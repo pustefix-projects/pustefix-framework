@@ -23,27 +23,56 @@ import java.util.Collection;
 import java.util.LinkedHashMap;
 import java.util.LinkedList;
 
+import javax.servlet.ServletContext;
+
 import org.pustefixframework.editor.common.dom.Project;
 import org.pustefixframework.editor.webui.remote.dom.ProjectImpl;
 import org.pustefixframework.editor.webui.remote.dom.util.RemoteServiceUtil;
+import org.springframework.beans.factory.InitializingBean;
+import org.springframework.context.ApplicationContext;
+import org.springframework.context.ApplicationContextAware;
+import org.springframework.core.io.Resource;
+import org.springframework.web.context.ServletContextAware;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.NodeList;
 import org.xml.sax.SAXException;
 
-import de.schlund.pfixxml.resources.FileResource;
-import de.schlund.pfixxml.resources.ResourceUtil;
 import de.schlund.pfixxml.util.Xml;
 
 
-public class ProjectPoolImpl implements ProjectPool {
+public class ProjectPoolImpl implements ProjectPool, ApplicationContextAware, ServletContextAware, InitializingBean {
+    
+    private final static String CONTEXT_PARAM_EDITOR_LOCATIONS = "editor.locations";
+    private final static String DEFAULT_EDITOR_LOCATIONS = "WEB-INF/editor-locations.xml";
+    
     private LinkedHashMap<String, Project> locationToProject = new LinkedHashMap<String, Project>();
     private LinkedHashMap<Project, String> projectToLocation = new LinkedHashMap<Project, String>();
     private LinkedHashMap<Project, RemoteServiceUtil> projectToRemoteServiceUtil = new LinkedHashMap<Project, RemoteServiceUtil>();
     private Object mapsLock = new Object();
+    private ApplicationContext applicationContext;
+    private ServletContext servletContext;
     
     public ProjectPoolImpl() {
-        loadFromFile();
+    }
+    
+    public void afterPropertiesSet() throws Exception {
+        String editorLocations = servletContext.getInitParameter(CONTEXT_PARAM_EDITOR_LOCATIONS);
+        Resource resource;
+        if(editorLocations == null) {
+            resource = applicationContext.getResource(DEFAULT_EDITOR_LOCATIONS);
+        } else {
+            resource = applicationContext.getResource(editorLocations);
+        }
+        loadFromResource(resource);
+    }
+    
+    public void setApplicationContext(ApplicationContext applicationContext) {
+        this.applicationContext = applicationContext;
+    }
+    
+    public void setServletContext(ServletContext servletContext) {
+        this.servletContext = servletContext;
     }
     
     public Project getProjectForURI(String uri) {
@@ -73,6 +102,7 @@ public class ProjectPoolImpl implements ProjectPool {
         }
     }
     
+    /**
     public void reloadConfiguration() {
         synchronized (mapsLock) {
             locationToProject.clear();
@@ -81,16 +111,16 @@ public class ProjectPoolImpl implements ProjectPool {
             loadFromFile();
         }
     }
+    */
     
-    private void loadFromFile() {
-        FileResource file = ResourceUtil.getFileResourceFromDocroot("WEB-INF/editor-locations.xml");
+    private void loadFromResource(Resource resource) {
         Document doc;
         try {
-            doc = Xml.parseMutable(file);
+            doc = Xml.parseMutable(resource.getInputStream());
         } catch (IOException e) {
-            throw new RuntimeException("Could not read project list from " + file, e);
+            throw new RuntimeException("Could not read project list from " + resource, e);
         } catch (SAXException e) {
-            throw new RuntimeException("Could not read project list from " + file, e);
+            throw new RuntimeException("Could not read project list from " + resource, e);
         }
         Element docElement = doc.getDocumentElement();
         NodeList projectElements = docElement.getElementsByTagName("project");
@@ -98,12 +128,12 @@ public class ProjectPoolImpl implements ProjectPool {
             Element projectElement = (Element) projectElements.item(i);
             Element locationElement = (Element) projectElement.getElementsByTagName("location").item(0);
             if (locationElement == null) {
-                throw new RuntimeException("Could not find location element within project element in file " + file);
+                throw new RuntimeException("Could not find location element within project element in file " + resource);
             }
             String location = locationElement.getTextContent();
             Element secretElement = (Element) projectElement.getElementsByTagName("secret").item(0);
             if (secretElement == null) {
-                throw new RuntimeException("Could not find secret element within project element in file " + file);
+                throw new RuntimeException("Could not find secret element within project element in file " + resource);
             }
             String secret = secretElement.getTextContent();
             LinkedList<String> aliasLocations = new LinkedList<String>();

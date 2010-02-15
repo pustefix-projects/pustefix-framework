@@ -27,6 +27,7 @@ import java.util.LinkedHashMap;
 import java.util.LinkedHashSet;
 import java.util.Map;
 
+import javax.servlet.ServletContext;
 import javax.xml.transform.TransformerException;
 
 import org.apache.log4j.Logger;
@@ -36,6 +37,12 @@ import org.pustefixframework.editor.common.exception.EditorIOException;
 import org.pustefixframework.editor.common.exception.EditorParsingException;
 import org.pustefixframework.editor.common.exception.EditorSecurityException;
 import org.pustefixframework.editor.common.exception.EditorUserNotExistingException;
+import org.springframework.beans.factory.InitializingBean;
+import org.springframework.context.ApplicationContext;
+import org.springframework.context.ApplicationContextAware;
+import org.springframework.core.io.FileSystemResource;
+import org.springframework.core.io.Resource;
+import org.springframework.web.context.ServletContextAware;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.Node;
@@ -44,8 +51,6 @@ import org.xml.sax.SAXException;
 import de.schlund.pfixcore.editor2.core.vo.EditorGlobalPermissions;
 import de.schlund.pfixcore.editor2.core.vo.EditorProjectPermissions;
 import de.schlund.pfixcore.editor2.core.vo.EditorUser;
-import de.schlund.pfixxml.resources.FileResource;
-import de.schlund.pfixxml.resources.ResourceUtil;
 import de.schlund.pfixxml.util.XPath;
 import de.schlund.pfixxml.util.Xml;
 
@@ -54,9 +59,11 @@ import de.schlund.pfixxml.util.Xml;
  * 
  * @author Sebastian Marsching <sebastian.marsching@1und1.de>
  */
-public class UserManagementServiceImpl implements UserManagementService {
-    private static final String CONFIG_FILE = "WEB-INF/userdata.xml";
-
+public class UserManagementServiceImpl implements UserManagementService, ApplicationContextAware, ServletContextAware, InitializingBean {
+    
+    private final static String CONTEXT_PARAM_EDITOR_USERDATA = "editor.userdata";
+    private final static String DEFAULT_EDITOR_USERDATA = "WEB-INF/userdata.xml";
+    
     private SecurityManagerService securitymanager;
     
     private ProjectPool projectPool;
@@ -67,6 +74,11 @@ public class UserManagementServiceImpl implements UserManagementService {
     
     private Object usersFileLock = new Object();
 
+    private ApplicationContext applicationContext;
+    private ServletContext servletContext;
+    
+    private Resource userDataResource;
+    
     public UserManagementServiceImpl() {
         this.users = new LinkedHashMap<String, EditorUser>();
         this.initialized = false;
@@ -79,30 +91,46 @@ public class UserManagementServiceImpl implements UserManagementService {
     public void setSecurityManagerService(SecurityManagerService securitymanager) {
         this.securitymanager = securitymanager;
     }
+    
+    public void setApplicationContext(ApplicationContext applicationContext) {
+        this.applicationContext = applicationContext;
+    }
+    
+    public void setServletContext(ServletContext servletContext) {
+        this.servletContext = servletContext;
+    }
 
+    public void afterPropertiesSet() throws Exception {
+        String editorUserData = servletContext.getInitParameter(CONTEXT_PARAM_EDITOR_USERDATA);
+        if(editorUserData == null) {
+            userDataResource = applicationContext.getResource(DEFAULT_EDITOR_USERDATA);
+        } else {
+            userDataResource = applicationContext.getResource(editorUserData);
+        }
+    }
+    
     public void init() throws EditorParsingException, EditorIOException {
         // Load configuration
-        this.loadFromFile();
+        this.loadFromResource(userDataResource);
         this.initialized = true;
     }
 
-    public void loadFromFile() throws EditorParsingException, EditorIOException {
-        FileResource configFile = ResourceUtil.getFileResourceFromDocroot(CONFIG_FILE);
+    public void loadFromResource(Resource resource) throws EditorParsingException, EditorIOException {
         Document xml = null;
         
         synchronized (usersFileLock) {
             try {
-                xml = Xml.parseMutable(configFile);
+                xml = Xml.parseMutable(resource.getInputStream());
             } catch (FileNotFoundException e) {
-                String err = "File " + configFile + " could not be found!";
+                String err = "File " + resource + " could not be found!";
                 Logger.getLogger(this.getClass()).error(err, e);
                 throw new EditorIOException(err, e);
             } catch (SAXException e) {
-                String err = "Error during parsing file " + configFile + "!";
+                String err = "Error during parsing file " + resource + "!";
                 Logger.getLogger(this.getClass()).error(err, e);
                 throw new EditorParsingException(err, e);
             } catch (IOException e) {
-                String err = "File " + configFile + " could not be read!";
+                String err = "File " + resource + " could not be read!";
                 Logger.getLogger(this.getClass()).error(err, e);
                 throw new EditorIOException(err, e);
             }
@@ -208,12 +236,16 @@ public class UserManagementServiceImpl implements UserManagementService {
 
     }
 
-    private void storeToFile() {
+    private void storeToResource() {
+        
+        if(!(userDataResource instanceof FileSystemResource)) {
+            throw new IllegalArgumentException("Userdata resource can't be stored because it's no file system resource.");
+        }
+        FileSystemResource resource = (FileSystemResource)userDataResource;
+        
         Document doc = Xml.createDocument();
         Element root = doc.createElement("userinfo");
         doc.appendChild(root);
-
-        FileResource configFile = ResourceUtil.getFileResourceFromDocroot(CONFIG_FILE);
 
         synchronized (this.users) {
             for (EditorUser user : this.users.values()) {
@@ -257,7 +289,7 @@ public class UserManagementServiceImpl implements UserManagementService {
             }
 
             try {
-                Xml.serialize(doc, configFile, true, true);
+                Xml.serialize(doc, resource.getFile(), true, true);
             } catch (IOException e) {
                 // Ooops, something went wrong.
                 // However we will not be able to recover from
@@ -314,7 +346,7 @@ public class UserManagementServiceImpl implements UserManagementService {
             }
             this.users.put(newuser.getUsername(), newuser);
         }
-        this.storeToFile();
+        this.storeToResource();
     }
 
     public void createUser(EditorUser user)
@@ -328,7 +360,7 @@ public class UserManagementServiceImpl implements UserManagementService {
             }
             this.users.put(user.getUsername(), user);
         }
-        this.storeToFile();
+        this.storeToResource();
     }
 
     public void deleteUser(EditorUser user)
@@ -343,7 +375,7 @@ public class UserManagementServiceImpl implements UserManagementService {
             }
             this.users.remove(user.getUsername());
         }
-        this.storeToFile();
+        this.storeToResource();
     }
 
     public Collection<EditorUser> getUsers() {

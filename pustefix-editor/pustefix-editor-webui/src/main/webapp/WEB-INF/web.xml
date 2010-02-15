@@ -1,5 +1,15 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <web-app xmlns="http://java.sun.com/xml/ns/javaee" xmlns:jee="http://java.sun.com/xml/ns/javaee">
+   <!--
+   <context-param>
+      <param-name>editor.userdata</param-name>
+      <param-value>file:/path/to/userdata.xml</param-value>
+   </context-param>
+   <context-param>
+      <param-name>editor.locations</param-name>
+      <param-value>file:/path/to/editor-locations.xml</param-value>
+   </context-param>
+   -->
    <servlet>
       <servlet-name>dispatcher</servlet-name>
       <servlet-class>org.springframework.web.servlet.DispatcherServlet</servlet-class>
@@ -9,7 +19,7 @@
       </init-param>
       <init-param>
          <param-name>contextConfigLocation</param-name>
-         <param-value>WEB-INF/project.xml WEB-INF/spring.xml</param-value>
+         <param-value> WEB-INF/project.xml WEB-INF/spring.xml</param-value>
       </init-param>
       <load-on-startup>1</load-on-startup>
    </servlet>
