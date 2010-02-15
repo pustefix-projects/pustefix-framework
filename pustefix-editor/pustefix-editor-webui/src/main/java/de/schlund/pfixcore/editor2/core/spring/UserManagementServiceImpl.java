@@ -18,6 +18,7 @@
 
 package de.schlund.pfixcore.editor2.core.spring;
 
+import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.util.Collection;
@@ -237,15 +238,22 @@ public class UserManagementServiceImpl implements UserManagementService, Applica
     }
 
     private void storeToResource() {
-        
-        if(!(userDataResource instanceof FileSystemResource)) {
-            throw new IllegalArgumentException("Userdata resource can't be stored because it's no file system resource: " + (userDataResource == null ? "null" : userDataResource.getClass()));
-        }
-        FileSystemResource resource = (FileSystemResource)userDataResource;
-        
+        File file;
+
         Document doc = Xml.createDocument();
         Element root = doc.createElement("userinfo");
         doc.appendChild(root);
+        if (userDataResource instanceof FileSystemResource) {
+            file = ((FileSystemResource) userDataResource).getFile();
+        } else if (userDataResource instanceof org.springframework.core.io.UrlResource) {
+            try {
+                file = ((org.springframework.core.io.UrlResource) userDataResource).getFile();
+            } catch (IOException e) {
+                throw new IllegalArgumentException("Userdata resource can't be stored because it's no file system resource", e);
+            }
+        } else {
+            throw new IllegalArgumentException("Userdata resource can't be stored because it's no file system resource: " + (userDataResource == null ? "null" : userDataResource.getClass()));
+        }
 
         synchronized (this.users) {
             for (EditorUser user : this.users.values()) {
@@ -289,7 +297,7 @@ public class UserManagementServiceImpl implements UserManagementService, Applica
             }
 
             try {
-                Xml.serialize(doc, resource.getFile(), true, true);
+                Xml.serialize(doc, file, true, true);
             } catch (IOException e) {
                 // Ooops, something went wrong.
                 // However we will not be able to recover from
