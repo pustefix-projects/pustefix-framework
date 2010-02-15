@@ -15,6 +15,7 @@
   <!-- "http://sample1.<servername>/" -->
   <defpath>/xml/config</defpath>
   <passthrough>sample1/img</passthrough>
+  <passthrough>modules/test-module/img</passthrough>
   <!-- The Apache DocumentRoot for static content -->
   <documentroot><cus:docroot/>sample1/htdocs</documentroot>
   <!-- Here you can enter any additional apache config stuff -->

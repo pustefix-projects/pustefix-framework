@@ -1,0 +1,12 @@
+<module-descriptor
+      xmlns="http://pustefix.sourceforge.net/moduledescriptor200702"
+      xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+      xsi:schemaLocation="http://pustefix.sourceforge.net/moduledescriptor200702 
+                          http://pustefix.sourceforge.net/moduledescriptor200702.xsd">
+
+      <module-name>test-module</module-name>
+      <resources>
+        <resource-mapping srcpath="PUSTEFIX-INF/img" targetpath="img"/>
+      </resources>
+
+</module-descriptor>

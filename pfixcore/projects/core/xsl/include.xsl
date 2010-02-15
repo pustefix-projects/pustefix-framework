@@ -236,6 +236,7 @@
                       select="include:get(string($realpath), string($part),
                               string($__target_gen), string($__target_key),
                               string($parent_part), string($parent_theme), $computed_inc, $module, $search)"/>
+        <xsl:variable name="__resolveduri"><xsl:value-of select="include:getResolvedURI()"/></xsl:variable>
         <!-- Start image of edited region -->
         <xsl:choose>
           <xsl:when test="$noedit = 'true'"/> <!-- Do NOTHING! -->
@@ -280,7 +281,6 @@
           <xsl:when test="$noedit = 'true'"/> <!-- Do NOTHING! -->
           <xsl:when test="not($__target_key = '__NONE__') and $prohibitEdit = 'no'">
             <ixsl:if test="$__editmode = 'admin'">
-              <xsl:variable name="__resolveduri"><xsl:value-of select="include:getResolvedURI()"/></xsl:variable>
               <xsl:choose>
                 <xsl:when test="$incnodes/parent::part/@editable='true'">
                   <xsl:call-template name="pfx:include_internal_render_edit">
@@ -349,14 +349,7 @@
     <xsl:param name="resolved_uri"/>
     <xsl:param name="product"/>
     <a href="#">
-      <xsl:choose>
-        <xsl:when test="not(starts-with($resolved_uri,'module:'))">
-          <ixsl:attribute name="onclick">window.open('/xml/edit;<ixsl:value-of select="$__sessid"/>?__scriptedflow=selectinclude&amp;theme=<xsl:value-of select="string($used_theme)"/>&amp;path=<xsl:value-of select="substring-after($resolved_uri,'/')"/>&amp;part=<xsl:value-of select="$part"/>&amp;tgen=<xsl:value-of select="$product"/>&amp;type=include&amp;__anchor=left_navi|<xsl:value-of select="$realpath"/>','PustefixEditor','menubar=yes,status=yes,resizable=yes');return(false);</ixsl:attribute>
-        </xsl:when>
-        <xsl:otherwise>
-          <ixsl:attribute name="onclick">alert("Editing <xsl:value-of select="$resolved_uri"/> not yet supported!")</ixsl:attribute>
-        </xsl:otherwise>
-      </xsl:choose>
+      <ixsl:attribute name="onclick">window.open('/xml/edit;<ixsl:value-of select="$__sessid"/>?__scriptedflow=selectinclude&amp;theme=<xsl:value-of select="string($used_theme)"/>&amp;path=<xsl:value-of select="$resolved_uri"/>&amp;part=<xsl:value-of select="$part"/>&amp;tgen=<xsl:value-of select="$product"/>&amp;type=include&amp;__anchor=left_navi|<xsl:value-of select="$realpath"/>','PustefixEditor','menubar=yes,status=yes,resizable=yes');return(false);</ixsl:attribute>
       <img border="0" src="{{$__contextpath}}/core/img/edit.gif"
            alt="] Edit include: '{$part}' in resource '{$resolved_uri}'"
            title="Edit include: '{$part}' in resource '{$resolved_uri}'"/>

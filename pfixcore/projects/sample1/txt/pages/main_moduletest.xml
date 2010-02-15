@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="ISO-8859-1"?><include_parts xmlns:ixsl="http://www.w3.org/1999/XSL/Transform" xmlns:pfx="http://www.schlund.de/pustefix/core">
+  
+  <part name="content">
+    <theme name="default">
+      <center>
+        <h1>Module test</h1>
+        <pfx:image module="test-module" src="img/up.png"/>
+        <pfx:image module="test-module" search="dynamic" src="img/down.png"/>
+        
+        <pfx:include part="test"/>
+        <pfx:include href="xml/parts.xml" module="test-module" part="test"/>
+      </center>
+    </theme>
+  </part>
+
+  <part name="test">
+    <theme name="default">
+      test
+    </theme>
+  </part>
+
+</include_parts>

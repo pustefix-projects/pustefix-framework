@@ -114,7 +114,9 @@ or delete the DOCTYPE definition -->
       encoding="${javac.encoding}"/>
   </target>
 
-  <target name="clean-project" depends="skel.clean-project">
+  <target name="post-compile" depends="init, setup-testmodule"/>
+
+  <target name="clean-project" depends="clean-testmodule, skel.clean-project">
     <delete dir="${dir.dist}"/>
     <!-- Delete empty htdocs and img dirs in the dist examples -->
     <delete includeemptydirs="true">
@@ -180,6 +182,18 @@ or delete the DOCTYPE definition -->
     </tar>
   </target>
 
+  <target name="clean-testmodule">
+    <delete file="${dir.lib}/test-module.jar"/>
+    <delete dir="${dir.projects}/modules"/>
+  </target>
+
+  <target name="setup-testmodule">
+     <jar destfile="${dir.lib}/test-module.jar" basedir="test-module"/>
+     <mkdir dir="${dir.projects}/modules/test-module"/>
+     <copy todir="${dir.projects}/modules/test-module/img">
+       <fileset dir="test-module/PUSTEFIX-INF/img"/>
+     </copy>
+  </target>
 
   <!-- a target to create a new project -->
   <target name="new-basicapp" depends="compile" description="Builds a naked application and creates the basic stuff">
@@ -197,7 +211,7 @@ or delete the DOCTYPE definition -->
     <tar destfile="${file.pfixcore_skel_tgz}" compression="gzip">
       <tarfileset dir="${dir.skel}" prefix="skel"/>
       <tarfileset dir="${dir.metainf}" includes="${name.svnrevision}" prefix="skel"/>
-      <tarfileset dir="${dir.lib}" includes="*.jar, tomcat/README" excludes="saxon8*.jar" prefix="skel/lib"/>
+      <tarfileset dir="${dir.lib}" includes="*.jar, tomcat/README" excludes="saxon8*.jar, test-module.jar" prefix="skel/lib"/>
       <tarfileset dir="${dir.dist}" includes="${name.pfixcore_jar}" prefix="skel/lib"/>
       <tarfileset dir="${dir.dist}" includes="${name.pfixcore_data_tgz}" prefix="skel/lib"/>
       <tarfileset dir="${basedir}" includes="ant.dtd" prefix="skel"/>

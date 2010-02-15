@@ -37,7 +37,11 @@ import de.schlund.pfixcore.editor2.core.dom.AbstractIncludeFile;
 import de.schlund.pfixcore.editor2.core.dom.IncludePart;
 import de.schlund.pfixcore.editor2.core.spring.FileSystemService;
 import de.schlund.pfixcore.editor2.core.spring.PathResolverService;
+import de.schlund.pfixxml.resources.ModuleResource;
+import de.schlund.pfixxml.resources.Resource;
+import de.schlund.pfixxml.resources.ResourceUtil;
 import de.schlund.pfixxml.util.XPath;
+import de.schlund.pfixxml.util.Xml;
 
 /**
  * Class implementing functions common to IncludeFiles and DynIncludeFiles
@@ -125,6 +129,18 @@ public abstract class CommonIncludeFileImpl extends AbstractIncludeFile {
     }
 
     public Document getContentXML(boolean forceUpdate) {
+    	if(getPath().startsWith("module://")) {
+    		Resource res = ResourceUtil.getResource(getPath());
+    		try {
+    			return Xml.parseMutable((ModuleResource)res);
+    		} catch(SAXException x) {
+    			Logger.getLogger(this.getClass()).warn(x);
+                return null;
+    		} catch(IOException x) {
+    			Logger.getLogger(this.getClass()).warn(x);
+                return null;
+    		}
+    	}
         File xmlFile = new File(this.pathresolver.resolve(this.getPath()));
         if (!forceUpdate && this.xmlCache != null) {
             synchronized (this.xmlCache) {

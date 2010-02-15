@@ -37,6 +37,8 @@
     <page name="B"  handler="/xml/config"/>
     <page name="C"  handler="/xml/config"/>
     
+    <page name="moduletest" handler="/xml/config"/>
+    
     <config-include file="sample1/conf/fragments.xml" section="navigation"/>
     
   </navigation>
@@ -72,6 +74,8 @@
   <standardpage name="A" xml="sample1/xml/one_frame.xml"/>
   <standardpage name="B" xml="sample1/xml/one_frame.xml"/>
   <standardpage name="C" xml="sample1/xml/one_frame.xml"/>
+  
+  <standardpage name="moduletest" xml="sample1/xml/one_frame.xml"/>
   
   <standardpage name="encoding" xml="sample1/xml/one_frame.xml"/>
   <standardpage name="upload" xml="sample1/xml/one_frame.xml"/>
