@@ -175,6 +175,14 @@
     <appender-ref ref="LOGGER_GENERAL"/>
   </category>
   
+  <category name="de.schlund.pfixxml.resources.internal" additivity="false">
+    <priority value="INFO"/>
+  </category>
+
+  <category name="org.pustefixframework.live" additivity="false">
+    <priority value="INFO"/>
+  </category>
+
   <category name="org.pustefixframework.webservices" additivity="false">
     <cus:choose>
       <cus:when test="$mode = 'prod'">
