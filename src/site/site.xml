@@ -13,9 +13,7 @@
       <item name="Home" href="index.html"/>
     </menu>
 
-    ${reports}
-
-    ${modules}
-
+    <menu ref="reports"/>
+    <menu ref="modules"/>
   </body>
 </project>

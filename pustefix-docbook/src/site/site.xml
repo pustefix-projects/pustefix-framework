@@ -15,6 +15,7 @@
       <item name="Tutorial" href="docbkx/tutorial.html"/>
       <item name="Reference" href="docbkx/reference.html"/>
       <item name="FAQ" href="docbkx/faq.html"/>
+      <item name="Changes" href="trac-report.html"/>
     </menu>
   </body>
 </project>

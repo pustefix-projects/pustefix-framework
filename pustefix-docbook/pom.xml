@@ -135,4 +135,24 @@
       </plugin>
     </plugins>
   </build>
+  <reporting>
+    <plugins>
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-changes-plugin</artifactId>
+        <reportSets>
+          <reportSet>
+            <reports>
+              <report>trac-report</report>
+            </reports>
+          </reportSet>
+        </reportSets>
+        <configuration>
+          <tracUser>mvnchr</tracUser>
+          <tracPassword>k7XvGD9i3MNz2bV4d78P</tracPassword>
+          <query>order=priority&amp;milestone=${pom.version}</query>
+        </configuration>
+      </plugin>
+    </plugins>
+  </reporting>
 </project>
