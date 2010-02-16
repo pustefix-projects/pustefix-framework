@@ -4,4 +4,8 @@
     <location>http://localhost:8080/pustefix-sample1</location>
     <secret>foobar</secret>
   </project>
+  <project>
+    <location>http://localhost:8080/moduletest</location>
+    <secret>foobar</secret>
+  </project>
 </projects>

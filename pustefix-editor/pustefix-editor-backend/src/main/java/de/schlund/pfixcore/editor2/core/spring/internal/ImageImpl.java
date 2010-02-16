@@ -136,8 +136,7 @@ public class ImageImpl extends AbstractImage {
     }
 
     public long getLastModTime() {
-        File file = new File(this.pathresolver.resolve(this.getPath()));
-        return file.lastModified();
+        return ResourceUtil.getResource(getPath()).lastModified();
     }
 
     public Collection<String> getBackupVersions() {

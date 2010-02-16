@@ -118,7 +118,7 @@ public class ImagesResource {
                 String url;
                 if (path.startsWith("docroot:/")) {
                     url = projectPool.getURIForProject(projectsResource.getSelectedProject())
-                        + path.substring(10);
+                        + path.substring(9);
                 } else {
                     url = projectPool.getURIForProject(projectsResource.getSelectedProject())
                     + path;
@@ -131,7 +131,7 @@ public class ImagesResource {
                 } else {
                     filename = path;
                 }
-                currentImage.setAttribute("filename", filename);
+                currentImage.setAttribute("filename", filename);               
                 currentImage.setAttribute("modtime", Long.toString(this.selectedImage.getLastModTime()));
                 if (securitymanager.mayEditImages(projectsResource.getSelectedProject())) {
                     currentImage.setAttribute("mayEdit", "true");

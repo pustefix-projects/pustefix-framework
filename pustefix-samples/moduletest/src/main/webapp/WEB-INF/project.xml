@@ -7,8 +7,13 @@
   </project>
   
   <editor>
-    <enabled>true</enabled>
-    <location>http://cms.${fqdn}/</location>
+    <choose>
+      <when test="$mode='test'">
+        <enabled>true</enabled>
+      </when>
+    </choose>
+    <location>http://cms.${fqdn}:9090/pustefix-editor-webui/</location>
+    <secret>foobar</secret>
   </editor>
 
   <xml-generator>

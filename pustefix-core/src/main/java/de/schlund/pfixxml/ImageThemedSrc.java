@@ -86,12 +86,7 @@ public class ImageThemedSrc {
                     src = resUri.getPath();
                     if(src.startsWith("/")) src=src.substring(1);
                 }
-                String parent_path = "";
-                if (IncludeDocumentExtension.isIncludeDocument(context)) {
-                    parent_path = IncludeDocumentExtension.getSystemId(context);
-                }
-                Resource relativeParent = parent_path.equals("") ? null : ResourceUtil.getResource(parent_path);
-                DependencyTracker.logTyped("image", res, "", "", relativeParent, parent_part_in, parent_product_in, target);
+                DependencyTracker.logImage(context, src, parent_part_in, parent_product_in, targetGen, targetKey, "image");
                 return src;
             } else {
                 if(module!=null) src =  "modules/"+module+"/"+src;

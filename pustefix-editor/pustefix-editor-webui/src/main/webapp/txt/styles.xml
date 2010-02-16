@@ -476,6 +476,19 @@ div.editor_pagemessages_box {
 .editor_page_old { font-weight: bold; font-style: italic; color:#aa3333; }
 .editor_small { color: #000000; font-size: 9px;
                 font-family: Verdana, Helvetica, Tahoma, Arial, sans-serif;}
+                
+div.important_note {
+   background: #333333;
+   padding: 10px;
+   border: 1px solid #999999;
+   color: white;
+   font-weight: bold;
+   text-align:left;
+}
+span.important_note {
+   padding-left: 7px;
+}
+
       </theme>
     
     

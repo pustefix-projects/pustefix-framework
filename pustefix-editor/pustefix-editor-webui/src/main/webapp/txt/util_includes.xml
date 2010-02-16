@@ -151,6 +151,8 @@
           </tr>
         </ixsl:if>
         
+        <ixsl:if test="not(starts-with(/formresult/includes/currentinclude/@path, 'module://'))">
+        
         <ixsl:if test="./currentinclude/possiblethemes">
           <tr><td colspan="2"><hr/></td></tr>
           <tr>
@@ -191,6 +193,9 @@
             </td>
           </tr>
         </ixsl:if>
+        
+        </ixsl:if>
+        
       </table>
     </theme>
   </part>
@@ -254,12 +259,20 @@
                 </tbody>
               </table>
               <br/>
+              <ixsl:if test="starts-with(/formresult/includes/currentinclude/@path, 'module://')">
+                <div class="important_note">
+                  <img align="left" src="{$__contextpath}/img/info.png"/>
+                  <span class="important_note">The include part was supplied by a module. Therefore it can't be changed within the CMS editor.</span>
+                </div>
+              </ixsl:if>
+              <ixsl:if test="not(starts-with(/formresult/includes/currentinclude/@path, 'module://'))">
               <div style="text-align:left">
                 <pfx:xinp type="check" name="upload.PreserveFormat" value="true"/>
                 <span style="cursor:default" onClick="document.forms[0].elements['upload.PreserveFormat'].checked = !document.forms[0].elements['upload.PreserveFormat'].checked">Preserve format (do not append or prepend whitespace)</span>
               </div>
               <input class="editor_submit" onclick="wfxed.submitContent('wfxta01', 'wfxsubmit01')" type="button" value="Upload Data"/>
               <br/>
+              </ixsl:if>
               <div style="display:none">
                 Line: <input id="wfxed_line" size="3" type="text" value=""/>
                 Scroll: <input id="wfxed_column" size="3" type="text" value=""/>
@@ -352,6 +365,7 @@
                      </div>
                     </td>
                   </tr>
+                  <ixsl:if test="not(starts-with(/formresult/includes/currentinclude/@path, 'module://'))">
                   <tr>
                     <td style="text-align:center; padding:4px 0 4px 0;">
                       <pfx:xinp type="hidden" name="upload.StoredContent"/>
@@ -368,6 +382,7 @@
                       </pfx:xinp>
                     </td>
                   </tr>
+                  </ixsl:if>
                 </table>
               </div>
             </div>

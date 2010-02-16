@@ -18,10 +18,11 @@
 
 package de.schlund.pfixcore.editor2.core.spring;
 
-import de.schlund.pfixxml.config.GlobalConfig;
+import java.net.URL;
+
 import org.pustefixframework.live.LiveResolver;
 
-import java.net.URL;
+import de.schlund.pfixxml.config.GlobalConfig;
 
 /**
  * Implementation using {@link de.schlund.pfixxml.config.GlobalConfig} to get
@@ -52,7 +53,7 @@ public class PathResolverServiceImpl implements PathResolverService {
         if (path.startsWith("docroot:")) {
             path = path.substring(9);
         } else if (path.startsWith("module:")) {
-            throw new IllegalArgumentException("Modules are currently not supported");
+            return path;
         }
         if (!path.startsWith("/")) {
             path = "/" + path;

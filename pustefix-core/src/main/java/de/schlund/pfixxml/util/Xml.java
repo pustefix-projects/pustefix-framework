@@ -58,6 +58,7 @@ import org.xml.sax.helpers.XMLReaderFactory;
 
 import de.schlund.pfixxml.SPDocument;
 import de.schlund.pfixxml.resources.FileResource;
+import de.schlund.pfixxml.resources.ModuleResource;
 import de.schlund.pfixxml.resources.Resource;
 
 public class Xml {
@@ -209,6 +210,13 @@ public class Xml {
     
     public static Document parseMutable(Resource res) throws IOException, SAXException {
         return parseMutable(new InputSource(res.toURI().toString()));
+    }
+    
+    public static Document parseMutable(ModuleResource res) throws IOException, SAXException {
+        InputSource is = new InputSource();
+        is.setSystemId(res.toURI().toString());
+        is.setByteStream(res.getInputStream());
+        return parseMutable(is);
     }
     
     public static Document parseMutable(File file) throws IOException, SAXException {
