@@ -41,6 +41,16 @@
         </personname>
       </author>
     </authorgroup>
+    <keywordset>
+      <keyword>Java</keyword>
+      <keyword>web framework</keyword>
+      <keyword>XML</keyword>
+      <keyword>XSL</keyword>
+      <keyword>XSLT</keyword>
+      <keyword>MVC</keyword>
+      <keyword>Pustefix</keyword>
+      <keyword>Spring</keyword>
+    </keywordset>
   </info>
   
   <xi:include href="reference/preface.xml" />
