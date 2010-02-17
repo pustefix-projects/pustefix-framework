@@ -2,9 +2,14 @@
 <book version="5.0" xmlns="http://docbook.org/ns/docbook" xmlns:xlink="www.w3.org/1999/xlink" xmlns:xi="http://www.w3.org/2001/XInclude" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://docbook.org/ns/docbook http://www.docbook.org/xml/5.0CR7/xsd/docbook.xsd">
   <info>
     <title>Pustefix Reference Documentation</title>
+    <subtitle>Version 0.12.x</subtitle>
+    <releaseinfo>This documentation relates to the latest Pustefix release from the 0.12 branch.</releaseinfo>
     <copyright>
-      <holder>1&amp;1 Internet AG</holder>
       <year>2007</year>
+      <year>2008</year>
+      <year>2009</year>
+      <year>2010</year>
+      <holder>1&amp;1 Internet AG</holder>
     </copyright>
   </info>
   <xi:include href="reference/configuration.xml"/>
