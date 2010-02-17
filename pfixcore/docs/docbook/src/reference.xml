@@ -5,9 +5,13 @@
 >
   <info>
     <title>Pustefix Reference Documentation</title>
+    <subtitle>Version 0.13.x</subtitle>
+    <releaseinfo>This documentation relates to the latest Pustefix release from the 0.13 branch.</releaseinfo>
     <copyright>
       <year>2007</year>
       <year>2008</year>
+      <year>2009</year>
+      <year>2010</year>
       <holder>1&amp;1 Internet AG</holder>
     </copyright>
     <authorgroup>
