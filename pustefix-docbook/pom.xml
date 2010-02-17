@@ -63,6 +63,7 @@
             <configuration>
               <sourceDirectory>src/docbkx/reference</sourceDirectory>
               <includes>reference.xml</includes>
+              <htmlCustomization>${project.basedir}/src/docbkx/resources/xsl/html.xsl</htmlCustomization>
             </configuration>
           </execution>
           <execution>
