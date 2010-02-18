@@ -17,5 +17,18 @@
     </meta>
   </xsl:template>
 
+  <xsl:template name="user.header.content">
+    <xsl:param name="node" select="."/>
+    <div id="header">
+      <h1><a href="http://pustefix-framework.org/">Pustefix-Framework</a></h1>
+    </div>
+    <div id="navi">
+      <li><a href="faq.html"><xsl:if test="$node/@id='faq'"><xsl:attribute name="class">active</xsl:attribute></xsl:if>FAQ</a></li>
+      <li><a href="reference.html"><xsl:if test="$node/@id='reference'"><xsl:attribute name="class">active</xsl:attribute></xsl:if>Reference</a></li>
+      <li><a href="tutorial.html"><xsl:if test="$node/@id='tutorial'"><xsl:attribute name="class">active</xsl:attribute></xsl:if>Tutorials</a></li>
+      <li><a href="http://pustefix-framework.org/docs.html">Other versions</a></li>
+    </div>
+  </xsl:template>
+
 
 </xsl:stylesheet>

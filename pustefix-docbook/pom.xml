@@ -38,6 +38,7 @@
               <includes>tutorial.xml</includes>
               <admonGraphicsPath>images/docbkx/</admonGraphicsPath>
               <calloutGraphicsPath>images/docbkx/callouts/</calloutGraphicsPath>
+              <htmlCustomization>${project.basedir}/src/docbkx/resources/xsl/html.xsl</htmlCustomization>
             </configuration>
           </execution>
           <execution>
@@ -89,6 +90,7 @@
             <configuration>
               <sourceDirectory>src/docbkx/faq</sourceDirectory>
               <includes>faq.xml</includes>
+              <htmlCustomization>${project.basedir}/src/docbkx/resources/xsl/html.xsl</htmlCustomization>
             </configuration>
           </execution>
           <execution>
