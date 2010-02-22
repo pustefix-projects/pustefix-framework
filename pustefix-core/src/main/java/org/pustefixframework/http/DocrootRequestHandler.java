@@ -85,9 +85,10 @@ public class DocrootRequestHandler implements UriProvidingHttpRequestHandler, Se
         boolean warOnly = getServletContext().getRealPath("/") == null ? true : false;
 
         // Handle default (root) request
-        if (this.defaultpath != null
-                && (path == null || path.length() == 0 || path.equals("/"))) {
-            res.sendRedirect(req.getContextPath() + this.defaultpath);
+        if (defaultpath != null && (path == null || path.length() == 0 || path.equals("/"))) {
+            String redirect = req.getContextPath() + defaultpath;
+            if(req.getQueryString() != null) redirect += "?" + req.getQueryString();
+            res.sendRedirect(redirect);
             return;
         }
 
