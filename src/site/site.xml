@@ -11,8 +11,8 @@
   <body>
     <menu name="Documents">
       <item name="Home" href="index.html"/>
+      <item name="Changes" href="pustefix-docbook/trac-report.html" />
     </menu>
-
     <menu ref="reports"/>
     <menu ref="modules"/>
   </body>
