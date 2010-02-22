@@ -167,7 +167,7 @@
  
     <site>
       <id>pustefix</id>
-      <url>scpexe://pustefix@pustefixhp.schlund.de/var/www/pustefix-docs/trunk</url>
+      <url>scpexe://pustefix@pustefixhp.schlund.de/var/www/pustefix-docs/0.14.x</url>
     </site>
   </distributionManagement>
   <profiles>
