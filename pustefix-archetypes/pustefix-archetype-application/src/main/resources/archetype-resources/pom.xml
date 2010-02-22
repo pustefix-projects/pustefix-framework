@@ -10,7 +10,7 @@
   <name>${artifactId} Pustefix Application </name>
 
   <properties>
-    <pustefix.version>0.14.5</pustefix.version>
+    <pustefix.version>0.14.6</pustefix.version>
   </properties>
   
   <dependencies>
