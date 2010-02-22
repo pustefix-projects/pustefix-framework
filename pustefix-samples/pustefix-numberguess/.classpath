@@ -1,0 +1,34 @@
+<classpath>
+  <classpathentry kind="src" path="src/main/java"/>
+  <classpathentry kind="src" path="target/generated-sources/iwrappers"/>
+  <classpathentry kind="src" path="target/generated-sources/statuscodes"/>
+  <classpathentry kind="output" path="target/classes"/>
+  <classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER"/>
+  <classpathentry kind="var" path="M2_REPO/javax/activation/activation/1.1/activation-1.1.jar"/>
+  <classpathentry kind="var" path="M2_REPO/aopalliance/aopalliance/1.0/aopalliance-1.0.jar"/>
+  <classpathentry kind="var" path="M2_REPO/org/aspectj/aspectjweaver/1.6.2/aspectjweaver-1.6.2.jar"/>
+  <classpathentry kind="var" path="M2_REPO/bsf/bsf/2.3.0/bsf-2.3.0.jar"/>
+  <classpathentry kind="var" path="M2_REPO/cglib/cglib-nodep/2.1_3/cglib-nodep-2.1_3.jar" sourcepath="M2_REPO/cglib/cglib-nodep/2.1_3/cglib-nodep-2.1_3-sources.jar"/>
+  <classpathentry kind="var" path="M2_REPO/commons-collections/commons-collections/3.2.1/commons-collections-3.2.1.jar"/>
+  <classpathentry kind="var" path="M2_REPO/commons-logging/commons-logging/1.0.4/commons-logging-1.0.4.jar" sourcepath="M2_REPO/commons-logging/commons-logging/1.0.4/commons-logging-1.0.4-sources.jar"/>
+  <classpathentry kind="var" path="M2_REPO/concurrent/concurrent/1.3.4/concurrent-1.3.4.jar" sourcepath="M2_REPO/concurrent/concurrent/1.3.4/concurrent-1.3.4-sources.jar"/>
+  <classpathentry kind="var" path="M2_REPO/com/marsching/flexiparse/flexiparse/0.2.1/flexiparse-0.2.1.jar"/>
+  <classpathentry kind="var" path="M2_REPO/urbanophile/java-getopt/1.0.9/java-getopt-1.0.9.jar"/>
+  <classpathentry kind="var" path="M2_REPO/junit/junit/4.5/junit-4.5.jar"/>
+  <classpathentry kind="var" path="M2_REPO/log4j/log4j/1.2.13/log4j-1.2.13.jar" sourcepath="M2_REPO/log4j/log4j/1.2.13/log4j-1.2.13-sources.jar"/>
+  <classpathentry kind="var" path="M2_REPO/javax/mail/mail/1.4.1/mail-1.4.1.jar" sourcepath="M2_REPO/javax/mail/mail/1.4.1/mail-1.4.1-sources.jar"/>
+  <classpathentry kind="var" path="M2_REPO/oro/oro/2.0.7/oro-2.0.7.jar"/>
+  <classpathentry kind="var" path="M2_REPO/org/pustefixframework/pustefix-core/0.14.6-SNAPSHOT/pustefix-core-0.14.6-SNAPSHOT.jar" sourcepath="M2_REPO/org/pustefixframework/pustefix-core/0.14.6-SNAPSHOT/pustefix-core-0.14.6-SNAPSHOT-sources.jar"/>
+  <classpathentry kind="var" path="M2_REPO/org/pustefixframework/pustefix-live/0.14.6-SNAPSHOT/pustefix-live-0.14.6-SNAPSHOT.jar"/>
+  <classpathentry kind="var" path="M2_REPO/com/icl/saxon/saxon/6.5.5/saxon-6.5.5.jar"/>
+  <classpathentry kind="var" path="M2_REPO/org/springframework/spring/2.5.6/spring-2.5.6.jar"/>
+  <classpathentry kind="var" path="M2_REPO/org/springframework/spring-beans/2.5.6/spring-beans-2.5.6.jar"/>
+  <classpathentry kind="var" path="M2_REPO/org/springframework/spring-context/2.5.6/spring-context-2.5.6.jar"/>
+  <classpathentry kind="var" path="M2_REPO/org/springframework/spring-context-support/2.5.6/spring-context-support-2.5.6.jar"/>
+  <classpathentry kind="var" path="M2_REPO/org/springframework/spring-core/2.5.6/spring-core-2.5.6.jar"/>
+  <classpathentry kind="var" path="M2_REPO/org/springframework/spring-test/2.5.6/spring-test-2.5.6.jar"/>
+  <classpathentry kind="var" path="M2_REPO/org/springframework/spring-web/2.5.6/spring-web-2.5.6.jar"/>
+  <classpathentry kind="var" path="M2_REPO/org/springframework/spring-webmvc/2.5.6/spring-webmvc-2.5.6.jar"/>
+  <classpathentry kind="lib" path="/data/java/jdk1.6.0_13/lib/tools.jar"/>
+  <classpathentry kind="var" path="M2_REPO/xml-resolver/xml-resolver/1.1/xml-resolver-1.1.jar" sourcepath="M2_REPO/xml-resolver/xml-resolver/1.1/xml-resolver-1.1-sources.jar"/>
+</classpath>

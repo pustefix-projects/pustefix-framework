@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="utf-8"?>
+<include_parts xmlns:ixsl="http://www.w3.org/1999/XSL/Transform" xmlns:pfx="http://www.schlund.de/pustefix/core">
+  
+  <part name="navibar">
+    <theme name="default">
+    
+      <pfx:button page="Home">Home</pfx:button>
+      <pfx:button page="Congratulation">Congratulation</pfx:button>
+
+    </theme> 
+  </part>
+ 
+ </include_parts>

@@ -1,0 +1,14 @@
+<interface xsi:schemaLocation="http://pustefix.sourceforge.net/interfacewrapper200401 http://pustefix.sourceforge.net/interfacewrapper200401.xsd"
+  xmlns="http://pustefix.sourceforge.net/interfacewrapper200401"
+  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+  
+  <ihandler class="org.pustefixframework.example.numberguess.handler.GuessDataHandler"/>
+  
+  <param name="number" type="java.lang.Integer">
+    <caster class="de.schlund.pfixcore.generator.casters.ToInteger"/>
+    <postcheck class="de.schlund.pfixcore.generator.postchecks.IntegerRange">
+      <cparam name="range" value="0:9"/>
+    </postcheck>
+  </param>
+  
+</interface>
