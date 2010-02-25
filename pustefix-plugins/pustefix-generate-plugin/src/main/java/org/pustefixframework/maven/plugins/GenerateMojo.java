@@ -22,7 +22,6 @@ import java.io.File;
 import org.apache.maven.plugin.AbstractMojo;
 import org.apache.maven.plugin.MojoExecutionException;
 import org.apache.tools.ant.BuildException;
-import org.codehaus.plexus.util.DirectoryScanner;
 
 import de.schlund.pfixxml.config.GlobalConfigurator;
 import de.schlund.pfixxml.resources.FileResource;
@@ -30,7 +29,7 @@ import de.schlund.pfixxml.resources.ResourceUtil;
 import de.schlund.pfixxml.targets.TargetGenerator;
 
 /**
- * Generate IWrapper classes from .iwrp files.
+ * Generate all XSL targets with TargetGenerator
  *
  * @author mleidig@schlund.de
  *
@@ -40,16 +39,16 @@ import de.schlund.pfixxml.targets.TargetGenerator;
 public class GenerateMojo extends AbstractMojo {
     
     /**
-     * @parameter
+     * @parameter default-value="${basedir}/src/main/webapp"
      * @required
      */
     private File docroot;
     
     /**
-     * @parameter
+     * @parameter default-value="${basedir}/src/main/webapp/WEB-INF/depend.xml"
      * @required
      */
-    private String[] includes;
+    private File config;
     
     
     public void execute() throws MojoExecutionException {
@@ -60,42 +59,24 @@ public class GenerateMojo extends AbstractMojo {
             // Ignore exception as there is no problem
             // if the docroot has already been configured
         }
-            
-        DirectoryScanner scanner = new DirectoryScanner();
-        scanner.setIncludes(includes);
-        scanner.setBasedir(docroot);
-        scanner.setCaseSensitive(true);
-        scanner.scan();
-        String[] files = scanner.getIncludedFiles();
-     
-        if (files.length > 0) {
+        
+        FileResource confile = ResourceUtil.getFileResource(config.toURI()); 
+        if(confile.exists() && confile.canRead() && confile.isFile()) {
             try {
-                for (int i = 0; i < files.length; i++) {
-                    FileResource confile = ResourceUtil.getFileResourceFromDocroot(files[i]);
-                    if (confile.exists() && confile.canRead() && confile.isFile()) {
-                        try {
-                            TargetGenerator gen = new TargetGenerator(confile);
-                            gen.setIsGetModTimeMaybeUpdateSkipped(false);
-                            getLog().info("---------- Doing " + files[i] + "...");
-                            gen.generateAll();
-                            getLog().info("---------- ...done [" + files[i] + "]");
-
-                            TargetGenerator.resetFactories();
-                        } catch (Exception e) {
-                            throw new BuildException(confile + ": " + e.getMessage(), e);
-                        }
-                    } else {
-                        throw new BuildException("Couldn't read configfile '" + files[i] + "'");
-                    }
-                }
+                TargetGenerator gen = new TargetGenerator(confile);
+                gen.setIsGetModTimeMaybeUpdateSkipped(false);
+                gen.generateAll();
+                TargetGenerator.resetFactories();
+            } catch (Exception e) {
+                throw new BuildException(confile + ": " + e.getMessage(), e);
             } finally {
                 getLog().info(TargetGenerator.getReportAsString());
-                if(TargetGenerator.errorsReported()) throw new BuildException("TargetGenerator reported errors.");
+                if(TargetGenerator.errorsReported()) throw new MojoExecutionException("TargetGenerator reported errors.");
             }
         } else {
-            getLog().warn("Need configfile to work on");
-        }
-            
+            throw new BuildException("Can't read TargetGenerator configuration '" +  confile + "'");
+        }    
+                
     }
         
   
