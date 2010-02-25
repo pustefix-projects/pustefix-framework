@@ -202,6 +202,7 @@
     <module>pustefix-editor</module>
     <module>pustefix-docbook</module>
     <module>pustefix-live</module>
+    <module>pustefix-tutorial</module>
   </modules>
 
 </project>

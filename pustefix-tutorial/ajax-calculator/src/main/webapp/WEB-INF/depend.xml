@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="utf-8"?><make lang="en_GB" project="ajax-calculator">
+
+<!--
+  A file configuring the xml related topics. 
+  More Informations here: 
+  
+  http://pustefix.sourceforge.net/depend.html
+ -->
+
+  <namespaces>
+     <namespace-declaration prefix="pfx" url="http://www.schlund.de/pustefix/core"/>
+     <namespace-declaration prefix="ixsl" url="http://www.w3.org/1999/XSL/Transform"/>
+  </namespaces>
+
+  <navigation>
+      <page handler="/xml/calc" name="Calculator"/>
+  </navigation>
+
+  <standardmaster>
+    <include stylesheet="xsl/skin.xsl"/>
+  </standardmaster>
+  
+  <standardmetatags>
+  	<include stylesheet="xsl/metatags.xsl"/>
+  </standardmetatags>
+  
+  <standardpage name="Calculator" xml="xml/frame.xml"/>
+  
+</make>

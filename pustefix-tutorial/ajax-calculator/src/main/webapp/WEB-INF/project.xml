@@ -1,0 +1,94 @@
+<?xml version="1.0" encoding="utf-8"?>
+<project-config xmlns="http://www.pustefix-framework.org/2008/namespace/project-config">
+
+<project>
+  <name>ajax-calculator</name>
+  <description>AJAX calculator tutorial</description>
+  </project>
+
+  <editor>
+    <choose>
+      <when test="$mode='test'">
+        <enabled>true</enabled>
+      </when>
+    </choose>
+    <location>http://cms.${fqdn}/</location>
+  </editor>
+
+  <xml-generator>
+    <config-file>docroot:/WEB-INF/depend.xml</config-file>
+    <choose>
+      <when test="$mode='prod'">
+        <check-modtime>false</check-modtime>
+      </when>
+    </choose>
+  </xml-generator>
+
+  <http-server>
+
+    <http-port>
+      <address>${fqdn}</address>
+    </http-port>
+
+    <!-- we do not use SSL here 
+    <https-port>
+      <address>${fqdn}</address>
+      <ssl-key>docroot:/WEB-INF/server.key</ssl-key>
+      <ssl-crt>docroot:/WEB-INF/server.crt</ssl-crt>
+    </https-port>
+    -->
+
+    <server-name>ajax-calculator.${fqdn}</server-name>
+    <server-alias>ajax-calculator.${machine}</server-alias>
+
+    <apache>
+      <literal>
+        <!-- Stuff that is copied to the Apache configuration -->
+      </literal>
+    </apache>
+
+  </http-server>
+
+  <application>
+
+    <docroot-path>docroot:/htdocs</docroot-path>
+    <default-path>/xml/calc</default-path>
+
+    <context-xml-service>
+      <path>/xml/calc</path>
+      <config-file>docroot:/WEB-INF/calc.conf.xml</config-file>
+      <additional-trail-info>de.schlund.pfixxml.perflogging.DefaultAdditionalTrailInfoImpl</additional-trail-info>
+      <choose>
+        <when test="$mode='prod'">
+          <session-cleaner-timeout>20</session-cleaner-timeout>
+        </when>
+        <otherwise>
+          <session-cleaner-timeout>600</session-cleaner-timeout>
+        </otherwise>
+      </choose>
+    </context-xml-service>
+
+    <static>
+      <path>core/img</path>
+      <path>core/script</path>
+      <path>img</path>
+    </static>
+
+    <webservice-service>
+      <path>/xml/webservice</path>
+      <config-file>docroot:/WEB-INF/webservice.conf.xml</config-file>
+    </webservice-service>
+
+    <exception-processing>
+      <process type="java.lang.Throwable" 
+               processor="de.schlund.pfixxml.exceptionprocessor.UniversalExceptionProcessor"/>
+    </exception-processing>
+
+  </application>
+
+  <properties>
+    <prop name="pfixcore.ssl_redirect_port.for.8080">8443</prop>
+    <prop name="pfixcore.ssl_redirect_port.for.9080">9443</prop>
+  </properties>
+
+</project-config>
