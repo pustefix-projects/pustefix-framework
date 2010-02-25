@@ -11,15 +11,9 @@
     an in-depth look at Pustefix, refer to the reference documentation. 
   </para>
   <para>
-    The source code used in the tutorials is available for public checkout. To test the tutorials on
-    you local development machine, execute the following commands:
+    You can either work through the tutorial by following the instructions and create the applications 
+    from scratch (the preferred way for first-time Pustefix users) or you can just check out the complete
+    source code (see  <xref linkend="gettingstarted.getsources"/>).
   </para>
-  <screen>$ svn co https://pustefix.svn.sourceforge.net/svnroot/pustefix/trunk/pfixtutorial
-$ cd pfixtutorial
-$ ant
-$ ./startTomcat.sh</screen>
-  <para>
-    Of course, you can also start with a skeleton application and implement the tutorials from
-    scratch.
-  </para>
+  <para></para>
 </preface>

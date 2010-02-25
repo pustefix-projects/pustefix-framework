@@ -462,12 +462,6 @@
       </literal>
     </apache>
     
-    <tomcat>
-      <!-- Set this to true to enable extra context instances 
-           for the virtual host created for this project      -->
-      <enable-extra-webapps>false</enable-extra-webapps>
-    </tomcat>
-    
   </http-server>
   
   <application>

@@ -76,4 +76,19 @@
     </plugins>
   </build>
 
+  <repositories>
+    <repository>
+      <id>pustefix</id>
+      <name>Pustefix Maven Repository</name>
+      <url>http://pustefix-framework.org/repository/maven</url>
+    </repository>
+  </repositories>
+
+  <pluginRepositories>
+    <pluginRepository>
+      <id>pustefix</id>
+      <url>http://pustefix-framework.org/repository/maven/</url>
+    </pluginRepository>
+  </pluginRepositories> 
+
 </project>

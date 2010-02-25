@@ -6,11 +6,6 @@
   
   <info>
     <title>Getting started</title>
-    <copyright>
-      <year>2007</year>
-      <year>2008</year>
-      <holder>1&amp;1 Internet AG</holder>
-    </copyright>
   </info>
   
   <section xml:id="gettingstarted.requirements">
@@ -30,17 +25,54 @@
         </para>
       </listitem>
       <listitem>
-        <para>Apache Tomcat 5.5.x</para>
-      </listitem>
-      <listitem>
-        <para>Apache Ant 1.6.5 or newer</para>
+        <para>Apache Maven 2.0.10 or newer</para>
       </listitem>
     </itemizedlist>
     <para>
-      The installation of these tools (except Tomcat) is not covered by this
+      The installation of these tools is not covered by this
       tutorial. Please refer to the documentation provided with these tools
       for installation instructions.
     </para>
+  </section>
+  <section xml:id="gettingstarted.mavensetup">
+    <title>Maven setup</title>
+    <para>
+      Pustefix provides a Maven archetype for quickly creating new applications. Therefore you
+      have to configure the repository where the according Pustefix artifacts reside (because
+      they currently aren't hosted in the Maven central repository).  
+    </para>
+    <para>
+      Adding the Pustefix repository can be easily done by adding the following profile to the
+      Maven settings. The profile can be either added to the <filename>settings.xml</filename>
+      file located in the <filename>.m2</filename> directory within your home directory (if it
+      doesn't already exist you can just create it) or to the <filename>settings.xml</filename> file 
+      located in the <filename>conf</filename> directory of your Maven installation.
+    </para>
+<programlisting language="xml"><![CDATA[<settings>
+  <profiles>
+
+    <profile>
+      <id>pustefix</id>
+      <activation>
+        <activeByDefault>true</activeByDefault>
+      </activation>
+      <repositories>
+        <repository>
+          <id>pustefix</id>
+          <name>Pustefix Maven Repository</name>
+          <url>http://pustefix-framework.org/repository/maven</url>
+        </repository>
+      </repositories>
+      <pluginRepositories>
+        <pluginRepository>
+          <id>pustefix</id>
+          <url>http://pustefix-framework.org/repository/maven/</url>
+        </pluginRepository>
+      </pluginRepositories> 
+
+    </profile>
+  </profiles>
+</settings>]]></programlisting>
   </section>
   <section xml:id="gettingstarted.prepareprojectdirectory">
     <title>Prepare the project directory</title>
@@ -129,5 +161,15 @@ makemode=test</programlisting>
       environment. This will create needed symlinks and initialize the 
       environment.
     </para>
+  </section>
+  <section xml:id="gettingstarted.getsources">
+    <title>Getting the source code</title>
+    <para>
+    The source code used in the tutorials is available for public checkout. To test the tutorials on
+    your local development machine, execute the following commands:
+  </para>
+  <screen>$ svn co https://pustefix.svn.sourceforge.net/svnroot/pustefix/branches/release-0.14.x/pustefix-tutorial
+$ cd pustefix-tutorial/ajax-calculator (or first-app, usermanagement)
+$ mvn tomcat:run</screen>
   </section>
 </chapter>

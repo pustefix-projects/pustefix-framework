@@ -160,8 +160,8 @@
     </repository>
     <snapshotRepository>
       <id>pustefix-snapshots</id>
-      <name>TODO</name>
-      <url>http://todo/setup-pustefix-snapshot-depository</url>
+      <name>Pustefix Maven Snapshot Repository</name>
+      <url>scpexe://pustefix@pustefixhp.schlund.de/home/pustefix/repository/maven</url>
       <uniqueVersion>true</uniqueVersion>
     </snapshotRepository>
  

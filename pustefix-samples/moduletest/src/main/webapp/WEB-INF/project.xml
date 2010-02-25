@@ -41,10 +41,6 @@
       </literal>
     </apache>
     
-    <tomcat>
-      <enable-extra-webapps>false</enable-extra-webapps>
-    </tomcat>
-    
   </http-server>
   
   <application>
