@@ -18,15 +18,16 @@
 package org.pustefixframework.maven.plugins;
 
 import java.io.File;
+import java.io.StringWriter;
+import java.io.Writer;
+import java.lang.reflect.Method;
+import java.net.URL;
+import java.net.URLClassLoader;
+import java.util.List;
 
 import org.apache.maven.plugin.AbstractMojo;
 import org.apache.maven.plugin.MojoExecutionException;
-import org.apache.tools.ant.BuildException;
-
-import de.schlund.pfixxml.config.GlobalConfigurator;
-import de.schlund.pfixxml.resources.FileResource;
-import de.schlund.pfixxml.resources.ResourceUtil;
-import de.schlund.pfixxml.targets.TargetGenerator;
+import org.apache.maven.project.MavenProject;
 
 /**
  * Generate all XSL targets with TargetGenerator
@@ -35,6 +36,8 @@ import de.schlund.pfixxml.targets.TargetGenerator;
  *
  * @goal generate
  * @phase prepare-package
+ * 
+ * @requiresDependencyResolution 
  */
 public class GenerateMojo extends AbstractMojo {
     
@@ -50,34 +53,48 @@ public class GenerateMojo extends AbstractMojo {
      */
     private File config;
     
+    /**
+     * @parameter default-value="error"
+     * @required
+     */
+    private String loglevel;
+    
+    /** @parameter default-value="${project}" */
+    private MavenProject mavenProject;
     
     public void execute() throws MojoExecutionException {
-
-        try {
-            GlobalConfigurator.setDocroot(docroot.getPath());
-        } catch (IllegalStateException e) {
-            // Ignore exception as there is no problem
-            // if the docroot has already been configured
-        }
         
-        FileResource confile = ResourceUtil.getFileResource(config.toURI()); 
-        if(confile.exists() && confile.canRead() && confile.isFile()) {
-            try {
-                TargetGenerator gen = new TargetGenerator(confile);
-                gen.setIsGetModTimeMaybeUpdateSkipped(false);
-                gen.generateAll();
-                TargetGenerator.resetFactories();
-            } catch (Exception e) {
-                throw new BuildException(confile + ": " + e.getMessage(), e);
-            } finally {
-                getLog().info(TargetGenerator.getReportAsString());
-                if(TargetGenerator.errorsReported()) throw new MojoExecutionException("TargetGenerator reported errors.");
-            }
-        } else {
-            throw new BuildException("Can't read TargetGenerator configuration '" +  confile + "'");
-        }    
+        URLClassLoader loader = getProjectRuntimeClassLoader();
+        ClassLoader contextLoader = Thread.currentThread().getContextClassLoader();
+        try {
+            Class<?> generator = Class.forName("de.schlund.pfixxml.targets.TargetGeneratorRunner", true, loader);
+            Method meth = generator.getMethod("run", File.class, File.class, Writer.class, String.class);
+            Object instance = generator.newInstance();
+            StringWriter output = new StringWriter();
+            Thread.currentThread().setContextClassLoader(loader);
+            boolean ok = (Boolean)meth.invoke(instance, docroot, config, output, loglevel);
+            getLog().info(output.toString()); 
+            if(!ok) throw new MojoExecutionException("Target generation errors occurred.");
+        } catch(Exception x) {
+            throw new MojoExecutionException("Can't create targets", x);
+        } finally {
+            Thread.currentThread().setContextClassLoader(contextLoader);
+        }
                 
     }
         
-  
+    private URLClassLoader getProjectRuntimeClassLoader() throws MojoExecutionException {
+        try {
+            List<?> elements = mavenProject.getRuntimeClasspathElements();
+            URL[] urls = new URL[elements.size()];
+            for (int i=0; i<elements.size(); i++) {
+                String element = (String)elements.get(i);
+                urls[i] = new File(element).toURI().toURL();
+            }
+            return new URLClassLoader(urls);
+        } catch(Exception x) {
+            throw new MojoExecutionException("Can't create project runtime classloader", x);
+        } 
+    }
+    
 }
