@@ -1,3 +1,10 @@
+2010-03-02  Martin Leidig  <mleidig@schlund.de>
+
+	Added support for configuring DispatcherServlet in project.xml
+	within jee-Namespace. The backwards compatible default behaviour
+	is: if no servlet named 'dispatcher' is found in project.xml an
+	according servlet definition is created.
+
 2009-12-16  Martin Leidig  <mleidig@schlund.de>
 
 	Added support for form submit buttons using the <button> element.
