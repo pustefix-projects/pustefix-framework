@@ -87,7 +87,9 @@
   </xsl:template>
   
   <xsl:template name="create-servlet-definitions">
-    <xsl:call-template name="create-dispatcher-servlet"/>
+    <xsl:if test="not(jee:servlet[jee:servlet-name='dispatcher'])">
+      <xsl:call-template name="create-dispatcher-servlet"/>
+    </xsl:if>
   </xsl:template>
   
   <xsl:template name="create-listeners">
@@ -164,7 +166,7 @@
       </xsl:otherwise>
     </xsl:choose>
   </xsl:template>
-
+  
   <xsl:template match="text()" mode="customization">
     <xsl:value-of select="ci:replaceVariables($customizationinfo,.)"/>
   </xsl:template>
