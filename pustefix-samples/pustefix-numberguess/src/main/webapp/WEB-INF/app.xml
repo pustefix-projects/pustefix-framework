@@ -7,16 +7,28 @@
   
   <global-config />
 
-  <context defaultpage="Home">
-    <resource bean-name="guessContext" class="org.pustefixframework.example.numberguess.context.GuessContext"/>
+  <context defaultpage="Welcome">
+    <resource bean-name="guessContext" scope="request" class="org.pustefixframework.example.numberguess.context.GuessContext"/>
+    <resource bean-name="statisticsContext" class="org.pustefixframework.example.numberguess.context.StatisticsContext"/>
+    <resource bean-name="userContext" class="org.pustefixframework.example.numberguess.context.UserContext"/>
   </context>
 
-  <pageflow name="Main" final="Home">
-    <flowstep name="Home"/>
+  <pageflow name="Main" final="Welcome">
+    <flowstep name="Welcome"/>
+    <flowstep name="Guess"/>
     <flowstep name="Result"/>
   </pageflow>
 
-  <pagerequest name="Home">
+  <pagerequest name="Welcome">
+    <input policy="NONE">
+      <wrapper prefix="user" class="org.pustefixframework.example.numberguess.wrapper.UserDataWrapper" />
+    </input>
+    <output>
+      <resource node="user" bean-ref="userContext"/>
+    </output>
+  </pagerequest>
+
+  <pagerequest name="Guess">
     <input>
       <wrapper prefix="guess" class="org.pustefixframework.example.numberguess.wrapper.GuessDataWrapper" />
     </input>
@@ -25,7 +37,7 @@
   <pagerequest name="Result">
     <state class="org.pustefixframework.example.numberguess.state.ResultState" />
     <output>
-      <resource node="guess" bean-ref="guessContext"/>
+      <resource node="statistics" bean-ref="statisticsContext"/>
     </output>
   </pagerequest>
 

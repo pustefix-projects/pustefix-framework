@@ -8,7 +8,8 @@
   </namespaces>
 
   <navigation>
-    <page handler="/xml/app" name="Home"/>
+    <page handler="/xml/app" name="Welcome"/>
+    <page handler="/xml/app" name="Guess"/>
     <page handler="/xml/app" name="Result"/>
   </navigation>
 
@@ -20,7 +21,8 @@
   	<include stylesheet="xsl/metatags.xsl"/>
   </standardmetatags>
   
-  <standardpage name="Home" xml="xml/frame.xml"/>
+  <standardpage name="Welcome" xml="xml/frame.xml"/>
+  <standardpage name="Guess" xml="xml/frame.xml"/>
   <standardpage name="Result" xml="xml/frame.xml"/>
   
 </make>

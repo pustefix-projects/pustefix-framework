@@ -1,0 +1,14 @@
+<interface xsi:schemaLocation="http://pustefix.sourceforge.net/interfacewrapper200401 http://pustefix.sourceforge.net/interfacewrapper200401.xsd"
+  xmlns="http://pustefix.sourceforge.net/interfacewrapper200401"
+  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+  
+  <ihandler class="org.pustefixframework.example.numberguess.handler.UserDataHandler"/>
+  
+  <param name="name" type="java.lang.String">
+    <postcheck class="de.schlund.pfixcore.generator.postchecks.StringLength">
+      <cparam name="minLength" value="3"/>
+      <cparam name="maxLength" value="20"/>
+    </postcheck>
+  </param>
+  
+</interface>

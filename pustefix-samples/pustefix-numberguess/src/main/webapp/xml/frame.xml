@@ -2,7 +2,7 @@
 <!-- This page is a frame containing the choosen content -->
   <html>
     <head>
-      <title>A new pustefix project</title>
+      <title>Number Guess</title>
       <link href="{$__contextpath}/css/style.css" media="all" rel="stylesheet" type="text/css"/>
     </head>
     <body>

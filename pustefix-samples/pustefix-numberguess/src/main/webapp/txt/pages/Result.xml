@@ -4,7 +4,9 @@
     <theme name="default">
       <h1>Number Guess Results</h1>
       <show-messages/>
-      You have won <ixsl:value-of select="/formresult/guess/@success"/> out of <ixsl:value-of select="/formresult/guess/@tries"/> times.
+      <br/>
+      You have won <ixsl:value-of select="/formresult/statistics/@success"/> out of <ixsl:value-of select="/formresult/statistics/@tries"/> times.
+      <pfx:button page="Guess">Try again</pfx:button>    
     </theme>
   </part>
 </include_parts>

@@ -22,31 +22,21 @@ import org.w3c.dom.Element;
 import de.schlund.pfixcore.beans.InsertStatus;
 import de.schlund.pfixxml.ResultDocument;
 
-public class GuessContext {
+public class UserContext {
 
-    private Integer guess;
-    private Integer random;
+	private String name;
     
-    public Integer getGuess() {
-    	return guess;
-    }
+	public String getName() {
+		return name;
+	}
     
-    public void setGuess(Integer guess) {
-    	this.guess = guess;
-    }
-    
-    public int getRandom() {
-    	return random;
-    }
-    
-    public void setRandom(Integer random) {
-    	this.random = random;
-    }
+	public void setName(String name) {
+		this.name = name;
+	}
     
     @InsertStatus
     public void insertStatus(ResultDocument document, Element element) throws Exception {
-        if(guess != null) element.setAttribute("guess", String.valueOf(guess));
-        if(random != null) element.setAttribute("random", String.valueOf(random));
+        element.setAttribute("name", name);
     }
     
 }

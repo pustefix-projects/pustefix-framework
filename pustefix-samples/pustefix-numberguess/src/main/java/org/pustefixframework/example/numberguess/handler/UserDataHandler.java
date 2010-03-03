@@ -18,76 +18,38 @@
 package org.pustefixframework.example.numberguess.handler;
 
 
-import java.util.Random;
-
-import org.pustefixframework.example.numberguess.StatusCodes;
-import org.pustefixframework.example.numberguess.context.GuessContext;
-import org.pustefixframework.example.numberguess.context.StatisticsContext;
 import org.pustefixframework.example.numberguess.context.UserContext;
-import org.pustefixframework.example.numberguess.wrapper.GuessDataWrapper;
+import org.pustefixframework.example.numberguess.wrapper.UserDataWrapper;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import de.schlund.pfixcore.generator.IHandler;
 import de.schlund.pfixcore.generator.IWrapper;
 import de.schlund.pfixcore.workflow.Context;
 
-public class GuessDataHandler implements IHandler {
+public class UserDataHandler implements IHandler {
 
-    private StatisticsContext statisticsContext;
-    private GuessContext guessContext;
     private UserContext userDataContext;
     
-    private static Random random = new Random();
-    
     public void handleSubmittedData(Context context, IWrapper wrapper) throws Exception {
-     
-        GuessDataWrapper guessData = (GuessDataWrapper)wrapper;
-        
-        int number = guessData.getNumber();
-        int randomNumber =random.nextInt(10);
-        
-        guessContext.setGuess(number);
-        guessContext.setRandom(randomNumber);
-        
-        statisticsContext.incTries();
-        
-        if(number == randomNumber) {
-        	context.addPageMessage(StatusCodes.SUCCESS, null, null);
-        	statisticsContext.incSuccess();
-        } else {
-        	guessData.addSCodeNumber(StatusCodes.FAILURE, new String[] {String.valueOf(randomNumber)}, null);
-        }
-        
-        
+        UserDataWrapper userDataWrapper = (UserDataWrapper)wrapper;
+        userDataContext.setName(userDataWrapper.getName());
     }
 
     public boolean isActive(Context context) throws Exception {
-        return true;
+        return userDataContext.getName() == null;
     }
 
     public boolean needsData(Context context) throws Exception {
-        return guessContext.getGuess() == null;
+        return userDataContext.getName() == null;
     }
 
     public boolean prerequisitesMet(Context context) throws Exception {
-        return userDataContext.getName() != null;
+        return true;
     }
 
     public void retrieveCurrentStatus(Context context, IWrapper wrapper) throws Exception {
-      
-        GuessDataWrapper guessData = (GuessDataWrapper)wrapper;
-        guessData.setStringValNumber("0");
-        
-    }
-    
-    @Autowired
-    public void setGuessContext(GuessContext guessContext) {
-        this.guessContext = guessContext;
-    }
-    
-    @Autowired
-    public void setStatisticsContext(StatisticsContext statisticsContext) {
-        this.statisticsContext = statisticsContext;
+    	UserDataWrapper userDataWrapper = (UserDataWrapper)wrapper;
+        userDataWrapper.setName("your name");
     }
     
     @Autowired
