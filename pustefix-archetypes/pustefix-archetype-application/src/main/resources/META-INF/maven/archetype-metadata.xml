@@ -44,5 +44,8 @@
     <requiredProperty key="package">
       <defaultValue>com.mycompany.firstapp</defaultValue>
     </requiredProperty>
+    <requiredProperty key="pustefixVersion">
+      <defaultValue>${pom.version}</defaultValue>
+    </requiredProperty>
   </requiredProperties>
 </archetype-descriptor>
