@@ -124,13 +124,18 @@ public class TargetGenerator implements Comparable<TargetGenerator> {
 
     //--
 
-    public TargetGenerator(FileResource confile) throws IOException, SAXException, XMLException {
+    public TargetGenerator(FileResource confile, FileResource cacheDir) throws IOException, SAXException, XMLException {
         this.config_path = confile;
-
+        this.cacheDir = cacheDir;
         Meminfo.print("TG: Before loading " + confile.toString());
         loadConfig(confile);
         Meminfo.print("TG: after loading targets for " + confile.toString());
     }
+        
+    public TargetGenerator(FileResource confile) throws IOException, SAXException, XMLException {
+        this(confile, null);
+    }
+    
 
     //-- attributes
 
@@ -375,14 +380,16 @@ public class TargetGenerator implements Comparable<TargetGenerator> {
         global_themes = new Themes(gl_theme_str);
         default_theme = def_theme_str;
 
-        cacheDir = ResourceUtil.getFileResourceFromDocroot(CACHEDIR + "/" + getName());
-        if (!cacheDir.exists()) {
-            cacheDir.mkdirs();
-        } else if (!cacheDir.isDirectory() || !cacheDir.canRead()) {
-            throw new XMLException("Directory " + cacheDir + " is not readeable or is no directory");
-        } else if (!cacheDir.canWrite()) {
-            // When running in WAR mode this is okay
-            LOG.warn("Directory " + cacheDir + " is not writable!");
+        if(cacheDir == null) {
+            cacheDir = ResourceUtil.getFileResourceFromDocroot(CACHEDIR + "/" + getName());
+            if (!cacheDir.exists()) {
+                cacheDir.mkdirs();
+            } else if (!cacheDir.isDirectory() || !cacheDir.canRead()) {
+                throw new XMLException("Directory " + cacheDir + " is not readeable or is no directory");
+            } else if (!cacheDir.canWrite()) {
+                // When running in WAR mode this is okay
+                LOG.warn("Directory " + cacheDir + " is not writable!");
+            }
         }
 
         HashSet<String> depxmls = new HashSet<String>();
@@ -420,6 +427,8 @@ public class TargetGenerator implements Comparable<TargetGenerator> {
             }
             if (xslsub != null) {
                 String xsldep = xslsub.getAttribute("name");
+                String module = xslsub.getAttribute("module");
+                if(module.length()>0) xsldep = "module://"+module+"/"+xsldep;
                 if (xsldep != null) {
                     struct.setXSLDep(xsldep);
                     depxsls.add(xsldep);

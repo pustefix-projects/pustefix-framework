@@ -59,8 +59,15 @@ public class AuxDependencyManager {
         this.target = (TargetImpl) target;
     }
         
+    private FileResource getAuxFile() {
+        String path = target.getTargetKey();
+        if(path.startsWith("module://")) path = path.substring(9);
+        FileResource auxFile = ResourceUtil.getFileResource(target.getTargetGenerator().getDisccachedir(), path + ".aux");
+        return auxFile;
+    }
+    
     public synchronized void tryInitAuxdepend() throws Exception {
-        FileResource auxfile = ResourceUtil.getFileResource(target.getTargetGenerator().getDisccachedir(), target.getTargetKey() + ".aux");
+        FileResource auxfile = getAuxFile();
         if (auxfile.exists() && auxfile.canRead() && auxfile.isFile()) {
             Document        doc     = Xml.parseMutable(auxfile);
             NodeList        auxdeps = doc.getElementsByTagName(DEPAUX);
@@ -219,8 +226,7 @@ public class AuxDependencyManager {
     public synchronized void saveAuxdepend() throws IOException  {
         LOG.info("===> Trying to save aux info of Target '" + target.getTargetKey() + "'");
 
-        FileResource       path   = ResourceUtil.getFileResource(target.getTargetGenerator().getDisccachedir(),
-                                                                 target.getTargetKey() + ".aux");
+        FileResource       path   = getAuxFile();
         FileResource       dir    = path.getParentAsFileResource();
         
         // Make sure parent directory is existing (for leaf targets)

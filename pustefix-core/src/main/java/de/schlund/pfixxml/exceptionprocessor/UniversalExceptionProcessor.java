@@ -38,6 +38,7 @@ import de.schlund.pfixxml.exceptionprocessor.util.ExceptionDataValue;
 import de.schlund.pfixxml.exceptionprocessor.util.ExceptionDataValueHelper;
 import de.schlund.pfixxml.exceptionprocessor.util.TextCreatorVisitor;
 import de.schlund.pfixxml.exceptionprocessor.util.XMLCreatorVisitor;
+import de.schlund.pfixxml.resources.ModuleResource;
 import de.schlund.pfixxml.resources.ResourceUtil;
 import de.schlund.pfixxml.util.Xml;
 import de.schlund.pfixxml.util.Xslt;
@@ -51,7 +52,7 @@ import de.schlund.pfixxml.util.XsltVersion;
  */
 public class UniversalExceptionProcessor implements ExceptionProcessor {
 
-    private static final String ERROR_STYLESHEET = "core/xsl/errorrepresentation.xsl";
+    private static final String ERROR_STYLESHEET = "module://pustefix-core/core/xsl/errorrepresentation.xsl";
     private static final Logger LOG = Logger.getLogger(UniversalExceptionProcessor.class);
     
     /* (non-Javadoc)
@@ -85,7 +86,7 @@ public class UniversalExceptionProcessor implements ExceptionProcessor {
         Templates stvalue;
         
         try {
-            stvalue = Xslt.loadTemplates(XsltVersion.XSLT1, ResourceUtil.getFileResourceFromDocroot(ERROR_STYLESHEET));
+            stvalue = Xslt.loadTemplates(XsltVersion.XSLT1, (ModuleResource)ResourceUtil.getResource(ERROR_STYLESHEET));
         } catch (TransformerConfigurationException e) {
             throw new ServletException(e);
         }

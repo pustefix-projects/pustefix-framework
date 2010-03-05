@@ -27,7 +27,7 @@ import javax.xml.transform.TransformerException;
 
 import org.w3c.dom.Document;
 
-import de.schlund.pfixxml.resources.FileResource;
+import de.schlund.pfixxml.resources.Resource;
 import de.schlund.pfixxml.resources.ResourceUtil;
 import de.schlund.pfixxml.util.Xml;
 import de.schlund.pfixxml.util.Xslt;
@@ -50,7 +50,7 @@ public class XSLLeafTarget extends LeafTarget {
         this.generator = gen;
         this.targetkey = key;
         this.themes    = themes;
-        FileResource targetpath = ResourceUtil.getFileResourceFromDocroot(key);
+        Resource targetpath = ResourceUtil.getResource(key);
         this.sharedleaf = SharedLeafFactory.getInstance().getSharedLeaf(generator.getXsltVersion(),targetpath);
         this.auxdepmanager = new AuxDependencyManager(this);
         this.auxdepmanager.tryInitAuxdepend();
@@ -61,7 +61,7 @@ public class XSLLeafTarget extends LeafTarget {
      */
     @Override
     protected Object getValueFromDiscCache() throws TransformerException {
-        FileResource thefile = ResourceUtil.getFileResourceFromDocroot(getTargetKey());
+        Resource thefile = ResourceUtil.getResource(getTargetKey());
         if (thefile.exists() && thefile.isFile()) {
             // reset the target dependency list as they will be set up again
             this.getAuxDependencyManager().reset();
@@ -83,7 +83,7 @@ public class XSLLeafTarget extends LeafTarget {
     }
 
     public Document getDOM() throws TargetGenerationException {
-        FileResource thefile = ResourceUtil.getFileResourceFromDocroot(getTargetKey());
+        Resource thefile = ResourceUtil.getResource(getTargetKey());
         if (thefile.exists() && thefile.isFile()) {
             try {
                 return Xml.parse(generator.getXsltVersion(), thefile);

@@ -25,7 +25,7 @@ import java.util.StringTokenizer;
 
 import org.apache.log4j.Logger;
 
-import de.schlund.pfixxml.resources.FileResource;
+import de.schlund.pfixxml.resources.Resource;
 import de.schlund.pfixxml.resources.ResourceUtil;
 
 
@@ -152,7 +152,8 @@ public class ImageGeometry {
 
     private static ImageGeometryData getImageGeometryData(String path) {
         synchronized (imageinfo) {
-            FileResource img = ResourceUtil.getFileResourceFromDocroot(path);
+            if(path.startsWith("modules/")) path = "module://" + path.substring(8);
+            Resource img = ResourceUtil.getResource(path);
             if (img.exists() && img.canRead() && img.isFile()) {
                 long              mtime = img.lastModified();
                 ImageGeometryData tmp = imageinfo.get(path);

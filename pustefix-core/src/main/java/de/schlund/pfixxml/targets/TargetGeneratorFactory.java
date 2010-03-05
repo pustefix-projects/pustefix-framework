@@ -28,6 +28,7 @@ import de.schlund.pfixxml.resources.FileResource;
 
 
 public class TargetGeneratorFactory {
+    
     private static TargetGeneratorFactory            instance     = new TargetGeneratorFactory();
     private static HashMap<String, TargetGenerator>  generatormap = new HashMap<String, TargetGenerator>();
     private final static Logger                      LOG          = Logger.getLogger(TargetGeneratorFactory.class);
@@ -35,14 +36,18 @@ public class TargetGeneratorFactory {
     public static TargetGeneratorFactory getInstance() {
         return instance;
     }
-
+    
     public synchronized TargetGenerator createGenerator(FileResource cfile) throws Exception {
+        return createGenerator(cfile, null);
+    }
+
+    public synchronized TargetGenerator createGenerator(FileResource cfile, FileResource cache) throws Exception {
         if (cfile.exists() && cfile.isFile() && cfile.canRead()) {
             String key = genKey(cfile);
             TargetGenerator generator = (TargetGenerator) generatormap.get(key);
             if (generator == null) {
                 LOG.debug("-- Init TargetGenerator --");
-                generator = new TargetGenerator(cfile);
+                generator = new TargetGenerator(cfile, cache);
                 
                 // Check generator has unique name
                 String tgenName = generator.getName();
@@ -72,7 +77,7 @@ public class TargetGeneratorFactory {
     public TargetGenerator getGenerator(String key) {
         return generatormap.get(key);
     }
-
+    
     public void remove(FileResource genfile) {
         generatormap.remove(genKey(genfile));
     }

@@ -296,5 +296,5 @@
       <xsl:copy-of select="@*"/>
     </img>
   </xsl:template>
-    
+  
 </xsl:stylesheet>

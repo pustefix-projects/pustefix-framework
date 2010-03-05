@@ -600,5 +600,5 @@
   <func:function name="pfx:getIncludePath">
     <func:result select="include:getRelativePathFromSystemId()"/>
   </func:function>
-
+ 
 </xsl:stylesheet>

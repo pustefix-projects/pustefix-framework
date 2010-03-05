@@ -49,6 +49,7 @@ import org.w3c.dom.Document;
 import org.xml.sax.InputSource;
 
 import de.schlund.pfixxml.resources.FileResource;
+import de.schlund.pfixxml.resources.ModuleResource;
 import de.schlund.pfixxml.resources.Resource;
 import de.schlund.pfixxml.resources.ResourceUtil;
 import de.schlund.pfixxml.targets.LeafTarget;
@@ -86,11 +87,26 @@ public class Xslt {
     public static Templates loadTemplates(Path path) throws TransformerConfigurationException {
         return loadTemplates(XsltVersion.XSLT1, new InputSource("file://" + path.resolve().getAbsolutePath()), null);
     }
+    
+    public static Templates loadTemplates(XsltVersion xsltVersion, Resource path) throws TransformerConfigurationException {
+        return loadTemplates(xsltVersion, path, null);
+    }
 
     public static Templates loadTemplates(XsltVersion xsltVersion, FileResource path) throws TransformerConfigurationException {
         return loadTemplates(xsltVersion, path, null);
     }
 
+    public static Templates loadTemplates(XsltVersion xsltVersion, Resource path, TargetImpl parent) throws TransformerConfigurationException {
+        try {
+            InputSource is = new InputSource();
+            is.setSystemId(path.toURI().toString());
+            is.setByteStream(path.getInputStream());
+            return loadTemplates(xsltVersion, is, parent);
+        } catch(IOException x) {
+            throw new TransformerConfigurationException("Can't load template", x);
+        }
+    }
+    
     public static Templates loadTemplates(XsltVersion xsltVersion, FileResource path, TargetImpl parent) throws TransformerConfigurationException {
         InputSource input;
         try {
@@ -264,8 +280,8 @@ public class Xslt {
             //need to have both versions installed, thus the extension functions can't be
             //referenced within the same stylesheet and we rewrite to the according 
             //version specific stylesheet here
-            if(href.equals("core/xsl/include.xsl")) {
-                if(xsltVersion==XsltVersion.XSLT2) href="core/xsl/include_xslt2.xsl";
+            if(href.equals("module://pustefix-core/core/xsl/include.xsl")) {
+                if(xsltVersion==XsltVersion.XSLT2) href="module://pustefix-core/core/xsl/include_xslt2.xsl";
             }
             
             try {

@@ -21,7 +21,7 @@ package de.schlund.pfixxml;
 import java.io.IOException;
 import java.io.InputStream;
 
-import de.schlund.pfixxml.resources.FileResource;
+import de.schlund.pfixxml.resources.Resource;
 
 
 /**
@@ -42,7 +42,7 @@ public class ImageGeometryData {
     private long    mtime;
     private String  type;
     
-    public ImageGeometryData(FileResource img) throws IOException {
+    public ImageGeometryData(Resource img) throws IOException {
         ImageInfo       info       = new ImageInfo();
         InputStream     img_stream = img.getInputStream();
         info.setInput(img_stream);

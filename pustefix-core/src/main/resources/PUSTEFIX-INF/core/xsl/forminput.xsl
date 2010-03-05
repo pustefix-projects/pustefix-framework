@@ -845,9 +845,3 @@
   </xsl:template>
   
 </xsl:stylesheet>
-
-<!--
-Local Variables:
-mode: xsl
-End:
--->

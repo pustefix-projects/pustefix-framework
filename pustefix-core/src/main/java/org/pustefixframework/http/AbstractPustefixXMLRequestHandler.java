@@ -93,7 +93,7 @@ public abstract class AbstractPustefixXMLRequestHandler extends AbstractPustefix
     private enum RENDERMODE { RENDER_NORMAL, RENDER_EXTERNAL, RENDER_FONTIFY, RENDER_XMLONLY };
 
     public static final String DEF_PROP_TMPDIR = "java.io.tmpdir";
-    private static final String FONTIFY_SSHEET        = "core/xsl/xmlfontify.xsl";
+    private static final String FONTIFY_SSHEET        = "module://pustefix-core/core/xsl/xmlfontify.xsl";
     public  static final String SESS_LANG             = "__SELECTED_LANGUAGE__";
     public  static final String PARAM_XMLONLY         = "__xmlonly";
     public  static final String PARAM_XMLONLY_FONTIFY = "1"; // -> RENDER_FONFIFY

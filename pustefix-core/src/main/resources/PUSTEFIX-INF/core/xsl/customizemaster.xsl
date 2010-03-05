@@ -140,7 +140,6 @@
 
 </xsl:stylesheet>
 
-
 <!--
 Local Variables:
 mode: xsl

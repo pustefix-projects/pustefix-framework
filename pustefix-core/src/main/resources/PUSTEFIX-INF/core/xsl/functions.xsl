@@ -85,5 +85,5 @@
     <xsl:param name="pageName"/>
     <func:result select="callback:isAuthorized($__context__,$pageName)"/>
   </func:function>
-  
+
 </xsl:stylesheet>

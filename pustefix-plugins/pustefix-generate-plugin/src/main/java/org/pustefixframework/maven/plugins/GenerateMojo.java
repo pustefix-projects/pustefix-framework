@@ -64,15 +64,20 @@ public class GenerateMojo extends AbstractMojo {
     
     public void execute() throws MojoExecutionException {
         
+        File warDir = getWarDir();
+        if(warDir == null) throw new MojoExecutionException("Can't find project WAR directory in target folder");
+        
+        File cache = new File(warDir, ".cache");
+        
         URLClassLoader loader = getProjectRuntimeClassLoader();
         ClassLoader contextLoader = Thread.currentThread().getContextClassLoader();
         try {
             Class<?> generator = Class.forName("de.schlund.pfixxml.targets.TargetGeneratorRunner", true, loader);
-            Method meth = generator.getMethod("run", File.class, File.class, Writer.class, String.class);
+            Method meth = generator.getMethod("run", File.class, File.class, File.class, String.class, Writer.class, String.class);
             Object instance = generator.newInstance();
             StringWriter output = new StringWriter();
             Thread.currentThread().setContextClassLoader(loader);
-            boolean ok = (Boolean)meth.invoke(instance, docroot, config, output, loglevel);
+            boolean ok = (Boolean)meth.invoke(instance, docroot, config, cache, "prod", output, loglevel);
             getLog().info(output.toString()); 
             if(!ok) throw new MojoExecutionException("Target generation errors occurred.");
         } catch(Exception x) {
@@ -95,6 +100,18 @@ public class GenerateMojo extends AbstractMojo {
         } catch(Exception x) {
             throw new MojoExecutionException("Can't create project runtime classloader", x);
         } 
+    }
+    
+    private File getWarDir() {
+        File targetDir = new File(mavenProject.getBasedir(), "target");
+        File[] files = targetDir.listFiles();
+        for(File file: files) {
+           if(file.isDirectory()) {
+               File webInfDir = new File(file, "WEB-INF");
+               if(webInfDir.exists() && webInfDir.isDirectory()) return file;
+           }
+        }
+        return null;
     }
     
 }

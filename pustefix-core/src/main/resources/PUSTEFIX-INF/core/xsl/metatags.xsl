@@ -5,9 +5,9 @@
                 xmlns:cus="http://www.schlund.de/pustefix/customize"
                 xmlns:ixsl="http://www.w3.org/1999/XSL/TransformOutputAlias">
 
-  <xsl:import href="core/xsl/default_copy.xsl"/>
-  <xsl:import href="core/xsl/include.xsl"/>
-  <xsl:import href="core/xsl/utils.xsl"/>
+  <xsl:import href="module://pustefix-core/core/xsl/default_copy.xsl"/>
+  <xsl:import href="module://pustefix-core/core/xsl/include.xsl"/>
+  <xsl:import href="module://pustefix-core/core/xsl/utils.xsl"/>
 
   <cus:custom_xsl/>
 
