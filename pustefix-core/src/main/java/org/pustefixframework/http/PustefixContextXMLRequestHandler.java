@@ -22,6 +22,8 @@ import java.io.ByteArrayOutputStream;
 import java.util.TreeMap;
 
 import javax.servlet.ServletException;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 
 import org.apache.log4j.Logger;
@@ -110,6 +112,21 @@ public class PustefixContextXMLRequestHandler extends AbstractPustefixXMLRequest
     @Override
     protected boolean allowSessionCreate() {
         return true;
+    }
+    
+    @Override
+    protected int validateRequest(HttpServletRequest req) {
+        String path = req.getPathInfo();
+        if(path != null && !path.equals("")) {
+            // simple implementation which prevents that broken links
+            // links with relative paths (e.g. img src="foo/bar.gif"),
+            // which are interpreted relative to the servlet (as page
+            // name) can create a lot of unwanted sessions or disturb
+            // the client side session handling (problems in IE)
+            if(path.startsWith("/")) path = path.substring(1);
+            if(path.contains("/")) return HttpServletResponse.SC_NOT_FOUND;
+        }
+        return 0;
     }
     
     public void init() throws ServletException {

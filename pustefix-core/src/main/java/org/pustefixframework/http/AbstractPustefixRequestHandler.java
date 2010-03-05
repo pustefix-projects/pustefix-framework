@@ -111,6 +111,10 @@ public abstract class AbstractPustefixRequestHandler implements UriProvidingHttp
     abstract protected boolean needsSession();
 
     abstract protected boolean allowSessionCreate();
+    
+    protected int validateRequest(HttpServletRequest req) {
+        return 0;
+    }
 
     public static String getServerName(HttpServletRequest req) {
         String forward = req.getHeader("X-Forwarded-Server");
@@ -163,6 +167,13 @@ public abstract class AbstractPustefixRequestHandler implements UriProvidingHttp
 
         }
 
+        int httpStatus = validateRequest(req);
+        if(validateRequest(req) >= 400) {
+            res.sendError(httpStatus);
+            if(LOG.isInfoEnabled()) LOG.info("Rejecting invalid request to path (" + httpStatus + "): " + req.getPathInfo());
+            return;
+        }
+        
         HttpSession session = null;
         boolean has_session = false;
         boolean has_ssl_session_insecure = false;
