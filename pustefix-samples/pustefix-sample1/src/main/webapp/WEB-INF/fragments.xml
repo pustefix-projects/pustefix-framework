@@ -1,10 +1,11 @@
 <?xml version="1.0"?>
 <fr:config-fragments 
-  xmlns:fr="http://pustefix.sourceforge.net/configfragments200609"
+  xmlns:fr="http://www.pustefix-framework.org/2008/namespace/config-fragments"
   xmlns:pr="http://www.pustefix-framework.org/2008/namespace/context-xml-service-config"
   xmlns:d="http://www.pustefix-framework.org/2008/namespace/direct-output-service-config"
   xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-  xsi:schemaLocation="http://pustefix.sourceforge.net/configfragments200609 ../../core/schema/configfragments200609.xsd">
+  xsi:schemaLocation="http://www.pustefix-framework.org/2008/namespace/config-fragments
+                      http://www.pustefix-framework.org/schema/config-fragments.xsd">
 
   <fr:navigation>
     <page name="IncludeConfPage" handler="/xml/main" />

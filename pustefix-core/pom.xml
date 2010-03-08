@@ -184,32 +184,15 @@
         </executions>
       </plugin>
       <plugin>
-        <groupId>org.apache.maven.plugins</groupId>
-        <artifactId>maven-assembly-plugin</artifactId>
-        <configuration>
-          <descriptors>
-            <descriptor>src/main/assembly/data.xml</descriptor>
-          </descriptors>
-        </configuration>
-        <executions>
-          <execution>
-            <phase>package</phase>
-            <goals>
-              <goal>single</goal>
-            </goals>
-          </execution>
-        </executions>
-      </plugin>
-      <plugin>
         <groupId>org.pustefixframework.maven.plugins</groupId>
         <artifactId>pustefix-statuscode-plugin</artifactId>
         <version>0.14.8-SNAPSHOT</version>
         <executions>
           <execution>
             <configuration>
-              <module>pfixcore</module>
-              <docRoot>${basedir}/src/data</docRoot>
-              <includes><include>core/dyntxt/statuscodeinfo.xml</include></includes>
+              <module>pustefix-core</module>
+              <docRoot>${basedir}/src/main/resources/PUSTEFIX-INF</docRoot>
+              <includes><include>dyntxt/statuscodeinfo.xml</include></includes>
             </configuration>
             <id>statuscodes</id>
             <goals>

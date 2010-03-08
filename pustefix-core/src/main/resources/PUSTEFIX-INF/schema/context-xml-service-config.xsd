@@ -54,46 +54,6 @@
   <xs:complexType name="global-config-Type" abstract="true">
   </xs:complexType>
 
-  <xs:complexType name="directoutputserverservletinfoType">
-    <xs:complexContent>
-      <xs:extension base="prop:global-config-Type">
-        <xs:sequence>
-       	  <xs:element ref="prop:encoding" minOccurs="0"/>
-          <!-- Only present for compatibility with older version -->
-          <xs:element ref="prop:editmode" minOccurs="0"/>
-          <xs:element ref="prop:force-ssl" minOccurs="0"/>
-          <xs:element name="choose" minOccurs="0" maxOccurs="unbounded">
-            <xs:complexType>
-              <xs:sequence>
-                <xs:element name="when" minOccurs="1" maxOccurs="unbounded">
-                  <xs:complexType>
-                    <xs:all>
-                      <!-- Only present for compatibility with older version -->
-                      <xs:element ref="prop:editmode" minOccurs="0"/>
-                      <xs:element ref="prop:force-ssl" minOccurs="0"/>                      
-                    </xs:all>
-                    <xs:attribute name="test" use="required"/>
-                  </xs:complexType>
-                </xs:element>
-                <xs:element name="otherwise" minOccurs="0" maxOccurs="1">
-                  <xs:complexType>
-                    <xs:all>
-                      <!-- Only present for compatibility with older version -->
-                      <xs:element ref="prop:editmode" minOccurs="0"/>
-                      <xs:element ref="prop:force-ssl" minOccurs="0"/>                      
-                    </xs:all>
-                  </xs:complexType>
-                </xs:element>
-              </xs:sequence>
-            </xs:complexType>
-          </xs:element>
-        </xs:sequence>
-        <!-- Only present for compatibility with older version -->
-        <xs:attribute name="depend" use="optional"/>
-      </xs:extension>
-    </xs:complexContent>
-  </xs:complexType>
-
   <xs:complexType name="context-xml-global-config-Type">
     <xs:complexContent>
       <xs:extension base="prop:global-config-Type">
@@ -706,41 +666,10 @@
   </xs:complexType>
   <!-- </properties> -->
 
-
-
-  <xs:element name="directoutputserver" type="prop:directoutputserverType"/>
-  <xs:complexType name="directoutputserverType">
-    <xs:sequence>
-      <xs:element name="directoutputservletinfo" type="prop:directoutputserverservletinfoType"/>
-      <xs:element ref="prop:foreigncontext" minOccurs="0"/>
-      <xs:element name="authconstraint" type="prop:authconstraintRefType" minOccurs="0"/>
-      <xs:element name="config-include" type="prop:directOutputConfigIncludeType" />
-      <xs:element ref="prop:directoutputpagerequest" minOccurs="0" maxOccurs="unbounded"/>
-      <xs:element ref="prop:properties" minOccurs="0"/>
-    </xs:sequence>
-    <xs:attribute name="version" type="xs:token" use="required"/>
-  </xs:complexType>
-
   <xs:element name="foreigncontext" type="prop:foreigncontextType"/>
   <xs:complexType name="foreigncontextType">
     <xs:attribute name="externalservletname"/>
   </xs:complexType>
-
-  <xs:element name="directoutputpagerequest" type="prop:directoutputpagerequestType"/>
-  <xs:complexType name="directoutputpagerequestType">
-    <xs:sequence>
-      <xs:element ref="prop:directoutputstate"/>
-      <xs:element name="authconstraint" type="prop:authconstraintRefType" minOccurs="0"/>
-      <xs:element ref="prop:properties" minOccurs="0"/>
-    </xs:sequence>
-    <xs:attribute name="name" use="required"/>
-  </xs:complexType>
-
-  <xs:element name="directoutputstate" type="prop:directoutputstateType"/>
-  <xs:complexType name="directoutputstateType">
-    <xs:attribute name="class"/>
-  </xs:complexType>
-
 
   <xs:element name="standardprops" type="prop:standardpropsType"/>
   <xs:complexType name="standardpropsType">
@@ -767,20 +696,6 @@
           <xs:enumeration value="conditions"/>
           <xs:enumeration value="authconstraints"/>
           <xs:enumeration value="scriptedflows"/>
-        </xs:restriction>
-      </xs:simpleType>
-    </xs:attribute>
-    <xs:attribute name="refid" type="xs:NCName" use="optional"></xs:attribute>
-    <xs:attribute name="xpath" type="xs:string" use="optional"></xs:attribute>
-  </xs:complexType>
-
-  <xs:complexType name="directOutputConfigIncludeType">
-    <xs:attribute name="file" type="xs:string" use="required"></xs:attribute>
-    <xs:attribute name="section" use="optional">
-      <xs:simpleType>
-        <xs:restriction base="xs:token">
-          <xs:enumeration value="directoutputpagerequests"/>
-          <xs:enumeration value="properties"/>
         </xs:restriction>
       </xs:simpleType>
     </xs:attribute>

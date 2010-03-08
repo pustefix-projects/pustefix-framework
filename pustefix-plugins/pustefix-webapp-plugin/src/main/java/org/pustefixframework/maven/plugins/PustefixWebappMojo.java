@@ -119,7 +119,6 @@ public class PustefixWebappMojo extends AbstractMojo {
      */
     public void execute() throws MojoExecutionException {
         File basedir;
-        File docrootFile;
         
         if (makemode == null || makemode.length() == 0) {
             makemode = "test";
@@ -129,14 +128,6 @@ public class PustefixWebappMojo extends AbstractMojo {
         GlobalConfig.reset();
         
         GlobalConfigurator.setDocroot(docroot);
-        docrootFile = new File(docroot);
-        if (!docrootFile.isDirectory()) {
-            try {
-                extractJar(getDataJar(), docrootFile);
-            } catch (IOException e) {
-                throw new MojoExecutionException("error extracting core data", e);
-            }
-        }
         new File(docroot, "WEB-INF").mkdirs();
 
         getLog().info("unpacked " + unpackModules() + " module(s)");
@@ -251,16 +242,6 @@ public class PustefixWebappMojo extends AbstractMojo {
         idx = result.indexOf('.');
         result = idx == -1 ? "" : result.substring(idx);
         return getMachine() + result;
-    }
-    
-    private String getDataJar() {
-        for (Artifact artifact : pluginClasspath) {
-            if ("data".equals(artifact.getClassifier()) && "pustefix-core".equals(artifact.getArtifactId()) 
-                    && "org.pustefixframework".equals(artifact.getGroupId())) {
-                return artifact.getFile().getAbsolutePath();
-            }
-        }
-        throw new IllegalStateException(pluginClasspath.toString());
     }
     
     private static List<String> pathStrings(Collection<Artifact> artifacts) {

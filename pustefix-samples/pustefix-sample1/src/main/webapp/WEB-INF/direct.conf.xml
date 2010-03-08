@@ -1,8 +1,9 @@
 <?xml version="1.0" encoding="utf-8"?>
 <direct-output-service-config xmlns="http://www.pustefix-framework.org/2008/namespace/direct-output-service-config"
-  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-  xsi:schemaLocation="http://pustefix.sourceforge.net/properties200401 ../../core/schema/properties200401.xsd"
-  version="1.0">
+                              xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+                              xsi:schemaLocation="http://www.pustefix-framework.org/2008/namespace/direct-output-service-config
+                                                  http://www.pustefix-framework.org/schema/direct-output-service-config.xsd"
+                              version="1.0">
   
   <global-config>
     <force-ssl>true</force-ssl>

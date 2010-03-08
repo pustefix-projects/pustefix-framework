@@ -212,7 +212,7 @@ public class PustefixInit {
 
                     public InputSource resolveEntity(String publicId, String systemId) throws SAXException, IOException {
                         if (systemId.equals("http://logging.apache.org/log4j/docs/api/org/apache/log4j/xml/log4j.dtd")) {
-                            return new InputSource(ResourceUtil.getFileResourceFromDocroot("core/schema/log4j.dtd").getInputStream());
+                            return new InputSource(ResourceUtil.getResource("module://pustefix-core/schema/log4j.dtd").getInputStream());
                         }
                         return null;
                     }

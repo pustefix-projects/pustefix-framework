@@ -52,7 +52,7 @@ public class IncludesResolver {
     
     private final static String TAGNAME = "config-include";
     
-    private final static String CONFIG_FRAGMENTS_NS = "http://pustefix.sourceforge.net/configfragments200609";
+    private final static String CONFIG_FRAGMENTS_NS = "http://www.pustefix-framework.org/2008/namespace/config-fragments";
     
     private final static String CONFIG_FRAGMENTS_ROOT_TAG = "config-fragments";
     

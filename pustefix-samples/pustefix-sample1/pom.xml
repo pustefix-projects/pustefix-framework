@@ -80,6 +80,7 @@
           <execution>
             <goals>
               <goal>generate</goal>
+              <goal>merge-statusmessages</goal>
             </goals>
           </execution>
         </executions>
