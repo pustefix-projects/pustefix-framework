@@ -37,7 +37,7 @@ public class BuildTimeProperties {
 
     public static Properties getProperties() {
         if (BuildTimeProperties.props == null) {
-            Properties props = new Properties();
+            Properties props = new Properties(System.getProperties());
             try {
                 props.load(ResourceUtil.getFileResourceFromDocroot(PATH).getInputStream());
                 BuildTimeProperties.props = props;
