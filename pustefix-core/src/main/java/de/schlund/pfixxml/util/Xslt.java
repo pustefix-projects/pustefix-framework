@@ -280,8 +280,8 @@ public class Xslt {
             //need to have both versions installed, thus the extension functions can't be
             //referenced within the same stylesheet and we rewrite to the according 
             //version specific stylesheet here
-            if(href.equals("module://pustefix-core/core/xsl/include.xsl")) {
-                if(xsltVersion==XsltVersion.XSLT2) href="module://pustefix-core/core/xsl/include_xslt2.xsl";
+            if(href.equals("module://pustefix-core/xsl/include.xsl")) {
+                if(xsltVersion==XsltVersion.XSLT2) href="module://pustefix-core/xsl/include_xslt2.xsl";
             }
             
             try {

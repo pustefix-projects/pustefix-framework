@@ -28,10 +28,10 @@
         <head>
           <link rel="stylesheet" type="text/css" href="{$__contextpath}/webservice.css"/>
           <script type="text/javascript" src="{$__contextpath}/application.js"></script>
-          <script type="text/javascript" src="{$__contextpath}/core/script/xmlRequest.js"></script>
-          <script type="text/javascript" src="{$__contextpath}/core/script/webservice.js"></script>
-          <script type="text/javascript" src="{$__contextpath}/core/script/httpRequest.js"></script>
-          <script type="text/javascript" src="{$__contextpath}/core/script/webservice_json.js"></script>
+          <script type="text/javascript" src="{$__contextpath}/modules/pustefix-core/script/xmlRequest.js"></script>
+          <script type="text/javascript" src="{$__contextpath}/modules/pustefix-core/script/webservice.js"></script>
+          <script type="text/javascript" src="{$__contextpath}/modules/pustefix-core/script/httpRequest.js"></script>
+          <script type="text/javascript" src="{$__contextpath}/modules/pustefix-core/script/webservice_json.js"></script>
           <ixsl:choose>
             <ixsl:when test="$page='calculator'">
               <script type="text/javascript" src="{$__contextpath}/xml/wsscript/Calculator.js"></script>

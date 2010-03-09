@@ -52,7 +52,7 @@ import de.schlund.pfixxml.util.XsltVersion;
  */
 public class UniversalExceptionProcessor implements ExceptionProcessor {
 
-    private static final String ERROR_STYLESHEET = "module://pustefix-core/core/xsl/errorrepresentation.xsl";
+    private static final String ERROR_STYLESHEET = "module://pustefix-core/xsl/errorrepresentation.xsl";
     private static final Logger LOG = Logger.getLogger(UniversalExceptionProcessor.class);
     
     /* (non-Javadoc)

@@ -37,8 +37,8 @@
       <xsl:call-template name="render_themes">
         <xsl:with-param name="local_themes" select="@themes"/>
       </xsl:call-template>
-      <depxml name="core/xsl/master.xsl" module="pustefix-core"/>
-      <depxsl name="core/xsl/customizemaster.xsl" module="pustefix-core"/>
+      <depxml name="xsl/master.xsl" module="pustefix-core"/>
+      <depxsl name="xsl/customizemaster.xsl" module="pustefix-core"/>
       <xsl:call-template name="render_include_ssheets"/>
       <xsl:apply-templates select="param"/>
       <xsl:apply-templates select="depaux"/>
@@ -61,8 +61,8 @@
       <xsl:call-template name="render_themes">
         <xsl:with-param name="local_themes" select="@themes"/>
       </xsl:call-template>
-      <depxml name="core/xsl/metatags.xsl" module="pustefix-core"/>
-      <depxsl name="core/xsl/customizemaster.xsl" module="pustefix-core"/>
+      <depxml name="xsl/metatags.xsl" module="pustefix-core"/>
+      <depxsl name="xsl/customizemaster.xsl" module="pustefix-core"/>
       <depaux name="{$project}/WEB-INF/depend.xml"/>
       <xsl:call-template name="render_include_ssheets"/>
       <xsl:apply-templates select="param"/>

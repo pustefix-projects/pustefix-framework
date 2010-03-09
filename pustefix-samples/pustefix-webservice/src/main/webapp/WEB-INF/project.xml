@@ -78,8 +78,6 @@
     
     <static>
       <path>img</path>
-      <path>core/img</path>
-      <path>core/script</path>
     </static>
     
     <choose>

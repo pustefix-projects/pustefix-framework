@@ -45,11 +45,11 @@
                 xmlns:pfx="http://www.schlund.de/pustefix/core"
 				xmlns:ixsl="http://www.w3.org/1999/XSL/TransformOutputAlias">
 
-  <xsl:import href="module://pustefix-core/core/xsl/default_copy.xsl"/>
-  <xsl:import href="module://pustefix-core/core/xsl/include.xsl"/>
-  <xsl:import href="module://pustefix-core/core/xsl/navigation.xsl"/>
-  <xsl:import href="module://pustefix-core/core/xsl/utils.xsl"/>
-  <xsl:import href="module://pustefix-core/core/xsl/forminput.xsl"/>
+  <xsl:import href="module://pustefix-core/xsl/default_copy.xsl"/>
+  <xsl:import href="module://pustefix-core/xsl/include.xsl"/>
+  <xsl:import href="module://pustefix-core/xsl/navigation.xsl"/>
+  <xsl:import href="module://pustefix-core/xsl/utils.xsl"/>
+  <xsl:import href="module://pustefix-core/xsl/forminput.xsl"/>
 
   <cus:custom_xsl/>
 
@@ -100,9 +100,9 @@
                      xmlns:rfh="java:org.pustefixframework.http.AbstractPustefixXMLRequestHandler$RegisterFrameHelper" 
                      exclude-result-prefixes="pfx cus xsl url deref callback compress func rfh">
 
-      <ixsl:import href="module://pustefix-core/core/xsl/default_copy.xsl"/>
-      <ixsl:import href="module://pustefix-core/core/xsl/include.xsl"/>
-      <ixsl:import href="module://pustefix-core/core/xsl/functions.xsl"/>
+      <ixsl:import href="module://pustefix-core/xsl/default_copy.xsl"/>
+      <ixsl:import href="module://pustefix-core/xsl/include.xsl"/>
+      <ixsl:import href="module://pustefix-core/xsl/functions.xsl"/>
 
       <!-- generate user defined imports -->
       <xsl:call-template name="gen_ixsl_import">

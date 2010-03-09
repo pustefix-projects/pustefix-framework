@@ -5,6 +5,7 @@
   <resources>
     <resource-mapping srcpath="PUSTEFIX-INF/dyntxt" targetpath="dyntxt"/>
     <resource-mapping srcpath="PUSTEFIX-INF/img" targetpath="img"/>
+    <resource-mapping srcpath="PUSTEFIX-INF/script" targetpath="script"/>
   </resources>
 
 
