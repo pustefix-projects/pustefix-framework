@@ -5,7 +5,7 @@
   xmlns:d="http://www.pustefix-framework.org/2008/namespace/direct-output-service-config"
   xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
   xsi:schemaLocation="http://www.pustefix-framework.org/2008/namespace/config-fragments
-                      http://www.pustefix-framework.org/schema/config-fragments.xsd">
+                      http://www.pustefix-framework.org/2008/namespace/config-fragments.xsd">
 
   <fr:navigation>
     <page name="IncludeConfPage" handler="/xml/main" />
