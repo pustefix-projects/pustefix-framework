@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema"
   targetNamespace="http://www.pustefix-framework.org/2008/namespace/context-xml-service-config"
-  xmlns:prop="http://www.pustefix-framework.org/2008/namespace/context-xml-service-config" elementFormDefault="qualified" attributeFormDefault="unqualified"
-  >
+  xmlns:prop="http://www.pustefix-framework.org/2008/namespace/context-xml-service-config" 
+  elementFormDefault="qualified" attributeFormDefault="unqualified">
 
   <!--
   CVS Revision: $Revision: 3691 $
