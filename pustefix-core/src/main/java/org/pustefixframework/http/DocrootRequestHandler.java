@@ -57,6 +57,8 @@ public class DocrootRequestHandler implements UriProvidingHttpRequestHandler, Se
     
     private ServletContext servletContext;
 
+    private String mode;
+    
     public ServletContext getServletContext() {
         return servletContext;
     }
@@ -75,6 +77,10 @@ public class DocrootRequestHandler implements UriProvidingHttpRequestHandler, Se
     
     public void setBase(String path) {
         this.base = path;
+    }
+    
+    public void setMode(String mode) {
+        this.mode = mode;
     }
 
     public void handleRequest(HttpServletRequest req, HttpServletResponse res)
@@ -212,7 +218,11 @@ public class DocrootRequestHandler implements UriProvidingHttpRequestHandler, Se
         String etag = MD5Utils.hex_md5(path+contentLength+lastModified);
         res.setHeader("ETag", etag);
             
-        res.setHeader("Cache-Control", "max-age=3600");
+        if(mode==null || mode.equals("") || mode.equals("prod")) {
+            res.setHeader("Cache-Control", "max-age=3600");
+        } else {
+            res.setHeader("Cache-Control", "max-age=3, must-revalidate");
+        }
             
         OutputStream out = new BufferedOutputStream(res.getOutputStream());
 
