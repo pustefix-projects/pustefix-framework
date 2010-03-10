@@ -356,8 +356,6 @@ public class PustefixWebappMojo extends AbstractMojo {
             public String targetPath;
         }
         
-        public final static String NS_MODULE = "http://pustefix.sourceforge.net/moduledescriptor200702";
-        
         private String moduleName = "";
 
         private List<ResourceMapping> mappings;
@@ -366,11 +364,11 @@ public class PustefixWebappMojo extends AbstractMojo {
             Document doc;
             doc = Xml.parse(XsltVersion.XSLT1, new StreamSource(xmlStream));
             Element root = doc.getDocumentElement();
-            if (!root.getNamespaceURI().equals(NS_MODULE) || !root.getNodeName().equals("module-descriptor")) {
+            if (!root.getNodeName().equals("module-descriptor")) {
                 throw new TransformerException("Descriptor has invalid format");
             }
             
-            NodeList temp = root.getElementsByTagNameNS(NS_MODULE, "module-name");
+            NodeList temp = root.getElementsByTagName("module-name");
             if (temp.getLength() != 1) {
                 throw new TransformerException("Module name not set!");
             }
@@ -384,7 +382,7 @@ public class PustefixWebappMojo extends AbstractMojo {
             }
             moduleName = moduleName.trim();
             
-            temp = root.getElementsByTagNameNS(NS_MODULE, "resources");
+            temp = root.getElementsByTagName("resources");
             if (temp.getLength() > 1) {
                 throw new TransformerException("Found more than one resources element!");
             }
@@ -392,7 +390,7 @@ public class PustefixWebappMojo extends AbstractMojo {
                 this.mappings = new ArrayList<ResourceMapping>();
                 return;
             }
-            temp = ((Element)temp.item(0)).getElementsByTagNameNS(NS_MODULE, "resource-mapping");
+            temp = ((Element)temp.item(0)).getElementsByTagName("resource-mapping");
             ArrayList<ResourceMapping> mappings = new ArrayList<ResourceMapping>();
             for (int i=0; i<temp.getLength(); i++) {
                 Element el = (Element) temp.item(i);

@@ -41,8 +41,6 @@ import org.w3c.dom.NodeList;
  */
 public class ModuleDescriptor {
     
-    private static String NAMESPACE_MODULE_DESCRIPTOR = "http://pustefix.sourceforge.net/moduledescriptor200702";
-    
     private URL url;
     private String name;
     private Map<String,Set<String>> moduleToResourcePaths = new HashMap<String,Set<String>>();
@@ -114,18 +112,18 @@ public class ModuleDescriptor {
         DocumentBuilder builder = factory.newDocumentBuilder();
         Document document = builder.parse(url.openStream());
         Element root = document.getDocumentElement();
-        if(root.getNamespaceURI().equals(NAMESPACE_MODULE_DESCRIPTOR) && root.getLocalName().equals("module-descriptor")) {
-            Element nameElem = getSingleChildElement(root, NAMESPACE_MODULE_DESCRIPTOR, "module-name", true);
+        if(root.getLocalName().equals("module-descriptor")) {
+            Element nameElem = getSingleChildElement(root, "module-name", true);
             String name = nameElem.getTextContent().trim();
             if(name.equals("")) throw new Exception("Text content of element 'module-name' must not be empty!");
             moduleInfo = new ModuleDescriptor(url, name);
-            Element overElem = getSingleChildElement(root, NAMESPACE_MODULE_DESCRIPTOR, "override-modules", false);
+            Element overElem = getSingleChildElement(root, "override-modules", false);
             if(overElem != null) {
-                List<Element> modElems = getChildElements(overElem, NAMESPACE_MODULE_DESCRIPTOR, "module");
+                List<Element> modElems = getChildElements(overElem, "module");
                 for(Element modElem:modElems) {
                     String modName = modElem.getAttribute("name").trim();
                     if(modName.equals("")) throw new Exception("Element 'module' requires 'name' attribute!");
-                    List<Element> resElems = getChildElements(modElem, NAMESPACE_MODULE_DESCRIPTOR, "resource");
+                    List<Element> resElems = getChildElements(modElem, "resource");
                     for(Element resElem:resElems) {
                         String resPath = resElem.getAttribute("path").trim();
                         if(resPath.equals("")) throw new Exception("Element 'resource' requires 'path' attribute!");
@@ -138,13 +136,12 @@ public class ModuleDescriptor {
     }
     
     
-    private static Element getSingleChildElement(Element parent, String nsuri, String localName, boolean mandatory) throws Exception {
+    private static Element getSingleChildElement(Element parent, String localName, boolean mandatory) throws Exception {
         Element elem = null;
         NodeList nodes = parent.getChildNodes();
         for(int i=0; i<nodes.getLength(); i++) {
             Node node = nodes.item(i);
-            if(node.getNodeType() == Node.ELEMENT_NODE && node.getNamespaceURI().equals(nsuri) 
-                    && node.getLocalName().equals(localName)) {
+            if(node.getNodeType() == Node.ELEMENT_NODE && node.getLocalName().equals(localName)) {
                 if(elem != null) throw new Exception("Multiple '" + localName + "' child elements aren't allowed."); 
                 elem = (Element)node;
             }
@@ -153,13 +150,12 @@ public class ModuleDescriptor {
         return elem;
     }
     
-    private static List<Element> getChildElements(Element parent, String nsuri, String localName) {
+    private static List<Element> getChildElements(Element parent, String localName) {
         List<Element> elems = new ArrayList<Element>();
         NodeList nodes = parent.getChildNodes();
         for(int i=0; i<nodes.getLength(); i++) {
             Node node = nodes.item(i);
-            if(node.getNodeType() == Node.ELEMENT_NODE && node.getNamespaceURI().equals(nsuri) 
-                    && node.getLocalName().equals(localName)) {
+            if(node.getNodeType() == Node.ELEMENT_NODE && node.getLocalName().equals(localName)) {
                 elems.add((Element)node);
             }
         }
