@@ -24,6 +24,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.net.InetAddress;
+import java.net.URI;
 import java.net.UnknownHostException;
 import java.util.ArrayList;
 import java.util.Collection;
@@ -62,6 +63,10 @@ import de.schlund.pfixxml.util.XsltVersion;
  * @requiresDependencyResolution compile
  */
 public class PustefixWebappMojo extends AbstractMojo {
+    
+    private final static String DEPRECATED_NS_MODULE_DESCRIPTOR = "http://pustefix.sourceforge.net/moduledescriptor200702"; 
+    private final static String NS_MODULE_DESCRIPTOR = "http://www.pustefix-framework.org/2008/namespace/module-descriptor";
+    
     /**
      * Docroot of the application
      * 
@@ -301,7 +306,7 @@ public class PustefixWebappMojo extends AbstractMojo {
         }
         DeploymentDescriptor dd;
         try {
-            dd = new DeploymentDescriptor(dds);
+            dd = new DeploymentDescriptor(dds, jarFile.toURI());
         } catch (TransformerException e) {
             throw new MojoExecutionException("Error while parsing deployment descriptor from module " + jarFile, e);
         }
@@ -360,12 +365,17 @@ public class PustefixWebappMojo extends AbstractMojo {
 
         private List<ResourceMapping> mappings;
         
-        public DeploymentDescriptor(InputStream xmlStream) throws TransformerException {
+        public DeploymentDescriptor(InputStream xmlStream, URI uri) throws TransformerException {
             Document doc;
             doc = Xml.parse(XsltVersion.XSLT1, new StreamSource(xmlStream));
             Element root = doc.getDocumentElement();
             if (!root.getNodeName().equals("module-descriptor")) {
                 throw new TransformerException("Descriptor has invalid format");
+            }
+            if(DEPRECATED_NS_MODULE_DESCRIPTOR.equals(root.getNamespaceURI()) ||
+               DEPRECATED_NS_MODULE_DESCRIPTOR.equals(root.getAttribute("xmlns"))) {
+                getLog().warn("[DEPRECATED] Module descriptor file from '" + uri.toString() + "' uses deprecated namespace '" + 
+                        DEPRECATED_NS_MODULE_DESCRIPTOR + "'. It should be replaced by '" + NS_MODULE_DESCRIPTOR + "'.");
             }
             
             NodeList temp = root.getElementsByTagName("module-name");

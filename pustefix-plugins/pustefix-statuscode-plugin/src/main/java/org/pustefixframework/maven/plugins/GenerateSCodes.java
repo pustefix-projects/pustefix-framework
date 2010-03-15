@@ -45,6 +45,11 @@ import org.xml.sax.SAXParseException;
 
 
 public class GenerateSCodes {
+    
+    private final static String DEPRECATED_NS_STATUSCODEINFO = "http://pustefix-framework.org/statuscodeinfo";
+    private final static String NS_STATUSCODEINFO = "http://www.pustefix-framework.org/2008/namespace/statuscodeinfo";
+    
+    
     public static Result generateFromInfo(List<String> infoFiles, String docRoot, File genDir, String module, String targetPath) throws Exception {
         Result totalResult = new Result();
         for(String infoFile:infoFiles) {
@@ -59,6 +64,14 @@ public class GenerateSCodes {
         DocumentBuilder db = dbf.newDocumentBuilder();
         File file = new File(docRoot, infoFile);
         Document doc = db.parse(file);
+        
+        if(DEPRECATED_NS_STATUSCODEINFO.equals(doc.getDocumentElement().getNamespaceURI()) || 
+                DEPRECATED_NS_STATUSCODEINFO.equals(doc.getDocumentElement().getAttribute("xmlns"))) {
+            String msg = "[DEPRECATED] Statuscode info file '" + infoFile + "' uses deprecated namespace '" + 
+                DEPRECATED_NS_STATUSCODEINFO + "'. It should be replaced by '" + NS_STATUSCODEINFO + "'.";
+            System.out.println("[WARNING] " + msg);
+        }
+        
         NodeList scElems = doc.getDocumentElement().getElementsByTagName("statuscodes");
         List<String> genClasses = new ArrayList<String>();
         List<String> allClasses = new ArrayList<String>();
