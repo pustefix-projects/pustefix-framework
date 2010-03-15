@@ -28,6 +28,7 @@ import java.util.Set;
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 
+import org.apache.log4j.Logger;
 import org.springframework.util.AntPathMatcher;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
@@ -40,6 +41,11 @@ import org.w3c.dom.NodeList;
  *
  */
 public class ModuleDescriptor {
+    
+    private final static Logger LOG = Logger.getLogger(ModuleDescriptor.class);
+    
+    private final static String DEPRECATED_NS_MODULE_DESCRIPTOR = "http://pustefix.sourceforge.net/moduledescriptor200702"; 
+    private final static String NS_MODULE_DESCRIPTOR = "http://www.pustefix-framework.org/2008/namespace/module-descriptor";
     
     private URL url;
     private String name;
@@ -113,6 +119,12 @@ public class ModuleDescriptor {
         Document document = builder.parse(url.openStream());
         Element root = document.getDocumentElement();
         if(root.getLocalName().equals("module-descriptor")) {
+            if(DEPRECATED_NS_MODULE_DESCRIPTOR.equals(root.getNamespaceURI()) || 
+               DEPRECATED_NS_MODULE_DESCRIPTOR.equals(root.getAttribute("xmlns"))) {
+                String msg = "[DEPRECATED] Module descriptor file '" + url.toString() + "' uses deprecated namespace '" + 
+                        DEPRECATED_NS_MODULE_DESCRIPTOR + "'. It should be replaced by '" + NS_MODULE_DESCRIPTOR + "'.";
+                LOG.warn(msg);
+            }
             Element nameElem = getSingleChildElement(root, "module-name", true);
             String name = nameElem.getTextContent().trim();
             if(name.equals("")) throw new Exception("Text content of element 'module-name' must not be empty!");

@@ -19,7 +19,7 @@
   -->
   
   <xsl:template match="old:interface">
-    <xsl:message>WARNING!!! IWrapper definition for '<xsl:value-of select="$classname"/>' uses deprecated namespace: '<xsl:value-of select="$oldns"/>'. It should be replaced by '<xsl:value-of select="$newns"/>'.</xsl:message>
+    <xsl:message>[WARNING] [DEPRECATED] IWrapper definition for '<xsl:value-of select="$classname"/>' uses deprecated namespace: '<xsl:value-of select="$oldns"/>'. It should be replaced by '<xsl:value-of select="$newns"/>'.</xsl:message>
     <xsl:variable name="upgraded">
       <xsl:apply-templates select="." mode="old"/>
     </xsl:variable>
@@ -35,10 +35,10 @@
   
   <xsl:template match="iwrp:interface" ><xsl:param name="extends">
   <xsl:if test="./iwrp:param/@occurance">
-    <xsl:message>WARNING!!! IWrapper definition for '<xsl:value-of select="$classname"/>' uses deprecated attribute: the use of 'occurance' (with 'a') is deprecated, use occurrence (with 'e') instead.</xsl:message>
+    <xsl:message>[WARNING] [DEPRECATED] IWrapper definition for '<xsl:value-of select="$classname"/>' uses deprecated attribute: the use of 'occurance' (with 'a') is deprecated, use occurrence (with 'e') instead.</xsl:message>
   </xsl:if>
   <xsl:if test="./iwrp:param/@occurence">
-    <xsl:message>WARNING!!! IWrapper definition for '<xsl:value-of select="$classname"/>' uses deprecated attribute: the use of 'occurence' (with one 'r')is deprecated, use occurrence (with double 'r') instead.</xsl:message>
+    <xsl:message>[WARNING] [DEPRECATED] IWrapper definition for '<xsl:value-of select="$classname"/>' uses deprecated attribute: the use of 'occurence' (with one 'r')is deprecated, use occurrence (with double 'r') instead.</xsl:message>
   </xsl:if>
       <xsl:choose>
         <xsl:when test="@extends">

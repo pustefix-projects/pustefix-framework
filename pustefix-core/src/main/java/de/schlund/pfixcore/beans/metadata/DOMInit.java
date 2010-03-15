@@ -20,10 +20,7 @@ package de.schlund.pfixcore.beans.metadata;
 
 import java.io.FileNotFoundException;
 import java.net.URL;
-import java.util.Iterator;
 
-import javax.xml.XMLConstants;
-import javax.xml.namespace.NamespaceContext;
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 
@@ -42,7 +39,8 @@ public class DOMInit {
     
     protected final static Logger LOG=Logger.getLogger(DOMInit.class);
     
-    public final static String XMLNS_BEANMETADATA="http://pustefix.sourceforge.net/beanmetadata";
+    private final static String DEPRECATED_NS_BEAN_METADATA = "http://pustefix.sourceforge.net/bean-metadata";
+    private final static String NS_BEAN_METADATA = "http://www.pustefix-framework.org/2008/namespace/bean-metadata";
     
     private Beans beans;
     
@@ -104,33 +102,18 @@ public class DOMInit {
             DocumentBuilder db=dbf.newDocumentBuilder();
             db.setErrorHandler(new MyErrorHandler());
             Document doc=db.parse(metadataUrl.openStream());
-            update(doc);
+            if(DEPRECATED_NS_BEAN_METADATA.equals(doc.getDocumentElement().getNamespaceURI()) || 
+                    DEPRECATED_NS_BEAN_METADATA.equals(doc.getDocumentElement().getAttribute("xmlns"))) {
+                     String msg = "[DEPRECATED] Bean metadata file '" + metadataUrl.toString() + "' uses deprecated namespace '" + 
+                             DEPRECATED_NS_BEAN_METADATA + "'. It should be replaced by '" + NS_BEAN_METADATA + "'.";
+                     LOG.warn(msg);
+                 }
         } catch(FileNotFoundException x) {
             if(LOG.isDebugEnabled()) LOG.debug("No metadata file found: "+metadataUrl.toString());
         } catch(Exception x) {
             throw new DOMInitException("Can't read metadata from '"+metadataUrl+"'.",x);
         }
     }
-    
-    
-    class MyNamespaceContext implements NamespaceContext {
-    
-        public Iterator<String> getPrefixes(String namespaceURI) {
-            return null;
-        }
-        
-        public String getNamespaceURI(String prefix) {
-            if(prefix.equals("bmd")) return XMLNS_BEANMETADATA;
-            return XMLConstants.NULL_NS_URI;
-        }
-        
-        public String getPrefix(String namespace) {
-            if(namespace.equals(XMLNS_BEANMETADATA)) return "bmd";
-            return null;
-        }
-       
-    }  
-
 
     static class MyErrorHandler implements ErrorHandler {
      

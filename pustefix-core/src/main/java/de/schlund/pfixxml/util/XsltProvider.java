@@ -52,14 +52,14 @@ public class XsltProvider {
             Class.forName(DETECT_SAXON1);
             saxon1Available=true;    
         } catch(Exception x) {
-            LOG.warn("No Saxon XSLT1 implementation found!");
+            LOG.info("No Saxon XSLT1 implementation found!");
         }
         boolean saxon2Available=false;
         try {
             Class.forName(DETECT_SAXON2);
             saxon2Available=true;    
         } catch(Exception x) {
-            LOG.warn("No Saxon XSLT2 implementation found!");
+            LOG.info("No Saxon XSLT2 implementation found!");
         }
         if(saxon1Available) {
             try {

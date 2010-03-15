@@ -22,6 +22,10 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
+import javax.xml.transform.TransformerException;
+
+import org.apache.log4j.Logger;
+import org.pustefixframework.util.xml.NamespaceUtils;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.NamedNodeMap;
@@ -48,8 +52,12 @@ import de.schlund.pfixxml.util.Xml;
  * @see de.schlund.pfixcore.scriptedflow.vm.ScriptVM
  */
 public class Compiler {
-    public final static String NS_SCRIPTEDFLOW = "http://pustefix.sourceforge.net/scriptedflow200602";
-
+    
+    private final static Logger LOG = Logger.getLogger(Compiler.class);
+    
+    public final static String DEPRECATED_NS_SCRIPTEDFLOW = "http://pustefix.sourceforge.net/scriptedflow200602";
+    public final static String NS_SCRIPTEDFLOW = "http://www.pustefix-framework.org/2008/namespace/scriptedflow";
+    
     public static Script compile(FileResource scriptFile) throws CompilerException {
         Document doc;
         try {
@@ -60,6 +68,15 @@ public class Compiler {
             throw new CompilerException("XML parser could not read file " + scriptFile.toString(), e);
         }
         
+        if(DEPRECATED_NS_SCRIPTEDFLOW.equals(doc.getDocumentElement().getNamespaceURI())) {
+            LOG.warn("[DEPRECATED] Scripted flow file '" + scriptFile.toString() + "' uses deprecated namespace '" + 
+                    DEPRECATED_NS_SCRIPTEDFLOW + ". It should be replaced by '" + NS_SCRIPTEDFLOW + "'.");
+            try {
+                doc = NamespaceUtils.setNamespace(doc, NS_SCRIPTEDFLOW, NS_SCRIPTEDFLOW + ".xsd");
+            } catch (TransformerException x) {
+                throw new CompilerException("Error handling deprecated scripteflow XML namespace: " + scriptFile.toString(), x);
+            }
+        }
         Element root = doc.getDocumentElement();
         if (!root.getLocalName().equals("scriptedflow") || !root.getNamespaceURI().equals(NS_SCRIPTEDFLOW)) {
             throw new CompilerException("Input file " + scriptFile.toString() + " is not a scripted flow!");
