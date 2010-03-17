@@ -124,7 +124,12 @@ public class PustefixWebappMojo extends AbstractMojo {
      */
     public void execute() throws MojoExecutionException {
         File basedir;
-        
+
+        // allow plugin declaration in parent pom
+        if ("pom".equals(project.getPackaging())) {
+            return;
+        }
+
         if (makemode == null || makemode.length() == 0) {
             makemode = "test";
         }
