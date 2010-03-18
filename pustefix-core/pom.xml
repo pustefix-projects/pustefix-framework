@@ -5,12 +5,12 @@
   <parent>
     <groupId>org.pustefixframework</groupId>
     <artifactId>pustefixframework</artifactId>
-    <version>0.14.8-SNAPSHOT</version>
+    <version>0.15.0-SNAPSHOT</version>
   </parent>
 
   <groupId>org.pustefixframework</groupId>
   <artifactId>pustefix-core</artifactId>
-  <version>0.14.8-SNAPSHOT</version>
+  <version>0.15.0-SNAPSHOT</version>
   <packaging>jar</packaging>
 
   <name>Pustefix Core</name>
@@ -186,7 +186,7 @@
       <plugin>
         <groupId>org.pustefixframework.maven.plugins</groupId>
         <artifactId>pustefix-statuscode-plugin</artifactId>
-        <version>0.14.8-SNAPSHOT</version>
+        <version>0.15.0-SNAPSHOT</version>
         <executions>
           <execution>
             <configuration>
