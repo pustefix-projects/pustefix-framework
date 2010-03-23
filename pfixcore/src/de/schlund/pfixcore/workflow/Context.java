@@ -43,12 +43,11 @@ public interface Context extends PageFlowContext {
     PageRequest createPageRequest(String name);
     PageRequest getCurrentPageRequest();
     /**
-     * Only available for backwards compatibility/easier migration.
-     * Method will be removed in future releases. 
+     * Method was market as deprecated in 0.14, but there are
+     * still a number of usecases needing it
      * Also be aware that since Pustefix 0.13 you're not always guaranteed
      * to get a current pageflow (if current page isn't in a pageflow).
      */
-    @Deprecated
     PageFlow getCurrentPageFlow();
     PageRequestStatus getCurrentStatus();
 
