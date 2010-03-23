@@ -54,6 +54,12 @@ public class GenerateMojo extends AbstractMojo {
     private File config;
     
     /**
+     * @parameter default-value="${basedir}/src/main/webapp/WEB-INF/project.xml"
+     * @required
+     */
+    private File projectConfig;
+    
+    /**
      * @parameter default-value="error"
      * @required
      */
@@ -73,11 +79,11 @@ public class GenerateMojo extends AbstractMojo {
         ClassLoader contextLoader = Thread.currentThread().getContextClassLoader();
         try {
             Class<?> generator = Class.forName("de.schlund.pfixxml.targets.TargetGeneratorRunner", true, loader);
-            Method meth = generator.getMethod("run", File.class, File.class, File.class, String.class, Writer.class, String.class);
+            Method meth = generator.getMethod("run", File.class, File.class, File.class, File.class, String.class, Writer.class, String.class);
             Object instance = generator.newInstance();
             StringWriter output = new StringWriter();
             Thread.currentThread().setContextClassLoader(loader);
-            boolean ok = (Boolean)meth.invoke(instance, docroot, config, cache, "prod", output, loglevel);
+            boolean ok = (Boolean)meth.invoke(instance, docroot, config, projectConfig, cache, "prod", output, loglevel);
             getLog().info(output.toString()); 
             if(!ok) throw new MojoExecutionException("Target generation errors occurred.");
         } catch(Exception x) {
