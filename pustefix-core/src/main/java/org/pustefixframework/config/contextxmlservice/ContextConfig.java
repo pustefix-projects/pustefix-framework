@@ -40,10 +40,17 @@ import de.schlund.pfixxml.Variant;
 public interface ContextConfig {
 
     /**
-     * return the default state to use if no more specific information is available
-     * @return State the default state to use for a page where no other information is given. 
+     * Returns the type of the default state. This is the type of the state
+     * returned by {@link #getDefaultState()}.
+     * @return type of default state
      */
-    Class<? extends State> getDefaultState();
+    Class<? extends State> getDefaultStateType();
+    
+    /**
+     * Returns the default state to use if no more specific information is available.
+     * @return the default state to use for a page where no other information is given. 
+     */
+    State getDefaultState();
     
      /**
      * Returns name of the page to use when the user enters the site without

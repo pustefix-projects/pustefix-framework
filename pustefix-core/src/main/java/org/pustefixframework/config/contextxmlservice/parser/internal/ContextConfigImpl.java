@@ -61,6 +61,7 @@ public class ContextConfigImpl implements ContextConfig {
     
     private final static Logger LOG = Logger.getLogger(ContextConfigImpl.class);
     private Class<? extends State> defaultStateClass = null;
+    private State defaultState = null;
     
     private String defaultPage = null;
     private Map<String,String> variantToDefaultPage = new HashMap<String,String>();
@@ -102,6 +103,7 @@ public class ContextConfigImpl implements ContextConfig {
         this.conditions = ref.conditions;
         this.defaultAuthConstraint = ref.defaultAuthConstraint;
         this.defaultPage = ref.defaultPage;
+        this.defaultState = ref.defaultState;
         this.defaultStateClass = ref.defaultStateClass;
         this.endInterceptorBeans = ref.endInterceptorBeans;
         this.endinterceptors = ref.endinterceptors;
@@ -141,14 +143,22 @@ public class ContextConfigImpl implements ContextConfig {
         return page;
     }
     
-    public void setDefaultState(Class<? extends State> clazz) {
+    public void setDefaultStateType(Class<? extends State> clazz) {
         this.defaultStateClass = clazz;
     }
 
-    public Class<? extends State> getDefaultState() {
+    public Class<? extends State> getDefaultStateType() {
         return this.defaultStateClass;
     }
 
+    public State getDefaultState() {
+        return defaultState;
+    }
+        
+    public void setDefaultState(State defaultState) {
+        this.defaultState = defaultState;
+    }
+    
     public void addContextResource(ContextResourceConfigImpl config) {
         if (resources.containsKey(config.getContextResourceClass())) {
             LOG.warn("Overwriting configuration for context resource " + config.getContextResourceClass().getName());

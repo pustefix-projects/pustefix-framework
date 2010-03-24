@@ -19,11 +19,16 @@
 package org.pustefixframework.config.contextxmlservice.parser;
 
 import java.util.Collection;
+import java.util.Collections;
 import java.util.List;
 import java.util.Map;
+import java.util.Properties;
 
+import org.pustefixframework.config.contextxmlservice.IWrapperConfig;
 import org.pustefixframework.config.contextxmlservice.PageFlowHolder;
 import org.pustefixframework.config.contextxmlservice.PageRequestConfig;
+import org.pustefixframework.config.contextxmlservice.ProcessActionStateConfig;
+import org.pustefixframework.config.contextxmlservice.StateConfig;
 import org.pustefixframework.config.contextxmlservice.parser.internal.ContextConfigImpl;
 import org.pustefixframework.config.contextxmlservice.parser.internal.ContextXMLServletConfigImpl;
 import org.pustefixframework.config.generic.ParsingUtils;
@@ -42,9 +47,12 @@ import com.marsching.flexiparse.parser.HandlerContext;
 import com.marsching.flexiparse.parser.ParsingHandler;
 import com.marsching.flexiparse.parser.exception.ParserException;
 
+import de.schlund.pfixcore.workflow.ConfigurableState;
 import de.schlund.pfixcore.workflow.ContextImpl;
 import de.schlund.pfixcore.workflow.ContextResourceManagerImpl;
 import de.schlund.pfixcore.workflow.PageMap;
+import de.schlund.pfixcore.workflow.State;
+import de.schlund.pfixcore.workflow.app.ResdocFinalizer;
 import de.schlund.pfixcore.workflow.context.ServerContextImpl;
 import de.schlund.pfixxml.perflogging.PerfLogging;
 
@@ -113,6 +121,62 @@ public class ContextXMLParsingHandler implements ParsingHandler {
                 pageFlowMap.put(pageFlowHolder.getName(), pageFlowHolder.getPageFlowObject());
             }
             
+            // Create bean definition for default state
+            Class<? extends State> defaultStateType = contextConfig.getDefaultStateType();
+            beanBuilder = BeanDefinitionBuilder.genericBeanDefinition(defaultStateType);
+            beanBuilder.setScope("prototype");
+            if (ConfigurableState.class.isAssignableFrom(defaultStateType)) {
+                final Class<? extends ConfigurableState> stateType = defaultStateType.asSubclass(ConfigurableState.class);
+                StateConfig config = new StateConfig() {
+                    
+                    public Map<String, ?> getContextResources() {
+                        return Collections.emptyMap();
+                    }
+            
+                    public Policy getIWrapperPolicy() {
+                        return Policy.ANY;
+                    }
+            
+                    public Map<String, ? extends IWrapperConfig> getIWrappers() {
+                        return Collections.emptyMap();
+                    }
+            
+                    public Map<String, ? extends ProcessActionStateConfig> getProcessActions() {
+                        return Collections.emptyMap();
+                    }
+            
+                    public Properties getProperties() {
+                        return new Properties();
+                    }
+            
+                    public String getScope() {
+                        return "prototype";
+                    }
+            
+                    public Class<? extends ConfigurableState> getState() {
+                        return stateType;
+                    }
+            
+                    public boolean isExternalBean() {
+                        return false;
+                    }
+            
+                    public boolean requiresToken() {
+                        return false;
+                    }
+                    
+                    public Class<? extends ResdocFinalizer> getFinalizer() {
+                        return null;
+                    }
+                    
+                };
+                beanBuilder.addPropertyValue("config", config);
+            }
+            beanDefinition = beanBuilder.getBeanDefinition();
+            String defaultStateBeanName = beanNameGenerator.generateBeanName(beanDefinition, beanRegistry);
+            beanRegistry.registerBeanDefinition(defaultStateBeanName, beanDefinition);
+            
+            
             beanBuilder = BeanDefinitionBuilder.genericBeanDefinition(ContextConfigImpl.class);
             beanBuilder.setScope("singleton");
             beanBuilder.addConstructorArgValue(contextConfig);
@@ -120,6 +184,7 @@ public class ContextXMLParsingHandler implements ParsingHandler {
             beanBuilder.addPropertyValue("endInterceptors", endInterceptors);
             beanBuilder.addPropertyValue("postRenderInterceptors", postRenderInterceptors);
             beanBuilder.addPropertyValue("pageFlowMap", pageFlowMap);
+            beanBuilder.addPropertyReference("defaultState", defaultStateBeanName);
             beanDefinition = beanBuilder.getBeanDefinition();
             String contextConfigBeanName = beanNameGenerator.generateBeanName(beanDefinition, beanRegistry);
             beanRegistry.registerBeanDefinition(contextConfigBeanName, beanDefinition);

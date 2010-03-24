@@ -47,7 +47,7 @@ public class ContextParsingHandler implements ParsingHandler {
         ContextConfigImpl ctxConfig = new ContextConfigImpl();
         // Navigation is stored in depend.xml
         ctxConfig.setNavigationFile(info.getConfigurationFile());
-        ctxConfig.setDefaultState(config.getDefaultStaticState());
+        ctxConfig.setDefaultStateType(config.getDefaultStaticState());
         
         String defaultPage = element.getAttribute("defaultpage").trim();
         if(defaultPage.length()>0) ctxConfig.setDefaultPage(defaultPage);
