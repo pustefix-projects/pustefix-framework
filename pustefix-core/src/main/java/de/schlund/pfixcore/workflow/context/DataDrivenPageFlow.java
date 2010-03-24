@@ -159,7 +159,8 @@ public class DataDrivenPageFlow implements PageFlow {
             }
         } 
         
-        throw new PustefixApplicationException("*** Reached end of page flow '" + getName() + "' " + "without having found a valid, accessible page ***");
+        LOG.warn("Reached end of page flow '" + getName() + "' " + "without having found a valid, accessible page");
+        return null;
         
     }
 
