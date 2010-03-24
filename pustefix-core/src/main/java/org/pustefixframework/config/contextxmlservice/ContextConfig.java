@@ -47,6 +47,8 @@ public interface ContextConfig {
      */
     Class<? extends State> getDefaultStateType();
 
+    String getDefaultStateParentBeanName();
+    
     /**
      * Returns the default state to use if no more specific information is available.
      * @return the default state to use for a page where no other information is given. 

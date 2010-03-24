@@ -62,6 +62,8 @@ public class ContextConfigImpl implements ContextConfig {
     private final static Logger LOG = Logger.getLogger(ContextConfigImpl.class);
 
     private Class<? extends State> defaultStateClass = null;
+    
+    private String defaultStateParentBeanName;
 
     private State defaultState = null;
 
@@ -121,6 +123,7 @@ public class ContextConfigImpl implements ContextConfig {
         this.defaultPage = ref.defaultPage;
         this.defaultState = ref.defaultState;
         this.defaultStateClass = ref.defaultStateClass;
+        this.defaultStateParentBeanName = ref.defaultStateParentBeanName;
         this.endInterceptorBeans = ref.endInterceptorBeans;
         this.endinterceptors = ref.endinterceptors;
         this.navigationFile = ref.navigationFile;
@@ -167,6 +170,14 @@ public class ContextConfigImpl implements ContextConfig {
 
     public Class<? extends State> getDefaultStateType() {
         return this.defaultStateClass;
+    }
+    
+    public void setDefaultStateParentBeanName(String defaultStateParentBeanName) {
+        this.defaultStateParentBeanName = defaultStateParentBeanName;
+    }
+     
+    public String getDefaultStateParentBeanName() {
+        return defaultStateParentBeanName;
     }
 
     public void addContextResource(ContextResourceConfigImpl config) {
