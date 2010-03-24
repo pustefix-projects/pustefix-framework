@@ -125,6 +125,9 @@ public class ContextXMLParsingHandler implements ParsingHandler {
             Class<? extends State> defaultStateType = contextConfig.getDefaultStateType();
             beanBuilder = BeanDefinitionBuilder.genericBeanDefinition(defaultStateType);
             beanBuilder.setScope("prototype");
+            if(contextConfig.getDefaultStateParentBeanName() != null) {
+                beanBuilder.setParentName(contextConfig.getDefaultStateParentBeanName());
+            }
             if (ConfigurableState.class.isAssignableFrom(defaultStateType)) {
                 final Class<? extends ConfigurableState> stateType = defaultStateType.asSubclass(ConfigurableState.class);
                 StateConfig config = new StateConfig() {

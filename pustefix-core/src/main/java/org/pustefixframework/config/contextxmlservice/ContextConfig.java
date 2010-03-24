@@ -52,6 +52,8 @@ public interface ContextConfig {
      */
     State getDefaultState();
     
+    String getDefaultStateParentBeanName();
+    
      /**
      * Returns name of the page to use when the user enters the site without
      * specifying a specific page.
