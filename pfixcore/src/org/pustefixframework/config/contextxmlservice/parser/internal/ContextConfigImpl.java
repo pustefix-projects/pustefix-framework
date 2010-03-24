@@ -61,6 +61,8 @@ public class ContextConfigImpl implements ContextConfig {
     
     private final static Logger LOG = Logger.getLogger(ContextConfigImpl.class);
     private Class<? extends State> defaultStateClass = null;
+    private String defaultStateParentBeanName;
+    private State defaultState = null;
     
     private String defaultPage = null;
     private Map<String,String> variantToDefaultPage = new HashMap<String,String>();
@@ -103,6 +105,8 @@ public class ContextConfigImpl implements ContextConfig {
         this.defaultAuthConstraint = ref.defaultAuthConstraint;
         this.defaultPage = ref.defaultPage;
         this.defaultStateClass = ref.defaultStateClass;
+        this.defaultStateParentBeanName = ref.defaultStateParentBeanName;
+        this.defaultState = ref.defaultState;
         this.endInterceptorBeans = ref.endInterceptorBeans;
         this.endinterceptors = ref.endinterceptors;
         this.navigationFile = ref.navigationFile;
@@ -141,12 +145,28 @@ public class ContextConfigImpl implements ContextConfig {
         return page;
     }
     
-    public void setDefaultState(Class<? extends State> clazz) {
+    public void setDefaultStateType(Class<? extends State> clazz) {
         this.defaultStateClass = clazz;
     }
+    
+    public void setDefaultStateParentBeanName(String defaultStateParentBeanName) {
+        this.defaultStateParentBeanName = defaultStateParentBeanName;
+    }
 
-    public Class<? extends State> getDefaultState() {
+    public Class<? extends State> getDefaultStateType() {
         return this.defaultStateClass;
+    }
+    
+    public String getDefaultStateParentBeanName() {
+        return defaultStateParentBeanName;
+    }
+    
+    public State getDefaultState() {
+        return defaultState;
+    }
+                
+    public void setDefaultState(State defaultState) {
+        this.defaultState = defaultState;
     }
 
     public void addContextResource(ContextResourceConfigImpl config) {
