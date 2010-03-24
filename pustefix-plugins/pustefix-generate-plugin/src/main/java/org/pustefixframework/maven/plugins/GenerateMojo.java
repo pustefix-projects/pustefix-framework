@@ -37,7 +37,7 @@ import org.apache.maven.project.MavenProject;
  * @goal generate
  * @phase prepare-package
  * 
- * @requiresDependencyResolution 
+ * @requiresDependencyResolution compile
  */
 public class GenerateMojo extends AbstractMojo {
     
@@ -96,7 +96,7 @@ public class GenerateMojo extends AbstractMojo {
         
     private URLClassLoader getProjectRuntimeClassLoader() throws MojoExecutionException {
         try {
-            List<?> elements = mavenProject.getRuntimeClasspathElements();
+            List<?> elements = mavenProject.getCompileClasspathElements();
             URL[] urls = new URL[elements.size()];
             for (int i=0; i<elements.size(); i++) {
                 String element = (String)elements.get(i);
