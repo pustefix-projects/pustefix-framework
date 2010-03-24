@@ -604,15 +604,20 @@ public class RequestContextImpl implements Cloneable, AuthorizationInterceptor {
             // take the right measures if not.
             if (!checkIsAccessible(currentpagerequest)) {
                 LOG.warn("[" + currentpagerequest + "]: Page is not accessible...");
+                boolean foundNext = false;
                 if (currentpageflow != null) {
                     LOG.warn("[" + currentpagerequest + "]: ...but trying to find an accessible page from the current page flow [" 
                              + currentpageflow.getName() + "]");
                     PageRequestStatus saved = currentstatus;
                     currentstatus = PageRequestStatus.WORKFLOW;
                     String nextPage = currentpageflow.findNextPage(this.parentcontext, currentpagerequest.getRootName(), false, stopnextforcurrentrequest);
-                    currentpagerequest = createPageRequest(nextPage);
+                    if(nextPage != null) {
+                        currentpagerequest = createPageRequest(nextPage);
+                        foundNext = true;
+                    }
                     currentstatus = saved;
-                } else {
+                }
+                if(!foundNext) {
                     String defpage = parentcontext.getContextConfig().getDefaultPage(variant);
                     LOG.warn("[" + currentpagerequest + "]: ...but trying to use the default page " + defpage); 
                     currentpagerequest = createPageRequest(defpage);
@@ -670,7 +675,7 @@ public class RequestContextImpl implements Cloneable, AuthorizationInterceptor {
         currentstatus = PageRequestStatus.WORKFLOW;
 
         String nextPage = currentpageflow.findNextPage(this.parentcontext, currentpagerequest.getRootName(), stopatcurrentpage, stopatnextaftercurrentpage);
-        assert (nextPage != null);
+        if(nextPage == null) throw new PustefixApplicationException("Can't get an accessible page from pageflow '" + currentpageflow.getName() + "'.");
         currentpagerequest = createPageRequest(nextPage);
 
         resdoc = documentFromCurrentStep();
