@@ -4,14 +4,15 @@
 <?xml version="1.0" encoding="utf-8"?>
 <project-config xmlns="http://www.pustefix-framework.org/2008/namespace/project-config">
 
-<project>
-  <name>${artifactId}</name>
-  <description>${artifactId} pustefix application</description>
+  <project>
+    <name>${artifactId}</name>
+    <description>${artifactId} pustefix application</description>
   </project>
 
   <editor>
     <enabled>true</enabled>
     <location>http://cms.${symbol_dollar}{fqdn}/</location>
+    <secret>foobar</secret>
   </editor>
 
   <xml-generator>
@@ -23,31 +24,6 @@
       </when>
     </choose>
   </xml-generator>
-
-  <http-server>
-
-    <http-port>
-      <address>${symbol_dollar}{fqdn}</address>
-    </http-port>
-
-    <!-- we do not use SSL here
-    <https-port>
-      <address>${symbol_dollar}{fqdn}</address>
-      <ssl-key>docroot:/WEB-INF/server.key</ssl-key>
-      <ssl-crt>docroot:/WEB-INF/server.crt</ssl-crt>
-    </https-port>
-    -->
-
-    <server-name>${artifactId}.${symbol_dollar}{fqdn}</server-name>
-    <server-alias>${artifactId}.${symbol_dollar}{machine}</server-alias>
-
-    <apache>
-      <literal>
-        <!-- Stuff that is copied to the Apache configuration -->
-      </literal>
-    </apache>
-
-  </http-server>
 
   <application>
 
@@ -70,7 +46,6 @@
 
     <deref-service>
       <path>/xml/deref</path>            <!-- optional: default is /xml/deref -->
-      <signkey>987foobarbaz123</signkey> <!-- mandatory -->
       <validtime>3600</validtime>        <!-- optional: default is 3600 (seconds) -->
       <mustsign>false</mustsign>         <!-- optional: default is false -->
     </deref-service>

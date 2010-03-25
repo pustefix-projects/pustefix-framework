@@ -17,8 +17,6 @@
  */
 package de.schlund.pfixcore.example;
 
-import java.io.File;
-
 import junit.framework.TestCase;
 
 import org.junit.Assert;

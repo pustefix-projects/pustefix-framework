@@ -151,13 +151,6 @@
         </listitem>
         <listitem>
           <para>
-            <literal>projects.xml</literal>: 
-            <link linkend="configuration.format.globalprojects">Global project settings</link>
-            which are shared by all projects. 
-          </para>
-        </listitem>
-        <listitem>
-          <para>
             <literal>pustefix.xml</literal>: 
             Contains 
             <link linkend="configuration.pustefixxml">global properties</link> using the 
@@ -311,69 +304,6 @@
       </table>
     </section>
     
-    <section xml:id="configuration.format.globalprojects">
-      <title>Global projects configuration (projects.xml)</title>
-      <para>
-        The <literal>projects.xml</literal> file contains global settings for Apache HTTPd,
-        Tomcat and Pustefix itself.
-      </para>
-      <programlisting language="xml">
-<![CDATA[
-<global-config xmlns="http://www.pustefix-framework.org/2008/namespace/project-config">
-  
-  <!-- prefix to namespace url mappings to be used in pages xml -->
-  <namespaces>
-    <namespace-declaration prefix="pfx" url="http://www.schlund.de/pustefix/core"/>
-    <namespace-declaration prefix="ixsl" url="http://www.w3.org/1999/XSL/Transform"/>
-  </namespaces>
-  
-  <http-server>
-    <tomcat>
-      <minprocessors>100</minprocessors>
-      <maxprocessors>500</maxprocessors>
-      <connectorport>8009</connectorport>
-      <debug>0</debug>
-      <loglevel>info</loglevel>
-      <jkhost>${fqdn}</jkhost>
-      <!-- This is only for mod_jk A matching sample workers.prop file will be generated, but may need -->
-      <!-- additional customization. Clustering will not work out of the box. -->
-      <jkmount>router</jkmount>
-      <defaulthost>sample1.${fqdn}</defaulthost>
-      <jvmroute>foo</jvmroute>
-    </tomcat>
-    <apache>
-      <logdir>pfixroot:/servletconf/log</logdir>
-    </apache>
-  </http-server>
-  
-  <application>
-    <static>
-      <path>common/img</path>
-      <path>core/img</path>
-      <path>core/script</path>
-    </static>
-  </application>
-  
-</global-config>
-]]>
-     </programlisting>
-     <para>
-       The <tag>namespaces</tag> section declares namespace prefixes, which are 
-       available when editing include parts in the Pustefix CMS. You can set the
-       <tag class="attribute">exclude-result-prefix</tag> to <literal>true</literal>
-       in order to exclude the namespace declaration from XHTML output sent to
-       the browser. 
-     </para>
-     <para>
-       The <tag>http-server</tag> section specifies various settings for Apache 
-       Tomcat and Apache HTTPd. Usually you do not have to change these settings. 
-     </para>
-     <para>
-       The <tag>application</tag> section is used to specify pathnames which 
-       contain static resources which should be made available to all projects.
-     </para>
-    </section>
-    
   </section>
   
 
@@ -434,35 +364,6 @@
          the TargetGenerator for this project -->
     <config-file>pfixroot:/projectname/conf/depend.xml</config-file>
   </xml-generator>
-  
-  <http-server>
-    
-    <!-- IP address and port Apache HTTPd (not Tomcat!) will
-         listen on for HTTP connections                      -->
-    <http-port>
-      <address>${fqdn}</address>
-    </http-port>
-    
-    <!-- IP address and port Apache HTTPd (not Tomcat!) will
-         listen on for HTTPS connections                     -->
-    <https-port>
-      <address>${fqdn}</address>
-      <ssl-key>pfixroot:/projectname/conf/server.key</ssl-key>
-      <ssl-crt>pfixroot:/projectname/conf/server.crt</ssl-crt>
-    </https-port>
-    
-    <!-- Name of the virtual host for this project -->
-    <server-name>projectname.${fqdn}</server-name>
-    <!-- Alias for the virtual host for this project -->
-    <server-alias>projectname.${machine}</server-alias>
-    
-    <apache>
-      <literal>
-        <!-- Stuff that is copied to the Apache configuration -->
-      </literal>
-    </apache>
-    
-  </http-server>
   
   <application>
     

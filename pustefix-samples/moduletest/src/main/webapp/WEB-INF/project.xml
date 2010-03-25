@@ -1,5 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
-<project-config xmlns="http://www.pustefix-framework.org/2008/namespace/project-config">
+<project-config xmlns="http://www.pustefix-framework.org/2008/namespace/project-config"
+                xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+                xsi:schemaLocation="http://www.pustefix-framework.org/2008/namespace/project-config 
+                                    http://www.pustefix-framework.org/2008/namespace/project-config.xsd">
   
   <project>
     <name>moduletest</name>
@@ -25,23 +28,6 @@
       </when>
     </choose>
   </xml-generator>
-
-  <http-server>
-    
-    <http-port>
-      <address>${fqdn}</address>
-    </http-port>
-    
-    <server-name>moduletest.${fqdn}</server-name>
-    <server-alias>moduletest.${machine}</server-alias>
-    
-    <apache>
-      <literal>
-        <!-- Stuff that is copied to the Apache configuration -->
-      </literal>
-    </apache>
-    
-  </http-server>
   
   <application>
     
@@ -64,7 +50,6 @@
     
     <deref-service>
       <path>/xml/deref</path>            <!-- optional: default is /xml/deref -->
-      <signkey>987foobarbaz123</signkey> <!-- mandatory -->
       <validtime>3600</validtime>        <!-- optional: default is 3600 (seconds) -->
       <mustsign>false</mustsign>         <!-- optional: default is false -->
     </deref-service>

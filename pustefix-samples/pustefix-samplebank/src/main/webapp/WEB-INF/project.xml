@@ -1,15 +1,18 @@
 <?xml version="1.0" encoding="utf-8"?>
-<project-config xmlns="http://www.pustefix-framework.org/2008/namespace/project-config">
+<project-config xmlns="http://www.pustefix-framework.org/2008/namespace/project-config"
+                xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+                xsi:schemaLocation="http://www.pustefix-framework.org/2008/namespace/project-config 
+                                    http://www.pustefix-framework.org/2008/namespace/project-config.xsd">
   
   <project>
     <name>samplebank</name>
     <description>Sample Bank Application</description>
-    <secret>foobar</secret>
   </project>
   
   <editor>
     <enabled>true</enabled> <!-- Do we really need this? -->
     <location>http://cms.${fqdn}/</location>
+    <secret>foobar</secret>
   </editor>
   
   <authadmin/>
@@ -23,17 +26,6 @@
       </when>
     </choose>
   </xml-generator>
-  
-  <http-server>
-    
-    <http-port>
-      <address>${fqdn}</address>
-    </http-port>
-    
-    <server-name>samplebank.${fqdn}</server-name>
-    <server-alias>samplebank.${machine}</server-alias>
-    
-  </http-server>
   
   <application>
     
@@ -53,11 +45,6 @@
         </otherwise>
       </choose>
     </context-xml-service>
-    
-    <deref-service>
-      <path>/xml/deref</path>
-      <signkey>987foobarbaz123</signkey>
-    </deref-service>
     
     <static>
       <path>core/img</path>
