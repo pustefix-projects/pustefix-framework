@@ -43,15 +43,15 @@ import de.schlund.pfixxml.util.Xml;
  */
 public class PustefixMergeMojo extends AbstractMojo {
 
-    private static final String[] DEFAULT_INCLUDES = new String[] {"dyntxt/statusmessages.xml",
-            "dyntxt/statusmessages-core.xml"};
+    private static final String[] DEFAULT_INCLUDES =
+            new String[]{"dyntxt/statusmessages.xml", "dyntxt/statusmessages-core.xml"};
 
     /**
      * Where modules have been unpacked
      *
      * @parameter default-value="${project.build.directory}/${project.artifactId}-${project.version}/modules"
      */
-    private String modulesSrcDirname;
+    private String modulesdir;
 
     /**
      * Where modules will be merged
@@ -61,21 +61,7 @@ public class PustefixMergeMojo extends AbstractMojo {
     private String modulesDestDirname;
 
     /**
-     * Where core has been unpacked
-     *
-     * @parameter default-value="${project.build.directory}/${project.artifactId}-${project.version}/core"
-     */
-    private String coreSrcDirname;
-
-    /**
-     * Where core will be merged
-     *
-     * @parameter default-value="${basedir}/src/main/webapp/core-override"
-     */
-    private String coreDestDirname;
-
-    /**
-     * Optional filename suffix for merged statusmessages file.
+     * Filename suffix for merged statusmessages file.
      *
      * @parameter default-value="-merged"
      */
@@ -97,14 +83,8 @@ public class PustefixMergeMojo extends AbstractMojo {
 
 
     public void execute() throws MojoExecutionException {
-        // Merge core statuscodes
-        File coreSrcDir = new File(coreSrcDirname);
-        if (coreSrcDir.exists() && coreSrcDir.isDirectory()) {
-            process(coreSrcDir, coreDestDirname);
-        }
-
         // Merge modules statuscodes
-        File modulesSrcDir = new File(modulesSrcDirname);
+        File modulesSrcDir = new File(modulesdir);
         if (modulesSrcDir.exists() && modulesSrcDir.isDirectory()) {
             File[] subDirs = modulesSrcDir.listFiles();
             for (File moduleDir : subDirs) {
@@ -185,9 +165,10 @@ public class PustefixMergeMojo extends AbstractMojo {
      * Insert a comment at the beginning of the statusmessages document.
      */
     private void addComment(Document doc, String mergeSource) {
-        Comment comment = doc.createComment("\nThis file contains merged statusmessages from '" + mergeSource + "'.\n"
-                + "You can modify this file to change the messages for exisiting statuscodes.\n"
-                + "Adding new statuscodes has to be done within the originating module.\n");
+        Comment comment =
+                doc.createComment("\nThis file contains merged statusmessages from '" + mergeSource + "'.\n"
+                        + "You can modify this file to change the messages for exisiting statuscodes.\n"
+                        + "Adding new statuscodes has to be done within the originating module.\n");
         Element element = doc.getDocumentElement();
         if (element.hasChildNodes()) {
             element.insertBefore(comment, element.getFirstChild());
