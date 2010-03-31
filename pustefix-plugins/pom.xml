@@ -23,6 +23,7 @@
     <module>pustefix-generate-plugin</module>
     <module>pustefix-webapp-plugin</module>
     <module>pustefix-webservice-plugin</module>
+    <module>pustefix-validator-plugin</module>
   </modules>
 
   <profiles>
