@@ -293,13 +293,7 @@ public class GenerateSCodes {
             int ind = relPath.lastIndexOf('.');
             if(ind == -1) throw new RuntimeException("Illegal file name: "+relPath);
             relPath = relPath.substring(0,ind)+"-merged"+relPath.substring(ind);
-            String modulePath="";
-            if(module.equals("pfixcore")) {
-                if(!relPath.startsWith("core")) throw new RuntimeException("Illegal core file name: "+relPath);
-                modulePath = "core-override/"+relPath.substring(5);
-            } else {
-                modulePath = "modules-override/"+module+"/"+relPath;
-            }
+            String modulePath = "modules-override/" + module + "/" + relPath;
             return modulePath;
         } else if(targetPath!=null) {
             int ind = relPath.lastIndexOf('/');
