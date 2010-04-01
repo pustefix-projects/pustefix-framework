@@ -5,12 +5,12 @@
   <parent>
     <groupId>org.pustefixframework</groupId>
     <artifactId>pustefix-samples</artifactId>
-    <version>0.15.1</version>
+    <version>0.15.2-SNAPSHOT</version>
   </parent>
  
   <groupId>org.pustefixframework.samples.modules</groupId>
   <artifactId>sample-modules</artifactId>
-  <version>0.15.1</version>
+  <version>0.15.2-SNAPSHOT</version>
 
   <name>Pustefix Sample Modules</name>
   <packaging>pom</packaging>
@@ -27,7 +27,7 @@
       <plugin>
         <groupId>org.pustefixframework.maven.plugins</groupId>
         <artifactId>pustefix-statuscode-plugin</artifactId>
-        <version>0.15.1</version>
+        <version>0.15.2-SNAPSHOT</version>
         <configuration>
           <module>${artifactId}</module>
           <includes>
