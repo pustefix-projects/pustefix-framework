@@ -1,6 +1,11 @@
 <?xml version="1.0" encoding="UTF-8"?><include_parts xmlns:ixsl="http://www.w3.org/1999/XSL/Transform" xmlns:pfx="http://www.schlund.de/pustefix/core">
   <part name="GEN_ERROR">
-    <theme name="default">An error happened.</theme>
+    <theme name="default">
+      <pfx:langselect>
+        <pfx:lang name="default">An error happened.</pfx:lang>
+        <pfx:lang name="de_*">Ein Fehler ist aufgetreten.</pfx:lang>
+      </pfx:langselect>
+    </theme>
   </part>
   <part name="MISSING_PARAM">
     <theme name="default">
