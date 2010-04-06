@@ -21,6 +21,8 @@ or delete the DOCTYPE definition -->
   <property name="dir.gensrc"               location="gensrc"/>
   <property name="dir.build"                location="build"/>
   <property name="dir.lib"                  location="lib"/>
+  <!-- Clients must be able to override location of pfixcore-data file -->
+  <property name="dir.coredata"             location="${dir.lib}"/>
   <property name="lib.includes"             value="lib/**/*.jar"/>
   <property name="test.lib.includes"        value="${lib.includes}"/>
   <property name="test.junit.fork"          value="true"/>
@@ -45,9 +47,9 @@ or delete the DOCTYPE definition -->
   <property name="webapps"                  value=""/> 
 
   <property name="pat.pfixcore_jar"         value="pfixcore-*.jar"/>
-  <fileset  id="id.fs.pfixcore_jar"         dir="${dir.lib}" includes="pfixcore-*.jar"/>
+  <fileset  id="id.fs.pfixcore_jar"         dir="${dir.coredata}" includes="pfixcore-*.jar"/>
   <property name="pat.pfixcore_data_tgz"    value="pfixcore-*data*.tar.gz"/>
-  <fileset  id="id.fs.pfixcore_data_tgz"    dir="${dir.lib}" includes="${pat.pfixcore_data_tgz}"/>
+  <fileset  id="id.fs.pfixcore_data_tgz"    dir="${dir.coredata}" includes="${pat.pfixcore_data_tgz}"/>
 
   <target name="check-ant-version" depends="ant-tasks-stage0">
     <propertyregex property="unsupported.ant.version" input="${ant.version}" regexp="1\.[0-6](\.[0-9]+)?" select="\0"/>
@@ -604,7 +606,7 @@ or delete the DOCTYPE definition -->
   <target name="init-data-check" unless="pfx.force">
     <!-- extract only if pfixcore-data.jar is newer than dir ${dir.projects}/core -->
     <uptodate property="upd.init-data">
-      <srcfiles dir="${dir.lib}" includes="${pat.pfixcore_data_tgz}"></srcfiles>
+      <srcfiles dir="${dir.coredata}" includes="${pat.pfixcore_data_tgz}"></srcfiles>
       <mapper type="merge" to="${dir.projects}/core/TIMESTAMP"></mapper>
     </uptodate>
   </target>
