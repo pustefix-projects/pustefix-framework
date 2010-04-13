@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="utf-8"?>
+<context-xml-service-config xmlns="http://www.pustefix-framework.org/2008/namespace/context-xml-service-config" 
+                            xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" 
+                            xsi:schemaLocation="http://www.pustefix-framework.org/2008/namespace/context-xml-service-config 
+                                                ../../core/schema/context-xml-service-config.xsd"
+                            version="1.0">
+  
+  <global-config/>
+
+  <context defaultpage="Home">
+    <!--
+    <resource bean-name="contextData" class="org.pustefixframework.sample.basic.context.SomeContextData">
+    -->
+  </context>
+
+  <pageflow name="MainFlow" final="Home">
+    <flowstep name="Home"/>
+    <!--
+    <flowstep name="AnotherPage"/>
+    -->
+  </pageflow>
+
+  <pagerequest name="Home"/>
+
+  <!--
+  <pagerequest name="AnotherPage">
+    <input>
+      <wrapper prefix="formdata" class="org.pustefixframework.sample.basic.wrapper.FormDataWrapper" />
+    </input>
+    <output>
+      <resource node="contextdata" bean-ref="contextData"/>
+    </output>
+  </pagerequest>
+  -->
+
+</context-xml-service-config>
