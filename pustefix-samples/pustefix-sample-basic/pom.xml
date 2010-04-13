@@ -16,6 +16,8 @@
 
   <properties>
   
+    <pustefix.version>1.0.3-SNAPSHOT</pustefix.version>
+
     <!-- Exclude bundles resolved by Maven from provisioning -->
     <provision.exclude>
        com.springsource.org.apache.log4j
@@ -41,18 +43,18 @@
     <dependency>
       <groupId>org.pustefixframework</groupId>
       <artifactId>pustefix-core</artifactId>
-      <version>1.0.3-SNAPSHOT</version>
+      <version>${pustefix.version}</version>
     </dependency>
     <dependency>
       <groupId>org.pustefixframework.osgi</groupId>
       <artifactId>pustefix-osgi-spring-dm-extender</artifactId>
-      <version>1.0.3-SNAPSHOT</version>
+      <version>${pustefix.version}</version>
       <scope>runtime</scope>
     </dependency>
     <dependency>
       <groupId>org.pustefixframework.osgi</groupId>
       <artifactId>pustefix-osgi-logservice-bridge</artifactId>
-      <version>1.0.3-SNAPSHOT</version>
+      <version>${pustefix.version}</version>
       <scope>runtime</scope>
     </dependency>
     
@@ -136,7 +138,7 @@
       <plugin>
         <groupId>org.pustefixframework.maven.plugins</groupId>
         <artifactId>pustefix-statuscode-plugin</artifactId>
-        <version>1.0.3-SNAPSHOT</version>
+        <version>${pustefix.version}</version>
         <executions>
           <execution>
             <goals>
@@ -148,7 +150,7 @@
       <plugin>
         <groupId>org.pustefixframework.maven.plugins</groupId>
         <artifactId>pustefix-iwrapper-plugin</artifactId>
-        <version>1.0.3-SNAPSHOT</version>
+        <version>${pustefix.version}</version>
         <executions>
           <execution>
             <goals>
@@ -160,7 +162,7 @@
       <plugin>
         <groupId>org.pustefixframework.maven.plugins</groupId>
         <artifactId>pustefix-iwrapperbean-plugin</artifactId>
-        <version>1.0.3-SNAPSHOT</version>
+        <version>${pustefix.version}</version>
         <executions>
           <execution>
             <goals>
@@ -173,7 +175,7 @@
       <plugin>
         <groupId>org.pustefixframework.maven.plugins</groupId>
         <artifactId>pustefix-autoconfig-plugin</artifactId>
-        <version>1.0.3-SNAPSHOT</version>
+        <version>${pustefix.version}</version>
         <configuration>
           <mode>${mode}</mode>
           <logLevel>${logLevel}</logLevel>
@@ -189,7 +191,7 @@
       <plugin>
         <groupId>org.pustefixframework.maven.plugins</groupId>
         <artifactId>pustefix-bundleindex-plugin</artifactId>
-        <version>1.0.3-SNAPSHOT</version>
+        <version>${pustefix.version}</version>
         <executions>
           <execution>
             <goals>
@@ -201,17 +203,17 @@
       <plugin>
         <groupId>org.pustefixframework.maven.plugins</groupId>
         <artifactId>pustefix-launcher-plugin</artifactId>
-        <version>1.0.3-SNAPSHOT</version>
+        <version>${pustefix.version}</version>
       </plugin>
       <plugin>
         <groupId>org.pustefixframework.maven.plugins</groupId>
         <artifactId>pustefix-eclipse-plugin</artifactId>
-        <version>1.0.3-SNAPSHOT</version>
+        <version>${pustefix.version}</version>
       </plugin>
       <plugin>
         <groupId>org.pustefixframework.maven.plugins</groupId>
         <artifactId>pustefix-webapp-plugin</artifactId>
-        <version>1.0.1</version>
+        <version>${pustefix.version}</version>
       </plugin>
     </plugins>
   </build>
