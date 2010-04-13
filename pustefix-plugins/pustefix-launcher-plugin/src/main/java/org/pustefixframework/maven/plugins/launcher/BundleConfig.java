@@ -29,6 +29,10 @@ public class BundleConfig {
 	    return startLevel;
 	}
 	
+	public void setStartLevel(int startLevel) {
+	    this.startLevel = startLevel;
+	}
+	
 	public String getBundleSymbolicName() {
 	    return bundleSymbolicName;
 	}

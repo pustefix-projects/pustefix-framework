@@ -9,9 +9,11 @@ import java.net.URISyntaxException;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 import java.util.jar.JarFile;
 import java.util.jar.Manifest;
@@ -105,7 +107,36 @@ public class BundleResolver implements URIToFileResolver {
 	                        provisioningConfig.toExternalForm() + "'.", x);
 	            }
     	}
-        
+    	
+    	List<String> excludeList = PropertyUtils.getProperty(mavenProject.getProperties(), "provision.exclude");
+    	for(String exclude: excludeList) excludedBundles.add(exclude);
+    	
+    	Map<String, List<String>> startLevelProps = PropertyUtils.getPropertiesByPrefix(mavenProject.getProperties(), "provision.startlevel.");
+    	Map<String, Integer> bundleToStartLevel = new HashMap<String, Integer>();
+    	Iterator<String> mit = startLevelProps.keySet().iterator();
+    	while(mit.hasNext()) {
+    	    String key = mit.next();
+    	    int startLevel = Integer.parseInt(key);
+    	    List<String> values = startLevelProps.get(key);
+    	    for(String value: values){
+    	        bundleToStartLevel.put(value, startLevel);
+    	    }
+    	}
+    	
+    	File generatedBundlesDir = new File(mavenProject.getBasedir(), "target/generated-bundles");
+        File[] generatedBundleFiles = generatedBundlesDir.listFiles();
+        for(File generatedBundleFile: generatedBundleFiles) {
+            if(generatedBundleFile.getName().endsWith(".jar")) {
+                BundleConfig bundleConfig = getBundleConfig(generatedBundleFile, defaultStartLevel);
+                if(bundleConfig != null && !excludedBundles.contains(bundleConfig.getBundleSymbolicName())) {
+                    if(bundleToStartLevel.containsKey(bundleConfig.getBundleSymbolicName())) {
+                        bundleConfig.setStartLevel(bundleToStartLevel.get(bundleConfig.getBundleSymbolicName()));
+                    }
+                    bundles.add(bundleConfig);
+                }
+            }
+        }
+    	
     	try {
     		List<?> list=mavenProject.getDependencies();
     		Set<?> dependencyArtifacts = MavenMetadataSource.createArtifacts( artifactFactory, list, null, null, null );
@@ -118,8 +149,12 @@ public class BundleResolver implements URIToFileResolver {
     			Artifact artifact = (Artifact)it.next();
     			if(artifact.getScope().equals(Artifact.SCOPE_RUNTIME) || artifact.getScope().equals(Artifact.SCOPE_COMPILE)) {
     			    BundleConfig bundleConfig = getBundleConfig(artifact.getFile(), defaultStartLevel);
-    			    if(bundleConfig != null && !excludedBundles.contains(bundleConfig.getBundleSymbolicName())) 
+    			    if(bundleConfig != null && !excludedBundles.contains(bundleConfig.getBundleSymbolicName())) { 
+    			        if(bundleToStartLevel.containsKey(bundleConfig.getBundleSymbolicName())) {
+    			            bundleConfig.setStartLevel(bundleToStartLevel.get(bundleConfig.getBundleSymbolicName()));
+    			        }
     			        bundles.add(bundleConfig);
+    			    }
     			}
     		}
     	} catch(Exception x) {

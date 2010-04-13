@@ -52,7 +52,8 @@ public class Apt {
     }
 
     public int execute(String classpath) throws MojoExecutionException {
-        File lastRunFile = new File(basedir, "target/.lastaptrun");
+        File targetDir = new File(basedir, "target");
+        File lastRunFile = new File(targetDir, ".lastaptrun");
         long lastRun = lastRunFile.lastModified();
         List<File> modified = getModifiedFiles(lastRun);
         if (modified.size() > 0) {
@@ -60,9 +61,10 @@ public class Apt {
         }
         lastRunFile.delete();
         try {
+            if(!targetDir.exists()) targetDir.mkdir();
             lastRunFile.createNewFile();
         } catch (IOException x) {
-            throw new MojoExecutionException("cannot create " + lastRun);
+            throw new MojoExecutionException("cannot create " + lastRun, x);
         }
         return modified.size();
     }

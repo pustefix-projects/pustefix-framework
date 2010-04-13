@@ -94,12 +94,14 @@ public class LauncherMojo extends AbstractMojo {
     	
     	URL frameworkConfig = getClass().getResource("/META-INF/provisioning_" + osgiRuntime + ".conf");
     	
-    	URL[] provisioningConfigs;
-		try {
-			provisioningConfigs = new URL[] {frameworkConfig, provisioningConfig.toURI().toURL()};
-		} catch (MalformedURLException x) {
-			throw new MojoExecutionException("Illegal provisioning configuration URL", x);
-		}
+    	URL[] provisioningConfigs = new URL[] {frameworkConfig};
+    	if(provisioningConfig.exists()) {
+    		try {
+    			provisioningConfigs = new URL[] {frameworkConfig, provisioningConfig.toURI().toURL()};
+    		} catch (MalformedURLException x) {
+    			throw new MojoExecutionException("Illegal provisioning configuration URL", x);
+    		}
+    	}
     	
     	BundleResolver bundleResolver = new BundleResolver(provisioningConfigs, defaultStartLevel,
     			mavenProject, artifactFactory, resolver, metadataSource, localRepository, remoteRepositories, getLog());
