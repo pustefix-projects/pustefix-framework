@@ -41,9 +41,8 @@
     </context-xml-service>
 
     <static>
-      <path>core/img</path>
-      <path>core/script</path>
       <path>img</path>
+      <path>css</path>
     </static>
     
     <choose>

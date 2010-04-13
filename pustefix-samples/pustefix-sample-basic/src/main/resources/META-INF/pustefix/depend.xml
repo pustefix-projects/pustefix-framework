@@ -9,9 +9,7 @@
 
   <navigation>
     <page handler="/xml/main" name="Home"/>
-    <!--
-    <page handler="/xml/main" name="AnotherPage"/>
-    -->
+    <page handler="/xml/main" name="Bye"/>
   </navigation>
 
   <standardmaster>
@@ -23,8 +21,6 @@
   </standardmetatags>
   
   <standardpage name="Home" xml="xml/frame.xml"/>
-  <!--
-  <standardpage name="AnotherPage" xml="xml/frame.xml"/>
-  -->
+  <standardpage name="Bye" xml="xml/frame.xml"/>
 
 </xml-generator-config>

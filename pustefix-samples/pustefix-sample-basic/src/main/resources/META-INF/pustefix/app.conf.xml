@@ -8,29 +8,24 @@
   <global-config/>
 
   <context defaultpage="Home">
-    <!--
-    <resource bean-name="contextData" class="org.pustefixframework.sample.basic.context.SomeContextData">
-    -->
+    <resource bean-name="contextData" class="org.pustefixframework.sample.basic.context.ContextData"/>
   </context>
 
   <pageflow name="MainFlow" final="Home">
     <flowstep name="Home"/>
-    <!--
-    <flowstep name="AnotherPage"/>
-    -->
+    <flowstep name="Bye"/>
   </pageflow>
 
-  <pagerequest name="Home"/>
-
-  <!--
-  <pagerequest name="AnotherPage">
+  <pagerequest name="Home">
     <input>
-      <wrapper prefix="formdata" class="org.pustefixframework.sample.basic.wrapper.FormDataWrapper" />
+      <wrapper prefix="data" class="org.pustefixframework.sample.basic.wrapper.DataWrapper" />
     </input>
+  </pagerequest>
+
+  <pagerequest name="Bye">
     <output>
-      <resource node="contextdata" bean-ref="contextData"/>
+      <resource node="data" bean-ref="contextData"/>
     </output>
   </pagerequest>
-  -->
 
 </context-xml-service-config>

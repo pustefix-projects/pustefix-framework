@@ -1,0 +1,8 @@
+body {
+  margin: 10px;
+}
+
+span.error {
+  color: red;
+  padding-left: 5px;
+}

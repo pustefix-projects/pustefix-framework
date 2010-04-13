@@ -4,8 +4,10 @@
   <html>
     <head>
       <title>Pustefix Sample Basic</title>
+      <link href="{$__contextpath}/css/style.css" media="all" rel="stylesheet" type="text/css"/>
     </head>
-    <body style="padding: 10px;">
+    <body>
+      <pfx:image src="img/logo.png"/>
       <pfx:maincontent/>
       <pfx:editconsole/>
     </body>

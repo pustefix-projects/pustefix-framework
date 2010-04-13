@@ -6,4 +6,13 @@
 
   <!-- insert templates for the first stage of the transformation here -->
 
+  <!-- example template showing how to attach error message to form field -->
+  <xsl:template match="show-error">
+    <pfx:checkfield name="{@field}">
+      <pfx:error>
+        <span class="error"><pfx:scode/></span>
+      </pfx:error>
+    </pfx:checkfield>
+  </xsl:template>
+
 </xsl:stylesheet>
