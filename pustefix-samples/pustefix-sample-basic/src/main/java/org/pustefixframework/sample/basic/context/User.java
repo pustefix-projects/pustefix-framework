@@ -1,6 +1,6 @@
 package org.pustefixframework.sample.basic.context;
 
-public class ContextData {
+public class User {
 
     private String name;
     

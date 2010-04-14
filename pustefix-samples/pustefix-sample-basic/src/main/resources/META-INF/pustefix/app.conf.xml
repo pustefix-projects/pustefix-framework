@@ -8,7 +8,7 @@
   <global-config/>
 
   <context defaultpage="Home">
-    <resource bean-name="contextData" class="org.pustefixframework.sample.basic.context.ContextData"/>
+    <resource bean-name="contextUser" class="org.pustefixframework.sample.basic.context.User"/>
   </context>
 
   <pageflow name="MainFlow" final="Home">
@@ -18,13 +18,13 @@
 
   <pagerequest name="Home">
     <input>
-      <wrapper prefix="data" class="org.pustefixframework.sample.basic.wrapper.DataWrapper" />
+      <wrapper prefix="registration" class="org.pustefixframework.sample.basic.wrapper.Registration"/>
     </input>
   </pagerequest>
 
   <pagerequest name="Bye">
     <output>
-      <resource node="data" bean-ref="contextData"/>
+      <resource node="user" bean-ref="contextUser"/>
     </output>
   </pagerequest>
 

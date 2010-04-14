@@ -9,9 +9,9 @@
     
       <pfx:forminput>
         Please enter your name: 
-        <pfx:xinp type="text" name="data.name" size="20"/>
+        <pfx:xinp type="text" name="registration.name" size="20"/>
         <pfx:xinp type="submit" value="Submit"/>
-        <show-error field="data.name"/>
+        <show-error field="registration.name"/>
       </pfx:forminput>
     
     </theme>

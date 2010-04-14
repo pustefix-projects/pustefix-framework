@@ -5,7 +5,7 @@
   <part name="content">
     <theme name="default">
       
-      <h3>Bye, <ixsl:value-of select="/formresult/data/@name"/>, have fun with Pustefix and OSGi!!!</h3>
+      <h3>Bye <ixsl:value-of select="/formresult/user/@name"/>, have fun with Pustefix and OSGi!!!</h3>
     
     </theme>
   </part>
