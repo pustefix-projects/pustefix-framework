@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd" xmlns="http://maven.apache.org/POM/4.0.0"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+
+  <modelVersion>4.0.0</modelVersion>
+
+  <parent>
+    <groupId>org.pustefixframework.maven.archetypes</groupId>
+    <artifactId>pustefix-archetypes</artifactId>
+    <version>1.0.3-SNAPSHOT</version>
+  </parent>
+
+  <groupId>org.pustefixframework.maven.archetypes</groupId>
+  <artifactId>pustefix-archetype-basic</artifactId>
+  <version>1.0.3-SNAPSHOT</version>
+  <packaging>maven-archetype</packaging>
+
+  <name>Pustefix Archetype Basic Application</name>
+  <description>Pustefix/OSGi archetype creating a basic appplication</description>
+
+  <build>
+    <extensions>
+      <extension>
+        <groupId>org.apache.maven.archetype</groupId>
+        <artifactId>archetype-packaging</artifactId>
+        <version>2.0-alpha-4</version>
+      </extension>
+    </extensions>
+    <plugins>
+      <plugin>
+        <artifactId>maven-archetype-plugin</artifactId>
+        <version>2.0-alpha-4</version>
+        <extensions>true</extensions>
+      </plugin>
+    </plugins>
+  </build>
+
+</project>

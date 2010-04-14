@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="UTF-8"?><archetype>
+  <id>pustefix-archetype-basic</id>
+  <sources>
+    <source>src/main/java/handler/RegistrationHandler.java</source>
+    <source>src/main/java/wrapper/Registration.iwrp</source>
+    <source>src/main/java/context/User.java</source>
+  </sources>
+  <resources>
+    <resource>src/main/resources/PUSTEFIX-INF/xsl/skin.xsl</resource>
+    <resource>src/main/resources/PUSTEFIX-INF/xsl/metatags.xsl</resource>
+    <resource>src/main/resources/PUSTEFIX-INF/xml/frame.xml</resource>
+    <resource>src/main/resources/PUSTEFIX-INF/dyntxt/statuscodeinfo.xml</resource>
+    <resource>src/main/resources/PUSTEFIX-INF/txt/pages/main_Bye.xml</resource>
+    <resource>src/main/resources/PUSTEFIX-INF/txt/pages/main_Home.xml</resource>
+    <resource>src/main/resources/PUSTEFIX-INF/css/style.css</resource>
+    <resource>src/main/resources/PUSTEFIX-INF/img/logo.png</resource>
+    <resource>src/main/resources/META-INF/pustefix/app.conf.xml</resource>
+    <resource>src/main/resources/META-INF/pustefix/depend.xml</resource>
+    <resource>src/main/resources/META-INF/spring/module-context.xml</resource>
+    <resource>src/main/resources/META-INF/pustefix-application.xml</resource>
+  </resources>
+  <siteResources>
+    <resource>src/site/site.xml</resource>
+  </siteResources>
+</archetype>
