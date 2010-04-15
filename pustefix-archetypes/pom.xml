@@ -21,6 +21,7 @@
     <module>pustefix-archetype-application</module>
     <module>pustefix-archetype-module</module>
     <module>pustefix-archetype-springmodule</module>
+    <module>pustefix-archetype-basic</module>
   </modules>
 
   <profiles>

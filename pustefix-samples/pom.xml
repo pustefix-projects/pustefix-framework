@@ -15,6 +15,7 @@
   <packaging>pom</packaging>
   <name>Pustefix Samples</name>
   <modules>
+    <module>pustefix-sample-basic</module>
     <module>pustefix-sample-firstapp</module>
     <module>pustefix-sample1</module>
 <!--
