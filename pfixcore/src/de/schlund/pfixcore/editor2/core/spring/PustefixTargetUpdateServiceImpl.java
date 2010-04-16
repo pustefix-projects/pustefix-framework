@@ -30,6 +30,7 @@ import org.pustefixframework.config.generic.PropertyFileReader;
 import com.marsching.flexiparse.parser.exception.ParserException;
 
 import de.schlund.pfixcore.lucefix.PfixReadjustment;
+import de.schlund.pfixxml.resources.FileResource;
 import de.schlund.pfixxml.resources.ResourceUtil;
 import de.schlund.pfixxml.targets.Target;
 import de.schlund.pfixxml.targets.TargetGenerationException;
@@ -94,11 +95,15 @@ public class PustefixTargetUpdateServiceImpl implements
     private void checkAutoUpdating() {
         Properties properties = new Properties();
         try {
-            PropertyFileReader.read(ResourceUtil.getFileResourceFromDocroot("common/conf/factory.xml"), properties);
+            FileResource res = ResourceUtil.getFileResourceFromDocroot("common/conf/factory.xml");
+            if(res.exists()) {
+                PropertyFileReader.read(res, properties);
+            }
+            PropertyFileReader.read(ResourceUtil.getFileResourceFromDocroot("common/conf/pustefix.xml"), properties);
         } catch (IOException e) {
-            throw new RuntimeException("Error while reading common/conf/factory.xml", e);
+            throw new RuntimeException("Error while reading property file", e);
         } catch (ParserException e) {
-            throw new RuntimeException("Error while reading common/conf/factory.xml", e);
+            throw new RuntimeException("Error while reading property file", e);
         }
         String generatorProp = properties.getProperty("de.schlund.pfixcore.editor2.updatetargets");
         boolean generatorFlag = false;

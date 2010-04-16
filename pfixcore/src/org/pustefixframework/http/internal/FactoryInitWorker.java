@@ -177,8 +177,8 @@ public class FactoryInitWorker {
             }
     
             String confname = "common/conf/factory.xml";
-            if (confname != null) {
-                FileResource confFile = ResourceUtil.getFileResourceFromDocroot(confname);
+            FileResource confFile = ResourceUtil.getFileResourceFromDocroot(confname);
+            if(confFile.exists()) {
                 try {
                     PropertyFileReader.read(confFile, properties);
                 } catch (IOException e) {
@@ -188,9 +188,6 @@ public class FactoryInitWorker {
                     throw new ServletException("*** [" + confname + "] Parsing-error: "
                             + e.toString(), e);
                 }
-            } else {
-                throw new ServletException(
-                        "*** FATAL: Need the servlet.propfile property as init parameter! ***");
             }
             
             if (docrootstr != null) {
@@ -202,7 +199,7 @@ public class FactoryInitWorker {
     
             configureLogging(properties, servletContext);
             LOG.debug(">>>> LOG4J Init OK <<<<");
-        
+            
             FactoryInitUtil.initialize(properties);
             
         } catch (FactoryInitException e) {
@@ -226,9 +223,7 @@ public class FactoryInitWorker {
             ProxyLogUtil.getInstance().setServletContext(servletContext);
         } else {
             log4jconfig = properties.getProperty(PROP_LOG4J);
-            if (log4jconfig == null || log4jconfig.equals("")) {
-                throw new ServletException("*** FATAL: Need the pustefix.log4j.config property in factory.xml! ***");
-            }
+            if(log4jconfig == null) log4jconfig = "common/conf/pfixlog.xml";
             FileResource l4jfile = ResourceUtil.getFileResourceFromDocroot(log4jconfig);
             try {
                 configureLog4j(l4jfile);
