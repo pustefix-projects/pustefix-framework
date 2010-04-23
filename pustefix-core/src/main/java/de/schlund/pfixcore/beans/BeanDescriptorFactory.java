@@ -61,14 +61,17 @@ public class BeanDescriptorFactory {
         Beans beans = classLoaderToBeans.get(clazz.getClassLoader());
         if(beans == null) {
             beans = new Beans();
-            URL url = clazz.getClassLoader().getResource("/META-INF/pustefix/beanmetadata.xml");
-            if(url != null) {
-               DOMInit domInit = new DOMInit(beans);
-               try {
-                   domInit.update(url);
-               } catch(DOMInitException x) {
-                   throw new RuntimeException("Error reading bean metadata", x);
-               }
+            ClassLoader cl = clazz.getClassLoader();
+            if(cl != null) {
+                URL url = cl.getResource("/META-INF/pustefix/beanmetadata.xml");
+                if(url != null) {
+                    DOMInit domInit = new DOMInit(beans);
+                    try {
+                        domInit.update(url);
+                    } catch(DOMInitException x) {
+                        throw new RuntimeException("Error reading bean metadata", x);
+                    }
+                }
             }
             classLoaderToBeans.put(clazz.getClassLoader(), beans);
         }
