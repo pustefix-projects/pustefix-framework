@@ -1,7 +1,6 @@
 package org.pustefixframework.samples.taskmanager.model;
 
 import java.util.Date;
-import java.util.List;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
@@ -11,7 +10,7 @@ import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
-import javax.persistence.OneToMany;
+import javax.persistence.Version;
 
 @Entity
 public class Task {
@@ -23,6 +22,10 @@ public class Task {
 	@Column(name="id")
 	@GeneratedValue(strategy = GenerationType.AUTO)
     private int id;
+	
+	@Version
+	@Column(name="version")
+	private int version;
 	
     private String summary;
     private String description;
@@ -39,7 +42,7 @@ public class Task {
     //private List<Task> dependentTasks;
     
     @ManyToOne(fetch=FetchType.LAZY)
-    @JoinColumn(name="tasklist")  
+    @JoinColumn(name="tasklist", insertable=false, updatable=false, nullable=false)  
     private TaskList taskList;  
     
     public int getId() {
@@ -48,6 +51,14 @@ public class Task {
     
     public void setId(int id) {
         this.id = id;
+    }
+    
+    public int getVersion() {
+    	return version;
+    }
+    
+    public void setVersion(int version) {
+    	this.version = version;
     }
     
     public String getSummary() {

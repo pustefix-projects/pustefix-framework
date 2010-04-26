@@ -9,7 +9,9 @@ import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
+import javax.persistence.JoinColumn;
 import javax.persistence.OneToMany;
+import javax.persistence.Version;
 
 @Entity
 public class TaskList {
@@ -19,6 +21,9 @@ public class TaskList {
 	@GeneratedValue(strategy = GenerationType.AUTO)
     private int id;
     
+	@Version
+	@Column(name="version")
+	private int version;
 	
 	private int user;
     
@@ -28,15 +33,26 @@ public class TaskList {
 	@Column(name="description")
     private String description;
     
-	@OneToMany(mappedBy="taskList",fetch=FetchType.EAGER,cascade=CascadeType.ALL)
+	@OneToMany(fetch=FetchType.EAGER,cascade=CascadeType.ALL)
+	@JoinColumn(name="tasklist")
 	private List<Task> tasks;
 	
     public int getId() {
         return id;
     }
+    
     public void setId(int id) {
         this.id = id;
     }
+    
+    public int getVersion() {
+    	return version;
+    }
+    
+    public void setVersion(int version) {
+    	this.version = version;
+    }
+    
     public String getName() {
         return name;
     }

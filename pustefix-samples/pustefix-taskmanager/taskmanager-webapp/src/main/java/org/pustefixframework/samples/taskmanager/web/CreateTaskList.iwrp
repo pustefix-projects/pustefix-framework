@@ -3,6 +3,7 @@
   
   <ihandler class="org.pustefixframework.samples.taskmanager.web.CreateTaskListHandler"/>
   
-  <param name="noparam" type="java.lang.String"/>
+  <param name="name" type="java.lang.String"/>
+  <param name="description" type="java.lang.String"/>
  
 </interface> 

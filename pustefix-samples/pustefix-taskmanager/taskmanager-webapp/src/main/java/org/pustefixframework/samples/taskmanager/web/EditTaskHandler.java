@@ -1,5 +1,7 @@
 package org.pustefixframework.samples.taskmanager.web;
 
+
+import org.pustefixframework.samples.taskmanager.StatusCodes;
 import org.pustefixframework.samples.taskmanager.dataaccess.dao.TaskListsDao;
 import org.pustefixframework.samples.taskmanager.model.TaskList;
 import org.pustefixframework.samples.taskmanager.user.ContextUser;
@@ -9,22 +11,20 @@ import de.schlund.pfixcore.generator.IHandler;
 import de.schlund.pfixcore.generator.IWrapper;
 import de.schlund.pfixcore.workflow.Context;
 
-public class CreateTaskListHandler implements IHandler {
+public class EditTaskHandler implements IHandler {
 
 	private ContextUser ctxUser;
+	private ContextTaskLists ctxTaskLists;
 	private TaskListsDao taskListsDao;
 	
 	public void handleSubmittedData(Context context, IWrapper wrapper) throws Exception {
-		CreateTaskList sel = (CreateTaskList)wrapper;
-		TaskList taskList = new TaskList();
-		taskList.setName(sel.getName());
-		taskList.setDescription(sel.getDescription());
-		taskList.setUser(ctxUser.getUserId());
-		taskListsDao.addTaskList(taskList);
+		EditTask sel = (EditTask)wrapper;
+		
 	}
 	
 	public boolean isActive(Context context) throws Exception {
-		return true;
+	    TaskList taskList = ctxTaskLists.getSelectedTaskList();
+	    return taskList != null;
 	}
 	
 	public boolean needsData(Context context) throws Exception {
@@ -36,6 +36,12 @@ public class CreateTaskListHandler implements IHandler {
 	}
 	
 	public void retrieveCurrentStatus(Context context, IWrapper wrapper) throws Exception {
+	  
+	}
+	
+	@Autowired
+	public void setContextTaskLists(ContextTaskLists ctxTaskLists) {
+		this.ctxTaskLists = ctxTaskLists;
 	}
 	
 	@Autowired

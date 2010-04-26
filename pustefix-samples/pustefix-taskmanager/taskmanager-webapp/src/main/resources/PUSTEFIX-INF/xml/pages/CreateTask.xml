@@ -1,14 +1,13 @@
-<?xml version="1.0" encoding="UTF-8"?>
-<include_parts xmlns:ixsl="http://www.w3.org/1999/XSL/Transform" xmlns:pfx="http://www.schlund.de/pustefix/core">
+<?xml version="1.0" encoding="UTF-8"?><include_parts xmlns:ixsl="http://www.w3.org/1999/XSL/Transform" xmlns:pfx="http://www.schlund.de/pustefix/core">
   
   <part name="content">
     <theme name="default">
-      <h1>Create task list</h1>
-      <table>
+        <h1>Create Task</h1>
+       <table>
         <pfx:forminput>
           <tr>
-            <td>Name:</td>
-            <td><pfx:xinp type="text" name="create.name"/></td>
+            <td>Summary:</td>
+            <td><pfx:xinp type="text" name="create.summary"/></td>
           </tr>
           <tr>
             <td>Description:</td>
@@ -20,8 +19,9 @@
             </td>
           </tr>
         </pfx:forminput>
-      </table>
+      </table>       
     </theme>
   </part>
+  
  
 </include_parts>

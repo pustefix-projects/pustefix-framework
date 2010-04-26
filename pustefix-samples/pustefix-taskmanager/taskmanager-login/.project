@@ -1,7 +1,9 @@
 <projectDescription>
   <name>taskmanager-login</name>
   <comment/>
-  <projects/>
+  <projects>
+    <project>taskmanager-user</project>
+  </projects>
   <buildSpec>
     <buildCommand>
       <name>org.eclipse.jdt.core.javabuilder</name>

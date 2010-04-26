@@ -26,7 +26,11 @@
             <th align="left">State</th>
             <th align="left">Creation date</th>
             <th align="left">Target date</th>
-            <th></th>
+            <th align="right">
+              <pfx:button page="CreateTask">
+                <pfx:image src="img/add-32x32.png" border="0" alt="Create new task" title="Create new task"/>
+              </pfx:button>
+            </th>
           </tr>
           <ixsl:for-each select="/formresult/tasks/tasks/task">
           <tr>
@@ -37,9 +41,9 @@
             <td align="right">TODO</td>
             <td align="right">TODO</td>
             <td style="padding-left:20px">
-              <pfx:button action="edit">
-                <pfx:image src="img/edit-24x24.png"  border="0" title="Edit task description"/>
-                <pfx:argument name="edit.id">0</pfx:argument>
+              <pfx:button action="select">
+                <pfx:image src="img/edit-24x24.png"  border="0" title="Select task"/>
+                <pfx:argument name="select.id">0</pfx:argument>
               </pfx:button>
               <span style="padding-left:15px"></span>
               <pfx:button action="delete">

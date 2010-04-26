@@ -1,5 +1,7 @@
 package org.pustefixframework.samples.taskmanager.web;
 
+
+import org.pustefixframework.samples.taskmanager.StatusCodes;
 import org.pustefixframework.samples.taskmanager.dataaccess.dao.TaskListsDao;
 import org.pustefixframework.samples.taskmanager.model.TaskList;
 import org.pustefixframework.samples.taskmanager.user.ContextUser;
@@ -17,12 +19,15 @@ public class EditTaskListHandler implements IHandler {
 	
 	public void handleSubmittedData(Context context, IWrapper wrapper) throws Exception {
 		EditTaskList sel = (EditTaskList)wrapper;
-		TaskList taskList = taskListsDao.getTaskListByUser(ctxUser.getUserId(), sel.getId());
-		if(taskList != null) {
-		    taskList.setName(sel.getName());
+		TaskList selTaskList = ctxTaskLists.getSelectedTaskList();
+		if(selTaskList.getId() != sel.getId()) {
+			context.addPageMessage(StatusCodes.UNSELECTED_TASKLIST_CHANGE, null, null);
+		} else {
+			TaskList taskList = taskListsDao.getTaskListByUser(ctxUser.getUserId(), sel.getId());
+			taskList.setName(sel.getName());
 		    taskList.setDescription(sel.getDescription());
 		    taskListsDao.updateTaskList(taskList);
-		    System.out.println("UPDATED!!!!!!!!!!!!!!!!!");
+		    ctxTaskLists.setSelectedTaskList(taskList);
 		}
 	}
 	

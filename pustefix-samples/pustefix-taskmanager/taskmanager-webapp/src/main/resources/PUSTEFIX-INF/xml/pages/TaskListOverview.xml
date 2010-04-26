@@ -10,9 +10,8 @@
             <th align="left">Open tasks</th>
             <th align="left">Total tasks</th>
             <th align="right">
-              <pfx:button action="create" >
+              <pfx:button page="CreateTaskList">
                 <pfx:image src="img/add-32x32.png" border="0" alt="Create new tasklist" title="Create new tasklist"/>
-                <pfx:argument name="create.id">0</pfx:argument>
               </pfx:button>
             </th>
           </tr>

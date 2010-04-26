@@ -19,14 +19,17 @@
   </namespaces>
   
   <navigation>
+  
     <page name="TaskListOverview" handler="/xml/main"/>
     <page name="CreateTaskList" handler="/xml/main"/>
-    <page name="TaskListDetails" handler="/xml/main"/>
-    <page name="DeleteTaskList" handler="/xml/main"/>
-    <page name="TaskOverview" handler="/xml/main"/>
     <page name="EditTaskList" handler="/xml/main"/>
-    <page name="TaskDetails" handler="/xml/main"/>
+    <page name="DeleteTaskList" handler="/xml/main"/>
+   
+    <page name="TaskOverview" handler="/xml/main"/>
+    <page name="CreateTask" handler="/xml/main"/>
+    <page name="EditTask" handler="/xml/main"/>
     <page name="DeleteTask" handler="/xml/main"/>
+    
     <extension-point type="xml.page" id="navigation.main"/>
   </navigation>
 
@@ -43,11 +46,12 @@
 
   <standardpage name="TaskListOverview" xml="xml/page.xml"/>
   <standardpage name="CreateTaskList" xml="xml/page.xml"/>
-  <standardpage name="TaskListDetails" xml="xml/page.xml"/>
-  <standardpage name="DeleteTaskList" xml="xml/page.xml"/>
-  <standardpage name="TaskOverview" xml="xml/page.xml"/>
   <standardpage name="EditTaskList" xml="xml/page.xml"/>
-  <standardpage name="TaskDetails" xml="xml/page.xml"/>
+  <standardpage name="DeleteTaskList" xml="xml/page.xml"/>
+ 
+  <standardpage name="TaskOverview" xml="xml/page.xml"/>
+  <standardpage name="CreateTask" xml="xml/page.xml"/>
+  <standardpage name="EditTask" xml="xml/page.xml"/>
   <standardpage name="DeleteTask" xml="xml/page.xml"/>
 
 </xml-generator-config>

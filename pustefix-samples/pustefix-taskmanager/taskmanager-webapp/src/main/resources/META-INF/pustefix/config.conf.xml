@@ -28,22 +28,28 @@
   <pageflow name="EditTaskListFlow" final="TaskOverview">
     <flowstep name="EditTaskList"/>
   </pageflow>
+  
+  <pageflow name="CreateTaskListFlow" final="TaskListOverview">
+    <flowstep name="CreateTaskList"/>
+  </pageflow>
+  
+  <pageflow name="EditTaskFlow" final="TaskOverview">
+    <flowstep name="EditTask"/>
+  </pageflow>
+  
+  <pageflow name="CreateTaskFlow" final="TaskOverview">
+    <flowstep name="CreateTask"/>
+  </pageflow>
 
   <extension-point type="context.pagerequest" id="pagerequest.main"/>
 
   <pagerequest name="TaskListOverview">
      <authconstraint ref="AC_AUTHORIZED"/>
      <input>
-        <wrapper prefix="create" class="org.pustefixframework.samples.taskmanager.web.CreateTaskList"/>
         <wrapper prefix="select" class="org.pustefixframework.samples.taskmanager.web.SelectTaskList"/>
         <wrapper prefix="delete" class="org.pustefixframework.samples.taskmanager.web.DeleteTaskList"/>
      </input>
      <process>
-        <action name="create" jumptopage="CreateTaskList">
-           <submit>
-              <wrapper ref="create"/>
-           </submit>
-        </action>
         <action name="select" jumptopage="TaskOverview">
            <submit>
              <wrapper ref="select"/>
@@ -63,7 +69,7 @@
 
   <pagerequest name="CreateTaskList">
      <input>
-        <wrapper prefix="edit" class="org.pustefixframework.samples.taskmanager.web.EditTaskList"/>
+        <wrapper prefix="create" class="org.pustefixframework.samples.taskmanager.web.CreateTaskList"/>
      </input>
   </pagerequest>
 
@@ -73,7 +79,7 @@
       <wrapper prefix="delete" class="org.pustefixframework.samples.taskmanager.web.DeleteTask"/>
     </input>
     <process>
-        <action name="select" jumptopage="TaskDetails">
+        <action name="select" jumptopage="EditTask">
            <submit>
              <wrapper ref="select"/>
            </submit>
@@ -97,6 +103,18 @@
     <input>
       <wrapper prefix="edit" class="org.pustefixframework.samples.taskmanager.web.EditTaskList"/>
     </input>
+  </pagerequest>
+  
+  <pagerequest name="CreateTask">
+     <input>
+        <wrapper prefix="create" class="org.pustefixframework.samples.taskmanager.web.CreateTask"/>
+     </input>
+  </pagerequest>
+  
+  <pagerequest name="EditTask">
+     <input>
+        <wrapper prefix="create" class="org.pustefixframework.samples.taskmanager.web.EditTask"/>
+     </input>
   </pagerequest>
 
 </context-xml-service-config>

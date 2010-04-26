@@ -32,6 +32,7 @@ public class TaskListsDaoImpl implements TaskListsDao {
     }
 
     public void deleteTaskList(TaskList taskList) {
+    	taskList = em.merge(taskList);
     	em.remove(taskList);
     }
 
