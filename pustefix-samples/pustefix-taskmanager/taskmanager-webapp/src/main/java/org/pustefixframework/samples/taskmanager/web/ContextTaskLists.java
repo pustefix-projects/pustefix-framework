@@ -22,6 +22,7 @@ public class ContextTaskLists {
 	public void toXML(ResultDocument resdoc, Element elem) {
 		List<TaskList> taskLists = taskListsDao.getTaskListsByUser(contextUser.getUserId());
 		ResultDocument.addObject(elem, taskLists);
+		if(selectedTaskList != null) elem.setAttribute("selected", String.valueOf(selectedTaskList.getId()));
 	}
 	
 	@Autowired

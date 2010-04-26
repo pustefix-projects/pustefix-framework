@@ -19,8 +19,9 @@
         <div class="content">
          
           <ixsl:if test="pfx:isAuthorized('TaskListOverview')">
-          <pfx:button page="TaskListOverview">Task list overview</pfx:button>
-          <pfx:button page="TaskOverview">Task overview</pfx:button>
+          <pfx:button page="TaskListOverview">Tasklists</pfx:button><span class="navispace"/>
+          <pfx:button page="TaskOverview">Tasks</pfx:button><span class="navispace"/>
+          <pfx:button page="EditTask">Task</pfx:button>
           </ixsl:if>
         
           <pfx:maincontent path="xml/pages" prefix="" part="content"/>

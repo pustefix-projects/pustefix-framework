@@ -34,6 +34,10 @@ span.errormsg {
   font-weight: bold;
 }
 
+span.navispace {
+  padding-left: 10px;
+}
+
 table.formtable {
   padding: 20px;
 }
@@ -43,6 +47,26 @@ table.formtable tr.buttonrow {
 }
 
 table.formtable tr.buttonrow td {
-  padding-top: 10px;
-  
+  padding-top: 10px; 
+}
+
+table.list {
+  border-spacing: 1px;
+}
+
+table.list th {
+  background: #bbb;
+}
+
+tr.selrow td {
+  border-top: 1px dotted #666;
+  border-bottom: 1px dotted #666;
+}
+
+tr.oddrow {
+  background: #ddd;
+}
+
+tr.evenrow {
+  background: #eee;
 }
