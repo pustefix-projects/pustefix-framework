@@ -22,7 +22,9 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.net.URI;
 import java.net.URL;
+import java.net.URLConnection;
 
+import org.apache.log4j.Logger;
 import org.pustefixframework.resource.InputStreamResource;
 import org.pustefixframework.resource.URLResource;
 
@@ -33,6 +35,8 @@ import org.pustefixframework.resource.URLResource;
  */
 public class URLResourceImpl extends AbstractResource implements InputStreamResource, URLResource {
 
+    private Logger LOG = Logger.getLogger(URLResourceImpl.class);
+    
     private URI uri;
     private URI originalURI;
     private URL url;
@@ -75,10 +79,23 @@ public class URLResourceImpl extends AbstractResource implements InputStreamReso
     }
 
     public long lastModified() {
+        URLConnection con = null;
         try {
-            return url.openConnection().getLastModified();
+            con = url.openConnection();
+            return con.getLastModified();
         } catch (IOException e) {
             return 0;
+        } finally {
+            //Workaround for bad FileURLConnection behaviour:
+            //calling getLastModified opens InputStream which isn't closed
+            //automatically and can cause an open file descriptor leak
+            if(url.getProtocol().equals("file") && con != null) {
+                try {
+                    con.getInputStream().close();
+                } catch (IOException e) {
+                    LOG.warn("Error closing URLConnection stream after modcheck.", e);
+                }
+            }
         }
     }
 

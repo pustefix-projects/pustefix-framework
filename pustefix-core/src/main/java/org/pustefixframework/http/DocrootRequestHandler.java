@@ -197,11 +197,14 @@ public class DocrootRequestHandler implements UriProvidingHttpRequestHandler, La
     private void sendResource(InputStreamResource resource, HttpServletRequest req, HttpServletResponse res) throws IOException {
         URLResource urlResource = null;
         URLConnection urlConnection = null;
+        
+        try {
+        
         if (resource instanceof URLResource) {
             urlResource = (URLResource) resource;
             urlConnection = urlResource.getURL().openConnection();
         }
-
+            
         String resourceETag;
         if (urlResource != null) {
             // If we have an URL resource, we use a simplified
@@ -235,7 +238,7 @@ public class DocrootRequestHandler implements UriProvidingHttpRequestHandler, La
         String mimeType = null;
 
         if (urlResource != null) {
-            mimeType = urlResource.getURL().openConnection().getContentType();
+            mimeType = urlConnection.getContentType();
         }
 
         if (mimeType == null || mimeType.equals("content/unknown")) {
@@ -270,6 +273,19 @@ public class DocrootRequestHandler implements UriProvidingHttpRequestHandler, La
         out.flush();
         is.close();
         out.close();
+        
+        } finally {
+            //Workaround for bad FileURLConnection behaviour:
+            //calling getLastModified, etc. opens InputStream which isn't closed
+            //automatically and can cause an open file descriptor leak
+            if(urlResource != null) {
+                if("file".equals(urlResource.getURL().getProtocol())) {
+                    if(urlConnection != null) {
+                        urlConnection.getInputStream().close();
+                    }
+                }
+            }
+        }
     }
 
     private InputStreamResource loadInputStreamResource(URI resourceURI) {
