@@ -26,8 +26,8 @@
             </ixsl:attribute>
             <td align="left"><ixsl:value-of select="@name"/></td>
             <td align="left"><ixsl:value-of select="@description"/></td>
-            <td align="right">TODO</td>
-            <td align="right">TODO</td>
+            <td align="right"><ixsl:value-of select="@openTasks"/></td>
+            <td align="right"><ixsl:value-of select="@totalTasks"/></td>
             <td>
               <pfx:button action="select">
                 <pfx:image src="img/edit-24x24.png" border="0" alt="Select tasklist" title="Select tasklist" />

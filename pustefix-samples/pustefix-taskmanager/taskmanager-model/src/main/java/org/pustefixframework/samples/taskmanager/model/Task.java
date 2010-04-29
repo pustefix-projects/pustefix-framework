@@ -4,7 +4,6 @@ import java.util.Date;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
-import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
@@ -41,8 +40,8 @@ public class Task {
     //TODO add support for task dependencies
     //private List<Task> dependentTasks;
     
-    @ManyToOne(fetch=FetchType.LAZY)
-    @JoinColumn(name="tasklist", insertable=false, updatable=false, nullable=false)  
+    @ManyToOne
+    @JoinColumn(name="tasklist")
     private TaskList taskList;  
     
     public int getId() {
@@ -109,6 +108,15 @@ public class Task {
     
     public void setTargetDate(Date targetDate) {
         this.targetDate = targetDate;
+    }
+    
+    
+    public TaskList getTaskList() {
+        return taskList;
+    }
+    
+    public void setTaskList(TaskList taskList) {
+        this.taskList = taskList;
     }
     
     /**

@@ -17,8 +17,6 @@
  */
 package org.pustefixframework.webservices.spring;
 
-import javax.security.auth.login.Configuration;
-
 import org.osgi.framework.BundleContext;
 import org.pustefixframework.config.Constants;
 import org.pustefixframework.config.customization.CustomizationAwareParsingHandler;
@@ -35,7 +33,6 @@ import org.springframework.osgi.context.ConfigurableOsgiBundleApplicationContext
 import org.w3c.dom.Element;
 
 import com.marsching.flexiparse.parser.HandlerContext;
-import com.marsching.flexiparse.parser.ParsingHandler;
 import com.marsching.flexiparse.parser.exception.ParserException;
 
 import de.schlund.pfixcore.workflow.ContextImpl;

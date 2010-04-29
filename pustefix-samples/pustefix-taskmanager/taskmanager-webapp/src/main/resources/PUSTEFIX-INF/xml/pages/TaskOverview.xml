@@ -3,7 +3,7 @@
   <part name="content">
     <theme name="default">
         <h1>Tasklist</h1>
-        <table >
+        <table class="list" cellpadding="10px">
           <tr>
             <td valign="top">
               <div style="font-size:140%; font-weight:bold; padding-bottom: 5px;"><ixsl:value-of select="/formresult/tasks/@name"/></div>
@@ -34,6 +34,13 @@
           </tr>
           <ixsl:for-each select="/formresult/tasks/tasks/task">
           <tr>
+            <ixsl:attribute name="class">
+              <ixsl:if test="/formresult/tasks/@selected = @id">selrow</ixsl:if>
+              <ixsl:choose>
+                <ixsl:when test="position() mod 2 = 0"> oddrow</ixsl:when>
+                <ixsl:otherwise> evenrow</ixsl:otherwise>
+              </ixsl:choose>
+            </ixsl:attribute>
             <td align="left"><ixsl:value-of select="@summary"/></td>
             <td align="left"><ixsl:value-of select="@description"/></td>
             <td align="right"><ixsl:value-of select="@priority"/></td>

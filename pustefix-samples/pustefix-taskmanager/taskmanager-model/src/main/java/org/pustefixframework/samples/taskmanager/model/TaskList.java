@@ -13,6 +13,8 @@ import javax.persistence.JoinColumn;
 import javax.persistence.OneToMany;
 import javax.persistence.Version;
 
+import org.pustefixframework.samples.taskmanager.model.Task.State;
+
 @Entity
 public class TaskList {
     
@@ -33,8 +35,7 @@ public class TaskList {
 	@Column(name="description")
     private String description;
     
-	@OneToMany(fetch=FetchType.EAGER,cascade=CascadeType.ALL)
-	@JoinColumn(name="tasklist")
+	@OneToMany(fetch=FetchType.EAGER, cascade=CascadeType.ALL, mappedBy="taskList")
 	private List<Task> tasks;
 	
     public int getId() {
@@ -71,6 +72,22 @@ public class TaskList {
     
     public List<Task> getTasks() {
     	return tasks;
+    }
+    
+    public int getOpenTasks() {
+        //TODO: fetch lazily
+        int open = 0;
+        for(Task task: getTasks()) {
+            if(task.getState() == State.OPEN) {
+                open++;
+            }
+        }
+        return open;
+    }
+    
+    public int getTotalTasks() {
+        //TODO: fetch lazily
+        return getTasks().size();
     }
     
 }

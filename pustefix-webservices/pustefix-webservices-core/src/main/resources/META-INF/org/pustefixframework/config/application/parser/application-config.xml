@@ -8,14 +8,19 @@
     <match>/p:pustefix-application/p:application/p:webservice-service//p:admin</match>
     <match>/p:pustefix-application/p:application/p:webservice-service//p:monitoring</match>
     <match>/p:pustefix-application/p:application/p:webservice-service//p:logging</match>
+    <match>/p:pustefix-application/p:application/p:webservice-service//p:faulthandler</match>
+  </handler>
+  
+  <handler class="org.pustefixframework.webservices.spring.ParamParsingHandler">
+    <match>/p:pustefix-application/p:application/p:webservice-service//p:param</match>
   </handler>
 
   <handler class="org.pustefixframework.config.customization.CustomizationWhenParsingHandler">
-    <match>/p:pustefix-application/p:application/p:webservice-service/p:choose/p:when</match>
+    <match>/p:pustefix-application/p:application/p:webservice-service//p:choose/p:when</match>
   </handler>
   
   <handler class="org.pustefixframework.config.customization.CustomizationOtherwiseParsingHandler">
-    <match>/p:pustefix-application/p:application/p:webservice-service/p:choose/p:otherwise</match>
+    <match>/p:pustefix-application/p:application/p:webservice-service//p:choose/p:otherwise</match>
   </handler>
 
 </configuration>

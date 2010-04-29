@@ -30,6 +30,7 @@ public class CreateTaskHandler implements IHandler {
 		task.setPriority(Priority.NORMAL);
 		task.setState(State.OPEN);
 		TaskList taskList = ctxTaskLists.getSelectedTaskList();
+		task.setTaskList(taskList);
 		taskList.getTasks().add(task);
 		taskListsDao.updateTaskList(taskList);
 	}
