@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="utf-8"?>
+<include_parts xmlns:ixsl="http://www.w3.org/1999/XSL/Transform" 
+               xmlns:pfx="http://www.schlund.de/pustefix/core">
+               
+  <part name="content">
+    <theme name="default">
+      
+      <h3>Welcome to the wonderful world of OSGi-powered Pustefix!!!</h3>
+     
+      <pfx:forminput>
+        Please enter your name: 
+        <pfx:xinp type="text" name="registration.name" size="20"/>
+        <pfx:xinp type="submit" value="Submit"/>
+        <show-error field="registration.name"/>
+      </pfx:forminput>
+    
+    </theme>
+  </part>
+  
+</include_parts>

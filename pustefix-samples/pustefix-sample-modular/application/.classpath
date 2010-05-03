@@ -1,0 +1,53 @@
+<classpath>
+  <classpathentry kind="src" path="src/main/java"/>
+  <classpathentry kind="src" path="src/main/resources" excluding="**/*.java"/>
+  <classpathentry kind="src" path="target/generated-sources/iwrappers"/>
+  <classpathentry kind="output" path="target/classes"/>
+  <classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER"/>
+  <classpathentry kind="var" path="M2_REPO/ch/qos/logback/com.springsource.ch.qos.logback.classic/0.9.15/com.springsource.ch.qos.logback.classic-0.9.15.jar"/>
+  <classpathentry kind="var" path="M2_REPO/ch/qos/logback/com.springsource.ch.qos.logback.core/0.9.15/com.springsource.ch.qos.logback.core-0.9.15.jar"/>
+  <classpathentry kind="var" path="M2_REPO/edu/oswego/cs/concurrent/com.springsource.edu.oswego.cs.dl.util.concurrent/1.3.4/com.springsource.edu.oswego.cs.dl.util.concurrent-1.3.4.jar"/>
+  <classpathentry kind="var" path="M2_REPO/javax/mail/com.springsource.javax.mail/1.4.1/com.springsource.javax.mail-1.4.1.jar"/>
+  <classpathentry kind="var" path="M2_REPO/net/sourceforge/cglib/com.springsource.net.sf.cglib/2.1.3/com.springsource.net.sf.cglib-2.1.3.jar"/>
+  <classpathentry kind="var" path="M2_REPO/org/aopalliance/com.springsource.org.aopalliance/1.0.0/com.springsource.org.aopalliance-1.0.0.jar"/>
+  <classpathentry kind="var" path="M2_REPO/org/apache/bsf/com.springsource.org.apache.bsf/2.4.0/com.springsource.org.apache.bsf-2.4.0.jar"/>
+  <classpathentry kind="var" path="M2_REPO/org/apache/commons/com.springsource.org.apache.commons.logging/1.1.1/com.springsource.org.apache.commons.logging-1.1.1.jar"/>
+  <classpathentry kind="var" path="M2_REPO/org/apache/log4j/com.springsource.org.apache.log4j/1.2.15/com.springsource.org.apache.log4j-1.2.15.jar"/>
+  <classpathentry kind="var" path="M2_REPO/org/apache/oro/com.springsource.org.apache.oro/2.0.8/com.springsource.org.apache.oro-2.0.8.jar"/>
+  <classpathentry kind="var" path="M2_REPO/org/apache/xml/com.springsource.org.apache.xml.resolver/1.2.0/com.springsource.org.apache.xml.resolver-1.2.0.jar"/>
+  <classpathentry kind="var" path="M2_REPO/org/aspectj/com.springsource.org.aspectj.weaver/1.6.5.RELEASE/com.springsource.org.aspectj.weaver-1.6.5.RELEASE.jar"/>
+  <classpathentry kind="var" path="M2_REPO/org/slf4j/com.springsource.slf4j.api/1.5.6/com.springsource.slf4j.api-1.5.6.jar"/>
+  <classpathentry kind="var" path="M2_REPO/org/slf4j/com.springsource.slf4j.bridge/1.5.6/com.springsource.slf4j.bridge-1.5.6.jar"/>
+  <classpathentry kind="var" path="M2_REPO/org/slf4j/com.springsource.slf4j.org.apache.log4j/1.5.6/com.springsource.slf4j.org.apache.log4j-1.5.6.jar"/>
+  <classpathentry kind="var" path="M2_REPO/commons-collections/commons-collections/3.2.1/commons-collections-3.2.1.jar" sourcepath="M2_REPO/commons-collections/commons-collections/3.2.1/commons-collections-3.2.1-sources.jar"/>
+  <classpathentry kind="var" path="M2_REPO/com/marsching/flexiparse/flexiparse/1.0.1/flexiparse-1.0.1.jar"/>
+  <classpathentry kind="var" path="M2_REPO/org/slf4j/jcl-over-slf4j/1.5.6/jcl-over-slf4j-1.5.6.jar"/>
+  <classpathentry kind="var" path="M2_REPO/org/mortbay/jetty/jetty/6.1.14/jetty-6.1.14.jar"/>
+  <classpathentry kind="var" path="M2_REPO/org/mortbay/jetty/jetty-sslengine/6.1.14/jetty-sslengine-6.1.14.jar"/>
+  <classpathentry kind="var" path="M2_REPO/org/mortbay/jetty/jetty-util/6.1.14/jetty-util-6.1.14.jar"/>
+  <classpathentry kind="var" path="M2_REPO/junit/junit/4.5/junit-4.5.jar" sourcepath="M2_REPO/junit/junit/4.5/junit-4.5-sources.jar"/>
+  <classpathentry kind="var" path="M2_REPO/log4j/log4j/1.2.13/log4j-1.2.13.jar" sourcepath="M2_REPO/log4j/log4j/1.2.13/log4j-1.2.13-sources.jar"/>
+  <classpathentry kind="var" path="M2_REPO/org/apache/felix/org.apache.felix.http.jetty/1.0.1/org.apache.felix.http.jetty-1.0.1.jar"/>
+  <classpathentry kind="var" path="M2_REPO/org/apache/felix/org.osgi.compendium/1.0.0/org.osgi.compendium-1.0.0.jar"/>
+  <classpathentry kind="var" path="M2_REPO/org/apache/felix/org.osgi.core/1.0.0/org.osgi.core-1.0.0.jar"/>
+  <classpathentry kind="var" path="M2_REPO/org/apache/felix/org.osgi.foundation/1.0.0/org.osgi.foundation-1.0.0.jar"/>
+  <classpathentry kind="var" path="M2_REPO/org/springframework/org.springframework.aop/2.5.6.A/org.springframework.aop-2.5.6.A.jar"/>
+  <classpathentry kind="var" path="M2_REPO/org/springframework/org.springframework.beans/2.5.6.A/org.springframework.beans-2.5.6.A.jar"/>
+  <classpathentry kind="var" path="M2_REPO/org/springframework/org.springframework.context/2.5.6.A/org.springframework.context-2.5.6.A.jar"/>
+  <classpathentry kind="var" path="M2_REPO/org/springframework/org.springframework.context.support/2.5.6.A/org.springframework.context.support-2.5.6.A.jar"/>
+  <classpathentry kind="var" path="M2_REPO/org/springframework/org.springframework.core/2.5.6.A/org.springframework.core-2.5.6.A.jar"/>
+  <classpathentry kind="var" path="M2_REPO/org/springframework/osgi/org.springframework.osgi.core/1.2.0/org.springframework.osgi.core-1.2.0.jar"/>
+  <classpathentry kind="var" path="M2_REPO/org/springframework/osgi/org.springframework.osgi.extender/1.2.0/org.springframework.osgi.extender-1.2.0.jar"/>
+  <classpathentry kind="var" path="M2_REPO/org/springframework/osgi/org.springframework.osgi.io/1.2.0/org.springframework.osgi.io-1.2.0.jar"/>
+  <classpathentry kind="var" path="M2_REPO/org/springframework/osgi/org.springframework.osgi.mock/1.2.0/org.springframework.osgi.mock-1.2.0.jar"/>
+  <classpathentry kind="var" path="M2_REPO/org/springframework/org.springframework.test/2.5.6.A/org.springframework.test-2.5.6.A.jar"/>
+  <classpathentry kind="var" path="M2_REPO/org/springframework/org.springframework.web/2.5.6.A/org.springframework.web-2.5.6.A.jar"/>
+  <classpathentry kind="var" path="M2_REPO/org/springframework/org.springframework.web.servlet/2.5.6.A/org.springframework.web.servlet-2.5.6.A.jar"/>
+  <classpathentry kind="var" path="M2_REPO/org/pustefixframework/pustefix-core/1.0.3-SNAPSHOT/pustefix-core-1.0.3-SNAPSHOT.jar" sourcepath="M2_REPO/org/pustefixframework/pustefix-core/1.0.3-SNAPSHOT/pustefix-core-1.0.3-SNAPSHOT-sources.jar"/>
+  <classpathentry kind="var" path="M2_REPO/org/pustefixframework/osgi/pustefix-osgi-logservice-bridge/1.0.3-SNAPSHOT/pustefix-osgi-logservice-bridge-1.0.3-SNAPSHOT.jar"/>
+  <classpathentry kind="var" path="M2_REPO/org/pustefixframework/osgi/pustefix-osgi-spring-dm-extender/1.0.3-SNAPSHOT/pustefix-osgi-spring-dm-extender-1.0.3-SNAPSHOT.jar" sourcepath="M2_REPO/org/pustefixframework/osgi/pustefix-osgi-spring-dm-extender/1.0.3-SNAPSHOT/pustefix-osgi-spring-dm-extender-1.0.3-SNAPSHOT-sources.jar"/>
+  <classpathentry kind="var" path="M2_REPO/com/icl/saxon/saxon/6.5.5/saxon-6.5.5.jar"/>
+  <classpathentry kind="var" path="M2_REPO/net/sf/saxon/saxon/8.7/saxon-8.7.jar"/>
+  <classpathentry kind="var" path="M2_REPO/org/mortbay/jetty/servlet-api-2.5/6.1.14/servlet-api-2.5-6.1.14.jar"/>
+  <classpathentry kind="src" path="/webmodule"/>
+</classpath>

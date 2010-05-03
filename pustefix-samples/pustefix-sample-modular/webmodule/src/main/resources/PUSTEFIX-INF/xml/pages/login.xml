@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="utf-8"?>
+<include_parts xmlns:ixsl="http://www.w3.org/1999/XSL/Transform" xmlns:pfx="http://www.schlund.de/pustefix/core">
+
+  <part name="content">
+    <theme name="default">
+      <center>
+      <h1>Login</h1>
+      <hr width="60%" size="1px" style="color:#cccccc"/>
+      <pfx:forminput type="auth">
+        <table class="formtable">
+          <tr>
+            <td>User:</td>
+            <td><pfx:xinp type="text" name="login.user" size="20"/></td>
+            <td><showFieldError name="login.user"/></td>
+          </tr>
+          <tr>
+            <td>Password:</td>
+            <td><pfx:xinp type="password" name="login.password" size="20"/></td>
+            <td><showFieldError name="login.password"/></td>
+          </tr>
+          <tr class="buttonrow">
+            <td colspan="3">
+              <pfx:xinp type="submit" value="Login"/>
+            </td>
+          </tr>
+        </table>
+      </pfx:forminput>
+       <hr width="60%" size="1px" style="color:#cccccc" />
+      </center>
+    </theme>
+  </part>
+  
+  <part name="foo">
+    <theme name="default">
+      fooooooooooo
+    </theme>
+  </part>
+</include_parts>
