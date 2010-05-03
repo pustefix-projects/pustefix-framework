@@ -7,7 +7,7 @@
                            http://www.springframework.org/schema/osgi 
                            http://www.springframework.org/schema/osgi/spring-osgi.xsd">
 
-   <osgi:reference id="dataSource" interface="javax.sql.DataSource"/>
+   <!--<osgi:reference id="dataSource" interface="javax.sql.DataSource"/>-->
 
    <!--<osgi:reference id="userDao" interface="org.pustefixframework.samples.modular.dataaccess.dao.UserDao"/>-->
 
