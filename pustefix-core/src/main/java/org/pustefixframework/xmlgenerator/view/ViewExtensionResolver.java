@@ -97,7 +97,12 @@ public class ViewExtensionResolver {
     			Element elem = extDoc.createElement("extension");
     			extElem.appendChild(elem);
     			elem.setAttribute("part", ext.getPartName());
+    			try {
     			elem.setAttribute("module", ext.getModule());
+    			} catch(IllegalStateException x) {
+    			    //TODO: fix services dynamics
+    			    continue;
+    			}
     			String path = ext.getResource().getOriginalURI().getPath();
     			int ind = path.indexOf("PUSTEFIX-INF");
     			path = path.substring(ind + "PUSTEFIX-INF".length() + 1);
