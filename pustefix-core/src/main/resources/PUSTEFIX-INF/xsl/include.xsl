@@ -550,7 +550,10 @@
   </func:function>
 
   <xsl:template match="pfx:extension-point">
-    <xsl:variable name="extensions" select="include:getExtensions($__target_gen, $__target_key, @id, @version)"/>
+    <xsl:param name="computed_inc">false</xsl:param>
+    <xsl:param name="parent_part"><xsl:value-of select="ancestor::part[position() = 1]/@name"/></xsl:param>
+    <xsl:param name="parent_theme"><xsl:value-of select="ancestor::theme[position() = 1]/@name"/></xsl:param>
+    <xsl:variable name="extensions" select="include:getExtensions($__target_gen, $__target_key, @id, @version, $parent_part, $parent_theme, $computed_inc)"/>
     <xsl:choose>
       <xsl:when test="$extensions/extension-point/missing-extension">
         <xsl:variable name="msg">Missing extension for extension point '<xsl:value-of select="@id"/>'</xsl:variable>

@@ -9,6 +9,7 @@ import org.osgi.framework.Filter;
 import org.osgi.framework.InvalidSyntaxException;
 import org.osgi.framework.ServiceReference;
 import org.osgi.util.tracker.ServiceTracker;
+import org.pustefixframework.extension.support.ExtensionPointRegistrationListener;
 
 /**
  * This class manages retrieving and updating ViewExtensionPoint services.
@@ -26,6 +27,24 @@ public class ViewExtensionPointReference extends ServiceTracker {
 	
 	private String extensionPointId;
 	private String extensionPointVersion;
+	
+	private ExtensionPointRegistrationListener<ViewExtensionPoint, ViewExtension> listener = new ExtensionPointRegistrationListener<ViewExtensionPoint, ViewExtension>() {
+
+	    @Override
+	    public void afterRegisterExtension(ViewExtensionPoint extensionPoint, ViewExtension extension) {
+	        resolver.invalidate(ViewExtensionPointReference.this);
+	    }
+
+	    @Override
+	    public void afterUnregisterExtension(ViewExtensionPoint extensionPoint, ViewExtension extension) {
+	        resolver.invalidate(ViewExtensionPointReference.this);
+	    }
+
+	    @Override
+	    public void updateExtension(ViewExtensionPoint extensionPoint, ViewExtension extension) {
+	        resolver.invalidate(ViewExtensionPointReference.this);
+	    }
+	};
 	
 	public ViewExtensionPointReference(BundleContext bundleContext, ViewExtensionResolver resolver,
 			String extensionPointId, String extensionPointVersion) {
@@ -60,6 +79,7 @@ public class ViewExtensionPointReference extends ServiceTracker {
 	public Object addingService(ServiceReference reference) {
 		if(extensionPoint == null) {
 			extensionPoint = (ViewExtensionPointImpl)super.addingService(reference);
+			extensionPoint.registerListener(listener);
 		} else {
 			logger.warn("Matching extension point already registered. Ignoring newly added instance.");
 		}
@@ -69,6 +89,7 @@ public class ViewExtensionPointReference extends ServiceTracker {
 	@Override
 	public void removedService(ServiceReference reference, Object service) {
 		if(extensionPoint == service) {
+		    extensionPoint.unregisterListener(listener);
 			extensionPoint = null;
 			resolver.invalidate(this);
 		}

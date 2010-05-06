@@ -55,7 +55,7 @@ public class ViewExtensionParser {
 			URL url = (URL)e.nextElement();
 			URLResource resource;
 			try {
-				URI uri = new URI("bundle:"+url.toURI().getPath());
+				URI uri = new URI("bundle://" + bundleContext.getBundle().getSymbolicName() + "/" + url.toURI().getPath());
 				resource = resourceLoader.getResource(uri, URLResource.class);
 			} catch (URISyntaxException x) {
 				throw new RuntimeException("Illegal resource URI: " + url.toString(), x);

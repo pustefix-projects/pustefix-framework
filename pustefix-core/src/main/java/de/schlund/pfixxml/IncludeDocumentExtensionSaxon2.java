@@ -66,9 +66,11 @@ public class IncludeDocumentExtensionSaxon2 {
     }
     
     public static Object getExtensions(XPathContext context, TargetGenerator targetGen,
-    		String targetKey, String extensionPointId, String extensionPointVersion) throws Exception {
+    		String targetKey, String extensionPointId, String extensionPointVersion,
+    		String parentPart, String parentTheme, String computed) throws Exception {
     	XsltContext xsltContext=new XsltContextSaxon2(context);
-    	return IncludeDocumentExtension.getExtensions(xsltContext, targetGen, targetKey, extensionPointId, extensionPointVersion);
+    	return IncludeDocumentExtension.getExtensions(xsltContext, targetGen, targetKey, extensionPointId, extensionPointVersion,
+    	        parentPart, parentTheme, computed);
     }
     
 }

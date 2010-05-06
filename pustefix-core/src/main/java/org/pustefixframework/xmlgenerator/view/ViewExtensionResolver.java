@@ -1,5 +1,6 @@
 package org.pustefixframework.xmlgenerator.view;
 
+import java.net.URI;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
@@ -11,6 +12,7 @@ import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.transform.TransformerException;
 
 import org.osgi.framework.BundleContext;
+import org.pustefixframework.resource.Resource;
 import org.pustefixframework.xmlgenerator.targets.Target;
 import org.pustefixframework.xmlgenerator.targets.TargetGenerator;
 import org.pustefixframework.xmlgenerator.targets.VirtualTarget;
@@ -18,6 +20,7 @@ import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.Node;
 
+import de.schlund.pfixxml.DependencyTracker;
 import de.schlund.pfixxml.IncludeDocument;
 import de.schlund.pfixxml.XMLException;
 import de.schlund.pfixxml.util.XPath;
@@ -46,8 +49,8 @@ public class ViewExtensionResolver {
 		dependentTargets = new HashMap<String, List<Target>>();
 	}
 	
-	public Node getExtensionNodes(XsltContext context, String targetKey,
-			String extensionPointId, String extensionPointVersion) throws Exception {
+	public Node getExtensionNodes(XsltContext context, String targetKey, String extensionPointId, String extensionPointVersion, 
+	        String parentPart, String parentTheme, String computed) throws Exception {
 		
 		if(extensionPointId != null) extensionPointId = extensionPointId.trim();
 		if(extensionPointId == null || extensionPointId.equals("")) throw new IllegalArgumentException("Missing extension point ID");
@@ -87,6 +90,25 @@ public class ViewExtensionResolver {
     	extElem.setAttribute("xmlns:pfx","http://www.schlund.de/pustefix/core");
     	extDoc.appendChild(extElem);
     	
+        String       parent_uri_str  = "";
+        String       parent_part     = "";
+        String       parent_theme    = "";
+        
+        String parentSystemId = getSystemId(context);
+        URI parentURI = new URI(parentSystemId);
+        
+        if (computed.equals("false") && isIncludeDocument(context)) {
+            parent_uri_str = parentSystemId;
+            parent_part     = parentPart;
+            parent_theme  = parentTheme;
+        }
+        
+        Resource    parent_path = null;
+        if(!parent_uri_str.equals("")) {
+            URI uri = new URI(parent_uri_str);
+            parent_path = targetGenerator.getResourceLoader().getResource(uri);
+        }
+        
     	try {
     		Collection<ViewExtension> extensions = ref.getExtensions();
     		
@@ -113,6 +135,8 @@ public class ViewExtensionResolver {
     			if(themeNode != null) {
     				Node impNode = extDoc.importNode(themeNode, true);
     				elem.appendChild(impNode);
+    				DependencyTracker.logTyped("text", ext.getResource(), ext.getPartName(), targetGenerator.getDefaultTheme(),
+    				        parent_path, parent_part, parent_theme, target);
     			} else {
     		    	StringBuilder sb = new StringBuilder();
     		    	for(String theme:themes) sb.append(theme + " ");
@@ -175,11 +199,18 @@ public class ViewExtensionResolver {
                 target.setStoredException(ex);
                 throw ex;
             }
-        }
-        //TODO dependency logging
+        } 
         return null;
 	}
         
+	
+    public static final String getSystemId(XsltContext context) {
+        return context.getSystemId();
+    }
+    
+    public static boolean isIncludeDocument(XsltContext context) {
+        return context.getDocumentElementName().equals("include_parts");
+    }
     	
 	public void invalidate(ViewExtensionPointReference reference) {
 		String refKey = reference.getExtensionPointId() + "@" + reference.getExtensionPointVersion();

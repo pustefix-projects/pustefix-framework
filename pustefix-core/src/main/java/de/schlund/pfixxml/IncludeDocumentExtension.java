@@ -371,10 +371,12 @@ public final class IncludeDocumentExtension {
     
     
     public static final Node getExtensions(XsltContext context, TargetGenerator targetGen,
-    		String targetKey, String extensionPointId, String extensionPointVersion) throws Exception {
+    		String targetKey, String extensionPointId, String extensionPointVersion,
+    		String parentPart, String parentTheme, String computed) throws Exception {
     	try {
     		ViewExtensionResolver resolver = targetGen.getViewExtensionResolver();
-    		Node node = resolver.getExtensionNodes(context, targetKey, extensionPointId, extensionPointVersion);
+    		Node node = resolver.getExtensionNodes(context, targetKey, extensionPointId, extensionPointVersion, 
+    		        parentPart, parentTheme, computed);
     		return node;
     	} catch (Exception x) {
     		ExtensionFunctionUtils.setExtensionFunctionError(x);

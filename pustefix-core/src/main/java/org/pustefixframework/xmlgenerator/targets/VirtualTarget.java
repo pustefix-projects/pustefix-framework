@@ -327,7 +327,7 @@ public abstract class VirtualTarget extends TargetImpl {
     }
     
     public void invalidate() {
-    	//TODO: implement
+    	setForceUpdate();
     }
 
 } // VirtualTarget
