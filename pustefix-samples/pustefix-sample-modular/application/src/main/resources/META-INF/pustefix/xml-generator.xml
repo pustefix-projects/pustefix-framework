@@ -10,6 +10,8 @@
   <navigation>
     <page handler="/xml/main" name="Home"/>
     <page handler="/xml/main" name="Bye"/>
+    
+    <extension-point type="xml.page" id="navigation.main"/>
   </navigation>
 
   <standardmaster>
@@ -22,5 +24,7 @@
   
   <standardpage name="Home" xml="xml/frame.xml"/>
   <standardpage name="Bye" xml="xml/frame.xml"/>
+  
+  <extension-point type="xml.standardpage" id="standardpage.main"/>
 
 </xml-generator-config>
