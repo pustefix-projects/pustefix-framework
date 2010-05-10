@@ -124,13 +124,17 @@ public abstract class AbstractPustefixRequestHandler implements UriProvidingHttp
             return req.getServerName();
         }
     }
-
+    
     protected void relocate(HttpServletResponse res, String reloc_url) {
+        relocate(res, HttpServletResponse.SC_MOVED_TEMPORARILY, reloc_url);
+    }
+
+    protected void relocate(HttpServletResponse res, int type, String reloc_url) {
         LOG.debug("\n\n        ======> relocating to " + reloc_url + "\n");
         res.setHeader("Expires", "Mon, 26 Jul 1997 05:00:00 GMT");
         res.setHeader("Pragma", "no-cache");
         res.setHeader("Cache-Control", "no-cache, no-store, private, must-revalidate");
-        res.setStatus(HttpServletResponse.SC_MOVED_TEMPORARILY);
+        res.setStatus(type);
         res.setHeader("Location", reloc_url);
     }
     
@@ -425,7 +429,7 @@ public abstract class AbstractPustefixRequestHandler implements UriProvidingHttp
     private void redirectToClearedRequest(HttpServletRequest req, HttpServletResponse res) {
         LOG.debug("===> Redirecting to cleared Request URL");
         String redirect_uri = SessionHelper.getClearedURL(req.getScheme(), getServerName(req), req, getServletManagerConfig().getProperties());
-        relocate(res, redirect_uri);
+        relocate(res, HttpServletResponse.SC_MOVED_PERMANENTLY, redirect_uri);
     }
 
     private void redirectToSSL(HttpServletRequest req, HttpServletResponse res) {
