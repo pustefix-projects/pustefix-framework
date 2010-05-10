@@ -18,6 +18,7 @@
 
 package org.pustefixframework.http.dereferer;
 
+import java.io.IOException;
 import java.io.OutputStream;
 import java.io.OutputStreamWriter;
 import java.net.URLEncoder;
@@ -197,7 +198,7 @@ public class DerefRequestHandler extends AbstractPustefixRequestHandler {
             writer.flush();
         } else {
             LOG.warn("===> No meta refresh because signature is wrong.");
-            res.sendError(HttpServletResponse.SC_BAD_REQUEST);
+            sendInvalidLink(preq, res);
             return;
         }
     }
@@ -226,7 +227,7 @@ public class DerefRequestHandler extends AbstractPustefixRequestHandler {
             res.setStatus(HttpServletResponse.SC_MOVED_TEMPORARILY);
         } else {
             LOG.warn("===> Won't relocate because signature is wrong.");
-            res.sendError(HttpServletResponse.SC_BAD_REQUEST);
+            sendInvalidLink(preq, res);
             return;
         }
     }
@@ -243,6 +244,12 @@ public class DerefRequestHandler extends AbstractPustefixRequestHandler {
     
     public void setConfiguration(AbstractPustefixRequestHandlerConfig config) {
         this.config = config;
+    }
+    
+    private void sendInvalidLink(PfixServletRequest req, HttpServletResponse res) throws IOException {
+        String redirectUrl = getServerURL(req) + req.getContextPath();
+        res.setStatus(HttpServletResponse.SC_MOVED_PERMANENTLY);
+        res.setHeader("Location", redirectUrl);
     }
     
 }
