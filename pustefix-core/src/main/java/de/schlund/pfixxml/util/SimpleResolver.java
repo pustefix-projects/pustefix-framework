@@ -56,6 +56,6 @@ public class SimpleResolver implements URIResolver {
                 ref = base.substring(0, idx) + "/" + href;
             }
         }
-        return defaultResolver.resolve(ref, base);
+        return defaultResolver == null ? null : defaultResolver.resolve(ref, base);
     }
 }
