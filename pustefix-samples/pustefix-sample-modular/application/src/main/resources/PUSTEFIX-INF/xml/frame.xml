@@ -10,10 +10,10 @@
     
       <pfx:image src="img/logo.png"/>
 
-      <hr/>
-      <pfx:button page="Home">Home</pfx:button>
-      <pfx:extension-point id="frame.navigation" cardinality="0..n"/>
-      <hr/>
+      <div id="navigation">
+        <pfx:button page="Home">Home</pfx:button>
+        <pfx:extension-point id="frame.navigation" cardinality="0..n"/>
+      </div>
       
       <pfx:maincontent prefix=""/>
       

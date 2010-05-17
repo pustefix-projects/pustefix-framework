@@ -6,7 +6,7 @@
     <extends extension-point="frame.navigation"/>
     <theme name="default">
       
-      <h3>Hi, I'm coming from a module</h3>
+      <pfx:button page="Test">Test</pfx:button>
     
     </theme>
   </part>

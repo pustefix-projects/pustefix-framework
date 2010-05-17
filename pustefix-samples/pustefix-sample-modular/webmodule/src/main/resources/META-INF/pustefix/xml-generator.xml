@@ -3,17 +3,12 @@
 
   <extension type="xml.page">
     <extend extension-point="navigation.main"/>
-    <page handler="/xml/main" name="login"/>
-  </extension>
-
-  <extension type="xml.include">
-    <extend extension-point="standardmetatags.include.main"/>
-    <include stylesheet="xsl/metatags.xsl"/>
+    <page handler="/xml/main" name="Test"/>
   </extension>
 
   <extension type="xml.standardpage">
     <extend extension-point="standardpage.main"/>
-    <standardpage name="login" xml="dynamic:/xml/page.xml"/>
+    <standardpage name="Test" xml="dynamic:/xml/frame.xml"/>
   </extension>
 
 </xml-generator-config>
