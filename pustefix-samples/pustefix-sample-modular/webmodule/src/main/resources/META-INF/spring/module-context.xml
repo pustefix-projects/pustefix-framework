@@ -12,8 +12,4 @@
 
    <context:annotation-config/>
 
-   <bean id="contextUser" class="org.pustefixframework.samples.modular.login.web.ContextUser" scope="session">
-      <aop:scoped-proxy/>
-   </bean>
-
 </beans>

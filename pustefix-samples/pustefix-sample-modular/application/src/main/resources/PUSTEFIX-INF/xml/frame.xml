@@ -8,14 +8,22 @@
     </head>
     <body>
     
-      <pfx:image src="img/logo.png"/>
-
+      <div id="header">
+        <pfx:image src="img/logo.png"/>
+        Pustefix Sample Modular
+      </div>
+      
       <div id="navigation">
         <pfx:button page="Home">Home</pfx:button>
         <pfx:extension-point id="frame.navigation" cardinality="0..n"/>
+        <pfx:button page="Bye">Bye</pfx:button>
       </div>
       
+      <div id="content">
+      
       <pfx:maincontent prefix=""/>
+      
+      </div>
       
       <pfx:editconsole/>
     

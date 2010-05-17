@@ -13,6 +13,7 @@
 
   <pageflow name="MainFlow" final="Home">
     <flowstep name="Home"/>
+    <extension-point id="flow.main" type="context.flowstep" cardinality="0..n"/>
     <flowstep name="Bye"/>
   </pageflow>
 
@@ -23,9 +24,12 @@
   </pagerequest>
 
   <pagerequest name="Bye">
+    <state class="org.pustefixframework.sample.basic.state.ByeState"/>
     <output>
       <resource node="user" bean-ref="contextUser"/>
     </output>
   </pagerequest>
+
+  <extension-point id="pagerequest.main" type="context.pagerequest" cardinality="0..n"/>
 
 </context-xml-service-config>

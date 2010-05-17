@@ -4,9 +4,5 @@
   <part name="GENERAL_ERRROR">
     <theme name="default">Error!</theme>
   </part>
-  
-  <part name="LOGIN_FAILED">
-    <theme name="default">Login failed: wrong user or password</theme>
-  </part>
-  
+
 </include_parts>
