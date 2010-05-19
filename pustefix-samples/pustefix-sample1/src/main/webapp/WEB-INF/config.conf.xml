@@ -113,9 +113,8 @@
   <pagerequest name="home">
     <default>
       <input>
-        <!-- <wrapper prefix="info" class="de.schlund.pfixcore.example.iwrapper.AdultInfo" /> -->
+        <wrapper prefix="info" class="de.schlund.pfixcore.example.iwrapper.AdultInfo" />
         <wrapper prefix="prefix" class="de.schlund.pfixcore.example.iwrapper.IndexedTest" />
-        <handler prefix="info" class="de.schlund.pfixcore.example.MyModelHandler"/>
       </input>
       <output>
         <resource node="adultinfo" class="de.schlund.pfixcore.example.ContextAdultInfo" />
