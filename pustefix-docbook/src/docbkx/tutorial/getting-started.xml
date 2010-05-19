@@ -37,9 +37,15 @@
   <section xml:id="gettingstarted.mavensetup">
     <title>Maven setup</title>
     <para>
-      Pustefix provides a Maven archetype for quickly creating new applications. Therefore you
+      Pustefix provides some Maven archetypes for quickly creating new applications. Therefore you
       have to configure the repository where the according Pustefix artifacts reside (because
       they currently aren't hosted in the Maven central repository).  
+    </para>
+    <para>
+      You can either configure the repository globally for Maven or always specify the URL of the repository's
+      archetype-catalog when generating a new project (and add the repository configuration to the project's POM,
+      if not already there). If you don't want to configure it globally,
+      you can skip the next paragraphs and continue with the archetype generation in the next section.
     </para>
     <para>
       Adding the Pustefix repository can be easily done by adding the following profile to the
@@ -73,6 +79,17 @@
     </profile>
   </profiles>
 </settings>]]></programlisting>
+  </section>
+  <section xml:id="gettingstarted.mavenarchetypes">
+    <para>
+      Pustefix provides an archetype for creating a basic application. Just call <literal>mvn archetype:generate</literal>
+      and select the archetype <literal>pustefix-archetype-basic</literal>. You only have to specifiy the
+      <literal>archetypeCatalog</literal> parameter if you didn't globally setup the Pustefix Maven repository like 
+      described in the last section.
+    </para>
+    <programlisting>
+      $ mvn archetype:generate -DarchetypeCatalog=http://pustefix-framework.org/repository/maven/archetype-catalog.xml
+    </programlisting>
   </section>
   <section xml:id="gettingstarted.prepareprojectdirectory">
     <title>Prepare the project directory</title>

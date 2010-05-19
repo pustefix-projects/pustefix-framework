@@ -21,14 +21,11 @@
         </para>
       </listitem>
       <listitem>
-        <para>Apache Tomcat 5.5.x</para>
-      </listitem>
-      <listitem>
-        <para>Apache Ant 1.6.5 or newer</para>
+        <para>Apache Maven 2.0.10 or newer</para>
       </listitem>
     </itemizedlist>
     <para>
-      The installation of these tools (except Tomcat) is not covered by this
+      The installation of these tools is not covered by this
       tutorial. Please refer to the documentation provided with these tools
       for installation instructions.
     </para>
