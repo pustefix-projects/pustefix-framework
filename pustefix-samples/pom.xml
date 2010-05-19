@@ -16,6 +16,7 @@
   <name>Pustefix Samples</name>
   <modules>
     <module>pustefix-numberguess</module>
+    <module>pustefix-sample-basic</module>
     <module>pustefix-sample-firstapp</module>
     <module>pustefix-sample1</module>
     <module>pustefix-samplebank</module>
