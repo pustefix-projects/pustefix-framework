@@ -156,19 +156,19 @@
     <repository>
       <id>pustefix</id>
       <name>Pustefix Maven Release Repository</name>
-      <url>scpexe://pustefix@pustefixhp.schlund.de/home/pustefix/repository/maven</url>
+      <url>scpexe://pustefix@pustefix-hp.schlund.de/home/pustefix/repository/maven</url>
       <uniqueVersion>false</uniqueVersion>
     </repository>
     <snapshotRepository>
       <id>pustefix-snapshots</id>
       <name>Pustefix Maven Snapshot Repository</name>
-      <url>scpexe://pustefix@pustefixhp.schlund.de/home/pustefix/repository/maven</url>
+      <url>scpexe://pustefix@pustefix-hp.schlund.de/home/pustefix/repository/maven</url>
       <uniqueVersion>true</uniqueVersion>
     </snapshotRepository>
  
     <site>
       <id>pustefix</id>
-      <url>scpexe://pustefix@pustefixhp.schlund.de/var/www/pustefix-docs/0.15.x</url>
+      <url>scpexe://pustefix@pustefix-hp.schlund.de/var/www/pustefix-docs/0.15.x</url>
     </site>
   </distributionManagement>
   <profiles>
