@@ -14,6 +14,12 @@
     <authorgroup>
       <author>
         <personname>
+          <firstname>Martin</firstname>
+          <surname>Leidig</surname>
+        </personname>
+      </author>
+      <author>
+        <personname>
           <firstname>Stephan</firstname>
           <surname>Schmidt</surname>
         </personname>
@@ -62,194 +68,19 @@
     <title>Setting up a new project</title>
     <para>
       Before you can start developing the application, make sure that your system
-      fulfills all requirements that are mentioned in <xref linkend="gettingstarted.requirements"/>
-      and that you have build your Pustefix installation at least once, so that all necessary
-      files have been extracted from the Pustefix distribution. More information on building
-      Pustefix can be found in <xref linkend="gettingstarted.firstbuild"/>
+      fulfills all requirements that are mentioned in <xref linkend="gettingstarted.requirements"/>.
     </para>
     <para>
       If your environment is set up correctly, you may create a new Pustefix project. For this
-      tutorial, please name the project <emphasis>first-app</emphasis>. A new Pustefix project
-      can be created using the <filename>newProject.sh</filename> script, which is part of the
-      Pustefix distribution. This script will guide you to the project creation and copy and
-      create all necessary files for you new project.
+      tutorial, please name the project <emphasis>firstapp</emphasis>. A new Pustefix project
+      can be created using a Maven archetype as described in <xref linkend="gettingstarted.mavensetup"/> 
+      and <xref linkend="gettingstarted.mavenarchetypes"/>.
+      The project name corresponds to the artifactId, so you should enter <emphasis>firstapp</emphasis> when
+      you're asked by Maven.  
     </para>
     <para>
-      Please move to your installation directory and start the script:
-    </para>
-    <screen continuation="continues"><![CDATA[$ ./newproject.sh
-**************************************************
-*                                                *
-*         Pustefix ProjectGenerator 1.0          *
-*                                                *
-**************************************************
-
-Please follow the instructions to create a new project.
-You can abort the process by pressing Ctrl + C.
-
-Please type in the projects name e.g. "myproject"]]></screen>
-    <para>
-      After the <filename>newProject.sh</filename> script has been started, you will be asked for a project name.
-      Please enter <literal>first-app</literal> at the prompt and press return. The name of the project will be used
-      for several things:
-    </para>
-    <itemizedlist>
-      <listitem><para>It will be used as the name for the folder that contains all project-relevant files inside the <filename>projects</filename> directory</para></listitem>
-      <listitem><para>It will also be used as the default sub-domain name for your project.</para></listitem>
-    </itemizedlist>
-    <para>
-      After you entered the project name and pressed return, the setup script will continue:
-    </para>
-    <screen continuation="continues"><![CDATA[Please type in the projects default language (it's english if you leave the field blank).]]></screen>
-    <para>
-      As your application will be in English, just leave the default language empty and press return.
-      Again, the setup script will continue after you pressed return.
-    </para>
-    <screen continuation="continues"><![CDATA[Please type in a comment for the Project
-It will be "projectname + comment" if you leave it blank.]]></screen>
-    <para>
-      Please enter <literal>My first Pustefix application</literal> as a comment for the project. This will not be visible
-      anywhere for the users of your application.
-    </para>
-    <screen continuation="continues"><![CDATA[Please type in a name for the servlet 1]]></screen>
-    <para>
-      Every Pustefix application at least needs one servlet to process the request. Please enter <literal>app</literal> and
-      press return to assign a name to the servlet. The setup script will then continue. 
-    </para>
-    <screen continuation="continues"><![CDATA[Servlet 1 has been added!
-
-Would you like to create another servlet? [yes] [no]]]></screen>
-    <para>
-      In your first example application, all requests will be processed by the same servlet. Enter <literal>no</literal> to inform
-      the setup script, that you do not want to add another servlet. New servlets can easily be added during the development of
-      your application.> 
-    </para>
-    <para>
-      Now you provided all necessary information and the setup script will create a new project based on
-      your input.
-    </para>
-    <screen continuation="continues"><![CDATA[Creating project in "/path/to/your/installation/projects/" starts now
-
-Creating project folder: first-app
-Folder has been created successfully
-
-Creating subfolder starts now
-Creating folder conf...
-Folder has been created successfully
-Creating folder img...
-Folder has been created successfully
-Creating folder xsl...
-Folder has been created successfully
-Creating folder xml...
-Folder has been created successfully
-Creating folder txt & subfolders
-Folder has been created successfully
-Creating folder htdocs...
-Folder has been created successfully
-
-Xml files editing starts now...
-
-Try to read the dom of the given Document: /path/to/your/installation/projects/core/prjtemplates/config.tmpl
-Transforming into dom has been successfull
-Changing the attribute depend
-Changing attribute has been successfull
-Changing the attribute name
-Changing attribute has been successfull
-Changing the attribute name
-Changing attribute has been successfull
-Changing the attribute name
-Changing attribute has been successfull
-Writing the file: app.conf.xml
-Writing file has been successfull
-
-Writing the file: app.conf.xml
-Writing file has been successfull
-
-Try to read the dom of the given Document: /path/to/your/installation/projects/core/prjtemplates/depend.tmpl
-Transforming into dom has been successfull
-Changing the attribute project
-Changing attribute has been successfull
-Changing the attribute lang
-Changing attribute has been successfull
-Changing the attribute handler
-Changing attribute has been successfull
-Changing the attribute stylesheet
-Changing attribute has been successfull
-Changing the attribute stylesheet
-Changing attribute has been successfull
-Changing the attribute xml
-Changing attribute has been successfull
-Writing the file: depend.xml
-Writing file has been successfull
-
-Try to read the dom of the given Document: /path/to/your/installation/projects/core/prjtemplates/frame.tmpl
-Transforming into dom has been successfull
-Changing the attribute href
-Changing attribute has been successfull
-Writing the file: frame.xml
-Writing file has been successfull
-
-Try to read the dom of the given Document: /path/to/your/installation/projects/core/prjtemplates/project.tmpl
-Transforming into dom has been successfull
-Changing the value of the tag depend
-Changing Textnode has been successfull
-
-Changing the attribute name
-Changing attribute has been successfull
-Changing the value of the tag comment
-Changing Textnode has been successfull
-
-Changing the value of the tag servername
-Changing Textnode has been successfull
-
-Changing the value of the tag serveralias
-Changing Textnode has been successfull
-
-Changing the value of the tag defpath
-Changing Textnode has been successfull
-
-Changing the value of the tag passthrough
-Changing Textnode has been successfull
-
-Changing the value of the tag documentroot
-Changing Textnode has been successfull
-
-Writing the file: project.xml.in
-Writing file has been successfull
-
-Try to read the dom of the given Document: /path/to/your/installation/projects/core/prjtemplates/skin.tmpl
-Transforming into dom has been successfull
-Writing the file: skin.xsl
-Writing file has been successfull
-
-Try to read the dom of the given Document: /path/to/your/installation/projects/core/prjtemplates/metatags.tmpl
-Transforming into dom has been successfull
-Writing the file: metatags.xsl
-Writing file has been successfull
-
-Try to read the dom of the given Document: /path/to/your/installation/projects/core/prjtemplates/page.tmpl
-Transforming into dom has been successfull
-Changing the value of the tag theme
-Changing Textnode has been successfull
-
-Writing the file: main_home1.xml
-Writing file has been successfull
-
-Writing the file: main_home1.xml
-Writing file has been successfull
-
-
-Your project has been successfully created.
-To see how it works type in "ant".
-Afterwards restart Apache httpd and Tomcat.
-Then type in "http://first-app.HOSTNAME.DOMAIN"]]></screen>
-    <para>
-      To complete the setup process, please re-run <command>ant</command>. Now Pustefix will automatically create
-      the Apache and Tomcat configuration for your new project. Please make sure, that you restart Apache and Tomcat,
-      after <command>ant</command> has finished its work.
-    </para>
-    <para>
-      After you restarted your web server, please open a web browser and open the URL <uri>http://first-app.HOSTNAME.DOMAIN</uri>.
+      After Maven successfully created the new project, you can start it using <literal>mvn tomcat:run</literal>
+      and open it in your browser under <uri>http://localhost:8080/firstapp</uri>.
       Figure <xref linkend="wrapper-handler.first-app"/> shows the output of the new Pustefix project.
     </para>
     <figure xml:id="wrapper-handler.first-app">
@@ -264,52 +95,64 @@ Then type in "http://first-app.HOSTNAME.DOMAIN"]]></screen>
   <section xml:id="wrapper-handler.structure">
     <title>Generated files</title>
     <para>
-      The <filename>newProject.sh</filename> generated a working application for you. All relevant files have been put
-      into <filename>projects/first-app</filename>. Please take a look at the most important folders in this new project
-      directory:
+      Maven generated a working application for you. All relevant files have been put
+      into the <filename>firstapp</filename> folder within your working directory. Please take a look at the most important folders:
     </para>
     <itemizedlist>
       <listitem>
         <para>
-          The <filename>conf</filename> folder contains all configuration files for your applications. These are:
+          The <filename>src/main/webapp/WEB-INF</filename> folder contains all configuration files for your applications. These are:
         </para>
         <itemizedlist>
           <listitem>
             <para>
-              <filename>project.xml</filename> contains the information the project, like the domain name where
-              the project can be accessed, the servlets available in the project and some Apache configuration options.
+              <filename>project.xml</filename> contains general project information, framework configuration, e.g. for the
+              rendering system, exception processing, path mappings for static resources, etc.
             </para>
           </listitem>
           <listitem>
             <para>
-              <filename>app.conf.xml</filename> contains the configuration of the <literal>app</literal> servlet that
-              you created using the setup script.
+              <filename>app.xml</filename> contains the configuration concerning the Java part of the application, e.g. pagerequests and assigned Java
+              framework classes
             </para>
           </listitem>
           <listitem>
             <para>
-              <filename>depend.xml</filename> contains the configuration of the pages and XSL stylesheets used in
+              <filename>depend.xml</filename> contains the configuration concerning the XML/XSLT part of the application, e.g. pages and XSL stylesheets used in
               your project.
+            </para>
+          </listitem>
+          <listitem>
+            <para>
+              <filename>web.xml</filename> contains servlet configuration and mappings.
+            </para>
+          </listitem>
+          <listitem>
+            <para>
+              <filename>spring.xml</filename> is empty by default and can be used to configure your Spring beans.
+            </para>
+          </listitem>
+          <listitem>
+            <para>
+              <filename>pfixlog.xml</filename> contains the log4j configuration.
             </para>
           </listitem>
         </itemizedlist>
       </listitem>
       <listitem>
+          <para>
+            The <filename>src/main/webapp</filename> folder also contains resource folders. These are:
+          </para>
+          <itemizedlist>
+      <listitem>
         <para>
-          The <filename>htdocs</filename> is empty and can be used to store any resource that should be available
-          via the web server. Possible resources are JavaScript or CSS files.
+          The <filename>css</filename> and <filename>img</filename> folders contain
+          CSS files and images which should be delivered as static resources.
         </para>
       </listitem>
       <listitem>
         <para>
-          The same applies to the <filename>img</filename> folder, which apparently is used to store image files.
-        </para>
-      </listitem>
-      <listitem>
-        <para>
-          The <filename>txt</filename> folder contains the text and HTML content of your application. After the
-          setup script has finished, it contains a <filename>pages</filename> folder which stores the different
-          pages of the application. 
+          The <filename>txt</filename> folder contains the web pages, i.e. the according XML content and fragments.
         </para>
       </listitem>
       <listitem>
@@ -321,9 +164,11 @@ Then type in "http://first-app.HOSTNAME.DOMAIN"]]></screen>
       </listitem>
       <listitem>
         <para>
-          The <filename>xsl</filename> folder contains XSL stylesheets that are only used in your application.
-          XSL stylesheets provided by Pustefix are not located inside this folder but in <filename>projects/core/xsl</filename>.
+          The <filename>xsl</filename> folder contains XSL stylesheets that are only used in your application
+          (not including XSL stylesheets provided by Pustefix itself).
         </para>
+      </listitem>
+      </itemizedlist>
       </listitem>
     </itemizedlist>
   </section>
