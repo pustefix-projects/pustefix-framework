@@ -15,7 +15,7 @@
         <pfx:maincontent path="xml/pages" prefix=""/>
       </div>
       <div id="footer">
-        Powered by Pustefix Framework 1.0
+        Powered by Pustefix Framework <ixsl:value-of select="pfx:getFrameworkVersion()"/>
       </div>
       <pfx:editconsole/>
     </body>
