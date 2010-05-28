@@ -12,7 +12,7 @@
         Pustefix Sample Basic
       </div>
       <div id="content">
-        <pfx:maincontent path="xml/pages"/>
+        <pfx:maincontent path="xml/pages" prefix=""/>
       </div>
       <div id="footer">
         Powered by Pustefix Framework 1.0
