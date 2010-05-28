@@ -5,7 +5,12 @@
   <part name="content">
     <theme name="default">
       
-      <h3>Bye <ixsl:value-of select="/formresult/user/@name"/>, have fun with Pustefix and OSGi!!!</h3>
+      <div class="msg">
+        Bye <span class="name"><ixsl:value-of select="/formresult/user/@name"/></span>, 
+        have fun with Pustefix and OSGi!!!
+      </div>
+      
+      <pfx:button page="Home">Back</pfx:button>
     
     </theme>
   </part>
