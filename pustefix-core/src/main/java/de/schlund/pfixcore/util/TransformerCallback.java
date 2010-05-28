@@ -36,6 +36,7 @@ import org.apache.log4j.Logger;
 import org.pustefixframework.config.contextxmlservice.IWrapperConfig;
 import org.pustefixframework.config.contextxmlservice.PageRequestConfig;
 import org.pustefixframework.config.contextxmlservice.ProcessActionPageRequestConfig;
+import org.pustefixframework.util.FrameworkInfo;
 import org.pustefixframework.xmlgenerator.targets.TargetGenerator;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
@@ -395,6 +396,10 @@ public class TransformerCallback {
             return null;
         }
         return config.getState();
+    }
+    
+    public static String getFrameworkVersion() {
+        return FrameworkInfo.getVersion();
     }
     
 }
