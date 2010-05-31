@@ -275,6 +275,8 @@
       <xs:element ref="prop:properties" minOccurs="0"/>
     </xs:sequence>
     <xs:attribute name="class" use="required"/>
+    <xs:attribute name="bean-name"/>
+    <xs:attribute name="scope" type="prop:springBeanScope"/>
   </xs:complexType>
 
   <xs:element name="implements" type="prop:implementsType"/>
@@ -702,5 +704,17 @@
     <xs:attribute name="refid" type="xs:NCName" use="optional"></xs:attribute>
     <xs:attribute name="xpath" type="xs:string" use="optional"></xs:attribute>
   </xs:complexType>
+
+ 
+  <!--  General simple types -->
+
+  <xs:simpleType name="springBeanScope">
+    <xs:restriction base="xs:string">
+      <xs:enumeration value="prototype"/>
+      <xs:enumeration value="request"/>
+      <xs:enumeration value="session"/>
+      <xs:enumeration value="singleton"/>
+    </xs:restriction>
+  </xs:simpleType>
 
 </xs:schema>
