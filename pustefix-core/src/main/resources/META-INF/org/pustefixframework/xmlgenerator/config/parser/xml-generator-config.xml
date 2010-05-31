@@ -1,7 +1,7 @@
 <?xml version="1.0"?>
 <configuration
   xmlns="http://www.marsching.com/2008/flexiparse/configurationNS"
-  xmlns:c="http://www.pustefix-framework.org/2008/namespace/xml-generator-config"
+  xmlns:c="http://www.pustefix-framework.org/2009/namespace/xml-generator-config"
 >
 
   <!-- TODO: add customization support -->

@@ -1,7 +1,7 @@
 <?xml version="1.0"?>
 <configuration
   xmlns="http://www.marsching.com/2008/flexiparse/configurationNS"
-  xmlns:c="http://www.pustefix-framework.org/2008/namespace/direct-output-service-config"
+  xmlns:c="http://www.pustefix-framework.org/2009/namespace/direct-output-service-config"
 >
   
   <handler class="org.pustefixframework.config.directoutputservice.parser.DirectOutputPageRequestParsingHandler" run-order="both">

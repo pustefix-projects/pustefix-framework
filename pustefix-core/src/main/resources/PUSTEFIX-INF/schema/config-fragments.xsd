@@ -1,12 +1,14 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <xs:schema
-  targetNamespace="http://pustefix.sourceforge.net/configfragments200609"
+  targetNamespace="http://www.pustefix-framework.org/2009/namespace/config-fragments"
   xmlns:xs="http://www.w3.org/2001/XMLSchema"
-  xmlns:fr="http://pustefix.sourceforge.net/configfragments200609"
-  xmlns:prop="http://pustefix.sourceforge.net/properties200401"
+  xmlns:fr="http://www.pustefix-framework.org/2009/namespace/config-fragments"
+  xmlns:prop="http://www.pustefix-framework.org/2009/namespace/context-xml-service-config"
+  xmlns:dos="http://www.pustefix-framework.org/2009/namespace/direct-output-service-config"
   elementFormDefault="qualified">
   
-  <xs:import namespace="http://pustefix.sourceforge.net/properties200401" schemaLocation="../../core/schema/properties200401.xsd"></xs:import>
+  <xs:import namespace="http://www.pustefix-framework.org/2009/namespace/context-xml-service-config" schemaLocation="context-xml-service-config.xsd"></xs:import>
+  <xs:import namespace="http://www.pustefix-framework.org/2009/namespace/direct-output-service-config" schemaLocation="direct-output-service-config.xsd"></xs:import>
   
   <xs:element name="config-fragments" type="fr:configFragmentsType" />
 
@@ -142,7 +144,7 @@
     <xs:complexContent>
       <xs:extension base="fr:sectionType">
         <xs:sequence>
-          <xs:element ref="prop:directoutputpagerequest" minOccurs="0" maxOccurs="unbounded" />
+          <xs:element ref="dos:directoutputpagerequest" minOccurs="0" maxOccurs="unbounded" />
         </xs:sequence>
       </xs:extension>
     </xs:complexContent>

@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <xs:schema
-  targetNamespace="http://pustefix.sourceforge.net/scriptedflow200602"
+  targetNamespace="http://www.pustefix-framework.org/2008/namespace/scriptedflow"
   xmlns:xs="http://www.w3.org/2001/XMLSchema"
-  xmlns:sf="http://pustefix.sourceforge.net/scriptedflow200602"
+  xmlns:sf="http://www.pustefix-framework.org/2008/namespace/scriptedflow"
   elementFormDefault="qualified">
   
   <xs:element name="scriptedflow" type="sf:scriptedflowType">

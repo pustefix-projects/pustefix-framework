@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <xsd:schema xmlns:xsd="http://www.w3.org/2001/XMLSchema" 
-            xmlns="http://pustefix-framework.org/statuscodeinfo"
-            targetNamespace="http://pustefix-framework.org/statuscodeinfo"
+            xmlns="http://www.pustefix-framework.org/2008/namespace/statuscodeinfo"
+            targetNamespace="http://www.pustefix-framework.org/2008/namespace/statuscodeinfo"
             elementFormDefault="qualified" attributeFormDefault="unqualified">
 
   <xsd:annotation>

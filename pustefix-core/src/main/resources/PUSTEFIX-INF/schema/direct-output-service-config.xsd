@@ -1,0 +1,134 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema"
+  targetNamespace="http://www.pustefix-framework.org/2009/namespace/direct-output-service-config"
+  xmlns:prop="http://www.pustefix-framework.org/2009/namespace/direct-output-service-config" 
+  elementFormDefault="qualified" attributeFormDefault="unqualified">
+
+  <xs:element name="direct-output-service-config" type="prop:direct-output-service-config-Type"/>
+    
+  <xs:complexType name="direct-output-service-config-Type">
+    <xs:sequence>
+      <xs:element name="global-config" type="prop:global-config-Type"/>
+      <xs:element ref="prop:config-include" minOccurs="0" maxOccurs="unbounded"/>
+      <xs:element ref="prop:directoutputpagerequest" minOccurs="0" maxOccurs="unbounded"/>
+      <xs:element ref="prop:properties" minOccurs="0"/>
+    </xs:sequence>
+    <xs:attribute name="version" type="xs:token" use="required"/>
+  </xs:complexType>
+
+  <xs:complexType name="global-config-Type">
+    <xs:sequence>
+      <xs:choice minOccurs="0" maxOccurs="unbounded">
+        <xs:element ref="prop:force-ssl" minOccurs="0"/>
+        <xs:element ref="prop:force-serial-requests" minOccurs="0"/>
+        <xs:element name="choose" minOccurs="0" maxOccurs="unbounded">
+          <xs:complexType>
+            <xs:sequence>
+              <xs:element name="when" minOccurs="1" maxOccurs="unbounded">
+                <xs:complexType>
+                  <xs:all>
+                    <xs:element ref="prop:force-ssl" minOccurs="0"/>                      
+                  </xs:all>
+                  <xs:attribute name="test" use="required"/>
+                </xs:complexType>
+              </xs:element>
+              <xs:element name="otherwise" minOccurs="0" maxOccurs="1">
+                <xs:complexType>
+                  <xs:all>
+                    <xs:element ref="prop:force-ssl" minOccurs="0"/>                      
+                  </xs:all>
+                </xs:complexType>
+              </xs:element>
+            </xs:sequence>
+          </xs:complexType>
+        </xs:element>
+      </xs:choice>
+    </xs:sequence>
+  </xs:complexType>
+  
+  <xs:element name="force-ssl" type="xs:boolean"/>
+
+  <xs:element name="force-serial-requests" type="xs:boolean"/>
+
+  <xs:element name="config-include" type="prop:configIncludeType"/>
+  <xs:complexType name="configIncludeType">
+    <xs:attribute name="file" type="xs:string" use="required"></xs:attribute>
+    <xs:attribute name="section" use="optional">
+      <xs:simpleType>
+        <xs:restriction base="xs:token">
+          <xs:enumeration value="directoutputpagerequests"/>
+          <xs:enumeration value="properties"/>
+        </xs:restriction>
+      </xs:simpleType>
+    </xs:attribute>
+    <xs:attribute name="refid" type="xs:NCName" use="optional"></xs:attribute>
+    <xs:attribute name="xpath" type="xs:string" use="optional"></xs:attribute>
+  </xs:complexType>
+
+  <xs:element name="directoutputpagerequest" type="prop:directoutputpagerequestType"/>
+  <xs:complexType name="directoutputpagerequestType">
+    <xs:sequence>
+      <xs:element ref="prop:directoutputstate"/>
+      <xs:element name="authconstraint" type="prop:authconstraintRefType" minOccurs="0"/>
+      <xs:element ref="prop:properties" minOccurs="0"/>
+    </xs:sequence>
+    <xs:attribute name="name" use="required"/>
+  </xs:complexType>
+  
+  <xs:element name="directoutputstate" type="prop:directoutputstateType"/>
+  <xs:complexType name="directoutputstateType">
+    <xs:attribute name="class"/>
+  </xs:complexType>
+  
+  <xs:complexType name="authconstraintRefType">
+    <xs:attribute name="ref" type="xs:string" use="required"/>
+  </xs:complexType>
+  
+  <xs:element name="properties" type="prop:propertiesType"/>
+  <xs:complexType name="propertiesType">
+    <xs:sequence>
+      <xs:choice minOccurs="1" maxOccurs="unbounded">
+        <xs:element ref="prop:prop"/>
+        <xs:element ref="prop:choose"/>
+        <xs:element ref="prop:config-include"/>
+      </xs:choice>
+    </xs:sequence>
+  </xs:complexType>
+
+  <xs:element name="prop" type="prop:propType"/>
+  <xs:complexType name="propType" mixed="true">
+    <xs:sequence>
+      <!-- allow <cus:fqdn/> etc -->
+      <xs:any namespace="http://www.schlund.de/pustefix/customize" processContents="lax" minOccurs="0" maxOccurs="unbounded"/>
+    </xs:sequence>
+    <xs:attribute name="name" use="required"/>
+  </xs:complexType>
+
+  <xs:element name="choose" type="prop:chooseType"/>
+  <xs:complexType name="chooseType">
+    <xs:sequence>
+      <xs:element name="when" minOccurs="1" maxOccurs="unbounded">
+        <xs:complexType>
+          <xs:sequence>
+            <xs:choice minOccurs="0" maxOccurs="unbounded">
+              <xs:element ref="prop:prop"/>
+              <xs:element ref="prop:config-include"/>
+            </xs:choice>
+          </xs:sequence>
+          <xs:attribute name="test" use="required"/>
+        </xs:complexType>
+      </xs:element>
+      <xs:element name="otherwise" minOccurs="0" maxOccurs="1">
+        <xs:complexType>
+          <xs:sequence>
+            <xs:choice minOccurs="0" maxOccurs="unbounded">
+              <xs:element ref="prop:prop"/>
+              <xs:element ref="prop:config-include"/>
+            </xs:choice>
+          </xs:sequence>
+        </xs:complexType>
+      </xs:element>
+    </xs:sequence>
+  </xs:complexType>
+
+</xs:schema>

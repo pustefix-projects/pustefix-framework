@@ -37,7 +37,7 @@ public class ConfigurationParsingHandler implements ParsingHandler {
     public void handleNode(HandlerContext context) throws ParserException {
         
     	Element element = (Element)context.getNode();
-    	ParsingUtils.checkAttributes(element, new String[] {"project", "lang", "xmlns"}, new String[] {"themes", "xsltversion"});    	
+    	ParsingUtils.checkAttributes(element, new String[] {"project", "lang", "xmlns"}, new String[] {"themes", "xsltversion", "xmlns:xsi", "xsi:schemaLocation"});    	
     	
      	Configuration configuration = ParsingUtils.getSingleTopObject(Configuration.class, context);
     	

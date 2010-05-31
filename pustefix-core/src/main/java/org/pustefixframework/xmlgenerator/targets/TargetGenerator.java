@@ -18,6 +18,7 @@
 
 package org.pustefixframework.xmlgenerator.targets;
 
+import java.io.ByteArrayInputStream;
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
@@ -52,6 +53,8 @@ import org.pustefixframework.resource.InputStreamResource;
 import org.pustefixframework.resource.LastModifiedInfoResource;
 import org.pustefixframework.resource.Resource;
 import org.pustefixframework.resource.ResourceLoader;
+import org.pustefixframework.util.io.StreamUtils;
+import org.pustefixframework.util.xml.NamespaceUtils;
 import org.pustefixframework.xmlgenerator.cachestat.CacheStatistic;
 import org.pustefixframework.xmlgenerator.config.model.Configuration;
 import org.pustefixframework.xmlgenerator.config.model.IncludeDef;
@@ -76,8 +79,6 @@ import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.xml.sax.SAXException;
 
-import sun.nio.cs.ext.TIS_620;
-
 import com.marsching.flexiparse.parser.OSGiAwareParser;
 import com.marsching.flexiparse.parser.Parser;
 
@@ -98,7 +99,10 @@ import de.schlund.pfixxml.util.XsltVersion;
  */
 
 public class TargetGenerator implements ModelChangeListener, InitializingBean, BundleContextAware, DisposableBean {
-
+    
+    private static String DEPRECATED_CONFIG_NS = "http://www.pustefix-framework.org/2008/namespace/xml-generator-config";
+    private static String CONFIG_NS = "http://www.pustefix-framework.org/2009/namespace/xml-generator-config";
+    
     public static final String XSLPARAM_TG = "__target_gen";
     public static final String XSLPARAM_TKEY = "__target_key";
     public static final String XSLPARAM_NAVITREE = "__navitree";
@@ -337,7 +341,7 @@ public class TargetGenerator implements ModelChangeListener, InitializingBean, B
 
     private void loadConfig(Resource configFile) throws XMLException, IOException, SAXException {
         config_mtime = System.currentTimeMillis();
-        logger.warn("\n***** CAUTION! ***** loading config " + configFile.toString() + "...");
+        logger.info("loading config " + configFile.toString());
         
         targetDependencyRelation = new TargetDependencyRelation();
         auxDependencyFactory = new AuxDependencyFactory(targetDependencyRelation);
@@ -348,10 +352,21 @@ public class TargetGenerator implements ModelChangeListener, InitializingBean, B
         	Parser configParser = new OSGiAwareParser(bundleContext, "META-INF/org/pustefixframework/xmlgenerator/config/parser/xml-generator-config.xml");
         	Properties buildTimeProperties = RuntimeProperties.getProperties();
         	CustomizationInfo cusInfo = new PropertiesBasedCustomizationInfo(buildTimeProperties);
-        	InputStream in = ((InputStreamResource)configFile).getInputStream();
-        	configuration = new Configuration();
+        	InputStream in = null;
+        	String namespace = NamespaceUtils.getNamespace(((InputStreamResource)configFile).getInputStream());
+        	if(DEPRECATED_CONFIG_NS.equals(namespace)) {
+        	    logger.warn("XML generator configuration uses deprecated namespace '" + DEPRECATED_CONFIG_NS + "'. " +
+                            "You should replace it by '" + CONFIG_NS +"'.");
+        	    logger.warn("Trying to continue by replacing the namespace on the fly.");
+        	    String content = StreamUtils.load(((InputStreamResource)configFile).getInputStream(), "utf8");
+        	    content = content.replaceAll(DEPRECATED_CONFIG_NS, CONFIG_NS);
+        	    in = new ByteArrayInputStream(content.getBytes("utf8"));
+            }
+        	if(in == null) in = ((InputStreamResource)configFile).getInputStream();
         	
+        	configuration = new Configuration();
         	configParser.parse(in, cusInfo, configuration, bundleContext, resourceLoader);
+        	
         	for(StandardMaster master:configuration.getStandardMasters()) addModelElement(master);
         	for(StandardMetatags metatags:configuration.getStandardMetatags()) addModelElement(metatags);
         	for(TargetDef targetDef:configuration.getTargetDefs()) addModelElement(targetDef);

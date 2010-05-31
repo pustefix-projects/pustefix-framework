@@ -83,7 +83,7 @@ public class ContextResourceParsingHandler implements ParsingHandler {
         // name to reference this implementation...
         crConfig.addInterface(implClass);
         
-        NodeList itfNodes = element.getElementsByTagNameNS("http://www.pustefix-framework.org/2008/namespace/context-xml-service-config", "implements");
+        NodeList itfNodes = element.getElementsByTagNameNS("http://www.pustefix-framework.org/2009/namespace/context-xml-service-config", "implements");
         for(int i=0;i<itfNodes.getLength();i++) {
             Element itfElem = (Element)itfNodes.item(i);
             String itfClassName = itfElem.getAttribute("class");
