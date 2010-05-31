@@ -1,6 +1,9 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema" targetNamespace="http://pustefix.sourceforge.net/interfacewrapper200401" 
-  xmlns="http://pustefix.sourceforge.net/interfacewrapper200401" elementFormDefault="qualified" attributeFormDefault="unqualified" >
+<xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema" 
+           targetNamespace="http://www.pustefix-framework.org/2008/namespace/iwrapper" 
+           xmlns="http://www.pustefix-framework.org/2008/namespace/iwrapper" 
+           elementFormDefault="qualified" attributeFormDefault="unqualified">
+           
   <xs:complexType name="cparamType" mixed="true">
     <xs:attribute name="name" use="required"/>
     <xs:attribute name="value" use="required"/>

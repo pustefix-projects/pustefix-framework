@@ -820,9 +820,12 @@ public interface State {
       <para>
         The syntax of the .iwrp file is given below.
       </para>
-      <programlisting language="xml"><![CDATA[<interface xsi:schemaLocation="http://pustefix.sourceforge.net/interfacewrapper200401 http://pustefix.sourceforge.net/interfacewrapper200401.xsd" extends="some.other.iwrapper.class"
-  xmlns="http://pustefix.sourceforge.net/interfacewrapper200401"
-  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+      <programlisting language="xml"><![CDATA[<interface xmlns="http://www.pustefix-framework.org/2008/namespace/iwrapper"
+           xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+           xsi:schemaLocation="http://www.pustefix-framework.org/2008/namespace/iwrapper 
+                               http://www.pustefix-framework.org/2008/namespace/iwrapper.xsd"
+           extends="some.other.iwrapper.class">
+
   <!--
     The class attribute references the associated IHandler class. Alternatively you can
     reference an existing Spring bean using the bean-ref attribute.
@@ -1116,7 +1119,7 @@ If your error message should contain dynamic data, you can use placeholders, whi
 StatusCodes can be also referenced from within IWrapper definitions. If you're using a built-in StatusCode (from org.pustefixframework.generated.CoreStatusCodes), you can just use its name, if you're using a StatusCode from another module, you have to prefix the name with the class name of the generated class separated by a <literal>#</literal> sign:
 </para>
 <programlisting language="xml"><![CDATA[
-<interface xmlns="http://pustefix.sourceforge.net/interfacewrapper200401">
+<interface xmlns="http://www.pustefix-framework.org/2008/namespace/iwrapper">
 
   <ihandler class="..."/>
   

@@ -68,7 +68,7 @@ import de.schlund.pfixcore.generator.annotation.Transient;
  */
 public class IWrapperAnnotationProcessor implements AnnotationProcessor {
 
-    private final static String XMLNS_IWRP = "http://pustefix.sourceforge.net/interfacewrapper200401";
+    private final static String XMLNS_IWRP = "http://www.pustefix-framework.org/2008/namespace/iwrapper";
     private final static String DEFAULT_SUFFIX = "Wrapper";
 
     private static DocumentBuilderFactory docBuilderFactory;
