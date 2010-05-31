@@ -16,7 +16,7 @@
   </xs:element>
   <xs:complexType name="context-xml-service-config-Type">
     <xs:sequence>
-      <xs:element name="global-config" type="prop:context-xml-global-config-Type"/>
+      <xs:element name="global-config" type="prop:context-xml-global-config-Type" minOccurs="0"/>
       <xs:element ref="prop:context"/>
       <xs:element ref="prop:interceptors" maxOccurs="1" minOccurs="0"/>
       <xs:choice minOccurs="0" maxOccurs="unbounded">
