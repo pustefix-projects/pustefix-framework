@@ -18,6 +18,7 @@
       </xsd:sequence>
       <xsd:attribute name="lang" type="xsd:string" use="required"/>
       <xsd:attribute name="themes" type="xsd:string"/>
+      <xsd:attribute name="project" type="xsd:string" use="optional"/>
     </xsd:complexType>
   </xsd:element>
   
