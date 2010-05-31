@@ -4,10 +4,6 @@
   xmlns:prop="http://www.pustefix-framework.org/2008/namespace/context-xml-service-config" 
   elementFormDefault="qualified" attributeFormDefault="unqualified">
 
-  <!--
-  CVS Revision: $Revision: 3691 $
-  -->
-
   <xs:element name="context-xml-service-config" type="prop:context-xml-service-config-Type">
 <!--    <xs:keyref refer="prop:contextresourceimplements" name="contextresourceimplements2pagerequestoutputresource">-->
 <!--      <xs:selector xpath="prop:pagerequest/prop:output/prop:resource"></xs:selector>-->
@@ -48,7 +44,7 @@
       <xs:element ref="prop:exception" minOccurs="0" maxOccurs="unbounded"/>
       <xs:element ref="prop:properties" minOccurs="0"/>
     </xs:sequence>
-    <xs:attribute name="version" type="xs:token" use="required"/>
+    <xs:attribute name="version" type="xs:token" default="1.0"/>
   </xs:complexType>
 
   <xs:complexType name="global-config-Type" abstract="true">
