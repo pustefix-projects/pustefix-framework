@@ -19,7 +19,7 @@
     <module>application</module>
     <module>webmodule</module>
     <module>service-api</module>
-    <module>service-dm</module>
+    <!--<module>service-dm</module>-->
     <module>service-osgi</module>
   </modules>
 
