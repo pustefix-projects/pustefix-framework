@@ -8,4 +8,6 @@
 
   <context:annotation-config/>
 
+  <!-- add your bundle local beans here -->
+
 </beans>
