@@ -8,7 +8,11 @@
   
   <extension type="context.pagerequest">
     <extend extension-point="pagerequest.main"/>
-    <pagerequest name="Test"/>
+    <pagerequest name="Guess">
+      <input>
+        <wrapper prefix="guess" class="org.pustefixframework.samples.modular.handler.Guess"/>
+      </input>
+    </pagerequest>
   </extension>
   
 </context-xml-service-config>
