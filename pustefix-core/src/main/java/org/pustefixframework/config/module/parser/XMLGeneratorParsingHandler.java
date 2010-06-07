@@ -18,12 +18,15 @@
 
 package org.pustefixframework.config.module.parser;
 
+import java.io.ByteArrayInputStream;
 import java.io.IOException;
+import java.io.InputStream;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.util.Collection;
 import java.util.Properties;
 
+import org.apache.log4j.Logger;
 import org.osgi.framework.BundleContext;
 import org.pustefixframework.config.Constants;
 import org.pustefixframework.config.customization.CustomizationInfo;
@@ -32,6 +35,8 @@ import org.pustefixframework.config.customization.RuntimeProperties;
 import org.pustefixframework.config.generic.ParsingUtils;
 import org.pustefixframework.resource.InputStreamResource;
 import org.pustefixframework.resource.ResourceLoader;
+import org.pustefixframework.util.io.StreamUtils;
+import org.pustefixframework.util.xml.NamespaceUtils;
 import org.pustefixframework.xmlgenerator.config.model.XMLExtension;
 import org.pustefixframework.xmlgenerator.config.model.XMLExtensions;
 import org.springframework.beans.factory.config.BeanDefinition;
@@ -56,6 +61,11 @@ import com.marsching.flexiparse.parser.exception.ParserException;
  */
 public class XMLGeneratorParsingHandler implements ParsingHandler {
 
+    private static String DEPRECATED_CONFIG_NS = "http://www.pustefix-framework.org/2008/namespace/xml-generator-config";
+    private static String CONFIG_NS = "http://www.pustefix-framework.org/2009/namespace/xml-generator-config";
+    
+    private static Logger LOG = Logger.getLogger(XMLGeneratorParsingHandler.class);
+    
     public void handleNode(HandlerContext context) throws ParserException {
     	
     	Element element = (Element)context.getNode();
@@ -79,9 +89,26 @@ public class XMLGeneratorParsingHandler implements ParsingHandler {
         BeanDefinitionRegistry beanReg = ParsingUtils.getSingleTopObject(BeanDefinitionRegistry.class, context);
         
         Parser parser = new OSGiAwareParser(appContext.getBundleContext(),"META-INF/org/pustefixframework/xmlgenerator/config/parser/xml-generator-config-module.xml");
+        
+        InputStream in = null;
+        try {
+            String namespace = NamespaceUtils.getNamespace(resource.getInputStream());
+            if(DEPRECATED_CONFIG_NS.equals(namespace)) {
+                LOG.warn("XML generator configuration uses deprecated namespace '" + DEPRECATED_CONFIG_NS + "'. " +
+                         "You should replace it by '" + CONFIG_NS +"'.");
+                LOG.warn("Trying to continue by replacing the namespace on the fly.");
+                String content = StreamUtils.load(resource.getInputStream(), "utf8");
+                content = content.replaceAll(DEPRECATED_CONFIG_NS, CONFIG_NS);
+                in = new ByteArrayInputStream(content.getBytes("utf8"));
+            }
+        } catch(Exception x) {
+            throw new ParserException("Error checking namespace", x);
+        }
+        
         Collection<XMLExtension> extensions;
         try {
-        	InputSource source = new InputSource(resource.getInputStream());
+            if(in == null) in = resource.getInputStream();
+        	InputSource source = new InputSource(in);
         	source.setSystemId(resource.getURI().toASCIIString());
         	ObjectTreeElement objectTree = parser.parse(source, runtimeProperties, cusInfo, beanReg, appContext, bundleContext, resourceLoader);
         	extensions = objectTree.getObjectsOfTypeFromSubTree(XMLExtension.class);

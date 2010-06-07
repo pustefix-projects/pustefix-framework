@@ -234,7 +234,7 @@
       </activation>
       <properties>
         <mode>test</mode>
-        <logLevel>info</logLevel>
+        <logLevel>warn</logLevel>
       </properties>
     </profile>
     <profile>

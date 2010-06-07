@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<xml-generator-config xmlns="http://www.pustefix-framework.org/2008/namespace/xml-generator-config">
+<xml-generator-config xmlns="http://www.pustefix-framework.org/2009/namespace/xml-generator-config">
 
   <extension type="xml.page">
     <extend extension-point="navigation.main"/>

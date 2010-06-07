@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
-<context-xml-service-config xmlns="http://www.pustefix-framework.org/2008/namespace/context-xml-service-config" 
+<context-xml-service-config xmlns="http://www.pustefix-framework.org/2009/namespace/context-xml-service-config" 
                             xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" 
-                            xsi:schemaLocation="http://www.pustefix-framework.org/2008/namespace/context-xml-service-config 
+                            xsi:schemaLocation="http://www.pustefix-framework.org/2009/namespace/context-xml-service-config 
                                                 ../../core/schema/context-xml-service-config.xsd"
                             version="1.0">
   

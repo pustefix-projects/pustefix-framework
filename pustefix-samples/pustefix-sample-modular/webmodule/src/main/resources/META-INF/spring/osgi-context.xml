@@ -7,7 +7,7 @@
                            http://www.springframework.org/schema/osgi 
                            http://www.springframework.org/schema/osgi/spring-osgi.xsd">
 
-  <osgi:reference id="randomNumberGenerator" 
+<!--   <osgi:reference id="randomNumberGenerator" 
                   interface="org.pustefixframework.samples.modular.service.RandomNumberGenerator"/>
-
+-->
 </beans>

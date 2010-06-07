@@ -18,12 +18,15 @@
 
 package org.pustefixframework.config.module.parser;
 
+import java.io.ByteArrayInputStream;
 import java.io.IOException;
+import java.io.InputStream;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.util.Collection;
 import java.util.Properties;
 
+import org.apache.log4j.Logger;
 import org.pustefixframework.config.customization.CustomizationInfo;
 import org.pustefixframework.config.customization.PropertiesBasedCustomizationInfo;
 import org.pustefixframework.config.customization.RuntimeProperties;
@@ -32,6 +35,8 @@ import org.pustefixframework.config.module.ModuleFlag;
 import org.pustefixframework.resource.InputStreamResource;
 import org.pustefixframework.resource.ResourceLoader;
 import org.pustefixframework.resource.URLResource;
+import org.pustefixframework.util.io.StreamUtils;
+import org.pustefixframework.util.xml.NamespaceUtils;
 import org.springframework.beans.factory.BeanDefinitionStoreException;
 import org.springframework.beans.factory.support.BeanDefinitionRegistry;
 import org.springframework.osgi.context.ConfigurableOsgiBundleApplicationContext;
@@ -53,6 +58,11 @@ import com.marsching.flexiparse.parser.exception.ParserException;
  */
 public class PustefixContextXMLRequestHandlerParsingHandler implements ParsingHandler {
 
+    private static String DEPRECATED_CONFIG_NS = "http://www.pustefix-framework.org/2008/namespace/context-xml-service-config";
+    private static String CONFIG_NS = "http://www.pustefix-framework.org/2009/namespace/context-xml-service-config";
+    
+    private static Logger LOG = Logger.getLogger(PustefixContextXMLRequestHandlerParsingHandler.class);
+    
     public void handleNode(HandlerContext context) throws ParserException {
         ResourceLoader resourceLoader = ParsingUtils.getSingleTopObject(ResourceLoader.class, context);
 
@@ -88,7 +98,23 @@ public class PustefixContextXMLRequestHandlerParsingHandler implements ParsingHa
             
             Parser contextXmlConfigParser = new OSGiAwareParser(appContext.getBundleContext(), "META-INF/org/pustefixframework/config/context-xml-service/parser/context-xml-service-config-module.xml");
             
-            InputSource configurationSource = new InputSource(configurationResource.getInputStream());
+            InputStream in = null;
+            try {
+                String namespace = NamespaceUtils.getNamespace(configurationResource.getInputStream());
+                if(DEPRECATED_CONFIG_NS.equals(namespace)) {
+                    LOG.warn("Context configuration uses deprecated namespace '" + DEPRECATED_CONFIG_NS + "'. " +
+                             "You should replace it by '" + CONFIG_NS +"'.");
+                    LOG.warn("Trying to continue by replacing the namespace on the fly.");
+                    String content = StreamUtils.load(configurationResource.getInputStream(), "utf-8");
+                    content = content.replaceAll(DEPRECATED_CONFIG_NS, CONFIG_NS);
+                    in = new ByteArrayInputStream(content.getBytes("utf8"));
+                }
+            } catch(Exception x) {
+                throw new ParserException("Error checking namespace", x);
+            }
+            if(in == null) in = configurationResource.getInputStream();
+            
+            InputSource configurationSource = new InputSource(in);
             if (configurationResource instanceof URLResource) {
                 URLResource urlResource = (URLResource) configurationResource;
                 configurationSource.setSystemId(urlResource.getURL().toExternalForm());

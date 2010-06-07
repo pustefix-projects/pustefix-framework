@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<context-xml-service-config xmlns="http://www.pustefix-framework.org/2008/namespace/context-xml-service-config">
+<context-xml-service-config xmlns="http://www.pustefix-framework.org/2009/namespace/context-xml-service-config">
 
   <extension type="context.flowstep">
     <extend extension-point="flow.main"/>
@@ -9,9 +9,11 @@
   <extension type="context.pagerequest">
     <extend extension-point="pagerequest.main"/>
     <pagerequest name="Guess">
+    <!-- 
       <input>
         <wrapper prefix="guess" class="org.pustefixframework.samples.modular.handler.Guess"/>
       </input>
+     -->
     </pagerequest>
   </extension>
   
