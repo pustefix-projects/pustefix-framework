@@ -18,8 +18,10 @@
 
 package org.pustefixframework.config.application.parser;
 
+import java.io.ByteArrayInputStream;
 import java.io.FileNotFoundException;
 import java.io.IOException;
+import java.io.InputStream;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.util.Collection;
@@ -28,6 +30,7 @@ import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.ParserConfigurationException;
 
+import org.apache.log4j.Logger;
 import org.pustefixframework.config.Constants;
 import org.pustefixframework.config.customization.CustomizationAwareParsingHandler;
 import org.pustefixframework.config.customization.CustomizationInfo;
@@ -36,6 +39,8 @@ import org.pustefixframework.config.generic.ParsingUtils;
 import org.pustefixframework.http.PustefixContextDirectOutputRequestHandler;
 import org.pustefixframework.resource.InputStreamResource;
 import org.pustefixframework.resource.ResourceLoader;
+import org.pustefixframework.util.io.StreamUtils;
+import org.pustefixframework.util.xml.NamespaceUtils;
 import org.springframework.beans.factory.config.BeanDefinition;
 import org.springframework.beans.factory.config.RuntimeBeanReference;
 import org.springframework.beans.factory.support.BeanDefinitionBuilder;
@@ -58,6 +63,11 @@ import de.schlund.pfixxml.serverutil.SessionAdmin;
 
 public class PustefixContextDirectOutputRequestHandlerParsingHandler extends CustomizationAwareParsingHandler {
 
+    private static String DEPRECATED_CONFIG_NS = "http://www.pustefix-framework.org/2008/namespace/direct-output-service-config";
+    private static String CONFIG_NS = "http://www.pustefix-framework.org/2009/namespace/direct-output-service-config";
+    
+    private static Logger LOG = Logger.getLogger(PustefixContextDirectOutputRequestHandlerParsingHandler.class);
+    
     @Override
     public void handleNodeIfActive(HandlerContext context) throws ParserException {
         ResourceLoader resourceLoader = ParsingUtils.getSingleTopObject(ResourceLoader.class, context);
@@ -95,13 +105,30 @@ public class PustefixContextDirectOutputRequestHandlerParsingHandler extends Cus
         ConfigurableOsgiBundleApplicationContext appContext = ParsingUtils.getSingleTopObject(ConfigurableOsgiBundleApplicationContext.class, context);
         
         OSGiAwareParser configParser = new OSGiAwareParser(appContext.getBundleContext(), "META-INF/org/pustefixframework/config/direct-output-service/parser/direct-output-service-config-application.xml");
+        
+        InputStream in = null;
+        try {
+            String namespace = NamespaceUtils.getNamespace(configurationResource.getInputStream());
+            if(DEPRECATED_CONFIG_NS.equals(namespace)) {
+                LOG.warn("Direct output configuration uses deprecated namespace '" + DEPRECATED_CONFIG_NS + "'. " +
+                         "You should replace it by '" + CONFIG_NS +"'.");
+                LOG.warn("Trying to continue by replacing the namespace on the fly.");
+                String content = StreamUtils.load(configurationResource.getInputStream(), "utf-8");
+                content = content.replaceAll(DEPRECATED_CONFIG_NS, CONFIG_NS);
+                in = new ByteArrayInputStream(content.getBytes("utf8"));
+            }
+        } catch(Exception x) {
+            throw new ParserException("Error checking namespace", x);
+        }
+        
         final ObjectTreeElement root;
         try {
             DocumentBuilderFactory dbf = DocumentBuilderFactory.newInstance();
             dbf.setNamespaceAware(true);
             dbf.setXIncludeAware(true);
             DocumentBuilder db = dbf.newDocumentBuilder();
-            Document doc = db.parse(configurationResource.getInputStream()); 
+            if(in == null) in = configurationResource.getInputStream();
+            Document doc = db.parse(in); 
             root = configParser.parse(doc, info, registry, appContext, resourceLoader);
         } catch (FileNotFoundException e) {
             throw new ParserException("Could not find referenced configuration file: " + configurationFile, e);
