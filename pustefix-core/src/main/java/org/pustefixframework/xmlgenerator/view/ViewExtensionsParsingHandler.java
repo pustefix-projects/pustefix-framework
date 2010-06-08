@@ -25,6 +25,7 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.osgi.framework.BundleContext;
 import org.pustefixframework.config.generic.ParsingUtils;
+import org.pustefixframework.extension.ExtensionPoint;
 import org.pustefixframework.resource.ResourceLoader;
 import org.springframework.beans.factory.config.BeanDefinition;
 import org.springframework.beans.factory.support.BeanDefinitionBuilder;
@@ -88,7 +89,7 @@ public class ViewExtensionsParsingHandler implements ParsingHandler {
         properties.put("type", extensionPoint.getType());
         properties.put("version", extensionPoint.getVersion());
 		
-		bundleContext.registerService(ViewExtensionPoint.class.getName(), extensionPoint, properties);
+		bundleContext.registerService(new String[] {ExtensionPoint.class.getName(), ViewExtensionPoint.class.getName()}, extensionPoint, properties);
     }
 
 }

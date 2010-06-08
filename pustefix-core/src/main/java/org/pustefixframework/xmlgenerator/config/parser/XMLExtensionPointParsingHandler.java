@@ -57,7 +57,7 @@ public class XMLExtensionPointParsingHandler implements ParsingHandler {
         properties.put("version", version);
 		
 		BundleContext bundleContext = ParsingUtils.getSingleTopObject(BundleContext.class, context);
-		bundleContext.registerService(getExtensionPointInterface(type).getName(), extensionPoint, properties);
+		bundleContext.registerService(new String[] {ExtensionPoint.class.getName(), getExtensionPointInterface(type).getName()}, extensionPoint, properties);
 		
 		registerExtensionPoint(extensionPoint, context);
 		
