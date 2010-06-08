@@ -23,6 +23,7 @@ import java.util.LinkedList;
 import java.util.List;
 
 import org.osgi.framework.BundleContext;
+import org.osgi.framework.Filter;
 import org.osgi.framework.ServiceReference;
 import org.osgi.util.tracker.ServiceTracker;
 import org.pustefixframework.extension.Extension;
@@ -141,7 +142,16 @@ public class AbstractExtension <T1 extends ExtensionPoint<? super T2>, T2 extend
     }
     
     public void afterPropertiesSet() throws Exception {
-        serviceTracker = new ExtensionPointServiceTracker(extensionPointType);
+        StringBuilder filter = new StringBuilder();
+        filter.append("(&");
+        filter.append("(objectClass="+extensionPointType.getName()+")");
+        filter.append("(|");
+        for (ExtensionTargetInfo info : extensionTargetInfos) {
+            filter.append("(extension-point="+info.getExtensionPoint()+")");
+        }
+        filter.append(")");
+        filter.append(")");
+        serviceTracker = new ExtensionPointServiceTracker(bundleContext.createFilter(filter.toString()));
         serviceTracker.open();
     }
 
@@ -157,6 +167,10 @@ public class AbstractExtension <T1 extends ExtensionPoint<? super T2>, T2 extend
     private class ExtensionPointServiceTracker extends ServiceTracker {
         public ExtensionPointServiceTracker(Class<? extends ExtensionPoint<? super T2>> extensionPointType) {
             super(bundleContext, extensionPointType.getName(), null);
+        }
+        
+        public ExtensionPointServiceTracker(Filter filter) {
+            super(bundleContext, filter, null);
         }
 
         @Override
