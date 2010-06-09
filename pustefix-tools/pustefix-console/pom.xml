@@ -20,7 +20,9 @@
   </dependencies>
 
   <modules>
+    <module>pustefix-console-core</module>
     <module>pustefix-console-equinox</module>
+    <module>pustefix-console-felix</module>
   </modules>
 
 </project>
