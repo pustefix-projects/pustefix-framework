@@ -38,4 +38,18 @@
       </includes>
     </fileSet>
   </fileSets>
+  <requiredProperties>
+    <requiredProperty key="groupId">
+      <defaultValue>mytld.myorg.mysection</defaultValue>
+    </requiredProperty>
+    <requiredProperty key="artifactId">
+      <defaultValue>myapp</defaultValue>
+    </requiredProperty>
+    <requiredProperty key="version">
+      <defaultValue>1.0-SNAPSHOT</defaultValue>
+    </requiredProperty>
+    <requiredProperty key="package">
+      <defaultValue>mytld.myorg.mysection.myapp</defaultValue>
+    </requiredProperty>
+  </requiredProperties>
 </archetype-descriptor>
