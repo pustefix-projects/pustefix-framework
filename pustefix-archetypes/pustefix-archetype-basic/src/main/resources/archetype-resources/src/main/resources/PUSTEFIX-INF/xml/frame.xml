@@ -10,8 +10,16 @@
       <link href="{${symbol_dollar}__contextpath}/css/style.css" media="all" rel="stylesheet" type="text/css"/>
     </head>
     <body>
-      <pfx:image src="img/logo.png"/>
-      <pfx:maincontent/>
+      <div id="header">
+        <pfx:image src="img/logo.png"/>
+        Pustefix Sample Basic
+      </div>
+      <div id="content">
+        <pfx:maincontent path="xml/pages" prefix=""/>
+      </div>
+      <div id="footer">
+        Powered by Pustefix Framework <ixsl:value-of select="pfx:getFrameworkVersion()"/>
+      </div>
       <pfx:editconsole/>
     </body>
   </html>

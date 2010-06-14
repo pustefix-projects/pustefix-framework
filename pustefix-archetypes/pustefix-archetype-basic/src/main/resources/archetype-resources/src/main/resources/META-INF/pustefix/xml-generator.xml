@@ -1,0 +1,32 @@
+#set( $symbol_pound = '#' )
+#set( $symbol_dollar = '$' )
+#set( $symbol_escape = '\' )
+<?xml version="1.0" encoding="utf-8"?>
+<xml-generator-config xmlns="http://www.pustefix-framework.org/2009/namespace/xml-generator-config"
+                      xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+                      xsi:schemaLocation="http://www.pustefix-framework.org/2009/namespace/xml-generator-config 
+                                          http://www.pustefix-framework.org/2009/namespace/xml-generator-config.xsd"
+                      lang="en_GB">
+
+  <navigation>
+    <page handler="/xml/main" name="Home"/>
+    <page handler="/xml/main" name="Bye"/>
+  </navigation>
+
+  <namespaces>
+    <namespace-declaration prefix="pfx" url="http://www.schlund.de/pustefix/core"/>
+    <namespace-declaration prefix="ixsl" url="http://www.w3.org/1999/XSL/Transform"/>
+  </namespaces>
+
+  <standardmaster>
+    <include stylesheet="xsl/skin.xsl"/>
+  </standardmaster>
+  
+  <standardmetatags>
+  	<include stylesheet="xsl/metatags.xsl"/>
+  </standardmetatags>
+  
+  <standardpage name="Home" xml="xml/frame.xml"/>
+  <standardpage name="Bye" xml="xml/frame.xml"/>
+
+</xml-generator-config>

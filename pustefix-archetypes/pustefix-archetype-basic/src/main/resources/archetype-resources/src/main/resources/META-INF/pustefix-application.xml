@@ -2,7 +2,10 @@
 #set( $symbol_dollar = '$' )
 #set( $symbol_escape = '\' )
 <?xml version="1.0" encoding="utf-8"?>
-<pustefix-application xmlns="http://www.pustefix-framework.org/2009/namespace/application-config">
+<pustefix-application xmlns="http://www.pustefix-framework.org/2009/namespace/application-config"
+                      xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+                      xsi:schemaLocation="http://www.pustefix-framework.org/2009/namespace/application-config 
+                                          http://www.pustefix-framework.org/2009/namespace/application-config.xsd">
 
   <project>
     <name>Pustefix Sample Basic</name>
@@ -15,7 +18,7 @@
   </editor>
 
   <xml-generator>
-    <config-file>bundle:/META-INF/pustefix/depend.xml</config-file>
+    <config-file>bundle:/META-INF/pustefix/xml-generator.xml</config-file>
     <choose>
       <when test="${symbol_dollar}mode='prod'">
         <!-- Set this to false if you want to skip the check for changed stylesheets on every request -->
@@ -31,7 +34,7 @@
 
     <context-xml-service>
       <path>/xml/main</path>
-      <config-file>bundle:/META-INF/pustefix/app.conf.xml</config-file>
+      <config-file>bundle:/META-INF/pustefix/context-xml-service.xml</config-file>
       <additional-trail-info>de.schlund.pfixxml.perflogging.DefaultAdditionalTrailInfoImpl</additional-trail-info>
       <choose>
         <when test="${symbol_dollar}mode='prod'">
@@ -59,9 +62,9 @@
 
   </application>
   
-  <!-- 
+  <!--
   <properties>
-  
+    <prop name="key">value</prop>
   </properties>
   -->
   

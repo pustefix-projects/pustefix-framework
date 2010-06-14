@@ -8,14 +8,12 @@
   <part name="content">
     <theme name="default">
       
-      <h3>Welcome to the wonderful world of OSGi-powered Pustefix!!!</h3>
-    
-      <pfx:forminput>
-        Please enter your name: 
-        <pfx:xinp type="text" name="registration.name" size="20"/>
-        <pfx:xinp type="submit" value="Submit"/>
-        <show-error field="registration.name"/>
-      </pfx:forminput>
+      <div class="msg">
+        Bye <span class="name"><ixsl:value-of select="/formresult/user/@name"/></span>, 
+        have fun with Pustefix and OSGi!!!
+      </div>
+      
+      <pfx:button page="Home">Back</pfx:button>
     
     </theme>
   </part>
