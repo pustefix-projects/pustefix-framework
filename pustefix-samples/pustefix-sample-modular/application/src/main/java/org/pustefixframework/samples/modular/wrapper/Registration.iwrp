@@ -4,7 +4,7 @@
            xsi:schemaLocation="http://pustefix.sourceforge.net/interfacewrapper200401 
                                http://pustefix.sourceforge.net/interfacewrapper200401.xsd">
   
-  <ihandler class="org.pustefixframework.sample.modular.handler.RegistrationHandler"/>
+  <ihandler class="org.pustefixframework.samples.modular.handler.RegistrationHandler"/>
   
   <param name="name" type="java.lang.String" occurrence="mandatory"/>
   

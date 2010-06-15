@@ -25,7 +25,7 @@
       <groupId>org.pustefixframework.samples.modular</groupId>
       <artifactId>service-api</artifactId>
       <version>1.0.3-SNAPSHOT</version>
-      <scope>runtime</scope>
+      <scope>compile</scope>
     </dependency>
     <dependency>
       <groupId>org.pustefixframework.samples.modular</groupId>

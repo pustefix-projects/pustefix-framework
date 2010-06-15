@@ -20,9 +20,11 @@
       </div>
       
       <div id="content">
+        <pfx:maincontent prefix=""/>
+      </div>
       
-      <pfx:maincontent prefix=""/>
-      
+      <div id="footer">
+        Powered by Pustefix Framework <ixsl:value-of select="pfx:getFrameworkVersion()"/>
       </div>
       
       <pfx:editconsole/>

@@ -5,8 +5,10 @@
   <part name="content">
     <theme name="default">
       
-      <h3>Welcome to the wonderful world of OSGi-powered Pustefix!!!</h3>
-     
+      <div class="msg">
+        Welcome to the wonderful world of OSGi-powered Pustefix!!!
+      </div>
+    
       <pfx:forminput>
         Please enter your name: 
         <pfx:xinp type="text" name="registration.name" size="20"/>

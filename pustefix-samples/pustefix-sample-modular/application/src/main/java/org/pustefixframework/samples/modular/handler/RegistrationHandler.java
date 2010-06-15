@@ -1,7 +1,7 @@
-package org.pustefixframework.sample.modular.handler;
+package org.pustefixframework.samples.modular.handler;
 
-import org.pustefixframework.sample.modular.wrapper.Registration;
-import org.pustefixframework.sample.modular.context.User;
+import org.pustefixframework.samples.modular.wrapper.Registration;
+import org.pustefixframework.samples.modular.context.User;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import de.schlund.pfixcore.generator.IHandler;

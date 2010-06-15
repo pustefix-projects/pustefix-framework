@@ -1,24 +1,35 @@
 package org.pustefixframework.sample.modular.context;
 
-public class GuessContext {
+import org.w3c.dom.Element;
 
-    private int randomNumber;
-    private int tries;
+import de.schlund.pfixcore.beans.InsertStatus;
+import de.schlund.pfixxml.ResultDocument;
+
+public class GuessContext {
     
-    public void incrementTries() {
-        tries++;
+    private Integer guess;
+    private Integer random;
+    
+    public Integer getGuess() {
+        return guess;
     }
     
-    public int getTries() {
-        return tries;
+    public void setGuess(Integer guess) {
+        this.guess = guess;
     }
     
-    public void setRandomNumber(int randomNumber) {
-        this.randomNumber = randomNumber;
+    public int getRandom() {
+        return random;
     }
     
-    public int getRandomNumber() {
-        return randomNumber;
+    public void setRandom(Integer random) {
+        this.random = random;
+    }
+    
+    @InsertStatus
+    public void insertStatus(ResultDocument document, Element element) throws Exception {
+        if(guess != null) element.setAttribute("guess", String.valueOf(guess));
+        if(random != null) element.setAttribute("random", String.valueOf(random));
     }
     
 }
