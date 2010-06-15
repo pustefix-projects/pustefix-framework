@@ -19,6 +19,20 @@
       <artifactId>pustefix-core</artifactId>
       <version>1.0.3-SNAPSHOT</version>
     </dependency>
+   
+    <!-- Service dependencies --> 
+    <dependency>
+      <groupId>org.pustefixframework.samples.modular</groupId>
+      <artifactId>service-api</artifactId>
+      <version>1.0.3-SNAPSHOT</version>
+      <scope>runtime</scope>
+    </dependency>
+    <dependency>
+      <groupId>org.pustefixframework.samples.modular</groupId>
+      <artifactId>service-osgi</artifactId>
+      <version>1.0.3-SNAPSHOT</version>
+      <scope>runtime</scope>
+    </dependency>
   </dependencies>
   
  <build>

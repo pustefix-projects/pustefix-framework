@@ -9,4 +9,11 @@
     </theme>
   </part>
   
+  <part name="navigation2">
+    <extends extension-point="frame.navigation"/>
+    <theme name="default">  
+      <pfx:button page="Bar">Bar</pfx:button>
+    </theme>
+  </part>
+  
 </include_parts>

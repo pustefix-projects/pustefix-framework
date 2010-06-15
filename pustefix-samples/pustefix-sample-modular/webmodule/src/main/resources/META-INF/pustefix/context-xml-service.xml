@@ -9,11 +9,9 @@
   <extension type="context.pagerequest">
     <extend extension-point="pagerequest.main"/>
     <pagerequest name="Guess">
-    <!-- 
       <input>
-        <wrapper prefix="guess" class="org.pustefixframework.samples.modular.handler.Guess"/>
+        <wrapper prefix="guess" class="org.pustefixframework.sample.modular.wrapper.Guess"/>
       </input>
-     -->
     </pagerequest>
   </extension>
   

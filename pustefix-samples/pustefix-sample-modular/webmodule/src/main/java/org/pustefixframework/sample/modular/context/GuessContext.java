@@ -1,4 +1,4 @@
-package org.pustefixframework.samples.modular.context;
+package org.pustefixframework.sample.modular.context;
 
 public class GuessContext {
 

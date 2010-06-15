@@ -212,6 +212,9 @@
         <groupId>org.pustefixframework.maven.plugins</groupId>
         <artifactId>pustefix-launcher-plugin</artifactId>
         <version>${pustefix.version}</version>
+        <configuration>
+          <osgiRuntime>felix</osgiRuntime>
+        </configuration>
       </plugin>
       <plugin>
         <groupId>org.pustefixframework.maven.plugins</groupId>

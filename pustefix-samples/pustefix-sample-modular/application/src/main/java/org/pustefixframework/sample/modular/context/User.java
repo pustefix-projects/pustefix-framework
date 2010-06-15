@@ -1,4 +1,4 @@
-package org.pustefixframework.sample.basic.context;
+package org.pustefixframework.sample.modular.context;
 
 public class User {
 

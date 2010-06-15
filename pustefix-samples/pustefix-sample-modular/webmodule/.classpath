@@ -1,6 +1,7 @@
 <classpath>
   <classpathentry kind="src" path="src/main/java"/>
   <classpathentry kind="src" path="src/main/resources" excluding="**/*.java"/>
+  <classpathentry kind="src" path="target/generated-sources/iwrappers"/>
   <classpathentry kind="src" path="target/generated-sources/statuscodes"/>
   <classpathentry kind="output" path="target/classes"/>
   <classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER"/>
@@ -32,4 +33,6 @@
   <classpathentry kind="var" path="M2_REPO/org/pustefixframework/pustefix-core/1.0.3-SNAPSHOT/pustefix-core-1.0.3-SNAPSHOT.jar" sourcepath="M2_REPO/org/pustefixframework/pustefix-core/1.0.3-SNAPSHOT/pustefix-core-1.0.3-SNAPSHOT-sources.jar"/>
   <classpathentry kind="var" path="M2_REPO/com/icl/saxon/saxon/6.5.5/saxon-6.5.5.jar"/>
   <classpathentry kind="var" path="M2_REPO/net/sf/saxon/saxon/8.7/saxon-8.7.jar"/>
+  <classpathentry kind="var" path="M2_REPO/org/pustefixframework/samples/modular/service-api/1.0.3-SNAPSHOT/service-api-1.0.3-SNAPSHOT.jar"/>
+  <classpathentry kind="var" path="M2_REPO/org/pustefixframework/samples/modular/service-osgi/1.0.3-SNAPSHOT/service-osgi-1.0.3-SNAPSHOT.jar"/>
 </classpath>

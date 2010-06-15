@@ -1,6 +1,6 @@
-package org.pustefixframework.sample.basic.state;
+package org.pustefixframework.sample.modular.state;
 
-import org.pustefixframework.sample.basic.context.User;
+import org.pustefixframework.sample.modular.context.User;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import de.schlund.pfixcore.workflow.Context;
