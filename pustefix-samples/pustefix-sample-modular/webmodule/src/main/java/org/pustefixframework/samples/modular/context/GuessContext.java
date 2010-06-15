@@ -1,4 +1,4 @@
-package org.pustefixframework.sample.modular.context;
+package org.pustefixframework.samples.modular.context;
 
 import org.w3c.dom.Element;
 

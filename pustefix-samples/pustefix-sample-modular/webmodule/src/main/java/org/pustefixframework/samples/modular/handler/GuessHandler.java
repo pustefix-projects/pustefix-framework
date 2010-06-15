@@ -1,9 +1,9 @@
-package org.pustefixframework.sample.modular.handler;
+package org.pustefixframework.samples.modular.handler;
 
-import org.pustefixframework.sample.modular.context.GuessContext;
-import org.pustefixframework.sample.modular.context.StatisticsContext;
-import org.pustefixframework.sample.modular.webmodule.StatusCodes;
-import org.pustefixframework.sample.modular.wrapper.Guess;
+import org.pustefixframework.samples.modular.context.GuessContext;
+import org.pustefixframework.samples.modular.context.StatisticsContext;
+import org.pustefixframework.samples.modular.webmodule.StatusCodes;
+import org.pustefixframework.samples.modular.wrapper.Guess;
 import org.pustefixframework.samples.modular.service.RandomNumberGenerator;
 
 import de.schlund.pfixcore.generator.IHandler;

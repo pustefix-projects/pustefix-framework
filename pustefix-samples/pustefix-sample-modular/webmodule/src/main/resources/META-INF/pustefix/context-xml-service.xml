@@ -10,7 +10,7 @@
     <extend extension-point="pagerequest.main"/>
     <pagerequest name="Guess">
       <input>
-        <wrapper prefix="guess" class="org.pustefixframework.sample.modular.wrapper.Guess"/>
+        <wrapper prefix="guess" class="org.pustefixframework.samples.modular.wrapper.Guess"/>
       </input>
     </pagerequest>
   </extension>
