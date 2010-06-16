@@ -17,8 +17,6 @@
  */
 package de.schlund.pfixcore.workflow.app;
 
-import org.pustefixframework.config.contextxmlservice.StateConfig;
-
 import de.schlund.pfixcore.generator.IHandler;
 import de.schlund.pfixcore.workflow.Context;
 import de.schlund.pfixxml.PfixServletRequest;
@@ -33,14 +31,6 @@ import de.schlund.pfixxml.ResultDocument;
  * between sessions.
  */
 public interface IHandlerContainer {
-
-    /**
-     * Sets state configuration for the state this IHandlerContainer
-     * is created for.
-     * 
-     * @param stateConfig state configuration
-     */
-    void setStateConfig(StateConfig stateConfig);
 
     /**
      * Determine if the associated page is accessible.

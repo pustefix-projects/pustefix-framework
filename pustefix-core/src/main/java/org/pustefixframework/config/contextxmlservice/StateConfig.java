@@ -104,4 +104,7 @@ public interface StateConfig {
     
     public Map<String, ? extends ProcessActionStateConfig> getProcessActions();
     
+    public void addChangeListener(StateConfigChangeListener listener);
+    public boolean removeChangeListener(StateConfigChangeListener listener);
+    
 }

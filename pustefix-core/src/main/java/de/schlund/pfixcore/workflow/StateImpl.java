@@ -20,6 +20,7 @@ package de.schlund.pfixcore.workflow;
 
 import org.apache.log4j.Logger;
 import org.pustefixframework.config.contextxmlservice.StateConfig;
+import org.pustefixframework.config.contextxmlservice.StateConfigChangeListener;
 
 import de.schlund.pfixcore.util.StateUtil;
 import de.schlund.pfixxml.PfixServletRequest;
@@ -29,7 +30,7 @@ import de.schlund.pfixxml.ResultDocument;
  * @author jtl
  */
 
-public abstract class StateImpl implements ConfigurableState {
+public abstract class StateImpl implements ConfigurableState, StateConfigChangeListener {
   
     protected final Logger CAT = Logger.getLogger(this.getClass());
 
@@ -38,13 +39,19 @@ public abstract class StateImpl implements ConfigurableState {
     protected StateConfig config;
     
     public void setConfig(StateConfig config) {
+        if(this.config != null) this.config.removeChangeListener(this);
         this.config = config;
+        config.addChangeListener(this);
     }
     
     protected StateConfig getConfig() {
         return this.config;
     }
 
+    public void stateConfigChanged() {
+        //implementors can respond to configuration changes by overriding this method
+    }
+    
     /**
      * @see de.schlund.pfixcore.util.StateUtil#isPageFlowRunning(Context)
      */

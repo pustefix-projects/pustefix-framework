@@ -41,6 +41,7 @@ import de.schlund.pfixxml.ResultDocument;
  */
 
 public class IHandlerContainerImpl implements IHandlerContainer {
+
     /** Store all created handlers here*/
     private HashSet<IHandler> handlers;
     /** Store all handlers here which do not have a 'checkactive' attribute set to 'false' */
@@ -50,14 +51,9 @@ public class IHandlerContainerImpl implements IHandlerContainer {
     
     private StateConfig stateConfig;
     
-    /**
-     * Initialize list of handlers (and active handlers) from state 
-     * configuration.
-     */
-    public void init() {
-        if (stateConfig == null) {
-            throw new IllegalStateException("stateConfig has to be set before calling init()");
-        }
+    public IHandlerContainerImpl(StateConfig stateConfig) {
+        
+        this.stateConfig = stateConfig;
         
         handlers  = new HashSet<IHandler>();
         activeset = new HashSet<IHandler>();
@@ -78,10 +74,6 @@ public class IHandlerContainerImpl implements IHandlerContainer {
             }
         }
         
-    }
-
-    public void setStateConfig(StateConfig stateConfig) {
-        this.stateConfig = stateConfig;
     }
     
     public boolean isAccessible(Context context) throws Exception {

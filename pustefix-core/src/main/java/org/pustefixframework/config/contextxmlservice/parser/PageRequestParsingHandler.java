@@ -66,8 +66,6 @@ import de.schlund.pfixcore.generator.UseHandlerClass;
 import de.schlund.pfixcore.generator.UseHandlerScript;
 import de.schlund.pfixcore.scripting.ScriptingIHandler;
 import de.schlund.pfixcore.workflow.ConfigurableState;
-import de.schlund.pfixcore.workflow.app.DefaultIWrapperState;
-import de.schlund.pfixcore.workflow.app.IHandlerContainerImpl;
 
 
 public class PageRequestParsingHandler implements ParsingHandler {
@@ -281,24 +279,6 @@ public class PageRequestParsingHandler implements ParsingHandler {
         configBeanName = nameGenerator.generateBeanName(beanDefinition, beanRegistry);
         beanRegistry.registerBeanDefinition(configBeanName, beanDefinition);
         
-        String handlerContainerBeanName = null;
-        if (DefaultIWrapperState.class.isAssignableFrom(stateClass)) {
-            beanBuilder = BeanDefinitionBuilder.genericBeanDefinition(IHandlerContainerImpl.class);
-            beanBuilder.setScope("request");
-            beanBuilder.addPropertyReference("stateConfig", configBeanName);
-            beanBuilder.setInitMethodName("init");
-            beanDefinition = beanBuilder.getBeanDefinition();
-            handlerContainerBeanName = nameGenerator.generateBeanName(beanDefinition, beanRegistry);
-            BeanDefinitionHolder beanHolder = new BeanDefinitionHolder(beanDefinition, handlerContainerBeanName);
-            beanHolder = ScopedProxyUtils.createScopedProxy(beanHolder, beanRegistry, true);
-            beanRegistry.registerBeanDefinition(beanHolder.getBeanName(), beanHolder.getBeanDefinition());
-            if (beanHolder.getAliases() != null) {
-                for (String alias : beanHolder.getAliases()) {
-                    beanRegistry.registerAlias(beanHolder.getBeanName(), alias);
-                }
-            }
-        }
-        
         Collection<ScriptingStatePathInfo> scriptPathInfoCollection = context.getObjectTreeElement().getObjectsOfTypeFromSubTree(ScriptingStatePathInfo.class);
         beanBuilder = BeanDefinitionBuilder.genericBeanDefinition(stateClass);
         String parentBeanName = stateConfig.getParentBeanName();
@@ -319,9 +299,6 @@ public class PageRequestParsingHandler implements ParsingHandler {
         beanBuilder.addPropertyReference("config", configBeanName);
         if (scriptPathInfoCollection.iterator().hasNext()) {
             beanBuilder.addPropertyValue("scriptPath", scriptPathInfoCollection.iterator().next().getScriptPath());
-        }
-        if (handlerContainerBeanName != null) {
-            beanBuilder.addPropertyReference("IHandlerContainer", handlerContainerBeanName);
         }
         beanDefinition = beanBuilder.getBeanDefinition();
         if (stateConfig.getBeanName() == null) {

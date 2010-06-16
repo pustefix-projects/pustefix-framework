@@ -31,6 +31,7 @@ import org.pustefixframework.config.contextxmlservice.PageFlowHolder;
 import org.pustefixframework.config.contextxmlservice.PageRequestConfigHolder;
 import org.pustefixframework.config.contextxmlservice.ProcessActionStateConfig;
 import org.pustefixframework.config.contextxmlservice.StateConfig;
+import org.pustefixframework.config.contextxmlservice.StateConfigChangeListener;
 import org.pustefixframework.config.contextxmlservice.parser.internal.AuthConstraintExtensionPointImpl;
 import org.pustefixframework.config.contextxmlservice.parser.internal.AuthConstraintMap;
 import org.pustefixframework.config.contextxmlservice.parser.internal.AuthConstraintRef;
@@ -191,6 +192,13 @@ public class ContextXMLParsingHandler implements ParsingHandler {
                     }
 
                     public boolean requiresToken() {
+                        return false;
+                    }
+                    
+                    public void addChangeListener(StateConfigChangeListener listener) {
+                    }
+                    
+                    public boolean removeChangeListener(StateConfigChangeListener listener) {
                         return false;
                     }
 

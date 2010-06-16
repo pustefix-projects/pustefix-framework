@@ -176,12 +176,19 @@ public class DefaultIWrapperState extends StateImpl implements IWrapperState, Re
         return resdoc;
     }
 
-    public IHandlerContainer getIHandlerContainer() {
-        return handlerContainer;
+    private IHandlerContainer getIHandlerContainer() {
+       return handlerContainer; 
     }
-
-    public void setIHandlerContainer(IHandlerContainer handlerContainer) {
-        this.handlerContainer = handlerContainer;
+    
+    @Override
+    public void setConfig(StateConfig config) {
+        super.setConfig(config);
+        handlerContainer = new IHandlerContainerImpl(config);
+    }
+    
+    @Override
+    public void stateConfigChanged() {
+        handlerContainer = new IHandlerContainerImpl(config);
     }
     
     public Map<String, ? extends IWrapperConfig> getIWrapperConfigMap() {
@@ -191,4 +198,5 @@ public class DefaultIWrapperState extends StateImpl implements IWrapperState, Re
     public boolean requiresToken() {
         return getConfig().requiresToken();
     }
+    
 }// DefaultIWrapperState

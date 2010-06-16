@@ -19,6 +19,7 @@
 package org.pustefixframework.config.contextxmlservice.parser.internal;
 
 import java.util.AbstractMap;
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.LinkedHashMap;
 import java.util.List;
@@ -46,6 +47,7 @@ public class IWrapperConfigMap extends AbstractMap<String, IWrapperConfig> {
     private final Object updateLock = new Object();
     private List<?> iWrapperConfigObjects;
     private Throwable cause;
+    private List<IWrapperConfigMapChangeListener> changeListeners = new ArrayList<IWrapperConfigMapChangeListener>();
     
     protected final Log logger = LogFactory.getLog(this.getClass());
     
@@ -68,6 +70,14 @@ public class IWrapperConfigMap extends AbstractMap<String, IWrapperConfig> {
             }
     };
 
+    public void addChangeListener(IWrapperConfigMapChangeListener listener) {
+        changeListeners.add(listener);
+    }
+    
+    public boolean removeChangeListener(IWrapperConfigMapChangeListener listener) {
+        return changeListeners.remove(listener);
+    }
+    
     @Override
     public Set<java.util.Map.Entry<String, IWrapperConfig>> entrySet() {
         synchronized (updateLock) {
@@ -119,6 +129,10 @@ public class IWrapperConfigMap extends AbstractMap<String, IWrapperConfig> {
             cachedMap = Collections.unmodifiableMap(cachedMap);
             // If update was successful, delete cause
             cause = null;
+            
+            for(IWrapperConfigMapChangeListener listener: changeListeners) {
+                listener.iwrapperConfigMapChanged();
+            }
         }
     }
 

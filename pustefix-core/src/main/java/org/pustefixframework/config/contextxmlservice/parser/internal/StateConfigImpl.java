@@ -18,15 +18,18 @@
 
 package org.pustefixframework.config.contextxmlservice.parser.internal;
 
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Enumeration;
 import java.util.LinkedHashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.Properties;
 
 import org.pustefixframework.config.contextxmlservice.IWrapperConfig;
 import org.pustefixframework.config.contextxmlservice.ProcessActionStateConfig;
 import org.pustefixframework.config.contextxmlservice.StateConfig;
+import org.pustefixframework.config.contextxmlservice.StateConfigChangeListener;
 
 import de.schlund.pfixcore.workflow.ConfigurableState;
 
@@ -35,7 +38,7 @@ import de.schlund.pfixcore.workflow.ConfigurableState;
  * 
  * @author Sebastian Marsching <sebastian.marsching@1und1.de>
  */
-public class StateConfigImpl implements Cloneable, StateConfig {
+public class StateConfigImpl implements Cloneable, StateConfig, IWrapperConfigMapChangeListener {
     
     private Class<? extends ConfigurableState> stateClass = null;
     private Class<? extends ConfigurableState> defaultStaticStateClass = null;
@@ -52,6 +55,15 @@ public class StateConfigImpl implements Cloneable, StateConfig {
     private String parentBeanName = null;
     private String scope = "singleton";
     private Map<String, ProcessActionStateConfig> actions = new LinkedHashMap<String, ProcessActionStateConfig>();
+    private List<StateConfigChangeListener> changeListeners = new ArrayList<StateConfigChangeListener>();
+    
+    public void addChangeListener(StateConfigChangeListener listener) {
+        changeListeners.add(listener);
+    }
+    
+    public boolean removeChangeListener(StateConfigChangeListener listener) {
+        return changeListeners.remove(listener);
+    }
     
     public void setState(Class<? extends ConfigurableState> clazz) {
         this.stateClass = clazz;
@@ -110,7 +122,9 @@ public class StateConfigImpl implements Cloneable, StateConfig {
     }
     
     public void setIWrappers(Map<String, IWrapperConfig> iwrappers) {
+        if(this.iwrappers != null) ((IWrapperConfigMap)this.iwrappers).removeChangeListener(this);
         this.iwrappers = iwrappers;
+        ((IWrapperConfigMap)iwrappers).addChangeListener(this);
     }
     
     public Map<String, IWrapperConfig> getIWrappers() {
@@ -186,4 +200,11 @@ public class StateConfigImpl implements Cloneable, StateConfig {
     public String getBeanName() {
         return beanName;
     }
+    
+    public void iwrapperConfigMapChanged() {
+        for(StateConfigChangeListener listener: changeListeners) {
+            listener.stateConfigChanged();
+        }
+    }
+    
  }
