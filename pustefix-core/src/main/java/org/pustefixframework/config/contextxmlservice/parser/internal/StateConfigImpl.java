@@ -122,7 +122,9 @@ public class StateConfigImpl implements Cloneable, StateConfig, IWrapperConfigMa
     }
     
     public void setIWrappers(Map<String, IWrapperConfig> iwrappers) {
-        if(this.iwrappers != null) ((IWrapperConfigMap)this.iwrappers).removeChangeListener(this);
+        if(this.iwrappers != null && this.iwrappers instanceof IWrapperConfigMap) {
+            ((IWrapperConfigMap)this.iwrappers).removeChangeListener(this);
+        }
         this.iwrappers = iwrappers;
         ((IWrapperConfigMap)iwrappers).addChangeListener(this);
     }
