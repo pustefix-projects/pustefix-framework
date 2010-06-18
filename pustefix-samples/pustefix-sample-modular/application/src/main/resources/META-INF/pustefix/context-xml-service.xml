@@ -7,9 +7,7 @@
   
   <global-config/>
 
-  <context defaultpage="Home">
-    <resource bean-name="contextUser" class="org.pustefixframework.samples.modular.context.User"/>
-  </context>
+  <context defaultpage="Home"/>
 
   <pageflow name="MainFlow" final="Home">
     <flowstep name="Home"/>
@@ -17,16 +15,18 @@
     <flowstep name="Bye"/>
   </pageflow>
 
+  <extension-point id="pageflows.main" type="context.pageflow" cardinality="0..n"/>
+
   <pagerequest name="Home">
-    <input>
-      <wrapper prefix="registration" class="org.pustefixframework.samples.modular.wrapper.Registration"/>
+    <input policy="NONE">
+      <extension-point id="home.wrapper" type="context.wrapper" cardinality="0..n"/>
     </input>
   </pagerequest>
 
   <pagerequest name="Bye">
-    <state class="org.pustefixframework.samples.modular.state.ByeState"/>
+    <state class="org.pustefixframework.samples.modular.app.internal.ByeState"/>
     <output>
-      <resource node="user" bean-ref="contextUser"/>
+      <resource node="user" bean-ref="user"/>
     </output>
   </pagerequest>
 

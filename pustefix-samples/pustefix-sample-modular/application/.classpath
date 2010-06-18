@@ -1,7 +1,6 @@
 <classpath>
   <classpathentry kind="src" path="src/main/java"/>
   <classpathentry kind="src" path="src/main/resources" excluding="**/*.java"/>
-  <classpathentry kind="src" path="target/generated-sources/iwrappers"/>
   <classpathentry kind="output" path="target/classes"/>
   <classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER"/>
   <classpathentry kind="var" path="M2_REPO/ch/qos/logback/com.springsource.ch.qos.logback.classic/0.9.15/com.springsource.ch.qos.logback.classic-0.9.15.jar"/>
@@ -46,8 +45,12 @@
   <classpathentry kind="var" path="M2_REPO/org/pustefixframework/pustefix-core/1.0.3-SNAPSHOT/pustefix-core-1.0.3-SNAPSHOT.jar" sourcepath="M2_REPO/org/pustefixframework/pustefix-core/1.0.3-SNAPSHOT/pustefix-core-1.0.3-SNAPSHOT-sources.jar"/>
   <classpathentry kind="var" path="M2_REPO/org/pustefixframework/osgi/pustefix-osgi-logservice-bridge/1.0.3-SNAPSHOT/pustefix-osgi-logservice-bridge-1.0.3-SNAPSHOT.jar"/>
   <classpathentry kind="var" path="M2_REPO/org/pustefixframework/osgi/pustefix-osgi-spring-dm-extender/1.0.3-SNAPSHOT/pustefix-osgi-spring-dm-extender-1.0.3-SNAPSHOT.jar" sourcepath="M2_REPO/org/pustefixframework/osgi/pustefix-osgi-spring-dm-extender/1.0.3-SNAPSHOT/pustefix-osgi-spring-dm-extender-1.0.3-SNAPSHOT-sources.jar"/>
+  <classpathentry kind="var" path="M2_REPO/org/pustefixframework/samples/modular/registration-api/1.0.3-SNAPSHOT/registration-api-1.0.3-SNAPSHOT.jar"/>
+  <classpathentry kind="var" path="M2_REPO/org/pustefixframework/samples/modular/registration-web/1.0.3-SNAPSHOT/registration-web-1.0.3-SNAPSHOT.jar"/>
   <classpathentry kind="var" path="M2_REPO/com/icl/saxon/saxon/6.5.5/saxon-6.5.5.jar"/>
   <classpathentry kind="var" path="M2_REPO/net/sf/saxon/saxon/8.7/saxon-8.7.jar"/>
+  <classpathentry kind="var" path="M2_REPO/org/pustefixframework/samples/modular/service-api/1.0.3-SNAPSHOT/service-api-1.0.3-SNAPSHOT.jar"/>
+  <classpathentry kind="var" path="M2_REPO/org/pustefixframework/samples/modular/service-osgi/1.0.3-SNAPSHOT/service-osgi-1.0.3-SNAPSHOT.jar"/>
   <classpathentry kind="var" path="M2_REPO/org/mortbay/jetty/servlet-api-2.5/6.1.14/servlet-api-2.5-6.1.14.jar"/>
   <classpathentry kind="var" path="M2_REPO/org/pustefixframework/samples/modular/webmodule/1.0.3-SNAPSHOT/webmodule-1.0.3-SNAPSHOT.jar"/>
 </classpath>

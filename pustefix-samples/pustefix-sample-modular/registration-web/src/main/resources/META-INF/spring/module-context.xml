@@ -12,18 +12,8 @@
 
    <context:annotation-config/>
 
-   <bean id="guessContext" scope="request"
-         class="org.pustefixframework.samples.modular.context.GuessContext">
-      <aop:scoped-proxy/>
-   </bean>
-   
-   <bean id="statisticsContext" scope="session"
-         class="org.pustefixframework.samples.modular.context.StatisticsContext">
-      <aop:scoped-proxy/>
-   </bean>
-   
-   <bean id="guessHandler" scope="session"
-         class="org.pustefixframework.samples.modular.handler.GuessHandler">
+   <bean id="user" scope="session"
+         class="org.pustefixframework.samples.modular.registration.web.internal.RegisteredUser">
       <aop:scoped-proxy/>
    </bean>
 

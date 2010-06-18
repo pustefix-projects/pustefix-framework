@@ -104,13 +104,52 @@
       <scope>runtime</scope>
     </dependency>
     
+    
+    
     <!-- Application modules -->
+    
+   
+    <!-- 
+    <dependency>
+      <groupId>org.pustefixframework.samples.modular</groupId>
+      <artifactId>registration-web</artifactId>
+      <version>1.0.3-SNAPSHOT</version>
+      <scope>runtime</scope>
+    </dependency>
+    
+     <dependency>
+      <groupId>org.pustefixframework.samples.modular</groupId>
+      <artifactId>webmodule</artifactId>
+      <version>1.0.3-SNAPSHOT</version>
+      <scope>runtime</scope>
+    </dependency>
+    -->
+    <dependency>
+      <groupId>org.pustefixframework.samples.modular</groupId>
+      <artifactId>registration-api</artifactId>
+      <version>1.0.3-SNAPSHOT</version>
+      <scope>compile</scope>
+    </dependency>
+    
     <dependency>
       <groupId>org.pustefixframework.samples.modular</groupId>
       <artifactId>webmodule</artifactId>
       <version>1.0.3-SNAPSHOT</version>
       <scope>runtime</scope>
     </dependency>
+    
+    <dependency>
+      <groupId>org.pustefixframework.samples.modular</groupId>
+      <artifactId>registration-web</artifactId>
+      <version>1.0.3-SNAPSHOT</version>
+      <scope>runtime</scope>
+    </dependency>
+    
+    <dependency>
+  <groupId>org.apache.felix</groupId>
+  <artifactId>org.apache.felix.webconsole</artifactId>
+  <version>3.0.0</version>
+</dependency>
 
   </dependencies>
  
@@ -120,7 +159,7 @@
          <groupId>org.apache.felix</groupId>
          <artifactId>maven-bundle-plugin</artifactId>
          <extensions>true</extensions>
-         <version>2.0.1</version>
+         <version>2.1.0</version>
          <configuration>
             <instructions>
               <Bundle-RequiredExecutionEnvironment>J2SE-1.5</Bundle-RequiredExecutionEnvironment>
@@ -213,7 +252,7 @@
         <artifactId>pustefix-launcher-plugin</artifactId>
         <version>${pustefix.version}</version>
         <configuration>
-          <osgiRuntime>felix</osgiRuntime>
+          <osgiRuntime>equinox</osgiRuntime>
         </configuration>
       </plugin>
       <plugin>

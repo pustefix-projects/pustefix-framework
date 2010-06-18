@@ -7,10 +7,6 @@
                            http://www.springframework.org/schema/osgi 
                            http://www.springframework.org/schema/osgi/spring-osgi.xsd">
 
-   <osgi:reference id="randomNumberGenerator" 
-                   interface="org.pustefixframework.samples.modular.service.RandomNumberGenerator"/>
-
-   <osgi:reference id="user" 
-                   interface="org.pustefixframework.samples.modular.registration.User"/>
+   <osgi:reference id="user" interface="org.pustefixframework.samples.modular.registration.User"/>
 
 </beans>

@@ -8,10 +8,10 @@
   </parent>
 
   <groupId>org.pustefixframework.samples.modular</groupId>
-  <artifactId>service-api</artifactId>
+  <artifactId>registration-api</artifactId>
   <version>1.0.3-SNAPSHOT</version>
   <packaging>bundle</packaging>
-  <name>Pustefix Sample Modular - Service API</name>
+  <name>Pustefix Sample Modular - Registration API</name>
 
   <build>
     <plugins> 

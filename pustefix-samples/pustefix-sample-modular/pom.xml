@@ -18,6 +18,8 @@
   <modules>
     <module>application</module>
     <module>webmodule</module>
+    <module>registration-api</module>
+    <module>registration-web</module>
     <module>service-api</module>
     <!--<module>service-dm</module>-->
     <module>service-osgi</module>

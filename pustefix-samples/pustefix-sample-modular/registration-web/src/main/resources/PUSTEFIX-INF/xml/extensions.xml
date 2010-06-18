@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="utf-8"?>
+<include_parts xmlns:ixsl="http://www.w3.org/1999/XSL/Transform" 
+               xmlns:pfx="http://www.schlund.de/pustefix/core">
+               
+  <part name="content">
+    <extends extension-point="home.content"/>
+    <theme name="default">  
+      
+      <pfx:checkactive prefix="registration">
+        <pfx:forminput>
+          Please enter your name: 
+          <pfx:xinp type="text" name="registration.name" size="20"/>
+          <pfx:xinp type="submit" value="Submit"/>
+          <show-error field="registration.name"/>
+        </pfx:forminput>
+      </pfx:checkactive>
+      
+    </theme>
+  </part>
+  
+</include_parts>

@@ -65,9 +65,16 @@ div#navigation span {
 }
 
 span.core_button_active {
-  font-color: #000;
+  color: #000;
 }
 
 span.core_button_invisible {
-  font-color: #999;
+  color: #999;
+}
+
+div.pagemsg {
+  background: #999;
+  color: #fff;
+  border: 1pt dotted #333;
+  padding: 3pt;
 }

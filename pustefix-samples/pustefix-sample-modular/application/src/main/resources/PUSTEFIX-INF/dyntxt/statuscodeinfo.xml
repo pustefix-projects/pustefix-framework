@@ -3,7 +3,7 @@
   xsi:schemaLocation="http://pustefix-framework.org/statuscodeinfo ../../core/schema/statuscodeinfo.xsd">
 
   <!--
-  <statuscodes class="org.pustefixframework.samples.modular.StatusCodes">
+  <statuscodes class="org.pustefixframework.samples.modular.app.StatusCodes">
     <file>statusmessages.xml</file>
   </statuscodes>
   -->  

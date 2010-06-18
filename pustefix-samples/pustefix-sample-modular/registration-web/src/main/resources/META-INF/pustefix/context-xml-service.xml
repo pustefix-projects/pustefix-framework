@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="utf-8"?>
+<context-xml-service-config xmlns="http://www.pustefix-framework.org/2009/namespace/context-xml-service-config">
+
+  <extension type="context.wrapper">
+    <extend extension-point="home.wrapper"/>
+    <wrapper prefix="registration" class="org.pustefixframework.samples.modular.registration.web.internal.Registration"/>
+  </extension>
+  
+</context-xml-service-config>

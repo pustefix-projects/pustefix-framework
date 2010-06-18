@@ -4,7 +4,8 @@
            xsi:schemaLocation="http://pustefix.sourceforge.net/interfacewrapper200401 
                                http://pustefix.sourceforge.net/interfacewrapper200401.xsd">
   
-  <ihandler class="org.pustefixframework.samples.modular.handler.GuessHandler"/>
+  <!-- <ihandler class="org.pustefixframework.samples.modular.handler.GuessHandler"/>-->
+  <ihandler bean-ref="guessHandler"/>
   
   <param name="number" type="java.lang.Integer">
     <caster class="de.schlund.pfixcore.generator.casters.ToInteger"/>

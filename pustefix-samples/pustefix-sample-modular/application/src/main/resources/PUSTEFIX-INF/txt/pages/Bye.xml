@@ -5,6 +5,8 @@
   <part name="content">
     <theme name="default">
 
+      <show-messages/>
+
       <div class="msg">
         Bye <span class="name"><ixsl:value-of select="/formresult/user/@name"/></span>, 
         have fun with Pustefix and OSGi!!!

@@ -3,12 +3,12 @@
 
   <extension type="context.flowstep">
     <extend extension-point="flow.main"/>
-    <flowstep name="Test"/>
+    <flowstep name="Play"/>
   </extension>
   
   <extension type="context.pagerequest">
     <extend extension-point="pagerequest.main"/>
-    <pagerequest name="Guess">
+    <pagerequest name="Play">
       <input>
         <wrapper prefix="guess" class="org.pustefixframework.samples.modular.wrapper.Guess"/>
       </input>

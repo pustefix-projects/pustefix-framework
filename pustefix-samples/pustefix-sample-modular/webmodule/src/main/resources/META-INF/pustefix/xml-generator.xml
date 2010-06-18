@@ -3,12 +3,12 @@
 
   <extension type="xml.page">
     <extend extension-point="navigation.main"/>
-    <page handler="/xml/main" name="Test"/>
+    <page handler="/xml/main" name="Play"/>
   </extension>
 
   <extension type="xml.standardpage">
     <extend extension-point="standardpage.main"/>
-    <standardpage name="Test" xml="dynamic:/xml/frame.xml"/>
+    <standardpage name="Play" xml="dynamic:/xml/frame.xml"/>
   </extension>
 
 </xml-generator-config>

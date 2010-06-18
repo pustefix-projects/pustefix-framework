@@ -5,7 +5,7 @@
   <part name="navigation">
     <extends extension-point="frame.navigation"/>
     <theme name="default">  
-      <pfx:button page="Test">Test</pfx:button>
+      <pfx:button page="Play">Play</pfx:button>
     </theme>
   </part>
   

@@ -15,4 +15,15 @@
     </pfx:checkfield>
   </xsl:template>
 
+  <!--  example template showing how to display page messages -->
+  <xsl:template match="show-messages">
+    <pfx:checkmessage>
+      <pfx:messageloop>
+        <div class="pagemsg">
+          <pfx:scode/>
+        </div>
+      </pfx:messageloop>
+    </pfx:checkmessage>
+  </xsl:template>
+
 </xsl:stylesheet>
