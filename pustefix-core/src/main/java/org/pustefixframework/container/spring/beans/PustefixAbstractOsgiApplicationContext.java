@@ -24,7 +24,10 @@ import org.osgi.framework.BundleContext;
 import org.pustefixframework.container.spring.beans.internal.DelegatedEntityResolver;
 import org.pustefixframework.container.spring.beans.internal.DelegatedNamespaceHandlerResolver;
 import org.pustefixframework.container.spring.beans.internal.TrackingUtil;
+import org.pustefixframework.container.spring.beans.support.BundleUniqueRequestScope;
+import org.pustefixframework.container.spring.beans.support.BundleUniqueSessionScope;
 import org.springframework.beans.BeansException;
+import org.springframework.beans.factory.config.ConfigurableListableBeanFactory;
 import org.springframework.beans.factory.support.DefaultListableBeanFactory;
 import org.springframework.beans.factory.xml.DefaultNamespaceHandlerResolver;
 import org.springframework.beans.factory.xml.DelegatingEntityResolver;
@@ -32,6 +35,8 @@ import org.springframework.beans.factory.xml.NamespaceHandlerResolver;
 import org.springframework.osgi.context.support.OsgiBundleXmlApplicationContext;
 import org.springframework.osgi.util.OsgiStringUtils;
 import org.springframework.util.Assert;
+import org.springframework.web.context.WebApplicationContext;
+import org.springframework.web.context.support.WebApplicationContextUtils;
 import org.xml.sax.EntityResolver;
 
 
@@ -116,4 +121,14 @@ public abstract class PustefixAbstractOsgiApplicationContext extends OsgiBundleX
             org.xml.sax.EntityResolver.class
         }, null, (org.xml.sax.EntityResolver.class).getClassLoader(), bundleContext, fallbackObject);
     }
+    
+    protected void registerScopes(ConfigurableListableBeanFactory beanFactory) {
+        WebApplicationContextUtils.registerWebApplicationScopes(beanFactory);
+        //Override default scopes by scopes making the bean names unique per bundle
+        //to avoid that beans having the same name are overwritten by beans from different bundles
+        beanFactory.registerScope(WebApplicationContext.SCOPE_REQUEST, new BundleUniqueRequestScope(getBundle().getBundleId()));
+        beanFactory.registerScope(WebApplicationContext.SCOPE_SESSION, new BundleUniqueSessionScope(false, getBundle().getBundleId()));
+        beanFactory.registerScope(WebApplicationContext.SCOPE_GLOBAL_SESSION, new BundleUniqueSessionScope(true, getBundle().getBundleId()));
+    }
+    
 }

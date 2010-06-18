@@ -28,7 +28,6 @@ import org.springframework.beans.factory.config.BeanDefinition;
 import org.springframework.beans.factory.config.ConfigurableListableBeanFactory;
 import org.springframework.beans.factory.support.BeanDefinitionBuilder;
 import org.springframework.beans.factory.support.DefaultListableBeanFactory;
-import org.springframework.web.context.support.WebApplicationContextUtils;
 
 import de.schlund.pfixcore.workflow.ContextImpl;
 
@@ -130,8 +129,7 @@ public class PustefixOsgiApplicationContext extends PustefixAbstractOsgiApplicat
     @Override
     protected void postProcessBeanFactory(ConfigurableListableBeanFactory beanFactory) throws BeansException {
         super.postProcessBeanFactory(beanFactory);
-        
-        WebApplicationContextUtils.registerWebApplicationScopes(beanFactory);
+        registerScopes(beanFactory);
     }
 
 }

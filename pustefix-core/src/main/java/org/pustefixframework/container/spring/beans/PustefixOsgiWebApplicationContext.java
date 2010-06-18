@@ -43,7 +43,6 @@ import org.springframework.web.context.ConfigurableWebApplicationContext;
 import org.springframework.web.context.ServletConfigAware;
 import org.springframework.web.context.ServletContextAware;
 import org.springframework.web.context.support.ServletContextAwareProcessor;
-import org.springframework.web.context.support.WebApplicationContextUtils;
 
 
 /**
@@ -177,7 +176,7 @@ public class PustefixOsgiWebApplicationContext extends PustefixAbstractOsgiAppli
         beanFactory.registerResolvableDependency(ServletContext.class, this.servletContextProxy);
         beanFactory.registerResolvableDependency(ServletConfig.class, this.servletConfigProxy);
         
-        WebApplicationContextUtils.registerWebApplicationScopes(beanFactory);
+        registerScopes(beanFactory);
     }
 
     @Override
