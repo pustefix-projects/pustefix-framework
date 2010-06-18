@@ -5,8 +5,8 @@
 >
   <title>Introduction</title>
   <para>
-    Pustefix is a framework that helps you to develop web based applications (referred to as
-    <emphasis>projects</emphasis> here).
+    Pustefix is a framework that helps you to develop web based applications. Based on OSGi and Spring-DM 
+    it enables you to create highly modular applications.
   </para>
   <para>
     The framework consists of two more or less independent parts:

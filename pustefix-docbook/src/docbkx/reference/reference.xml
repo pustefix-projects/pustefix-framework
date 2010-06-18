@@ -7,9 +7,7 @@
   <info>
     <title>Pustefix Reference Documentation</title>
     <subtitle>Version 1.0.x</subtitle>
-    <releaseinfo>This documentation relates to Pustefix 1.0.x.
-    As is has not been completely updated yet, some parts might still refer
-    to version 0.14.x or even 0.13.x.</releaseinfo>
+    <releaseinfo>This documentation relates to Pustefix 1.0.x.</releaseinfo>
     <copyright>
       <year>2007</year>
       <year>2008</year>
