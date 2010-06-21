@@ -251,7 +251,8 @@
       <xsl:for-each select="$anchors[@frame != '']">&amp;__anchor=<xsl:value-of select="@frame"/>|<xsl:apply-templates select="./node()"/></xsl:for-each>
       <xsl:if test="$anchors[not(@frame) or @frame = '']">#<xsl:apply-templates select="$anchors[not(@frame) or @frame = ''][1]/node()"/></xsl:if>
     </xsl:variable>
-
+    <xsl:variable name="excluded_button_attrs">|accesskey|action|activeclass|buttpage|forcestop|frame|invisibleclass|jumptopage|jumptopageflow|mode|nodata|normalclass|page|pageflow|popup|popupfeatures|popupheight|popupid|popupwidth|startwithflow|target|</xsl:variable>
+    <xsl:variable name="excluded_button_span_attrs"><xsl:value-of select="$excluded_button_attrs"/>charset|type|name|href|hreflang|rel|rev|accesskey|shape|coords|tabindex|onfocus|onblur|</xsl:variable>
     <xsl:choose>
       <xsl:when test="string($urlonly) = 'true'">
         <xsl:copy-of select="$fulllink"/>
@@ -260,6 +261,7 @@
         <ixsl:choose>
           <ixsl:when test="(callback:checkAuthorization($__context__,'{$buttpage_impl}') = 3) or (callback:isAccessible($__context__, $__target_gen, '{$buttpage_impl}') = 0) and not('{$mode_impl}' = 'force')">
             <span>
+              <xsl:if test="name()='pfx:button'"><xsl:copy-of select="@*[not(contains($excluded_button_span_attrs,concat('|',name(),'|')))]"/></xsl:if>
               <xsl:attribute name="class">
                 <xsl:choose>
                   <xsl:when test="$invisibleclass = ''">core_button_invisible</xsl:when>
@@ -275,6 +277,7 @@
             <xsl:choose>
               <xsl:when test="not($mode_impl = 'force') and ($page = $buttpage_impl)">
                 <span>
+                  <xsl:if test="name()='pfx:button'"><xsl:copy-of select="@*[not(contains($excluded_button_span_attrs,concat('|',name(),'|')))]"/></xsl:if>
                   <xsl:attribute name="class">
                     <xsl:choose>
                       <xsl:when test="$activeclass = ''">core_button_active</xsl:when>
@@ -288,6 +291,7 @@
               </xsl:when>
               <xsl:otherwise>
                 <a>
+                  <xsl:if test="name()='pfx:button'"><xsl:copy-of select="@*[not(contains($excluded_button_attrs,concat('|',name(),'|')))]"/></xsl:if>
                   <xsl:if test="not($target_impl = '')">
                     <xsl:attribute name="target"><xsl:value-of select="$target_impl"/></xsl:attribute>
                   </xsl:if>
@@ -296,9 +300,7 @@
                   </xsl:if>
                   <xsl:attribute name="class">
                     <xsl:choose>
-                      <xsl:when test="$normalclass = ''">
-                        core_button_normal
-                      </xsl:when>
+                      <xsl:when test="$normalclass = ''">core_button_normal</xsl:when>
                       <xsl:otherwise>
                         <xsl:value-of select="$normalclass" />
                       </xsl:otherwise>
