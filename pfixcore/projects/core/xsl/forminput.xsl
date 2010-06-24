@@ -259,11 +259,11 @@
   <xsl:template match="fieldset">
     <xsl:copy>
       <xsl:copy-of select="@*"/>
+      <xsl:apply-templates/>
       <xsl:variable name="form" select="ancestor::pfx:forminput[1]"/>
       <xsl:if test="$form and generate-id($form//fieldset[1])=generate-id(.) and not($form//pfx:hiddenfields)">
         <xsl:apply-templates select="$form" mode="render_hidden_fields"/>
       </xsl:if>
-      <xsl:apply-templates/>
     </xsl:copy>
   </xsl:template>
 
