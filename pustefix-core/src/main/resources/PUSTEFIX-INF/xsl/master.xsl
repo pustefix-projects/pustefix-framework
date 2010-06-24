@@ -320,7 +320,6 @@
 
   <xsl:template match="pfx:script">
     <script>
-      <xsl:attribute name="language">JavaScript</xsl:attribute>
       <xsl:attribute name="type">text/javascript</xsl:attribute>
       <xsl:copy-of select="@*[not(name()='compress' or name()='transform')]"/>
       <ixsl:comment><xsl:text>&#10;</xsl:text>
