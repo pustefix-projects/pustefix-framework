@@ -211,39 +211,60 @@
           </xsl:otherwise>
         </xsl:choose>
       </ixsl:attribute>
-      <ixsl:if test="not($__lf = '')">
-        <input type="hidden" name="__lf">
-          <ixsl:attribute name="value"><ixsl:value-of select="$__lf"/></ixsl:attribute>
-        </input>
-      </ixsl:if>
-      <input type="hidden" name="__sendingdata" value="1"/>
-      <xsl:if test="@type='auth'">
-        <input type="hidden" name="__sendingauthdata" value="1"/>
-      </xsl:if>
-      <xsl:if test="@send-to-pageflow">
-        <input type="hidden" name="__pageflow" value="{@send-to-pageflow}"/>
-      </xsl:if>
-      <ixsl:for-each select="$__root/formresult/formhiddenvals/hidden">
-        <input type="hidden">
-          <ixsl:attribute name="name"><ixsl:value-of select="./@name"/></ixsl:attribute>
-          <ixsl:attribute name="value"><ixsl:value-of select="./text()"/></ixsl:attribute>
-        </input>
-      </ixsl:for-each>
-      <xsl:if test="not(.//pfx:token)">
-        <xsl:variable name="pageName">
-          <xsl:choose>
-            <xsl:when test="@send-to-page"><xsl:value-of select="@send-to-page"/></xsl:when>
-            <xsl:otherwise><xsl:value-of select="$page"/></xsl:otherwise>
-          </xsl:choose>
-        </xsl:variable>
-        <ixsl:if test="pfx:requiresToken('{$pageName}')">
-          <xsl:call-template name="createToken">
-            <xsl:with-param name="tokenName"><xsl:value-of select="concat($pageName,'#',generate-id())"/></xsl:with-param>
-          </xsl:call-template>
-        </ixsl:if>
+      <xsl:if test="not(.//fieldset or .//pfx:hiddenfields)">
+        <xsl:apply-templates select="." mode="render_hidden_fields"/>
       </xsl:if>
       <xsl:apply-templates/>
     </form>
+  </xsl:template>
+  
+  <xsl:template match="pfx:forminput" mode="render_hidden_fields">
+    <ixsl:if test="not($__lf = '')">
+      <input type="hidden" name="__lf">
+        <ixsl:attribute name="value"><ixsl:value-of select="$__lf"/></ixsl:attribute>
+      </input>
+    </ixsl:if>
+    <input type="hidden" name="__sendingdata" value="1"/>
+    <xsl:if test="@type='auth'">
+      <input type="hidden" name="__sendingauthdata" value="1"/>
+    </xsl:if>
+    <xsl:if test="@send-to-pageflow">
+      <input type="hidden" name="__pageflow" value="{@send-to-pageflow}"/>
+    </xsl:if>
+    <ixsl:for-each select="$__root/formresult/formhiddenvals/hidden">
+      <input type="hidden">
+        <ixsl:attribute name="name"><ixsl:value-of select="./@name"/></ixsl:attribute>
+        <ixsl:attribute name="value"><ixsl:value-of select="./text()"/></ixsl:attribute>
+      </input>
+    </ixsl:for-each>
+    <xsl:if test="not(.//pfx:token)">
+      <xsl:variable name="pageName">
+        <xsl:choose>
+          <xsl:when test="@send-to-page"><xsl:value-of select="@send-to-page"/></xsl:when>
+          <xsl:otherwise><xsl:value-of select="$page"/></xsl:otherwise>
+        </xsl:choose>
+      </xsl:variable>
+      <ixsl:if test="pfx:requiresToken('{$pageName}')">
+        <xsl:call-template name="createToken">
+          <xsl:with-param name="tokenName"><xsl:value-of select="concat($pageName,'#',generate-id())"/></xsl:with-param>
+        </xsl:call-template>
+      </ixsl:if>
+    </xsl:if>
+  </xsl:template>
+  
+  <xsl:template match="pfx:hiddenfields">
+    <xsl:apply-templates select="ancestor::pfx:forminput[1]" mode="render_hidden_fields"/>
+  </xsl:template>
+  
+  <xsl:template match="fieldset">
+    <xsl:copy>
+      <xsl:copy-of select="@*"/>
+      <xsl:apply-templates/>
+      <xsl:variable name="form" select="ancestor::pfx:forminput[1]"/>
+      <xsl:if test="$form and generate-id($form//fieldset[1])=generate-id(.) and not($form//pfx:hiddenfields)">
+        <xsl:apply-templates select="$form" mode="render_hidden_fields"/>
+      </xsl:if>
+    </xsl:copy>
   </xsl:template>
 
   <xsl:template name="generate_coded_input">
