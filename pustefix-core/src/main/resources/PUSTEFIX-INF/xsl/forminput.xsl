@@ -211,7 +211,7 @@
           </xsl:otherwise>
         </xsl:choose>
       </ixsl:attribute>
-      <xsl:if test="not(.//fieldset or .//pfx:hiddenfields)">
+      <xsl:if test="not(.//pfx:hiddenfields)">
         <xsl:apply-templates select="." mode="render_hidden_fields"/>
       </xsl:if>
       <xsl:apply-templates/>
@@ -256,17 +256,6 @@
     <xsl:apply-templates select="ancestor::pfx:forminput[1]" mode="render_hidden_fields"/>
   </xsl:template>
   
-  <xsl:template match="fieldset">
-    <xsl:copy>
-      <xsl:copy-of select="@*"/>
-      <xsl:apply-templates/>
-      <xsl:variable name="form" select="ancestor::pfx:forminput[1]"/>
-      <xsl:if test="$form and generate-id($form//fieldset[1])=generate-id(.) and not($form//pfx:hiddenfields)">
-        <xsl:apply-templates select="$form" mode="render_hidden_fields"/>
-      </xsl:if>
-    </xsl:copy>
-  </xsl:template>
-
   <xsl:template name="generate_coded_input">
     <xsl:variable name="current" select="generate-id(.)"/>
     <xsl:if test="@action">
