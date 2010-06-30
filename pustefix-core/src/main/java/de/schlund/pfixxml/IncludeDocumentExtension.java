@@ -22,6 +22,8 @@ import java.net.URI;
 import java.net.URISyntaxException;
 import java.text.MessageFormat;
 import java.util.List;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import javax.xml.transform.TransformerException;
 
@@ -38,6 +40,7 @@ import de.schlund.pfixxml.targets.TargetGenerator;
 import de.schlund.pfixxml.targets.TargetGeneratorFactory;
 import de.schlund.pfixxml.targets.VirtualTarget;
 import de.schlund.pfixxml.util.ExtensionFunctionUtils;
+import de.schlund.pfixxml.util.URIParameters;
 import de.schlund.pfixxml.util.XPath;
 import de.schlund.pfixxml.util.Xml;
 import de.schlund.pfixxml.util.XsltContext;
@@ -62,6 +65,8 @@ public final class IncludeDocumentExtension {
     private static final String XPNAMEEND  = "']";
     
     private static ThreadLocal<String> resolvedUri = new ThreadLocal<String>();
+    
+    private static Pattern dynamicUriPattern = Pattern.compile("dynamic://[^?#]*(\\?([^#]*))?(#.*)?");
     
     //~ Methods
     // ....................................................................................
@@ -90,22 +95,13 @@ public final class IncludeDocumentExtension {
        
         if(path_str.startsWith("docroot:")) path_str = path_str.substring(9);
         
-        boolean dynamic = false;
-        if(search!=null && !search.trim().equals("")) {
-            if(search.equals("dynamic")) dynamic = true;
-            else throw new XMLException("Unsupported include search argument: " + search);
-        }
-        
-        if(module!=null) {
+        if(module != null) {
             module = module.trim();
             if(module.equals("")) module = null;
         }
         
         if (path_str == null || path_str.equals("")) {
             throw new XMLException("Need href attribute for pfx:include or path of parent part must be deducible");
-        }
-        if (path_str.matches("^\\w+:.*")) {
-            throw new XMLException("Attribute href must not contain URI: " + path_str);
         }
         if (path_str.startsWith("/")) path_str = path_str.substring(1);
         
@@ -127,21 +123,43 @@ public final class IncludeDocumentExtension {
         
         TargetGenerator tgen = TargetGeneratorFactory.getInstance().createGenerator(tgen_path);
         
-        if(dynamic) {
-            uriStr = "dynamic:/" + path_str + "?part=" + part + "&parent=" + parent_uri_str;
-            if(module != null) uriStr += "&module="+module;
-            else if("module".equals(parentURI.getScheme())) {
-                uriStr += "&module="+parentURI.getAuthority();
+        if(!uriStr.matches("^\\w+:.*")) {
+            boolean dynamic = false;
+            if(search!=null && !search.trim().equals("")) {
+                if(search.equals("dynamic")) dynamic = true;
+                else throw new XMLException("Unsupported include search argument: " + search);
             }
-            uriStr += "&project=" + tgen.getName();
-        } else {
-            if(module != null) {
-                uriStr = "module://" + module + "/" + path_str;
-            } else if("module".equals(parentURI.getScheme())) {
-                uriStr = "module://" + parentURI.getAuthority() + "/" + path_str;
+            if(dynamic) {
+                uriStr = "dynamic:/" + path_str + "?part=" + part + "&parent=" + parent_uri_str;
+                if(module != null) uriStr += "&module="+module;
+                else if("module".equals(parentURI.getScheme())) {
+                    uriStr += "&module="+parentURI.getAuthority();
+                }
+            } else {
+                if(module != null) {
+                    uriStr = "module://" + module + "/" + path_str;
+                } else if("module".equals(parentURI.getScheme())) {
+                    uriStr = "module://" + parentURI.getAuthority() + "/" + path_str;
+                }
+            }
+        } else if(uriStr.matches("^dynamic://.*")) {
+            //add missing dynamic URI parameters
+            Matcher matcher = dynamicUriPattern.matcher(uriStr);
+            if(matcher.matches()) {
+                URIParameters params;
+                if(matcher.group(2) != null) params = new URIParameters(matcher.group(2), "UTF-8");
+                else params = new URIParameters();
+                if(params.getParameter("part") == null) params.addParameter("part", part);
+                if(params.getParameter("parent") == null) params.addParameter("parent", parent_uri_str);
+                if(matcher.group(2) == null) {
+                    if(matcher.group(3) == null) uriStr += "?" + params.toString();
+                    else uriStr = uriStr.substring(0, matcher.start(3)) + "?" +  params.toString() + uriStr.substring(matcher.start(3));
+                } else {
+                    uriStr = uriStr.substring(0, matcher.start(2)) + params.toString() + uriStr.substring(matcher.end(2));
+                }
             }
         }
-        
+
         // EEEEK! this code is in need of some serious beautifying....
         
         try {

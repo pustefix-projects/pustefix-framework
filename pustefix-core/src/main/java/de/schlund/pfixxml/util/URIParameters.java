@@ -18,6 +18,7 @@
 package de.schlund.pfixxml.util;
 
 import java.net.URLDecoder;
+import java.util.Arrays;
 import java.util.Enumeration;
 import java.util.HashMap;
 import java.util.Iterator;
@@ -33,6 +34,10 @@ public class URIParameters {
 
     private Map<String, String[]> params;
 
+    public URIParameters() {
+    	params = new HashMap<String, String[]>();
+    }
+    
     public URIParameters(String queryStr, String encoding) throws Exception {
         params = parse(queryStr, encoding);
     }
@@ -89,22 +94,30 @@ public class URIParameters {
         return params;
     }
 
+    public void addParameter(String name, String value) {
+    	String[] values = params.get(name);
+    	if(values == null) values = new String[] {value};
+    	else {
+    		values = Arrays.copyOf(values, values.length +1);
+    		values[values.length - 1] = value;
+    	}
+    	params.put(name, values);
+    }
+    
     @Override
     public String toString() {
         StringBuffer sb = new StringBuffer();
-        sb.append("URIParameters:\n");
         Iterator<String> it = params.keySet().iterator();
         while (it.hasNext()) {
             String name = it.next();
-            sb.append("   ");
-            sb.append(name);
-            sb.append(" = ");
             String[] values = (String[]) params.get(name);
             for (int i = 0; i < values.length; i++) {
+            	sb.append(name);
+            	sb.append("=");
                 sb.append(values[i]);
-                if (i < values.length - 1) sb.append(" | ");
+                if (i < values.length - 1) sb.append("&");
             }
-            sb.append("\n");
+            if(it.hasNext()) sb.append("&");
         }
         return sb.toString();
     }

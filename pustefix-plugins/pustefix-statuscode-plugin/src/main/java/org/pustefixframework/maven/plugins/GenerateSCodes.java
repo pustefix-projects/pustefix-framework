@@ -25,6 +25,8 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.OutputStreamWriter;
 import java.io.Writer;
+import java.net.URI;
+import java.net.URISyntaxException;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
@@ -48,30 +50,28 @@ public class GenerateSCodes {
     
     private final static String DEPRECATED_NS_STATUSCODEINFO = "http://pustefix-framework.org/statuscodeinfo";
     private final static String NS_STATUSCODEINFO = "http://www.pustefix-framework.org/2008/namespace/statuscodeinfo";
-    
-    
-    public static Result generateFromInfo(List<String> infoFiles, String docRoot, File genDir, String module, String targetPath) throws Exception {
+
+
+    public static Result generateFromInfo(List<String> infoFiles, String resDir, File genDir, String module, String targetPath) throws Exception {
         Result totalResult = new Result();
         for(String infoFile:infoFiles) {
-            Result result = generate(infoFile, docRoot, genDir, module, targetPath);
+            Result result = generate(infoFile, resDir, genDir, module, targetPath);
             totalResult.addResult(result);
         }
         return totalResult;
     }
     
-    public static Result generate(String infoFile, String docRoot, File genDir, String module, String targetPath) throws Exception {
+    public static Result generate(String infoFile, String resDir, File genDir, String module, String targetPath) throws Exception {
         DocumentBuilderFactory dbf = DocumentBuilderFactory.newInstance();
         DocumentBuilder db = dbf.newDocumentBuilder();
-        File file = new File(docRoot, infoFile);
+        File file = new File(resDir, infoFile);
         Document doc = db.parse(file);
-        
         if(DEPRECATED_NS_STATUSCODEINFO.equals(doc.getDocumentElement().getNamespaceURI()) || 
                 DEPRECATED_NS_STATUSCODEINFO.equals(doc.getDocumentElement().getAttribute("xmlns"))) {
             String msg = "[DEPRECATED] Statuscode info file '" + infoFile + "' uses deprecated namespace '" + 
-                DEPRECATED_NS_STATUSCODEINFO + "'. It should be replaced by '" + NS_STATUSCODEINFO + "'.";
+                         DEPRECATED_NS_STATUSCODEINFO + "'. It should be replaced by '" + NS_STATUSCODEINFO + "'.";
             System.out.println("[WARNING] " + msg);
         }
-        
         NodeList scElems = doc.getDocumentElement().getElementsByTagName("statuscodes");
         List<String> genClasses = new ArrayList<String>();
         List<String> allClasses = new ArrayList<String>();
@@ -88,12 +88,12 @@ public class GenerateSCodes {
                     // try to get resource relative to info file
                     String path = infoFile;
                     path=path.substring(0,path.lastIndexOf('/'))+"/"+filePath;
-                    File tmp = new File(docRoot, path);
+                    File tmp = new File(resDir, path);
                     if(tmp.exists()) res = path;
                 }
                 if(res==null) {
-                    // try to get resource relative to docroot
-                    File tmp = new File(docRoot, filePath);
+                    // try to get resource relative to the resource dir
+                    File tmp = new File(resDir, filePath);
                     if(tmp.exists()) res = filePath;
                 }
                 if(res==null) throw new RuntimeException("Statusmessage file not found: "+filePath);
@@ -102,23 +102,23 @@ public class GenerateSCodes {
                 }
                 scXmlFiles.add(res);
             }
-            boolean generated = generate(scXmlFiles, docRoot, genDir, className, module, targetPath);
+            boolean generated = generate(scXmlFiles, resDir, genDir, className, module, targetPath);
             if(generated) genClasses.add(className);
             allClasses.add(className);
         }
         return new Result(allClasses, genClasses);
     }
     
-    public static boolean generate(List<String> scXmlFiles, String docroot, File genDir, String className, String module, String targetPath) throws IOException, SAXException {
+    public static boolean generate(List<String> scXmlFiles, String resDir, File genDir, String className, String module, String targetPath) throws IOException, SAXException {
         
         String scLibPath = className.replace('.','/')+".java";
         File scLibFile = new File(genDir, scLibPath);
         if (scLibFile.exists()) {
             boolean differentFiles = false;
-            List<String> targetXmlFiles = getModulePaths(scXmlFiles, module, targetPath);
-            List<String> resPaths = getResourcePaths(scLibFile);
+            List<URI> targetXmlFiles = getModuleURIs(scXmlFiles, module, targetPath);
+            List<URI> resPaths = getResourceURIs(scLibFile);
             if(resPaths.size() == targetXmlFiles.size()) {
-                for(String resPath : resPaths) {
+                for(URI resPath : resPaths) {
                     if(!targetXmlFiles.contains(resPath)) {
                         differentFiles = true;
                         break;
@@ -128,7 +128,7 @@ public class GenerateSCodes {
             if(!differentFiles) {
                 boolean newer = false;
                 for (String pathStr: scXmlFiles) {
-                    File path = new File(docroot, pathStr);
+                    File path = new File(resDir, pathStr);
                     if (path.exists() && path.lastModified() > scLibFile.lastModified()) {
                         newer = true;
                         break;
@@ -141,19 +141,18 @@ public class GenerateSCodes {
                 scLibFile.getParentFile().mkdirs();
             }
         }
-
         Writer writer = new OutputStreamWriter(new FileOutputStream(scLibFile), "ascii");
         createHeader(writer, className);
-        List<String> docRelPaths = new ArrayList<String>();
+        List<URI> uris = new ArrayList<URI>();
         for (String input: scXmlFiles) {
-            String path = getModulePath(input,module,targetPath);
-            docRelPaths.add(path);
+            URI uri = getModuleURI(input, module, targetPath);
+            uris.add(uri);
         }
-        createResources(writer, docRelPaths);
+        createResources(writer, uris);
         
         for (String input: scXmlFiles) {
-            Document doc = parseMutable(new File(docroot, input));
-            createStatusCodes(writer, doc, docRelPaths.indexOf(getModulePath(input,module,targetPath)));
+            Document doc = parseMutable(new File(resDir, input));
+            createStatusCodes(writer, doc, uris.indexOf(getModuleURI(input,module,targetPath)));
         }
             
         writer.write("}\n");
@@ -163,23 +162,29 @@ public class GenerateSCodes {
         return true;
     }
     
-    private static List<String> getResourcePaths(File scLibFile) throws IOException {
-        List<String> paths = new ArrayList<String>();
-        String regexp = "\\s*ResourceUtil.getFileResourceFromDocroot\\(\"([^\\)]+)\"\\).*";
+    private static List<URI> getResourceURIs(File scLibFile) throws IOException {
+        List<URI> paths = new ArrayList<URI>();
+        String regexp = "\\s*new URI\\(\"([^\\)]+)\"\\).*";
         Pattern pattern = Pattern.compile(regexp);
         BufferedReader reader = new BufferedReader(new InputStreamReader(new FileInputStream(scLibFile), "ISO-8859-1"));
         String line;
         while((line=reader.readLine())!=null) {
             Matcher matcher = pattern.matcher(line);
             if(matcher.matches()) {
-                paths.add(matcher.group(1));
+                URI uri;
+                try {
+                    uri = new URI(matcher.group(1));
+                } catch (URISyntaxException e) {
+                    throw new RuntimeException("Illegal URI: "+matcher.group(1), e);
+                }
+                paths.add(uri);
             }
         }
         reader.close();
         return paths;
     }
     
-    public static void generate(File scXmlFile, File genDir, String className, String docRelPath) throws IOException, SAXException {
+    public static void generate(File scXmlFile, File genDir, String className, URI uri) throws IOException, SAXException {
       
         if (!scXmlFile.exists()) throw new IOException("statuscode file doesn't exist: "+scXmlFile.getAbsolutePath());
         
@@ -196,9 +201,9 @@ public class GenerateSCodes {
         Writer writer = new OutputStreamWriter(new FileOutputStream(scLibFile), "ascii");
         createHeader(writer, className);
             
-        List<String> docRelPaths = new ArrayList<String>();
-        docRelPaths.add(docRelPath);
-        createResources(writer, docRelPaths);
+        List<URI> uris = new ArrayList<URI>();
+        uris.add(uri);
+        createResources(writer, uris);
         
         Document doc = parseMutable(scXmlFile);
         createStatusCodes(writer, doc, 0);
@@ -209,14 +214,21 @@ public class GenerateSCodes {
         
     }
     
-    private static void createResources(Writer writer, List<String> docRelPaths) throws IOException {
-        writer.write("    public static final DocrootResource[] __RES = {\n");
-        Iterator<String> it = docRelPaths.iterator();
+    private static void createResources(Writer writer, List<URI> uris) throws IOException {
+        writer.write("    public static final URI[] __URI;\n\n");
+        writer.write("    static {\n");
+        writer.write("        try {\n");
+        writer.write("            __URI = new URI[] {\n");
+        Iterator<URI> it = uris.iterator();
         while(it.hasNext()) {
-            writer.write("        ResourceUtil.getFileResourceFromDocroot(\""+it.next()+"\")");
+            writer.write("                new URI(\""+it.next().toASCIIString()+"\")");
             if(it.hasNext()) writer.write(",");
             writer.write("\n");
         }
+        writer.write("            };\n");
+        writer.write("        } catch (URISyntaxException e) {\n");
+        writer.write("            throw new RuntimeException(\"Illegal URI\", e);\n");
+        writer.write("        }\n");
         writer.write("    };\n\n");
     }
     
@@ -227,7 +239,7 @@ public class GenerateSCodes {
             String  name      = node.getAttribute("name");
             String  classname = convertToFieldName(name);
             writer.write("    public static final StatusCode " + classname +
-                    " = new StatusCode(\"" + name + "\", __RES["+resIndex+"]);\n");
+                    " = new StatusCode(\"" + name + "\", __URI["+resIndex+"]);\n");
         }
     }
 
@@ -254,13 +266,13 @@ public class GenerateSCodes {
                 " * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA\n" +
                 " */\n");
         writer.write("package "+pkgName+";\n\n");
-        writer.write("import de.schlund.pfixxml.resources.DocrootResource;\n");
-        writer.write("import de.schlund.pfixxml.resources.ResourceUtil;\n");
         if(!pkgName.equals("de.schlund.util.statuscodes")) {
             writer.write("import de.schlund.util.statuscodes.StatusCode;\n");
             writer.write("import de.schlund.util.statuscodes.StatusCodeException;\n");
         }
         writer.write("import java.lang.reflect.Field;\n");
+        writer.write("import java.net.URI;\n");
+        writer.write("import java.net.URISyntaxException;\n");
         writer.write("\n");
         writer.write("public class "+simpleName+" {\n\n");
         writer.write("    public static StatusCode getStatusCodeByName(String name) throws StatusCodeException {\n");
@@ -288,27 +300,21 @@ public class GenerateSCodes {
     }
 
     
-    private static String getModulePath(String relPath, String module, String targetPath) {
-        if(module!=null) {
-            int ind = relPath.lastIndexOf('.');
-            if(ind == -1) throw new RuntimeException("Illegal file name: "+relPath);
-            relPath = relPath.substring(0,ind)+"-merged"+relPath.substring(ind);
-            String modulePath = "modules-override/" + module + "/" + relPath;
-            return modulePath;
-        } else if(targetPath!=null) {
-            int ind = relPath.lastIndexOf('/');
-            if(ind>0) relPath=relPath.substring(ind+1);
-            return targetPath+"/"+relPath;
+    private static URI getModuleURI(String relPath, String module, String targetPath) {
+        String uriStr = "dynamic://"+module+"/"+relPath;
+        try {
+            return new URI(uriStr);
+        } catch (URISyntaxException e) {
+            throw new RuntimeException("Illegal URI: " + uriStr);
         }
-        return relPath;
     }
     
-    private static List<String> getModulePaths(List<String> relPaths, String module, String targetPath) {
-        List<String> newPaths = new ArrayList<String>();
+    private static List<URI> getModuleURIs(List<String> relPaths, String module, String targetPath) {
+        List<URI> newURIs = new ArrayList<URI>();
         for(String relPath : relPaths) {
-            newPaths.add(getModulePath(relPath, module, targetPath));
+            newURIs.add(getModuleURI(relPath, module, targetPath));
         }
-        return newPaths;
+        return newURIs;
     }
     
     public static class Result {

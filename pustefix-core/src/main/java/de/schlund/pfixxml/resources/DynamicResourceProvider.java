@@ -60,9 +60,8 @@ public class DynamicResourceProvider implements ResourceProvider {
         } catch(Exception x) {
             throw new ResourceProviderException("Error reading URI parameters: "+uri.toString(), x);
         }
-        String project = params.getParameter("project");
-        if(project == null) throw new ResourceProviderException("Missing project URI parameter: "+uri.toString());
         String module = params.getParameter("module");
+        if(module == null) module = uri.getAuthority();
         String part = params.getParameter("part");
         String themes[] = null;
         if(params.getParameter("themes")!=null) {
@@ -80,6 +79,7 @@ public class DynamicResourceProvider implements ResourceProvider {
                 Resource resource = ResourceUtil.getResource(prjUri);
                 if(resource.exists()) {
                     resource.setOriginatingURI(uri);
+                    System.out.println("PART: "+part);
                     if(part == null) return resource;
                     if(containsPart(resource, part)) return resource;
                 }
