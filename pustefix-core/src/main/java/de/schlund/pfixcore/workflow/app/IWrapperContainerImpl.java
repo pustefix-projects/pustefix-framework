@@ -27,6 +27,10 @@ import java.util.Set;
 import java.util.TreeMap;
 import java.util.TreeSet;
 
+import net.sf.cglib.proxy.Callback;
+import net.sf.cglib.proxy.Enhancer;
+import net.sf.cglib.proxy.Factory;
+
 import org.apache.log4j.Logger;
 import org.pustefixframework.config.contextxmlservice.IWrapperConfig;
 import org.pustefixframework.config.contextxmlservice.ProcessActionStateConfig;
@@ -36,6 +40,7 @@ import org.w3c.dom.Element;
 import de.schlund.pfixcore.generator.IHandler;
 import de.schlund.pfixcore.generator.IWrapper;
 import de.schlund.pfixcore.generator.IWrapperParam;
+import de.schlund.pfixcore.generator.IWrapperProxyInterceptor;
 import de.schlund.pfixcore.generator.RequestData;
 import de.schlund.pfixcore.generator.StatusCodeInfo;
 import de.schlund.pfixcore.workflow.Context;
@@ -295,6 +300,9 @@ public class IWrapperContainerImpl implements IWrapperContainer {
                 try {
                     thewrapper = Class.forName(iface);
                     wrapper = (IWrapper) thewrapper.newInstance();
+                    if(Enhancer.isEnhanced(thewrapper)) {
+                        ((Factory)wrapper).setCallbacks(new Callback[] {new IWrapperProxyInterceptor()});
+                    }
                 } catch (ClassNotFoundException e) {
                     throw new XMLException("unable to find class [" + iface + "] :" + e.getMessage());
                 } catch (InstantiationException e) {

@@ -113,7 +113,8 @@
   <pagerequest name="home">
     <default>
       <input>
-        <wrapper prefix="info" class="de.schlund.pfixcore.example.iwrapper.AdultInfo" />
+        <wrapper prefix="info" class="de.schlund.pfixcore.example.MyModel"/>
+        <!--<wrapper prefix="info" class="de.schlund.pfixcore.example.iwrapper.AdultInfo" />-->
         <wrapper prefix="prefix" class="de.schlund.pfixcore.example.iwrapper.IndexedTest" />
       </input>
       <output>

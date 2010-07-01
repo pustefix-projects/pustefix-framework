@@ -29,6 +29,9 @@ import com.marsching.flexiparse.parser.ParsingHandler;
 import com.marsching.flexiparse.parser.exception.ParserException;
 
 import de.schlund.pfixcore.generator.IWrapper;
+import de.schlund.pfixcore.generator.IWrapperProxyFactory;
+
+
 
 /**
  * 
@@ -57,7 +60,8 @@ public class PageRequestInputWrapperParsingHandler implements ParsingHandler {
             throw new ParserException("Could not load wrapper class \"" + className + "\"!");
         }
         if (!IWrapper.class.isAssignableFrom(wrapperClass)) {
-            throw new ParserException("Input wrapper class " + wrapperClass + " on page " + pageConfig.getPageName() + " does not implement " + IWrapper.class + " interface!");
+            wrapperClass = IWrapperProxyFactory.getIWrapperProxyClass(wrapperClass);
+            //throw new ParserException("Input wrapper class " + wrapperClass + " on page " + pageConfig.getPageName() + " does not implement " + IWrapper.class + " interface!");
         }
         wrapperConfig.setWrapperClass(wrapperClass.asSubclass(IWrapper.class));
         

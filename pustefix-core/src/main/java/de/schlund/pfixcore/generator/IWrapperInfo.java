@@ -30,6 +30,10 @@ import javax.xml.transform.TransformerFactory;
 import javax.xml.transform.dom.DOMSource;
 import javax.xml.transform.stream.StreamResult;
 
+import net.sf.cglib.proxy.Callback;
+import net.sf.cglib.proxy.Enhancer;
+import net.sf.cglib.proxy.Factory;
+
 import org.apache.log4j.Logger;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
@@ -38,6 +42,7 @@ import de.schlund.pfixcore.generator.annotation.Caster;
 import de.schlund.pfixcore.generator.annotation.PostCheck;
 import de.schlund.pfixcore.generator.annotation.PreCheck;
 import de.schlund.pfixcore.generator.annotation.Property;
+import de.schlund.pfixxml.util.ExtensionFunctionUtils;
 import de.schlund.pfixxml.util.Xml;
 import de.schlund.pfixxml.util.XsltVersion;
 
@@ -64,6 +69,9 @@ public class IWrapperInfo {
                     root.setAttribute("class", iwrpClass.getName());
                     doc.appendChild(root);
                     IWrapper iw = iwrpClass.newInstance();
+                    if(Enhancer.isEnhanced(iwrpClass)) {
+                       ((Factory)iw).setCallbacks(new Callback[] {new IWrapperProxyInterceptor()});
+                    }
                     iw.init("dummy");
                     IWrapperParamDefinition[] defs = iw.gimmeAllParamDefinitions();
                     for (IWrapperParamDefinition def : defs) {

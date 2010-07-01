@@ -106,7 +106,7 @@ public abstract class IWrapperImpl implements IWrapper {
         }
     }
 
-    public final void init(String prefix) throws Exception {
+    public void init(String prefix) throws Exception {
         params  = new HashMap<String, IWrapperParam>();
         errors  = new HashMap<String, IWrapperParam>();
         idxprms = new HashMap<String, IWrapperIndexedParam>();
@@ -114,7 +114,7 @@ public abstract class IWrapperImpl implements IWrapper {
         registerParams();
     }
 
-    public final void load(RequestData req) throws Exception {
+    public void load(RequestData req) throws Exception {
         this.req = req;
 
         for (Iterator<IWrapperParam> i = params.values().iterator(); i.hasNext();) {
@@ -142,7 +142,7 @@ public abstract class IWrapperImpl implements IWrapper {
         }
     }
     
-    public final void loadFromStringValues() throws Exception {
+    public void loadFromStringValues() throws Exception {
     	for(IWrapperParam pinfo:params.values()) {
     	    pinfo.initFromStringValue();
     	    if(pinfo.errorHappened()) errors.put(pinfo.getName(), pinfo);
@@ -150,19 +150,19 @@ public abstract class IWrapperImpl implements IWrapper {
     	for(IWrapperIndexedParam pindex:idxprms.values()) pindex.initFromStringValue();
     }
 
-    public final String gimmePrefix() {
+    public String gimmePrefix() {
         return prefix;
     }
 
-    public final void defineOrder(int order) {
+    public void defineOrder(int order) {
         this.order = new Integer(order);
     }
 
-    public final Integer gimmeOrder() {
+    public Integer gimmeOrder() {
         return order;
     }
     
-    public final boolean errorHappened() {
+    public boolean errorHappened() {
         boolean noerr = errors.isEmpty();
         if (noerr) {
             synchronized (idxprms) {
@@ -178,7 +178,7 @@ public abstract class IWrapperImpl implements IWrapper {
         return !noerr;
     }
 
-    public final IWrapperParamDefinition[] gimmeAllParamDefinitions() {
+    public IWrapperParamDefinition[] gimmeAllParamDefinitions() {
         TreeSet<IWrapperParamDefinition> retpar = new TreeSet<IWrapperParamDefinition>();
         synchronized (params) {
             retpar.addAll(params.values());
@@ -190,7 +190,7 @@ public abstract class IWrapperImpl implements IWrapper {
     }
     
     
-    public final IWrapperParam[] gimmeAllParams() {
+    public IWrapperParam[] gimmeAllParams() {
         TreeSet<IWrapperParam> retpar = new TreeSet<IWrapperParam>();
         synchronized (params) {
             retpar.addAll(params.values());
@@ -204,7 +204,7 @@ public abstract class IWrapperImpl implements IWrapper {
         return (IWrapperParam[]) retpar.toArray(new IWrapperParam[] {});
     }
 
-    public final IWrapperParam[] gimmeAllParamsWithErrors() {
+    public IWrapperParam[] gimmeAllParamsWithErrors() {
         TreeSet<IWrapperParam> retpar = new TreeSet<IWrapperParam>();
         synchronized (errors) {
             retpar.addAll(errors.values());
@@ -225,13 +225,13 @@ public abstract class IWrapperImpl implements IWrapper {
         }
     }
 
-    protected final IWrapperParam gimmeParamForKey(String key) {
+    protected IWrapperParam gimmeParamForKey(String key) {
         synchronized (params) {
             return (IWrapperParam) params.get(key);
         }
     }
 
-    protected final IWrapperIndexedParam gimmeIndexedParamForKey(String key) {
+    protected IWrapperIndexedParam gimmeIndexedParamForKey(String key) {
         synchronized (idxprms) {
             return (IWrapperIndexedParam) idxprms.get(key);
         }
@@ -243,7 +243,7 @@ public abstract class IWrapperImpl implements IWrapper {
         // super.registerParams() without worrying.
     }
 
-    public final int compareTo(IWrapper in) {
+    public int compareTo(IWrapper in) {
         return (gimmeOrder().compareTo(in.gimmeOrder()));
     }
 

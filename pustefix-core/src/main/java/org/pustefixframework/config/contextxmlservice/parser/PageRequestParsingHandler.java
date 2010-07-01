@@ -21,6 +21,8 @@ package org.pustefixframework.config.contextxmlservice.parser;
 import java.util.Collection;
 import java.util.Map;
 
+import net.sf.cglib.proxy.Enhancer;
+
 import org.pustefixframework.config.Constants;
 import org.pustefixframework.config.contextxmlservice.IWrapperConfig;
 import org.pustefixframework.config.contextxmlservice.parser.internal.ContextConfigImpl;
@@ -157,6 +159,7 @@ public class PageRequestParsingHandler implements ParsingHandler {
                     Class<? extends IHandler> handlerClass = null;
                     String handlerScriptPath = null;
                     UseHandlerClass handlerClassAnnotation = wrapperClass.getAnnotation(UseHandlerClass.class);
+                    if(Enhancer.isEnhanced(wrapperClass)) handlerClassAnnotation = wrapperClass.getSuperclass().getAnnotation(UseHandlerClass.class);
                     UseHandlerScript handlerScriptAnnotation = wrapperClass.getAnnotation(UseHandlerScript.class);
                     UseHandlerBeanRef handlerBeanRefAnnotation = wrapperClass.getAnnotation(UseHandlerBeanRef.class);
                     
