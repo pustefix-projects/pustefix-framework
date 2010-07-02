@@ -39,28 +39,63 @@
     <section xml:id="architecture.backend">
       <title>The Pustefix backend system</title>
       <para>
-        <xref linkend="architecture.backend.figure"/> shows, how the different interfaces and classes
-        in Pustefix are connected (not including web services and direct output support).
+        Pustefix closely integrates with the <link xlink:href="http://www.springsource.org/about">Spring Framework</link>. 
+        It uses the Spring MVC request dispatching mechanism and
+        all objects making up an application are Spring-managed beans. Since Pustefix 1.0 it uses 
+        <link xlink:href="http://www.springsource.org/osgi">Spring Dynamic Modules</link>
+        to provide seamless OSGi support.
       </para>
-      <figure xml:id="architecture.backend.figure">
-        <title>The Pustefix backend system</title>
+      <figure xml:id="architecture.spring.figure">
+        <title>Spring integration</title>
         <mediaobject>
           <imageobject>
-            <imagedata fileref="images/reference/architecture-backend.png" format="PNG"/>
+            <imagedata fileref="images/reference/architecture-spring.png" format="PNG"/>
           </imageobject>
         </mediaobject>
+      </figure>
+        <para>
+         Pustefix provides a specialized <interfacename>ApplicationContext</interfacename> which is capable
+         of reading framework specific configuration files along with Spring's bean configurations.
+         <xref linkend="architecture.spring.figure"/> shows some of the involved Spring and Pustefix classes.
+        </para>
         <para>
           The Pustefix application runs within a Spring <interfacename>ApplicationContext</interfacename>
           that is created by the <classname>DispatcherServlet</classname>. The servlet dispatches
           all requests to <interfacename>HttpRequestHandler</interfacename>s that are managed as
           beans in the application context. <classname>PustefixContextXMLHttpRequestHandler</classname>
           handles the requests to Pustefix pages and takes care of session, cookie and SSL management.
-          The actual request processing (workflow handling, dispatching to the right 
-          <interfacename>State</interfacename>) is performed by <interfacename>Context</interfacename>
-          (or more precisely <classname>ContextImpl</classname>). 
+          Other handlers are responsible to serve requests to static resources or AJAX requests.
         </para>
-      </figure>
+        <para>
+          A typical Pustefix application is composed of multiple modules providing more or less self-contained
+          functionality loosely coupled using an extension point mechanism. Modularization is done using the mechanisms
+          provided by OSGi: modules are OSGi bundles and extension points are implemented by services using
+          the OSGi service registry. <xref linkend="architecture.bundles.figure"/> shows an example of a modularized application.
+        </para>   
+        <figure xml:id="architecture.bundles.figure">
+          <title>Modularized application</title>
+          <mediaobject>
+            <imageobject>
+              <imagedata fileref="images/reference/architecture-bundles.png" format="PNG"/>
+            </imageobject>
+          </mediaobject>
+        </figure>
+        <para>
+          A Pustefix application at least consists of a main application bundle, which provides the application entry point, i.e.
+          contains the application's base configuration and triggers the registration of the DispatcherServlet, setting up a
+          Spring ApplicationContext configuring the HttpRequestHandlers and other Pustefix framework specific stuff.
+        </para>
+        <para>
+          While it's possible to develop applications only consisting of the application bundle, it's good practice to group
+          your application into modules. You typically modularize your application along functional blocks/features and the classical layers, 
+          e.g. separating it into bundles containing parts of the view and view logic, so-called webmodule bundles, and into bundles containing
+          business logic in the form of services, so-called service bundles. 
+        </para>
+
+
     </section>
+
+
     
     <section xml:id="architecture.xsl">
       <title>Recursive XSL Transformations</title>

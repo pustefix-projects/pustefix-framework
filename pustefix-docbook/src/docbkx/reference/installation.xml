@@ -30,60 +30,130 @@
       for installation instructions.
     </para>
   </section>
-  <section xml:id="installation.prepareprojectdirectory">
-    <title>Prepare the project directory</title>
+  <section xml:id="gettingstarted.mavensetup">
+    <title>Maven setup</title>
     <para>
-      If you are not using Eclipse, you can just create an empty directory
-      that will contain the project files and proceed with <xref linkend="installation.unpack"/>.
+      Pustefix provides some Maven archetypes for quickly creating new applications. Therefore you
+      have to configure the repository where the according Pustefix artifacts reside (because
+      they currently aren't hosted in the Maven central repository).  
     </para>
     <para>
-      Start the Eclipse workbench and create a new project of type Java Project".
-      Make sure that you choose separate source and build folders: Use 
-      <filename>src</filename> for the source and <filename>build</filename> for 
-      the build folder. This is important because the Pustefix build script 
-      expects these folders.
+      You can either configure the repository globally for Maven or always specify the URL of the repository's
+      archetype-catalog when generating a new project (and add the repository configuration to the project's POM,
+      if not already there). If you don't want to configure it globally,
+      you can skip the next paragraphs and continue with the archetype generation in the next section.
     </para>
-  </section>
-  <section xml:id="installation.repositories">
-    <title>Add Pustefix repository to your Maven configuration</title>
     <para>
-      In order to be able to resolve the dependencies, you should add the
-      Pustefix repository to your list of Maven repositories in your
-      <filename>~/.m2/settings.xml</filename>.
+      Adding the Pustefix repository can be easily done by adding the following profile to the
+      Maven settings. The profile can be either added to the <filename>settings.xml</filename>
+      file located in the <filename>.m2</filename> directory within your home directory (if it
+      doesn't already exist you can just create it) or to the <filename>settings.xml</filename> file 
+      located in the <filename>conf</filename> directory of your Maven installation.
     </para>
-    <programlisting language="xml"><![CDATA[
-<settings>
+<programlisting language="xml"><![CDATA[<settings>
   <profiles>
+
     <profile>
+      <id>pustefix</id>
       <activation>
         <activeByDefault>true</activeByDefault>
       </activation>
-      <id>pustefix-repositories</id>
       <repositories>
         <repository>
-          <id>pustefix></id>
-          <url>http://www.pustefix-framework.org/repository/maven</url>
+          <id>pustefix</id>
+          <name>Pustefix Maven Repository</name>
+          <url>http://pustefix-framework.org/repository/maven</url>
         </repository>
       </repositories>
       <pluginRepositories>
         <pluginRepository>
-          <id>pustefix></id>
-          <url>http://www.pustefix-framework.org/repository/maven</url>
+          <id>pustefix</id>
+          <url>http://pustefix-framework.org/repository/maven</url>
         </pluginRepository>
-      </pluginRepositories>
+      </pluginRepositories> 
+
     </profile>
   </profiles>
-</settings>
-    ]]></programlisting>
+</settings>]]></programlisting>
   </section>
-  <section xml:id="installation.configureeclipse">
-    <title>Configure Eclipse</title>
+  <section xml:id="gettingstarted.mavenarchetypes">
+    <title>Generating a new project from a Maven archetype</title>
     <para>
-      You can generate an Eclipse configuration for your project
-      using "mvn eclipse:eclipse". After generating the configuration
-      you can import your project to the Eclipse workspace using the
-      import wizard in the Eclipse workbench. 
+      Pustefix provides some Maven archetypes to help you quickly setting up new applications or application modules.
+    </para>
+    <para>
+    <table rules="all" frame="box">
+        <caption>Maven archetypes</caption>
+        <thead>
+          <tr>
+            <th>ArtifactId</th>
+            <th>Description</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td>pustefix-archetype-basic</td>
+            <td>Creates a basic application only consisting of the main application bundle.</td>
+          </tr>
+          <tr>
+            <td>pustefix-archetype-modular</td>
+            <td>Creates a modular application consisting of application, webmodule and service bundles.</td>
+          </tr>
+          <tr>
+            <td>pustefix-archetype-webmodule</td>
+            <td>Creates an application module bundle.</td>
+          </tr>
+        </tbody>
+      </table>
+    </para>
+    <para>
+      For example to create a new application: just call <literal>mvn archetype:generate</literal>
+      and select the archetype <literal>pustefix-archetype-basic</literal>. You only have to specifiy the
+      <literal>archetypeCatalog</literal> parameter if you didn't globally setup the Pustefix Maven repository like 
+      described in the last section.
+    </para>
+    <screen>
+      $ mvn archetype:generate -DarchetypeCatalog=http://pustefix-framework.org/repository/maven/archetype-catalog.xml</screen>
+    <para>
+      After choosing the <literal>pustefix-archetype-basic</literal> Maven will ask you for your project's <literal>groupId</literal>, 
+      <literal>artifactId</literal>, <literal>version</literal> and <literal>package</literal>.
+      Having finished these settings Maven will generate the new project within a new directory called like the <literal>artifactId</literal>
+      and located within the current working directory.
+    </para>
+    <screen>
+      $ cd myproject
+      $ mvn pustefix-launcher:run</screen>
+    <para>
+      The generated project is a standard Maven project with <literal>bundle</literal> packaging type. It uses 
+      <link xlink:href="http://felix.apache.org/site/apache-felix-maven-bundle-plugin-bnd.html">Apache Felix's Maven Bundle Plugin</link>
+      to build your application as an OSGi bundle.
+    </para>
+    <para>
+      Pustefix provides a simple application launcher plugin, which configures and starts an OSGi runtime. By default it just installs/starts all dependencies
+      (available as OSGi bundles) from the Maven POM. You can run your application by calling <literal>mvn pustefix-launcher:run</literal> and
+      opening <literal>http://localhost:8080</literal> in your browser.
     </para>
   </section>
-
+  <section xml:id="gettingstarted.ide">
+    <title>Configure your IDE</title>
+    <para>
+      You can use the IDE of your choice. As a Pustefix project is a standard Maven project, you can
+      use an arbitrary IDE supporting projects with Maven layout.
+    </para>
+    <para>
+      Eclipse will be a good choice, e.g. you can just generate an according Eclipse configuration for your project
+      using the Eclipse Maven plugin:
+    </para>
+    <screen>
+      $ mvn eclipse:eclipse</screen>
+    <para>
+      Then you can import your project into Eclipse. Doing this the first time you will have to add 
+      the <literal>M2_REPO</literal> classpath variable pointing to your local Maven repository
+      (usually <literal>.m2/repository</literal> within your home directory). This can be done by 
+      opening the <guimenu>Window</guimenu> ⇒ <guimenuitem>Preferences</guimenuitem> dialog
+      and navigating to <guimenu>Java</guimenu> ⇒ <guimenuitem>Build Path</guimenuitem> ⇒
+      <guimenuitem>Classpath Variables</guimenuitem>
+      (also see the <link xlink:href="http://maven.apache.org/guides/mini/guide-ide-eclipse.html">Maven Eclipse documentation</link>).
+    </para>
+  </section>
 </chapter>
