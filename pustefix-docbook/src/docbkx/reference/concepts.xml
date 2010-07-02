@@ -1249,4 +1249,11 @@ public class MySessionScopedInterceptor implements ContextInterceptor {
     <para><literal>ContextInterceptors</literal> are called on every request. So you shouldn't execute long-running tasks and avoid that time-consuming code is unnecessarily called with each invocation.</para>
   </note>
 </section>
+
+<section xml:id="concepts.extensionpoints">
+  <title>Extension points</title>
+  <para>
+    Extension points
+  </para>
+</section>
 </chapter>

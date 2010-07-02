@@ -91,7 +91,12 @@
           e.g. separating it into bundles containing parts of the view and view logic, so-called webmodule bundles, and into bundles containing
           business logic in the form of services, so-called service bundles. 
         </para>
-
+        <para>
+          Modules are coupled using OSGi services. You can either programmatically handle service registration and lookup using the
+          low-level OSGi API or use a declarative approach, like Declarative Services. Building on Spring we prefer using the Spring-DM approach.
+          The Pustefix framework additionally provides an extension point mechanism based on OSGi services, which allows you to declaratively
+          define where a module can be extended by other modules and what extensions modules contribute to other modules (see <xref linkend="concepts.extensionpoints"/>). 
+        </para>
 
     </section>
 
