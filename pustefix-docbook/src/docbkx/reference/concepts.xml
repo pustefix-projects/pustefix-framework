@@ -1253,7 +1253,39 @@ public class MySessionScopedInterceptor implements ContextInterceptor {
 <section xml:id="concepts.extensionpoints">
   <title>Extension points</title>
   <para>
-    Extension points
+    Pustefix leverages OSGi for building highly modular applications. Nearly every aspect making up a web application can be sourced out into modules, i.e.
+    a module can contribute its own pages, XML fragments, XSL templates, view and business logic, etc. to the application or other modules. Therefor you
+    need a kind of plugin mechanism letting you define where your application or module is extensible and what extensions your modules contribute to
+    the application or other modules.
   </para>
+  <para>
+    Pustefix 1.0 introduced an extension point mechanism based on OSGi services. Extension points are defined in a declarative way, i.e. extension points
+    can be declared by inserting according XML tags at the designated locations within the various Pustefix configuration files or within the view templates.
+    Extensions are declared in a similar way by inserting according XML tags defining the target extension point and enclosing elements configuring the
+    contribution.
+  </para>
+  <para>
+    <xref linkend="concepts.extensionpoints.figure"/> shows how a webmodule adds an additional pageflow step to the main application by contributing an
+    according extension to the pageflow extension point defined by the application:
+  </para>
+  <figure xml:id="concepts.extensionpoints.figure">
+    <title>Extension Points</title>
+    <mediaobject>
+      <imageobject>
+        <imagedata fileref="images/reference/concepts-extensionpoints.png" format="PNG"/>
+      </imageobject>
+    </mediaobject>
+  </figure>
+  <para>
+    Extension points and extension declarations are processed as part of the general configuration parsing during ApplicationContext setup. For each extension point an according bean will be created and exported as OSGI service. For each extension a ServiceTracker is created, which will track matching services and add/remove the
+extension.
+  </para>
+  <para>
+    Extension points are published under the <literal>org.pustefixframework.extension.ExtensionPoint</literal> interface. They must specify a unique id and a type supported by Pustefix. Version and cardinality are optional (default values are <literal>0.0.0</literal> and <literal>0..n</literal>). Extensions must specify a type and must reference one or more extension-points (of the same type) by their ids. The version attribute is optional and defaults to <literal>0</literal> - interpreted as <literal>[0.0.0,∞)</literal>.
+  </para>
+  <para>
+    
+  </para>
+
 </section>
 </chapter>
