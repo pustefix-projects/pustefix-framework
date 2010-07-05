@@ -1283,9 +1283,63 @@ extension.
   <para>
     Extension points are published under the <literal>org.pustefixframework.extension.ExtensionPoint</literal> interface. They must specify a unique id and a type supported by Pustefix. Version and cardinality are optional (default values are <literal>0.0.0</literal> and <literal>0..n</literal>). Extensions must specify a type and must reference one or more extension-points (of the same type) by their ids. The version attribute is optional and defaults to <literal>0</literal> - interpreted as <literal>[0.0.0,∞)</literal>.
   </para>
-  <para>
-    
-  </para>
+
+  <section xml:id="concepts.extensionpoints.types">
+    <title>Extension point types</title>
+    <para>
+      The available extension points can be grouped by their type. Also corresponding to their location we can differentiate <literal>application</literal>, 
+      <literal>context</literal>, <literal>direct</literal> and <literal>xml</literal> extension points.
+    </para>
+    <para>
+      Currently there's only one <literal>application</literal> extension point. <literal>application.static</literal> allows to contribute resource folders containing
+      static resources which should be delivered by the application.
+    </para>
+    <programlisting language="xml"><![CDATA[
+<extension-point type="application.static"/>]]></programlisting>
+    <para>
+      The <literal>context</literal> extension points are used for plugging into the view logic, e.g. adding pageflows, pagerequests or request data wrappers. They are declared within the <literal>context-xml-service-config</literal> configuration file.
+    </para>
+    <programlisting language="xml"><![CDATA[
+<extension-point type="context.interceptor"/>
+<extension-point type="context.scriptedflow"/>
+<extension-point type="context.pageflow"/>
+<extension-point type="context.pageflowvariant"/>
+<extension-point type="context.flowstep"/>
+<extension-point type="context.pagerequest"/>
+<extension-point type="context.pagerequestvariant"/>
+<extension-point type="context.wrapper"/>
+<extension-point type="context.action"/>
+<extension-point type="context.resource"/>
+<extension-point type="context.property"/>]]></programlisting>
+    <para>
+      The <literal>direct-output-service-config</literal> configuration file supports one extension point, which can be used to add pagerequests for direct
+      output generation. 
+    </para>
+    <programlisting language="xml"><![CDATA[
+<extension-point type="direct.pagerequest"/>]]></programlisting>
+    <para>
+      The <literal>xml-generator-config</literal> configuration file supports various extension points, e.g. for adding pages and templates.
+    </para>
+    <programlisting language="xml"><![CDATA[
+<extension-point type="xml.param"/>
+<extension-point type="xml.page"/>
+<extension-point type="xml.standardmaster"/>
+<extension-point type="xml.standardmetatag"/>
+<extension-point type="xml.include"/>
+<extension-point type="xml.standardpage"/>
+<extension-point type="xml.target"/>
+<extension-point type="xml.depxml"/>
+<extension-point type="xml.depxsl"/>
+<extension-point type="xml.depaux"/>]]></programlisting>
+    <para>
+      There's one special <literal>xml</literal> extension point, <literal>xml.view</literal>, which isn't declared in a configuration file but directly
+      in the view's XML using a Pustefix view tag, thus allowing to plug in view fragments:
+    </para>
+    <programlisting language="xml"><![CDATA[
+<div id="content">
+  <pfx:extension-point id="main.content" cardinality="0..n"/>
+</div>]]></programlisting>
+  </section>
 
 </section>
 </chapter>
