@@ -20,12 +20,16 @@ package org.pustefixframework.extension.support;
 
 import java.util.Collection;
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.LinkedHashSet;
 import java.util.LinkedList;
+import java.util.Map;
 import java.util.Set;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.osgi.framework.Bundle;
+import org.osgi.framework.Version;
 import org.pustefixframework.extension.Extension;
 import org.pustefixframework.extension.ExtensionPoint;
 
@@ -43,6 +47,7 @@ public class AbstractExtensionPoint <T1 extends AbstractExtensionPoint<T1, T2>, 
     protected String version = "0.0.0";
     
     protected Set<T2> extensions = new LinkedHashSet<T2>();
+    protected Map<String, Version> bundleVersions = new HashMap<String, Version>();
     
     protected Set<ExtensionPointRegistrationListener<? super T1, ? super T2>> listeners = new LinkedHashSet<ExtensionPointRegistrationListener<? super T1, ? super T2>>();
     
@@ -169,6 +174,7 @@ public class AbstractExtensionPoint <T1 extends AbstractExtensionPoint<T1, T2>, 
                     }
                 }
                 extensions.add(extension);
+                refreshBundleVersions();
                 for (ExtensionPointRegistrationListener<? super T1, ? super T2> listener : listeners) {
                     try {
                         listener.afterRegisterExtension(thisToT1(), extension);
@@ -194,6 +200,7 @@ public class AbstractExtensionPoint <T1 extends AbstractExtensionPoint<T1, T2>, 
                     }
                 }
                 extensions.remove(extension);
+                refreshBundleVersions();
                 for (ExtensionPointRegistrationListener<? super T1, ? super T2> listener : listeners) {
                     try {
                         listener.afterUnregisterExtension(thisToT1(), extension);
@@ -249,15 +256,23 @@ public class AbstractExtensionPoint <T1 extends AbstractExtensionPoint<T1, T2>, 
      */
     public Collection<T2> getExtensions() {
         synchronized (extensions) {
-            if (extensions.size() < cardinalityMin) {
-                throw new IllegalStateException("getExtension() for extension point \"" + getId() + "\" has been called while " + extensions.size() + " extension(s) were present but a minimum of " + cardinalityMin + " extension(s) is required.");
+            Set<T2> filteredExtensions = new LinkedHashSet<T2>();
+            for(T2 extension: extensions) {
+                Bundle bundle = extension.getBundle();
+                String symbolicName = bundle.getSymbolicName();
+                Version version = Version.parseVersion((String)bundle.getHeaders().get("Bundle-Version"));
+                Version bundleVersion = bundleVersions.get(symbolicName);
+                if(bundleVersion == null || bundleVersion.equals(version)) filteredExtensions.add(extension);
             }
-            if (cardinalityMax == -1 || extensions.size() <= cardinalityMax) {
-                return Collections.unmodifiableList(new LinkedList<T2>(extensions));
+            if (filteredExtensions.size() < cardinalityMin) {
+                throw new IllegalStateException("getExtension() for extension point \"" + getId() + "\" has been called while " + filteredExtensions.size() + " extension(s) were present but a minimum of " + cardinalityMin + " extension(s) is required.");
+            }
+            if (cardinalityMax == -1 || filteredExtensions.size() <= cardinalityMax) {
+                return Collections.unmodifiableList(new LinkedList<T2>(filteredExtensions));
             } else {
                 LinkedList<T2> list = new LinkedList<T2>();
                 int count = cardinalityMax;
-                for (T2 extension : extensions) {
+                for (T2 extension : filteredExtensions) {
                     if (count == 0) {
                         break;
                     }
@@ -265,6 +280,23 @@ public class AbstractExtensionPoint <T1 extends AbstractExtensionPoint<T1, T2>, 
                     count++;
                 }
                 return Collections.unmodifiableList(list);
+            }
+        }
+    }
+    
+    private void refreshBundleVersions() {
+        bundleVersions.clear();
+        for(T2 extension: extensions) {
+            Bundle bundle = extension.getBundle();
+            String symbolicName = bundle.getSymbolicName();
+            Version version = Version.parseVersion((String)bundle.getHeaders().get("Bundle-Version"));
+            Version oldVer = bundleVersions.get(symbolicName);
+            if(oldVer != null) {
+                if(version.compareTo(oldVer)>0) {
+                    bundleVersions.put(symbolicName, version);
+                }
+            } else {
+                bundleVersions.put(symbolicName, version);
             }
         }
     }

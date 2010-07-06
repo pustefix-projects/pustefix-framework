@@ -22,6 +22,7 @@ import java.util.Collection;
 import java.util.LinkedList;
 import java.util.List;
 
+import org.osgi.framework.Bundle;
 import org.osgi.framework.BundleContext;
 import org.osgi.framework.Filter;
 import org.osgi.framework.ServiceReference;
@@ -49,7 +50,8 @@ public class AbstractExtension <T1 extends ExtensionPoint<? super T2>, T2 extend
     protected List<T1> extensionPoints = new LinkedList<T1>();
     protected BundleContext bundleContext;
     protected ExtensionPointServiceTracker serviceTracker;
-
+    protected Bundle bundle;
+    
     public String getType() {
         return type;
     }
@@ -64,7 +66,11 @@ public class AbstractExtension <T1 extends ExtensionPoint<? super T2>, T2 extend
     public void setType(String type) {
         this.type = type;
     }
-
+    
+    public Bundle getBundle() {
+        return bundleContext.getBundle();
+    }
+    
     /**
      * Returns the interface type of the extension point, this extension
      * registers at.

@@ -18,6 +18,8 @@
 
 package org.pustefixframework.extension;
 
+import org.osgi.framework.Bundle;
+
 
 /**
  * Base interface for extensions, that register themselves at an
@@ -32,4 +34,6 @@ public interface Extension {
      * @return type of this extension
      */
     String getType();
+    
+    Bundle getBundle();
 }
