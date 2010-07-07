@@ -13,7 +13,7 @@ import de.schlund.pfixcore.generator.IHandler;
 import de.schlund.pfixcore.generator.IWrapper;
 import de.schlund.pfixcore.workflow.Context;
 
-public class GuessHandler implements IHandler, DisposableBean {
+public class GuessHandler implements IHandler {
 
     private RandomNumberGenerator generator;
     private StatisticsContext statistics;
@@ -79,8 +79,4 @@ public class GuessHandler implements IHandler, DisposableBean {
         this.user = user;
     }
     
-    public void destroy() throws Exception {
-        System.out.println("DESTRooooooooooooooooooooooooooyyyyyy!");   
-    }
-
 }
