@@ -133,4 +133,9 @@ public class ModuleResource implements Resource {
         return uri.compareTo(res.toURI());
     }
     
+    @Override
+    public String toString() {
+    	return uri.toString();
+    }
+    
 }
