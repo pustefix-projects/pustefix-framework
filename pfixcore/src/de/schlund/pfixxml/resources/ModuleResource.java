@@ -98,5 +98,10 @@ public class ModuleResource implements Resource {
     public int compareTo(Resource res) {
         return uri.compareTo(res.toURI());
     }
+
+    @Override
+    public String toString() {
+        return uri.toString();
+    }
     
 }
