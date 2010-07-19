@@ -12,7 +12,7 @@ or delete the DOCTYPE definition -->
   <import file="build-maven.xml"/>
 
   <property name="dist.version"        value="0.13.21" description="the version to use for pfixcore-*.*"/>
-  <property name="dist.type"           value="build" description="distribution type: supported values release, build"/>
+  <property name="dist.type"           value="release" description="distribution type: supported values release, build"/>
 
   <!-- additional properties -->
   <property name="name.svnrevision"       value="SVN_REVISION"/>
