@@ -186,9 +186,15 @@ public class DynamicResourceProvider implements ResourceProvider {
         if(path.startsWith("/")) path = path.substring(1);
         ModuleFilter filter = ModuleFilterInfo.getInstance().getModuleFilter(project);
         List<String> overMods = moduleInfo.getOverridingModules(module, filter, path);
-        if(overMods.size()>1) {
-            LOG.warn("Multiple modules found which override resource '"+path+"' from module '"+module+"'.");
-        }
+        //if(overMods.size()>1) {
+        //    StringBuilder sb = new StringBuilder();
+        //    for(String overMod: overMods) {
+        //        sb.append(overMod);
+        //        sb.append(" ");
+        //    }
+        //    LOG.warn("Multiple modules found which override resource '"+path+"' from module '"+module+"'. " +
+        //             "(Modules: " + sb.toString() + " URI: " + uri.toString() + ")");
+        //}
         
         //search in overriding modules
         for(String theme:themes) {
