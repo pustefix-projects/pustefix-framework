@@ -47,8 +47,8 @@
       <monitoring scope="session" historysize="10"/>
       <logging/>
       <faulthandler class="org.pustefixframework.webservices.fault.EmailNotifyingHandler">
-        <param name="recipients" value="martin.leidig@1und1.de"/>
-        <param name="sender" value="martin.leidig@1und1.de"/>
+        <param name="recipients" value="mleidig@schlund.de"/>
+        <param name="sender" value="mleidig@schlund.de"/>
         <param name="smtphost" value="localhost"/>
       </faulthandler>
     </webservice-service>

@@ -21,7 +21,7 @@ import java.util.ArrayList;
 import java.util.StringTokenizer;
 
 import org.apache.log4j.Logger;
-import org.pustefixframework.webservices.HttpServiceRequest;
+import org.pustefixframework.webservices.ServiceRequest;
 
 import de.schlund.pfixcore.util.email.EmailSender;
 import de.schlund.pfixcore.util.email.EmailSenderException;
@@ -87,9 +87,7 @@ public class EmailNotifyingHandler extends FaultHandler {
     
     public String createSubject(Fault fault) {
         StringBuffer sb=new StringBuffer();
-        HttpServiceRequest srvReq=(HttpServiceRequest)fault.getRequest();
-        sb.append(srvReq.getServerName());
-        sb.append("|webservice|");
+        sb.append("webservice|");
         sb.append(fault.getServiceName());
         sb.append("|");
         sb.append(fault.getFaultString());
@@ -98,9 +96,9 @@ public class EmailNotifyingHandler extends FaultHandler {
     
     public String createText(Fault fault) {
         StringBuffer sb=new StringBuffer();
-        HttpServiceRequest srvReq=(HttpServiceRequest)fault.getRequest();
+        ServiceRequest srvReq=(ServiceRequest)fault.getRequest();
         sb.append("Request: \t");
-        sb.append(srvReq.getRequestURI());
+        sb.append(srvReq.getServiceName());
         sb.append("\n");
         sb.append("Service: \t");
         sb.append(fault.getServiceName());
