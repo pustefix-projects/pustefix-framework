@@ -447,6 +447,7 @@
  
   <xsl:template match="pfx:xinp[@type='hidden']">
     <input type="hidden">
+      <xsl:copy-of select="@*[name()!='type' and name()!='default' and name()!='position' and name()!='name']"/>
       <xsl:variable name="thename" select="@name"/>
       <ixsl:variable name="pfx_name"><xsl:choose>
         <xsl:when test="./pfx:name"><xsl:apply-templates select="./pfx:name/node()"/></xsl:when>
