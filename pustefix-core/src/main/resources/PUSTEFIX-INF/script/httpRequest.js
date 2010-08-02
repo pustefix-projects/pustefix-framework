@@ -154,7 +154,9 @@ pfx.net.HTTPRequest.prototype.start = function( content, headers, reqId ) {
                   reqId = pfx.net.HTTPRequest._xml[i].getResponseHeader("Request-Id");
                 } catch(e) {
                 }
-                self.callback.call( self.context, self._getResponse(pfx.net.HTTPRequest._xml[i]), reqId);
+                var content = self._getResponse(pfx.net.HTTPRequest._xml[i]);
+                if(content!=null) self.callback.call( self.context, content, reqId);
+                else if(!pfx.net.HTTPRequest._xml[i].aborted) throw new Error("Empty response");
                 pfx.net.HTTPRequest._xml[i] = null;
               }
             };
@@ -174,7 +176,9 @@ pfx.net.HTTPRequest.prototype.start = function( content, headers, reqId ) {
                   reqId = pfx.net.HTTPRequest._xml[i].getResponseHeader("Request-Id");
                 } catch(e) {
                 }
-                self.callback.call( self.context, self._getResponse(pfx.net.HTTPRequest._xml[i]), reqId );
+                var content = self._getResponse(pfx.net.HTTPRequest._xml[i]);
+                if(content!=null) self.callback.call( self.context, content, reqId );
+                else if(!pfx.net.HTTPRequest._xml[i].aborted) throw new Error("Empty response");
                 pfx.net.HTTPRequest._xml[i] = null;
               }
             };
@@ -395,6 +399,11 @@ pfx.net.HTTPRequest.prototype.getQueryParameter = function( url, field ) {
 pfx.net.HTTPRequest.prototype._getResponse = function(request) {
   var ctype=request.getResponseHeader("Content-Type");
   if(ctype==null) {
+    if(request.status==0) {
+       //Handle aborted requests in Firefox
+       request.aborted = true;
+       return null;
+    }
     throw new Error("Missing response content type");
   } else if(ctype.indexOf("text/plain")==0) {
     return request.responseText;
