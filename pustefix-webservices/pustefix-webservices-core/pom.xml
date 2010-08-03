@@ -15,12 +15,12 @@
     <dependency>
       <groupId>org.springframework</groupId>
       <artifactId>spring-context</artifactId>
-      <version>3.0.2.RELEASE</version>
+      <version>3.0.3.RELEASE</version>
     </dependency>
     <dependency>
       <groupId>org.springframework</groupId>
       <artifactId>spring-test</artifactId>
-      <version>3.0.2.RELEASE</version>
+      <version>3.0.3.RELEASE</version>
     </dependency>
     <dependency>
       <groupId>com.marsching.flexiparse</groupId>
