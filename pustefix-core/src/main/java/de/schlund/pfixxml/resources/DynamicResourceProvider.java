@@ -79,7 +79,6 @@ public class DynamicResourceProvider implements ResourceProvider {
                 Resource resource = ResourceUtil.getResource(prjUri);
                 if(resource.exists()) {
                     resource.setOriginatingURI(uri);
-                    System.out.println("PART: "+part);
                     if(part == null) return resource;
                     if(containsPart(resource, part)) return resource;
                 }
