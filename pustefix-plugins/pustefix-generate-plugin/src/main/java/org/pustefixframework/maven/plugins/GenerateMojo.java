@@ -77,6 +77,11 @@ public class GenerateMojo extends AbstractMojo {
     private MavenProject mavenProject;
 
     public void execute() throws MojoExecutionException {
+        if ("pom".equals(mavenProject.getPackaging())) {
+            getLog().info("Generated Plugin invoked for packaging pom - ignored.");
+            getLog().info("(This happens if you declare the plugin in your parent pom - which is fine)");
+            return;
+        }
 
         File warDir = getWarDir();
         if (warDir == null) {
