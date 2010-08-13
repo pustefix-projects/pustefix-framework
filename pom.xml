@@ -34,6 +34,11 @@
   </properties>
 
   <repositories>
+    <repository>
+      <id>org.pustefixframework.repository</id>
+      <name>Pustefix Framework Maven Repository</name>
+      <url>http://pustefix-framework.org/repository/maven</url>
+    </repository>
     <repository>  
       <id>com.springsource.repository.bundles.release</id>
       <name>SpringSource Enterprise Bundle Repository - SpringSource Bundle Releases</name>
