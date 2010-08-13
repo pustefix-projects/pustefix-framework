@@ -40,7 +40,6 @@ import de.schlund.pfixcore.workflow.context.RequestContextImpl;
 import de.schlund.pfixxml.ResultDocument;
 import de.schlund.pfixxml.resources.FileResource;
 import de.schlund.pfixxml.resources.ResourceUtil;
-import de.schlund.pfixxml.targets.PageTargetTree;
 import de.schlund.pfixxml.targets.TargetGenerator;
 import de.schlund.pfixxml.targets.TargetGeneratorFactory;
 import de.schlund.pfixxml.util.ExtensionFunctionUtils;
@@ -164,28 +163,19 @@ public class TransformerCallback {
             throw x;
         }
     }
-
+    
     public static Node getIWrapperInfo(RequestContextImpl requestContext, Node docNode, String pageName, String prefix) {
         try {
+            PageRequest pageRequest;
             ContextImpl context = requestContext.getParentContext();
             XsltVersion xsltVersion = Xml.getXsltVersion(docNode);
             if (pageName == null || pageName.equals("")) {
-                PageRequest pg = requestContext.getCurrentPageRequest();
-                if (pg != null)
-                    pageName = pg.getName();
-                else
-                    throw new IllegalArgumentException("Missing page name");
-            }
-            State state;
-            if (pageName != null) {
-                state = context.getPageMap().getState(pageName);
+                pageRequest = requestContext.getCurrentPageRequest();
             } else {
-                state = context.getPageMap().getState(context.getCurrentPageRequest());
+                pageRequest = context.createPageRequest(pageName);
             }
-            if (state == null) {
-                return null;
-            }
-            if (state instanceof IWrapperState) {
+            State state = context.getPageMap().getState(pageRequest);
+            if (state != null && state instanceof IWrapperState) {
                 IWrapperState iwState = (IWrapperState) state;
                 Map<String, ? extends IWrapperConfig> iwrappers = iwState.getIWrapperConfigMap();
                 IWrapperConfig iwrpConfig = iwrappers.get(prefix);
@@ -202,7 +192,7 @@ public class TransformerCallback {
             throw x;
         }
     }
-
+    
     public static Node getIWrappers(RequestContextImpl requestContext, Node docNode, String pageName) throws Exception {
         try {
             ContextImpl context = requestContext.getParentContext();
@@ -211,16 +201,15 @@ public class TransformerCallback {
             Document doc = db.newDocument();
             Element root = doc.createElement("iwrappers");
             doc.appendChild(root);
+            PageRequest pageRequest;
             if (pageName == null || pageName.equals("")) {
-                PageRequest pg = requestContext.getCurrentPageRequest();
-                if (pg != null)
-                    pageName = pg.getName();
-                else
-                    throw new IllegalArgumentException("Missing page name");
+                pageRequest = requestContext.getCurrentPageRequest();
+            } else {
+                pageRequest = context.createPageRequest(pageName);
             }
-            PageRequestConfig pageConfig = context.getContextConfig().getPageRequestConfig(pageName);
-            State state = context.getPageMap().getState(pageName);
-            if (state instanceof IWrapperState) {
+            PageRequestConfig pageConfig = context.getContextConfig().getPageRequestConfig(pageRequest.getName());
+            State state = context.getPageMap().getState(pageRequest);
+            if (state != null && state instanceof IWrapperState) {
                 IWrapperState iwState = (IWrapperState) state;
                 Map<String, ? extends IWrapperConfig> iwrappers = iwState.getIWrapperConfigMap();
                 for (String prefix : iwrappers.keySet()) {
