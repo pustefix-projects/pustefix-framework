@@ -208,6 +208,7 @@
     <module>pustefix-core</module>
     <module>pustefix-osgi</module>
     <module>pustefix-samples</module>
+    <module>pustefix-tools</module>
     <!--<module>pustefix-editor</module>-->
     <module>pustefix-docbook</module>
     <module>pustefix-url-rewrite-filter</module>
