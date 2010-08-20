@@ -4,7 +4,7 @@
   <groupId>org.pustefixframework</groupId>
   <artifactId>pfixcore</artifactId>
   <name>pfixcore</name>
-  <version>0.13.22-SNAPSHOT</version>
+  <version>0.13.22-xsltcomp-SNAPSHOT</version>
   <dependencies>
     <dependency>
       <groupId>ant-contrib</groupId>

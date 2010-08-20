@@ -96,7 +96,9 @@
             </ixsl:for-each>
           </table>
        </pfx:forminput>
-        
+           
+       <pfx:render href="sample1/txt/common.xml" part="content"/>
+      
       </center>
     </theme>
   </part>

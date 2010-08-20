@@ -27,6 +27,7 @@ import java.net.SocketException;
 import java.security.DigestOutputStream;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
+import java.util.Collections;
 import java.util.Enumeration;
 import java.util.HashMap;
 import java.util.Iterator;
@@ -58,6 +59,7 @@ import de.schlund.pfixcore.exception.PustefixCoreException;
 import de.schlund.pfixcore.workflow.NavigationFactory;
 import de.schlund.pfixcore.workflow.NavigationInitializationException;
 import de.schlund.pfixxml.PfixServletRequest;
+import de.schlund.pfixxml.RenderContext;
 import de.schlund.pfixxml.RenderingException;
 import de.schlund.pfixxml.RequestParam;
 import de.schlund.pfixxml.SPDocument;
@@ -728,8 +730,14 @@ public abstract class AbstractPustefixXMLRequestHandler extends AbstractPustefix
             LOGGER.warn("stylevalue MUST NOT be null: stylesheet=" + stylesheet + "; " +
                      ((spdoc != null) ? ("pagename=" +  spdoc.getPagename()) : "spdoc==null")); 
         }
+        RenderContext renderContext = RenderContext.create(generator.getXsltVersion());
+        paramhash.put("__rendercontext__", renderContext);
+        renderContext.setParameters(Collections.unmodifiableMap(paramhash));
         try {
+            long t1 = System.currentTimeMillis();
             Xslt.transform(spdoc.getDocument(), stylevalue, paramhash, new StreamResult(output), getServletEncoding());
+            long t2 = System.currentTimeMillis();
+            System.out.println("TTTTTTTTTTTTTTTTTTTT: " + (t2-t1));
         } catch (TransformerException e) {
             Throwable inner = e.getException();
             Throwable cause = null;
@@ -743,7 +751,7 @@ public abstract class AbstractPustefixXMLRequestHandler extends AbstractPustefix
             } else {
                 throw e;
             }
-        }
+        } 
     }
 
 

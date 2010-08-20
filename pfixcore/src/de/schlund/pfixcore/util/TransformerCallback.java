@@ -387,4 +387,9 @@ public class TransformerCallback {
         }
     }
     
+    public static String getHandlerPath(String targetgen, String page) {
+        TargetGenerator gen = TargetGeneratorFactory.getInstance().getGenerator(targetgen);
+        return gen.getNavigation().getHandler(page);
+    }
+
 }

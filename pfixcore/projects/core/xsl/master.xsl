@@ -103,6 +103,7 @@
       <ixsl:import href="core/xsl/default_copy.xsl"/>
       <ixsl:import href="core/xsl/include.xsl"/>
       <ixsl:import href="core/xsl/functions.xsl"/>
+      <ixsl:import href="core/xsl/render.xsl"/>
 
       <!-- generate user defined imports -->
       <xsl:call-template name="gen_ixsl_import">
@@ -127,7 +128,7 @@
       <ixsl:param name="__navitree"/>
       <ixsl:param name="navitree" select="$__navitree"/>
       
-      <!-- The next three parameters are opaque Java objects. Use them only to pass them to extension functions! -->
+      <!-- The next four parameters are opaque Java objects. Use them only to pass them to extension functions! -->
       <ixsl:param name="__context__"/>
       <ixsl:param name="__spdoc__"/>
       <ixsl:param name="__register_frame_helper__"/>
@@ -259,6 +260,7 @@
     </ixsl:template>    
 
       <ixsl:template match="/">
+        <ixsl:call-template name="__render_start__"/>
         <xsl:choose>
           <!-- <xsl:when test="//frameset"> -->
           <xsl:when test="key('frameset_key','fset')">

@@ -54,7 +54,9 @@ import org.xml.sax.helpers.DefaultHandler;
 import org.xml.sax.helpers.XMLReaderFactory;
 
 import de.schlund.pfixcore.util.Meminfo;
+import de.schlund.pfixcore.workflow.Navigation;
 import de.schlund.pfixcore.workflow.NavigationFactory;
+import de.schlund.pfixcore.workflow.NavigationInitializationException;
 import de.schlund.pfixxml.IncludeDocumentFactory;
 import de.schlund.pfixxml.XMLException;
 import de.schlund.pfixxml.config.BuildTimeProperties;
@@ -71,6 +73,7 @@ import de.schlund.pfixxml.resources.Resource;
 import de.schlund.pfixxml.resources.ResourceUtil;
 import de.schlund.pfixxml.targets.cachestat.SPCacheStatistic;
 import de.schlund.pfixxml.util.TransformerHandlerAdapter;
+import de.schlund.pfixxml.util.XMLUtils;
 import de.schlund.pfixxml.util.Xml;
 import de.schlund.pfixxml.util.XsltVersion;
 
@@ -120,7 +123,9 @@ public class TargetGenerator implements Comparable<TargetGenerator> {
     private Set<ConfigurationChangeListener> configurationListeners = Collections.synchronizedSet(new HashSet<ConfigurationChangeListener>());
 
     private FileResource config_path;
-
+    
+    private Navigation navigation;
+    
     //--
 
     public TargetGenerator(FileResource confile) throws IOException, SAXException, XMLException {
@@ -161,6 +166,10 @@ public class TargetGenerator implements Comparable<TargetGenerator> {
         return pagetree;
     }
 
+    public Navigation getNavigation() {
+        return navigation;
+    }
+    
     //-- targets
 
     public TreeMap<String, Target> getAllTargets() {
@@ -171,7 +180,12 @@ public class TargetGenerator implements Comparable<TargetGenerator> {
 
     public Target getTarget(String key) {
         synchronized (alltargets) {
-            return (Target) alltargets.get(key);
+            Target target = (Target) alltargets.get(key);
+            if(target == null && key.contains("$")) {
+                Target compTarget = createTargetForComponent(key);
+                return compTarget;
+            }
+            return target;
         }
     }
 
@@ -321,7 +335,11 @@ public class TargetGenerator implements Comparable<TargetGenerator> {
         } else {
             throw new RuntimeException("Could not get instance of SAXTransformerFactory!");
         }
-
+try {
+    XMLUtils.serialize(config);
+} catch(Exception x) {
+    x.printStackTrace();
+}
         Element root = (Element) config.getElementsByTagName("make").item(0);
         
         String versionStr=root.getAttribute("xsltversion");
@@ -447,6 +465,14 @@ public class TargetGenerator implements Comparable<TargetGenerator> {
             struct.setParams(params);
             allstructs.put(nameattr, struct);
         }
+        
+        
+        try {
+            navigation = NavigationFactory.getInstance().getNavigation(this.config_path,getXsltVersion());
+        } catch (NavigationInitializationException e) {
+            throw new XMLException("Error reading page navigation.");
+        }
+        
         LOG.warn("\n=====> Preliminaries took " + (System.currentTimeMillis() - start) + "ms. Now looping over " + allstructs.keySet().size() + " targets");
         start = System.currentTimeMillis();
         String tgParam = configFile.toString();
@@ -533,8 +559,9 @@ public class TargetGenerator implements Comparable<TargetGenerator> {
             }
             virtual.addParam(XSLPARAM_TG, tgParam);
             virtual.addParam(XSLPARAM_TKEY, key);
+            System.out.println(">>>>>>>>>>>>>>>>>> "+tgParam+" "+key);
             try {
-                virtual.addParam(XSLPARAM_NAVITREE, NavigationFactory.getInstance().getNavigation(this.config_path,getXsltVersion()).getNavigationXMLElement());
+                virtual.addParam(XSLPARAM_NAVITREE, navigation.getNavigationXMLElement());
             } catch (Exception e) {
                 throw new XMLException("Cannot get navigation tree", e);
             }
@@ -554,7 +581,52 @@ public class TargetGenerator implements Comparable<TargetGenerator> {
             return virtual;
         }
     }
+    
+    private TargetRW createTargetForComponent(String componentKey) {
 
+        String[] comps = splitComponentKey(componentKey);
+        String href = comps[0];
+        String part = comps[1];
+        String module = "";
+        if(comps.length>2) module = comps[2];
+        String search = "";
+        if(comps.length>3) search = comps[3];
+        
+        System.out.println("NNNNNNNNNNNNNNNNNN: " + componentKey);
+        //sample1_txt_pages_main_foo@content::foo:bar:baz.xml
+        Themes themes = global_themes;
+        
+        if(getTargetRW(name) != null) throw new RuntimeException("Target already exists"); 
+        
+        String tgParam = config_path.toString();
+        
+        XMLVirtualTarget xmlTarget = (XMLVirtualTarget)createTarget(TargetType.XML_VIRTUAL, componentKey + ".xml", themes);
+        Target xmlSource = createTarget(TargetType.XML_LEAF, "core/xml/component.xml", null);
+        Target xslSource = createTarget(TargetType.XSL_VIRTUAL, "metatags.xsl", null);
+        xmlTarget.setXMLSource(xmlSource);
+        xmlTarget.setXSLSource(xslSource);
+        xmlTarget.addParam(XSLPARAM_TG, tgParam);
+        xmlTarget.addParam(XSLPARAM_TKEY, componentKey + ".xml");
+        xmlTarget.addParam("component_href", href);
+        xmlTarget.addParam("component_part", part);
+        xmlTarget.addParam("component_module", module);
+        xmlTarget.addParam("component_search", search);
+        
+        XSLVirtualTarget xslTarget = (XSLVirtualTarget)createTarget(TargetType.XSL_VIRTUAL, componentKey + ".xsl", themes);
+        xmlSource = xmlTarget;
+        xslSource = createTarget(TargetType.XSL_VIRTUAL, "master.xsl", null);
+        xslTarget.setXMLSource(xmlSource);
+        xslTarget.setXSLSource(xslSource);
+        xslTarget.addParam(XSLPARAM_TG, tgParam);
+        xslTarget.addParam(XSLPARAM_TKEY, componentKey + ".xsl");
+        
+        return xslTarget;
+    }
+    
+    
+    
+    
+    
     // *******************************************************************************************
     private TargetRW getTargetRW(String key) {
         synchronized (alltargets) {
@@ -877,6 +949,39 @@ public class TargetGenerator implements Comparable<TargetGenerator> {
 
     public FileResource getConfigPath() {
         return this.config_path;
+    }
+    
+    public static String createComponentKey(String href, String part, String module, String search) {
+        if(href == null || href.equals("")) throw new IllegalArgumentException("Argument 'href' must not be empty");
+        if(part == null || part.equals("")) throw new IllegalArgumentException("Argument 'part' must not be empty");
+        if(module == null) module = "";
+        if(search == null) search = "";
+        String targetKey = encode(href) + "$" + encode(part) + "$" + encode(module) + "$" + encode(search);
+        return targetKey;
+    }
+    
+    public static String encode(String str) {
+        str = str.replace("%", "%" + Integer.toHexString('%'));
+        str = str.replace("$", "%" + Integer.toHexString('$'));
+        str = str.replace("+", "%" + Integer.toHexString('+'));
+        str = str.replace("/", "+");
+        return str;
+    }
+    
+    public static String decode(String str) {
+        str = str.replace("+", "/");
+        str = str.replace("%" + Integer.toHexString('+'), "+");
+        str = str.replace("%" + Integer.toHexString('$'), "$");
+        str = str.replace("%" + Integer.toHexString('%'), "%");
+        return str;
+    }
+    
+    public static String[] splitComponentKey(String componentKey) {
+        String[] comps = componentKey.split("\\$");
+        for(int i=0; i<comps.length; i++) {
+            comps[i] = decode(comps[i]);
+        }
+        return comps;
     }
 
 }

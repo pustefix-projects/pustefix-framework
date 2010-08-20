@@ -8,6 +8,7 @@
   <xsl:import href="core/xsl/default_copy.xsl"/>
   <xsl:import href="core/xsl/include.xsl"/>
   <xsl:import href="core/xsl/utils.xsl"/>
+  <xsl:import href="core/xsl/render.xsl"/>
 
   <cus:custom_xsl/>
 

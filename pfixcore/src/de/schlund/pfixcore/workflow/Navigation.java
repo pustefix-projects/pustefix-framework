@@ -153,6 +153,13 @@ public class Navigation {
         return pagetonavi.get(page.getRootName());
     }
 
+    public String getHandler(String page) {
+        NavigationElement element = pagetonavi.get(page);
+        if(element == null) throw new IllegalArgumentException("Page '" + page + "' not found in navigation.");
+        return element.getHandler();
+    }
+    
+    
     public class NavigationElement {
         private ArrayList<NavigationElement> children = new ArrayList<NavigationElement>();
         private String    name;

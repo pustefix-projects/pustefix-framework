@@ -267,6 +267,8 @@ public class Xslt {
             //version specific stylesheet here
             if(href.equals("core/xsl/include.xsl")) {
                 if(xsltVersion==XsltVersion.XSLT2) href="core/xsl/include_xslt2.xsl";
+            } else if(href.equals("core/xsl/render.xsl")) {
+                if(xsltVersion==XsltVersion.XSLT2) href="core/xsl/render_xslt2.xsl";
             }
             
             try {
