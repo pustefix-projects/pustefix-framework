@@ -50,7 +50,7 @@ import org.apache.oro.text.perl.Perl5Util;
 public class EmailSender {
 
     // private static Logger LOG = Logger.getLogger(EmailSender.class);
-    private static final String CHARSET = "ISO-8859-15";
+    private static final String CHARSET = "UTF-8";
 
     /**
      * Send an email (without headers). 
@@ -71,6 +71,17 @@ public class EmailSender {
             String smtphost)
             throws EmailSenderException {
         sendMail(subject, text, null, to, from, smtphost, null, null, false);
+    }
+    
+    public static void sendMail(
+            String subject,
+            String text,
+            String[] to,
+            String from,
+            String smtphost,
+            String encoding)
+            throws EmailSenderException {
+        sendMail(subject, text, null, to, from, smtphost, null, null, false, encoding);
     }
     
     /**
@@ -100,6 +111,19 @@ public class EmailSender {
         sendMail(subject, text, null, to, from, smtphost, authuser, authpassword, false);
     }
     
+    public static void sendMail(
+            String subject,
+            String text,
+            String[] to,
+            String from,
+            String smtphost,
+            String authuser,
+            String authpassword,
+            String encoding)
+            throws EmailSenderException {
+        sendMail(subject, text, null, to, from, smtphost, authuser, authpassword, false, encoding);
+    }
+    
     /**
      * Send an email.
      * 
@@ -124,6 +148,18 @@ public class EmailSender {
         sendMail(subject, text, headers, to, from, smtphost, null, null, false);
     }
     
+    public static void sendMail(
+            String subject,
+            String text,
+            Map<String, String> headers,
+            String[] to,
+            String from,
+            String smtphost,
+            String encoding)
+            throws EmailSenderException {
+        sendMail(subject, text, headers, to, from, smtphost, null, null, false, encoding);
+    }
+    
     /**
      * Send an email.
      * 
@@ -144,6 +180,20 @@ public class EmailSender {
      * @throws IllegalArgumentExceptionwhen trying to pass NPs as paramters.
      */
     public static void sendMail(
+            String subject,
+            String text,
+            Map<String, String> headers,
+            String[] to,
+            String from,
+            String smtphost,
+            String authuser,
+            String authpassword,
+            boolean secure)
+            throws EmailSenderException {
+        sendMail(subject, text, headers, to, from, smtphost, authuser, authpassword, secure, CHARSET);
+    }
+    
+    public static void sendMail(
         String subject,
         String text,
         Map<String, String> headers,
@@ -152,7 +202,8 @@ public class EmailSender {
         String smtphost,
         String authuser,
         String authpassword,
-        boolean secure)
+        boolean secure,
+        String encoding)
         throws EmailSenderException {
 
         if(subject == null)
@@ -230,8 +281,8 @@ public class EmailSender {
 
         // got everything, now send mail
         try {
-            msg.setText(text, CHARSET);
-            msg.setHeader("Content-Type", "text/plain; charset=" + CHARSET);
+            msg.setText(text, encoding);
+            msg.setHeader("Content-Type", "text/plain; charset=" + encoding);
             msg.setHeader("Content-Transfer-Encoding", "8bit");
             
             if (headers != null) {
@@ -246,7 +297,7 @@ public class EmailSender {
             }
             
             msg.setRecipients(Message.RecipientType.TO, toaddresses);
-            msg.setSubject(subject, CHARSET);
+            msg.setSubject(subject, encoding);
             msg.setFrom(fromaddress);
             msg.setSentDate(new Date());
             
@@ -305,5 +356,5 @@ public class EmailSender {
             throw new EmailSenderException(strError.toString());
         }
     }
-
+    
 }
