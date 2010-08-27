@@ -98,7 +98,7 @@ public class FactoryInitWorker {
     private boolean standaloneMode = false;
     
     private final static Object initLock = new Object();
-    private static boolean initRunning = false;
+    private static boolean initialized = false;
 
     public static void tryReloadLog4j() {
         if (log4jconfig != null) {
@@ -127,9 +127,9 @@ public class FactoryInitWorker {
     
     public static void init(ServletContext servletContext) throws ServletException {
         synchronized (initLock) {
-            if (!initRunning) {
-                initRunning = true;
+            if (!initialized) {
                 (new FactoryInitWorker()).doInit(servletContext);
+                initialized = true;
             }
         }
     }
