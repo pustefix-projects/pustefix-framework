@@ -48,6 +48,7 @@ import de.schlund.pfixxml.config.includes.FileIncludeEvent;
 import de.schlund.pfixxml.config.includes.FileIncludeEventListener;
 import de.schlund.pfixxml.config.includes.IncludesResolver;
 import de.schlund.pfixxml.resources.FileResource;
+import de.schlund.pfixxml.resources.Resource;
 import de.schlund.pfixxml.util.TransformerHandlerAdapter;
 import de.schlund.pfixxml.util.XPath;
 import de.schlund.pfixxml.util.Xml;
@@ -57,7 +58,7 @@ public class Navigation {
     private NavigationElement                   pageroot = new NavigationElement("__NONE__", "__NONE__");
     private Map<String, NavigationElement> pagetonavi;
     
-    private Set<FileResource> fileDependencies = new HashSet<FileResource>();
+    private Set<Resource> fileDependencies = new HashSet<Resource>();
     private long loadTime = 0;
     
     private Element navigationXMLElement = null;
@@ -115,7 +116,7 @@ public class Navigation {
     }
     
     public boolean needsReload() {
-        for (FileResource file : fileDependencies) {
+        for (Resource file : fileDependencies) {
             long lastModified = file.lastModified();
             if (lastModified > loadTime) {
                 return true;

@@ -101,7 +101,7 @@ public class TargetGenerator implements Comparable<TargetGenerator> {
 
     private long config_mtime = 0;
 
-    private Set<FileResource> configFileDependencies = new HashSet<FileResource>();
+    private Set<Resource> configFileDependencies = new HashSet<Resource>();
 
     private String name;
     
@@ -233,7 +233,7 @@ public class TargetGenerator implements Comparable<TargetGenerator> {
     }
 
     private boolean needsReload() {
-        for (FileResource file : configFileDependencies) {
+        for (Resource file : configFileDependencies) {
             if (file.lastModified() > config_mtime) {
                 return true;
             }
@@ -243,7 +243,7 @@ public class TargetGenerator implements Comparable<TargetGenerator> {
     
     protected long getConfigMaxModTime() {
         long tmptime = -1;
-        for (FileResource file: configFileDependencies) {
+        for (Resource file: configFileDependencies) {
             tmptime = Math.max(file.lastModified(), tmptime);
         }
         return tmptime;

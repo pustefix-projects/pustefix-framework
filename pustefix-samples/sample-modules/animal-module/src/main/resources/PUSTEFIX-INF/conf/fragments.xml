@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<fr:config-fragments 
+  xmlns:fr="http://www.pustefix-framework.org/2008/namespace/config-fragments"
+  xmlns:pr="http://www.pustefix-framework.org/2008/namespace/context-xml-service-config"
+  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xsi:schemaLocation="http://www.pustefix-framework.org/2008/namespace/config-fragments
+                      http://www.pustefix-framework.org/2008/namespace/config-fragments.xsd">
+
+  <fr:navigation>
+    <page name="SelectAnimal" handler="/xml/main"/>
+    <page name="DisplayAnimal" handler="/xml/main"/>
+  </fr:navigation>
+  
+  <fr:targets>
+    <standardpage name="SelectAnimal" xml="xml/one_frame.xml"/>
+    <standardpage name="DisplayAnimal" xml="xml/one_frame.xml"/>
+  </fr:targets>
+  
+  <fr:pagerequests>
+    <pr:pagerequest name="SelectAnimal"/>
+    <pr:pagerequest name="DisplayAnimal"/>
+  </fr:pagerequests>
+  
+</fr:config-fragments>

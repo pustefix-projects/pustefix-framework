@@ -37,7 +37,7 @@ import org.xml.sax.SAXException;
 
 import com.marsching.flexiparse.util.DOMBasedNamespaceContext;
 
-import de.schlund.pfixxml.resources.FileResource;
+import de.schlund.pfixxml.resources.Resource;
 import de.schlund.pfixxml.resources.ResourceUtil;
 import de.schlund.pfixxml.util.Generics;
 import de.schlund.pfixxml.util.XPath;
@@ -116,10 +116,18 @@ public class IncludesResolver {
                 throw new SAXException("One of the \"xpath\", \"refid\" or \"section\" attributes must be set for the include tag!");
             }
 
+            String module = elem.getAttribute("module");
+            if(module.equals("")) module = null;
+            
             String filepath = elem.getAttribute("file");
             if (filepath == null) {
                 throw new SAXException("The attribute \"file\" must be set for the include tag!");
             }
+            if(module != null) {
+            	if(filepath.startsWith("/")) filepath = filepath.substring(1);
+            	filepath = "module://" + module + "/" + filepath;
+            }
+            
 
             // Look if the same include has been performed ealier in the recursion
             // If yes, we have a cyclic dependency
@@ -132,9 +140,10 @@ public class IncludesResolver {
                 throw new SAXException("Cyclic dependency in include detected: " + filepath.toString());
             }
             
-            FileResource includeFile = ResourceUtil.getFileResourceFromDocroot(filepath);
+            Resource includeFile = ResourceUtil.getResource(filepath);
             Document includeDocument;
             try {
+            	System.out.println(">>>>>>>>>>>> PARSE: "+includeFile.toString());
                 includeDocument = Xml.parseMutable(includeFile);
             } catch (IOException e) {
                 throw new SAXException("I/O exception on included file " + includeFile.toString(), e);
@@ -163,6 +172,9 @@ public class IncludesResolver {
             for (int i=0; i < includeNodes.getLength(); i++) {
                 Node node = includeNodes.item(i);
                 Node newNode = doc.importNode(node, true);
+                if(module != null) {
+                	newNode.setUserData("module", module, null);
+                }
                 elem.getParentNode().insertBefore(newNode, elem);
             }
             elem.getParentNode().removeChild(elem);

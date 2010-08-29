@@ -32,6 +32,7 @@
     <page name="testchecks" handler="/xml/main"/>
 
     <config-include file="WEB-INF/fragments.xml" section="navigation"/>
+    <config-include file="conf/fragments.xml" section="navigation" module="animal-module"/>
 
   </navigation>
 
@@ -70,6 +71,7 @@
   </standardmetatags>
 
   <config-include file="WEB-INF/fragments.xml" section="targets"/>
+  <config-include file="conf/fragments.xml" section="targets" module="animal-module"/>
 
   <standardpage master="var1" metatags="var1" name="home"     xml="xml/one_frame_navi.xml"/>
   <standardpage name="home"     xml="xml/one_frame_navi.xml" variant="foo"/>

@@ -244,6 +244,7 @@
   
 
   <config-include file="WEB-INF/fragments.xml" section="pagerequests" />
+  <config-include file="conf/fragments.xml" section="pagerequests" module="animal-module"/>
 
   <!-- <properties> -->
     <!-- *** some additional properties needed for this application *** -->

@@ -1,4 +1,4 @@
-<?xml version="1.0"?>
+<?xml version="1.0" encoding="UTF-8"?>
 <fr:config-fragments 
   xmlns:fr="http://www.pustefix-framework.org/2008/namespace/config-fragments"
   xmlns:pr="http://www.pustefix-framework.org/2008/namespace/context-xml-service-config"

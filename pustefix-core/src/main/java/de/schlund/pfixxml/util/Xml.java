@@ -209,7 +209,10 @@ public class Xml {
     }
     
     public static Document parseMutable(Resource res) throws IOException, SAXException {
-        return parseMutable(new InputSource(res.toURI().toString()));
+        InputSource is = new InputSource();
+        is.setSystemId(res.toURI().toString());
+        is.setByteStream(res.getInputStream());
+    	return parseMutable(is);
     }
     
     public static Document parseMutable(ModuleResource res) throws IOException, SAXException {
