@@ -143,7 +143,6 @@ public class IncludesResolver {
             Resource includeFile = ResourceUtil.getResource(filepath);
             Document includeDocument;
             try {
-            	System.out.println(">>>>>>>>>>>> PARSE: "+includeFile.toString());
                 includeDocument = Xml.parseMutable(includeFile);
             } catch (IOException e) {
                 throw new SAXException("I/O exception on included file " + includeFile.toString(), e);
