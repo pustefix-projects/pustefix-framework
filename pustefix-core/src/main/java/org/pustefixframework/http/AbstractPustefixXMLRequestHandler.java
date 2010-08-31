@@ -61,6 +61,7 @@ import de.schlund.pfixxml.RequestParam;
 import de.schlund.pfixxml.SPDocument;
 import de.schlund.pfixxml.SessionCleaner;
 import de.schlund.pfixxml.Variant;
+import de.schlund.pfixxml.config.BuildTimeProperties;
 import de.schlund.pfixxml.perflogging.AdditionalTrailInfo;
 import de.schlund.pfixxml.serverutil.SessionHelper;
 import de.schlund.pfixxml.targets.PageInfo;
@@ -156,6 +157,7 @@ public abstract class AbstractPustefixXMLRequestHandler extends AbstractPustefix
     private boolean      editmodeAllowed            = false;
     private boolean      includePartsEditableByDefault = true;
     private boolean      checkModtime               = true;
+    private boolean xmlOnlyAllowed = false;
     
     private final static Logger LOGGER_TRAIL = Logger.getLogger("LOGGER_TRAIL");
     private final static Logger LOGGER       = Logger.getLogger(AbstractPustefixXMLRequestHandler.class);
@@ -190,6 +192,9 @@ public abstract class AbstractPustefixXMLRequestHandler extends AbstractPustefix
     private void initValues() throws ServletException {
         servletname = this.getAbstractXMLServletConfig().getServletName();
 
+        String mode = BuildTimeProperties.getProperties().getProperty("mode");
+        if(!"prod".equals(mode)) xmlOnlyAllowed = true; 
+        
         if (generator == null) {
             LOGGER.error("Error: TargetGenerator has not been set.");
             throw new ServletException("TargetGenerator is not set");
@@ -203,6 +208,7 @@ public abstract class AbstractPustefixXMLRequestHandler extends AbstractPustefix
             sb.append("                targetconf = ").append(generator.getConfigPath()).append("\n");
             sb.append("               servletname = ").append(servletname).append("\n");
             sb.append("           editModeAllowed = ").append(editmodeAllowed).append("\n");
+            sb.append("            xmlOnlyAllowed = ").append(xmlOnlyAllowed).append("\n");
             sb.append("             maxStoredDoms = ").append(maxStoredDoms).append("\n");
             sb.append("                   timeout = ").append(sessionCleaner.getTimeout()).append("\n");
             sb.append("              checkModtime = ").append(checkModtime).append("\n");
@@ -396,7 +402,7 @@ public abstract class AbstractPustefixXMLRequestHandler extends AbstractPustefix
             // This will store just the last dom, but only when editmode is allowed (so this normally doesn't apply to production mode)
             // This is a seperate place from the SessionCleaner as we don't want to interfere with this, nor do we want to use 
             // the whole queue of possible stored SPDocs only for the viewing of the DOM during development.
-            if (editmodeAllowed) {
+            if (xmlOnlyAllowed) {
                 session.setAttribute(ATTR_SHOWXMLDOC, spdoc);
             }
 
@@ -768,7 +774,7 @@ public abstract class AbstractPustefixXMLRequestHandler extends AbstractPustefix
         } else {
             throw new IllegalArgumentException("invalid value for " + PARAM_XMLONLY + ": " + value);
         }
-        if (editmodeAllowed || (testRecording!=null && testRecording.isKnownClient(pfreq.getRemoteAddr()))) {
+        if (xmlOnlyAllowed || (testRecording!=null && testRecording.isKnownClient(pfreq.getRemoteAddr()))) {
             return rendering;
         } else {
             return RENDERMODE.RENDER_NORMAL;
