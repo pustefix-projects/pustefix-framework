@@ -30,6 +30,7 @@
   <xsl:param name="__application_url"/>
   <xsl:param name="themes"/>
   <xsl:param name="prohibitEdit">no</xsl:param>
+  <xsl:param name="__defining_module"/>
 
   <xsl:template match="pfx:langselect">
     <xsl:param name="__env"/>
@@ -206,6 +207,16 @@
     <xsl:param name="href"><xsl:value-of select="@href"/></xsl:param>
     <xsl:param name="module"><xsl:value-of select="@module"/></xsl:param>
     <xsl:param name="search"><xsl:value-of select="@search"/></xsl:param>
+    <xsl:variable name="module_name">
+      <xsl:choose>
+        <xsl:when test="@module='PAGEDEF' or @module='pagedef'">
+          <xsl:value-of select="$__defining_module"/>
+        </xsl:when>
+        <xsl:otherwise>
+          <xsl:value-of select="$module"/>
+        </xsl:otherwise>
+      </xsl:choose>
+    </xsl:variable>
     <xsl:variable name="href_int">
       <xsl:if test="$href">
         <xsl:choose>
@@ -237,7 +248,7 @@
         <xsl:variable name="incnodes"
                       select="include:get(string($realpath), string($part),
                               string($__target_gen), string($__target_key),
-                              string($parent_part), string($parent_theme), $computed_inc, $module, $search)"/>
+                              string($parent_part), string($parent_theme), $computed_inc, $module_name, $search)"/>
         <xsl:variable name="__resolveduri"><xsl:value-of select="include:getResolvedURI()"/></xsl:variable>
         <!-- Start image of edited region -->
         <xsl:choose>
@@ -273,7 +284,7 @@
           <xsl:when test="not($noerror = 'true')">
             <xsl:call-template name="pfx:missinc">
               <xsl:with-param name="href" select="include:getResolvedURI()"/>
-              <xsl:with-param name="module" select="$module"/>
+              <xsl:with-param name="module" select="$module_name"/>
               <xsl:with-param name="part" select="$part"/>
             </xsl:call-template>
           </xsl:when>
@@ -426,6 +437,16 @@
     <xsl:param name="themed-img"/>
     <xsl:param name="module"/>
     <xsl:param name="search"/>
+    <xsl:variable name="module_name">
+      <xsl:choose>
+        <xsl:when test="$module='PAGEDEF' or $module='pagedef'">
+          <xsl:value-of select="$__defining_module"/>
+        </xsl:when>
+        <xsl:otherwise>
+          <xsl:value-of select="$module"/>
+        </xsl:otherwise>
+      </xsl:choose>
+    </xsl:variable>
     <xsl:choose>
       <xsl:when test="($src and not($src = '') and (not($themed-path) or $themed-path = '') and (not($themed-img) or $themed-img = '')) or
                       ((not($src) or $src = '') and $themed-path and not($themed-path = '') and $themed-img and not($themed-img = ''))">
@@ -433,7 +454,7 @@
         <xsl:variable name="parent_theme"><xsl:value-of select="ancestor::theme[position() = 1]/@name"/></xsl:variable>
         <xsl:value-of select="image:getSrc(string($src),string($themed-path),string($themed-img),
                               string($parent_part),string($parent_theme),
-                              string($__target_gen),string($__target_key),string($module),string($search))"/>          
+                              string($__target_gen),string($__target_key),string($module_name),string($search))"/>          
       </xsl:when>
       <xsl:otherwise>
         <xsl:message terminate="no">

@@ -77,7 +77,7 @@ public class ImageThemedSrc {
             LOG.debug("  -> Register image src '" + src + "'");
             if(dynamic) {
                 String uri =  "dynamic:/"+src+"?project="+gen.getName();
-                if(module != null) uri += "&module="+module;
+                if(module != null && !module.equalsIgnoreCase("WEBAPP")) uri += "&module="+module;
                 Resource res = ResourceUtil.getResource(uri);
                 URI resUri = res.toURI();
                 if("module".equals(resUri.getScheme()) && res.exists()) {
@@ -89,7 +89,7 @@ public class ImageThemedSrc {
                 DependencyTracker.logImage(context, src, parent_part_in, parent_product_in, targetGen, targetKey, "image");
                 return src;
             } else {
-                if(module!=null) src =  "modules/"+module+"/"+src;
+                if(module!=null && !module.equalsIgnoreCase("WEBAPP")) src =  "modules/"+module+"/"+src;
                 DependencyTracker.logImage(context, src, parent_part_in, parent_product_in, targetGen, targetKey, "image");
                 return src;
             }
@@ -108,7 +108,7 @@ public class ImageThemedSrc {
                 }
                 String uri =  "dynamic:/" + themed_path +"/THEME/" + themed_img +"?project="+gen.getName();
                 uri += themeParam;
-                if(module != null) uri += "&module="+module;
+                if(module != null && !module.equalsIgnoreCase("WEBAPP")) uri += "&module="+module;
                 Resource res = ResourceUtil.getResource(uri);
                 URI resUri = res.toURI();
                 if("module".equals(resUri.getScheme()) && res.exists()) {
@@ -127,7 +127,7 @@ public class ImageThemedSrc {
                 String currtheme = themes[i];
                 testsrc = themed_path + "/" + currtheme + "/" + themed_img;
                 
-                if(module!=null) {
+                if(module!=null && !module.equalsIgnoreCase("WEBAPP")) {
                     testsrc =  "modules/"+module+"/"+testsrc;
                 }
                 

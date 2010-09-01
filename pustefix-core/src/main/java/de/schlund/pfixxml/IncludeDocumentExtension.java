@@ -131,15 +131,19 @@ public final class IncludeDocumentExtension {
             }
             if(dynamic) {
                 uriStr = "dynamic:/" + path_str + "?part=" + part + "&parent=" + parent_uri_str;
-                if(module != null) uriStr += "&module="+module;
-                else if("module".equals(parentURI.getScheme())) {
-                    uriStr += "&module="+parentURI.getAuthority();
+                if(!"WEBAPP".equalsIgnoreCase(module)) {
+                    if(module != null) uriStr += "&module="+module;
+                    else if("module".equals(parentURI.getScheme())) {
+                        uriStr += "&module="+parentURI.getAuthority();
+                    }
                 }
             } else {
-                if(module != null) {
-                    uriStr = "module://" + module + "/" + path_str;
-                } else if("module".equals(parentURI.getScheme())) {
-                    uriStr = "module://" + parentURI.getAuthority() + "/" + path_str;
+                if(!"WEBAPP".equalsIgnoreCase(module)) {
+                    if(module != null) {
+                        uriStr = "module://" + module + "/" + path_str;
+                    } else if("module".equals(parentURI.getScheme())) {
+                        uriStr = "module://" + parentURI.getAuthority() + "/" + path_str;
+                    }
                 }
             }
         } else if(uriStr.matches("^dynamic://.*")) {

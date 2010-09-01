@@ -280,6 +280,14 @@ public class TargetGenerator implements Comparable<TargetGenerator> {
         };
         iresolver.registerListener(listener);
         iresolver.resolveIncludes(confDoc);
+        
+        NodeList pageNodes = confDoc.getElementsByTagName("standardpage");
+        for(int i = 0; i < pageNodes.getLength(); i++) {
+            Element pageElem = (Element)pageNodes.item(i);
+            String module = (String)pageElem.getUserData("module");
+            if(module != null) pageElem.setAttribute("defining-module", module);
+        }
+        
         fullXml = Xml.serialize(confDoc, false, true);
 
         XMLReader xreader = XMLReaderFactory.createXMLReader();
@@ -452,6 +460,10 @@ public class TargetGenerator implements Comparable<TargetGenerator> {
                 }
                 String value = par.getAttribute("value");
                 params.put(parname, value);
+            }
+            String defModule = node.getAttribute("defining-module");
+            if(!defModule.equals("")) {
+                params.put("__defining_module", defModule);
             }
             // TODO Check that docroot really is not needed by targets
             // params.put("docroot", confile.getBase().getPath());

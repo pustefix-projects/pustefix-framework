@@ -101,6 +101,9 @@
       <xsl:if test="@variant">
         <xsl:attribute name="variant"><xsl:value-of select="@variant"/></xsl:attribute>
       </xsl:if>
+      <xsl:if test="@defining-module">
+        <xsl:attribute name="defining-module"><xsl:value-of select="@defining-module"/></xsl:attribute>
+      </xsl:if>
       <xsl:call-template name="render_themes">
         <xsl:with-param name="variant" select="@variant"/>
         <xsl:with-param name="local_themes" select="@themes"/>
@@ -141,6 +144,9 @@
         <xsl:with-param name="variant" select="@variant"/>
         <xsl:with-param name="local_themes" select="@themes"/>
       </xsl:call-template>
+      <xsl:if test="@defining-module">
+        <xsl:attribute name="defining-module"><xsl:value-of select="@defining-module"/></xsl:attribute>
+      </xsl:if>
       <depxml name="{@xml}">
         <xsl:if test="@module"><xsl:attribute name="module"><xsl:value-of select="@module"/></xsl:attribute></xsl:if>
       </depxml>
