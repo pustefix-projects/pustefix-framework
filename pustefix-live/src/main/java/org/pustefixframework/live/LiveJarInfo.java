@@ -47,7 +47,6 @@ import org.apache.log4j.Logger;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.Node;
-import org.w3c.dom.NodeList;
 
 /**
  * Provides information about Pustefix live resources. Also handles read and write operations of live.xml.
@@ -60,7 +59,7 @@ public class LiveJarInfo {
 
     /** The live.xml file */
     private File file;
-    
+
     private long lastReadTimestamp;
 
     /** The jar entries */
@@ -102,12 +101,12 @@ public class LiveJarInfo {
             if (!oldFile.exists()) {
                 oldFile = new File(homeDir + "/.m2/life.xml"); // support old misspelled name
             }
-            if(oldFile.exists()) {
+            if (oldFile.exists()) {
                 file = oldFile;
                 LOG.warn("Using live.xml from old location: " + file);
             }
         }
-        if(file == null) {
+        if (file == null) {
             LOG.warn("No live.xml detected, default settings for live resources may be used!");
         }
 
@@ -125,7 +124,7 @@ public class LiveJarInfo {
         rootToLocation = new HashMap<String, File>();
         rootsWithNoLocation = new HashSet<String>();
 
-        if(file != null) {
+        if (file != null) {
             try {
                 read();
                 LOG.info(toString());
@@ -145,11 +144,11 @@ public class LiveJarInfo {
             Element root = document.getDocumentElement();
             if (root.getLocalName().equals("live") || root.getLocalName().equals("life")) { // support old misspelled
                 // name
-                for (Element jarElem : getChildElements(root, "jar")) {
+                for (Element jarElem : LiveUtils.getChildElements(root, "jar")) {
                     Entry entry = readEntry(jarElem);
                     jarEntries.put(entry.getId(), entry);
                 }
-                for (Element warElem : getChildElements(root, "war")) {
+                for (Element warElem : LiveUtils.getChildElements(root, "war")) {
                     Entry entry = readEntry(warElem);
                     warEntries.put(entry.getId(), entry);
                 }
@@ -161,16 +160,16 @@ public class LiveJarInfo {
 
     private Entry readEntry(Element jarElem) throws Exception {
         Entry entry = new Entry();
-        Element idElem = getSingleChildElement(jarElem, "id", true);
-        Element groupElem = getSingleChildElement(idElem, "group", true);
+        Element idElem = LiveUtils.getSingleChildElement(jarElem, "id", true);
+        Element groupElem = LiveUtils.getSingleChildElement(idElem, "group", true);
         entry.groupId = groupElem.getTextContent().trim();
-        Element artifactElem = getSingleChildElement(idElem, "artifact", true);
+        Element artifactElem = LiveUtils.getSingleChildElement(idElem, "artifact", true);
         entry.artifactId = artifactElem.getTextContent().trim();
-        Element versionElem = getSingleChildElement(idElem, "version", true);
+        Element versionElem = LiveUtils.getSingleChildElement(idElem, "version", true);
         entry.version = versionElem.getTextContent().trim();
-        List<Element> dirElems = getChildElements(jarElem, "directory");
+        List<Element> dirElems = LiveUtils.getChildElements(jarElem, "directory");
         if (dirElems.size() == 0)
-            dirElems = getChildElements(jarElem, "directorie"); // support old misspelled name
+            dirElems = LiveUtils.getChildElements(jarElem, "directorie"); // support old misspelled name
         for (Element dirElem : dirElems) {
             File dir = new File(dirElem.getTextContent().trim());
             entry.directories.add(dir);
@@ -188,8 +187,8 @@ public class LiveJarInfo {
 
     /**
      * Writes the live information to the live.xml file.
-     * 
-     * @throws Exception the exception
+     * @throws Exception
+     *             the exception
      */
     public void write() throws Exception {
         DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
@@ -256,34 +255,6 @@ public class LiveJarInfo {
         return warEntries != null && warEntries.size() > 0;
     }
 
-    private static Element getSingleChildElement(Element parent, String localName, boolean mandatory) throws Exception {
-        Element elem = null;
-        NodeList nodes = parent.getChildNodes();
-        for (int i = 0; i < nodes.getLength(); i++) {
-            Node node = nodes.item(i);
-            if (node.getNodeType() == Node.ELEMENT_NODE && node.getLocalName().equals(localName)) {
-                if (elem != null)
-                    throw new Exception("Multiple '" + localName + "' child elements aren't allowed.");
-                elem = (Element) node;
-            }
-        }
-        if (mandatory && elem == null)
-            throw new Exception("Missing '" + localName + "' child element.");
-        return elem;
-    }
-
-    private static List<Element> getChildElements(Element parent, String localName) {
-        List<Element> elems = new ArrayList<Element>();
-        NodeList nodes = parent.getChildNodes();
-        for (int i = 0; i < nodes.getLength(); i++) {
-            Node node = nodes.item(i);
-            if (node.getNodeType() == Node.ELEMENT_NODE && node.getLocalName().equals(localName)) {
-                elems.add((Element) node);
-            }
-        }
-        return elems;
-    }
-
     /**
      * Gets the live docroot.
      * @param docroot
@@ -312,7 +283,7 @@ public class LiveJarInfo {
         }
 
         // find pom.xml, retrieve groupId, artifactId, version from pom.xml
-        File pomFile = guessPom(docroot);
+        File pomFile = LiveUtils.guessPom(docroot);
         if (pomFile != null) {
             if (LOG.isDebugEnabled()) {
                 LOG.debug("Found pom.xml: " + pomFile);
@@ -322,11 +293,11 @@ public class LiveJarInfo {
             DocumentBuilder builder = factory.newDocumentBuilder();
             Document document = builder.parse(pomFile);
             Element root = document.getDocumentElement();
-            Element groupElem = getSingleChildElement(root, "groupId", true);
+            Element groupElem = LiveUtils.getSingleChildElement(root, "groupId", true);
             String groupId = groupElem.getTextContent().trim();
-            Element artifactElem = getSingleChildElement(root, "artifactId", true);
+            Element artifactElem = LiveUtils.getSingleChildElement(root, "artifactId", true);
             String artifactId = artifactElem.getTextContent().trim();
-            Element versionElem = getSingleChildElement(root, "version", true);
+            Element versionElem = LiveUtils.getSingleChildElement(root, "version", true);
             String version = versionElem.getTextContent().trim();
             String entryKey = groupId + "+" + artifactId + "+" + version;
 
@@ -347,74 +318,6 @@ public class LiveJarInfo {
         // TODO: look for entry by buildtime.prop?
 
         rootsWithNoLocation.add(docroot);
-        return null;
-    }
-
-    private static File guessPom(String docroot) throws Exception {
-        if (LOG.isDebugEnabled()) {
-            LOG.debug("Guessing pom.xml for " + docroot);
-        }
-        
-        /*
-         * Here is a project layout including a pustefix editor. The editor has its
-         * own pom.xml blow META-INF. Otherwise we walk up the parent path till we 
-         * find the project pom.xml.
-         * 
-         * <pre>
-         * pfixui
-         * |-- pom.xml                                        <-- pom of application
-         * |-- target
-         *     |-- pfixui-0.2.29-SNAPSHOT                     <-- docroot of application
-         *         |-- WEB-INF
-         *     |-- editor                                     <-- docroot of editor
-         *         |-- META-INF
-         *             |-- maven
-         *                 |-- org.pustefixframework.editor
-         *                     |-- pustefix-editor-webui
-         *                         |-- pom.xml                <-- pom of editor
-         *     
-         * </pre>
-         */
-        
-        // search pom.xml below META-INF
-        File docrootDir = new File(docroot);
-        if (docrootDir.exists() && docrootDir.isDirectory()) {
-            File metaInfDir = new File(docrootDir, "META-INF");
-            if(LOG.isTraceEnabled()) LOG.trace(metaInfDir);
-            if (metaInfDir.exists() && metaInfDir.isDirectory()) {
-                File mavenDir = new File(metaInfDir, "maven");
-                if(LOG.isTraceEnabled()) LOG.trace(mavenDir);
-                if (mavenDir.exists() && mavenDir.isDirectory()) {
-                    File[] groupIdDirs = mavenDir.listFiles();
-                    for (File groupIdDir : groupIdDirs) {
-                        if(LOG.isTraceEnabled()) LOG.trace(groupIdDir);
-                        if (groupIdDir.exists() && groupIdDir.isDirectory()) {
-                            File[] artifactIdDirs = groupIdDir.listFiles();
-                            for (File artifiactIdDir : artifactIdDirs) {
-                                if(LOG.isTraceEnabled()) LOG.trace(artifiactIdDir);
-                                if (artifiactIdDir.exists() && artifiactIdDir.isDirectory()) {
-                                    File pomFile = new File(artifiactIdDir, "pom.xml");
-                                    if(LOG.isTraceEnabled()) LOG.trace(pomFile);
-                                    if (pomFile.exists() && pomFile.isFile()) {
-                                        return pomFile;
-                                    }
-                                }
-                            }
-                        }
-                    }
-                }
-            }
-        }
-
-        // search project pom.xml
-        File pomDir = new File(docroot);
-        while (pomDir != null && pomDir.exists() && pomDir.isDirectory()) {
-            File pomFile = new File(pomDir, "pom.xml");
-            if (pomFile != null && pomFile.exists() && pomFile.isFile()) {
-                return pomFile;
-            }
-            pomDir = pomDir.getParentFile();
-        }
         return null;
     }
 
@@ -498,23 +401,12 @@ public class LiveJarInfo {
         } else if (url.getProtocol().equals("file")) {
             // find pom.xml, retrieve groupId, artifactId, version from pom.xml
             try {
-                File pomFile = guessPom(url.getFile());
+                File pomFile = LiveUtils.guessPom(url.getFile());
                 if (pomFile != null) {
                     if (LOG.isDebugEnabled()) {
                         LOG.debug("Found pom.xml: " + pomFile);
                     }
-                    DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
-                    factory.setNamespaceAware(true);
-                    DocumentBuilder builder = factory.newDocumentBuilder();
-                    Document document = builder.parse(pomFile);
-                    Element root = document.getDocumentElement();
-                    Element groupElem = getSingleChildElement(root, "groupId", true);
-                    String groupId = groupElem.getTextContent().trim();
-                    Element artifactElem = getSingleChildElement(root, "artifactId", true);
-                    String artifactId = artifactElem.getTextContent().trim();
-                    Element versionElem = getSingleChildElement(root, "version", true);
-                    String version = versionElem.getTextContent().trim();
-                    String entryKey = groupId + "+" + artifactId + "+" + version;
+                    String entryKey = LiveUtils.getKeyFromPom(pomFile);
 
                     Entry jarEntry = jarEntries.get(entryKey);
                     if (jarEntry != null) {
@@ -592,7 +484,7 @@ public class LiveJarInfo {
         public void setDirectories(List<File> directories) {
             this.directories = directories;
         }
-        
+
     }
 
 }

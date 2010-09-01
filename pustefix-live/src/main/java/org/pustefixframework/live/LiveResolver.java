@@ -63,7 +63,7 @@ public class LiveResolver {
         if (!path.startsWith("/")) {
             throw new IllegalArgumentException(path);
         }
-        
+
         if (file.exists()) {
             url = file.toURI().toURL();
         } else {
@@ -92,7 +92,7 @@ public class LiveResolver {
         if (LOG.isDebugEnabled()) {
             LOG.debug("Resolving live module root from live.xml for " + url + ":" + path);
         }
-        
+
         if (path.startsWith("/")) {
             path = path.substring(1);
         }
@@ -184,14 +184,16 @@ public class LiveResolver {
         return null;
     }
 
-    private static File guessFallbackDocroot(String srcMainWebapp) {
+    private static File guessFallbackDocroot(String srcMainWebapp) throws Exception {
         File srcMainWebappDir = new File(srcMainWebapp);
         if (srcMainWebappDir.exists() && srcMainWebappDir.isDirectory()) {
             File projectDir = srcMainWebappDir.getParentFile().getParentFile().getParentFile();
+            File pomFile = LiveUtils.guessPom(srcMainWebapp);
             File target = new File(projectDir, "target");
-            if (target.exists() && target.isDirectory()) {
+            if (pomFile != null && pomFile.exists() && target.exists() && target.isDirectory()) {
+                String artifactId = LiveUtils.getArtifactFromPom(pomFile);
                 for (File file : target.listFiles()) {
-                    if (file.isDirectory()) {
+                    if (file.isDirectory() && file.getName().startsWith(artifactId)) {
                         File webInfDir = new File(file, "WEB-INF");
                         if (webInfDir.exists())
                             return file;
