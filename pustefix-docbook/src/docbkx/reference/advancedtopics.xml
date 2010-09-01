@@ -237,6 +237,12 @@ PUSTEFIX-INF/xsl/skin.xsl</screen>
           <listitem>if you're specifying <literal>part</literal> and <literal>module</literal>, the include is loaded from the href/path of the current file from within the specified module</listitem>
         </itemizedlist>
       </note>
+      <note xml:id="advanced.dyninclude.modinclude.special">
+        <title>Special module names</title>
+        If you want to explicitly reference an include from the application, you can use the special module name <emphasis>webapp</emphasis>, which indicates
+        Pustefix, that it shouldn't look in the current module as done by default, but load the file from the webapp folder.
+        If you want to explicitly reference an include from the module where the page is defined (where the config fragment with the <literal>standardpage</literal> definition resides), you can use the special name <emphasis>pagedef</emphasis>.
+      </note>
       <para>
         If you want to directly reference XML/XSL files in the <literal>depend.xml</literal> configuration file, this works the same way by adding a <literal>module</literal> attribute to the according elements:
       </para>

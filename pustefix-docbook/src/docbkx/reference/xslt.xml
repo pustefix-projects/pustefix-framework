@@ -525,7 +525,7 @@
             <tr>
               <td>module</td>
               <td>optional</td>
-              <td>Not set by default. Set this to the name of the module from which the part should be loaded. If dynamic search is set, the module just serves as fallback location if the part can't be found in the project or common location and isn't overrided by another module. See <xref linkend="advanced.dyninclude"/>.</td>
+              <td>Not set by default. Set this to the name of the module from which the part should be loaded. If dynamic search is set, the module just serves as fallback location if the part can't be found in the project or common location and isn't overrided by another module. See <xref linkend="advanced.dyninclude"/>. You can also use one of the pre-defined special module names (see <xref linkend="advanced.dyninclude.modinclude.special"/>).</td>
             </tr>
           </tbody>
         </table>
@@ -598,7 +598,7 @@
             <tr>
               <td>module</td>
               <td>optional</td>
-              <td>Not set by default. Set this to the name of the module from which the part should be loaded. If dynamic search is set, the module just serves as fallback location if the part can't be found in the project or common location and isn't overrided by another module. See <xref linkend="advanced.dyninclude"/>.</td>
+              <td>Not set by default. Set this to the name of the module from which the part should be loaded. If dynamic search is set, the module just serves as fallback location if the part can't be found in the project or common location and isn't overrided by another module. See <xref linkend="advanced.dyninclude"/>. You can also use one of the pre-defined special module names (see <xref linkend="advanced.dyninclude.modinclude.special"/>).</td>
             </tr>
           </tbody>
         </table>
@@ -681,7 +681,7 @@
             <tr>
               <td>module</td>
               <td>optional</td>
-              <td>Not set by default. Set this to the name of the module from which the image should be loaded. If dynamic search is set, the module just serves as fallback location if an according image can't be found in the project or common location or another overriding module. See <xref linkend="advanced.dyninclude"/>.</td>
+              <td>Not set by default. Set this to the name of the module from which the image should be loaded. If dynamic search is set, the module just serves as fallback location if an according image can't be found in the project or common location or another overriding module. See <xref linkend="advanced.dyninclude"/>. You can also use one of the pre-defined special module names (see <xref linkend="advanced.dyninclude.modinclude.special"/>).</td>
             </tr>
             <tr>
               <td>other attributes</td>

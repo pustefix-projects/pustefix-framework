@@ -1557,6 +1557,12 @@
               <classname>ContextXMLServlet</classname> configuration 
               tags.</td>
             </tr>
+            <tr>
+              <td><literal>module</literal></td>
+              <td><emphasis>Optional</emphasis>.
+              Specifies the Pustefix module where the file is located (by default
+              the file is searched in the webapp itself).</td>
+            </tr>
           </tbody>
         </informaltable>
         <emphasis>One and only one</emphasis> of the section, refid or 
@@ -1701,6 +1707,13 @@
               namespace of the <classname>DirectOutputService</classname> 
               configuration tags.</td>
             </tr>
+            <tr>
+              <td><literal>module</literal></td>
+              <td><emphasis>Optional</emphasis>.
+              Specifies the Pustefix module where the file is located (by default
+              the file is searched in the webapp itself).</td>
+            </tr>
+
           </tbody>
         </informaltable>
         <emphasis>One and only one</emphasis> of the section, refid or 
