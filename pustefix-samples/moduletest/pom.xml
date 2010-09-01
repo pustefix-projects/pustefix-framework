@@ -3,12 +3,12 @@
   <parent>
         <artifactId>pustefix-samples</artifactId>
         <groupId>org.pustefixframework</groupId>
-        <version>0.15.6</version>
+        <version>0.15.7-SNAPSHOT</version>
     </parent>
 
   <groupId>org.pustefixframework.samples</groupId>
   <artifactId>moduletest</artifactId>
-  <version>0.15.6</version>
+  <version>0.15.7-SNAPSHOT</version>
   <packaging>war</packaging>
 
   <name>Pustefix module test application</name>
@@ -17,22 +17,22 @@
     <dependency>
       <groupId>org.pustefixframework</groupId>
       <artifactId>pustefix-core</artifactId>
-      <version>0.15.6</version>
+      <version>0.15.7-SNAPSHOT</version>
     </dependency>
     <dependency>
       <groupId>org.pustefixframework.samples.modules</groupId>
       <artifactId>sample-module-A</artifactId>
-      <version>0.15.6</version>
+      <version>0.15.7-SNAPSHOT</version>
     </dependency>
     <dependency>
       <groupId>org.pustefixframework.samples.modules</groupId>
       <artifactId>sample-module-B</artifactId>
-      <version>0.15.6</version>
+      <version>0.15.7-SNAPSHOT</version>
     </dependency>
     <dependency>
       <groupId>org.pustefixframework.samples.modules</groupId>
       <artifactId>sample-module-C</artifactId>
-      <version>0.15.6</version>
+      <version>0.15.7-SNAPSHOT</version>
     </dependency>
   </dependencies>
  
@@ -49,7 +49,7 @@
       <plugin>
         <groupId>org.pustefixframework.maven.plugins</groupId>
         <artifactId>pustefix-webapp-plugin</artifactId>
-        <version>0.15.6</version>
+        <version>0.15.7-SNAPSHOT</version>
         <executions>
           <execution>
             <goals>
@@ -61,7 +61,7 @@
       <plugin>
         <groupId>org.pustefixframework.maven.plugins</groupId>
         <artifactId>pustefix-statuscode-plugin</artifactId>
-        <version>0.15.6</version>
+        <version>0.15.7-SNAPSHOT</version>
         <executions>
           <execution>
             <goals>
@@ -73,7 +73,7 @@
       <plugin>
         <groupId>org.pustefixframework.maven.plugins</groupId>
         <artifactId>pustefix-iwrapper-plugin</artifactId>
-        <version>0.15.6</version>
+        <version>0.15.7-SNAPSHOT</version>
         <executions>
           <execution>
             <goals>
