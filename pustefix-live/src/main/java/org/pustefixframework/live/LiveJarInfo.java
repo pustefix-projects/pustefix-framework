@@ -420,84 +420,122 @@ public class LiveJarInfo {
 
     /**
      * Gets the live module root.
-     * @param jarUrl
-     *            the URL to the module JAR with the path to the resource appended
+     * @param url
+     *            the URL to the module JAR or file target URL
+     * @param path
+     *            the resource path, relative to the URL
      * @return the live location for the module resource, or null if no live location is available
      */
-    public File getLiveModuleRoot(URL jarUrl) {
+    public File getLiveModuleRoot(URL url, String path) {
         checkFileModified();
 
         // TODO: excludes and includes, depending on path, per directory
 
-        File location = rootToLocation.get(jarUrl.toString());
-        if (location != null || rootsWithNoLocation.contains(jarUrl.toString())) {
+        File location = rootToLocation.get(url.toString());
+        if (location != null || rootsWithNoLocation.contains(url.toString())) {
             return location;
         }
 
-        String path = jarUrl.getPath();
-        int ind = path.indexOf('!');
-        path = path.substring(0, ind);
-        ind = path.lastIndexOf('/');
-        path = path.substring(ind + 1);
-        ind = path.lastIndexOf('.');
-        path = path.substring(0, ind);
-        // look for entry by jar file name
-        Entry entry = jarEntries.get(path);
-        if (entry != null) {
-            for (File dir : entry.directories) {
-                if (dir.getName().equals("resources")) {
-                    if (LOG.isDebugEnabled()) {
-                        LOG.debug("Found live location by jar file name: " + path);
+        if (url.getProtocol().equals("jar")) {
+            String jarFileName = url.getPath();
+            int ind = jarFileName.indexOf('!');
+            jarFileName = jarFileName.substring(0, ind);
+            ind = jarFileName.lastIndexOf('/');
+            jarFileName = jarFileName.substring(ind + 1);
+            ind = jarFileName.lastIndexOf('.');
+            jarFileName = jarFileName.substring(0, ind);
+            // look for entry by jar file name
+            Entry entry = jarEntries.get(jarFileName);
+            if (entry != null) {
+                for (File dir : entry.directories) {
+                    if (dir.getName().equals("resources")) {
+                        if (LOG.isDebugEnabled()) {
+                            LOG.debug("Found live module location by jar file name: " + jarFileName);
+                        }
+                        rootToLocation.put(url.toString(), dir);
+                        return dir;
                     }
-                    rootToLocation.put(jarUrl.toString(), dir);
-                    return dir;
                 }
             }
-        }
-        // look for entry by artifact name and MANIFEST attributes
-        try {
-            URL manifestUrl = new URL(jarUrl, "/META-INF/MANIFEST.MF");
-            URLConnection con = manifestUrl.openConnection();
-            if (con != null) {
-                InputStream in = con.getInputStream();
-                if (in != null) {
-                    Manifest manifest = new Manifest(in);
-                    Attributes attrs = manifest.getMainAttributes();
-                    String groupId = attrs.getValue("Implementation-Vendor-Id");
-                    String version = attrs.getValue("Implementation-Version");
-                    if (groupId != null && version != null) {
-                        int endInd = path.indexOf(version);
-                        if (endInd > 2) {
-                            String artifactId = path.substring(0, endInd - 1);
-                            String entryKey = groupId + "+" + artifactId + "+" + version;
-                            entry = jarEntries.get(entryKey);
-                            if (entry != null) {
-                                for (File dir : entry.directories) {
-                                    // if (dir.getName().equals("resources")) {
-                                    if (LOG.isDebugEnabled()) {
-                                        LOG.debug("Found live location by artifact name and MANIFEST attributes: "
-                                                + entryKey);
+            // look for entry by artifact name and MANIFEST attributes
+            try {
+                URL manifestUrl = new URL(url, "/META-INF/MANIFEST.MF");
+                URLConnection con = manifestUrl.openConnection();
+                if (con != null) {
+                    InputStream in = con.getInputStream();
+                    if (in != null) {
+                        Manifest manifest = new Manifest(in);
+                        Attributes attrs = manifest.getMainAttributes();
+                        String groupId = attrs.getValue("Implementation-Vendor-Id");
+                        String version = attrs.getValue("Implementation-Version");
+                        if (groupId != null && version != null) {
+                            int endInd = jarFileName.indexOf(version);
+                            if (endInd > 2) {
+                                String artifactId = jarFileName.substring(0, endInd - 1);
+                                String entryKey = groupId + "+" + artifactId + "+" + version;
+                                entry = jarEntries.get(entryKey);
+                                if (entry != null) {
+                                    for (File dir : entry.directories) {
+                                        if (LOG.isDebugEnabled()) {
+                                            LOG.debug("Found live module location by artifact name and MANIFEST attributes: "
+                                                    + entryKey);
+                                        }
+                                        rootToLocation.put(url.toString(), dir);
+                                        return dir;
                                     }
-                                    rootToLocation.put(jarUrl.toString(), dir);
-                                    return dir;
-                                    // }
                                 }
                             }
                         }
                     }
                 }
+            } catch (FileNotFoundException x) {
+                LOG.warn("Module contains no MANIFEST.MF: " + url.toString());
+            } catch (MalformedURLException x) {
+                LOG.warn("Illegal module URL: " + url.toString(), x);
+            } catch (IOException x) {
+                LOG.warn("IO error reading module data: " + url.toString(), x);
             }
-        } catch (FileNotFoundException x) {
-            LOG.warn("Module contains no MANIFEST.MF: " + jarUrl.toString());
-        } catch (MalformedURLException x) {
-            LOG.warn("Illegal module URL: " + jarUrl.toString(), x);
-        } catch (IOException x) {
-            LOG.warn("IO error reading module data: " + jarUrl.toString(), x);
+        } else if (url.getProtocol().equals("file")) {
+            // find pom.xml, retrieve groupId, artifactId, version from pom.xml
+            try {
+                File pomFile = guessPom(url.getFile());
+                if (pomFile != null) {
+                    if (LOG.isDebugEnabled()) {
+                        LOG.debug("Found pom.xml: " + pomFile);
+                    }
+                    DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
+                    factory.setNamespaceAware(true);
+                    DocumentBuilder builder = factory.newDocumentBuilder();
+                    Document document = builder.parse(pomFile);
+                    Element root = document.getDocumentElement();
+                    Element groupElem = getSingleChildElement(root, "groupId", true);
+                    String groupId = groupElem.getTextContent().trim();
+                    Element artifactElem = getSingleChildElement(root, "artifactId", true);
+                    String artifactId = artifactElem.getTextContent().trim();
+                    Element versionElem = getSingleChildElement(root, "version", true);
+                    String version = versionElem.getTextContent().trim();
+                    String entryKey = groupId + "+" + artifactId + "+" + version;
+
+                    Entry jarEntry = jarEntries.get(entryKey);
+                    if (jarEntry != null) {
+                        for (File dir : jarEntry.directories) {
+                            if (LOG.isDebugEnabled()) {
+                                LOG.debug("Found live module location by pom.xml: " + entryKey);
+                            }
+                            rootToLocation.put(url.toString(), dir);
+                            return dir;
+                        }
+                    }
+                }
+            } catch (Exception e) {
+                LOG.warn("Exceptions reading module live POM: " + url.toString(), e);
+            }
         }
+
         if (LOG.isDebugEnabled()) {
-            LOG.debug("Found no live location: " + jarUrl.toString());
+            LOG.debug("Found no live location: " + url.toString());
         }
-        rootsWithNoLocation.add(jarUrl.toString());
+        rootsWithNoLocation.add(url.toString());
         return null;
     }
 

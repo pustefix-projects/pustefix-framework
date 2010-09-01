@@ -59,7 +59,7 @@ public class ModuleResourceProvider implements ResourceProvider {
             throw new ResourceProviderException("Missing module name: " + uri);
         ModuleDescriptor desc = ModuleInfo.getInstance().getModuleDescriptor(module);
         if (desc != null) {
-            URL url = getJarURL(desc.getURL());
+            URL url = desc.getURL().getProtocol().equals("jar") ? getJarURL(desc.getURL()) : getFileUrl(desc.getURL());
             // Ensure module resources are read from classpath in production environment
             boolean checkLive = !BuildTimeProperties.getProperties().getProperty("mode").equals("prod");
             if (checkLive) {
@@ -88,6 +88,22 @@ public class ModuleResourceProvider implements ResourceProvider {
         return new ModuleResource(uri);
     }
     
+    private static URL getFileUrl(URL url) {
+        if (!url.getProtocol().equals("file"))
+            throw new PustefixRuntimeException("Invalid protocol: " + url);
+        String urlStr = url.toString();
+        int ind = urlStr.indexOf("META-INF");
+        if (ind > -1) {
+            urlStr = urlStr.substring(0, ind);
+        } else
+            throw new PustefixRuntimeException("Unexpected module descriptor URL: " + url);
+        try {
+            return new URL(urlStr);
+        } catch (MalformedURLException x) {
+            throw new PustefixRuntimeException("Invalid module URL: " + urlStr);
+        }
+    }
+
     private static URL getJarURL(URL url) {
         if(!url.getProtocol().equals("jar")) throw new PustefixRuntimeException("Invalid protocol: "+url);
         String urlStr = url.toString();

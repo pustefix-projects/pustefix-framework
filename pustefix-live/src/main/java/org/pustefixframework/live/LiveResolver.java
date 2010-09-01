@@ -81,22 +81,22 @@ public class LiveResolver {
 
     /**
      * Resolves the module base.
-     * @param jarUrl
-     *            the original module jar URL
+     * @param url
+     *            the original module jar URL or file target URL
      * @param path
-     *            the resource path, relative to jarUrl
+     *            the resource path, relative to the URL
      * @return the resolved live module root, or null if no live module root was found
      * @throws Exception
      */
-    public URL resolveLiveModuleRoot(URL jarUrl, String path) throws Exception {
+    public URL resolveLiveModuleRoot(URL url, String path) throws Exception {
         if (LOG.isDebugEnabled()) {
-            LOG.debug("Resolving live module root from live.xml for " + jarUrl + ":" + path);
+            LOG.debug("Resolving live module root from live.xml for " + url + ":" + path);
         }
         
         if (path.startsWith("/")) {
             path = path.substring(1);
         }
-        File moduleRoot = getLiveJarInfo().getLiveModuleRoot(new URL(jarUrl + path));
+        File moduleRoot = getLiveJarInfo().getLiveModuleRoot(url, path);
         if (moduleRoot != null) {
             if (LOG.isDebugEnabled()) {
                 LOG.debug("  --> " + moduleRoot);
