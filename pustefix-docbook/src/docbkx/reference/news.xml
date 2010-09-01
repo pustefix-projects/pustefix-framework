@@ -1,0 +1,27 @@
+<?xml version="1.0"?>
+<chapter xml:id="news" xmlns="http://docbook.org/ns/docbook" xmlns:xlink="http://www.w3.org/1999/xlink"
+  xmlns:xi="http://www.w3.org/2001/XInclude" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xsi:schemaLocation="http://docbook.org/ns/docbook http://www.docbook.org/xml/5.0CR7/xsd/docbook.xsd"
+>
+  <title>What's new in Pustefix 0.15.x</title>    
+  <section xml:id="news.0_15_6">
+    <title>New features and enhancements in Pustefix 0.15.6</title>
+  
+    <section xml:id="news.0_15_6.modules">
+    <title>New module enhancements</title>
+    <para>
+      Introduced pre-defined special module names <literal>WEBAPP</literal> and 
+      <literal>PAGEDEF</literal>, which can be set as <literal>module</literal> values at <literal>&lt;pfx:include&gt;</literal>
+      and <literal>&lt;pfx:image&gt;</literal> tags to explicitly refer to resources from the webapp folder
+      or resources from within the module where a page is defined (see <xref linkend="advanced.dyninclude.modinclude.special"/>).
+    </para>
+    <para>
+      The config-include mechanism now supports directly referencing config
+      fragment files from modules by adding a <literal>module</literal> attribute to the according
+      <literal>&lt;config-include&gt;</literal> elements (see <xref linkend="configuration.depend"/> and <xref linkend="configuration.servlet.contextxml"/>).
+    </para>
+  </section>
+ 
+  </section>
+
+</chapter>
