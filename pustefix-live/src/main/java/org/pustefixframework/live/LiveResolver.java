@@ -122,7 +122,7 @@ public class LiveResolver {
      */
     public URL resolveLiveDocroot(String docroot, String path) throws Exception {
 
-        if (getLiveJarInfo().hasWarEntries()) {
+        if (getLiveJarInfo().hasWarEntries() && !docroot.endsWith("src/main/webapp")) {
             // live.xml defines live folders for web applications, use this information
             if (LOG.isDebugEnabled()) {
                 LOG.debug("Resolving live docroot from live.xml for " + docroot + ":" + path);
