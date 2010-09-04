@@ -373,7 +373,7 @@ public class RequestContextImpl implements Cloneable, AuthorizationInterceptor {
             if (authConst == null)
                 authConst = getParentContext().getContextConfig().getDefaultAuthConstraint();
             if (authConst != null) {
-                String authPageName = authConst.getAuthPage();
+                String authPageName = authConst.getAuthPage(parentcontext);
                 if (authPageName != null) {
                     currentpagerequest = createPageRequest(authPageName);
                     if (!roleAuthTarget.equals(authPageName))
@@ -741,7 +741,7 @@ public class RequestContextImpl implements Cloneable, AuthorizationInterceptor {
         if(pageConfig != null) {
             AuthConstraint authConstraint = pageConfig.getAuthConstraint();
             if (authConstraint == null) authConstraint = parentcontext.getContextConfig().getDefaultAuthConstraint();
-            if (authConstraint != null && !authConstraint.isAuthorized(parentcontext) && authConstraint.getAuthPage()==null) return false;
+            if (authConstraint != null && !authConstraint.isAuthorized(parentcontext) && authConstraint.getAuthPage(parentcontext)==null) return false;
         }
         return true;
     }
@@ -770,7 +770,7 @@ public class RequestContextImpl implements Cloneable, AuthorizationInterceptor {
             if (authConstraint == null)
                 authConstraint = parentcontext.getContextConfig().getDefaultAuthConstraint();
             if (authConstraint != null) {
-                String authPageName = authConstraint.getAuthPage();
+                String authPageName = authConstraint.getAuthPage(parentcontext);
                 if (authPageName != null)
                     localAuthPage = createPageRequest(authPageName);
             }

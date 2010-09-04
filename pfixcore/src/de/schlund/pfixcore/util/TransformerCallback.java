@@ -346,7 +346,7 @@ public class TransformerCallback {
                 if(authConst==null) authConst = context.getContextConfig().getDefaultAuthConstraint();
                 if(authConst != null) {
                     if(authConst.isAuthorized(context)) result = 1;
-                    else if(authConst.getAuthPage()!=null) result = 2;
+                    else if(authConst.getAuthPage(context)!=null) result = 2;
                     else result = 3;
                 }
             }
