@@ -315,6 +315,9 @@
       <xs:element ref="prop:properties" minOccurs="0"/>
     </xs:sequence>
     <xs:attribute name="class" use="required"/>
+    <xs:attribute name="bean-name" use="optional" />
+    <xs:attribute name="scope" use="optional" />
+    <xs:attribute name="parent-bean-ref" use="optional"/>
   </xs:complexType>
 
   <xs:element name="implements" type="prop:implementsType"/>
