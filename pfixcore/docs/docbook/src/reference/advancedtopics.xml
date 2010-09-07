@@ -423,11 +423,21 @@ module://module-A/txt/common.xml</screen>
         set one toplevel <literal>authconstraint</literal> to be the default one for 
         all <literal>pagerequests</literal> having no <literal>authconstraint</literal> asssigned.
       </para>
+      <tip version="0.13.24">
+        <para>
+          In addition to the <literal>authpage</literal>-attribute one can define more fine-grained, 
+          conditional navigation-cases via the new <literal>navigateTo</literal>-child-element to <literal>authconstraint</literal>.
+        </para>
+      </tip>
       <programlisting language="xml"><![CDATA[<authconstraint id="MYCONSTRAINT" authpage="login" default="true">
   <or>
     <hasrole name="MYROLE"/>
     <hasrole name="OTHERROLE"/>
   </or>
+  <!-- navigate to page guests, if constraints above fail, but user still has the "GUEST"-role -->
+  <navigateTo page="guests">
+    <hasrole name="GUEST"/>
+  </navigateTo>
 </authconstraint>]]></programlisting>
       <para>
         <literal>Pagerequests</literal> can either define new <literal>authconstraints</literal> as 
