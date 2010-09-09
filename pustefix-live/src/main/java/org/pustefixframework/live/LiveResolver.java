@@ -75,6 +75,9 @@ public class LiveResolver {
             return liveModuleRoot != null ? new File(liveModuleRoot.getFile()) : null;
         } else {
             URL liveDocRoot = resolveLiveDocroot(root, path);
+            if (liveDocRoot == null) {
+                liveDocRoot = resolveLiveModuleRoot(url, path);
+            }
             return liveDocRoot != null ? new File(liveDocRoot.getFile()) : null;
         }
     }
