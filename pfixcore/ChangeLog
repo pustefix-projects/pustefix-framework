@@ -1,3 +1,7 @@
+2010-09-10  Andreas kurth
+
+        Made chmod attributes configurable.
+
 2010-03-02  Martin Leidig  <mleidig@schlund.de>
 
 	Added support for configuring DispatcherServlet in project.xml
@@ -15,7 +19,7 @@
 
 2009-11-20  Sebastian Marsching  <sebastian.marsching@1und1.de>
 
-	* res/META-INF/org/pustefixframework/config/context-xml-service/parser/context-xml-service-config.xml: 
+	* res/META-INF/org/pustefixframework/config/context-xml-service/parser/context-xml-service-config.xml:
 	Allow <choose> tag within pagerequest variants
 
 2009-11-06  Martin Leidig  <mleidig@schlund.de>
@@ -28,7 +32,7 @@
 	which will be applied based on these attributes.
 
 	Example (filtering by a language attribute):
-	
+
 	Module descriptor (META-INF/pustefix-module.xml)
 
 	<module-descriptor>
@@ -57,7 +61,7 @@
 	behaviour).
 	The filter uses the OSGi filter syntax (see the OSGi Service Platform
 	Release 4 Version 4.2 Core Specification, section 3.2.7 Filter
-	syntax), which itself is based on the syntax of LDAP search 
+	syntax), which itself is based on the syntax of LDAP search
 	filters (see RFC1960/RFC2254).
 
 	Examples:
@@ -77,7 +81,7 @@
 	    <!-- all XML files from txt folder: -->
 	    <resource path="txt/*.xml"/>
 	    <!-- all XSL files from xsl folder or arbitrary subfolders: -->
-	    <resource path="xsl/**/*.xsl"/>          
+	    <resource path="xsl/**/*.xsl"/>
 	  </module>
 	</override-modules>
 
