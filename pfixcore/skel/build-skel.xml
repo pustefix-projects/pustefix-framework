@@ -46,6 +46,9 @@ or delete the DOCTYPE definition -->
   <property name="webappmode"               value="false"/>
   <property name="webapps"                  value=""/> 
 
+  <property name="chmod.parallel"           value="false"/>
+  <property name="chmod.maxparallel"        value="0"/>
+
   <property name="pat.pfixcore_jar"         value="pfixcore-*.jar"/>
   <fileset  id="id.fs.pfixcore_jar"         dir="${dir.coredata}" includes="pfixcore-*.jar"/>
   <property name="pat.pfixcore_data_tgz"    value="pfixcore-*data*.tar.gz"/>
@@ -562,7 +565,8 @@ or delete the DOCTYPE definition -->
       <fileset dir="${dir.src.modules}" includes="*.jar" />
     </unjar>
     <antcall target="-extract-jar-modules"></antcall>
-    <chmod perm="444" parallel="false"><fileset dir="${dir.extract.modules}" includes="**/*"/></chmod>
+    <echo message="Calling chmod with attributes parallel=${chmod.parallel}, maxparallel=${chmod.maxparallel}."/>
+    <chmod perm="444" parallel="${chmod.parallel}" maxparallel="${chmod.maxparallel}"><fileset dir="${dir.extract.modules}" includes="**/*"/></chmod>
     <touch file="${dir.extract.modules}/TIMESTAMP"/>
     <foreach param="tmp.modules.buildxml" target="extract-modules-call-ant" inheritall="true" inheritrefs="true">
       <fileset dir="${dir.extract.modules}">
