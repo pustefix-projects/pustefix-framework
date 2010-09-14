@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="utf-8"?>
+<make lang="en_GB" project="firstapp" themes="at de default">
+
+  <!-- prefix to namespace url mappings to be used in pages xml -->
+  <namespaces>
+    <namespace-declaration prefix="pfx" url="http://www.schlund.de/pustefix/core"/>
+    <namespace-declaration prefix="ixsl" url="http://www.w3.org/1999/XSL/Transform"/>
+  </namespaces>
+
+  <navigation>
+    <page handler="/xml/app" name="Home"/>
+    <page handler="/xml/app" name="Play"/>
+    <page handler="/xml/app" name="Bye"/>
+  </navigation>
+
+  <standardmaster>
+    <include stylesheet="xsl/skin.xsl"/>
+  </standardmaster>
+  
+  <standardmetatags>
+  	<include stylesheet="xsl/metatags.xsl"/>
+  </standardmetatags>
+  
+  <standardpage name="Home" xml="xml/frame.xml"/>
+  <standardpage name="Play" xml="xml/frame.xml"/>
+  <standardpage name="Bye" xml="xml/frame.xml"/>
+
+</make>

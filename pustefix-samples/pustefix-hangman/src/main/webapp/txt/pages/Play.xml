@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="utf-8"?>
+<include_parts xmlns:ixsl="http://www.w3.org/1999/XSL/Transform" xmlns:pfx="http://www.schlund.de/pustefix/core">
+  <part name="content">
+    <theme name="default">
+    
+      <h3>Play!!!</h3>
+      <img src="{$__contextpath}/img/Hangman-{/formresult/play/@tries}.png"/>
+      <div style="padding: 23pt; letter-spacing: 0.3em;font-size:25pt">
+      <ixsl:value-of select="/formresult/play/@displayWord"/>
+      </div>
+      <buttons/>
+    </theme>
+  </part>
+</include_parts>

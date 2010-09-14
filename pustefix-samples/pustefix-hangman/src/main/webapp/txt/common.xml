@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="utf-8"?>
+<include_parts xmlns:ixsl="http://www.w3.org/1999/XSL/Transform" xmlns:pfx="http://www.schlund.de/pustefix/core">
+  
+  <part name="title">
+    <theme name="default">
+      Hangman
+      <pfx:langselect>
+       <pfx:lang name="de">fdafdsf</pfx:lang>
+       <pfx:lang name="at">fdafdsf</pfx:lang>
+      </pfx:langselect>
+    </theme>
+    <theme name="de">
+      Galgenmann
+    </theme>
+    <theme name="at">
+      Galgenmannfadf
+    </theme>
+  </part>
+</include_parts>
