@@ -61,5 +61,10 @@ public class ModuleSourceResource extends ModuleResource {
     public long lastModified() {
         return file.lastModified();
     }
-
+    
+    @Override
+    public long length() {
+        return file.length();
+    }
+    
 }

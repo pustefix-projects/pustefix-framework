@@ -24,7 +24,9 @@ import java.io.InputStream;
 import java.io.OutputStream;
 import java.net.URL;
 import java.net.URLConnection;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 import javax.servlet.ServletContext;
 import javax.servlet.ServletException;
@@ -33,6 +35,7 @@ import javax.servlet.http.HttpServletResponse;
 
 import org.apache.log4j.Logger;
 import org.pustefixframework.container.spring.http.UriProvidingHttpRequestHandler;
+import org.springframework.beans.factory.InitializingBean;
 import org.springframework.web.context.ServletContextAware;
 
 import de.schlund.pfixxml.resources.FileResource;
@@ -45,7 +48,7 @@ import de.schlund.pfixxml.util.MD5Utils;
  * 
  * @author Sebastian Marsching <sebastian.marsching@1und1.de>
  */
-public class DocrootRequestHandler implements UriProvidingHttpRequestHandler, ServletContextAware {
+public class DocrootRequestHandler implements UriProvidingHttpRequestHandler, ServletContextAware, InitializingBean {
     
     private Logger LOG = Logger.getLogger(DocrootRequestHandler.class);
     
@@ -58,6 +61,8 @@ public class DocrootRequestHandler implements UriProvidingHttpRequestHandler, Se
     private ServletContext servletContext;
 
     private String mode;
+    
+    private Set<String> extractedPaths = new HashSet<String>();
     
     public ServletContext getServletContext() {
         return servletContext;
@@ -121,11 +126,16 @@ public class DocrootRequestHandler implements UriProvidingHttpRequestHandler, Se
             }
             
             if (!warOnly) {
-                
                 if (passthroughPaths != null) {
                     for (String prefix : this.passthroughPaths) {
                         if (path.startsWith(prefix)) {
-                            Resource resource = ResourceUtil.getFileResourceFromDocroot(path);
+                            Resource resource = null;
+                            if(path.startsWith("modules/") && !extractedPaths.contains(prefix)) {
+                                String moduleUri = "module://" + path.substring(8);
+                                resource = ResourceUtil.getResource(moduleUri);
+                            } else {
+                                resource = ResourceUtil.getFileResourceFromDocroot(path);
+                            }
                             if(resource.exists()) {
                                 contentLength = resource.length();
                                 lastModified = resource.lastModified();
@@ -145,7 +155,7 @@ public class DocrootRequestHandler implements UriProvidingHttpRequestHandler, Se
                 }
                 
             } else {
-                
+                //TODO: add direct module load support
                 if (passthroughPaths != null) {
                     for (String prefix : this.passthroughPaths) {
                         if (path.startsWith(prefix)) {
@@ -247,4 +257,14 @@ public class DocrootRequestHandler implements UriProvidingHttpRequestHandler, Se
         return MD5Utils.hex_md5(path + length + modtime);
     }
 
+    
+    public void afterPropertiesSet() throws Exception {
+        for(String path: passthroughPaths) {
+            if(path.startsWith("modules/")) { 
+                Resource resource = ResourceUtil.getFileResourceFromDocroot(path);
+                if(resource.exists()) extractedPaths.add(path);
+            }
+        }
+    }
+    
 }

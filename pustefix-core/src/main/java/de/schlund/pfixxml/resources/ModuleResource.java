@@ -17,6 +17,7 @@
  */
 package de.schlund.pfixxml.resources;
 
+import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
@@ -41,17 +42,16 @@ public class ModuleResource implements Resource {
         try {
             url = new URL(moduleUrl, path);
         } catch (MalformedURLException x) {
-            //TODO: throw typed exception
             throw new PustefixRuntimeException(x);
         } 
+        System.out.println("URI: "+uri);
     }
     
     public ModuleResource(URI uri) {
         this.uri = uri;
     }
     
-    private JarURLConnection getConnection() throws IOException {
-        
+    protected JarURLConnection getConnection() throws IOException {
         JarURLConnection con = new JarFileURLConnection(url);
         //Use own JarURLConnection implementation to workaround problem
         //with standard implementation, which causes too many open file
@@ -62,8 +62,7 @@ public class ModuleResource implements Resource {
     }
     
     public boolean canRead() {
-        //TODO: implement
-        return true;
+        return exists();
     }
 
     public boolean exists() {
@@ -80,6 +79,7 @@ public class ModuleResource implements Resource {
     }
 
     public InputStream getInputStream() throws IOException {
+        
         if(url == null) throw new IOException("Resource doesn't exist");
         JarURLConnection con = getConnection();
         return con.getInputStream();
@@ -103,8 +103,7 @@ public class ModuleResource implements Resource {
     public long length() {
         if(url == null) return 0;
         try {
-            JarURLConnection con = (JarURLConnection)url.openConnection();
-            con.setUseCaches(false);
+            JarURLConnection con = getConnection();
             JarEntry entry = con.getJarEntry();
             if(entry != null) {
                 return con.getJarEntry().getSize();

@@ -62,7 +62,7 @@ public class JarFileURLConnectionTest extends TestCase {
         URL url = new URL(urlStr);   
         JarURLConnection con = (JarURLConnection)url.openConnection();
         JarURLConnection conFile = new JarFileURLConnection(url);
-        assertEquals(con.getLastModified(), con.getLastModified());
+        assertEquals(con.getContentLength(), conFile.getContentLength());
         assertNotNull(con.getJarEntry());
         assertNotNull(conFile.getJarEntry());
     }
@@ -89,4 +89,13 @@ public class JarFileURLConnectionTest extends TestCase {
         assertNotNull(error);
     }
 
+    public void testEmptyJarEntryURL() throws Exception {
+        String urlStr = "jar:"+testModuleFile.toURI().toString()+"!/";
+        URL url = new URL(urlStr);   
+        JarURLConnection con = (JarURLConnection)url.openConnection();
+        JarURLConnection conFile = new JarFileURLConnection(url);
+        assertNull(con.getJarEntry());
+        assertNull(conFile.getJarEntry());
+    }
+    
 }

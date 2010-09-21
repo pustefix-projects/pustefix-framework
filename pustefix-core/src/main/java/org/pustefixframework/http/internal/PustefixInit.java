@@ -19,6 +19,7 @@ package org.pustefixframework.http.internal;
 
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
+import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.util.Properties;
@@ -116,7 +117,11 @@ public class PustefixInit {
         if(initDone) return;
         
     	Properties properties = new Properties(System.getProperties());
-            
+        
+    	//Make tempdir context attribute available as system property
+    	File tempdir = (File)servletContext.getAttribute("javax.servlet.context.tempdir");
+    	if(tempdir != null && !tempdir.equals("")) System.setProperty("javax.servlet.context.tempdir", tempdir.getPath());
+    	
     	// old webapps specify docroot -- true webapps don't
     	String docrootstr = servletContext.getInitParameter("pustefix.docroot");
     	if (docrootstr == null || docrootstr.equals("")) {

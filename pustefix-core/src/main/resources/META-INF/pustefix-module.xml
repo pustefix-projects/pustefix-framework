@@ -4,11 +4,9 @@
                                        http://www.pustefix-framework.org/2008/namespace/module-descriptor.xsd" >
 
   <module-name>pustefix-core</module-name>
-
+   
   <resources>
     <resource-mapping srcpath="PUSTEFIX-INF/dyntxt" targetpath="dyntxt"/>
-    <resource-mapping srcpath="PUSTEFIX-INF/img" targetpath="img"/>
-    <resource-mapping srcpath="PUSTEFIX-INF/script" targetpath="script"/>
   </resources>
 
 </module-descriptor>
