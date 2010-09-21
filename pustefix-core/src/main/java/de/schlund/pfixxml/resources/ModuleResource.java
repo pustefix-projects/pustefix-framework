@@ -17,7 +17,6 @@
  */
 package de.schlund.pfixxml.resources;
 
-import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
@@ -44,7 +43,6 @@ public class ModuleResource implements Resource {
         } catch (MalformedURLException x) {
             throw new PustefixRuntimeException(x);
         } 
-        System.out.println("URI: "+uri);
     }
     
     public ModuleResource(URI uri) {
