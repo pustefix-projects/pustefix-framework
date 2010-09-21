@@ -2,9 +2,4 @@
 
   <module-name>animal-module</module-name>
 
-  <resources>
-    <resource-mapping srcpath="PUSTEFIX-INF/dyntxt" targetpath="dyntxt"/>
-    <resource-mapping srcpath="PUSTEFIX-INF/img" targetpath="img"/>
-  </resources>
-
 </module-descriptor>
