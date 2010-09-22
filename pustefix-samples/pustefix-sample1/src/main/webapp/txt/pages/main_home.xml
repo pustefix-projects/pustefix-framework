@@ -120,7 +120,7 @@
         <br/>
         <pfx:button page="upload">Test upload mechanism</pfx:button>&#160;&#160;
         <pfx:button page="encoding">Encoding test page</pfx:button>&#160;&#160;
-        <pfx:button page="moduletest">Module test page</pfx:button>  
+        <pfx:button page="SelectAnimal">Module test page</pfx:button>  
     </theme>
   </part>
   

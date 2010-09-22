@@ -30,6 +30,7 @@
 <!--        <prop name="baz">snafu</prop>-->
 <!--      </properties>-->
     </resource>
+    <config-include file="conf/fragments.xml" section="resources" module="animal-module"/>
   </context>
 
   <interceptors>
@@ -88,6 +89,8 @@
     </flowstep>
     <flowstep name="C" />
   </pageflow>
+  
+  <config-include file="conf/fragments.xml" section="pageflows" module="animal-module"/>
 
   <!-- *** PageRequests and associated properties *** -->
 

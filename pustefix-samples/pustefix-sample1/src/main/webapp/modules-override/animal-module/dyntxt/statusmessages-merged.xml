@@ -4,7 +4,7 @@ This file contains merged statusmessages from 'dyntxt/statusmessages.xml'.
 You can modify this file to change the messages for exisiting statuscodes.
 Adding new statuscodes has to be done within the originating module.
 -->
-  <part name="GENERAL_ERRROR">
-    <theme name="default">Error!</theme>
+  <part name="MISSING_SELECTION">
+    <theme name="default">You have to select an animal!</theme>
   </part>
 </include_parts>
