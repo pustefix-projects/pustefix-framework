@@ -52,16 +52,16 @@ public class GenerateSCodes {
     private final static String NS_STATUSCODEINFO = "http://www.pustefix-framework.org/2008/namespace/statuscodeinfo";
 
 
-    public static Result generateFromInfo(List<String> infoFiles, String resDir, File genDir, String module, String targetPath) throws Exception {
+    public static Result generateFromInfo(List<String> infoFiles, String resDir, File genDir, String module, boolean dynamic) throws Exception {
         Result totalResult = new Result();
         for(String infoFile:infoFiles) {
-            Result result = generate(infoFile, resDir, genDir, module, targetPath);
+            Result result = generate(infoFile, resDir, genDir, module, dynamic);
             totalResult.addResult(result);
         }
         return totalResult;
     }
     
-    public static Result generate(String infoFile, String resDir, File genDir, String module, String targetPath) throws Exception {
+    public static Result generate(String infoFile, String resDir, File genDir, String module, boolean dynamic) throws Exception {
         DocumentBuilderFactory dbf = DocumentBuilderFactory.newInstance();
         DocumentBuilder db = dbf.newDocumentBuilder();
         File file = new File(resDir, infoFile);
@@ -102,20 +102,20 @@ public class GenerateSCodes {
                 }
                 scXmlFiles.add(res);
             }
-            boolean generated = generate(scXmlFiles, resDir, genDir, className, module, targetPath);
+            boolean generated = generate(scXmlFiles, resDir, genDir, className, module, dynamic);
             if(generated) genClasses.add(className);
             allClasses.add(className);
         }
         return new Result(allClasses, genClasses);
     }
     
-    public static boolean generate(List<String> scXmlFiles, String resDir, File genDir, String className, String module, String targetPath) throws IOException, SAXException {
+    public static boolean generate(List<String> scXmlFiles, String resDir, File genDir, String className, String module, boolean dynamic) throws IOException, SAXException {
         
         String scLibPath = className.replace('.','/')+".java";
         File scLibFile = new File(genDir, scLibPath);
         if (scLibFile.exists()) {
             boolean differentFiles = false;
-            List<URI> targetXmlFiles = getModuleURIs(scXmlFiles, module, targetPath);
+            List<URI> targetXmlFiles = getModuleURIs(scXmlFiles, module, dynamic);
             List<URI> resPaths = getResourceURIs(scLibFile);
             if(resPaths.size() == targetXmlFiles.size()) {
                 for(URI resPath : resPaths) {
@@ -145,14 +145,14 @@ public class GenerateSCodes {
         createHeader(writer, className);
         List<URI> uris = new ArrayList<URI>();
         for (String input: scXmlFiles) {
-            URI uri = getModuleURI(input, module, targetPath);
+            URI uri = getModuleURI(input, module, dynamic);
             uris.add(uri);
         }
         createResources(writer, uris);
         
         for (String input: scXmlFiles) {
             Document doc = parseMutable(new File(resDir, input));
-            createStatusCodes(writer, doc, uris.indexOf(getModuleURI(input,module,targetPath)));
+            createStatusCodes(writer, doc, uris.indexOf(getModuleURI(input, module, dynamic)));
         }
             
         writer.write("}\n");
@@ -300,8 +300,20 @@ public class GenerateSCodes {
     }
 
     
-    private static URI getModuleURI(String relPath, String module, String targetPath) {
-        String uriStr = "dynamic://"+module+"/"+relPath;
+    private static URI getModuleURI(String relPath, String module, boolean dynamic) {
+        String uriStr;
+        if(module != null) {
+            if(dynamic) {
+                uriStr = "dynamic://"+module+"/"+relPath;
+            } else {
+                int ind = relPath.lastIndexOf('.');
+                if(ind == -1) throw new RuntimeException("Illegal file name: "+relPath);
+                relPath = relPath.substring(0,ind)+"-merged"+relPath.substring(ind);
+                uriStr = "docroot:/modules-override/" + module + "/" + relPath;
+            }
+        } else {
+            uriStr = "docroot:/" + relPath;
+        }
         try {
             return new URI(uriStr);
         } catch (URISyntaxException e) {
@@ -309,10 +321,10 @@ public class GenerateSCodes {
         }
     }
     
-    private static List<URI> getModuleURIs(List<String> relPaths, String module, String targetPath) {
+    private static List<URI> getModuleURIs(List<String> relPaths, String module, boolean dynamic) {
         List<URI> newURIs = new ArrayList<URI>();
         for(String relPath : relPaths) {
-            newURIs.add(getModuleURI(relPath, module, targetPath));
+            newURIs.add(getModuleURI(relPath, module, dynamic));
         }
         return newURIs;
     }
