@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <fr:config-fragments 
   xmlns:fr="http://www.pustefix-framework.org/2008/namespace/config-fragments"
-  xmlns:pr="http://www.pustefix-framework.org/2008/namespace/context-xml-service-config"
+  xmlns:cc="http://www.pustefix-framework.org/2008/namespace/context-xml-service-config"
   xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
   xsi:schemaLocation="http://www.pustefix-framework.org/2008/namespace/config-fragments
                       http://www.pustefix-framework.org/2008/namespace/config-fragments.xsd">
@@ -16,9 +16,31 @@
     <standardpage name="DisplayAnimal" xml="xml/one_frame.xml"/>
   </fr:targets>
   
+  <fr:resources>
+    <cc:resource bean-name="animals" class="org.pustefixframework.example.animal.ContextAnimal"/>
+  </fr:resources>
+  
+  <fr:pageflows>
+    <cc:pageflow name="AnimalFlow">
+      <cc:flowstep name="SelectAnimal"/>
+      <cc:flowstep name="DisplayAnimal"/>
+    </cc:pageflow>
+  </fr:pageflows>
+  
   <fr:pagerequests>
-    <pr:pagerequest name="SelectAnimal"/>
-    <pr:pagerequest name="DisplayAnimal"/>
+    <cc:pagerequest name="SelectAnimal">
+      <cc:input>
+        <cc:wrapper prefix="select" class="org.pustefixframework.example.animal.Select"/>
+      </cc:input>
+      <cc:output>
+        <cc:resource node="animals" bean-ref="animals"/>
+      </cc:output>
+    </cc:pagerequest>
+    <cc:pagerequest name="DisplayAnimal">
+      <cc:output>
+        <cc:resource node="animals" bean-ref="animals"/>
+      </cc:output>
+    </cc:pagerequest>
   </fr:pagerequests>
   
 </fr:config-fragments>

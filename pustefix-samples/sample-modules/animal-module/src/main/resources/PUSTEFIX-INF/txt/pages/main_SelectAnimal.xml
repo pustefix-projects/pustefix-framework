@@ -6,7 +6,24 @@
   <part name="content">
     <theme name="default">
         <h2>Select your favorite animal:</h2>
-        
+        <pfx:forminput>
+          <ixsl:for-each select="/formresult/animals/supportedAnimals/string">
+            <pfx:xinp name="select.Animal" type="radio">
+              <pfx:value><ixsl:value-of select="."/></pfx:value>
+              <ixsl:value-of select="."/>
+            </pfx:xinp>
+            <br/>
+          </ixsl:for-each>
+          <br/>
+          
+          <pfx:checkfield name="select.Animal">
+            <pfx:error><b><pfx:scode/></b><br/><br/></pfx:error>
+          </pfx:checkfield>
+          <pfx:xinp type="submit" value="Submit"/>
+          
+         
+          
+        </pfx:forminput>
     </theme>
   </part>
 
