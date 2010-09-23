@@ -4,12 +4,12 @@
   <parent>
     <groupId>org.pustefixframework</groupId>
     <artifactId>pustefix-tutorial</artifactId>
-    <version>0.15.8</version>
+    <version>0.15.9-SNAPSHOT</version>
   </parent>
 
   <groupId>org.pustefixframework.tutorial</groupId>
   <artifactId>first-app</artifactId>
-  <version>0.15.8</version>
+  <version>0.15.9-SNAPSHOT</version>
   <packaging>war</packaging>
 
   <name>Pustefix Tutorial First Application</name>
@@ -18,7 +18,7 @@
     <dependency>
       <groupId>org.pustefixframework</groupId>
       <artifactId>pustefix-core</artifactId>
-      <version>0.15.8</version>
+      <version>0.15.9-SNAPSHOT</version>
     </dependency>
   </dependencies>
  
@@ -45,7 +45,7 @@
       <plugin>
         <groupId>org.pustefixframework.maven.plugins</groupId>
         <artifactId>pustefix-webapp-plugin</artifactId>
-        <version>0.15.8</version>
+        <version>0.15.9-SNAPSHOT</version>
         <executions>
           <execution>
             <goals>
@@ -58,7 +58,7 @@
       <plugin>
         <groupId>org.pustefixframework.maven.plugins</groupId>
         <artifactId>pustefix-statuscode-plugin</artifactId>
-        <version>0.15.8</version>
+        <version>0.15.9-SNAPSHOT</version>
         <executions>
           <execution>
             <goals>
@@ -70,7 +70,7 @@
       <plugin>
         <groupId>org.pustefixframework.maven.plugins</groupId>
         <artifactId>pustefix-iwrapper-plugin</artifactId>
-        <version>0.15.8</version>
+        <version>0.15.9-SNAPSHOT</version>
         <executions>
           <execution>
             <goals>
