@@ -8,20 +8,42 @@
     <title>New features and enhancements in Pustefix 0.15.6</title>
   
     <section xml:id="news.0_15_6.modules">
-    <title>New module enhancements</title>
-    <para>
-      Introduced pre-defined special module names <literal>WEBAPP</literal> and 
-      <literal>PAGEDEF</literal>, which can be set as <literal>module</literal> values at <literal>&lt;pfx:include&gt;</literal>
-      and <literal>&lt;pfx:image&gt;</literal> tags to explicitly refer to resources from the webapp folder
-      or resources from within the module where a page is defined (see <xref linkend="advanced.dyninclude.modinclude.special"/>).
-    </para>
-    <para>
-      The config-include mechanism now supports directly referencing config
-      fragment files from modules by adding a <literal>module</literal> attribute to the according
-      <literal>&lt;config-include&gt;</literal> elements (see <xref linkend="configuration.depend"/> and <xref linkend="configuration.servlet.contextxml"/>).
-    </para>
+      <title>New module enhancements</title>
+      <para>
+        Introduced pre-defined special module names <literal>WEBAPP</literal> and 
+        <literal>PAGEDEF</literal>, which can be set as <literal>module</literal> values at <literal>&lt;pfx:include&gt;</literal>
+        and <literal>&lt;pfx:image&gt;</literal> tags to explicitly refer to resources from the webapp folder
+        or resources from within the module where a page is defined (see <xref linkend="advanced.dyninclude.modinclude.special"/>).
+      </para>
+      <para>
+        The config-include mechanism now supports directly referencing config
+        fragment files from modules by adding a <literal>module</literal> attribute to the according
+        <literal>&lt;config-include&gt;</literal> elements (see <xref linkend="configuration.depend"/> and <xref linkend="configuration.servlet.contextxml"/>).
+      </para>
+    </section>
+  
   </section>
- 
+  
+  <section xml:id="news.0_15_7">
+    <title>New features and enhancements in Pustefix 0.15.7</title>
+
+    <section xml:id="news.0_15_7.modules">
+      <title>New module enhancements</title>
+      <para>
+        Static web resources now can be delivered directly from modules without having to extract them to the webapp folder first
+        by the build process. Thus it's no longer necessary to define resource mappings in the module's descriptor file (see
+        <xref linkend="modulessupport"/>). Making
+        resources from modules publicly available now just requires to define an according static path in the project configuration,
+        e.g. <literal>&lt;path&gt;/modules/mymodule/mypath/img&lt;/path&gt;</literal> makes available the according folder 
+        <literal>/PUSTEFIX-INF/mypath/img</literal> from the module/JAR file <literal>mymodule</literal>.
+      </para>
+      <para>
+        Status message files no longer require to be extracted using a resource mapping. 
+        Now they're automatically detected within module jars
+        and merged to the according <literal>modules-override</literal> folder.
+      </para> 
+   
+    </section>
   </section>
 
 </chapter>
