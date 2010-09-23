@@ -260,8 +260,10 @@ public class DocrootRequestHandler implements UriProvidingHttpRequestHandler, Se
     
     public void afterPropertiesSet() throws Exception {
         for(String path: passthroughPaths) {
-            if(path.startsWith("modules/") || path.equals("modules")) { 
-                Resource resource = ResourceUtil.getFileResourceFromDocroot(path);
+            if(path.startsWith("modules/") || path.equals("modules")) {
+                String dirPath = path;
+                if(!dirPath.endsWith("/")) dirPath = dirPath + "/";
+                Resource resource = ResourceUtil.getFileResourceFromDocroot(dirPath);
                 if(resource.exists()) extractedPaths.add(path);
             }
         }
