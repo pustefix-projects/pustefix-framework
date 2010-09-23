@@ -28,6 +28,7 @@ import javax.xml.transform.TransformerException;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.Node;
+import org.xml.sax.InputSource;
 import org.xml.sax.SAXException;
 
 import de.schlund.pfixxml.util.Generics;
@@ -36,16 +37,16 @@ import de.schlund.pfixxml.util.Xml;
 
 public class Merge {
 
-    private final File src;
+    private final InputSource src;
     private final String srcPath;
     private final File dest;
     private final boolean verbose;
 
-    public Merge(File src, String srcPath, File dest) {
+    public Merge(InputSource src, String srcPath, File dest) {
         this(src, srcPath, dest, true);
     }
 
-    public Merge(File src, String srcPath, File dest, boolean verbose) {
+    public Merge(InputSource src, String srcPath, File dest, boolean verbose) {
         this.src = src;
         this.srcPath = srcPath;
         this.dest = dest;
