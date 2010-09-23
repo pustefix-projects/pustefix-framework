@@ -2,7 +2,8 @@
 <include_parts xmlns:ixsl="http://www.w3.org/1999/XSL/Transform" xmlns:pfx="http://www.schlund.de/pustefix/core">
 
   <part name="MISSING_SELECTION">
-    <theme name="default">You have to select an animal!</theme>
+    <theme name="default">XXXYou have to select an animal!</theme>
+    <theme name="en">You have to select an animal!</theme>
   </part>
   
 </include_parts>
