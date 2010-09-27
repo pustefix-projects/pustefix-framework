@@ -76,8 +76,7 @@ public class AuthConstraintParsingHandler implements ParsingHandler {
             pageConfig.setAuthConstraint(constraint);
         }
         String authPage = element.getAttribute("authpage").trim();
-        if (!authPage.equals("")) constraint.setAuthPage(authPage);
-        
+        if (!authPage.equals("")) constraint.setDefaultAuthPage(authPage);
     }
 
 }

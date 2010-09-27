@@ -95,10 +95,13 @@
   <!--  authconstraints -->
 
   <xs:complexType name="authconstraintTopLevelType">
-    <xs:choice minOccurs="0">
-      <xs:element ref="prop:abstractcondition" minOccurs="0"/>
-      <xs:element name="authconstraint" type="prop:authconstraintRefType"/>
-    </xs:choice>
+    <xs:sequence>
+      <xs:choice minOccurs="0">
+        <xs:element ref="prop:abstractcondition" minOccurs="0"/>
+        <xs:element name="authconstraint" type="prop:authconstraintRefType"/>
+      </xs:choice>
+      <xs:element ref="prop:navigateTo" minOccurs="0" maxOccurs="unbounded"/>
+    </xs:sequence>
     <xs:attribute name="id" type="xs:ID" use="required"/>
     <xs:attribute name="authpage" type="xs:string" use="optional"/>
     <xs:attribute name="default" type="xs:boolean" use="optional"/>
@@ -156,6 +159,19 @@
     <xs:complexContent>
       <xs:extension base="prop:abstractconditionType">
          <xs:attribute name="name" type="xs:string" use="required"/>
+      </xs:extension>
+    </xs:complexContent>
+  </xs:complexType>
+  
+  <xs:element name="navigateTo" type="prop:navigateToType" />
+  <xs:complexType name="navigateToType">
+    <xs:complexContent>
+      <xs:extension base="prop:abstractconditionType">
+        <xs:choice maxOccurs="unbounded">
+          <xs:element ref="prop:abstractcondition"/>
+          <xs:element name="condition" type="prop:conditionType"/>
+        </xs:choice>
+        <xs:attribute name="page" type="xs:string" use="required" />
       </xs:extension>
     </xs:complexContent>
   </xs:complexType>
@@ -273,11 +289,15 @@
     <xs:attribute name="class" use="required"/>
     <xs:attribute name="bean-name"/>
     <xs:attribute name="scope" type="prop:springBeanScope"/>
+    <xs:attribute name="parent-bean-ref"/>
   </xs:complexType>
 
   <xs:element name="implements" type="prop:implementsType"/>
   <xs:complexType name="implementsType">
     <xs:attribute name="class" use="required"/>
+    <xs:attribute name="bean-name" use="optional" />
+    <xs:attribute name="scope" use="optional" />
+    <xs:attribute name="parent-bean-ref" use="optional"/>
   </xs:complexType>
   <!-- </context> -->
 

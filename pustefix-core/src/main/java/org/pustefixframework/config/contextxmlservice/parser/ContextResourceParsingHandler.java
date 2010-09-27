@@ -60,7 +60,7 @@ public class ContextResourceParsingHandler implements ParsingHandler {
     public void handleNode(HandlerContext context) throws ParserException {
         
         Element element = (Element)context.getNode();
-        ParsingUtils.checkAttributes(element, new String[] {"class"}, new String[] {"bean-name", "scope"});
+        ParsingUtils.checkAttributes(element, new String[] {"class"}, new String[] {"bean-name", "scope", "parent-bean-ref"});
         
         ContextConfigImpl config = ParsingUtils.getSingleTopObject(ContextConfigImpl.class, context);
         BeanDefinitionRegistry beanReg = ParsingUtils.getSingleTopObject(BeanDefinitionRegistry.class, context);
@@ -111,6 +111,10 @@ public class ContextResourceParsingHandler implements ParsingHandler {
         }
             
         BeanDefinitionBuilder beanBuilder = BeanDefinitionBuilder.genericBeanDefinition(implClass);
+        String parentBeanRef = element.getAttribute("parent-bean-ref").trim();
+        if (parentBeanRef.length() != 0) {
+            beanBuilder.setParentName(parentBeanRef);
+        }
         beanBuilder.setScope(scope);
         BeanDefinition beanDefinition = beanBuilder.getBeanDefinition();
             

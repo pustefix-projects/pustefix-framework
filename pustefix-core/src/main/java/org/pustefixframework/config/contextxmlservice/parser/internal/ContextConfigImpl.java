@@ -44,6 +44,7 @@ import de.schlund.pfixcore.auth.RoleProvider;
 import de.schlund.pfixcore.auth.RoleProviderImpl;
 import de.schlund.pfixcore.auth.conditions.ConditionGroup;
 import de.schlund.pfixcore.auth.conditions.HasRole;
+import de.schlund.pfixcore.auth.conditions.NavigationCase;
 import de.schlund.pfixcore.auth.conditions.Not;
 import de.schlund.pfixcore.workflow.ContextInterceptor;
 import de.schlund.pfixcore.workflow.State;
@@ -467,25 +468,66 @@ public class ContextConfigImpl implements ContextConfig {
     }
     
     private void checkAuthConstraint(AuthConstraint authConstraint, Set<String> authPages, String lastAuthPage) throws Exception {
-        String authPage = authConstraint.getAuthPage();
-        if (authPage != null && !authPage.equals(lastAuthPage)) {
-            if (authPages.contains(authPage)) {
-                StringBuilder sb = new StringBuilder();
-                for (String s : authPages)
-                    sb.append(s + " -> ");
-                sb.append(authPage);
-                throw new Exception("Circular authconstraint@authpage reference: " + sb.toString());
-            }
-            PageRequestConfigImpl cfg = getPageRequestConfig(authPage);
-            if (cfg != null) {
-                AuthConstraint ac = cfg.getAuthConstraint();
-                if (ac == null) ac = getDefaultAuthConstraint();
-                if (ac != null) {
-                    authPages.add(authPage);
-                    checkAuthConstraint(ac, authPages, authPage);
+        for (String authPage : traverseAuthPages(authConstraint)) {
+            if (authPage != null && !authPage.equals(lastAuthPage)) {
+                if (authPages.contains(authPage)) {
+                    StringBuilder sb = new StringBuilder();
+                    for (String s : authPages)
+                        sb.append(s + " -> ");
+                    sb.append(authPage);
+                    throw new Exception("Circular authconstraint@authpage reference: " + sb.toString());
                 }
-            } else throw new Exception("Authpage not configured: " + authPage);
+                PageRequestConfigImpl cfg = getPageRequestConfig(authPage);
+                if (cfg != null) {
+                    AuthConstraint ac = cfg.getAuthConstraint();
+                    if (ac == null) ac = getDefaultAuthConstraint();
+                    if (ac != null) {
+                        authPages.add(authPage);
+                        checkAuthConstraint(ac, authPages, authPage);
+                    }
+                } else throw new Exception("Authpage not configured: " + authPage);
+            }
         }
     }
-    
+
+    private Iterable<String> traverseAuthPages(final AuthConstraint authConstraint) {
+        return new Iterable<String>() {
+            @Override
+            public Iterator<String> iterator() {
+                return new Iterator<String>() {
+
+                    private Iterator<NavigationCase> navCases =
+                        authConstraint.getNavigation().iterator();
+
+                    private boolean visitedDefaultAuthPage;
+
+                    private boolean isDefaultPageVisitable() {
+                        return !visitedDefaultAuthPage && authConstraint.getDefaultAuthPage() != null;
+                    }
+
+                    @Override
+                    public boolean hasNext() {
+                        return isDefaultPageVisitable() ||
+                               navCases.hasNext();
+                    }
+
+                    @Override
+                    public String next() {
+                        if (isDefaultPageVisitable()) {
+                            String result = authConstraint.getDefaultAuthPage();
+                            visitedDefaultAuthPage = true;
+                            return result;
+                        }
+                        return navCases.next().getPage();
+                    }
+
+                    @Override
+                    public void remove() {
+                        throw new UnsupportedOperationException(); 
+                    }
+                };
+            }
+        };
+    }
+
 }
