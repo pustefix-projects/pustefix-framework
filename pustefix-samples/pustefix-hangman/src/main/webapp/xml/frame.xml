@@ -7,12 +7,11 @@
       <link href="{$__contextpath}/css/style.css" media="all" rel="stylesheet" type="text/css"/>
     </head>
     <body>
-      <table style="background:#444; color:#fff; width:100%; height:80px;">
-        <td style="width:64px"><pfx:image src="img/logo.png" width="64px" height="64px" align="middle"/></td>
-        <td style="font-size:25pt; font-family:sans-serif; font-style:italic; padding-left:5px;"><pfx:include href="txt/common.xml" part="title"/></td>
-      </table>
+      <div id="header">
+        <pfx:include href="txt/common.xml" part="title"/>
+      </div>
       <div class="content">
-      <pfx:maincontent prefix=""/>
+        <pfx:maincontent prefix=""/>
       </div>
       <pfx:editconsole/>
     </body>

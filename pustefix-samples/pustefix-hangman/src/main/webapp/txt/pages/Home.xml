@@ -4,7 +4,7 @@
   <part name="content">
     <theme name="default">
 
-      <h3>Welcome to Hangman!!!</h3>
+      <h3><pfx:include part="greeting"/></h3>
  	
       <pfx:forminput>
         Please enter your name:
@@ -15,6 +15,15 @@
 
     </theme>
 
+  </part>
+  
+  <part name="greeting">
+    <theme name="default">
+      Welcome to <pfx:include href="txt/common.xml" part="title"/>!
+    </theme>
+    <theme name="en">
+      Willkommen zu <pfx:include href="txt/common.xml" part="title"/>!
+    </theme>
   </part>
 
  </include_parts>

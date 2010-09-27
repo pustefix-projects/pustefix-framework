@@ -4,16 +4,9 @@
   <part name="title">
     <theme name="default">
       Hangman
-      <pfx:langselect>
-       <pfx:lang name="de">fdafdsf</pfx:lang>
-       <pfx:lang name="at">fdafdsf</pfx:lang>
-      </pfx:langselect>
     </theme>
     <theme name="de">
       Galgenmann
-    </theme>
-    <theme name="at">
-      Galgenmannfadf
     </theme>
   </part>
 </include_parts>

@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<make lang="en_GB" project="firstapp" themes="at de default">
+<make lang="en_GB" project="firstapp" themes="default">
 
   <!-- prefix to namespace url mappings to be used in pages xml -->
   <namespaces>
