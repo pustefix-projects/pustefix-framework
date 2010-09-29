@@ -6,7 +6,6 @@ import java.io.InputStream;
 import java.net.URISyntaxException;
 import java.net.URL;
 import java.rmi.server.UID;
-import java.security.MessageDigest;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.jar.JarEntry;
