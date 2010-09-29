@@ -97,7 +97,7 @@ public class PustefixStatuscodeMojo extends AbstractMojo {
             }
         }
         
-        if(!docRoot.exists()) return;
+        if(docRoot == null || !docRoot.exists()) return;
 	
         DirectoryScanner ds = new DirectoryScanner();
         if(includes!=null) {
