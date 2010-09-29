@@ -97,7 +97,7 @@ public class WebServiceHttpRequestHandler implements UriProvidingHttpRequestHand
     public void afterPropertiesSet() throws Exception {
         LOG.info("Initialize ServiceRuntime ...");
         try {
-            Configuration srvConf = ConfigurationReader.read(configFile);
+            Configuration srvConf = ConfigurationReader.read(configFile, applicationContext);
             //if (srvConf.getGlobalServiceConfig().getContextName() == null && config.getInitParameter(Constants.PROP_CONTEXT_NAME) != null) {
             //    srvConf.getGlobalServiceConfig().setContextName(config.getInitParameter(Constants.PROP_CONTEXT_NAME));
             //}

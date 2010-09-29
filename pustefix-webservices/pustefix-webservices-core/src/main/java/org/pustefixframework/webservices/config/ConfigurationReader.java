@@ -34,6 +34,8 @@ import javax.xml.parsers.SAXParserFactory;
 
 import org.pustefixframework.webservices.Constants;
 import org.pustefixframework.webservices.fault.FaultHandler;
+import org.springframework.context.ApplicationContext;
+import org.springframework.context.ApplicationContextAware;
 import org.xml.sax.Attributes;
 import org.xml.sax.SAXException;
 import org.xml.sax.helpers.DefaultHandler;
@@ -47,111 +49,115 @@ import de.schlund.pfixxml.resources.ResourceUtil;
  */
 public class ConfigurationReader extends DefaultHandler {
 
-	FileResource configFile;
+    FileResource configFile;
     FileResource configDir;
-	Configuration config;
-	Stack<Object> contextStack=new Stack<Object>();
-	Object context;
-	CharArrayWriter content=new CharArrayWriter();
-	List<FileResource> importedFiles=new ArrayList<FileResource>();
+    Configuration config;
+    Stack<Object> contextStack=new Stack<Object>();
+    Object context;
+    CharArrayWriter content=new CharArrayWriter();
+    List<FileResource> importedFiles=new ArrayList<FileResource>();
     boolean isRootFile;
+    ApplicationContext appContext;
     
-    
-    public static Configuration read(FileResource file) throws Exception {
-        return read(file,true);
+    public static Configuration read(FileResource file, ApplicationContext appContext) throws Exception {
+        return read(file, true, appContext);
     }
     
-	private static Configuration read(FileResource file,boolean isRootFile) throws Exception {
-		ConfigurationReader reader=new ConfigurationReader(file,isRootFile);
-		reader.read();
-		return reader.getConfiguration();
-	}
-	
-
-	private ConfigurationReader(FileResource configFile,boolean isRootFile) {
-		this.configFile=configFile;
-        this.isRootFile=isRootFile;
-        configDir=configFile.getParentAsFileResource();
-	}
-	
-	public Configuration getConfiguration() {
-	    return config;
-	}
-	
-	public void read() throws Exception {
-		CustomizationHandler cushandler=new CustomizationHandler(this,Constants.WS_CONF_NS,Constants.CUS_NS);
+    public static Configuration read(FileResource file) throws Exception {
+        return read(file, true, null);
+    }
+    
+    private static Configuration read(FileResource file,boolean isRootFile, ApplicationContext appContext) throws Exception {
+        ConfigurationReader reader=new ConfigurationReader(file, isRootFile, appContext);
+        reader.read();
+        return reader.getConfiguration();
+    }
+    
+    private ConfigurationReader(FileResource configFile, boolean isRootFile, ApplicationContext appContext) {
+        this.configFile = configFile;
+        this.isRootFile = isRootFile;
+        configDir = configFile.getParentAsFileResource();
+        this.appContext = appContext;
+    }
+    
+    public Configuration getConfiguration() {
+        return config;
+    }
+    
+    public void read() throws Exception {
+        CustomizationHandler cushandler=new CustomizationHandler(this,Constants.WS_CONF_NS,Constants.CUS_NS);
         SAXParserFactory spf=SAXParserFactory.newInstance();
         spf.setNamespaceAware(true);
         SAXParser parser=spf.newSAXParser();
         parser.parse(configFile.getInputStream(),cushandler);
-	}
-	
-	private void setContext(Object obj) {
-		contextStack.add(obj);
-		context=obj;
-	}
-	
-	private void resetContext() {
-		contextStack.pop();
-		if(contextStack.empty()) context=null;
-		else context=contextStack.peek();
-	}
-	
-	@Override
-	public void startElement(String uri, String localName, String qName, Attributes atts) throws SAXException {
-		content.reset();
-		if(context==null) {
-			if(localName.equals("webservice-config")) {
-				config=new Configuration();
-				setContext(config);
-			}
-		} else if(context instanceof Configuration) {
-			if(localName.equals("webservice-global")) {
-				GlobalServiceConfig globSrvConf=new GlobalServiceConfig();
-				config.setGlobalServiceConfig(globSrvConf);
-				setContext(globSrvConf);
-			} else if(localName.equals("webservice")) {
-				ServiceConfig srvConf=new ServiceConfig(config.getGlobalServiceConfig());
-				String name=getStringAttribute(atts,"name",true);
-				srvConf.setName(name);
-				config.addServiceConfig(srvConf);
-				setContext(srvConf);
-			} else if(localName.equals("import")) {
-			    String name=getStringAttribute(atts,"href",true);
+    }
+    
+    private void setContext(Object obj) {
+        contextStack.add(obj);
+        context=obj;
+    }
+    
+    private void resetContext() {
+        contextStack.pop();
+        if(contextStack.empty()) context=null;
+        else context=contextStack.peek();
+    }
+    
+    @Override
+    public void startElement(String uri, String localName, String qName, Attributes atts) throws SAXException {
+        content.reset();
+        if(context==null) {
+            if(localName.equals("webservice-config")) {
+                config=new Configuration();
+                setContext(config);
+            }
+        } else if(context instanceof Configuration) {
+            if(localName.equals("webservice-global")) {
+                GlobalServiceConfig globSrvConf=new GlobalServiceConfig();
+                config.setGlobalServiceConfig(globSrvConf);
+                setContext(globSrvConf);
+            } else if(localName.equals("webservice")) {
+                ServiceConfig srvConf=new ServiceConfig(config.getGlobalServiceConfig());
+                String name=getStringAttribute(atts,"name",true);
+                srvConf.setName(name);
+                config.addServiceConfig(srvConf);
+                setContext(srvConf);
+            } else if(localName.equals("import")) {
+                String name=getStringAttribute(atts,"href",true);
                 FileResource impFile=ResourceUtil.getFileResourceFromDocroot(name);
                 importedFiles.add(impFile);
             }
-		} else if(context instanceof GlobalServiceConfig) {
-			GlobalServiceConfig globSrvConf=(GlobalServiceConfig)context;
-			if(localName.equals("wsdlsupport")) {
-				Boolean wsdlSupport=getBooleanAttribute(atts,"enabled");
+        } else if(context instanceof GlobalServiceConfig) {
+            GlobalServiceConfig globSrvConf=(GlobalServiceConfig)context;
+            if(localName.equals("wsdlsupport")) {
+                Boolean wsdlSupport=getBooleanAttribute(atts,"enabled");
                 if(wsdlSupport!=null) globSrvConf.setWSDLSupportEnabled(wsdlSupport);
                 String wsdlRepo=getStringAttribute(atts,"repository");
-				if(wsdlRepo!=null) globSrvConf.setWSDLRepository(wsdlRepo);
-			} else if(localName.equals("stubgeneration")) {
-				 Boolean stubGeneration=getBooleanAttribute(atts,"enabled");
-				 if(stubGeneration!=null) globSrvConf.setStubGenerationEnabled(stubGeneration);
-				 String stubRepo=getStringAttribute(atts,"repository");
-				 if(stubRepo!=null)	 globSrvConf.setStubRepository(stubRepo);
+                if(wsdlRepo!=null) globSrvConf.setWSDLRepository(wsdlRepo);
+            } else if(localName.equals("stubgeneration")) {
+                 Boolean stubGeneration=getBooleanAttribute(atts,"enabled");
+                 if(stubGeneration!=null) globSrvConf.setStubGenerationEnabled(stubGeneration);
+                 String stubRepo=getStringAttribute(atts,"repository");
+                 if(stubRepo!=null)     globSrvConf.setStubRepository(stubRepo);
                  String jsNamespace=getStringAttribute(atts,"jsnamespace");
                  if(jsNamespace!=null) globSrvConf.setStubJSNamespace(jsNamespace);
-			} else if(localName.equals("protocol")) {
-				String proto=getStringAttribute(atts,"type",Constants.PROTOCOL_TYPES);
-				if(proto!=null) globSrvConf.setProtocolType(proto);
-			} else if(localName.equals("encoding")) {
-				String encStyle=getStringAttribute(atts,"style",Constants.ENCODING_STYLES);
-				if(encStyle!=null) globSrvConf.setEncodingStyle(encStyle);
-		        String encUse=getStringAttribute(atts,"use",Constants.ENCODING_USES);
-		        if(encUse!=null) globSrvConf.setEncodingUse(encUse);
+            } else if(localName.equals("protocol")) {
+                String proto=getStringAttribute(atts,"type",Constants.PROTOCOL_TYPES);
+                if(proto!=null) globSrvConf.setProtocolType(proto);
+            } else if(localName.equals("encoding")) {
+                String encStyle=getStringAttribute(atts,"style",Constants.ENCODING_STYLES);
+                if(encStyle!=null) globSrvConf.setEncodingStyle(encStyle);
+                String encUse=getStringAttribute(atts,"use",Constants.ENCODING_USES);
+                if(encUse!=null) globSrvConf.setEncodingUse(encUse);
             } else if(localName.equals("json")) {
                 Boolean hinting=getBooleanAttribute(atts,"classhinting");
                 if(hinting!=null) globSrvConf.setJSONClassHinting(hinting);
-			} else if(localName.equals("session")) {
-				String sessType=getStringAttribute(atts,"type",Constants.SESSION_TYPES);
-				if(sessType!=null) globSrvConf.setSessionType(sessType);
-			} else if(localName.equals("scope")) {
-				String scopeType=getStringAttribute(atts,"type",Constants.SERVICE_SCOPES);
-				if(scopeType!=null) globSrvConf.setScopeType(scopeType);
+            } else if(localName.equals("session")) {
+                String sessType=getStringAttribute(atts,"type",Constants.SESSION_TYPES);
+                if(sessType!=null) globSrvConf.setSessionType(sessType);
+            } else if(localName.equals("scope")) {
+                String scopeType=getStringAttribute(atts,"type",Constants.SERVICE_SCOPES);
+                if(scopeType!=null) globSrvConf.setScopeType(scopeType);
             } else if(localName.equals("ssl")) {
                 Boolean sslForce=getBooleanAttribute(atts,"force");
                 if(sslForce!=null) globSrvConf.setSSLForce(sslForce);
@@ -160,107 +166,110 @@ public class ConfigurationReader extends DefaultHandler {
                 globSrvConf.setContextName(ctxName);
                 Boolean ctxSync=getBooleanAttribute(atts,"synchronize");
                 if(ctxSync!=null) globSrvConf.setSynchronizeOnContext(ctxSync);
-			} else if(localName.equals("admin")) {
-				Boolean admin=getBooleanAttribute(atts,"enabled");
-				if(admin!=null) globSrvConf.setAdminEnabled(admin);
-			} else if(localName.equals("monitoring")) {
-				Boolean monitoring=getBooleanAttribute(atts,"enabled");
-				if(monitoring!=null) globSrvConf.setMonitoringEnabled(monitoring);
-		        String monitorScope=getStringAttribute(atts,"scope",Constants.MONITOR_SCOPES);
+            } else if(localName.equals("admin")) {
+                Boolean admin=getBooleanAttribute(atts,"enabled");
+                if(admin!=null) globSrvConf.setAdminEnabled(admin);
+            } else if(localName.equals("monitoring")) {
+                Boolean monitoring=getBooleanAttribute(atts,"enabled");
+                if(monitoring!=null) globSrvConf.setMonitoringEnabled(monitoring);
+                String monitorScope=getStringAttribute(atts,"scope",Constants.MONITOR_SCOPES);
                 if(monitorScope!=null) globSrvConf.setMonitoringScope(monitorScope);
-		        Integer monitorSize=getIntegerAttribute(atts,"historysize");
-		        if(monitorSize!=null) globSrvConf.setMonitoringHistorySize(monitorSize);
-			} else if(localName.equals("logging")) {
-				Boolean logging=getBooleanAttribute(atts,"enabled");
-				if(logging!=null) globSrvConf.setLoggingEnabled(logging);
-			} else if(localName.equals("faulthandler")) {
-				 FaultHandler faultHandler=(FaultHandler)getObjectAttribute(atts,"class",FaultHandler.class,false);
-				 globSrvConf.setFaultHandler(faultHandler);
-				 setContext(faultHandler);
-			} else if(localName.equals("authconstraint")) {
+                Integer monitorSize=getIntegerAttribute(atts,"historysize");
+                if(monitorSize!=null) globSrvConf.setMonitoringHistorySize(monitorSize);
+            } else if(localName.equals("logging")) {
+                Boolean logging=getBooleanAttribute(atts,"enabled");
+                if(logging!=null) globSrvConf.setLoggingEnabled(logging);
+            } else if(localName.equals("faulthandler")) {
+                 FaultHandler faultHandler=(FaultHandler)getObjectAttribute(atts,"class",FaultHandler.class,false);
+                 globSrvConf.setFaultHandler(faultHandler);
+                 setContext(faultHandler);
+            } else if(localName.equals("authconstraint")) {
                 String ref=getStringAttribute(atts,"ref",true);
                 if(ref!=null) globSrvConf.setAuthConstraintRef(ref);
             }
-		} else if(context instanceof ServiceConfig) {
-			ServiceConfig srvConf=(ServiceConfig)context;
-			if(localName.equals("interface")) {
-				String name=getStringAttribute(atts,"name",true);
-				srvConf.setInterfaceName(name);
-			} else if(localName.equals("implementation")) {
-				String name=getStringAttribute(atts,"name",true);
-				srvConf.setImplementationName(name);
-			} else if(localName.equals("protocol")) {
-				String proto=getStringAttribute(atts,"type",Constants.PROTOCOL_TYPES);
-				if(proto!=null) srvConf.setProtocolType(proto);
+        } else if(context instanceof ServiceConfig) {
+            ServiceConfig srvConf=(ServiceConfig)context;
+            if(localName.equals("interface")) {
+                String name=getStringAttribute(atts,"name",true);
+                srvConf.setInterfaceName(name);
+            } else if(localName.equals("implementation")) {
+                String name=getStringAttribute(atts,"name",true);
+                srvConf.setImplementationName(name);
+            } else if(localName.equals("protocol")) {
+                String proto=getStringAttribute(atts,"type",Constants.PROTOCOL_TYPES);
+                if(proto!=null) srvConf.setProtocolType(proto);
             } else if(localName.equals("stubgeneration")) {
                  String jsNamespace=getStringAttribute(atts,"jsnamespace");
                  if(jsNamespace!=null) srvConf.setStubJSNamespace(jsNamespace);
-			} else if(localName.equals("encoding")) {
-				String encStyle=getStringAttribute(atts,"style",Constants.ENCODING_STYLES);
-				if(encStyle!=null) srvConf.setEncodingStyle(encStyle);
-		        String encUse=getStringAttribute(atts,"use",Constants.ENCODING_USES);
-		        if(encUse!=null) srvConf.setEncodingUse(encUse);
+            } else if(localName.equals("encoding")) {
+                String encStyle=getStringAttribute(atts,"style",Constants.ENCODING_STYLES);
+                if(encStyle!=null) srvConf.setEncodingStyle(encStyle);
+                String encUse=getStringAttribute(atts,"use",Constants.ENCODING_USES);
+                if(encUse!=null) srvConf.setEncodingUse(encUse);
             } else if(localName.equals("json")) {
                 Boolean hinting=getBooleanAttribute(atts,"classhinting");
                 if(hinting!=null) srvConf.setJSONClassHinting(hinting);
-			} else if(localName.equals("session")) {
-				String sessType=getStringAttribute(atts,"type",Constants.SESSION_TYPES);
-				if(sessType!=null) srvConf.setSessionType(sessType);
-			} else if(localName.equals("scope")) {
-				String scopeType=getStringAttribute(atts,"type",Constants.SERVICE_SCOPES);
-				if(scopeType!=null) srvConf.setScopeType(scopeType);
-			} else if(localName.equals("ssl")) {
-				Boolean sslForce=getBooleanAttribute(atts,"force");
-				if(sslForce!=null) srvConf.setSSLForce(sslForce);
-			} else if(localName.equals("context")) {
-				String ctxName=getStringAttribute(atts,"name",true);
-				srvConf.setContextName(ctxName);
+            } else if(localName.equals("session")) {
+                String sessType=getStringAttribute(atts,"type",Constants.SESSION_TYPES);
+                if(sessType!=null) srvConf.setSessionType(sessType);
+            } else if(localName.equals("scope")) {
+                String scopeType=getStringAttribute(atts,"type",Constants.SERVICE_SCOPES);
+                if(scopeType!=null) srvConf.setScopeType(scopeType);
+            } else if(localName.equals("ssl")) {
+                Boolean sslForce=getBooleanAttribute(atts,"force");
+                if(sslForce!=null) srvConf.setSSLForce(sslForce);
+            } else if(localName.equals("context")) {
+                String ctxName=getStringAttribute(atts,"name",true);
+                srvConf.setContextName(ctxName);
                 Boolean ctxSync=getBooleanAttribute(atts,"synchronize");
                 if(ctxSync!=null) srvConf.setSynchronizeOnContext(ctxSync);
-			} else if(localName.equals("faulthandler")) {
-				 FaultHandler faultHandler=(FaultHandler)getObjectAttribute(atts,"class",FaultHandler.class,false);
-				 srvConf.setFaultHandler(faultHandler);
-				 setContext(faultHandler);
-			} else if(localName.equals("authconstraint")) {
-			    String ref=getStringAttribute(atts,"ref",true);
-			    if(ref!=null) srvConf.setAuthConstraintRef(ref);
-			}
-		} else if(context instanceof FaultHandler) {
-			FaultHandler faultHandler=(FaultHandler)context;
-			if(localName.equals("param")) {
-				String name=getStringAttribute(atts,"name",true);
-				String value=getStringAttribute(atts,"value",true);
-				faultHandler.addParam(name,value);
-			}
-		}
-	}
-	
-	@Override
-	public void endElement(String uri, String localName, String qName) throws SAXException {
-		if(context instanceof Configuration) {
-			if(localName.equals("webservice-config")) {
-				resetContext();
-			}
-		} else if(context instanceof GlobalServiceConfig) {
-			GlobalServiceConfig globSrvConf=(GlobalServiceConfig)context;
-			if(localName.equals("webservice-global")) {
-				resetContext();
-			} else if(localName.equals("requestpath")) {
+            } else if(localName.equals("faulthandler")) {
+                 FaultHandler faultHandler=(FaultHandler)getObjectAttribute(atts,"class",FaultHandler.class,false);
+                 srvConf.setFaultHandler(faultHandler);
+                 setContext(faultHandler);
+            } else if(localName.equals("authconstraint")) {
+                String ref=getStringAttribute(atts,"ref",true);
+                if(ref!=null) srvConf.setAuthConstraintRef(ref);
+            }
+        } else if(context instanceof FaultHandler) {
+            FaultHandler faultHandler=(FaultHandler)context;
+            if(localName.equals("param")) {
+                String name=getStringAttribute(atts,"name",true);
+                String value=getStringAttribute(atts,"value",true);
+                faultHandler.addParam(name,value);
+            }
+        }
+    }
+    
+    @Override
+    public void endElement(String uri, String localName, String qName) throws SAXException {
+        if(context instanceof Configuration) {
+            if(localName.equals("webservice-config")) {
+                resetContext();
+            }
+        } else if(context instanceof GlobalServiceConfig) {
+            GlobalServiceConfig globSrvConf=(GlobalServiceConfig)context;
+            if(localName.equals("webservice-global")) {
+                resetContext();
+            } else if(localName.equals("requestpath")) {
                 String path=getContent();
                 if(path!=null&&!path.equals("")) globSrvConf.setRequestPath(path);
-			}
-		} else if(context instanceof ServiceConfig) {
-			if(localName.equals("webservice")) {
-				resetContext();
-			} 
-		} else if(context instanceof FaultHandler) {
-			if(localName.equals("faulthandler")) {
+            }
+        } else if(context instanceof ServiceConfig) {
+            if(localName.equals("webservice")) {
+                resetContext();
+            } 
+        } else if(context instanceof FaultHandler) {
+            if(localName.equals("faulthandler")) {
                 FaultHandler faultHandler=(FaultHandler)context;
+                if(faultHandler instanceof ApplicationContextAware) {
+                    ((ApplicationContextAware)faultHandler).setApplicationContext(appContext);
+                }
                 faultHandler.init();
-				resetContext();
-			}
-		}
-	}
+                resetContext();
+            }
+        }
+    }
     
     @Override
     public void endDocument() throws SAXException {
@@ -284,21 +293,21 @@ public class ConfigurationReader extends DefaultHandler {
             throw new SAXException("Can't get default bean metadata URL.",x);
         }
     }
-	
+    
     @Override
-	public void characters(char[] ch, int start, int length) throws SAXException {
-		content.write(ch,start,length);
-	}
-	
+    public void characters(char[] ch, int start, int length) throws SAXException {
+        content.write(ch,start,length);
+    }
+    
     public String getContent() {
-    	return content.toString().trim();
+        return content.toString().trim();
     }
     
     private void processImports() throws SAXException {
         for(int i=importedFiles.size()-1;i>-1;i--) {
             try {
                 FileResource impFile=importedFiles.get(i);
-                Configuration impConf=ConfigurationReader.read(impFile,false);
+                Configuration impConf=ConfigurationReader.read(impFile, false, appContext);
                 if(config.getGlobalServiceConfig()==null && impConf.getGlobalServiceConfig()!=null) {
                     config.setGlobalServiceConfig(impConf.getGlobalServiceConfig());
                 }
@@ -313,7 +322,7 @@ public class ConfigurationReader extends DefaultHandler {
             }
         }
     }
-	
+    
     private String getStringAttribute(Attributes attributes,String attrName) throws ConfigException {
         String val=attributes.getValue(attrName);
         if(val!=null) val=val.trim();
@@ -347,27 +356,27 @@ public class ConfigurationReader extends DefaultHandler {
         String val=attributes.getValue(attrName);
         if(val==null) return null;
         try {
-        	int intVal=Integer.parseInt(val);
+            int intVal=Integer.parseInt(val);
             return intVal;
         } catch(NumberFormatException x) {
-        	throw new ConfigException(ConfigException.ILLEGAL_ATTRIBUTE_VALUE,attrName,val);
+            throw new ConfigException(ConfigException.ILLEGAL_ATTRIBUTE_VALUE,attrName,val);
         }
     }
     
     private Object getObjectAttribute(Attributes attributes,String attrName,Class<?> superClazz,boolean mandatory) throws ConfigException {
-    	String val=attributes.getValue(attrName);
-    	if(val==null) {
-    		if(mandatory) throw new ConfigException(ConfigException.MISSING_ATTRIBUTE,attrName);
-    		else return null;
-    	}
-    	try {
-    		Class<?> clazz=Class.forName(val);
-    		Object obj=clazz.newInstance();
-    		if(!superClazz.isInstance(obj)) throw new ClassCastException("Class '"+val+"' can't be casted to '"+superClazz.getName()+"'.");
-    		return obj;
-    	} catch(Exception x) {
-    		throw new ConfigException(ConfigException.ILLEGAL_ATTRIBUTE_VALUE,attrName,val,x);
-    	}
+        String val=attributes.getValue(attrName);
+        if(val==null) {
+            if(mandatory) throw new ConfigException(ConfigException.MISSING_ATTRIBUTE,attrName);
+            else return null;
+        }
+        try {
+            Class<?> clazz=Class.forName(val);
+            Object obj=clazz.newInstance();
+            if(!superClazz.isInstance(obj)) throw new ClassCastException("Class '"+val+"' can't be casted to '"+superClazz.getName()+"'.");
+            return obj;
+        } catch(Throwable x) {
+            throw new ConfigException(ConfigException.ILLEGAL_ATTRIBUTE_VALUE,attrName,val,x);
+        } 
     }
 
     
