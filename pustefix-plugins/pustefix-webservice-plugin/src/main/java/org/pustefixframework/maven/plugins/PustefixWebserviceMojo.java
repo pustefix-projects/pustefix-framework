@@ -25,7 +25,6 @@ import java.util.Set;
 
 import javax.jws.WebService;
 
-import org.apache.maven.artifact.Artifact;
 import org.apache.maven.plugin.AbstractMojo;
 import org.apache.maven.plugin.MojoExecutionException;
 import org.apache.maven.project.MavenProject;
