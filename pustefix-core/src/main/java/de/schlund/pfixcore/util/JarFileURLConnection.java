@@ -12,13 +12,9 @@ import java.util.jar.JarFile;
 
 public class JarFileURLConnection extends JarURLConnection {
     
-    private static JarFileCache jarFileCache = new JarFileCache();
-
     private boolean doCache = true;
-    
     private File cachedFile;
-    
-    
+   
     public JarFileURLConnection(URL url) throws MalformedURLException {
         super(url);
     }
@@ -27,7 +23,7 @@ public class JarFileURLConnection extends JarURLConnection {
     public synchronized void connect() throws IOException {
         if(!connected) {
             if(doCache) {
-                cachedFile = jarFileCache.getFile(getJarFileURL(), getEntryName());
+                cachedFile = JarFileCache.getInstance().getFile(getJarFileURL(), getEntryName());
             }
             connected = true;
         }
@@ -51,7 +47,7 @@ public class JarFileURLConnection extends JarURLConnection {
                 return cachedFile.lastModified();
             } else {
                 long lastMod = getJarEntry().getTime();
-                if(lastMod == -1) lastMod = jarFileCache.getLastModified(getJarFileURL());
+                if(lastMod == -1) lastMod = JarFileCache.getInstance().getLastModified(getJarFileURL());
                 return lastMod;
             }
         } catch(IOException x) {
@@ -77,7 +73,7 @@ public class JarFileURLConnection extends JarURLConnection {
 
     @Override
     public synchronized JarFile getJarFile() throws IOException {
-        return jarFileCache.getJarFile(getJarFileURL());
+        return JarFileCache.getInstance().getJarFile(getJarFileURL());
     }
     
     @Override

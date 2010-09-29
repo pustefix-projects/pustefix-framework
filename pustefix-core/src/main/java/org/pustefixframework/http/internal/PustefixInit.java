@@ -51,6 +51,7 @@ import org.xml.sax.helpers.DefaultHandler;
 import org.xml.sax.helpers.XMLReaderFactory;
 
 import de.schlund.pfixcore.exception.PustefixCoreException;
+import de.schlund.pfixcore.util.JarFileCache;
 import de.schlund.pfixxml.config.CustomizationHandler;
 import de.schlund.pfixxml.config.GlobalConfig;
 import de.schlund.pfixxml.config.GlobalConfigurator;
@@ -118,9 +119,10 @@ public class PustefixInit {
         
     	Properties properties = new Properties(System.getProperties());
         
-    	//Make tempdir context attribute available as system property
-    	File tempdir = (File)servletContext.getAttribute("javax.servlet.context.tempdir");
-    	if(tempdir != null && !tempdir.equals("")) System.setProperty("javax.servlet.context.tempdir", tempdir.getPath());
+    	File tempDir = (File)servletContext.getAttribute("javax.servlet.context.tempdir");
+    	if(tempDir != null && !tempDir.equals("")) {
+    	    JarFileCache.setTempDir(tempDir);
+    	}
     	
     	// old webapps specify docroot -- true webapps don't
     	String docrootstr = servletContext.getInitParameter("pustefix.docroot");

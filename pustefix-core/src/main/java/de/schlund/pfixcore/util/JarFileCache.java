@@ -6,10 +6,13 @@ import java.io.InputStream;
 import java.net.URISyntaxException;
 import java.net.URL;
 import java.rmi.server.UID;
+import java.security.MessageDigest;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.jar.JarEntry;
 import java.util.jar.JarFile;
+
+import de.schlund.pfixxml.util.MD5Utils;
 
 /**
  * JarFile instance cache providing JarEntries backed by file system cache.
@@ -18,30 +21,31 @@ import java.util.jar.JarFile;
  *
  */
 public class JarFileCache {
-  
-    private final static String PROP_JAVA_TMP = "java.io.tmpdir";
-    //context attribute normally is only set as context attribute,
-    //but can be used here as system property to override java.io.tmpdir
-    private final static String PROP_SERVLET_TMP = "javax.servlet.context.tempdir";
     
-    private File tempDir;
+    private static JarFileCache instance;
+    
+    private File cacheDir;
     private Map<URL,CacheEntry> jarFileCache = new HashMap<URL,CacheEntry>();
     
-    public JarFileCache() {
-        Runtime.getRuntime().addShutdownHook(new ShutdownHook());
-        createTempDir();
+    public synchronized static JarFileCache getInstance() {
+        if(instance == null) instance = new JarFileCache();
+        return instance;
     }
     
-    private void createTempDir() {
-        String tmp = System.getProperty(PROP_SERVLET_TMP);
-        if(tmp == null || tmp.equals("")) {
-            tmp = System.getProperty(PROP_JAVA_TMP);
-            if(tmp == null || tmp.equals(""))  {
-                throw new RuntimeException("Can't find temporary directory");
-            }
-        }
+    public synchronized static void setTempDir(File tempDir) {
+        instance = new JarFileCache(tempDir);
+    }
+    
+    public JarFileCache() {
+        this(new File(System.getProperty("java.io.tmpdir")));
+    }
+    
+    public JarFileCache(File tempDir) {
+        if(!tempDir.exists()) throw new RuntimeException("Temporary directory doesn't exist: " + tempDir.getPath());
         UID uid = new UID();
-        tempDir = new File(tmp, uid.toString());
+        String md5 = MD5Utils.hex_md5(uid.toString());
+        cacheDir = new File(tempDir, md5);
+        Runtime.getRuntime().addShutdownHook(new ShutdownHook());
     }
     
     public JarFile getJarFile(URL url) throws IOException {
@@ -72,7 +76,7 @@ public class JarFileCache {
     public synchronized File getFile(URL jarURL, String path) throws IOException {
         CacheEntry cacheEntry = getCachedJarFile(jarURL);
         
-        File file = new File(tempDir, cacheEntry.id + "/" + path);
+        File file = new File(cacheDir, cacheEntry.id + "/" + path);
        
         if(!file.exists()) {
             JarEntry entry = cacheEntry.jarFile.getJarEntry(path);
@@ -106,7 +110,7 @@ public class JarFileCache {
     
     @Override
     protected void finalize() throws Throwable {
-        if(tempDir != null) delete(tempDir);
+        if(cacheDir != null) delete(cacheDir);
     }
     
     
@@ -114,7 +118,7 @@ public class JarFileCache {
         
         @Override
         public void run() {
-            if(tempDir != null) delete(tempDir);
+            if(cacheDir != null) delete(cacheDir);
         }
         
     }
