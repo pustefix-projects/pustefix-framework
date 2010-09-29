@@ -4,14 +4,14 @@
   <parent>
     <groupId>org.pustefixframework</groupId>
     <artifactId>pustefixframework</artifactId>
-    <version>0.15.9</version>
+    <version>0.15.10</version>
   </parent>
 
   <name>Pustefix External Libraries</name>
 
   <groupId>org.pustefixframework</groupId>
   <artifactId>pustefix-libs</artifactId>
-  <version>0.15.9</version>
+  <version>0.15.10</version>
   <packaging>pom</packaging>
  
   <build>
