@@ -44,7 +44,6 @@ public class JarFileCache {
         UID uid = new UID();
         String md5 = MD5Utils.hex_md5(uid.toString());
         cacheDir = new File(tempDir, md5);
-        Runtime.getRuntime().addShutdownHook(new ShutdownHook());
     }
     
     public JarFile getJarFile(URL url) throws IOException {
@@ -111,17 +110,6 @@ public class JarFileCache {
     protected void finalize() throws Throwable {
         if(cacheDir != null) delete(cacheDir);
     }
-    
-    
-    class ShutdownHook extends Thread {
-        
-        @Override
-        public void run() {
-            if(cacheDir != null) delete(cacheDir);
-        }
-        
-    }
-    
     
     class CacheEntry {
         File file;

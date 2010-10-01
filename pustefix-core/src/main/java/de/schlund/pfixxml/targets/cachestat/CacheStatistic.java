@@ -31,6 +31,7 @@ import javax.management.MBeanServer;
 import javax.management.ObjectName;
 
 import org.apache.log4j.Logger;
+import org.springframework.beans.factory.DisposableBean;
 import org.springframework.beans.factory.InitializingBean;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
@@ -51,7 +52,7 @@ import de.schlund.pfixxml.util.Xml;
  * @author Joerg Haecker <haecker@schlund.de>
  *  
  */
-public class CacheStatistic implements CacheStatisticMBean, InitializingBean {
+public class CacheStatistic implements CacheStatisticMBean, InitializingBean, DisposableBean {
     
     private static CacheStatistic theInstance = new CacheStatistic();
     private static int REGISTER_MISS = 0;
@@ -65,7 +66,7 @@ public class CacheStatistic implements CacheStatisticMBean, InitializingBean {
     /** Format for hitrate */
     private DecimalFormat hitrateFormat = new DecimalFormat("##0.00");
     /** Timer used for AdvanceCacheStatistic */
-    private Timer tickTimer = new Timer(true);
+    private Timer tickTimer;
     private String projectName;
 
     public void afterPropertiesSet() throws Exception {
@@ -76,7 +77,8 @@ public class CacheStatistic implements CacheStatisticMBean, InitializingBean {
             mbeanServer.registerMBean(this, objectName);
         } catch(Exception x) {
             LOG.error("Can't register SPCacheStatistic MBean!",x);
-        } 
+        }
+        tickTimer = new Timer("Timer-CacheStatistic", true);
     }
     
     public void setProjectName(String projectName) {
@@ -107,6 +109,12 @@ public class CacheStatistic implements CacheStatisticMBean, InitializingBean {
     }
 
     
+    public void destroy() throws Exception {
+        if(tickTimer != null) {
+            tickTimer.cancel();
+            tickTimer = null;
+        }
+    }
     
     
     /**
@@ -404,4 +412,5 @@ final class TargetsInSPCache {
             }
         }
     }
+    
 }

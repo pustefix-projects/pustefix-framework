@@ -46,8 +46,6 @@ public class XsltSaxon2 implements XsltSupport {
     
     private TransformerFactory ifactory = new TransformerFactoryImpl(config);
     
-    private static final ThreadLocal<TransformerFactory> threadfactory = new ThreadLocal<TransformerFactory>();
-    
     //TODO: replace by XSLT 2.0 version
     // pretty-print script by M. Kay, see 
     // http://www.cafeconleche.org/books/xmljava/chapters/ch17s02.html#d0e32721
@@ -75,15 +73,7 @@ public class XsltSaxon2 implements XsltSupport {
     }
     
     public TransformerFactory getThreadTransformerFactory() {
-        TransformerFactory factory = threadfactory.get();
-        if (factory == null) {
-            // Create a new factory. As we have to use a new URIResolver
-            // for each transformation, we cannot reuse the same factory
-            // in other threads
-            factory = new TransformerFactoryImpl(config);
-            threadfactory.set(factory);
-        }
-        return factory;
+        return new TransformerFactoryImpl(config);
     }
     
     public Templates getPrettyPrinterTemplates() {
