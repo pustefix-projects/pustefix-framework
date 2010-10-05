@@ -66,7 +66,7 @@ public class CacheStatistic implements CacheStatisticMBean, InitializingBean, Di
     /** Format for hitrate */
     private DecimalFormat hitrateFormat = new DecimalFormat("##0.00");
     /** Timer used for AdvanceCacheStatistic */
-    private Timer tickTimer;
+    private Timer tickTimer = new Timer("Timer-CacheStatistic", true);
     private String projectName;
 
     public void afterPropertiesSet() throws Exception {
@@ -78,7 +78,6 @@ public class CacheStatistic implements CacheStatisticMBean, InitializingBean, Di
         } catch(Exception x) {
             LOG.error("Can't register SPCacheStatistic MBean!",x);
         }
-        tickTimer = new Timer("Timer-CacheStatistic", true);
     }
     
     public void setProjectName(String projectName) {
