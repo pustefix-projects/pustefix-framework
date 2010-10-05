@@ -18,24 +18,31 @@
 
 package de.schlund.pfixcore.lucefix;
 
+import org.springframework.beans.factory.DisposableBean;
+
 import de.schlund.pfixxml.XMLException;
 
 /**
  * @author schuppi
  * @date Jun 24, 2005
  */
-public class PfixEngine {
+public class PfixEngine implements DisposableBean {
 
     private int queueIdle;
+    private PfixQueueManager queueManager;
 
     public void setQueueIdle(int queueIdle) {
         this.queueIdle = queueIdle;
     }
 
     public void init() throws XMLException {
-        PfixQueueManager pq = PfixQueueManager.getInstance(queueIdle);
-        Thread queueT = new Thread(pq, "lucefix-queue");
-        queueT.setPriority(Thread.MIN_PRIORITY);
-        queueT.start();
+        queueManager = PfixQueueManager.getInstance(queueIdle);
+        queueManager.setPriority(Thread.MIN_PRIORITY);
+        queueManager.start();
     }
+    
+    public void destroy() throws Exception {
+        queueManager.interrupt();
+    }
+    
 }
