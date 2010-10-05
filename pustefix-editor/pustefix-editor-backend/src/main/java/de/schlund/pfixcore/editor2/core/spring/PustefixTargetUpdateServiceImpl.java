@@ -24,6 +24,7 @@ import java.util.Iterator;
 
 import org.apache.log4j.Logger;
 import org.pustefixframework.editor.backend.config.EditorProjectInfo;
+import org.springframework.beans.factory.DisposableBean;
 
 import de.schlund.pfixcore.lucefix.PfixReadjustment;
 import de.schlund.pfixxml.targets.Target;
@@ -42,8 +43,8 @@ import de.schlund.pfixxml.targets.TargetGenerator;
  * 
  * @author Sebastian Marsching <sebastian.marsching@1und1.de>
  */
-public class PustefixTargetUpdateServiceImpl implements
-        PustefixTargetUpdateService, Runnable {
+public class PustefixTargetUpdateServiceImpl extends Thread implements
+        PustefixTargetUpdateService, DisposableBean {
     
     private PfixReadjustment pfixReadjustment;
     
@@ -107,6 +108,7 @@ public class PustefixTargetUpdateServiceImpl implements
     }
 
     public PustefixTargetUpdateServiceImpl() {
+        super(new ThreadGroup("pustefix-target-update"), "target-update");
         this.lowPriorityQueue = new ArrayList<Target>();
         this.highPriorityQueue = new ArrayList<Target>();
         this.lock = new Object();
@@ -116,10 +118,13 @@ public class PustefixTargetUpdateServiceImpl implements
     }
 
     public void init() {
-        Thread thread = new Thread(this, "pustefix-target-update");
-        thread.setPriority(Thread.MIN_PRIORITY);
-        thread.setDaemon(true);
-        thread.start();
+        setPriority(Thread.MIN_PRIORITY);
+        setDaemon(true);
+        start();
+    }
+    
+    public void destroy() {
+        getThreadGroup().interrupt();
     }
 
     public void registerTargetForUpdate(Target target) {
@@ -147,12 +152,9 @@ public class PustefixTargetUpdateServiceImpl implements
     }
 
     public void run() {
-        // Wait for delay
-        LOG.debug("*** Starting updater thread ***");
         if (this.startupDelay > 0) {
             long startTime = System.currentTimeMillis();
             long currentTime = System.currentTimeMillis();
-            ;
             do {
                 long waitTime = this.startupDelay + startTime - currentTime;
                 Object waitLock = new Object();
@@ -160,15 +162,14 @@ public class PustefixTargetUpdateServiceImpl implements
                     try {
                         waitLock.wait(waitTime);
                     } catch (InterruptedException e) {
-                        // Ignore interruption
+                        interrupt();
                     }
                 }
                 currentTime = System.currentTimeMillis();
-            } while (currentTime < (startTime + this.startupDelay));
+            } while ((currentTime < (startTime + this.startupDelay)) && !isInterrupted());
         }
 
-        while (true) {
-            LOG.info("*** Starting updater loop ***");
+        while (!isInterrupted()) {
             ArrayList<Target> lowCopy;
             ArrayList<Target> highCopy;
             synchronized (this.lock) {
@@ -176,11 +177,9 @@ public class PustefixTargetUpdateServiceImpl implements
                 highCopy = new ArrayList<Target>(this.highPriorityQueue);
                 this.highPriorityQueue.clear();
             }
-            LOG.debug("*** Starting HighPrio loop");
-            while (!highCopy.isEmpty()) {
+            while (!(highCopy.isEmpty() || isInterrupted())) {
                 Target target = (Target) highCopy.get(0);
                 try {
-                    LOG.debug("  * Generating HighPrio target " + target.getFullName());
                     target.getValue();
                 } catch (TargetGenerationException e) {
                     LOG.warn("*** Exception generating HP " + target.getFullName() + ": " + e.getMessage());
@@ -190,19 +189,16 @@ public class PustefixTargetUpdateServiceImpl implements
                     try {
                         this.lock.wait(this.highRunDelay);
                     } catch (InterruptedException e) {
-                        LOG.debug("*** Interrupted while waiting in HighPrio loop");
-                        // Ignore interruption and continue
+                        interrupt();
                     }
                 }
             }
-            LOG.debug("*** End of HighPrio loop");
-
+    
             // Do automatic regeneration only if enabled
-            if (this.isEnabled) {
+            if (this.isEnabled && !isInterrupted()) {
                 // System.out.println("*** in low loop ***");
                 if (!lowCopy.isEmpty()) {
-                    LOG.debug("*** Starting LowPrio loop");
-                    while (!lowCopy.isEmpty()) {
+                    while (!(lowCopy.isEmpty() || isInterrupted())) {
                         Target target = (Target) lowCopy.get(0);
                         boolean needsUpdate;
                         try {
@@ -218,7 +214,6 @@ public class PustefixTargetUpdateServiceImpl implements
                         }
                         try {
                             if (needsUpdate) {
-                                LOG.debug("  * Generating LowPrio target " + target.getFullName());
                                 target.getValue();
                             }
                         } catch (TargetGenerationException e) {
@@ -228,10 +223,9 @@ public class PustefixTargetUpdateServiceImpl implements
                         synchronized (this.lock) {
                             this.lowPriorityQueue.remove(0);
                             if (!this.highPriorityQueue.isEmpty()) {
-                                LOG.debug("*** Leaving LP loop for doing HP targets");
                                 break;
                             }
-
+                            
                             if (needsUpdate) {
                                 // If a target has been generated, wait for some time.
                                 long delay = nthRunDelay;
@@ -242,41 +236,40 @@ public class PustefixTargetUpdateServiceImpl implements
                                     try {
                                         this.lock.wait(delay);
                                     } catch (InterruptedException e) {
-                                        LOG.debug("*** Interrupted while waiting in LowPrio loop");
+                                        interrupt();
                                     }
                                 }
                             }
                         }
                     }
-                    LOG.debug("*** End of LowPrio loop");
                 }
             }
-
+    
             synchronized (this.lock) {
-                if (this.isEnabled) {
+                if (this.isEnabled && !isInterrupted()) {
                     if (this.lowPriorityQueue.isEmpty() && !waitingForRefill) {
                         this.firstRunDone = true;
-
+    
                         // All low priority targets (usually all targets)
                         // have been updated, so trigger regeneration of
                         // search index
                         pfixReadjustment.readjust();
-
+    
                         // Delay refill of low priority queue
                         // in order to keep down system load
                         this.waitingForRefill = true;
-                        Runnable refillTool = new Runnable() {
+                        //TODO: interrupt 
+                        Thread refillToolThread = new Thread(getThreadGroup(), "target-update-refill") {
                             public void run() {
                                 try {
                                     if (completeRunDelay > 0) {
                                         Thread.sleep(completeRunDelay);
                                     }
                                 } catch (InterruptedException e) {
-                                    // Ignore
+                                    interrupt();
                                 }
                                 synchronized (lock) {
-                                    LOG.debug("##### Adding target list to LowPrio queue");
-                                    for (Iterator<TargetGenerator> i = tgenList.iterator(); i.hasNext();) {
+                                    for (Iterator<TargetGenerator> i = tgenList.iterator(); i.hasNext() && !isInterrupted();) {
                                         TargetGenerator tgen = (TargetGenerator) i.next();
                                         lowPriorityQueue.addAll(tgen.getPageTargetTree().getToplevelTargets());
                                     }
@@ -285,24 +278,19 @@ public class PustefixTargetUpdateServiceImpl implements
                                 }
                             }
                         };
-                        Thread toolThread = new Thread(refillTool, "target-update-refill");
-                        toolThread.start();
+                        refillToolThread.start();
                     }
                 }
-
+    
                 if (this.highPriorityQueue.isEmpty() && (!this.isEnabled || this.lowPriorityQueue.isEmpty())) {
                     try {
-                        LOG.debug("*** Going to Sleep...\n");
                         this.lock.wait();
                     } catch (InterruptedException e) {
-                        LOG.debug("*** Interrupted while sleeping...");
-                        // Ignore exception
+                        interrupt();
                     }
-                } else {
-                    LOG.debug("*** HP or LP queue still not empty - continue directly");
                 }
             }
-        }
+        } 
     }
 
     public void setPfixReadjustment(PfixReadjustment pfixReadjustment) {
