@@ -105,18 +105,24 @@ public class PustefixMergeMojo extends AbstractMojo {
     
 
     public void execute() throws MojoExecutionException {
-        // Merge modules statuscodes
-        File modulesSrcDir = new File(modulesdir);
-        if (modulesSrcDir.exists() && modulesSrcDir.isDirectory()) {
-            File[] subDirs = modulesSrcDir.listFiles();
-            for (File moduleDir : subDirs) {
-                if (moduleDir.isDirectory()) {
-                    process(moduleDir, modulesDestDirname + "/" + moduleDir.getName());
+        
+        File webappDir = new File(project.getBasedir(), "src/main/webapp");
+        if(webappDir.exists()) {
+        
+            // Merge modules statuscodes
+            File modulesSrcDir = new File(modulesdir);
+            if (modulesSrcDir.exists() && modulesSrcDir.isDirectory()) {
+                File[] subDirs = modulesSrcDir.listFiles();
+                for (File moduleDir : subDirs) {
+                    if (moduleDir.isDirectory()) {
+                        process(moduleDir, modulesDestDirname + "/" + moduleDir.getName());
+                    }
                 }
             }
+            // Merge statusmessages from modules which were not extracted
+            processUnextractedModules();
+        
         }
-        // Merge statusmessages from modules which were not extracted
-        processUnextractedModules();
     }    
     
     
