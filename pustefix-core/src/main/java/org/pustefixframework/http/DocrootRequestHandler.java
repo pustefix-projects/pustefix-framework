@@ -22,8 +22,6 @@ import java.io.BufferedOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
-import java.net.URL;
-import java.net.URLConnection;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
@@ -92,9 +90,7 @@ public class DocrootRequestHandler implements UriProvidingHttpRequestHandler, Se
             throws ServletException, IOException {
 
         String path = req.getPathInfo();
-      
-        boolean warOnly = getServletContext().getRealPath("/") == null ? true : false;
-
+        
         // Handle default (root) request
         if (defaultpath != null && (path == null || path.length() == 0 || path.equals("/"))) {
             String redirect = req.getContextPath() + defaultpath;
@@ -125,27 +121,24 @@ public class DocrootRequestHandler implements UriProvidingHttpRequestHandler, Se
                 path = path.substring(1);
             }
             
-            if (!warOnly) {
-                if (passthroughPaths != null) {
-                    for (String prefix : this.passthroughPaths) {
-                        if (path.startsWith(prefix)) {
-                            Resource resource = null;
-                            if(path.startsWith("modules/") && !extractedPaths.contains(prefix)) {
-                                String moduleUri = "module://" + path.substring(8);
-                                resource = ResourceUtil.getResource(moduleUri);
-                            } else {
-                                resource = ResourceUtil.getFileResourceFromDocroot(path);
-                            }
-                            if(resource.exists()) {
-                                contentLength = resource.length();
-                                lastModified = resource.lastModified();
-                                in = resource.getInputStream();
-                                break;
-                            }
+            if (passthroughPaths != null) {
+                for (String prefix : this.passthroughPaths) {
+                    if (path.startsWith(prefix)) {
+                        Resource resource = null;
+                        if(path.startsWith("modules/") && !extractedPaths.contains(prefix)) {
+                            String moduleUri = "module://" + path.substring(8);
+                            resource = ResourceUtil.getResource(moduleUri);
+                        } else {
+                            resource = ResourceUtil.getFileResourceFromDocroot(path);
+                        }
+                        if(resource.exists()) {
+                            contentLength = resource.length();
+                            lastModified = resource.lastModified();
+                            in = resource.getInputStream();
+                            break;
                         }
                     }
                 }
-                
                 if (in == null) {
                     FileResource baseResource = ResourceUtil.getFileResource(base);
                     FileResource resource = ResourceUtil.getFileResource(baseResource, path);
@@ -153,26 +146,6 @@ public class DocrootRequestHandler implements UriProvidingHttpRequestHandler, Se
                     lastModified = resource.lastModified();
                     in = resource.getInputStream();
                 }
-                
-            } else {
-                //TODO: add direct module load support
-                if (passthroughPaths != null) {
-                    for (String prefix : this.passthroughPaths) {
-                        if (path.startsWith(prefix)) {
-                            // Use getResource() to make sure we can
-                            // access the file even in packed WAR mode
-                            URL url = getServletContext().getResource("/"+path);
-                            if(url != null) {
-                                URLConnection con = url.openConnection();
-                                lastModified = con.getLastModified();
-                                contentLength = con.getContentLength();
-                                in = url.openStream();
-                                break;
-                            }
-                        }
-                    }
-                }
-                
             }
             
         } catch(IOException x) {

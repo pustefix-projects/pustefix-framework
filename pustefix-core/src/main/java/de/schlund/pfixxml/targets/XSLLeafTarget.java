@@ -73,7 +73,7 @@ public class XSLLeafTarget extends LeafTarget {
 
                 this.getAuxDependencyManager().saveAuxdepend();
             } catch (IOException e) {
-                throw new TransformerException("Error while writing auxdependency information");
+                throw new TransformerException("Error while writing auxdependency information", e);
             }
             
             return tmpl;

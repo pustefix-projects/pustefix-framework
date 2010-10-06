@@ -161,7 +161,7 @@ class DocrootResourceByServletContextImpl extends AbstractDocrootResourceImpl {
 
     @Override
     public OutputStream getOutputStream() throws FileNotFoundException {
-        throw new FileNotFoundException("Cannot write to file in WAR archive");
+        throw new FileNotFoundException("Cannot write to file in WAR archive: " + toURI());
     }
     
     @Override
