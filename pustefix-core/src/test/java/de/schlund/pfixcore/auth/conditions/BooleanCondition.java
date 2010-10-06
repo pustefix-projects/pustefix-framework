@@ -22,7 +22,6 @@ public final class BooleanCondition implements Condition {
     /**
      * @returns the boolean value which has been specified via the constructor.
      */
-    @Override
     public boolean evaluate(Context context) {
         return result;
     }

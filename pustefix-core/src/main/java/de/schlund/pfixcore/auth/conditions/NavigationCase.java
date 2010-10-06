@@ -27,7 +27,6 @@ public class NavigationCase implements Condition {
         this.condition = condition;
     }
 
-    @Override
     public boolean evaluate(Context context) {
         if (condition == null) {
             return true;

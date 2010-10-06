@@ -492,7 +492,7 @@ public class ContextConfigImpl implements ContextConfig {
 
     private Iterable<String> traverseAuthPages(final AuthConstraint authConstraint) {
         return new Iterable<String>() {
-            @Override
+
             public Iterator<String> iterator() {
                 return new Iterator<String>() {
 
@@ -505,13 +505,11 @@ public class ContextConfigImpl implements ContextConfig {
                         return !visitedDefaultAuthPage && authConstraint.getDefaultAuthPage() != null;
                     }
 
-                    @Override
                     public boolean hasNext() {
                         return isDefaultPageVisitable() ||
                                navCases.hasNext();
                     }
 
-                    @Override
                     public String next() {
                         if (isDefaultPageVisitable()) {
                             String result = authConstraint.getDefaultAuthPage();
@@ -521,7 +519,6 @@ public class ContextConfigImpl implements ContextConfig {
                         return navCases.next().getPage();
                     }
 
-                    @Override
                     public void remove() {
                         throw new UnsupportedOperationException(); 
                     }
