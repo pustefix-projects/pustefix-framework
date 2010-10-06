@@ -1,5 +1,10 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<interface xmlns="http://pustefix.sourceforge.net/interfacewrapper200401" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://pustefix.sourceforge.net/interfacewrapper200401 http://pustefix.sourceforge.net/interfacewrapper200401.xsd">
+<interface xmlns="http://www.pustefix-framework.org/2008/namespace/iwrapper"
+           xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+           xsi:schemaLocation="http://www.pustefix-framework.org/2008/namespace/iwrapper 
+                               http://www.pustefix-framework.org/2008/namespace/iwrapper.xsd">
+
   <ihandler class="org.pustefixframework.editor.webui.handlers.DeleteUsersHandler"/>
-  <param type="java.lang.String" name="Username" occurance="mandatory" frequency="multiple"/>
+  <param type="java.lang.String" name="Username" occurrence="mandatory" frequency="multiple"/>
+
 </interface>

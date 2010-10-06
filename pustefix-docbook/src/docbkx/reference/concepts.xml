@@ -820,9 +820,11 @@ public interface State {
       <para>
         The syntax of the .iwrp file is given below.
       </para>
-      <programlisting language="xml"><![CDATA[<interface xsi:schemaLocation="http://pustefix.sourceforge.net/interfacewrapper200401 http://pustefix.sourceforge.net/interfacewrapper200401.xsd" extends="some.other.iwrapper.class"
-  xmlns="http://pustefix.sourceforge.net/interfacewrapper200401"
-  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+      <programlisting language="xml"><![CDATA[<interface xmlns="http://www.pustefix-framework.org/2008/namespace/iwrapper"
+  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xsi:schemaLocation="http://www.pustefix-framework.org/2008/namespace/iwrapper 
+                      http://www.pustefix-framework.org/2008/namespace/iwrapper.xsd"
+  extends="some.other.iwrapper.class">
   <!--
     The class attribute references the associated IHandler class. Alternatively you can
     reference an existing Spring bean using the bean-ref attribute.
@@ -898,17 +900,17 @@ public interface State {
                 <td>The java type of the parameter. This will determine the return type of the generated getter method.</td>
               </tr>
               <tr>
-                <td>occurence</td>
+                <td>occurrence</td>
                 <td>Optional, default is mandatory</td>
                 <td>This attribute specifies if the parameter must be given (mandatory), or if it's not considered to be an error if it is omitted (optional). The special value indexed tells the system that it should search for occurrences of the parameter name with a suffix appended of the form AParamName.ASuffix. The suffix string must be unique for every occurrence of the parameter named AParamName. Indexed parameters are never mandatory.</td>
               </tr>
               <tr>
-                <td>occurence</td>
+                <td>occurrence</td>
                 <td>Optional, default is single</td>
                 <td>This attribute specifies if only one parameter of the same name should be accepted or multiple. This determines if the generated getter method's return value is a single object or an array.</td>
               </tr>
               <tr>
-                <td>occurence</td>
+                <td>occurrence</td>
                 <td>Optional, default is de.schlund.pfixcore.generator.MISSING_PARAM</td>
                 <td>This attribute applies only to mandatory parameters. It allows to specify a different than the default StatusCode to use when the parameter is not supplied.</td>
               </tr>
@@ -920,7 +922,7 @@ public interface State {
           method signatures in the generated wrapper code.
         </para>
         <para>
-          The parameter type is influenced by the attributes <literal>occurance</literal>
+          The parameter type is influenced by the attributes <literal>occurrence</literal>
           and <literal>frequency</literal>
         </para>
         <section>
@@ -1052,8 +1054,10 @@ Before the StatusCode files are recognized by the build process, they have to be
 </para>
 <programlisting language="xml"><![CDATA[
 <?xml version="1.0" encoding="UTF-8"?>
-<statuscodeinfo xmlns="http://pustefix-framework.org/statuscodeinfo" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-                xsi:schemaLocation="http://pustefix-framework.org/statuscodeinfo ../../core/schema/statuscodeinfo.xsd">
+<statuscodeinfo xmlns="http://www.pustefix-framework.org/2008/namespace/statuscodeinfo" 
+                xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+                xsi:schemaLocation="http://www.pustefix-framework.org/2008/namespace/statuscodeinfo 
+                                    http://www.pustefix-framework.org/2008/namespace/statuscodeinfo.xsd">
   <statuscodes class="example.bank.BankStatusCodes">
     <file>statusmessages.xml</file>
     <file>...</file>
@@ -1116,7 +1120,7 @@ If your error message should contain dynamic data, you can use placeholders, whi
 StatusCodes can be also referenced from within IWrapper definitions. If you're using a built-in StatusCode (from org.pustefixframework.generated.CoreStatusCodes), you can just use its name, if you're using a StatusCode from another module, you have to prefix the name with the class name of the generated class separated by a <literal>#</literal> sign:
 </para>
 <programlisting language="xml"><![CDATA[
-<interface xmlns="http://pustefix.sourceforge.net/interfacewrapper200401">
+<interface xmlns="http://www.pustefix-framework.org/2008/namespace/iwrapper">
 
   <ihandler class="..."/>
   

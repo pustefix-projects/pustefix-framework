@@ -1179,10 +1179,10 @@ public class ContextUserImpl implements ContextUser {
       To achieve this, you will have to implement a new pair of wrapper and handler. As the <literal>ReviewData</literal> page does not
       contain any input fields, the new wrapper does not need any parameters:
     </para>
-    <programlisting language="xml"><![CDATA[<interface xsi:schemaLocation="http://pustefix.sourceforge.net/interfacewrapper200401 
-      http://pustefix.sourceforge.net/interfacewrapper200401.xsd"
-      xmlns="http://pustefix.sourceforge.net/interfacewrapper200401"
-      xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+    <programlisting language="xml"><![CDATA[<interface xmlns="http://www.pustefix-framework.org/2008/namespace/iwrapper"
+      xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+      xsi:schemaLocation="http://www.pustefix-framework.org/2008/namespace/iwrapper 
+                          http://www.pustefix-framework.org/2008/namespace/iwrapper.xsd">
   
   <!-- This handler will process the data -->
   <ihandler class="org.pustefixframework.tutorial.firstapp.handler.SaveUserDataHandler"/>

@@ -23,11 +23,12 @@
           order to be recognized by the Pustefix build system. This deployment descriptor
           is a XML file with the following format:
         </para>
-        <programlisting language="xml"><![CDATA[<module-descriptor
-  xsi:schemaLocation="http://pustefix.sourceforge.net/moduledescriptor200702 http://pustefix.sourceforge.net/moduledescriptor200702.xsd"
-  xmlns="http://pustefix.sourceforge.net/moduledescriptor200702"
-  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
-  
+        <programlisting language="xml"><![CDATA[<module-descriptor 
+  xmlns="http://www.pustefix-framework.org/2008/namespace/module-descriptor"
+  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xsi:schemaLocation="http://www.pustefix-framework.org/2008/namespace/module-descriptor
+                      http://www.pustefix-framework.org/2008/namespace/module-descriptor.xsd">
+
   <!--
     The module name is used to construct the path the resources will be extracted to.
     In this example the path would be modules/mytest/.

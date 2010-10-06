@@ -107,7 +107,7 @@ public class LiveJarInfo {
             }
         }
         if (file == null) {
-            LOG.warn("No live.xml detected, default settings for live resources may be used!");
+            LOG.info("No live.xml detected, default settings for live resources may be used!");
         }
 
         init();

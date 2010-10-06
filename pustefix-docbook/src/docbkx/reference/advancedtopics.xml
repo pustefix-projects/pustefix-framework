@@ -319,10 +319,11 @@ projects/common/img/default/image.png
       <para>
         Resources from modules can be overridden by other modules. Therefor a module can declare, which resources from which module it wants to override. This declaration is done within its module descriptor (see <xref linkend="modulessupport"/>).
       </para>
-<programlisting language="xml"><![CDATA[<module-descriptor
-     xsi:schemaLocation="http://pustefix.sourceforge.net/moduledescriptor200702 http://pustefix.sourceforge.net/moduledescriptor200702.xsd" 
-     xmlns="http://pustefix.sourceforge.net/moduledescriptor200702" 
-     xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+<programlisting language="xml"><![CDATA[<module-descriptor 
+     xmlns="http://www.pustefix-framework.org/2008/namespace/module-descriptor"
+     xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+     xsi:schemaLocation="http://www.pustefix-framework.org/2008/namespace/module-descriptor
+                         http://www.pustefix-framework.org/2008/namespace/module-descriptor.xsd">
 
   <module-name>module-B</module-name>
 
@@ -348,10 +349,11 @@ module://module-A/txt/common.xml</screen>
       <para>
         An overriding module itself can be overridden by another module. Consider the following descriptor for <literal>sample-module-C</literal>:
       </para>
-<programlisting language="xml"><![CDATA[<module-descriptor
-     xsi:schemaLocation="http://pustefix.sourceforge.net/moduledescriptor200702 http://pustefix.sourceforge.net/moduledescriptor200702.xsd" 
-     xmlns="http://pustefix.sourceforge.net/moduledescriptor200702" 
-     xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+<programlisting language="xml"><![CDATA[<module-descriptor 
+     xmlns="http://www.pustefix-framework.org/2008/namespace/module-descriptor"
+     xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+     xsi:schemaLocation="http://www.pustefix-framework.org/2008/namespace/module-descriptor
+                         http://www.pustefix-framework.org/2008/namespace/module-descriptor.xsd">
 
   <module-name>module-C</module-name>
 
@@ -374,10 +376,11 @@ module://module-A/txt/common.xml</screen>
     <para>
       Now we add another module, called <literal>module-A-ext</literal>, which is also overriding <literal>module-A</literal>:
     </para>
-<programlisting language="xml"><![CDATA[<module-descriptor
-     xsi:schemaLocation="http://pustefix.sourceforge.net/moduledescriptor200702 http://pustefix.sourceforge.net/moduledescriptor200702.xsd" 
-     xmlns="http://pustefix.sourceforge.net/moduledescriptor200702" 
-     xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+<programlisting language="xml"><![CDATA[<module-descriptor 
+     xmlns="http://www.pustefix-framework.org/2008/namespace/module-descriptor"
+     xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+     xsi:schemaLocation="http://www.pustefix-framework.org/2008/namespace/module-descriptor
+                         http://www.pustefix-framework.org/2008/namespace/module-descriptor.xsd">
 
   <module-name>module-A-ext</module-name>
 

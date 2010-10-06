@@ -11,7 +11,7 @@
       <cparam name="scodeCastError" value="de.schlund.pfixcore.example.StatusCodeLib#home.NO_AGE"/>
     </caster>
   </param>
-  <param name="Date" type="java.util.Date" occurance="optional">
+  <param name="Date" type="java.util.Date" occurrence="optional">
     <caster class="de.schlund.pfixcore.generator.casters.ToDate">
       <cparam name="paramFormat" value="yy/MM/dd" />
     </caster>

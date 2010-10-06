@@ -1,4 +1,8 @@
-<module-descriptor xsi:schemaLocation="http://pustefix.sourceforge.net/moduledescriptor200702 http://pustefix.sourceforge.net/moduledescriptor200702.xsd" xmlns="http://pustefix.sourceforge.net/moduledescriptor200702" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+<?xml version="1.0" encoding="utf-8"?>
+<module-descriptor xmlns="http://www.pustefix-framework.org/2008/namespace/module-descriptor"
+                   xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+                   xsi:schemaLocation="http://www.pustefix-framework.org/2008/namespace/module-descriptor
+                                       http://www.pustefix-framework.org/2008/namespace/module-descriptor.xsd">
 
   <module-name>sample-module-B</module-name>
 

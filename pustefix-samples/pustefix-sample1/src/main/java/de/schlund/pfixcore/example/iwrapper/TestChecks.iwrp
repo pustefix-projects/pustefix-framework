@@ -1,8 +1,12 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<interface xmlns="http://pustefix.sourceforge.net/interfacewrapper200401" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://pustefix.sourceforge.net/interfacewrapper200401 http://pustefix.sourceforge.net/interfacewrapper200401.xsd">
+<interface xmlns="http://www.pustefix-framework.org/2008/namespace/iwrapper"
+           xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+           xsi:schemaLocation="http://www.pustefix-framework.org/2008/namespace/iwrapper 
+                               http://www.pustefix-framework.org/2008/namespace/iwrapper.xsd">
+
   <ihandler class="de.schlund.pfixcore.example.TestChecksHandler"/>
   
-  <param name="Date" type="java.util.Date" occurance="optional">
+  <param name="Date" type="java.util.Date" occurrence="optional">
     <caster class="de.schlund.pfixcore.generator.casters.ToDate">
       <cparam name="scodeCastError" value="de.schlund.pfixcore.example.StatusCodeLib#checks.DATE_ERR" />
       <cparam name="format" value="yy/MM/dd" />
@@ -10,43 +14,43 @@
     </caster>
   </param>
   
-  <param name="Integer" type="java.lang.Integer" occurance="optional">
+  <param name="Integer" type="java.lang.Integer" occurrence="optional">
     <caster class="de.schlund.pfixcore.generator.casters.ToInteger">
       <cparam name="scodeCastError" value="de.schlund.pfixcore.example.StatusCodeLib#checks.INT_ERR" />
     </caster>
   </param>
   
-  <param name="Boolean" type="java.lang.Boolean" occurance="optional">
+  <param name="Boolean" type="java.lang.Boolean" occurrence="optional">
     <caster class="de.schlund.pfixcore.generator.casters.ToBoolean">
       <cparam name="scodeCastError" value="de.schlund.pfixcore.example.StatusCodeLib#checks.BOOL_ERR" />
     </caster>
   </param>
   
-  <param name="Byte" type="java.lang.Byte" occurance="optional">
+  <param name="Byte" type="java.lang.Byte" occurrence="optional">
     <caster class="de.schlund.pfixcore.generator.casters.ToByte">
       <cparam name="scodeCastError" value="de.schlund.pfixcore.example.StatusCodeLib#checks.BYTE_ERR" />
     </caster>
   </param>
   
-  <param name="Long" type="java.lang.Long" occurance="optional">
+  <param name="Long" type="java.lang.Long" occurrence="optional">
     <caster class="de.schlund.pfixcore.generator.casters.ToLong">
       <cparam name="scodeCastError" value="de.schlund.pfixcore.example.StatusCodeLib#checks.LONG_ERR" />
     </caster>
   </param>
 
-  <param name="Float" type="java.lang.Float" occurance="optional">
+  <param name="Float" type="java.lang.Float" occurrence="optional">
     <caster class="de.schlund.pfixcore.generator.casters.ToFloat">
       <cparam name="scodeCastError" value="de.schlund.pfixcore.example.StatusCodeLib#checks.FLOAT_ERR" />
     </caster>
   </param>
   
-  <param name="Double" type="java.lang.Double" occurance="optional">
+  <param name="Double" type="java.lang.Double" occurrence="optional">
     <caster class="de.schlund.pfixcore.generator.casters.ToDouble">
       <cparam name="scodeCastError" value="de.schlund.pfixcore.example.StatusCodeLib#checks.DOUBLE_ERR" />
     </caster>
   </param>
 
-  <param name="FloatRange" type="java.lang.Float" occurance="optional">
+  <param name="FloatRange" type="java.lang.Float" occurrence="optional">
     <caster class="de.schlund.pfixcore.generator.casters.ToFloat">
       <cparam name="scodeCastError" value="de.schlund.pfixcore.example.StatusCodeLib#checks.FLOAT_ERR" />
     </caster>
@@ -57,7 +61,7 @@
     </postcheck>
   </param>
 
-  <param name="IntegerRange" type="java.lang.Integer" occurance="optional">
+  <param name="IntegerRange" type="java.lang.Integer" occurrence="optional">
     <caster class="de.schlund.pfixcore.generator.casters.ToInteger">
       <cparam name="scodeCastError" value="de.schlund.pfixcore.example.StatusCodeLib#checks.INT_ERR" />
     </caster>
@@ -68,7 +72,7 @@
     </postcheck>
   </param>
 
-  <param name="StringLength" type="java.lang.String" occurance="optional">
+  <param name="StringLength" type="java.lang.String" occurrence="optional">
     <postcheck class="de.schlund.pfixcore.generator.postchecks.StringLength">
       <cparam name="minLength" value="2"/>
       <cparam name="maxLength" value="10"/>
@@ -77,30 +81,29 @@
     </postcheck>
   </param>
   
-  <param name="RegExp" type="java.lang.String" occurance="optional">
+  <param name="RegExp" type="java.lang.String" occurrence="optional">
     <precheck class="de.schlund.pfixcore.generator.prechecks.RegexpCheck">
       <cparam name="regexp" value="/^[a-zA-Z]*$/"/>
       <cparam name="scodeNoMatch" value="de.schlund.pfixcore.example.StatusCodeLib#checks.REGEXP_NO_MATCH" />
     </precheck>
   </param>
   
-  <param name="Perl5Pattern" type="org.apache.oro.text.regex.Perl5Pattern" occurance="optional">
+  <param name="Perl5Pattern" type="org.apache.oro.text.regex.Perl5Pattern" occurrence="optional">
     <caster class="de.schlund.pfixcore.generator.casters.ToInteger">
       <cparam name="scodeCastError" value="de.schlund.pfixcore.example.StatusCodeLib#checks.PERL5_ERR" />
     </caster>
   </param>
   
-  <param name="File" type="java.io.File" occurance="optional">
+  <param name="File" type="java.io.File" occurrence="optional">
     <caster class="de.schlund.pfixcore.generator.casters.ToFile">
       <cparam name="scodeCastError" value="de.schlund.pfixcore.example.StatusCodeLib#checks.FILE_ERR" />
     </caster>
   </param>
   
-  <param name="UploadFile" type="de.schlund.pfixxml.multipart.UploadFile" occurance="optional">
+  <param name="UploadFile" type="de.schlund.pfixxml.multipart.UploadFile" occurrence="optional">
     <caster class="de.schlund.pfixcore.generator.casters.ToUploadFile">
       <cparam name="scodeCastError" value="de.schlund.pfixcore.example.StatusCodeLib#checks.UPLOAD_FILE_ERR" />
     </caster>
   </param>
-  
 
 </interface> 

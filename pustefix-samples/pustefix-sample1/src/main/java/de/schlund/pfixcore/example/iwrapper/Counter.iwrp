@@ -1,12 +1,16 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<interface xmlns="http://pustefix.sourceforge.net/interfacewrapper200401" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://pustefix.sourceforge.net/interfacewrapper200401 http://pustefix.sourceforge.net/interfacewrapper200401.xsd">
+<interface xmlns="http://www.pustefix-framework.org/2008/namespace/iwrapper"
+           xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+           xsi:schemaLocation="http://www.pustefix-framework.org/2008/namespace/iwrapper 
+                               http://www.pustefix-framework.org/2008/namespace/iwrapper.xsd">
+
   <ihandler class="de.schlund.pfixcore.example.CounterHandler"/>
   
-  <param name="ShowCounter" type="java.lang.Boolean" occurence="optional">
+  <param name="ShowCounter" type="java.lang.Boolean" occurrence="optional">
     <caster class="de.schlund.pfixcore.generator.casters.ToBoolean"/>
   </param>
 
-  <param name="Add" type="java.lang.Integer" occurence="optional">
+  <param name="Add" type="java.lang.Integer" occurrence="optional">
     <caster class="de.schlund.pfixcore.generator.casters.ToInteger"/>
   </param>
 
