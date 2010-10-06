@@ -147,7 +147,8 @@ public class PustefixWebappMojo extends AbstractMojo {
             throw new MojoExecutionException("error creating buildtime.props", e);
         }
         basedir = project.getBasedir();
-        if (new Apt(basedir, aptdir, getLog()).execute(getPluginClasspath()) > 0) {
+        new Apt(basedir, aptdir, getLog()).execute(getPluginClasspath());
+        if(aptdir.exists()) {
             project.addCompileSourceRoot(aptdir.getAbsolutePath());
         }
     }
