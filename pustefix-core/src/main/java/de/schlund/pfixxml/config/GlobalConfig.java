@@ -116,6 +116,7 @@ public class GlobalConfig {
     
     static void setServletContext(ServletContext context) {
         if (docroot != null || servletContext != null) {
+            if(context.equals(servletContext)) return;
             throw new IllegalStateException("Docroot or servlet context may only be set once!");
         }
         servletContext = context;
