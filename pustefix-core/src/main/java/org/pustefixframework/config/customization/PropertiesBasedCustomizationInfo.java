@@ -69,7 +69,7 @@ public class PropertiesBasedCustomizationInfo implements CustomizationInfo {
     }
     
     private class IsSetFunction implements XPathFunction {
-        @SuppressWarnings("unchecked")
+        @SuppressWarnings("rawtypes")
         public Object evaluate(List args) throws XPathFunctionException {
             String varName = (String) args.get(0);
             return (properties.getProperty(varName) != null);

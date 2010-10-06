@@ -1,11 +1,9 @@
 package de.schlund.pfixcore.auth;
 
-import java.util.Arrays;
 import java.util.List;
 
 import junit.framework.Assert;
 
-import org.junit.Assume;
 import org.junit.Test;
 import org.junit.experimental.theories.DataPoints;
 import org.junit.experimental.theories.Theories;

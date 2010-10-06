@@ -49,7 +49,6 @@ import org.w3c.dom.Document;
 import org.xml.sax.InputSource;
 
 import de.schlund.pfixxml.resources.FileResource;
-import de.schlund.pfixxml.resources.ModuleResource;
 import de.schlund.pfixxml.resources.Resource;
 import de.schlund.pfixxml.resources.ResourceUtil;
 import de.schlund.pfixxml.targets.LeafTarget;

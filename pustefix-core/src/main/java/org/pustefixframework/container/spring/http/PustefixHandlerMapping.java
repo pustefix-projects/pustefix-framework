@@ -45,7 +45,7 @@ public class PustefixHandlerMapping extends AbstractDetectingUrlHandlerMapping {
     }
 
     @Override
-    @SuppressWarnings("unchecked")
+    @SuppressWarnings({"unchecked","rawtypes"})
     protected void extendInterceptors(List interceptors) {
         // Find all interceptors in the ApplicationContext and add them
         ApplicationContext applicationContext = getApplicationContext();

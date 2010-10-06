@@ -68,7 +68,7 @@ public class IWrapperRuntimeGenerator {
         return doc;
     }
 
-    @SuppressWarnings("unchecked")
+    @SuppressWarnings("rawtypes")
     public static void generate(Class<?> clazz, File genSrcDir) {
 
         BeanDescriptor beanDesc = new BeanDescriptor(clazz);

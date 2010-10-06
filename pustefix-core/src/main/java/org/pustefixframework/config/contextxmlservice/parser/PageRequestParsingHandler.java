@@ -148,7 +148,7 @@ public class PageRequestParsingHandler implements ParsingHandler {
                 String configBeanName;
                 String stateBeanName;
                 
-                @SuppressWarnings("unchecked")
+                @SuppressWarnings({"unchecked","rawtypes"})
                 Map<String, Object> wrapperMap = new ManagedMap(stateConfig.getIWrappers().size());
                 for (String prefix : stateConfig.getIWrappers().keySet()) {
                     IWrapperConfig wrapperConfig = stateConfig.getIWrappers().get(prefix);
@@ -211,7 +211,7 @@ public class PageRequestParsingHandler implements ParsingHandler {
                 
                 beanBuilder = BeanDefinitionBuilder.genericBeanDefinition(StateConfigImpl.class);
                 beanBuilder.setScope("singleton");
-                @SuppressWarnings("unchecked")
+                @SuppressWarnings({"unchecked","rawtypes"})
                 Map<String, Object> contextResources = new ManagedMap(stateConfig.getContextResources().size());
                 contextResources.putAll(stateConfig.getContextResources());
                 beanBuilder.addPropertyValue("contextResources", contextResources);

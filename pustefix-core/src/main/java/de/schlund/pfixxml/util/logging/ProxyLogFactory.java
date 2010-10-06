@@ -32,7 +32,7 @@ import org.apache.commons.logging.impl.LogFactoryImpl;
  */
 public class ProxyLogFactory extends LogFactoryImpl {
 
-    @SuppressWarnings("unchecked")
+    @SuppressWarnings("rawtypes")
     @Override
     protected Constructor getLogConstructor() throws LogConfigurationException {
         try {

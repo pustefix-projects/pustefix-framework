@@ -85,7 +85,7 @@ public class ContextXMLParsingHandler implements ParsingHandler {
             DefaultBeanNameGenerator beanNameGenerator = new DefaultBeanNameGenerator();
             BeanDefinitionRegistry beanRegistry = ParsingUtils.getSingleTopObject(BeanDefinitionRegistry.class, context);
             
-            @SuppressWarnings("unchecked")
+            @SuppressWarnings({"unchecked","rawtypes"})
             Map<String, Object> pageMap = new ManagedMap();
             Collection<PageRequestConfig> pageCollection = context.getObjectTreeElement().getObjectsOfTypeFromSubTree(PageRequestConfig.class);
             for (PageRequestConfig pageConfig : pageCollection) {
@@ -99,23 +99,23 @@ public class ContextXMLParsingHandler implements ParsingHandler {
             String pageMapBeanName = beanNameGenerator.generateBeanName(beanDefinition, beanRegistry);
             beanRegistry.registerBeanDefinition(pageMapBeanName, beanDefinition);
             
-            @SuppressWarnings("unchecked")
+            @SuppressWarnings({"unchecked","rawtypes"})
             List<Object> startInterceptors = new ManagedList();
             for (String interceptorBeanName : contextConfig.getStartInterceptorBeans()) {
                 startInterceptors.add(new RuntimeBeanReference(interceptorBeanName));
             }
-            @SuppressWarnings("unchecked")
+            @SuppressWarnings({"unchecked","rawtypes"})
             List<Object> endInterceptors = new ManagedList();
             for (String interceptorBeanName : contextConfig.getEndInterceptorBeans()) {
                 endInterceptors.add(new RuntimeBeanReference(interceptorBeanName));
             }
-            @SuppressWarnings("unchecked")
+            @SuppressWarnings({"unchecked","rawtypes"})
             List<Object> postRenderInterceptors = new ManagedList();
             for (String interceptorBeanName : contextConfig.getPostRenderInterceptorBeans()) {
                 postRenderInterceptors.add(new RuntimeBeanReference(interceptorBeanName));
             }
             
-            @SuppressWarnings("unchecked")
+            @SuppressWarnings({"unchecked","rawtypes"})
             Map<String, Object> pageFlowMap = new ManagedMap();
             for (PageFlowHolder pageFlowHolder : context.getObjectTreeElement().getObjectsOfTypeFromSubTree(PageFlowHolder.class)) {
                 pageFlowMap.put(pageFlowHolder.getName(), pageFlowHolder.getPageFlowObject());

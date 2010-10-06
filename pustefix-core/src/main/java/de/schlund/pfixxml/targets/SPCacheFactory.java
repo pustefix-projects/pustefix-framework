@@ -72,7 +72,7 @@ public class SPCacheFactory {
         }
     }
 
-    @SuppressWarnings("unchecked")
+    @SuppressWarnings({"unchecked","rawtypes"})
     private <T1, T2> SPCache<T1, T2> getCache(String className, int capacity) {
         SPCache<T1, T2> retval= null;
         try {

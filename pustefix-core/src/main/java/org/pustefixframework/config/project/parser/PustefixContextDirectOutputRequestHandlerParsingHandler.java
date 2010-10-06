@@ -123,7 +123,7 @@ public class PustefixContextDirectOutputRequestHandlerParsingHandler extends Cus
         
         String mapBeanName;
         beanBuilder = BeanDefinitionBuilder.genericBeanDefinition(MapFactoryBean.class);
-        @SuppressWarnings("unchecked")
+        @SuppressWarnings({"unchecked","rawtypes"})
         Map<String, Object> managedMap = new ManagedMap(stateMap.size());
         managedMap.putAll(stateMap);
         beanBuilder.addPropertyValue("sourceMap", managedMap);
