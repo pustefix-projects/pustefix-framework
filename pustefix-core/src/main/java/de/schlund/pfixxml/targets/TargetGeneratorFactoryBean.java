@@ -18,8 +18,15 @@
 
 package de.schlund.pfixxml.targets;
 
+import java.io.File;
+
+import javax.servlet.ServletContext;
+
+import org.springframework.web.context.ServletContextAware;
+
 import de.schlund.pfixxml.resources.FileResource;
 import de.schlund.pfixxml.resources.ResourceUtil;
+import de.schlund.pfixxml.util.FileUtils;
 
 
 /**
@@ -29,8 +36,9 @@ import de.schlund.pfixxml.resources.ResourceUtil;
  * 
  * @author Sebastian Marsching <sebastian.marsching@1und1.de>
  */
-public class TargetGeneratorFactoryBean {
+public class TargetGeneratorFactoryBean implements ServletContextAware {
     
+    private ServletContext servletContext;
     private FileResource configFile;
 
     /**
@@ -41,7 +49,20 @@ public class TargetGeneratorFactoryBean {
      * @throws Exception if TargetGenerator cannot be created
      */
     public Object getObject() throws Exception {
-        return TargetGeneratorFactory.getInstance().createGenerator(configFile);
+        TargetGenerator generator;
+        if(servletContext.getRealPath("/") == null) {
+            File tmpDir = (File)servletContext.getAttribute("javax.servlet.context.tempdir");
+            File cacheDir = new File(tmpDir, "pustefix-xsl-cache");
+            if(cacheDir.exists()) {
+                FileUtils.delete(cacheDir);
+                cacheDir.mkdir();
+            }
+            FileResource cacheRes = ResourceUtil.getFileResource(cacheDir.toURI());
+            generator = TargetGeneratorFactory.getInstance().createGenerator(configFile, cacheRes);
+        } else {
+            generator = TargetGeneratorFactory.getInstance().createGenerator(configFile);
+        }
+        return generator;
     }
     
     /**
@@ -53,6 +74,10 @@ public class TargetGeneratorFactoryBean {
      */
     public void setConfigFile(String path) {
         configFile = ResourceUtil.getFileResource(path);
+    }
+ 
+    public void setServletContext(ServletContext servletContext) {
+        this.servletContext = servletContext;
     }
     
 }

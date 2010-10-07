@@ -148,4 +148,20 @@ public class FileUtils {
         }
     }
     
+    /**
+     * Recursively deletes directory.
+     * 
+     * @param file directory to delete
+     * @return true if directory was deleted
+     */
+    public static boolean delete(File file) {
+        if(file.isDirectory()) {
+            File[] files=file.listFiles();
+            for(int i=0;i<files.length;i++) {
+                delete(files[i]);
+            }
+        }
+        return file.delete();
+    }
+    
 }

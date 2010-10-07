@@ -121,7 +121,8 @@ public class PustefixInit {
         
     	File tempDir = (File)servletContext.getAttribute("javax.servlet.context.tempdir");
     	if(tempDir != null && !tempDir.equals("")) {
-    	    JarFileCache.setTempDir(tempDir);
+    	    File cacheDir = new File(tempDir, "pustefix-jar-cache");
+    	    JarFileCache.setCacheDir(cacheDir);
     	}
     	
     	// old webapps specify docroot -- true webapps don't

@@ -23,27 +23,30 @@ public class JarFileCache {
     
     private static JarFileCache instance;
     
-    private File cacheDir;
-    private Map<URL,CacheEntry> jarFileCache = new HashMap<URL,CacheEntry>();
+    private final File cacheDir;
+    private final Map<URL,CacheEntry> jarFileCache = new HashMap<URL,CacheEntry>();
     
     public synchronized static JarFileCache getInstance() {
         if(instance == null) instance = new JarFileCache();
         return instance;
     }
     
-    public synchronized static void setTempDir(File tempDir) {
-        instance = new JarFileCache(tempDir);
+    public synchronized static void setCacheDir(File cacheDir) {
+        instance = new JarFileCache(cacheDir);
     }
     
     public JarFileCache() {
-        this(new File(System.getProperty("java.io.tmpdir")));
-    }
-    
-    public JarFileCache(File tempDir) {
-        if(!tempDir.exists()) throw new RuntimeException("Temporary directory doesn't exist: " + tempDir.getPath());
+        File tempDir = new File(System.getProperty("java.io.tmpdir"));
         UID uid = new UID();
         String md5 = MD5Utils.hex_md5(uid.toString());
-        cacheDir = new File(tempDir, md5);
+        cacheDir = new File(tempDir, "pustefix-jar-cache/" + md5);
+        cacheDir.mkdirs();
+    }
+    
+    public JarFileCache(File cacheDir) {
+        this.cacheDir = cacheDir;
+        if(cacheDir.exists()) delete(cacheDir);
+        cacheDir.mkdirs();
     }
     
     public JarFile getJarFile(URL url) throws IOException {
@@ -96,7 +99,12 @@ public class JarFileCache {
         return file;    
     }
     
-    public static boolean delete(File file) {
+    @Override
+    protected void finalize() throws Throwable {
+        if(cacheDir != null) delete(cacheDir);
+    }
+    
+    private static boolean delete(File file) {
         if(file.isDirectory()) {
             File[] files=file.listFiles();
             for(int i=0;i<files.length;i++) {
@@ -104,11 +112,6 @@ public class JarFileCache {
             }
         }
         return file.delete();
-    }
-    
-    @Override
-    protected void finalize() throws Throwable {
-        if(cacheDir != null) delete(cacheDir);
     }
     
     class CacheEntry {
