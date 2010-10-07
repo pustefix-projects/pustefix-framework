@@ -52,6 +52,7 @@ import org.xml.sax.helpers.XMLReaderFactory;
 
 import de.schlund.pfixcore.exception.PustefixCoreException;
 import de.schlund.pfixcore.util.JarFileCache;
+import de.schlund.pfixxml.config.BuildTimeProperties;
 import de.schlund.pfixxml.config.CustomizationHandler;
 import de.schlund.pfixxml.config.GlobalConfig;
 import de.schlund.pfixxml.config.GlobalConfigurator;
@@ -150,6 +151,14 @@ public class PustefixInit {
     		properties.setProperty("pustefix.docroot", docrootstr);
     	}
     
+    	// override buildtime properties by according context init parameters
+    	for(String prop: BuildTimeProperties.PROPERTY_NAMES) {
+    	    String value = servletContext.getInitParameter(prop);
+    	    if(value != null && !value.equals("")) {
+    	        BuildTimeProperties.getProperties().put(prop, value);
+    	    }
+    	}
+    	
     	configureLogging(properties, servletContext);
     	LOG.debug(">>>> LOG4J Init OK <<<<");
     	

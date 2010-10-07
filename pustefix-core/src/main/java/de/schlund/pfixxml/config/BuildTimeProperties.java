@@ -31,6 +31,14 @@ import de.schlund.pfixxml.resources.ResourceUtil;
  * @author Sebastian Marsching <sebastian.marsching@1und1.de>
  */
 public class BuildTimeProperties {
+    
+    public static final String[] PROPERTY_NAMES = {
+        "fqdn",
+        "machine",
+        "mode",
+        "uid"
+    };
+    
     public static final String PATH = "WEB-INF/buildtime.prop";
     
     private static Properties props = null;
