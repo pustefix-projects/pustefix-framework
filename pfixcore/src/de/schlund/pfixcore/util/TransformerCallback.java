@@ -220,13 +220,15 @@ public class TransformerCallback {
                     root.appendChild(elem);
                 }
             }
-            Map<String, ? extends ProcessActionPageRequestConfig> actions = pageConfig.getProcessActions();
-            if (actions != null && !actions.isEmpty()) {
-                Element actionelement = doc.createElement("actions");
-                root.appendChild(actionelement);
-                for (Iterator<? extends ProcessActionPageRequestConfig> iterator = actions.values().iterator(); iterator.hasNext();) {
-                    ProcessActionPageRequestConfig action =  iterator.next();
-                    ResultDocument.addObject(actionelement, "action", action);
+            if(pageConfig != null) {
+                Map<String, ? extends ProcessActionPageRequestConfig> actions = pageConfig.getProcessActions();
+                if (actions != null && !actions.isEmpty()) {
+                    Element actionelement = doc.createElement("actions");
+                    root.appendChild(actionelement);
+                    for (Iterator<? extends ProcessActionPageRequestConfig> iterator = actions.values().iterator(); iterator.hasNext();) {
+                        ProcessActionPageRequestConfig action =  iterator.next();
+                        ResultDocument.addObject(actionelement, "action", action);
+                    }
                 }
             }
             if (LOG.isDebugEnabled()) {
