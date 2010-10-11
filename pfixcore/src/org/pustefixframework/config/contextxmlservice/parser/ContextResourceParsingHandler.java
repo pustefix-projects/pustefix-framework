@@ -46,15 +46,9 @@ import com.marsching.flexiparse.parser.exception.ParserException;
  */
 public class ContextResourceParsingHandler implements ParsingHandler {
     
-    private final Set<String> supportedScopes;
     private final String defaultScope = "session";
     
     public ContextResourceParsingHandler() {
-        supportedScopes = new HashSet<String>();
-        supportedScopes.add("prototype");
-        supportedScopes.add("singleton");
-        supportedScopes.add("request");
-        supportedScopes.add("session");
     }
     
     public void handleNode(HandlerContext context) throws ParserException {
@@ -106,9 +100,6 @@ public class ContextResourceParsingHandler implements ParsingHandler {
             
         String scope = element.getAttribute("scope");
         if(scope == null || scope.trim().equals("")) scope = defaultScope;
-        else if(!supportedScopes.contains(scope)) {
-            throw new ParserException("Bean scope isn't supported: "+scope);
-        }
             
         BeanDefinitionBuilder beanBuilder = BeanDefinitionBuilder.genericBeanDefinition(implClass);
         String parentBeanRef = element.getAttribute("parent-bean-ref").trim();
