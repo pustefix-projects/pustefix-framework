@@ -25,7 +25,7 @@ import org.apache.log4j.Logger;
 import org.pustefixframework.live.LiveResolver;
 
 import de.schlund.pfixcore.exception.PustefixRuntimeException;
-import de.schlund.pfixxml.config.BuildTimeProperties;
+import de.schlund.pfixxml.config.EnvironmentProperties;
 import de.schlund.pfixxml.resources.DocrootResourceProvider;
 import de.schlund.pfixxml.resources.Resource;
 
@@ -49,8 +49,8 @@ public class DocrootResourceOnFileSystemProvider extends DocrootResourceProvider
 
         boolean checkLive;
         // Ensure resources are read from real docroot in production environment
-        checkLive = BuildTimeProperties.getProperties().getProperty("mode") != null
-            && !BuildTimeProperties.getProperties().getProperty("mode").equals("prod");
+        checkLive = EnvironmentProperties.getProperties().getProperty("mode") != null
+            && !EnvironmentProperties.getProperties().getProperty("mode").equals("prod");
 
         if (checkLive) {
             if (LOG.isDebugEnabled()) {

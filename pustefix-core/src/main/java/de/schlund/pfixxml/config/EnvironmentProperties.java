@@ -27,7 +27,7 @@ import java.util.Set;
 /**
  * Provides easy access to environment dependent properties
  */
-public class BuildTimeProperties extends Properties {
+public class EnvironmentProperties extends Properties {
     
     private static final long serialVersionUID = -8915762987670154888L;
     
@@ -40,13 +40,13 @@ public class BuildTimeProperties extends Properties {
         AUTODETECT_PROPERTIES.add("uid");
     }
     
-    private static Properties props = new BuildTimeProperties();
+    private static Properties props = new EnvironmentProperties();
 
-    public BuildTimeProperties() {
+    public EnvironmentProperties() {
         super(System.getProperties());
     }
     
-    public BuildTimeProperties(Properties props) {
+    public EnvironmentProperties(Properties props) {
         super(props);
     }
     
@@ -73,7 +73,7 @@ public class BuildTimeProperties extends Properties {
     }
 
     public static void setProperties(Properties p) {
-        props = new BuildTimeProperties(p);
+        props = new EnvironmentProperties(p);
     }
     
     private static String getFQDN() {

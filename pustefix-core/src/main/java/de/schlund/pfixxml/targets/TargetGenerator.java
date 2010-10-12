@@ -55,7 +55,7 @@ import de.schlund.pfixcore.util.Meminfo;
 import de.schlund.pfixcore.workflow.NavigationFactory;
 import de.schlund.pfixxml.IncludeDocumentFactory;
 import de.schlund.pfixxml.XMLException;
-import de.schlund.pfixxml.config.BuildTimeProperties;
+import de.schlund.pfixxml.config.EnvironmentProperties;
 import de.schlund.pfixxml.config.CustomizationHandler;
 import de.schlund.pfixxml.config.GlobalConfigurator;
 import de.schlund.pfixxml.config.includes.FileIncludeEvent;
@@ -312,7 +312,7 @@ public class TargetGenerator implements Comparable<TargetGenerator> {
             xreader.parse(new InputSource(new StringReader(fullXml)));
             try {
                 Transformer trans = SimpleResolver.configure(tf, "/pustefix/xsl/depend.xsl");
-                if (BuildTimeProperties.getProperties().getProperty("mode").equals("prod")) {
+                if (EnvironmentProperties.getProperties().getProperty("mode").equals("prod")) {
                     trans.setParameter("prohibitEdit", "yes");
                 } else {
                     trans.setParameter("prohibitEdit", "no");

@@ -53,7 +53,7 @@ import org.xml.sax.helpers.XMLReaderFactory;
 
 import de.schlund.pfixcore.exception.PustefixCoreException;
 import de.schlund.pfixcore.util.JarFileCache;
-import de.schlund.pfixxml.config.BuildTimeProperties;
+import de.schlund.pfixxml.config.EnvironmentProperties;
 import de.schlund.pfixxml.config.CustomizationHandler;
 import de.schlund.pfixxml.config.GlobalConfig;
 import de.schlund.pfixxml.config.GlobalConfigurator;
@@ -158,7 +158,7 @@ public class PustefixInit {
     	    String name = (String)names.nextElement();
     	    String value = servletContext.getInitParameter(name);
             if(value != null && !value.equals("")) {
-                BuildTimeProperties.getProperties().put(name, value);
+                EnvironmentProperties.getProperties().put(name, value);
             }
     	}
     	

@@ -31,7 +31,7 @@ import com.marsching.flexiparse.parser.HandlerContext;
 import com.marsching.flexiparse.parser.ParsingHandler;
 import com.marsching.flexiparse.parser.exception.ParserException;
 
-import de.schlund.pfixxml.config.BuildTimeProperties;
+import de.schlund.pfixxml.config.EnvironmentProperties;
 
 public class DocrootRequestHandlerParsingHandler implements ParsingHandler {
     
@@ -77,7 +77,7 @@ public class DocrootRequestHandlerParsingHandler implements ParsingHandler {
         beanBuilder.addPropertyValue("base", basePath);
         beanBuilder.addPropertyValue("defaultPath", defaultPath);
         beanBuilder.addPropertyValue("passthroughPaths", paths);
-        beanBuilder.addPropertyValue("mode", BuildTimeProperties.getProperties().getProperty("mode"));
+        beanBuilder.addPropertyValue("mode", EnvironmentProperties.getProperties().getProperty("mode"));
         
         context.getObjectTreeElement().addObject(new BeanDefinitionHolder(beanBuilder.getBeanDefinition(), "org.pustefixframework.http.DocrootRequestHandler"));
     }

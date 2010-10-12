@@ -61,7 +61,7 @@ import de.schlund.pfixxml.RequestParam;
 import de.schlund.pfixxml.SPDocument;
 import de.schlund.pfixxml.SessionCleaner;
 import de.schlund.pfixxml.Variant;
-import de.schlund.pfixxml.config.BuildTimeProperties;
+import de.schlund.pfixxml.config.EnvironmentProperties;
 import de.schlund.pfixxml.perflogging.AdditionalTrailInfo;
 import de.schlund.pfixxml.serverutil.SessionHelper;
 import de.schlund.pfixxml.targets.PageInfo;
@@ -192,7 +192,7 @@ public abstract class AbstractPustefixXMLRequestHandler extends AbstractPustefix
     private void initValues() throws ServletException {
         servletname = this.getAbstractXMLServletConfig().getServletName();
 
-        String mode = BuildTimeProperties.getProperties().getProperty("mode");
+        String mode = EnvironmentProperties.getProperties().getProperty("mode");
         if(!"prod".equals(mode)) xmlOnlyAllowed = true; 
         
         if (generator == null) {

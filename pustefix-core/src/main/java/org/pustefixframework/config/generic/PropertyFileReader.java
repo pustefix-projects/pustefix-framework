@@ -31,7 +31,7 @@ import org.xml.sax.InputSource;
 import com.marsching.flexiparse.parser.ClasspathConfiguredParser;
 import com.marsching.flexiparse.parser.exception.ParserException;
 
-import de.schlund.pfixxml.config.BuildTimeProperties;
+import de.schlund.pfixxml.config.EnvironmentProperties;
 import de.schlund.pfixxml.resources.FileResource;
 
 /**
@@ -61,7 +61,7 @@ public class PropertyFileReader {
     
     public static void read(InputSource in, Properties properties) throws ParserException {
         
-        PropertiesBasedCustomizationInfo customizationInfo = new PropertiesBasedCustomizationInfo(BuildTimeProperties.getProperties());
+        PropertiesBasedCustomizationInfo customizationInfo = new PropertiesBasedCustomizationInfo(EnvironmentProperties.getProperties());
         ClasspathConfiguredParser parser = new ClasspathConfiguredParser("META-INF/org/pustefixframework/config/generic/properties-config.xml");
         
         parser.parse(in, customizationInfo, properties);

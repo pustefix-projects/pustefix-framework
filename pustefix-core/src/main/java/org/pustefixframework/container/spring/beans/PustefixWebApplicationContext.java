@@ -47,7 +47,7 @@ import org.xml.sax.SAXException;
 
 import de.schlund.pfixcore.exception.PustefixCoreException;
 import de.schlund.pfixcore.exception.PustefixRuntimeException;
-import de.schlund.pfixxml.config.BuildTimeProperties;
+import de.schlund.pfixxml.config.EnvironmentProperties;
 
 public class PustefixWebApplicationContext extends AbstractRefreshableWebApplicationContext {
 	
@@ -63,7 +63,7 @@ public class PustefixWebApplicationContext extends AbstractRefreshableWebApplica
     	}
     	
     	if(LOG.isInfoEnabled()) {
-            Properties props = BuildTimeProperties.getProperties();
+            Properties props = EnvironmentProperties.getProperties();
             LOG.info("Initializing Pustefix with runtime properties: " +
                 "fqdn=" + props.getProperty("fqdn") +
                 ", machine=" + props.getProperty("machine") +

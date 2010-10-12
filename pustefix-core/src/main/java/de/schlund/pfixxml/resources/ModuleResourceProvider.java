@@ -28,7 +28,7 @@ import org.pustefixframework.live.LiveResolver;
 import de.schlund.pfixcore.exception.PustefixRuntimeException;
 import de.schlund.pfixcore.util.ModuleDescriptor;
 import de.schlund.pfixcore.util.ModuleInfo;
-import de.schlund.pfixxml.config.BuildTimeProperties;
+import de.schlund.pfixxml.config.EnvironmentProperties;
 
 /**
  * 
@@ -61,7 +61,7 @@ public class ModuleResourceProvider implements ResourceProvider {
         if (desc != null) {
             URL url = desc.getURL().getProtocol().equals("jar") ? getJarURL(desc.getURL()) : getFileUrl(desc.getURL());
             // Ensure module resources are read from classpath in production environment
-            boolean checkLive = !BuildTimeProperties.getProperties().getProperty("mode").equals("prod");
+            boolean checkLive = !EnvironmentProperties.getProperties().getProperty("mode").equals("prod");
             if (checkLive) {
                 if (LOG.isDebugEnabled()) {
                     LOG.debug("Getting live resource for " + uri);

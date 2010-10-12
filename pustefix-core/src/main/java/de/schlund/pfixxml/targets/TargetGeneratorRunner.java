@@ -20,7 +20,7 @@ import org.w3c.dom.Element;
 import org.w3c.dom.NodeList;
 
 import de.schlund.pfixcore.util.ModuleInfo;
-import de.schlund.pfixxml.config.BuildTimeProperties;
+import de.schlund.pfixxml.config.EnvironmentProperties;
 import de.schlund.pfixxml.config.GlobalConfigurator;
 import de.schlund.pfixxml.resources.FileResource;
 import de.schlund.pfixxml.resources.ResourceUtil;
@@ -45,7 +45,7 @@ public class TargetGeneratorRunner {
         
         Properties props = new Properties();
         props.setProperty("mode", mode);
-        BuildTimeProperties.setProperties(props);
+        EnvironmentProperties.setProperties(props);
         
         GlobalConfigurator.setDocroot(docroot.getPath());
         

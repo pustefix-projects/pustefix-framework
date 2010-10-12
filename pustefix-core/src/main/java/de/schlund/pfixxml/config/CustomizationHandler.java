@@ -126,7 +126,7 @@ public class CustomizationHandler extends DefaultHandler {
      *        elements within
      */
     public CustomizationHandler(DefaultHandler targetHandler, String namespace) {
-        this(targetHandler, BuildTimeProperties.getProperties(), namespace,
+        this(targetHandler, EnvironmentProperties.getProperties(), namespace,
                 namespace);
     }
 
@@ -142,7 +142,7 @@ public class CustomizationHandler extends DefaultHandler {
      */
     public CustomizationHandler(DefaultHandler targetHandler, String namespace,
             String namespaceContent) {
-        this(targetHandler, BuildTimeProperties.getProperties(), namespace,
+        this(targetHandler, EnvironmentProperties.getProperties(), namespace,
                 namespaceContent);
     }
 
@@ -158,7 +158,7 @@ public class CustomizationHandler extends DefaultHandler {
      */
     public CustomizationHandler(DefaultHandler targetHandler, String namespace,
             String namespaceContent, String[] pathsToMatch) {
-        this(targetHandler, BuildTimeProperties.getProperties(), namespace,
+        this(targetHandler, EnvironmentProperties.getProperties(), namespace,
                 namespaceContent);
         this.matchingPaths = pathsToMatch;
     }

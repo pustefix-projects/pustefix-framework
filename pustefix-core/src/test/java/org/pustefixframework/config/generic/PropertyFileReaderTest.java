@@ -29,7 +29,7 @@ import org.apache.log4j.PatternLayout;
 import org.junit.Before;
 import org.junit.Test;
 
-import de.schlund.pfixxml.config.BuildTimeProperties;
+import de.schlund.pfixxml.config.EnvironmentProperties;
 
 /**
  * 
@@ -52,7 +52,7 @@ public class PropertyFileReaderTest {
         Properties btp = new Properties();
         btp.put("mode", "test");
         btp.put("fqdn", "fqdn");
-        BuildTimeProperties.setProperties(btp);
+        EnvironmentProperties.setProperties(btp);
         InputStream in = getClass().getResourceAsStream("/properties.xml");
         Properties props = new Properties();
         PropertyFileReader.read(in, props);
@@ -60,9 +60,9 @@ public class PropertyFileReaderTest {
         refProps.setProperty("foo", "bar");
         refProps.setProperty("hey", "ho");
         
-        String mode = BuildTimeProperties.getProperties().getProperty("mode");
+        String mode = EnvironmentProperties.getProperties().getProperty("mode");
         refProps.setProperty("mode", mode);
-        String fqdn = BuildTimeProperties.getProperties().getProperty("fqdn");
+        String fqdn = EnvironmentProperties.getProperties().getProperty("fqdn");
         refProps.setProperty("fqdn", fqdn);
         
         assertEquals(props, refProps);

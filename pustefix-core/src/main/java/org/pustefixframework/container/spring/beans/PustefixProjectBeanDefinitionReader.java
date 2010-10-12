@@ -36,7 +36,7 @@ import com.marsching.flexiparse.parser.ClasspathConfiguredParser;
 import com.marsching.flexiparse.parser.Parser;
 import com.marsching.flexiparse.parser.exception.ParserException;
 
-import de.schlund.pfixxml.config.BuildTimeProperties;
+import de.schlund.pfixxml.config.EnvironmentProperties;
 
 public class PustefixProjectBeanDefinitionReader extends AbstractBeanDefinitionReader {
     
@@ -48,7 +48,7 @@ public class PustefixProjectBeanDefinitionReader extends AbstractBeanDefinitionR
         // TODO Use BeanFactory's class loader
         ObjectTreeElement projectConfigTree;
         // FIXME Use new implementation of build-time properties
-        Properties buildTimeProperties = BuildTimeProperties.getProperties();
+        Properties buildTimeProperties = EnvironmentProperties.getProperties();
         CustomizationInfo info = new PropertiesBasedCustomizationInfo(buildTimeProperties);
         try {
             Parser projectConfigParser = new ClasspathConfiguredParser("META-INF/org/pustefixframework/config/project/parser/project-config.xml");

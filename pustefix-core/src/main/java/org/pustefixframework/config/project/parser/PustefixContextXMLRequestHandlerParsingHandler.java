@@ -58,7 +58,7 @@ import com.marsching.flexiparse.parser.exception.ParserException;
 
 import de.schlund.pfixcore.workflow.ContextImpl;
 import de.schlund.pfixxml.SessionCleaner;
-import de.schlund.pfixxml.config.BuildTimeProperties;
+import de.schlund.pfixxml.config.EnvironmentProperties;
 import de.schlund.pfixxml.config.includes.IncludesResolver;
 import de.schlund.pfixxml.exceptionprocessor.ExceptionProcessingConfiguration;
 import de.schlund.pfixxml.resources.FileResource;
@@ -140,7 +140,7 @@ public class PustefixContextXMLRequestHandlerParsingHandler extends Customizatio
         if(beanRegs.size()==0) throw new ParserException("No BeanDefinitionRegistry object found.");
         else if(beanRegs.size()>1) throw new ParserException("Multiple BeanDefinitionRegistry objects found.");
         BeanDefinitionRegistry beanReg = beanRegs.iterator().next();
-        Properties buildTimeProperties = BuildTimeProperties.getProperties();
+        Properties buildTimeProperties = EnvironmentProperties.getProperties();
         CustomizationInfo cusInfo = new PropertiesBasedCustomizationInfo(buildTimeProperties);
         try {
             Parser contextXmlConfigParser = new ClasspathConfiguredParser("META-INF/org/pustefixframework/config/context-xml-service/parser/context-xml-service-config.xml");
