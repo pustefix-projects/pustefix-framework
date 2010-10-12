@@ -52,8 +52,8 @@
     <section xml:id="news.0_15_11.config">
       <title>New configuration system enhancements</title>
       <para>
-        We improved the configuration customization support by adding context init parameters to the environment properties
-        available as XPath variables during the customization process (see <xref linkend="configuration.customization"/>).
+        We improved the configuration customization support by making context init parameters available as environment properties
+        and thus usable as XPath variables during the customization process (see <xref linkend="configuration.customization"/>).
       </para>
       <para>
         Besides we dropped the storage of environment properties during the build (and the reusage at runtime). Thus a WAR file
