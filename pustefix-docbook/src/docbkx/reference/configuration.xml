@@ -42,7 +42,7 @@
       Virtually all configuration files used by Pustefix support a mechanism 
       called "customization". You may use this customization support to use 
       different portions of a configuration file depending on the environment
-      being used when building the project. For this task, the customization 
+      within your application is running. For this task, the customization 
       tools provide a <tag>choose</tag> tag which is similar to the 
       <tag>choose</tag> tag provided by XSLT.
     </para>
@@ -98,17 +98,17 @@
         </listitem>
         <listitem>
           <para>
-            <literal>__antprop_*</literal>: All properties defined
-            within Ant's <literal>build.xml</literal> file are 
-            provided as variables with the prefix 
-            <literal>__antprop_</literal>.
+            You not only have access to the predefined variables. You can also reference
+            System properties and ServletContext init parameters. If you want to override
+            the values of an automatically set predefined property, you can do this by adding an
+            according context init parameter to your <literal>web.xml</literal>.
           </para>
         </listitem>
       </itemizedlist>
       It is an error to reference a variable that is not defined. Therefore you
       might use the special XPath function 
       <literal>pfx:isSet('variableName')</literal> to check if a variable with 
-      a certain name is defined. 
+      a certain name is defined.
     </para>
   </section>
   

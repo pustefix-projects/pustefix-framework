@@ -5,7 +5,7 @@
 >
   <title>What's new in Pustefix 0.15.x</title>    
   <section xml:id="news.0_15_6">
-    <title>New features and enhancements in Pustefix 0.15.6</title>
+    <title>What's new in Pustefix 0.15.6</title>
   
     <section xml:id="news.0_15_6.modules">
       <title>New module enhancements</title>
@@ -25,7 +25,7 @@
   </section>
   
   <section xml:id="news.0_15_7">
-    <title>New features and enhancements in Pustefix 0.15.7</title>
+    <title>What's new in Pustefix 0.15.7</title>
 
     <section xml:id="news.0_15_7.modules">
       <title>New module enhancements</title>
@@ -42,6 +42,24 @@
         Now they're automatically detected within module jars
         and merged to the according <literal>modules-override</literal> folder.
       </para> 
+   
+    </section>
+  </section>
+
+  <section xml:id="news.0_15_11">
+    <title>What's new in Pustefix 0.15.11</title>
+
+    <section xml:id="news.0_15_11.config">
+      <title>New configuration system enhancements</title>
+      <para>
+        We improved the configuration customization support by adding context init parameters to the environment properties
+        available as XPath variables during the customization process (see <xref linkend="configuration.customization"/>).
+      </para>
+      <para>
+        Besides we dropped the storage of environment properties during the build (and the reusage at runtime). Thus a WAR file
+        doesn't contain build-dependent settings any longer and can be used in different environments. Environment specific
+        config customizations can be controlled by setting according context init parameters.
+      </para>
    
     </section>
   </section>
