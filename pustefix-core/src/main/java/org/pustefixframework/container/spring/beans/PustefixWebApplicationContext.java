@@ -19,11 +19,13 @@
 package org.pustefixframework.container.spring.beans;
 
 import java.io.IOException;
+import java.util.Properties;
 
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.ParserConfigurationException;
 
+import org.apache.log4j.Logger;
 import org.pustefixframework.container.spring.util.PustefixPropertiesPersister;
 import org.pustefixframework.http.internal.PustefixInit;
 import org.springframework.beans.BeansException;
@@ -45,9 +47,12 @@ import org.xml.sax.SAXException;
 
 import de.schlund.pfixcore.exception.PustefixCoreException;
 import de.schlund.pfixcore.exception.PustefixRuntimeException;
+import de.schlund.pfixxml.config.BuildTimeProperties;
 
 public class PustefixWebApplicationContext extends AbstractRefreshableWebApplicationContext {
 	
+    private Logger LOG = Logger.getLogger(PustefixWebApplicationContext.class);
+    
     @Override
     protected void loadBeanDefinitions(DefaultListableBeanFactory beanFactory) throws IOException, BeansException {
     	
@@ -56,6 +61,15 @@ public class PustefixWebApplicationContext extends AbstractRefreshableWebApplica
     	} catch(PustefixCoreException x) {
     		throw new PustefixRuntimeException("Pustefix initialization failed", x);
     	}
+    	
+    	if(LOG.isInfoEnabled()) {
+            Properties props = BuildTimeProperties.getProperties();
+            LOG.info("Initializing Pustefix with runtime properties: " +
+                "fqdn=" + props.getProperty("fqdn") +
+                ", machine=" + props.getProperty("machine") +
+                ", mode=" + props.getProperty("mode") +
+                ", uid=" + props.getProperty("uid"));
+        }
     	
     	String configLocations[] = getConfigLocations();
         if (configLocations == null) {

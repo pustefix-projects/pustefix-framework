@@ -18,55 +18,110 @@
 
 package de.schlund.pfixxml.config;
 
-import java.io.IOException;
+import java.net.InetAddress;
+import java.net.UnknownHostException;
+import java.util.HashSet;
 import java.util.Properties;
-
-import org.apache.log4j.Logger;
-
-import de.schlund.pfixxml.resources.ResourceUtil;
+import java.util.Set;
 
 /**
- * Provides easy access to properties stored at buildtime 
- * 
- * @author Sebastian Marsching <sebastian.marsching@1und1.de>
+ * Provides easy access to environment dependent properties
  */
-public class BuildTimeProperties {
+public class BuildTimeProperties extends Properties {
     
-    public static final String[] PROPERTY_NAMES = {
-        "fqdn",
-        "machine",
-        "mode",
-        "uid"
-    };
+    private static final long serialVersionUID = -8915762987670154888L;
     
-    public static final String PATH = "WEB-INF/buildtime.prop";
-    
-    private static Properties props = null;
+    public static final Set<String> AUTODETECT_PROPERTIES = new HashSet<String>();
 
-    public static Properties getProperties() {
-        if (BuildTimeProperties.props == null) {
-            Properties props = new Properties(System.getProperties());
-            try {
-                props.load(ResourceUtil.getFileResourceFromDocroot(PATH).getInputStream());
-                BuildTimeProperties.props = props;
-            } catch (IOException e) {
-                Logger.getLogger(BuildTimeProperties.class).error(
-                        "Could not load buildtime properties!");
+    static {
+        AUTODETECT_PROPERTIES.add("fqdn");
+        AUTODETECT_PROPERTIES.add("machine");
+        AUTODETECT_PROPERTIES.add("mode");
+        AUTODETECT_PROPERTIES.add("uid");
+    }
+    
+    private static Properties props = new BuildTimeProperties();
+
+    public BuildTimeProperties() {
+        super(System.getProperties());
+    }
+    
+    public BuildTimeProperties(Properties props) {
+        super(props);
+    }
+    
+    @Override
+    public String getProperty(String name) {
+        String value = super.getProperty(name);
+        if(value == null && AUTODETECT_PROPERTIES.contains(name)) {
+            if(name.equals("fqdn")) {
+                value = getFQDN();
+            } else if(name.equals("machine")) {
+                value = getMachine();
+            } else if(name.equals("mode")) {
+                value = getMode();
+            } else if(name.equals("uid")) {
+                value = getUID();
             }
-            return props;
+            setProperty(name, value);
         }
-        return BuildTimeProperties.props;
+        return value;
+    }
+    
+    public static Properties getProperties() {
+        return props;
     }
 
     public static void setProperties(Properties p) {
-        props = p; 
+        props = new BuildTimeProperties(p);
     }
     
-    public static void generate(Properties props, String mode, String machine, String fqdn, String uid) throws IOException {
-        props.setProperty("mode", mode);
-        props.setProperty("machine", machine);
-        props.setProperty("fqdn", fqdn);
-        props.setProperty("uid", uid);
-        props.store(ResourceUtil.getFileResourceFromDocroot(PATH).getOutputStream(), "Properties used at buildtime");
+    private static String getFQDN() {
+        String fqdn = null;
+        try {
+            String hostAddress = InetAddress.getLocalHost().getHostAddress();
+            fqdn = InetAddress.getLocalHost().getCanonicalHostName();
+            if(fqdn.equals(hostAddress)) fqdn = InetAddress.getLocalHost().getHostName();
+            if(!fqdn.equals(hostAddress)) {
+                int ind = fqdn.indexOf('.');
+                if(ind > -1) fqdn = fqdn.substring(ind);
+                fqdn = getMachine() + fqdn;
+            }
+        } catch(UnknownHostException x) {
+            throw new RuntimeException("Error getting FQDN", x);
+        }
+        return fqdn;
     }
+    
+    private static String getMachine() {
+        String machine = System.getenv("MACHINE");
+        if(machine == null || machine.trim().equals("")) {
+            try {
+                String hostAddress = InetAddress.getLocalHost().getHostAddress();
+                machine = InetAddress.getLocalHost().getHostName();
+                if(machine.equals(hostAddress)) machine = InetAddress.getLocalHost().getCanonicalHostName();
+                if(!machine.equals(hostAddress)) {
+                    int ind = machine.indexOf('.');
+                    if(ind > -1) machine = machine.substring(0, ind);
+                }
+            } catch(UnknownHostException x) {
+                throw new RuntimeException("Error getting machine name", x);
+            }
+        }
+        if(machine == null) throw new RuntimeException("Can't get machine name");
+        return machine;
+    }
+    
+    private static String getMode() {
+        String mode = System.getenv("MAKE_MODE");
+        if(mode == null || mode.trim().equals("")) mode = "prod";
+        return mode;
+    }
+    
+    private static String getUID() {
+        String uid = System.getProperty("user.name");
+        if(uid == null || uid.trim().equals("")) uid = "servlet";
+        return uid;
+    }
+    
 }

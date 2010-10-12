@@ -22,6 +22,7 @@ import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
+import java.util.Enumeration;
 import java.util.Properties;
 
 import javax.servlet.ServletContext;
@@ -152,11 +153,13 @@ public class PustefixInit {
     	}
     
     	// override buildtime properties by according context init parameters
-    	for(String prop: BuildTimeProperties.PROPERTY_NAMES) {
-    	    String value = servletContext.getInitParameter(prop);
-    	    if(value != null && !value.equals("")) {
-    	        BuildTimeProperties.getProperties().put(prop, value);
-    	    }
+    	Enumeration<?> names = servletContext.getInitParameterNames();
+    	while(names.hasMoreElements()) {
+    	    String name = (String)names.nextElement();
+    	    String value = servletContext.getInitParameter(name);
+            if(value != null && !value.equals("")) {
+                BuildTimeProperties.getProperties().put(name, value);
+            }
     	}
     	
     	configureLogging(properties, servletContext);

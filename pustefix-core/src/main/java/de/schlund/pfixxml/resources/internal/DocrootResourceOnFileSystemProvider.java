@@ -48,14 +48,9 @@ public class DocrootResourceOnFileSystemProvider extends DocrootResourceProvider
     public Resource getResource(URI uri) {
 
         boolean checkLive;
-        if (uri.getPath().equals("/" + BuildTimeProperties.PATH)) {
-            // special case for WEB-INF/buildtime.prop: avoid recursive calls while they are not loaded
-            checkLive = !new DocrootResourceOnFileSystemImpl(uri, docroot).exists();
-        } else {
-            // Ensure resources are read from real docroot in production environment
-            checkLive = BuildTimeProperties.getProperties().getProperty("mode") != null
-                    && !BuildTimeProperties.getProperties().getProperty("mode").equals("prod");
-        }
+        // Ensure resources are read from real docroot in production environment
+        checkLive = BuildTimeProperties.getProperties().getProperty("mode") != null
+            && !BuildTimeProperties.getProperties().getProperty("mode").equals("prod");
 
         if (checkLive) {
             if (LOG.isDebugEnabled()) {
