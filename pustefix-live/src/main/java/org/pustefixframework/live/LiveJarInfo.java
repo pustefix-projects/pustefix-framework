@@ -54,7 +54,7 @@ import org.w3c.dom.Node;
 public class LiveJarInfo {
 
     private static Logger LOG = Logger.getLogger(LiveJarInfo.class);
-    public static final String[] DEFAULT_DOCROOT_LIVE_EXCLUSIONS = { "/WEB-INF/web.xml", "/WEB-INF/buildtime.prop",
+    public static final String[] DEFAULT_DOCROOT_LIVE_EXCLUSIONS = { "/WEB-INF/web.xml",
             "/.cache/", "/core/", "/modules/", "/wsscript/", "/wsdl/", "/.editorbackup/" };
 
     /** The live.xml file */
@@ -314,8 +314,6 @@ public class LiveJarInfo {
                 }
             }
         }
-
-        // TODO: look for entry by buildtime.prop?
 
         rootsWithNoLocation.add(docroot);
         return null;

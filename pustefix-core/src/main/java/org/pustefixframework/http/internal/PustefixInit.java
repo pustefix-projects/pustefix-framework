@@ -152,7 +152,7 @@ public class PustefixInit {
     		properties.setProperty("pustefix.docroot", docrootstr);
     	}
     
-    	// override buildtime properties by according context init parameters
+    	// override environment properties by according context init parameters
     	Enumeration<?> names = servletContext.getInitParameterNames();
     	while(names.hasMoreElements()) {
     	    String name = (String)names.nextElement();

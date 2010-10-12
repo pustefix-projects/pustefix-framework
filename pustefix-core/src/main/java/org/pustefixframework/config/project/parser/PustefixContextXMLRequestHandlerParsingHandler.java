@@ -140,8 +140,8 @@ public class PustefixContextXMLRequestHandlerParsingHandler extends Customizatio
         if(beanRegs.size()==0) throw new ParserException("No BeanDefinitionRegistry object found.");
         else if(beanRegs.size()>1) throw new ParserException("Multiple BeanDefinitionRegistry objects found.");
         BeanDefinitionRegistry beanReg = beanRegs.iterator().next();
-        Properties buildTimeProperties = EnvironmentProperties.getProperties();
-        CustomizationInfo cusInfo = new PropertiesBasedCustomizationInfo(buildTimeProperties);
+        Properties envProperties = EnvironmentProperties.getProperties();
+        CustomizationInfo cusInfo = new PropertiesBasedCustomizationInfo(envProperties);
         try {
             Parser contextXmlConfigParser = new ClasspathConfiguredParser("META-INF/org/pustefixframework/config/context-xml-service/parser/context-xml-service-config.xml");
             

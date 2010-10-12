@@ -167,7 +167,7 @@ public class CustomizationHandler extends DefaultHandler {
      * Creates a new customization handler using the supplied arguments
      * 
      * @param targetHandler Handler events are forwared to
-     * @param buildTimeProps Properties to read variables from
+     * @param environmentProps Properties to read variables from
      * @param namespace URI specifying the namespace to expect the customization
      *        elements within
      * @param namespaceContent URI expected for docroot and fqdn tag, can be
@@ -175,11 +175,11 @@ public class CustomizationHandler extends DefaultHandler {
      *                         matched
      */
     public CustomizationHandler(DefaultHandler targetHandler,
-            Properties buildTimeProps, String namespace, String namespaceContent) {
+            Properties environmentProps, String namespace, String namespaceContent) {
         this.namespace = namespace;
         this.namespaceContent = namespaceContent;
         this.targetHandler = targetHandler;
-        Properties props = new Properties(buildTimeProps);
+        Properties props = new Properties(environmentProps);
         String docroot = GlobalConfig.getDocroot() + "/";
         if (docroot != null) {
             props.setProperty("docroot", docroot);

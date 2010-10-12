@@ -120,20 +120,6 @@
       <itemizedlist>
         <listitem>
           <para>
-            <literal>buildtime.properties</literal>: This file is automatically 
-            generated each time Ant runs. It contains all properties defined 
-            in Ant's <literal>build.xml</literal> file as well as some special
-            properties (like the "makemode"). It is used by Pustefix's 
-            customization tools, which allow to check for the properties 
-            defined there. You cannot modify this file, as all changes will 
-            be overwritten the next time Ant is run. If you want to define your 
-            own properties for the customization process, use Ant properties 
-            as they will be automatically included. See 
-            <xref linkend="configuration.customization"/> for details.
-          </para>
-        </listitem>
-        <listitem>
-          <para>
             <literal>factory.xml</literal>: Configuration for 
             <link linkend="configuration.misc.factory">factory loader</link>.
           </para>
@@ -1899,7 +1885,7 @@
     <section xml:id="configuration.spring.custom">
       <title>Customizing the Spring configuration</title>
       <para>
-        Spring supports the externalization of property values from Spring XML configuration files into separate standard java property files. Pustefix extends this mechanism by adding support for the Pustefix XML property file format, which let's you use the <literal>choose/when</literal>-customization and buildtime property capabilities known from other Pustefix configuration files, like <literal>factory.xml</literal>, for Spring properties too.
+        Spring supports the externalization of property values from Spring XML configuration files into separate standard Java property files. Pustefix extends this mechanism by adding support for the Pustefix XML property file format, which let's you use the <literal>choose/when</literal>-customization known from other Pustefix configuration files, like <literal>factory.xml</literal>, for Spring properties too.
       </para>
       <para>
         Therefor Pustefix by default registers a Spring <literal>PropertyPlaceholderConfigurer</literal>, which looks for a Pustefix XML property file under <literal>myproject/conf/spring-properties.xml</literal> and a <literal>PropertyOverrideConfigurer</literal>, which looks under <literal>myproject/conf/spring-properties-override.xml</literal>.
@@ -1946,7 +1932,7 @@
 </properties>
 ]]></programlisting>
       <para>
-        The following <literal>spring-properties-override.xml</literal> file overrides the value for the second bean by using the format <literal>beanName.property</literal> as property name. It also shows how you can use the available buildtime properties (like <literal>docroot</literal>, <literal>fqdn</literal>, <literal>mode</literal>) within a property value:
+        The following <literal>spring-properties-override.xml</literal> file overrides the value for the second bean by using the format <literal>beanName.property</literal> as property name. It also shows how you can use the available environment properties (like <literal>fqdn</literal> or <literal>mode</literal>) within a property value:
       </para>
 <programlisting language="xml"><![CDATA[
 <?xml version="1.0" encoding="UTF-8"?>

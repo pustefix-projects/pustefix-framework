@@ -23,9 +23,7 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
-import java.net.InetAddress;
 import java.net.URI;
-import java.net.UnknownHostException;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Enumeration;
@@ -48,7 +46,6 @@ import org.w3c.dom.Element;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 
-import de.schlund.pfixxml.config.BuildTimeProperties;
 import de.schlund.pfixxml.config.GlobalConfig;
 import de.schlund.pfixxml.config.GlobalConfigurator;
 import de.schlund.pfixxml.util.Xml;
@@ -89,21 +86,6 @@ public class PustefixWebappMojo extends AbstractMojo {
     private File aptdir;
 
     /**
-     * @parameter expression="${machine}"
-     */
-    private String machine;
-
-    /**
-     * @parameter expression="${fqdn}"
-     */
-    private String fqdn;
-    
-    /**
-     * @parameter expression="${makemode}"
-     */
-    private String makemode;
-
-    /**
      * @parameter expression="${project}"
      * @required
      * @readonly
@@ -130,10 +112,6 @@ public class PustefixWebappMojo extends AbstractMojo {
             return;
         }
 
-        if (makemode == null || makemode.length() == 0) {
-            makemode = "test";
-        }
-
         // because all executions operate on the same pfixcore classes:
         GlobalConfig.reset();
         
@@ -141,11 +119,7 @@ public class PustefixWebappMojo extends AbstractMojo {
         new File(docroot, "WEB-INF").mkdirs();
 
         getLog().info("unpacked " + unpackModules() + " module(s)");
-        try {
-            buildtimeProps();
-        } catch (IOException e) {
-            throw new MojoExecutionException("error creating buildtime.props", e);
-        }
+        
         basedir = project.getBasedir();
         new Apt(basedir, aptdir, getLog()).execute(getPluginClasspath());
         if(aptdir.exists()) {
@@ -204,11 +178,6 @@ public class PustefixWebappMojo extends AbstractMojo {
          out.close();
          src.close();
     }
-
-
-    private void buildtimeProps() throws IOException {
-        BuildTimeProperties.generate(getProperties(), makemode, getMachine(), getFqdn(), System.getProperty("user.name"));
-    }
     
     private Properties getProperties() {
     	Properties orig;
@@ -224,35 +193,6 @@ public class PustefixWebappMojo extends AbstractMojo {
         	}
         }
     	return result;
-    }
-
-    private String getMachine() throws UnknownHostException {
-        String str;
-        int idx;
-        
-        if (machine != null && machine.length() > 0) {
-            return machine;
-        }
-        str = System.getenv("MACHINE");
-        if (str != null && str.length() > 0) {
-            return str;
-        }
-        str = InetAddress.getLocalHost().getCanonicalHostName();
-        idx = str.indexOf('.');
-        return idx == -1 ? str : str.substring(0, idx);
-    }
-
-    private String getFqdn() throws UnknownHostException {
-        String result;
-        int idx;
-
-        if (fqdn != null && fqdn.length() > 0) {
-            return fqdn;
-        }
-        result = InetAddress.getLocalHost().getCanonicalHostName();
-        idx = result.indexOf('.');
-        result = idx == -1 ? "" : result.substring(idx);
-        return getMachine() + result;
     }
     
     private static List<String> pathStrings(Collection<Artifact> artifacts) {

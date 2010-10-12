@@ -89,7 +89,6 @@ public class Helper {
      *                         `-- pom.xml
      *     `-- app1
      *         |-- WEB-INF
-     *         |   `-- buildTime.prop
      *         `-- core
      *             `-- file.xml
      * </pre>
@@ -101,7 +100,6 @@ public class Helper {
 
         FileUtils.forceMkdir(APP1_TARGET_DIR);
         FileUtils.forceMkdir(new File(APP1_TARGET_DIR, "WEB-INF"));
-        FileUtils.writeStringToFile(new File(APP1_TARGET_DIR, "WEB-INF/buildTime.prop"), "dummy", "UTF-8");
         FileUtils.forceMkdir(new File(APP1_TARGET_DIR, "core"));
         FileUtils.writeStringToFile(new File(APP1_TARGET_DIR, "core/file.xml"), "dummy", "UTF-8");
         

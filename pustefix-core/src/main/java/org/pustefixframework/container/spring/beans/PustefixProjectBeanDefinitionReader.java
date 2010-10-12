@@ -48,8 +48,8 @@ public class PustefixProjectBeanDefinitionReader extends AbstractBeanDefinitionR
         // TODO Use BeanFactory's class loader
         ObjectTreeElement projectConfigTree;
         // FIXME Use new implementation of build-time properties
-        Properties buildTimeProperties = EnvironmentProperties.getProperties();
-        CustomizationInfo info = new PropertiesBasedCustomizationInfo(buildTimeProperties);
+        Properties envProperties = EnvironmentProperties.getProperties();
+        CustomizationInfo info = new PropertiesBasedCustomizationInfo(envProperties);
         try {
             Parser projectConfigParser = new ClasspathConfiguredParser("META-INF/org/pustefixframework/config/project/parser/project-config.xml");
             ProjectInfo projectInfo = new ProjectInfo(resource.getURL());

@@ -148,8 +148,7 @@ public class LiveResolver {
                 String fallbackDocroot = dir.getAbsolutePath();
                 if (fallbackDocroot != null
                         && (path.startsWith("/core/") || path.startsWith("/modules/") || path.startsWith("/.cache/")
-                                || path.startsWith("/wsscript/") || path.startsWith("/wsdl/") || path
-                                .equals("/WEB-INF/buildtime.prop"))) {
+                                || path.startsWith("/wsscript/") || path.startsWith("/wsdl/"))) {
                     if (LOG.isDebugEnabled()) {
                         LOG.debug("  --> " + dir);
                     }
