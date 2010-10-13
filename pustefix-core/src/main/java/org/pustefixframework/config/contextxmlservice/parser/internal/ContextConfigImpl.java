@@ -449,6 +449,14 @@ public class ContextConfigImpl implements ContextConfig {
             Condition resCond = resolveAuthConstraintRefs(cond,refList);
             refList.remove(condAuth.getId());
             if(cond!=resCond) condAuth.setCondition(resCond);
+            
+            for(NavigationCase naviCase: condAuth.getNavigation()) {
+                cond = naviCase.getCondition();
+                if(cond != null) {
+                    resCond = resolveAuthConstraintRefs(cond,refList);
+                    if(cond!=resCond) naviCase.setCondition(resCond);
+                }
+            }
         }
         return condition;
     }
