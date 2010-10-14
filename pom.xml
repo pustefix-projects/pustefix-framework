@@ -168,7 +168,7 @@
     </snapshotRepository>
     <site>
       <id>pustefix</id>
-      <url>scpexe://pustefix@pustefix-hp.schlund.de/var/www/pustefix-docs/0.15.x</url>
+      <url>scpexe://pustefix@pustefix-hp.schlund.de/home/pustefix/www/pustefix-docs/0.15.x</url>
     </site>
   </distributionManagement>
   <profiles>
