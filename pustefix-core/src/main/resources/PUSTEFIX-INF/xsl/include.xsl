@@ -359,7 +359,7 @@
     <xsl:param name="used_theme"/>
     <xsl:param name="resolved_uri"/>
     <a href="#">
-      <ixsl:attribute name="onclick">window.open('<ixsl:value-of select="$__editor_url"/>/xml/main?__scriptedflow=selectinclude&amp;theme=<xsl:value-of select="string($used_theme)"/>&amp;path=<xsl:value-of select="$resolved_uri"/>&amp;part=<xsl:value-of select="$part"/>&amp;uri=<ixsl:value-of select="$__application_url"/>&amp;type=include&amp;__anchor=left_navi|<xsl:value-of select="$realpath"/>','PustefixEditor','menubar=yes,status=yes,resizable=yes');return(false);</ixsl:attribute>
+      <ixsl:attribute name="onclick">window.open('<ixsl:value-of select="$__editor_url"/>?__scriptedflow=selectinclude&amp;theme=<xsl:value-of select="string($used_theme)"/>&amp;path=<xsl:value-of select="$resolved_uri"/>&amp;part=<xsl:value-of select="$part"/>&amp;uri=<ixsl:value-of select="$__application_url"/>&amp;type=include&amp;__anchor=left_navi|<xsl:value-of select="$realpath"/>','PustefixEditor','menubar=yes,status=yes,resizable=yes');return(false);</ixsl:attribute>
       <img border="0" src="{{$__contextpath}}/modules/pustefix-core/img/edit.gif"
            alt="] Edit include: '{$part}' in resource '{$resolved_uri}'"
            title="Edit include: '{$part}' in resource '{$resolved_uri}'"/>
@@ -380,7 +380,7 @@
     <xsl:param name="used_theme"/>
     <xsl:param name="resolved_uri"/>
     <a href="#">
-      <xsl:attribute name="onClick">window.open('<xsl:value-of select="$__editor_url"/>/xml/main?__scriptedflow=selectinclude&amp;theme=<xsl:value-of select="string($used_theme)"/>&amp;path=<xsl:value-of select="$realpath"/>&amp;part=<xsl:value-of select="$part"/>&amp;name=<xsl:value-of select="$product"/>&amp;uri=<xsl:value-of select="$__application_url"/>&amp;type=dyninclude&amp;__anchor=left_navi|<xsl:value-of select="$realpath"/>','PustefixEditor','menubar=yes,status=yes,resizable=yes');return(false);</xsl:attribute>
+      <xsl:attribute name="onClick">window.open('<xsl:value-of select="$__editor_url"/>?__scriptedflow=selectinclude&amp;theme=<xsl:value-of select="string($used_theme)"/>&amp;path=<xsl:value-of select="$realpath"/>&amp;part=<xsl:value-of select="$part"/>&amp;name=<xsl:value-of select="$product"/>&amp;uri=<xsl:value-of select="$__application_url"/>&amp;type=dyninclude&amp;__anchor=left_navi|<xsl:value-of select="$realpath"/>','PustefixEditor','menubar=yes,status=yes,resizable=yes');return(false);</xsl:attribute>
       <img border="0" src="{$__contextpath}/modules/pustefix-core/img/edit.gif" alt="] Edit include: '{$part}' in file '{$realpath}'" title="Edit include: '{$part}' in file '{$realpath}'"/>
     </a>
   </xsl:template>

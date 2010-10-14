@@ -229,13 +229,13 @@
                 <xsl:if test="@webserviceconsole='true'">
                   <a target="pfixcore_web_service_monitor">
                     <ixsl:attribute name="href">
-                      <ixsl:value-of select="concat($__contextpath, '/xml/webservice;',$__sessid,'?monitor')"/>
+                      <ixsl:value-of select="concat($__contextpath, '/webservice;',$__sessid,'?monitor')"/>
                     </ixsl:attribute>
                     <img border="0" alt="Webservice monitor" title="Show webservice monitor" src="{{$__contextpath}}/modules/pustefix-core/img/console_webservicemonitor.gif" style="margin-left:5px"/>
                   </a>
                   <a target="pfixcore_web_service_admin">
                     <ixsl:attribute name="href">
-                      <ixsl:value-of select="concat($__contextpath, '/xml/webservice;',$__sessid,'?admin')"/>
+                      <ixsl:value-of select="concat($__contextpath, '/webservice;',$__sessid,'?admin')"/>
                     </ixsl:attribute>
                     <img border="0" alt="Webservice admin" title="Show webservice admin" src="{{$__contextpath}}/modules/pustefix-core/img/console_webserviceadmin.gif" style="margin-left:5px"/>
                   </a>
@@ -277,13 +277,13 @@
         Web service tools:
         <a target="pfixcore_web_service_monitor">
           <ixsl:attribute name="href">
-            <ixsl:value-of select="concat($__contextpath, '/xml/webservice;',$__sessid,'?monitor')"/>
+            <ixsl:value-of select="concat($__contextpath, '/webservice;',$__sessid,'?monitor')"/>
           </ixsl:attribute>
           Monitor
         </a>
         <a target="pfixcore_web_service_admin">
           <ixsl:attribute name="href">
-            <ixsl:value-of select="concat($__contextpath, '/xml/webservice;',$__sessid,'?admin')"/>
+            <ixsl:value-of select="concat($__contextpath, '/webservice;',$__sessid,'?admin')"/>
           </ixsl:attribute>
           Admin
         </a>

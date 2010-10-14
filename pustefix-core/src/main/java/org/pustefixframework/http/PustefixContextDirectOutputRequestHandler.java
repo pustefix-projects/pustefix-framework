@@ -18,14 +18,19 @@
 
 package org.pustefixframework.http;
 
+import java.util.List;
 import java.util.Map;
 import java.util.Properties;
+import java.util.Set;
+import java.util.SortedSet;
+import java.util.TreeSet;
 
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 
 import org.apache.log4j.Logger;
+import org.pustefixframework.config.contextxmlservice.PageRequestConfig;
 import org.pustefixframework.config.contextxmlservice.ServletManagerConfig;
 import org.pustefixframework.config.directoutputservice.DirectOutputPageRequestConfig;
 import org.pustefixframework.config.directoutputservice.DirectOutputServiceConfig;
@@ -38,6 +43,7 @@ import de.schlund.pfixcore.workflow.DirectOutputState;
 import de.schlund.pfixcore.workflow.PageRequest;
 import de.schlund.pfixxml.PfixServletRequest;
 import de.schlund.pfixxml.resources.FileResource;
+import de.schlund.pfixxml.targets.PageInfo;
 
 /**
  * The <code>DirectOutputServlet</code> is a servlet that hijacks the {@link de.schlund.pfixcore.workflow.Context} of a
@@ -66,6 +72,7 @@ import de.schlund.pfixxml.resources.FileResource;
  * @version $Id: DirectOutputServlet.java 3515 2008-04-28 22:11:18Z jenstl $
  */
 public class PustefixContextDirectOutputRequestHandler extends AbstractPustefixRequestHandler {
+    
     private Logger                    LOG       = Logger.getLogger(this.getClass());
     private DirectOutputServiceConfig config;
     private Map<String, DirectOutputState> stateMap;
@@ -217,6 +224,26 @@ public class PustefixContextDirectOutputRequestHandler extends AbstractPustefixR
     
     public void setConfiguration(DirectOutputServiceConfig config) {
         this.config = config;
+    }
+    
+    @Override
+    public String[] getRegisteredURIs() {
+   
+        SortedSet<String> uris = new TreeSet<String>();
+        
+        //add path mapping for backwards compatibility
+        String[] regUris = super.getRegisteredURIs();
+        for(String regUri: regUris) uris.add(regUri);
+        
+        //add page mappings for configured pagerequests
+        List<? extends DirectOutputPageRequestConfig> pages = config.getPageRequests();
+        for(DirectOutputPageRequestConfig page: pages) {
+            uris.add("/" + page.getPageName());
+        }
+        
+        String[] uriArr = uris.toArray(new String[uris.size()]);
+        return uriArr;
+        
     }
     
 }

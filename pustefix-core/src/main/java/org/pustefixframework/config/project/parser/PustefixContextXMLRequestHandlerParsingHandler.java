@@ -72,17 +72,14 @@ public class PustefixContextXMLRequestHandlerParsingHandler extends Customizatio
     public void handleNodeIfActive(HandlerContext context) throws ParserException {
         Element serviceElement = (Element) context.getNode();
         
+        String path = null; 
         Element pathElement = (Element) serviceElement.getElementsByTagNameNS(Constants.NS_PROJECT, "path").item(0);
-        if (pathElement == null) {
-            throw new ParserException("Could not find expected <path> element");
-        }
+        if(pathElement != null) path = pathElement.getTextContent().trim();
         
         Element configurationFileElement = (Element) serviceElement.getElementsByTagNameNS(Constants.NS_PROJECT, "config-file").item(0);
         if (configurationFileElement == null) {
             throw new ParserException("Could not find expected <config-file> element");
         }
-        
-        String path = pathElement.getTextContent().trim();
         String configurationFile = configurationFileElement.getTextContent().trim();
         
         boolean renderExternal = false;
@@ -177,7 +174,7 @@ public class PustefixContextXMLRequestHandlerParsingHandler extends Customizatio
         beanBuilder.setScope("singleton");
         beanBuilder.setInitMethodName("init");
         beanBuilder.addPropertyValue("targetGenerator", new RuntimeBeanReference(info.getTargetGeneratorBeanName()));
-        beanBuilder.addPropertyValue("handlerURI", path + "/**");
+        if(path != null && !path.equals("") && !path.equals("/")) beanBuilder.addPropertyValue("handlerURI", path + "/**");
         beanBuilder.addPropertyValue("context", new RuntimeBeanReference(ContextImpl.class.getName()));
         beanBuilder.addPropertyValue("configuration", config);
         beanBuilder.addPropertyValue("sessionAdmin", new RuntimeBeanReference(SessionAdmin.class.getName()));
@@ -200,7 +197,7 @@ public class PustefixContextXMLRequestHandlerParsingHandler extends Customizatio
             beanBuilder.addPropertyValue("includePartsEditableByDefault", editorInfo.isIncludePartsEditableByDefault());
         }
         BeanDefinition beanDefinition = beanBuilder.getBeanDefinition();
-        BeanDefinitionHolder beanHolder = new BeanDefinitionHolder(beanDefinition, PustefixContextXMLRequestHandler.class.getName() + "#" + path);
+        BeanDefinitionHolder beanHolder = new BeanDefinitionHolder(beanDefinition, PustefixContextXMLRequestHandler.class.getName() + (path != null ? "#" + path : ""));
         context.getObjectTreeElement().addObject(beanHolder);
         
     }

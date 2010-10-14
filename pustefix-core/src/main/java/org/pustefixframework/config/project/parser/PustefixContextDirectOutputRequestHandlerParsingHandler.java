@@ -63,15 +63,15 @@ public class PustefixContextDirectOutputRequestHandlerParsingHandler extends Cus
     @Override
     public void handleNodeIfActive(HandlerContext context) throws ParserException {
         Element serviceElement = (Element) context.getNode();
+        
+        String path = null; 
         Element pathElement = (Element) serviceElement.getElementsByTagNameNS(Constants.NS_PROJECT, "path").item(0);
-        if (pathElement == null) {
-            throw new ParserException("Could not find expected <path> element");
-        }
+        if(pathElement != null) path = pathElement.getTextContent().trim();
+        
         Element configurationFileElement = (Element) serviceElement.getElementsByTagNameNS(Constants.NS_PROJECT, "config-file").item(0);
         if (configurationFileElement == null) {
             throw new ParserException("Could not find expected <config-file> element");
         }
-        String path = pathElement.getTextContent().trim();
         String configurationFile = configurationFileElement.getTextContent().trim();
 
         Collection<CustomizationInfo> infoCollection = context.getObjectTreeElement().getObjectsOfTypeFromTopTree(CustomizationInfo.class);
@@ -134,7 +134,7 @@ public class PustefixContextDirectOutputRequestHandlerParsingHandler extends Cus
         beanBuilder = BeanDefinitionBuilder.genericBeanDefinition(PustefixContextDirectOutputRequestHandler.class);
         beanBuilder.setScope("singleton");
         beanBuilder.setInitMethodName("init");
-        beanBuilder.addPropertyValue("handlerURI", path + "/**");
+        if(path != null && !path.equals("") && !path.equals("/")) beanBuilder.addPropertyValue("handlerURI", path + "/**");
         beanBuilder.addPropertyValue("context", new RuntimeBeanReference(ContextImpl.class.getName()));
         beanBuilder.addPropertyValue("stateMap", new RuntimeBeanReference(mapBeanName));
         beanBuilder.addPropertyValue("configuration", config);

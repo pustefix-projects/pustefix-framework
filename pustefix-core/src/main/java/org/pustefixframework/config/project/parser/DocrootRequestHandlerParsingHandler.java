@@ -38,12 +38,10 @@ public class DocrootRequestHandlerParsingHandler implements ParsingHandler {
     public void handleNode(HandlerContext context) throws ParserException {
         Element applicationElement = (Element) context.getNode();
         
+        String defaultPath = null;
         NodeList defaultPathList = applicationElement.getElementsByTagNameNS(Constants.NS_PROJECT, "default-path");
-        if (defaultPathList.getLength() != 1) {
-            throw new ParserException("Found " + defaultPathList.getLength() + " <default-path> elements but expected one.");
-        }
         Element defaultPathElement = (Element) defaultPathList.item(0);
-        String defaultPath = defaultPathElement.getTextContent();
+        if(defaultPathElement != null) defaultPath = defaultPathElement.getTextContent().trim(); 
 
         NodeList basePathList = applicationElement.getElementsByTagNameNS(Constants.NS_PROJECT, "docroot-path");
         if (basePathList.getLength() != 1) {
@@ -75,7 +73,7 @@ public class DocrootRequestHandlerParsingHandler implements ParsingHandler {
         BeanDefinitionBuilder beanBuilder = BeanDefinitionBuilder.genericBeanDefinition(DocrootRequestHandler.class);
         beanBuilder.setScope("singleton");
         beanBuilder.addPropertyValue("base", basePath);
-        beanBuilder.addPropertyValue("defaultPath", defaultPath);
+        if(defaultPath != null && !defaultPath.equals("")) beanBuilder.addPropertyValue("defaultPath", defaultPath);
         beanBuilder.addPropertyValue("passthroughPaths", paths);
         beanBuilder.addPropertyValue("mode", EnvironmentProperties.getProperties().getProperty("mode"));
         

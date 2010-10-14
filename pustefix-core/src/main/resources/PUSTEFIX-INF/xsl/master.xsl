@@ -133,7 +133,6 @@
       <ixsl:param name="__register_frame_helper__"/>
       
       <!-- these parameters will always be passed in by the servlet -->
-      <!-- e.g. /xml/static/FOOBAR;jsessionid=1E668C65F42697962A31177EB5319D8B.foo -->
       <ixsl:param name="__uri"/>
       
       <!-- e.g. jsessionid=1E668C65F42697962A31177EB5319D8B.foo -->
@@ -152,8 +151,6 @@
       -->
       <ixsl:param name="__external_session_ref"/>
       
-      <!-- e.g. /xml/static -->
-      <ixsl:param name="__servletpath"/>
       <!-- e.g. /context -->
       <ixsl:param name="__contextpath"/>
 
@@ -212,7 +209,7 @@
           </ixsl:call-template>
         </ixsl:variable>
         <ixsl:value-of select="$__contextpath"/>
-        <ixsl:text>/xml/deref</ixsl:text>
+        <ixsl:text>/deref</ixsl:text>
         <ixsl:call-template name="__fake_session_id_argument"/>
         <ixsl:text>?link=</ixsl:text>
         <ixsl:value-of select="$enclink"/>&amp;__sign=<ixsl:value-of select="$sign"/>&amp;__ts=<ixsl:value-of select="$ts"/>
@@ -409,7 +406,7 @@
   <xsl:template match="pfx:wsscript">
     <script type="text/javascript">
       <ixsl:attribute name="src">
-        <ixsl:value-of select="concat($__contextpath,'/xml/webservice')"/>
+        <ixsl:value-of select="concat($__contextpath,'/webservice')"/>
         <xsl:if test="@session='true'">;<ixsl:value-of select="$__sessid"/></xsl:if>
         <ixsl:value-of select="concat('?wsscript&amp;name=',url:encode('{@name}','{$outputencoding}'),'&amp;type=')"/>
         <xsl:choose>

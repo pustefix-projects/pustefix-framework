@@ -19,7 +19,11 @@
 package org.pustefixframework.http;
 
 import java.io.ByteArrayOutputStream;
+import java.util.List;
+import java.util.Set;
+import java.util.SortedSet;
 import java.util.TreeMap;
+import java.util.TreeSet;
 
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
@@ -49,6 +53,7 @@ import de.schlund.pfixxml.PfixServletRequestImpl;
 import de.schlund.pfixxml.RenderOutputListener;
 import de.schlund.pfixxml.RequestParam;
 import de.schlund.pfixxml.SPDocument;
+import de.schlund.pfixxml.targets.PageInfo;
 
 /**
  * @author jtl
@@ -329,4 +334,32 @@ public class PustefixContextXMLRequestHandler extends AbstractPustefixXMLRequest
     public void setContext(ContextImpl context) {
         this.context = context;
     }
+    
+    @Override
+    public String[] getRegisteredURIs() {
+
+        SortedSet<String> uris = new TreeSet<String>();
+        
+        uris.add("/");
+        
+        //add path mapping for backwards compatibility
+        String[] regUris = super.getRegisteredURIs();
+        for(String regUri: regUris) uris.add(regUri);
+        
+        //add page mappings for configured pagerequests
+        List<? extends PageRequestConfig> pages = config.getContextConfig().getPageRequestConfigs();
+        for(PageRequestConfig page: pages) {
+            uris.add("/" + page.getPageName());
+        }
+        
+        //add page mappings for standardpages
+        Set<PageInfo> pageInfos = generator.getPageTargetTree().getPageInfos();
+        for(PageInfo pageInfo: pageInfos) {
+            uris.add("/" + pageInfo.getName());
+        }
+        
+        String[] uriArr = uris.toArray(new String[uris.size()]);
+        return uriArr;
+    }
+    
 }

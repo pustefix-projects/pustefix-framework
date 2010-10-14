@@ -828,7 +828,7 @@
   <form method="post">
     <ixsl:attribute name="action">
       <ixsl:value-of select="$__contextpath"/>
-      <ixsl:text>/xml/deref</ixsl:text>
+      <ixsl:text>/deref</ixsl:text>
       <ixsl:call-template name="__fake_session_id_argument"/>
     </ixsl:attribute>
     <xsl:variable name="link">addallparams:<xsl:value-of select="@href"/></xsl:variable>

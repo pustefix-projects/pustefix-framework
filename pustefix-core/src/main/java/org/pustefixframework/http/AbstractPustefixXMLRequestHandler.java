@@ -108,7 +108,6 @@ public abstract class AbstractPustefixXMLRequestHandler extends AbstractPustefix
     private static final String   XSLPARAM_LANG           = "lang";
     private static final String   XSLPARAM_SESSID         = "__sessid";
     private static final String   XSLPARAM_URI            = "__uri";
-    private static final String   XSLPARAM_SERVP          = "__servletpath";
     private static final String   XSLPARAM_CONTEXTPATH    = "__contextpath";
     private static final String   XSLPARAM_REMOTE_ADDR    = "__remote_addr";
     private static final String   XSLPARAM_SERVER_NAME    = "__server_name";
@@ -300,7 +299,6 @@ public abstract class AbstractPustefixXMLRequestHandler extends AbstractPustefix
                 params.put(XSLPARAM_FRAME, value.getValue());
             }
         params.put(XSLPARAM_URI, preq.getRequestURI());
-        params.put(XSLPARAM_SERVP, preq.getContextPath() + preq.getServletPath());
         params.put(XSLPARAM_CONTEXTPATH, preq.getContextPath());
         if (preq.getRemoteAddr() != null)
             params.put(XSLPARAM_REMOTE_ADDR, preq.getRemoteAddr());

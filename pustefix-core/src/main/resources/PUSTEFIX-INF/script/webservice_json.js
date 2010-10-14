@@ -81,7 +81,7 @@ pfx.ws.json.BaseStub=function(service,context,scope) {
    this._service=service;
    this._context=context;
    this._scope=scope;
-   this._requestPath="/xml/webservice";
+   this._requestPath="/webservice";
    this._protocol="jsonws";
    this._uri=null;
 };

@@ -143,7 +143,8 @@ public abstract class AbstractPustefixRequestHandler implements UriProvidingHttp
     }
     
     public String[] getRegisteredURIs() {
-        return new String[] { handlerURI };
+        if(handlerURI != null) return new String[] { handlerURI };
+        return new String[0];
     }
 
     public void handleRequest(HttpServletRequest req, HttpServletResponse res) throws ServletException, IOException {
