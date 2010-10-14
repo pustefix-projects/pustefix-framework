@@ -57,10 +57,10 @@
   <application>
     
     <docroot-path>docroot:/htdocs</docroot-path>
-    <default-path>/xml/main</default-path>
+    <!--<default-path>/</default-path>-->
     
     <context-xml-service>
-      <path>/xml/main</path>
+      <!--<path>/xml/main</path>-->
       <config-file>docroot:/WEB-INF/config.conf.xml</config-file>
       <!-- Set this to true if you want to skip the last transformation and only get a
            xml document containing all needed information for an external renderer -->
@@ -79,7 +79,7 @@
     </context-xml-service>
     
     <direct-output-service>
-      <path>/xml/download</path>
+      <!-- <path>/xml/download</path>-->
       <config-file>docroot:/WEB-INF/direct.conf.xml</config-file>
     </direct-output-service>
    
