@@ -29,9 +29,9 @@
           <link rel="stylesheet" type="text/css" href="{$__contextpath}/webservice.css"/>
           <script type="text/javascript" src="{$__contextpath}/application.js"></script>
           <script type="text/javascript" src="{$__contextpath}/modules/pustefix-core/script/xmlRequest.js"></script>
-          <script type="text/javascript" src="{$__contextpath}/modules/pustefix-core/script/webservice.js"></script>
+          <script type="text/javascript" src="{$__contextpath}/modules/pustefix-webservices-jaxws/script/webservice.js"></script>
           <script type="text/javascript" src="{$__contextpath}/modules/pustefix-core/script/httpRequest.js"></script>
-          <script type="text/javascript" src="{$__contextpath}/modules/pustefix-core/script/webservice_json.js"></script>
+          <script type="text/javascript" src="{$__contextpath}/modules/pustefix-webservices-jsonws/script/webservice_json.js"></script>
           <ixsl:choose>
             <ixsl:when test="$page='calculator'">
               <pfx:wsscript name="Calculator" type="soap"/>

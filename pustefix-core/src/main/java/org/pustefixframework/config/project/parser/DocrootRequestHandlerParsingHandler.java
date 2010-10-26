@@ -55,6 +55,8 @@ public class DocrootRequestHandlerParsingHandler implements ParsingHandler {
         //Add pre-defined static paths
         paths.add("modules/pustefix-core/img");
         paths.add("modules/pustefix-core/script");
+        paths.add("modules/pustefix-webservices-jaxws/script");
+        paths.add("modules/pustefix-webservices-jsonws/script");
         paths.add("wsscript");
         
         NodeList staticList = applicationElement.getElementsByTagNameNS(Constants.NS_PROJECT, "static");
