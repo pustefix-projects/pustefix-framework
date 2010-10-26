@@ -104,10 +104,11 @@ public class DOMInit {
             Document doc=db.parse(metadataUrl.openStream());
             if(DEPRECATED_NS_BEAN_METADATA.equals(doc.getDocumentElement().getNamespaceURI()) || 
                     DEPRECATED_NS_BEAN_METADATA.equals(doc.getDocumentElement().getAttribute("xmlns"))) {
-                     String msg = "[DEPRECATED] Bean metadata file '" + metadataUrl.toString() + "' uses deprecated namespace '" + 
-                             DEPRECATED_NS_BEAN_METADATA + "'. It should be replaced by '" + NS_BEAN_METADATA + "'.";
-                     LOG.warn(msg);
-                 }
+                String msg = "[DEPRECATED] Bean metadata file '" + metadataUrl.toString() + "' uses deprecated namespace '" + 
+                    DEPRECATED_NS_BEAN_METADATA + "'. It should be replaced by '" + NS_BEAN_METADATA + "'.";
+                LOG.warn(msg);
+            }
+            update(doc);
         } catch(FileNotFoundException x) {
             if(LOG.isDebugEnabled()) LOG.debug("No metadata file found: "+metadataUrl.toString());
         } catch(Exception x) {
