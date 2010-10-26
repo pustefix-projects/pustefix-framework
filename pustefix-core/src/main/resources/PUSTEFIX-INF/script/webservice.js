@@ -1297,7 +1297,8 @@ SOAP_BeanInfo.prototype.populate=function(props) {
 // SOAP_Stub
 //*********************************
 function SOAP_Stub() {
-  this._url="";
+  this._requestPath="";
+  this._service="";
   this._targetNamespace="";
   this._typeInfos=new Array();
 }
@@ -1320,23 +1321,18 @@ SOAP_Stub.prototype._extractCallback=function(call,args,expLen) {
   } else if(argLen!=expLen) throw new CORE_IllegalArgsEx("Wrong number of arguments","SOAP_Stub._extractCallback");
 }
 
-SOAP_Stub.prototype._setURL=function(url) {
-  this._url=url;
+SOAP_Stub.prototype._setRequestPath=function(requestPath) {
+  this._requestPath=requestPath;
+}
+
+SOAP_Stub.prototype._setService=function(service) {
+  this._service=service;
 }
 
 SOAP_Stub.prototype.getURI=function() {
    if(this._uri==null) {
       var session=window.location.href.match(/;jsessionid=[A-Z0-9]+(\.[a-zA-Z0-9]+)?/)[0];
-      var reqpath=window.location.pathname;
-      var pcs=reqpath.split('/');
-      pcs=pcs.slice(1,pcs.length-3);
-      reqpath="";
-      for (var i=0;i<pcs.length;i++) reqpath+="/"+pcs[i];
-      pcs=this._url.split('/');
-      pcs=pcs.slice(pcs.length-3,pcs.length);
-      lastpath="";
-      for (var i=0;i<pcs.length;i++) lastpath+="/"+pcs[i];
-      reqpath=reqpath+lastpath;
+      var reqpath=this._requestPath+"/"+this._service;
       this._uri=window.location.protocol+"//"+window.location.host+reqpath+session;
    }
    return this._uri;

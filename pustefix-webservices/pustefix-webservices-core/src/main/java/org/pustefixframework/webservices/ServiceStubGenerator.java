@@ -29,6 +29,6 @@ import org.pustefixframework.webservices.config.ServiceConfig;
  */
 public interface ServiceStubGenerator {
 
-    public void generateStub(ServiceConfig service,OutputStream out) throws ServiceException,IOException;
+    public void generateStub(ServiceConfig service, String requestPath, OutputStream out) throws ServiceException,IOException;
     
 }

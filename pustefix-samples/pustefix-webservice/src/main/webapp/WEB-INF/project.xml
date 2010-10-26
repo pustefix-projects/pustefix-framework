@@ -51,7 +51,6 @@
     </deref-service>
     
     <webservice-service>
-      <path>/xml/webservice</path>
       <config-file>docroot:/WEB-INF/webservice.conf.xml</config-file>
     </webservice-service>
     

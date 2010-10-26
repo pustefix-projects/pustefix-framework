@@ -303,7 +303,7 @@ public class ServiceRuntime {
         String[] serviceNames=nameParam.split("\\s+");
         if(serviceNames.length==0) throw new ServiceException("No service name found");
         String serviceType=typeParam.toUpperCase();
-        if(!serviceType.equals(Constants.PROTOCOL_TYPE_JSONWS)) throw new ServiceException("Protocol not supported: "+serviceType);
+        if(!(serviceType.equals(Constants.PROTOCOL_TYPE_JSONWS)||serviceType.equals(Constants.PROTOCOL_TYPE_SOAP))) throw new ServiceException("Protocol not supported: "+serviceType);
         
         ServiceConfig[] services=new ServiceConfig[serviceNames.length];
         for(int i=0;i<serviceNames.length;i++) {
@@ -328,6 +328,8 @@ public class ServiceRuntime {
             sb.append(serviceName);
             sb.append(" ");
         }
+        sb.append("#");
+        sb.append(serviceType);
         String cacheKey=sb.toString();
                  
         FileCacheData data=stubCache.get(cacheKey);
@@ -337,7 +339,8 @@ public class ServiceRuntime {
                 long tt1=System.currentTimeMillis();
                 ByteArrayOutputStream bout=new ByteArrayOutputStream();
                 for(int i=0;i<services.length;i++) {
-                    stubGen.generateStub(services[i],bout);
+                    String requestPath = req.getContextPath() + services[i].getGlobalServiceConfig().getRequestPath();
+                    stubGen.generateStub(services[i], requestPath, bout);
                     if(i<services.length-1) bout.write("\n\n".getBytes());
                 }
                 byte[] bytes=bout.toByteArray();

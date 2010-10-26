@@ -74,6 +74,7 @@ public class WebServiceHttpRequestHandler implements UriProvidingHttpRequestHand
     private static final String PROCESSOR_IMPL_JSONQX="org.pustefixframework.webservices.jsonqx.JSONQXProcessor";
     
     private static final String GENERATOR_IMPL_JSONWS="org.pustefixframework.webservices.jsonws.JSONWSStubGenerator";
+    private static final String GENERATOR_IMPL_JAXWS="org.pustefixframework.webservices.jaxws.JAXWSStubGenerator";
     
     //TODO: dynamic ServiceProcessor detection/registration
     private ServiceProcessor findServiceProcessor(String protocolType) throws ServletException {
@@ -110,7 +111,14 @@ public class WebServiceHttpRequestHandler implements UriProvidingHttpRequestHand
                 Method meth = sp.getClass().getMethod("setServletContext", ServletContext.class);
                 meth.invoke(sp, getServletContext());
                 runtime.addServiceProcessor(Constants.PROTOCOL_TYPE_SOAP, sp);
-                LOG.info("Registered ServiceProcessor for "+Constants.PROTOCOL_TYPE_SOAP);
+                try {
+                    Class<?> clazz = Class.forName(GENERATOR_IMPL_JAXWS);
+                    ServiceStubGenerator gen = (ServiceStubGenerator)clazz.newInstance();
+                    runtime.addServiceStubGenerator(Constants.PROTOCOL_TYPE_SOAP, gen);
+                    LOG.info("Registered ServiceProcessor for "+Constants.PROTOCOL_TYPE_SOAP);
+                } catch(Exception x) {
+                    throw new ServletException("Can't instantiate ServiceStubGenerator: "+GENERATOR_IMPL_JSONWS,x);
+                }
             }
             URL metaURL = srvConf.getGlobalServiceConfig().getDefaultBeanMetaDataURL();
             sp = findServiceProcessor(Constants.PROTOCOL_TYPE_JSONWS);

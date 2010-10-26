@@ -43,18 +43,9 @@ import javax.wsdl.Types;
 import javax.wsdl.extensions.ExtensibilityElement;
 import javax.wsdl.extensions.schema.Schema;
 import javax.wsdl.extensions.schema.SchemaImport;
-import javax.wsdl.extensions.soap.SOAPAddress;
 import javax.wsdl.factory.WSDLFactory;
 import javax.wsdl.xml.WSDLReader;
 import javax.xml.namespace.QName;
-
-import org.w3c.dom.Element;
-import org.w3c.dom.NamedNodeMap;
-import org.w3c.dom.Node;
-import org.w3c.dom.NodeList;
-import org.xml.sax.InputSource;
-
-import com.ibm.wsdl.util.xml.DOMUtils;
 
 import org.pustefixframework.webservices.Constants;
 import org.pustefixframework.webservices.jsgen.JsBlock;
@@ -62,6 +53,13 @@ import org.pustefixframework.webservices.jsgen.JsClass;
 import org.pustefixframework.webservices.jsgen.JsMethod;
 import org.pustefixframework.webservices.jsgen.JsParam;
 import org.pustefixframework.webservices.jsgen.JsStatement;
+import org.w3c.dom.Element;
+import org.w3c.dom.NamedNodeMap;
+import org.w3c.dom.Node;
+import org.w3c.dom.NodeList;
+import org.xml.sax.InputSource;
+
+import com.ibm.wsdl.util.xml.DOMUtils;
 
 /**
  * This class generates a Javascript stub file from a WSDL description.
@@ -131,7 +129,8 @@ public class Wsdl2Js {
                 JsClass jsClass=new JsClass(stubClass,"SOAP_Stub",constParams);
                 JsBlock block=jsClass.getConstructorBody();
                 block.addStatement(new JsStatement("this._cbObj=cbObj"));
-                block.addStatement(new JsStatement("this._setURL(\""+getAddressLocation(port)+"\")"));
+                block.addStatement(new JsStatement("this._setService(\""+service.getQName().getLocalPart()+"\")"));
+                block.addStatement(new JsStatement("this._setRequestPath(\"###REQUESTPATH###\")"));
                 Binding binding=port.getBinding();
                 Iterator<?> bopIt=binding.getBindingOperations().iterator();
                 while(bopIt.hasNext()) {
@@ -199,21 +198,6 @@ public class Wsdl2Js {
                 jsClass.printCode(new FileOutputStream(outputFile));
             }
         }
-    }
-    
-    /**
-     * Get endpoint location URI from WSDL port
-     */
-    private String getAddressLocation(Port port) throws Wsdl2JsException {
-        Iterator<?> it=port.getExtensibilityElements().iterator();
-        while(it.hasNext()) {
-            ExtensibilityElement elem=(ExtensibilityElement)it.next();
-            if(elem instanceof SOAPAddress) {
-                SOAPAddress adr=(SOAPAddress)elem;
-                return adr.getLocationURI();
-            }
-        }
-        throw new Wsdl2JsException("No soap address binding found for port "+port);
     }
     
     /**

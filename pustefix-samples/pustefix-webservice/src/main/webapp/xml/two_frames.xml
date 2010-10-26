@@ -34,7 +34,7 @@
           <script type="text/javascript" src="{$__contextpath}/modules/pustefix-core/script/webservice_json.js"></script>
           <ixsl:choose>
             <ixsl:when test="$page='calculator'">
-              <script type="text/javascript" src="{$__contextpath}/xml/wsscript/Calculator.js"></script>
+              <pfx:wsscript name="Calculator" type="soap"/>
               <pfx:wsscript name="Calculator"/>
               <script type="text/javascript" src="{$__contextpath}/calc-pfxsoap.js"></script>
               
