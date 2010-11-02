@@ -49,5 +49,8 @@
     <requiredProperty key="package">
       <defaultValue>mytld.myorg.myapp</defaultValue>
     </requiredProperty>
+    <requiredProperty key="pustefixVersion">
+      <defaultValue>${pom.version}</defaultValue>
+    </requiredProperty>
   </requiredProperties>
 </archetype-descriptor>
