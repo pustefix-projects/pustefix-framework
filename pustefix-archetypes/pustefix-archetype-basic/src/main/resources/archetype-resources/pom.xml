@@ -12,7 +12,7 @@
   <name>Pustefix Basic Application</name>
 
   <properties>
-    <pustefix.version>0.15.11-SNAPSHOT</pustefix.version>
+    <pustefix.version>0.15.12-SNAPSHOT</pustefix.version>
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
   </properties>
 
