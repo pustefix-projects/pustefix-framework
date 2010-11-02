@@ -6,12 +6,12 @@
   <parent>
     <groupId>org.pustefixframework</groupId>
     <artifactId>pustefix-samples</artifactId>
-    <version>0.15.12</version>
+    <version>0.15.13-SNAPSHOT</version>
   </parent>
 
   <groupId>org.pustefixframework</groupId>
   <artifactId>pustefix-hangman</artifactId>
-  <version>0.15.12</version>
+  <version>0.15.13-SNAPSHOT</version>
   <packaging>war</packaging>
 
   <name>Pustefix Hangman Game</name>
