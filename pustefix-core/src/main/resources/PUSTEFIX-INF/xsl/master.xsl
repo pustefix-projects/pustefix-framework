@@ -134,9 +134,6 @@
       
       <!-- these parameters will always be passed in by the servlet -->
       <ixsl:param name="__uri"/>
-      
-      <!-- e.g. jsessionid=1E668C65F42697962A31177EB5319D8B.foo -->
-      <!--<ixsl:param name="__sessid"/>--> <!-- defined in include.xsl.in -->
 
       <!-- e.g. 1E668C65F42697962A31177EB5319D8B.foo -->
       <!--
@@ -189,7 +186,7 @@
       </ixsl:template>
       
       <ixsl:template name="__fake_session_id_argument">
-        <ixsl:value-of select="deref:getFakeSessionIdArgument($__sessid)"/>
+        <ixsl:value-of select="deref:getFakeSessionIdArgument($__sessionIdPath)"/>
       </ixsl:template>
       
       <ixsl:template name="__deref">
@@ -407,7 +404,7 @@
     <script type="text/javascript">
       <ixsl:attribute name="src">
         <ixsl:value-of select="concat($__contextpath,'/webservice')"/>
-        <xsl:if test="@session='true'">;<ixsl:value-of select="$__sessid"/></xsl:if>
+        <xsl:if test="@session='true'"><ixsl:value-of select="$__sessionIdPath"/></xsl:if>
         <ixsl:value-of select="concat('?wsscript&amp;name=',url:encode('{@name}','{$outputencoding}'),'&amp;type=')"/>
         <xsl:choose>
           <xsl:when test="@type"><xsl:value-of select="@type"/></xsl:when>

@@ -22,7 +22,8 @@
   <xsl:namespace-alias stylesheet-prefix="ixsl" result-prefix="xsl"/>
 
   <xsl:param name="__editmode"/>
-  <xsl:param name="__sessid"/>
+  <xsl:param name="__sessionId"/>
+  <xsl:param name="__sessionIdPath"/>
   <xsl:param name="__target_gen"/>
   <xsl:param name="__target_key"/>
   <xsl:param name="__editor_url"/>

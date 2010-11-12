@@ -49,6 +49,7 @@ import javax.xml.transform.stream.StreamResult;
 import org.apache.log4j.Logger;
 import org.pustefixframework.config.contextxmlservice.AbstractXMLServletConfig;
 import org.pustefixframework.config.contextxmlservice.ServletManagerConfig;
+import org.pustefixframework.http.internal.PustefixInit;
 import org.w3c.dom.Document;
 
 import de.schlund.pfixcore.exception.PustefixApplicationException;
@@ -106,7 +107,8 @@ public abstract class AbstractPustefixXMLRequestHandler extends AbstractPustefix
     private static final String PARAM_REUSE           = "__reuse"; // internally used
     
     private static final String   XSLPARAM_LANG           = "lang";
-    private static final String   XSLPARAM_SESSID         = "__sessid";
+    private static final String   XSLPARAM_SESSION_ID     = "__sessionId";
+    private static final String   XSLPARAM_SESSION_ID_PATH = "__sessionIdPath";
     private static final String   XSLPARAM_URI            = "__uri";
     private static final String   XSLPARAM_CONTEXTPATH    = "__contextpath";
     private static final String   XSLPARAM_REMOTE_ADDR    = "__remote_addr";
@@ -256,6 +258,9 @@ public abstract class AbstractPustefixXMLRequestHandler extends AbstractPustefix
      */
     @Override
     protected void process(PfixServletRequest preq, HttpServletResponse res) throws Exception {
+        
+        PustefixInit.tryReloadLog4j();
+        
         Properties  params     = new Properties();
         HttpSession session    = preq.getSession(false);
         CacheValueLRU<String,SPDocument> storeddoms = null;
@@ -315,7 +320,9 @@ public abstract class AbstractPustefixXMLRequestHandler extends AbstractPustefix
         params.put(XSL_PARAM_APP_URL, getApplicationURL(preq));
         
         if (session != null) {
-            params.put(XSLPARAM_SESSID, session.getAttribute(SessionHelper.SESSION_ID_URL));
+            params.put(XSLPARAM_SESSION_ID, session.getId());
+            if(!preq.getRequest().isRequestedSessionIdFromCookie())
+                params.put(XSLPARAM_SESSION_ID_PATH, ";jsessionid=" + session.getId());
             if (doreuse) {
                 synchronized (session) {
                     // Make sure redirect is only done once

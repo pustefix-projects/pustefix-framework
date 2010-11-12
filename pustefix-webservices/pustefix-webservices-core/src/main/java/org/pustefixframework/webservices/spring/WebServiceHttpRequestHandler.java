@@ -213,7 +213,7 @@ public class WebServiceHttpRequestHandler implements UriProvidingHttpRequestHand
     }
     
     public String[] getRegisteredURIs() {
-        return new String[] { handlerURI };
+        return new String[] { handlerURI, handlerURI + "/**" };
     }
     
     public void setApplicationContext(ApplicationContext applicationContext) {

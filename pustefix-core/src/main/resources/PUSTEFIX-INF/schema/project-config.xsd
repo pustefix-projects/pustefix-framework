@@ -143,12 +143,11 @@
   
   <xsd:complexType name="application-type">
     <xsd:sequence>
-      <xsd:element name="docroot-path" type="xsd:string"/>
-      <xsd:element name="default-path" type="xsd:string"/>
+      <xsd:element name="docroot-path" type="xsd:string" minOccurs="0"/>
+      <xsd:element name="default-path" type="xsd:string" minOccurs="0"/>
       <xsd:element name="context-xml-service">
         <xsd:complexType>
         <xsd:sequence>
-          <xsd:element name="path" type="xsd:string"/>
           <xsd:element name="config-file" type="xsd:string"/>
           <xsd:element name="additional-trail-info" type="xsd:string" minOccurs="0"/>
           <xsd:choice minOccurs="0">
@@ -181,7 +180,6 @@
       <xsd:element name="direct-output-service" minOccurs="0">
         <xsd:complexType>
           <xsd:sequence>
-            <xsd:element name="path" type="xsd:string"/>
             <xsd:element name="config-file" type="xsd:string"/>
           </xsd:sequence>
         </xsd:complexType>
@@ -189,7 +187,6 @@
       <xsd:element name="deref-service" minOccurs="0">
         <xsd:complexType>
           <xsd:sequence>
-            <xsd:element name="path" type="xsd:string"/>
             <xsd:element name="validtime" type="xsd:int"/>
             <xsd:element name="mustsign" type="xsd:boolean"/>
           </xsd:sequence>
@@ -198,7 +195,6 @@
       <xsd:element name="webservice-service" minOccurs="0">
         <xsd:complexType>
           <xsd:sequence>
-            <xsd:element name="path" type="xsd:string"/>
             <xsd:element name="config-file" type="xsd:string"/>
           </xsd:sequence>
         </xsd:complexType>

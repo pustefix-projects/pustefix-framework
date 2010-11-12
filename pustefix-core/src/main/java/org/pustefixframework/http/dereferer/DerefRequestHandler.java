@@ -252,4 +252,9 @@ public class DerefRequestHandler extends AbstractPustefixRequestHandler {
         res.setHeader("Location", redirectUrl);
     }
     
+    @Override
+    public String[] getRegisteredURIs() {
+        return new String[] { handlerURI, handlerURI + "/**" };
+    }
+    
 }

@@ -190,22 +190,22 @@
         <ixsl:value-of select="$__contextpath"/>
         <xsl:choose>
           <xsl:when test="$send-to-page">
-            <xsl:value-of select="concat($thehandler, '/', $send-to-page)"/>;<ixsl:value-of select="$__sessid"/><xsl:if test="not($theframe = '')"></xsl:if>?__frame=<xsl:value-of select="$theframe"/>
+            <xsl:value-of select="concat($thehandler, '/', $send-to-page)"/><ixsl:value-of select="$__sessionIdPath"/><xsl:if test="not($theframe = '')"></xsl:if>?__frame=<xsl:value-of select="$theframe"/>
           </xsl:when>
           <xsl:otherwise>
             <xsl:choose>
               <xsl:when test="@type='auth'">
                 <ixsl:choose>
                   <ixsl:when test="$__root/formresult/authentication/@targetpage">
-                    <xsl:value-of select="$thehandler"/>/<ixsl:value-of select="$__root/formresult/authentication/@targetpage"/>;<ixsl:value-of select="$__sessid"/>
+                    <xsl:value-of select="$thehandler"/>/<ixsl:value-of select="$__root/formresult/authentication/@targetpage"/><ixsl:value-of select="$__sessionIdPath"/>
                   </ixsl:when>
                   <ixsl:otherwise>
-                    <xsl:value-of select="concat($thehandler, '/', $page)"/>;<ixsl:value-of select="$__sessid"/><xsl:if test="not($theframe = '')"></xsl:if>?__frame=<xsl:value-of select="$theframe"/>
+                    <xsl:value-of select="concat($thehandler, '/', $page)"/><ixsl:value-of select="$__sessionIdPath"/><xsl:if test="not($theframe = '')"></xsl:if>?__frame=<xsl:value-of select="$theframe"/>
                   </ixsl:otherwise>
                 </ixsl:choose>
               </xsl:when>
               <xsl:otherwise>
-                <xsl:value-of select="concat($thehandler, '/', $page)"/>;<ixsl:value-of select="$__sessid"/><xsl:if test="not($theframe = '')"></xsl:if>?__frame=<xsl:value-of select="$theframe"/>
+                <xsl:value-of select="concat($thehandler, '/', $page)"/><ixsl:value-of select="$__sessionIdPath"/><xsl:if test="not($theframe = '')"></xsl:if>?__frame=<xsl:value-of select="$theframe"/>
               </xsl:otherwise>
             </xsl:choose>
           </xsl:otherwise>

@@ -237,7 +237,7 @@
       <xsl:text>?</xsl:text><xsl:value-of select="$thequery"/>
     </xsl:variable>
     <xsl:variable name="fulllink">
-      <ixsl:value-of select="$__contextpath"/><xsl:value-of select="$prelink"/>;<ixsl:value-of select="$__sessid"/><xsl:value-of select="$postlink"/>
+      <ixsl:value-of select="$__contextpath"/><xsl:value-of select="$prelink"/><ixsl:value-of select="$__sessionIdPath"/><xsl:value-of select="$postlink"/>
       <ixsl:if test="not($__lf = '')">&amp;__lf=<ixsl:value-of select="$__lf"/></ixsl:if>
       <xsl:if test="$args and not($nodata) and not($startwithflow = 'true')">&amp;__sendingdata=1</xsl:if>
       <xsl:for-each select="$args">&amp;<xsl:value-of select="./@name"/>=<ixsl:call-template name="__enc"><ixsl:with-param name="in"><xsl:apply-templates select="./node()"/></ixsl:with-param></ixsl:call-template></xsl:for-each>

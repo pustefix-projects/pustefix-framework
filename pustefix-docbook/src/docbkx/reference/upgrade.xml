@@ -1,0 +1,40 @@
+<?xml version="1.0"?>
+<chapter xml:id="upgrade" xmlns="http://docbook.org/ns/docbook" xmlns:xlink="http://www.w3.org/1999/xlink"
+  xmlns:xi="http://www.w3.org/2001/XInclude" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xsi:schemaLocation="http://docbook.org/ns/docbook http://www.docbook.org/xml/5.0CR7/xsd/docbook.xsd"
+>
+  <title>Upgrading to a newer Pustefix version</title>    
+  <section xml:id="upgrade.0_15_to_0_16">
+    <title>Upgrading from Pustefix 0.15 to 0.16</title>
+  
+    <section xml:id="upgrade.0_15_to_0_16.webservices">
+      <title>AJAX webservices</title>
+      <para>
+        The JSON and SOAP Javascript libraries were moved from the Pustefix core module to the Pustefix webservice modules.
+        If you're application uses these libraries, you will have to adapt the according <literal>script</literal> tags, replacing
+        <literal>pustefix-core</literal> by <literal>pustefix-webservices-jaxws</literal> or <literal>pustefix-webservices-jsonws</literal>,
+        e.g.
+<programlisting language="xml"><![CDATA[<script type="text/javascript" src="{$__contextpath}/modules/pustefix-core/script/webservice.js"></script>
+<script type="text/javascript" src="{$__contextpath}/modules/pustefix-core/script/webservice_json.js"></script>]]></programlisting>
+        has to be changed to:
+<programlisting language="xml"><![CDATA[<script type="text/javascript" src="{$__contextpath}/modules/pustefix-webservices-jaxws/script/webservice.js"></script>
+<script type="text/javascript" src="{$__contextpath}/modules/pustefix-webservices-jsonws/script/webservice_json.js"></script>]]></programlisting>
+      </para>
+      <para>
+        Generated Javascript SOAP stubs aren't delivered statically any longer, i.e. you also have to use the <literal>pfx:wsscript</literal> tag
+        to include the stub file (instead of statically referencing it), e.g.
+<programlisting language="xml"><![CDATA[<script type="text/javascript" src="{$__contextpath}/xml/wsscript/MyService.js"></script>]]></programlisting>
+        has to be changed to:
+<programlisting language="xml"><![CDATA[<pfx:wsscript name="MyService" type="soap"/>]]></programlisting>
+        The <literal>type</literal> attribute only is required if you enabled multiple webservice protocols for the service within the configuration.
+      </para>
+      <para>
+        If you manually build webservice URLs, e.g. if you don't want to use the generated stubs, you have to be aware that the request path no
+        longer contains the <literal>xml</literal> part, e.g. you will have to change <literal>http://anyhost/xml/webservice/MyService</literal> to
+        <literal>http://anyhost/webservice/MyService</literal>.
+      </para>
+    </section>
+  
+  </section>
+  
+</chapter>

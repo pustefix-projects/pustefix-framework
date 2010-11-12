@@ -50,7 +50,7 @@ public class WebServiceRequestHandlerParsingHandler implements ParsingHandler {
         BeanDefinitionBuilder beanBuilder = BeanDefinitionBuilder.genericBeanDefinition(WebServiceHttpRequestHandler.class);
         beanBuilder.setScope("singleton");
         beanBuilder.addPropertyValue("configFile", configurationFile);
-        beanBuilder.addPropertyValue("handlerURI", "/webservice/**");
+        beanBuilder.addPropertyValue("handlerURI", "/webservice");
         beanBuilder.addPropertyValue("serviceRuntime", new RuntimeBeanReference(ServiceRuntime.class.getName()));
         BeanDefinition beanDefinition = beanBuilder.getBeanDefinition();
         BeanDefinitionHolder beanHolder = new BeanDefinitionHolder(beanDefinition, WebServiceHttpRequestHandler.class.getName());

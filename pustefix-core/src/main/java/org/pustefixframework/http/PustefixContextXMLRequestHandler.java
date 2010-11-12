@@ -221,7 +221,6 @@ public class PustefixContextXMLRequestHandler extends AbstractPustefixXMLRequest
                 // handle as usual
                 spdoc = context.handleRequest(preq);
             }
-            
             if (spdoc != null && !spdoc.isRedirect() && (preq.getPageName() == null || !preq.getPageName().equals(spdoc.getPagename()))) {
                 // Make sure all requests that don't encode an explicite pagename
                 // (this normally is only the case for the first request)
@@ -232,7 +231,7 @@ public class PustefixContextXMLRequestHandler extends AbstractPustefixXMLRequest
                 String port = String.valueOf(preq.getServerPort());
                 String redirectURL = scheme + "://" + getServerName(preq.getRequest()) 
                     + ":" + port + preq.getContextPath() + preq.getServletPath() + "/" + spdoc.getPagename() 
-                    + ";jsessionid=" + preq.getSession(false).getId() + "?__reuse=" + spdoc.getTimestamp();
+                    + (preq.getRequest().isRequestedSessionIdFromCookie()?"":";jsessionid=" + preq.getSession(false).getId()) + "?__reuse=" + spdoc.getTimestamp();
                 RequestParam rp = preq.getRequestParam("__frame");
                 if (rp != null) {
                     redirectURL += "&__frame=" + rp.getValue();

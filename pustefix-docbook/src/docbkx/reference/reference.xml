@@ -65,6 +65,7 @@
   <xi:include href="advancedtopics.xml" />
   <xi:include href="module-support.xml" />
   <xi:include href="testing.xml" />
+  <xi:include href="upgrade.xml" />
   <xi:include href="glossary.xml" />
 
 </book>

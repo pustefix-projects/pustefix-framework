@@ -40,7 +40,6 @@ import org.apache.log4j.Logger;
 import org.pustefixframework.admin.mbeans.WebappAdmin;
 import org.pustefixframework.config.contextxmlservice.ServletManagerConfig;
 import org.pustefixframework.container.spring.http.UriProvidingHttpRequestHandler;
-import org.pustefixframework.http.internal.PustefixInit;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.web.context.ServletContextAware;
 
@@ -93,7 +92,7 @@ public abstract class AbstractPustefixRequestHandler implements UriProvidingHttp
     private static Logger                       LOG                           = Logger.getLogger(AbstractPustefixRequestHandler.class);
     private String                       servletEncoding;
     private ServletContext servletContext;
-    private String handlerURI;
+    protected String handlerURI;
     private SessionAdmin sessionAdmin;
     private WebappAdmin webappAdmin;
     private ExceptionProcessingConfiguration exceptionProcessingConfig;
@@ -196,26 +195,11 @@ public abstract class AbstractPustefixRequestHandler implements UriProvidingHttp
             res.addHeader("P3P", p3pHeader);
         }
         
-        // Delete JSESSIONID cookie
-        // Otherwise a redirect loop will be caused when a request with an
-        // invalid JSESSIONID cookie is made
-        Cookie[] cookies = CookieUtils.getCookies(req);
-        if (cookies != null) {
-            for (int i = 0; i < cookies.length; i++) {
-                Cookie cookie = cookies[i];
-                if (cookie.getName().equalsIgnoreCase("JSESSIONID")) {
-                    cookie.setMaxAge(0);
-                    cookie.setPath((req.getContextPath().equals("")) ? "/" : req.getContextPath());
-                    res.addCookie(cookie);
-                }
-            }
-        }
-        
         if (req.isRequestedSessionIdValid()) {
             session = req.getSession(false);
             has_session = true;
             LOG.debug("*** Found valid session with ID " + session.getId());
-
+            
             // Much of the advanced security depends on having cookies enabled.  We need to make
             // sure that this isn't defeated by just disabling cookies.  So we mark every session
             // whenever the client has cookies enabled, and don't allow further uses of this session
@@ -358,7 +342,7 @@ public abstract class AbstractPustefixRequestHandler implements UriProvidingHttp
                 String forcelocal = req.getParameter(PARAM_FORCELOCAL);
                 if (forcelocal != null && (forcelocal.equals("1") || forcelocal.equals("true") || forcelocal.equals("yes"))) {
                     LOG.debug("    ... but found __forcelocal parameter to be set.");
-                } else {
+                } else if(req.isRequestedSessionIdFromURL()){
                     LOG.debug("    ... and __forcelocal is NOT set.");
                     redirectToClearedRequest(req, res);
                     return;
@@ -380,8 +364,6 @@ public abstract class AbstractPustefixRequestHandler implements UriProvidingHttp
             LOG.debug("*** Creating PfixServletRequest object.");
             preq = new PfixServletRequestImpl(req, this.getServletManagerConfig().getProperties());
         }
-
-        PustefixInit.tryReloadLog4j();
         
         // End of initialization. Now we handle all cases where we need to redirect.
 
