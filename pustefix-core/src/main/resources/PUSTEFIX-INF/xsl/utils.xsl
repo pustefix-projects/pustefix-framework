@@ -99,6 +99,35 @@
         </xsl:when>
         <xsl:otherwise>
           <script type="text/javascript">
+           
+            var pfixcore_spans = document.getElementsByTagName("span");
+            for(var i=0; i&lt;pfixcore_spans.length; i++) {
+              if(pfixcore_spans[i].className == 'pfx_inc_start') {
+                pfixcore_spans[i].innerHTML = '<img border="0" alt="[" src="{{$__contextpath}}/modules/pustefix-core/img/edit_start.gif"/>';
+              }
+              if(pfixcore_spans[i].className == 'pfx_inc_end') {
+                var data = pfixcore_spans[i].title.split('|');
+                pfixcore_spans[i].innerHTML = '<a href="#" onclick="pfixcore_openEditor(\'' + pfixcore_spans[i].title + '\')">' +
+                                              '<img border="0" alt="] Edit include \'' + data[1] + '\' in resource \'' + data[0] + '\'" title="Edit include \'' + data[1] + '\' in resource \'' + data[0] + '\'" src="{{$__contextpath}}/modules/pustefix-core/img/edit.gif"/>';
+                                              '</a>';
+              }
+              if(pfixcore_spans[i].className == 'pfx_inc_end pfx_inc_ro') {
+                var data = pfixcore_spans[i].title.split('|');
+                pfixcore_spans[i].innerHTML = '<img border="0" alt="] Info: include \'' + data[1] + '\' in resource \'' + data[0] + '\'" title="Info: include \'' + data[1] + '\' in resource \'' + data[0] +'\'" src="{{$__contextpath}}/modules/pustefix-core/img/noedit.gif"/>';
+              }
+            }
+            
+            function pfixcore_openEditor(title) {
+            	var data = title.split('|');
+            	window.open('<ixsl:value-of select="$__editor_url"/>/xml/main?__scriptedflow=selectinclude&amp;' +
+            	            'theme=' + data[2] + '&amp;path=' + data[0] + '&amp;part=' + data[1] + '&amp;' +
+            	            'uri=<ixsl:value-of select="$__application_url"/>&amp;type=include&amp;__anchor=left_navi|' + data[3]
+            	            ,'PustefixEditor','menubar=yes,status=yes,resizable=yes');
+            	return false;
+            }
+            
+          </script>
+          <script type="text/javascript">
             var de_schlund_pfixcore_console_drag_start_x = 0;
             var de_schlund_pfixcore_console_drag_start_y = 0;
             var de_schlund_pfixcore_console_saved_width = 0;

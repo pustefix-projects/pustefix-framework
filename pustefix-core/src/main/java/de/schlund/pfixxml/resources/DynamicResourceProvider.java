@@ -49,6 +49,19 @@ public class DynamicResourceProvider implements ResourceProvider {
     }
     
     public Resource getResource(URI uri) throws ResourceProviderException {
+        Resource res = getResource(uri, null);
+        DynamicResourceInfo info = new DynamicResourceInfo(uri);
+        
+        Resource res2 = getResource(uri, info);
+        System.out.println("--------------");
+        System.out.println(info);
+        
+        if(!res.toURI().equals(res2.toURI())) throw new RuntimeException("XXXXXXXXXXXXXXXX: " + res.toURI() + " " +res2.toURI());
+        return res;
+        //return getResource(uri, null);
+    }
+        
+    public Resource getResource(URI uri, DynamicResourceInfo info) throws ResourceProviderException {
         if(uri.getScheme()==null) 
             throw new ResourceProviderException("Missing URI scheme: "+uri);
         if(!uri.getScheme().equals(DYNAMIC_SCHEME)) 
@@ -69,6 +82,8 @@ public class DynamicResourceProvider implements ResourceProvider {
         }
         if(themes==null) themes = new String[] {""};
         
+        Resource infoRes = null;
+        
         //search in local project
         for(String theme:themes) {
             try {
@@ -79,9 +94,20 @@ public class DynamicResourceProvider implements ResourceProvider {
                 Resource resource = ResourceUtil.getResource(prjUri);
                 if(resource.exists()) {
                     resource.setOriginatingURI(uri);
-                    if(part == null) return resource;
-                    if(containsPart(resource, part)) return resource;
-                }
+                    if(part == null) {
+                        if(info == null) return resource;
+                        else {
+                            if(infoRes == null) infoRes = resource;
+                            info.addEntry(prjUri, true, false);
+                        }
+                    } else if(containsPart(resource, part)) {
+                        if(info == null) return resource;
+                        else {
+                            if(infoRes == null) infoRes = resource;
+                            info.addEntry(prjUri, true, true);
+                        }
+                    } else if(info != null) info.addEntry(prjUri, true, false);
+                } else if(info != null) info.addEntry(prjUri, false, false);
             } catch(URISyntaxException x) {
                 throw new ResourceProviderException("Error while searching project resource: " + uri, x);
             }
@@ -103,54 +129,90 @@ public class DynamicResourceProvider implements ResourceProvider {
                     Resource resource = ResourceUtil.getResource(modUri);
                     if(resource.exists()) {
                         resource.setOriginatingURI(uri);
-                        if(part==null) return resource;
-                        if(containsPart(resource, part)) return resource;
-                    }
+                        if(part==null) {
+                            if(info == null) return resource;
+                            else {
+                                if(infoRes == null) infoRes = resource;
+                                info.addEntry(modUri, true, false);
+                            }
+                        } else if(containsPart(resource, part)) {
+                            if(info == null) return resource;
+                            else {
+                                if(infoRes == null) infoRes = resource;
+                                info.addEntry(modUri, true,true);
+                            }
+                        } else if(info != null) info.addEntry(modUri, true, false);
+                    } else if(info != null) info.addEntry(modUri, false, false);
                 } catch(URISyntaxException x) {
                     throw new ResourceProviderException("Error while searching defaultsearch module resource: " + uri, x);
                 }
             }
         }
+        
+        if(module != null) {
 
-        //search in overriding modules
-        List<String> overMods = moduleInfo.getOverridingModules(module, path);
-        if(overMods.size()>1) {
-            LOG.warn("Multiple modules found which override resource '"+path+"' from module '"+module+"'.");
-        }
-        for(String theme:themes) {
-            for(String overMod:overMods) {
+            //search in overriding modules
+            List<String> overMods = moduleInfo.getOverridingModules(module, path);
+            if(overMods.size()>1) {
+                LOG.warn("Multiple modules found which override resource '"+path+"' from module '"+module+"'.");
+            }
+            for(String theme:themes) {
+                for(String overMod:overMods) {
+                    try {
+                        String uriPath = uri.getPath();
+                        uriPath = uriPath.replace("THEME", theme);
+                        URI modUri = new URI("module://" + overMod + uriPath);
+                        if(LOG.isDebugEnabled()) LOG.debug("trying "+modUri.toString());
+                        Resource resource = ResourceUtil.getResource(modUri);
+                        if(resource.exists()) {
+                            resource.setOriginatingURI(uri);
+                            if(part==null) {
+                                if(info == null) return resource;
+                                else {
+                                    if(infoRes == null) infoRes = resource;
+                                    info.addEntry(modUri, true, false);
+                                }
+                            } else if(containsPart(resource, part)) {
+                                if(info == null) return resource;
+                                else {
+                                    if(infoRes == null) infoRes = resource;
+                                    info.addEntry(modUri, true, true);
+                                }
+                            } else if(info != null) info.addEntry(modUri, true, false);
+                        } else if(info != null) info.addEntry(modUri, false, false);
+                    } catch(URISyntaxException x) {
+                        throw new ResourceProviderException("Error while searching overrided module resource: " + uri, x);
+                    }
+                }
+            }
+            
+            //use resource from specified module
+            for(String theme:themes) {
                 try {
                     String uriPath = uri.getPath();
                     uriPath = uriPath.replace("THEME", theme);
-                    URI modUri = new URI("module://" + overMod + uriPath);
+                    URI modUri = new URI("module://" + module + uriPath);
                     if(LOG.isDebugEnabled()) LOG.debug("trying "+modUri.toString());
                     Resource resource = ResourceUtil.getResource(modUri);
                     if(resource.exists()) {
                         resource.setOriginatingURI(uri);
-                        if(part==null) return resource;
-                        if(containsPart(resource, part)) return resource;
-                    }
+                        if(info == null) return resource;
+                        else {
+                            if(infoRes == null) infoRes = resource;
+                            if(part != null && containsPart(resource, part)) info.addEntry(modUri, true, true);
+                            else info.addEntry(modUri, true, false);
+                        }
+                    } else if(info != null) info.addEntry(modUri, false, false);
                 } catch(URISyntaxException x) {
-                    throw new ResourceProviderException("Error while searching overrided module resource: " + uri, x);
+                    throw new ResourceProviderException("Error while getting module resource: " + uri, x);
                 }
             }
+        
         }
         
-        //use resource from specified module
-        for(String theme:themes) {
-            try {
-                String uriPath = uri.getPath();
-                uriPath = uriPath.replace("THEME", theme);
-                URI modUri = new URI("module://" + module + uriPath);
-                if(LOG.isDebugEnabled()) LOG.debug("trying "+modUri.toString());
-                Resource resource = ResourceUtil.getResource(modUri);
-                if(resource.exists()) {
-                    resource.setOriginatingURI(uri);
-                    return resource;
-                }
-            } catch(URISyntaxException x) {
-                throw new ResourceProviderException("Error while getting module resource: " + uri, x);
-            }
+        if(infoRes != null) {
+            info.setResolvedURI(infoRes.toURI());
+            return infoRes;
         }
         
         //Return non-existing project resource if search failed

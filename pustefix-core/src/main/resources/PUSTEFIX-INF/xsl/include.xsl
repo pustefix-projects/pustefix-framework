@@ -251,17 +251,9 @@
                               string($parent_part), string($parent_theme), $computed_inc, $module_name, $search)"/>
         <xsl:variable name="__resolveduri"><xsl:value-of select="include:getResolvedURI()"/></xsl:variable>
         <!-- Start image of edited region -->
-        <xsl:choose>
-          <xsl:when test="$noedit = 'true'"/> <!-- Do NOTHING! -->
-          <xsl:when test="not($__target_key = '__NONE__') and $prohibitEdit = 'no'">
-            <ixsl:if test="$__editmode='admin'">
-              <img border="0" alt="[" src="{{$__contextpath}}/modules/pustefix-core/img/edit_start.gif"/>
-            </ixsl:if>
-          </xsl:when>
-          <xsl:when test="$__target_key = '__NONE__' and $__editmode = 'admin'">
-            <img border="0" alt="[" src="{$__contextpath}/modules/pustefix-core/img/edit_start.gif"/>
-          </xsl:when>
-        </xsl:choose>
+        <xsl:if test="$prohibitEdit='no' and not($noedit='true')">
+          <ixsl:if test="$__editmode='admin'"><span class="pfx_inc_start"/></ixsl:if>
+        </xsl:if>
         <!-- -->
         <xsl:variable name="used_theme">
           <xsl:choose>
@@ -290,9 +282,7 @@
           </xsl:when>
         </xsl:choose>
         <!-- ===================================================== -->
-        <xsl:choose>
-          <xsl:when test="$noedit = 'true'"/> <!-- Do NOTHING! -->
-          <xsl:when test="not($__target_key = '__NONE__') and $prohibitEdit = 'no'">
+        <xsl:if test="$prohibitEdit='no' and not($noedit='true')">
             <ixsl:if test="$__editmode = 'admin'">
               <xsl:choose>
                 <xsl:when test="$incnodes/parent::part/@editable='true'">
@@ -329,26 +319,7 @@
                 </xsl:otherwise>
               </xsl:choose>
             </ixsl:if>
-          </xsl:when>
-          <xsl:when test="$__target_key='__NONE__' and $__editmode = 'admin'">
-            <xsl:choose>
-              <xsl:when test="$incnodes/parent::part/@editable='true' or (not($incnodes/parent::part/@editable='false') and $__editor_include_parts_editable_by_default='true')">
-                <xsl:call-template name="pfx:include_internal_render_edit_runtime">
-                  <xsl:with-param name="part" select="$part"/>
-                  <xsl:with-param name="realpath" select="$realpath"/>
-                  <xsl:with-param name="used_theme" select="$used_theme"/>
-                  <xsl:with-param name="resolved_uri" select="$__resolveduri"/>
-                </xsl:call-template>
-              </xsl:when>
-              <xsl:otherwise>
-                <xsl:call-template name="pfx:include_internal_render_noedit_runtime">
-                  <xsl:with-param name="part" select="$part"/>
-                  <xsl:with-param name="resolved_uri" select="$__resolveduri"/>
-                </xsl:call-template>
-              </xsl:otherwise>
-            </xsl:choose>
-          </xsl:when>
-        </xsl:choose>
+        </xsl:if>
       </xsl:otherwise>
     </xsl:choose>
   </xsl:template>
@@ -358,37 +329,13 @@
     <xsl:param name="realpath"/>
     <xsl:param name="used_theme"/>
     <xsl:param name="resolved_uri"/>
-    <a href="#">
-      <ixsl:attribute name="onclick">window.open('<ixsl:value-of select="$__editor_url"/>/xml/main?__scriptedflow=selectinclude&amp;theme=<xsl:value-of select="string($used_theme)"/>&amp;path=<xsl:value-of select="$resolved_uri"/>&amp;part=<xsl:value-of select="$part"/>&amp;uri=<ixsl:value-of select="$__application_url"/>&amp;type=include&amp;__anchor=left_navi|<xsl:value-of select="$realpath"/>','PustefixEditor','menubar=yes,status=yes,resizable=yes');return(false);</ixsl:attribute>
-      <img border="0" src="{{$__contextpath}}/modules/pustefix-core/img/edit.gif"
-           alt="] Edit include: '{$part}' in resource '{$resolved_uri}'"
-           title="Edit include: '{$part}' in resource '{$resolved_uri}'"/>
-    </a>
+    <span class="pfx_inc_end" title="{$resolved_uri}|{$part}|{$used_theme}|{$realpath}"/>
   </xsl:template>
 
   <xsl:template name="pfx:include_internal_render_noedit">
     <xsl:param name="part"/>
     <xsl:param name="resolved_uri"/>
-    <img border="0" src="{{$__contextpath}}/modules/pustefix-core/img/noedit.gif"
-      alt="] Info: '{$part}' in resource '{$resolved_uri}'"
-      title="Info: '{$part}' in resource '{$resolved_uri}'"/>
-  </xsl:template>
-
-  <xsl:template name="pfx:include_internal_render_edit_runtime">
-    <xsl:param name="part"/>
-    <xsl:param name="realpath"/>
-    <xsl:param name="used_theme"/>
-    <xsl:param name="resolved_uri"/>
-    <a href="#">
-      <xsl:attribute name="onClick">window.open('<xsl:value-of select="$__editor_url"/>/xml/main?__scriptedflow=selectinclude&amp;theme=<xsl:value-of select="string($used_theme)"/>&amp;path=<xsl:value-of select="$realpath"/>&amp;part=<xsl:value-of select="$part"/>&amp;name=<xsl:value-of select="$product"/>&amp;uri=<xsl:value-of select="$__application_url"/>&amp;type=dyninclude&amp;__anchor=left_navi|<xsl:value-of select="$realpath"/>','PustefixEditor','menubar=yes,status=yes,resizable=yes');return(false);</xsl:attribute>
-      <img border="0" src="{$__contextpath}/modules/pustefix-core/img/edit.gif" alt="] Edit include: '{$part}' in file '{$realpath}'" title="Edit include: '{$part}' in file '{$realpath}'"/>
-    </a>
-  </xsl:template>
-
-  <xsl:template name="pfx:include_internal_render_noedit_runtime">
-    <xsl:param name="part"/>
-    <xsl:param name="resolved_uri"/>
-    <img border="0" src="{$__contextpath}/modules/pustefix-core/img/noedit.gif" alt="] Info: '{$part}' in file '{$realpath}'" title="Info: '{$part}' in file '{$realpath}'"/>
+    <span class="pfx_inc_end pfx_inc_ro" title="{$resolved_uri}|{$part}"/>
   </xsl:template>
 
   <xsl:template match="pfx:include[@level='runtime']">

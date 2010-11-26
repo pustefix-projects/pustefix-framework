@@ -86,4 +86,8 @@
     <func:result select="callback:isAuthorized($__context__,$pageName)"/>
   </func:function>
 
+  <func:function name="pfx:getFrameworkVersion">
+    <func:result select="callback:getFrameworkVersion()"/>
+  </func:function>
+
 </xsl:stylesheet>
