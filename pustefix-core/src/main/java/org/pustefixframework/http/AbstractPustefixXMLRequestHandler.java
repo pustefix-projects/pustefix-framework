@@ -148,7 +148,7 @@ public abstract class AbstractPustefixXMLRequestHandler extends AbstractPustefix
     protected String editorLocation;
     
     @Override
-    protected ServletManagerConfig getServletManagerConfig() {
+    public ServletManagerConfig getServletManagerConfig() {
         return this.getAbstractXMLServletConfig();
     }
     

@@ -15,17 +15,17 @@ public class SessionHandlingTestHandler extends AbstractPustefixRequestHandler {
     ServletManagerConfig config = new SessionHandlingTestHandlerConfig();
     
     @Override
-    protected ServletManagerConfig getServletManagerConfig() {
+    public ServletManagerConfig getServletManagerConfig() {
         return config;
     }
 
     @Override
-    protected boolean needsSession() {
+    public boolean needsSession() {
         return true;
     }
 
     @Override
-    protected boolean allowSessionCreate() {
+    public boolean allowSessionCreate() {
         return true;
     }
 
@@ -47,7 +47,7 @@ public class SessionHandlingTestHandler extends AbstractPustefixRequestHandler {
     }
     
     @Override
-    protected boolean needsSSL(PfixServletRequest preq) throws ServletException {
+    public boolean needsSSL(PfixServletRequest preq) throws ServletException {
         if(preq.getRequestParam("nossl") != null) return false;
         return true;
     }

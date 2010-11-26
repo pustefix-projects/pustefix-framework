@@ -84,7 +84,7 @@ public class PustefixContextDirectOutputRequestHandler extends AbstractPustefixR
      * @return a <code>boolean</code> value
      */
     @Override
-    protected final boolean needsSession() {
+    public final boolean needsSession() {
         return true;
     }
    
@@ -95,7 +95,7 @@ public class PustefixContextDirectOutputRequestHandler extends AbstractPustefixR
      * @return a <code>boolean</code> value
      */
     @Override
-    protected final boolean allowSessionCreate() {
+    public final boolean allowSessionCreate() {
         return false;
     }
 
@@ -203,7 +203,7 @@ public class PustefixContextDirectOutputRequestHandler extends AbstractPustefixR
     }
     
     @Override
-    protected ServletManagerConfig getServletManagerConfig() {
+    public ServletManagerConfig getServletManagerConfig() {
         return this.config;
     }
 

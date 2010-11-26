@@ -46,12 +46,12 @@ public class SessionHandlingTest extends TestCase {
             
             ConsoleAppender appender = new ConsoleAppender(new PatternLayout("%p: %m\n"));
             Logger logger=Logger.getRootLogger();
-            logger.setLevel((Level)Level.ERROR);
+            logger.setLevel((Level)Level.WARN);
             logger.removeAllAppenders();
             logger.addAppender(appender);
             
             logger = Logger.getLogger("org.pustefixframework");
-            logger.setLevel((Level)Level.ERROR);
+            logger.setLevel((Level)Level.DEBUG);
             logger.addAppender(appender);
             
             //Start embedded Jetty
@@ -86,7 +86,7 @@ public class SessionHandlingTest extends TestCase {
         method.getParams().setCookiePolicy(CookiePolicy.BROWSER_COMPATIBILITY);
             
         int statusCode = client.executeMethod(method);
-        printDump(method);
+        //printDump(method);
         
         assertEquals(HttpStatus.SC_MOVED_TEMPORARILY, statusCode);
         String location = method.getResponseHeader("Location").getValue();
@@ -98,13 +98,27 @@ public class SessionHandlingTest extends TestCase {
         method = new GetMethod(location);
         method.setFollowRedirects(false);
         method.getParams().setCookiePolicy(CookiePolicy.BROWSER_COMPATIBILITY);
+        
+        statusCode = client.executeMethod(method);
+        //printDump(method);
+        
+        assertEquals(HttpStatus.SC_MOVED_TEMPORARILY, statusCode);
+        location = method.getResponseHeader("Location").getValue();
+        assertNull(getSession(location));
+        assertEquals("http", getProtocol(location));
+        assertEquals(HTTP_PORT, getPort(location));
+                  
+        method = new GetMethod(location);
+        method.setFollowRedirects(false);
+        method.getParams().setCookiePolicy(CookiePolicy.BROWSER_COMPATIBILITY);
             
         statusCode = client.executeMethod(method);
-        printDump(method);
+        //printDump(method);
         
         assertEquals(HttpStatus.SC_OK, statusCode);
         assertTrue(method.getResponseBodyAsString().contains("<body>test</body>"));
         assertEquals(1, getCount(method.getResponseBodyAsString()));
+        assertEquals("JSESSIONID=" + session, method.getRequestHeader("Cookie").getValue());
 
     }
     
@@ -117,6 +131,7 @@ public class SessionHandlingTest extends TestCase {
         method.getParams().setCookiePolicy(CookiePolicy.BROWSER_COMPATIBILITY);
             
         int statusCode = client.executeMethod(method);
+        printDump(method);
         
         assertEquals(HttpStatus.SC_MOVED_TEMPORARILY, statusCode);
         String location = method.getResponseHeader("Location").getValue();

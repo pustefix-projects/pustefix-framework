@@ -64,12 +64,12 @@ public class DerefRequestHandler extends AbstractPustefixRequestHandler {
     }
     
     @Override
-    protected boolean allowSessionCreate() {
+    public boolean allowSessionCreate() {
         return (false);
     }
 
     @Override
-    protected boolean needsSession() {
+    public boolean needsSession() {
         return (false);
     }
 
@@ -233,12 +233,12 @@ public class DerefRequestHandler extends AbstractPustefixRequestHandler {
     }
     
     @Override
-    protected boolean wantsCheckSessionIdValid() {
+    public boolean wantsCheckSessionIdValid() {
         return false;
     }
 
     @Override
-    protected ServletManagerConfig getServletManagerConfig() {
+    public ServletManagerConfig getServletManagerConfig() {
         return this.config;
     }
     

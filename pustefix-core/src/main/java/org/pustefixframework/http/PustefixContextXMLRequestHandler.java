@@ -94,7 +94,7 @@ public class PustefixContextXMLRequestHandler extends AbstractPustefixXMLRequest
     }
     
     @Override
-    protected boolean needsSSL(PfixServletRequest preq) throws ServletException {
+    public boolean needsSSL(PfixServletRequest preq) throws ServletException {
         if (super.needsSSL(preq)) {
             return true;
         } else {
@@ -110,12 +110,12 @@ public class PustefixContextXMLRequestHandler extends AbstractPustefixXMLRequest
     }
 
     @Override
-    protected boolean needsSession() {
+    public boolean needsSession() {
         return true;
     }
 
     @Override
-    protected boolean allowSessionCreate() {
+    public boolean allowSessionCreate() {
         return true;
     }
     
