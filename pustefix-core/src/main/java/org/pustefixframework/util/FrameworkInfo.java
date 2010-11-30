@@ -1,7 +1,6 @@
 package org.pustefixframework.util;
 
 import java.io.File;
-import java.io.FileInputStream;
 import java.net.URL;
 import java.util.jar.JarFile;
 import java.util.jar.Manifest;

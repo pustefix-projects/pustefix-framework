@@ -104,16 +104,27 @@
             for(var i=0; i&lt;pfixcore_spans.length; i++) {
               if(pfixcore_spans[i].className == 'pfx_inc_start') {
                 pfixcore_spans[i].innerHTML = '<img border="0" alt="[" src="{{$__contextpath}}/modules/pustefix-core/img/edit_start.gif"/>';
-              }
-              if(pfixcore_spans[i].className == 'pfx_inc_end') {
+              } else if(pfixcore_spans[i].className == 'pfx_inc_end' || pfixcore_spans[i].className == 'pfx_inc_end pfx_inc_ro') {
                 var data = pfixcore_spans[i].title.split('|');
-                pfixcore_spans[i].innerHTML = '<a href="#" onclick="pfixcore_openEditor(\'' + pfixcore_spans[i].title + '\')">' +
-                                              '<img border="0" alt="] Edit include \'' + data[1] + '\' in resource \'' + data[0] + '\'" title="Edit include \'' + data[1] + '\' in resource \'' + data[0] + '\'" src="{{$__contextpath}}/modules/pustefix-core/img/edit.gif"/>';
-                                              '</a>';
-              }
-              if(pfixcore_spans[i].className == 'pfx_inc_end pfx_inc_ro') {
-                var data = pfixcore_spans[i].title.split('|');
-                pfixcore_spans[i].innerHTML = '<img border="0" alt="] Info: include \'' + data[1] + '\' in resource \'' + data[0] + '\'" title="Info: include \'' + data[1] + '\' in resource \'' + data[0] +'\'" src="{{$__contextpath}}/modules/pustefix-core/img/noedit.gif"/>';
+                var partStr = 'part \'' + data[0] + '\'';
+                var pathStr = ' from resource \'' + data[2] + '\'';
+                var modStr = '';
+                if(data[3] == 'webapp') {
+                  modStr = ' within webapp';
+                } else {
+                  modStr = ' within module \'' + data[3] + '\'';
+                }
+                var dynStr = '';
+                if(data.length > 4) {
+                  dynStr = ' having searched \''+ data[5] + '\'';
+                }
+                if(pfixcore_spans[i].className == 'pfx_inc_end') {
+                  pfixcore_spans[i].innerHTML = '<a href="#" onclick="pfixcore_openEditor(\'' + pfixcore_spans[i].title + '\')">' +
+                                                '<img border="0" alt="] Edit ' + partStr + pathStr + modStr + dynStr + '" title="Edit ' + partStr + pathStr + modStr + dynStr + '" src="{{$__contextpath}}/modules/pustefix-core/img/edit.gif"/>';
+                                                '</a>';
+                } else {
+                  pfixcore_spans[i].innerHTML = '<img border="0" alt="] This is ' + partStr + pathStr + modStr + dynStr + '" title="This is ' + partStr + pathStr + modStr + dynStr + '" src="{{$__contextpath}}/modules/pustefix-core/img/noedit.gif"/>';
+                }
               }
             }
             

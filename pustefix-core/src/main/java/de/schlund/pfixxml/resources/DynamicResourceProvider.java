@@ -49,16 +49,7 @@ public class DynamicResourceProvider implements ResourceProvider {
     }
     
     public Resource getResource(URI uri) throws ResourceProviderException {
-        Resource res = getResource(uri, null);
-        DynamicResourceInfo info = new DynamicResourceInfo(uri);
-        
-        Resource res2 = getResource(uri, info);
-        System.out.println("--------------");
-        System.out.println(info);
-        
-        if(!res.toURI().equals(res2.toURI())) throw new RuntimeException("XXXXXXXXXXXXXXXX: " + res.toURI() + " " +res2.toURI());
-        return res;
-        //return getResource(uri, null);
+       return getResource(uri, null);
     }
         
     public Resource getResource(URI uri, DynamicResourceInfo info) throws ResourceProviderException {
@@ -98,16 +89,16 @@ public class DynamicResourceProvider implements ResourceProvider {
                         if(info == null) return resource;
                         else {
                             if(infoRes == null) infoRes = resource;
-                            info.addEntry(prjUri, true, false);
+                            info.addEntry("webapp", true, false);
                         }
                     } else if(containsPart(resource, part)) {
                         if(info == null) return resource;
                         else {
                             if(infoRes == null) infoRes = resource;
-                            info.addEntry(prjUri, true, true);
+                            info.addEntry("webapp", true, true);
                         }
-                    } else if(info != null) info.addEntry(prjUri, true, false);
-                } else if(info != null) info.addEntry(prjUri, false, false);
+                    } else if(info != null) info.addEntry("webapp", true, false);
+                } else if(info != null) info.addEntry("webapp", false, false);
             } catch(URISyntaxException x) {
                 throw new ResourceProviderException("Error while searching project resource: " + uri, x);
             }
@@ -133,16 +124,16 @@ public class DynamicResourceProvider implements ResourceProvider {
                             if(info == null) return resource;
                             else {
                                 if(infoRes == null) infoRes = resource;
-                                info.addEntry(modUri, true, false);
+                                info.addEntry(defaultSearchModule, true, false);
                             }
                         } else if(containsPart(resource, part)) {
                             if(info == null) return resource;
                             else {
                                 if(infoRes == null) infoRes = resource;
-                                info.addEntry(modUri, true,true);
+                                info.addEntry(defaultSearchModule, true,true);
                             }
-                        } else if(info != null) info.addEntry(modUri, true, false);
-                    } else if(info != null) info.addEntry(modUri, false, false);
+                        } else if(info != null) info.addEntry(defaultSearchModule, true, false);
+                    } else if(info != null) info.addEntry(defaultSearchModule, false, false);
                 } catch(URISyntaxException x) {
                     throw new ResourceProviderException("Error while searching defaultsearch module resource: " + uri, x);
                 }
@@ -170,16 +161,16 @@ public class DynamicResourceProvider implements ResourceProvider {
                                 if(info == null) return resource;
                                 else {
                                     if(infoRes == null) infoRes = resource;
-                                    info.addEntry(modUri, true, false);
+                                    info.addEntry(overMod, true, false);
                                 }
                             } else if(containsPart(resource, part)) {
                                 if(info == null) return resource;
                                 else {
                                     if(infoRes == null) infoRes = resource;
-                                    info.addEntry(modUri, true, true);
+                                    info.addEntry(overMod, true, true);
                                 }
-                            } else if(info != null) info.addEntry(modUri, true, false);
-                        } else if(info != null) info.addEntry(modUri, false, false);
+                            } else if(info != null) info.addEntry(overMod, true, false);
+                        } else if(info != null) info.addEntry(overMod, false, false);
                     } catch(URISyntaxException x) {
                         throw new ResourceProviderException("Error while searching overrided module resource: " + uri, x);
                     }
@@ -199,10 +190,10 @@ public class DynamicResourceProvider implements ResourceProvider {
                         if(info == null) return resource;
                         else {
                             if(infoRes == null) infoRes = resource;
-                            if(part != null && containsPart(resource, part)) info.addEntry(modUri, true, true);
-                            else info.addEntry(modUri, true, false);
+                            if(part != null && containsPart(resource, part)) info.addEntry(module, true, true);
+                            else info.addEntry(module, true, false);
                         }
-                    } else if(info != null) info.addEntry(modUri, false, false);
+                    } else if(info != null) info.addEntry(module, false, false);
                 } catch(URISyntaxException x) {
                     throw new ResourceProviderException("Error while getting module resource: " + uri, x);
                 }
@@ -210,10 +201,7 @@ public class DynamicResourceProvider implements ResourceProvider {
         
         }
         
-        if(infoRes != null) {
-            info.setResolvedURI(infoRes.toURI());
-            return infoRes;
-        }
+        if(infoRes != null) return infoRes;
         
         //Return non-existing project resource if search failed
         try {

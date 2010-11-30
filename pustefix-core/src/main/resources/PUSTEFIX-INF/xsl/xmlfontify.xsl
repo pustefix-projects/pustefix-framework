@@ -24,6 +24,10 @@
           .datatable td {padding:4px;}
           .datatable th {padding:4px;text-align:left;font-weight:normal;border-bottom: 1px solid black;}
           .rowsep {border-bottom: 1px dotted #888888;}
+          table.info {padding-left: 20px;}
+          table.info th,td {text-align:left; padding:4px;}
+          table.info td {color: #666666; font-weight: normal;}
+          table.info th {color: #000000; font-weight: normal;}
         </style>
       </head>
       <body>
@@ -47,6 +51,40 @@
         </xsl:call-template>
         </table>
         <br/>
+        <h1>Environment properties:</h1>
+        <xsl:variable name="properties" select="java:getProperties()" xmlns:java="de.schlund.pfixxml.config.EnvironmentProperties"/>
+        <table class="info">
+        <tr>
+        <th>fqdn</th>
+        <td><xsl:value-of select="java:getProperty($properties,'fqdn')" xmlns:java="java.util.Properties"/></td>
+        </tr>
+        <tr>
+        <th>machine</th>
+        <td><xsl:value-of select="java:getProperty($properties,'machine')" xmlns:java="java.util.Properties"/></td>
+        </tr>
+        <tr>
+        <th>mode</th>
+        <td><xsl:value-of select="java:getProperty($properties,'mode')" xmlns:java="java.util.Properties"/></td>
+        </tr>
+        <tr>
+        <th>uid</th>
+        <td><xsl:value-of select="java:getProperty($properties,'uid')" xmlns:java="java.util.Properties"/></td>
+        </tr>
+        </table>
+        <h1>Framework information:</h1>
+        <table class="info">
+        <tr>
+        <th>Pustefix version</th>
+        <td><xsl:value-of select="callback:getFrameworkVersion()"/></td>
+        </tr>
+        </table>
+        <h1>Loaded modules:</h1>
+        <table class="info">
+        <xsl:variable name="modules" select="callback:getLoadedModules(.)"/>
+        <xsl:for-each select="$modules/modules/module">
+          <tr><th><xsl:value-of select="@name"/></th></tr>
+        </xsl:for-each>
+        </table>
       </body>
     </html>
   </xsl:template>

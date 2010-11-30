@@ -53,5 +53,9 @@ public class IncludeDocumentExtensionSaxon1 {
     public static String getResolvedURI() {
         return IncludeDocumentExtension.getResolvedURI();
     }
+    
+    public static String getDynIncInfo(String part, String theme, String path, String resolvedModule, String requestedModule) {
+        return IncludeDocumentExtension.getDynIncInfo(part, theme, path, resolvedModule, requestedModule);
+    }
 
 }

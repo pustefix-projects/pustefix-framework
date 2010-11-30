@@ -89,5 +89,5 @@
   <func:function name="pfx:getFrameworkVersion">
     <func:result select="callback:getFrameworkVersion()"/>
   </func:function>
-
+  
 </xsl:stylesheet>
