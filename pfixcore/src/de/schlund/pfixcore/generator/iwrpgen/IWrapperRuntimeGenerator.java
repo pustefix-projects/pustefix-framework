@@ -27,7 +27,9 @@ import de.schlund.pfixcore.generator.annotation.Caster;
 import de.schlund.pfixcore.generator.annotation.IWrapper;
 import de.schlund.pfixcore.generator.annotation.Param;
 import de.schlund.pfixcore.generator.annotation.PostCheck;
+import de.schlund.pfixcore.generator.annotation.PostChecks;
 import de.schlund.pfixcore.generator.annotation.PreCheck;
+import de.schlund.pfixcore.generator.annotation.PreChecks;
 import de.schlund.pfixcore.generator.annotation.Property;
 
 public class IWrapperRuntimeGenerator {
@@ -182,37 +184,25 @@ public class IWrapperRuntimeGenerator {
             PreCheck preCheck = getter.getAnnotation(PreCheck.class);
             if (preCheck == null && field != null) preCheck = field.getAnnotation(PreCheck.class);
             if (preCheck != null) {
-                Element preCheckElem = doc.createElementNS(XMLNS_IWRP, "iwrp:precheck");
-                paramElem.appendChild(preCheckElem);
-                Class<?> preCheckType = preCheck.type();
-                preCheckElem.setAttribute("class", preCheckType.getName());
-                Property[] preCheckProps = preCheck.properties();
-                if (preCheckProps != null) {
-                    for (Property preCheckProp : preCheckProps) {
-                        Element propElem = doc.createElementNS(XMLNS_IWRP, "iwrp:cparam");
-                        preCheckElem.appendChild(propElem);
-                        propElem.setAttribute("name", preCheckProp.name());
-                        propElem.setAttribute("value", preCheckProp.value());
-                    }
-                }
+                addPreCheck(preCheck, paramElem);
+            }
+            PreChecks preChecks = getter.getAnnotation(PreChecks.class);
+            if(preChecks == null && field != null) preChecks = field.getAnnotation(PreChecks.class);
+            if(preChecks != null) {
+                PreCheck[] pres = preChecks.value();
+                if(pres != null) for(PreCheck pre: pres) addPreCheck(pre, paramElem);
             }
 
             PostCheck postCheck = getter.getAnnotation(PostCheck.class);
             if (postCheck == null && field != null) postCheck = field.getAnnotation(PostCheck.class);
             if (postCheck != null) {
-                Element postCheckElem = doc.createElementNS(XMLNS_IWRP, "iwrp:postcheck");
-                paramElem.appendChild(postCheckElem);
-                Class<?> postCheckType = postCheck.type();
-                postCheckElem.setAttribute("class", postCheckType.getName());
-                Property[] postCheckProps = postCheck.properties();
-                if (postCheckProps != null) {
-                    for (Property postCheckProp : postCheckProps) {
-                        Element propElem = doc.createElementNS(XMLNS_IWRP, "iwrp:cparam");
-                        postCheckElem.appendChild(propElem);
-                        propElem.setAttribute("name", postCheckProp.name());
-                        propElem.setAttribute("value", postCheckProp.value());
-                    }
-                }
+                addPostCheck(postCheck, paramElem);
+            }
+            PostChecks postChecks = getter.getAnnotation(PostChecks.class);
+            if(postChecks == null && field != null) postChecks = field.getAnnotation(PostChecks.class);
+            if(postChecks != null) {
+                PostCheck[] posts = postChecks.value();
+                if(posts != null) for(PostCheck post: posts) addPostCheck(post, paramElem);
             }
 
         }
@@ -241,6 +231,38 @@ public class IWrapperRuntimeGenerator {
 
         } catch (Exception x) {
             x.printStackTrace();
+        }
+    }
+    
+    private static void addPreCheck(PreCheck preCheck, Element parent) {
+        Element preCheckElem = parent.getOwnerDocument().createElementNS(XMLNS_IWRP, "iwrp:precheck");
+        parent.appendChild(preCheckElem);
+        Class<?> preCheckType = preCheck.type();
+        preCheckElem.setAttribute("class", preCheckType.getName());
+        Property[] preCheckProps = preCheck.properties();
+        if (preCheckProps != null) {
+            for (Property preCheckProp : preCheckProps) {
+                Element propElem = parent.getOwnerDocument().createElementNS(XMLNS_IWRP, "iwrp:cparam");
+                preCheckElem.appendChild(propElem);
+                propElem.setAttribute("name", preCheckProp.name());
+                propElem.setAttribute("value", preCheckProp.value());
+            }
+        }
+    }
+    
+    private static void addPostCheck(PostCheck postCheck, Element parent) {
+        Element postCheckElem = parent.getOwnerDocument().createElementNS(XMLNS_IWRP, "iwrp:postcheck");
+        parent.appendChild(postCheckElem);
+        Class<?> postCheckType = postCheck.type();
+        postCheckElem.setAttribute("class", postCheckType.getName());
+        Property[] postCheckProps = postCheck.properties();
+        if (postCheckProps != null) {
+            for (Property postCheckProp : postCheckProps) {
+                Element propElem = parent.getOwnerDocument().createElementNS(XMLNS_IWRP, "iwrp:cparam");
+                postCheckElem.appendChild(propElem);
+                propElem.setAttribute("name", postCheckProp.name());
+                propElem.setAttribute("value", postCheckProp.value());
+            }
         }
     }
 

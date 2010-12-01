@@ -72,7 +72,9 @@ public class IWrapperAnnotationProcessor implements AnnotationProcessor {
     protected AnnotationTypeDeclaration transientType;
     protected AnnotationTypeDeclaration paramType;
     protected AnnotationTypeDeclaration casterType;
+    protected AnnotationTypeDeclaration preChecksType;
     protected AnnotationTypeDeclaration preCheckType;
+    protected AnnotationTypeDeclaration postChecksType;
     protected AnnotationTypeDeclaration postCheckType;
     protected AnnotationTypeDeclaration propertyType;
 
@@ -82,7 +84,9 @@ public class IWrapperAnnotationProcessor implements AnnotationProcessor {
         transientType = (AnnotationTypeDeclaration) env.getTypeDeclaration("de.schlund.pfixcore.generator.annotation.Transient");
         paramType = (AnnotationTypeDeclaration) env.getTypeDeclaration("de.schlund.pfixcore.generator.annotation.Param");
         casterType = (AnnotationTypeDeclaration) env.getTypeDeclaration("de.schlund.pfixcore.generator.annotation.Caster");
+        preChecksType = (AnnotationTypeDeclaration) env.getTypeDeclaration("de.schlund.pfixcore.generator.annotation.PreChecks");
         preCheckType = (AnnotationTypeDeclaration) env.getTypeDeclaration("de.schlund.pfixcore.generator.annotation.PreCheck");
+        postChecksType = (AnnotationTypeDeclaration) env.getTypeDeclaration("de.schlund.pfixcore.generator.annotation.PostChecks");
         postCheckType = (AnnotationTypeDeclaration) env.getTypeDeclaration("de.schlund.pfixcore.generator.annotation.PostCheck");
         propertyType = (AnnotationTypeDeclaration) env.getTypeDeclaration("de.schlund.pfixcore.generator.annotation.Property");
     }
@@ -294,8 +298,30 @@ public class IWrapperAnnotationProcessor implements AnnotationProcessor {
                             else autoAddCaster(paramElem, fieldDecl.getType());
                             AnnotationMirror preCheckMirror = MirrorApiUtils.getAnnotationMirror(fieldDecl, preCheckType);
                             if (preCheckMirror != null) addPreCheck(paramElem, preCheckMirror);
+                            AnnotationMirror preChecksMirror = MirrorApiUtils.getAnnotationMirror(fieldDecl, preChecksType);
+                            if (preChecksMirror != null) {
+                                AnnotationValue value = MirrorApiUtils.getAnnotationValue(preChecksMirror, "value");
+                                if (value != null) {
+                                    Collection<AnnotationValue> preChecks = getCollectionFromAnnotationValue(value);
+                                    for (AnnotationValue val : preChecks) {
+                                        AnnotationMirror preMirror = (AnnotationMirror) val.getValue();
+                                        addPreCheck(paramElem, preMirror);
+                                    }
+                                }
+                            }
                             AnnotationMirror postCheckMirror = MirrorApiUtils.getAnnotationMirror(fieldDecl, postCheckType);
                             if (postCheckMirror != null) addPostCheck(paramElem, postCheckMirror);
+                            AnnotationMirror postChecksMirror = MirrorApiUtils.getAnnotationMirror(fieldDecl, postChecksType);
+                            if (postChecksMirror != null) {
+                                AnnotationValue value = MirrorApiUtils.getAnnotationValue(postChecksMirror, "value");
+                                if (value != null) {
+                                    Collection<AnnotationValue> postChecks = getCollectionFromAnnotationValue(value);
+                                    for (AnnotationValue val : postChecks) {
+                                        AnnotationMirror postMirror = (AnnotationMirror) val.getValue();
+                                        addPostCheck(paramElem, postMirror);
+                                    }
+                                }
+                            }
                         }
                     }
                 }
@@ -348,10 +374,36 @@ public class IWrapperAnnotationProcessor implements AnnotationProcessor {
                         if (preCheckMirror == null && fieldDecl != null)
                             preCheckMirror = MirrorApiUtils.getAnnotationMirror(fieldDecl, preCheckType);
                         if (preCheckMirror != null) addPreCheck(paramElem, preCheckMirror);
+                        AnnotationMirror preChecksMirror = MirrorApiUtils.getAnnotationMirror(methDecl, preChecksType);
+                        if (preChecksMirror == null && fieldDecl != null)
+                            preChecksMirror = MirrorApiUtils.getAnnotationMirror(fieldDecl, preChecksType);
+                        if( preChecksMirror != null) {
+                            AnnotationValue value = MirrorApiUtils.getAnnotationValue(preChecksMirror, "value");
+                            if (value != null) {
+                                Collection<AnnotationValue> preChecks = getCollectionFromAnnotationValue(value);
+                                for (AnnotationValue val : preChecks) {
+                                    AnnotationMirror preMirror = (AnnotationMirror) val.getValue();
+                                    addPreCheck(paramElem, preMirror);
+                                }
+                            }
+                        }
                         AnnotationMirror postCheckMirror = MirrorApiUtils.getAnnotationMirror(methDecl, postCheckType);
                         if (postCheckMirror == null && fieldDecl != null)
                             postCheckMirror = MirrorApiUtils.getAnnotationMirror(fieldDecl, postCheckType);
                         if (postCheckMirror != null) addPostCheck(paramElem, postCheckMirror);
+                        AnnotationMirror postChecksMirror = MirrorApiUtils.getAnnotationMirror(methDecl, postChecksType);
+                        if (postChecksMirror == null && fieldDecl != null)
+                            postChecksMirror = MirrorApiUtils.getAnnotationMirror(fieldDecl, postChecksType);
+                        if( postChecksMirror != null) {
+                            AnnotationValue value = MirrorApiUtils.getAnnotationValue(postChecksMirror, "value");
+                            if (value != null) {
+                                Collection<AnnotationValue> postChecks = getCollectionFromAnnotationValue(value);
+                                for (AnnotationValue val : postChecks) {
+                                    AnnotationMirror postMirror = (AnnotationMirror) val.getValue();
+                                    addPostCheck(paramElem, postMirror);
+                                }
+                            }
+                        }
                     }
                 }
 
