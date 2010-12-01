@@ -42,9 +42,9 @@
           </xs:annotation>
           <xs:complexType>
 
-            <xs:all>
+            <xs:choice minOccurs="0" maxOccurs="unbounded">
 
-              <xs:element name="caster" minOccurs="0">
+              <xs:element name="caster">
                 <xs:annotation>
                   <xs:documentation xml:lang="en">Each parameter must be casted from a String to the specific type (unless the type is java.lang.String itself, in this case, no caster need to be supplied). This is done by means of a class implementing de.schlund.pfixcore.generator.IWrapperParamCaster. For the usual simple types you can use a caster from the package de.schlund.pfixcore.generator.casters.</xs:documentation>
                 </xs:annotation>
@@ -61,7 +61,7 @@
                 </xs:complexType>
               </xs:element>
 
-              <xs:element name="default" minOccurs="0">
+              <xs:element name="default">
                 <xs:complexType>
                   <xs:sequence>
 	                  <xs:element name="value" minOccurs="1" maxOccurs="unbounded" type="xs:string"/>
@@ -69,7 +69,7 @@
                 </xs:complexType>
 	            </xs:element>
 
-	            <xs:element name="precheck" minOccurs="0">
+	            <xs:element name="precheck">
                 <xs:annotation>
                   <xs:documentation xml:lang="en">// TODO_DOC Documentation</xs:documentation>
                 </xs:annotation>
@@ -85,7 +85,7 @@
                   </xs:attribute>
                 </xs:complexType>
               </xs:element>
-              <xs:element name="postcheck" minOccurs="0">
+              <xs:element name="postcheck">
                 <xs:annotation>
                   <xs:documentation xml:lang="en">// TODO_DOC Documentation</xs:documentation>
                 </xs:annotation>
@@ -102,7 +102,7 @@
                 </xs:complexType>
               </xs:element>
 
-            </xs:all>
+            </xs:choice>
 
             <xs:attribute name="name" use="required"/>
             <xs:attribute name="type" use="required"/>
@@ -178,13 +178,4 @@
     </xs:complexType>
   </xs:element>
 
-	<!--
-  <xs:simpleType name="frequencyType" >
-    <xs:restriction base="xs:string">
-      <xs:enumeration value="multiple"/>
-      <xs:enumeration value="single"/>
-    </xs:restriction>
-  </xs:simpleType>
-  drei umlaute äää
-  -->
 </xs:schema>

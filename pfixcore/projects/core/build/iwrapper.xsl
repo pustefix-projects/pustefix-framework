@@ -341,22 +341,55 @@ public <xsl:if test="not(/iwrp:interface/iwrp:ihandler) and not(@extends)">abstr
   
   <xsl:template name="annotate"> 
     <xsl:if test="iwrp:caster">
+      <xsl:if test="count(iwrp:caster) > 1">
+        <xsl:message>WARNING: Multiple caster elements defined. Using the first one.</xsl:message>
+      </xsl:if>
       <xsl:call-template name="annotate_properties">
-        <xsl:with-param name="node" select="iwrp:caster"/>
+        <xsl:with-param name="node" select="iwrp:caster[1]"/>
         <xsl:with-param name="anno">Caster</xsl:with-param>
       </xsl:call-template>
     </xsl:if>
     <xsl:if test="iwrp:precheck">
-      <xsl:call-template name="annotate_properties">
-        <xsl:with-param name="node" select="iwrp:precheck"/>
-        <xsl:with-param name="anno">PreCheck</xsl:with-param>
-      </xsl:call-template>
+      <xsl:choose>
+        <xsl:when test="count(iwrp:precheck) = 1">
+          <xsl:call-template name="annotate_properties">
+            <xsl:with-param name="node" select="iwrp:precheck[1]"/>
+            <xsl:with-param name="anno">PreCheck</xsl:with-param>
+          </xsl:call-template>
+        </xsl:when>
+        <xsl:otherwise>
+    @PreChecks({
+          <xsl:for-each select="iwrp:precheck">
+            <xsl:call-template name="annotate_properties">
+              <xsl:with-param name="node" select="."/>
+              <xsl:with-param name="anno">PreCheck</xsl:with-param>
+            </xsl:call-template>
+            <xsl:if test="following-sibling::iwrp:precheck"><xsl:text>,</xsl:text></xsl:if>
+          </xsl:for-each>
+    })
+        </xsl:otherwise>
+      </xsl:choose>
     </xsl:if>
     <xsl:if test="iwrp:postcheck">
-      <xsl:call-template name="annotate_properties">
-        <xsl:with-param name="node" select="iwrp:postcheck"/>
-        <xsl:with-param name="anno">PostCheck</xsl:with-param>
-      </xsl:call-template>
+      <xsl:choose>
+        <xsl:when test="count(iwrp:postcheck) = 1">
+          <xsl:call-template name="annotate_properties">
+            <xsl:with-param name="node" select="iwrp:postcheck[1]"/>
+            <xsl:with-param name="anno">PostCheck</xsl:with-param>
+          </xsl:call-template>
+        </xsl:when>
+        <xsl:otherwise>
+    @PostChecks({
+    	  <xsl:for-each select="iwrp:postcheck">
+            <xsl:call-template name="annotate_properties">
+              <xsl:with-param name="node" select="."/>
+              <xsl:with-param name="anno">PostCheck</xsl:with-param>
+            </xsl:call-template>
+            <xsl:if test="following-sibling::iwrp:postcheck"><xsl:text>,</xsl:text></xsl:if>
+          </xsl:for-each>
+    })
+        </xsl:otherwise>
+      </xsl:choose>
     </xsl:if>
   </xsl:template>
 

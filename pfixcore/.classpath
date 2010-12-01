@@ -46,7 +46,7 @@
 	<classpathentry kind="lib" path="lib/spring-webmvc-2.5.6.jar"/>
 	<classpathentry kind="lib" path="projects/servletconf/tomcat/common/lib/servlet-api.jar"/>
 	<classpathentry kind="lib" path="lib/spring-test-2.5.6.jar"/>
-	<classpathentry kind="lib" path="lib/junit-4.3.jar"/>
 	<classpathentry kind="lib" path="lib/aspectjweaver-1.6.2.jar"/>
+	<classpathentry kind="lib" path="lib/junit-4.8.1.jar"/>
 	<classpathentry kind="output" path="build"/>
 </classpath>

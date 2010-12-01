@@ -19,7 +19,9 @@ import org.w3c.dom.Element;
 
 import de.schlund.pfixcore.generator.annotation.Caster;
 import de.schlund.pfixcore.generator.annotation.PostCheck;
+import de.schlund.pfixcore.generator.annotation.PostChecks;
 import de.schlund.pfixcore.generator.annotation.PreCheck;
+import de.schlund.pfixcore.generator.annotation.PreChecks;
 import de.schlund.pfixcore.generator.annotation.Property;
 import de.schlund.pfixxml.util.Xml;
 import de.schlund.pfixxml.util.XsltVersion;
@@ -83,38 +85,28 @@ public class IWrapperInfo {
                         }
                         IWrapperParamPreCheck[] preChecks = def.getPreChecks();
                         if (preChecks.length > 0) {
-                            IWrapperParamPreCheck preCheck = preChecks[0];
-                            Element preElem = doc.createElement("precheck");
-                            elem.appendChild(preElem);
-                            preElem.setAttribute("class", preCheck.getClass().getName());
                             if (getter != null) {
                                 PreCheck preAnno = getter.getAnnotation(PreCheck.class);
-                                if (preAnno != null) {
-                                    Property[] propAnnos = preAnno.properties();
-                                    for (Property propAnno : propAnnos) {
-                                        Element propElem = doc.createElement("property");
-                                        preElem.appendChild(propElem);
-                                        propElem.setAttribute("name", propAnno.name());
-                                        propElem.setAttribute("value", propAnno.value());
+                                if(preAnno != null) addPreCheck(preAnno, elem);
+                                PreChecks preAnnos = getter.getAnnotation(PreChecks.class);
+                                if(preAnnos != null) {
+                                    PreCheck[] preAnnosVal = preAnnos.value();
+                                    if(preAnnosVal != null) {
+                                        for(PreCheck pre: preAnnosVal) addPreCheck(pre, elem);
                                     }
                                 }
                             }
                         }
                         IWrapperParamPostCheck[] postChecks = def.getPostChecks();
                         if (postChecks.length > 0) {
-                            IWrapperParamPostCheck postCheck = postChecks[0];
-                            Element postElem = doc.createElement("postcheck");
-                            elem.appendChild(postElem);
-                            postElem.setAttribute("class", postCheck.getClass().getName());
                             if (getter != null) {
                                 PostCheck postAnno = getter.getAnnotation(PostCheck.class);
-                                if (postAnno != null) {
-                                    Property[] propAnnos = postAnno.properties();
-                                    for (Property propAnno : propAnnos) {
-                                        Element propElem = doc.createElement("property");
-                                        postElem.appendChild(propElem);
-                                        propElem.setAttribute("name", propAnno.name());
-                                        propElem.setAttribute("value", propAnno.value());
+                                if (postAnno != null) addPostCheck(postAnno, elem);
+                                PostChecks postAnnos = getter.getAnnotation(PostChecks.class);
+                                if(postAnnos != null) {
+                                    PostCheck[] postAnnosVal = postAnnos.value();
+                                    if(postAnnosVal != null) {
+                                        for(PostCheck post: postAnnosVal) addPostCheck(post, elem);
                                     }
                                 }
                             }
@@ -138,6 +130,32 @@ public class IWrapperInfo {
                 }
             }
             return iwrpDoc;
+        }
+    }
+        
+    private static void addPreCheck(PreCheck preAnno, Element parent) {
+        Element preElem = parent.getOwnerDocument().createElement("precheck");
+        parent.appendChild(preElem);
+        preElem.setAttribute("class", preAnno.type().getName());
+        Property[] propAnnos = preAnno.properties();
+        for (Property propAnno : propAnnos) {
+            Element propElem = parent.getOwnerDocument().createElement("property");
+            preElem.appendChild(propElem);
+            propElem.setAttribute("name", propAnno.name());
+            propElem.setAttribute("value", propAnno.value());
+        }
+    }
+    
+    private static void addPostCheck(PostCheck postAnno, Element parent) {
+        Element postElem = parent.getOwnerDocument().createElement("postcheck");
+        parent.appendChild(postElem);
+        postElem.setAttribute("class", postAnno.type().getName());
+        Property[] propAnnos = postAnno.properties();
+        for (Property propAnno : propAnnos) {
+            Element propElem = parent.getOwnerDocument().createElement("property");
+            postElem.appendChild(propElem);
+            propElem.setAttribute("name", propAnno.name());
+            propElem.setAttribute("value", propAnno.value());
         }
     }
 
