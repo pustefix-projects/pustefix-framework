@@ -388,6 +388,19 @@
         <xsl:otherwise>webapp</xsl:otherwise>
       </xsl:choose>
     </xsl:variable>
+    <xsl:variable name="requested_module">
+      <xsl:choose>
+        <xsl:when test="not($module = '')">
+          <xsl:choose>
+            <xsl:when test="$module='WEBAPP' or $module='webapp'"></xsl:when>
+            <xsl:otherwise><xsl:value-of select="$module"/></xsl:otherwise>
+          </xsl:choose>
+        </xsl:when>
+        <xsl:when test="starts-with(include:getSystemId(),'module://')">
+          <xsl:value-of select="substring-before(substring-after(include:getSystemId(),'//'),'/')"/>  
+        </xsl:when>
+      </xsl:choose>
+    </xsl:variable>
     <xsl:variable name="classes">
       <xsl:choose>
         <xsl:when test="$editable='true'">pfx_inc_end</xsl:when>
@@ -398,10 +411,10 @@
       <xsl:when test="$search='dynamic'">
         <xsl:choose>
           <xsl:when test="$__target_key='__NONE__'">
-            <span class="{$classes}" title="{pfx:getDynIncInfo($part,$theme,$path,$resolved_module,$module)}"/>
+            <span class="{$classes}" title="{pfx:getDynIncInfo($part,$theme,$path,$resolved_module,$requested_module)}"/>
           </xsl:when>
           <xsl:otherwise>
-            <span class="{$classes}" title="{{pfx:getDynIncInfo('{$part}','{$theme}','{$path}','{$resolved_module}','{$module}')}}"/>
+            <span class="{$classes}" title="{{pfx:getDynIncInfo('{$part}','{$theme}','{$path}','{$resolved_module}','{$requested_module}')}}"/>
           </xsl:otherwise>
         </xsl:choose>
       </xsl:when>

@@ -83,14 +83,19 @@
                       <ixsl:value-of select="$__uri"/>?__xmlonly=1</ixsl:attribute>
                     <img border="0" alt="Show XML" title="Show last XML tree" src="{{$__contextpath}}/modules/pustefix-core/img/show_xml.gif"/></a>
                 </td>
+                <td align="left">
+                  <a target="pfixcore_internals__">
+                    <ixsl:attribute name="href"><ixsl:value-of select="$__contextpath"/>/xml/pfxinternals</ixsl:attribute>
+                    <img border="0" alt="Show XML" title="Show last XML tree" src="{{$__contextpath}}/modules/pustefix-core/img/show_info.gif"/></a>
+                </td>
               </tr>
               <tr>
-                <td nowrap="nowrap" colspan="2" style="font-family: Verdana,Sans; font-size: 10px; background-color: black; color: white; padding-left: 5px; padding-right: 2px;">
+                <td nowrap="nowrap" colspan="3" style="font-family: Verdana,Sans; font-size: 10px; background-color: black; color: white; padding-left: 5px; padding-right: 2px;">
                   P: <ixsl:value-of select="$page"/>
                 </td>
               </tr>
               <tr>
-                <td nowrap="nowrap" colspan="2" style="font-family: Verdana,Sans; font-size: 10px; background-color: black; color: white; padding-left: 5px; padding-right: 2px;">
+                <td nowrap="nowrap" colspan="3" style="font-family: Verdana,Sans; font-size: 10px; background-color: black; color: white; padding-left: 5px; padding-right: 2px;">
                   F: <ixsl:value-of select="$__root/formresult/pageflow/@name"/>
                 </td>
               </tr>
@@ -99,44 +104,49 @@
         </xsl:when>
         <xsl:otherwise>
           <script type="text/javascript">
-           
-            var pfixcore_spans = document.getElementsByTagName("span");
-            for(var i=0; i&lt;pfixcore_spans.length; i++) {
-              if(pfixcore_spans[i].className == 'pfx_inc_start') {
-                pfixcore_spans[i].innerHTML = '<img border="0" alt="[" src="{{$__contextpath}}/modules/pustefix-core/img/edit_start.gif"/>';
-              } else if(pfixcore_spans[i].className == 'pfx_inc_end' || pfixcore_spans[i].className == 'pfx_inc_end pfx_inc_ro') {
-                var data = pfixcore_spans[i].title.split('|');
-                var partStr = 'part \'' + data[0] + '\'';
-                var pathStr = ' from resource \'' + data[2] + '\'';
-                var modStr = '';
-                if(data[3] == 'webapp') {
-                  modStr = ' within webapp';
-                } else {
-                  modStr = ' within module \'' + data[3] + '\'';
-                }
-                var dynStr = '';
-                if(data.length > 4) {
-                  dynStr = ' having searched \''+ data[5] + '\'';
-                }
-                if(pfixcore_spans[i].className == 'pfx_inc_end') {
-                  pfixcore_spans[i].innerHTML = '<a href="#" onclick="pfixcore_openEditor(\'' + pfixcore_spans[i].title + '\')">' +
-                                                '<img border="0" alt="] Edit ' + partStr + pathStr + modStr + dynStr + '" title="Edit ' + partStr + pathStr + modStr + dynStr + '" src="{{$__contextpath}}/modules/pustefix-core/img/edit.gif"/>';
-                                                '</a>';
-                } else {
-                  pfixcore_spans[i].innerHTML = '<img border="0" alt="] This is ' + partStr + pathStr + modStr + dynStr + '" title="This is ' + partStr + pathStr + modStr + dynStr + '" src="{{$__contextpath}}/modules/pustefix-core/img/noedit.gif"/>';
+            if(!window.pfx) pfx={};
+            if(!pfx.editor) pfx.editor={}; 
+            pfx.editor.enrichSpans=function() {
+              var spans = document.getElementsByTagName("span");
+              for(var i=0; i&lt;spans.length; i++) {
+                if(spans[i].className == 'pfx_inc_start') {
+                  spans[i].innerHTML = '<img border="0" alt="[" src="{{$__contextpath}}/modules/pustefix-core/img/edit_start.gif"/>';
+                } else if(spans[i].className == 'pfx_inc_end' || spans[i].className == 'pfx_inc_end pfx_inc_ro') {
+                  var data = spans[i].title.split('|');
+                  var partStr = 'part \'' + data[0] + '\'';
+                  var pathStr = ' from resource \'' + data[2] + '\'';
+                  var modStr = '';
+                  if(data[3] == 'webapp') {
+                    modStr = ' within webapp';
+                  } else {
+                    modStr = ' within module \'' + data[3] + '\'';
+                  }
+                  var dynStr = '';
+                  if(data.length > 4) {
+                    dynStr = ' having searched \''+ data[5] + '\'';
+                  }
+                  if(spans[i].className == 'pfx_inc_end') {
+                    spans[i].innerHTML = '<a href="#" onclick="pfx.editor.openEditor(\'' + spans[i].title + '\')">' +
+                                                  '<img border="0" alt="] Edit ' + partStr + pathStr + modStr + dynStr + '" title="Edit ' + partStr + pathStr + modStr + dynStr + '" src="{{$__contextpath}}/modules/pustefix-core/img/edit.gif"/>';
+                                                  '</a>';
+                  } else {
+                    spans[i].innerHTML = '<img border="0" alt="] This is ' + partStr + pathStr + modStr + dynStr + '" title="This is ' + partStr + pathStr + modStr + dynStr + '" src="{{$__contextpath}}/modules/pustefix-core/img/noedit.gif"/>';
+                  }
                 }
               }
             }
-            
-            function pfixcore_openEditor(title) {
+            pfx.editor.openEditor=function(title) {
             	var data = title.split('|');
+            	var uri = '';
+            	if(data[3]=='webapp') uri = 'docroot:/' + data[2];
+            	else uri = 'module://' + data[3] + '/' + data[2];
             	window.open('<ixsl:value-of select="$__editor_url"/>/xml/main?__scriptedflow=selectinclude&amp;' +
-            	            'theme=' + data[2] + '&amp;path=' + data[0] + '&amp;part=' + data[1] + '&amp;' +
-            	            'uri=<ixsl:value-of select="$__application_url"/>&amp;type=include&amp;__anchor=left_navi|' + data[3]
+            	            'theme=' + data[1] + '&amp;path=' + uri + '&amp;part=' + data[0] + '&amp;' +
+            	            'uri=<ixsl:value-of select="$__application_url"/>&amp;type=include&amp;__anchor=left_navi|' + data[2]
             	            ,'PustefixEditor','menubar=yes,status=yes,resizable=yes');
             	return false;
             }
-            
+            pfx.editor.enrichSpans();
           </script>
           <script type="text/javascript">
             var de_schlund_pfixcore_console_drag_start_x = 0;
@@ -265,6 +275,10 @@
                   <ixsl:attribute name="href">
                   <ixsl:value-of select="$__uri"/>?__xmlonly=1</ixsl:attribute>
                   <img border="0" alt="Show XML" title="Show last XML tree" src="{{$__contextpath}}/modules/pustefix-core/img/console_showxml.gif" style="margin-left:5px"/>
+                </a>
+                <a target="pfixcore_internals__">
+                  <ixsl:attribute name="href"><ixsl:value-of select="$__contextpath"/>/xml/pfxinternals</ixsl:attribute>
+                  <img border="0" alt="Show Pustefix internals" title="Show Pustefix internals" src="{{$__contextpath}}/modules/pustefix-core/img/console_showinfo.gif" style="margin-left:5px"/>
                 </a>
                 <xsl:if test="@webserviceconsole='true'">
                   <a target="pfixcore_web_service_monitor">

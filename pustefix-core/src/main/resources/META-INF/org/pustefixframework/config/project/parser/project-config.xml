@@ -14,8 +14,12 @@
   </handler>
   
   <!-- Creates request handler for static resources -->
-  <handler class="org.pustefixframework.config.project.parser.DocrootRequestHandlerParsingHandler">
+  <handler class="org.pustefixframework.config.project.parser.DocrootRequestHandlerParsingHandler" run-order="both">
     <match>/p:project-config/p:application</match>
+  </handler>
+  
+  <handler class="org.pustefixframework.config.project.parser.StaticPathParsingHandler">
+    <match>/p:project-config/p:application/p:static//p:path</match>
   </handler>
   
   <!-- Adds the SessionCleaner bean -->
@@ -126,6 +130,7 @@
     <match>/p:project-config//p:context-xml-service/p:choose/p:when[p:session-cleaner-timeout]</match>
     <match>/p:project-config/p:editor/p:choose/p:when</match>
     <match>/p:project-config/p:properties/p:choose/p:when</match>
+    <match>/p:project-config/p:application/p:static/p:choose/p:when</match>
   </handler>
   
   <handler id="org.pustefixframework.config.customization.OtherwiseParsingHandler" class="org.pustefixframework.config.customization.CustomizationOtherwiseParsingHandler">
@@ -135,6 +140,7 @@
     <match>/p:project-config//p:context-xml-service/p:choose/p:otherwise[p:session-cleaner-timeout]</match>
     <match>/p:project-config/p:editor/p:choose/p:otherwise</match>
     <match>/p:project-config/p:properties/p:choose/p:otherwise</match>
+    <match>/p:project-config/p:application/p:static/p:choose/p:otherwise</match>
   </handler>
   
 </configuration>
