@@ -23,7 +23,6 @@ import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
 
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
@@ -397,27 +396,6 @@ public class TransformerCallback {
     
     public static String getFrameworkVersion() {
         return FrameworkInfo.getVersion();
-    }
-    
-    public static Node getLoadedModules(Node docNode) throws Exception {
-        try {
-            XsltVersion xsltVersion = Xml.getXsltVersion(docNode);
-            DocumentBuilder db = docBuilderFactory.newDocumentBuilder();
-            Document doc = db.newDocument();
-            Element root = doc.createElement("modules");
-            doc.appendChild(root);
-            Set<String> modules = ModuleInfo.getInstance().getModules();
-            for(String module: modules) {
-                Element elem = doc.createElement("module");
-                elem.setAttribute("name", module);
-                root.appendChild(elem);
-            }
-            Node moduleDoc = Xml.parse(xsltVersion, doc);
-            return moduleDoc;
-        } catch (Exception x) {
-            ExtensionFunctionUtils.setExtensionFunctionError(x);
-            throw x;
-        }
     }
     
 }

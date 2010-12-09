@@ -26,14 +26,21 @@ import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.io.Serializable;
 import java.lang.management.ManagementFactory;
+import java.lang.management.MemoryMXBean;
+import java.lang.management.MemoryPoolMXBean;
+import java.lang.management.MemoryUsage;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Hashtable;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+import java.util.Properties;
 import java.util.Set;
+import java.util.SortedSet;
+import java.util.TreeSet;
 
 import javax.management.MBeanServer;
 import javax.management.ObjectName;
@@ -47,6 +54,7 @@ import javax.xml.transform.stream.StreamResult;
 
 import org.apache.log4j.Logger;
 import org.pustefixframework.container.spring.http.UriProvidingHttpRequestHandler;
+import org.pustefixframework.util.FrameworkInfo;
 import org.springframework.beans.factory.DisposableBean;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.web.context.ServletContextAware;
@@ -54,9 +62,11 @@ import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 
 import de.schlund.pfixcore.exception.PustefixRuntimeException;
+import de.schlund.pfixcore.util.ModuleInfo;
 import de.schlund.pfixxml.config.EnvironmentProperties;
 import de.schlund.pfixxml.resources.ModuleResource;
 import de.schlund.pfixxml.resources.ResourceUtil;
+import de.schlund.pfixxml.serverutil.SessionAdmin;
 import de.schlund.pfixxml.util.Xml;
 import de.schlund.pfixxml.util.Xslt;
 import de.schlund.pfixxml.util.XsltVersion;
@@ -76,7 +86,10 @@ public class PustefixInternalsRequestHandler implements UriProvidingHttpRequestH
     
     private String handlerURI ="/xml/pfxinternals";
     private ServletContext servletContext;
-   
+    private SessionAdmin sessionAdmin;
+    private long startTime;
+    private long reloadTimeout = 1000 * 10;
+    
     private MessageList messageList = new MessageList();
     
     public void setHandlerURI(String handlerURI) {
@@ -87,8 +100,13 @@ public class PustefixInternalsRequestHandler implements UriProvidingHttpRequestH
         this.servletContext = servletContext;
     }
     
+    public void setSessionAdmin(SessionAdmin sessionAdmin) {
+        this.sessionAdmin = sessionAdmin;
+    }
+    
     public void afterPropertiesSet() throws Exception {
         deserialize();
+        startTime = System.currentTimeMillis();
         messageList.addMessage(Message.Level.INFO, new Date(), "Webapp started.");
     }
     
@@ -108,19 +126,37 @@ public class PustefixInternalsRequestHandler implements UriProvidingHttpRequestH
             String action = req.getParameter("action");
             if(action != null) {
                 if(action.equals("reload")) {
-                    messageList.addMessage(Message.Level.INFO, new Date(), "Scheduled webapp reload.");
-                    serialize();
-                    Thread reloadThread = new ReloadThread(servletContext.getRealPath("/"));
-                    reloadThread.start();
-                    try { Thread.sleep(1000); } catch(InterruptedException x) {}
-                    res.sendRedirect(req.getContextPath()+"/xml/develinfo#messages");
+                    if((System.currentTimeMillis() - startTime) > reloadTimeout) {
+                        messageList.addMessage(Message.Level.INFO, new Date(), "Scheduled webapp reload.");
+                        serialize();
+                        Thread reloadThread = new ReloadThread(servletContext.getRealPath("/"));
+                        reloadThread.start();
+                        try { Thread.sleep(1000); } catch(InterruptedException x) {}
+                    } else {
+                        messageList.addMessage(Message.Level.WARN, new Date(), "Skipped scheduled webapp reload right after start.");
+                    }
+                    res.sendRedirect(req.getContextPath()+"/xml/pfxinternals#messages");
+                    return;
+                } else if(action.equals("invalidate")) {
+                    Set<String> sessionIds = sessionAdmin.getAllSessionIds();
+                    Iterator<String> it = sessionIds.iterator();
+                    while(it.hasNext()) {
+                        String sessionId = it.next();
+                        sessionAdmin.invalidateSession(sessionId);
+                    }
+                    messageList.addMessage(Message.Level.INFO, new Date(), "Invalidated sessions.");
+                    res.sendRedirect(req.getContextPath()+"/xml/pfxinternals#messages");
                     return;
                 }
             }
             
         Document doc = DocumentBuilderFactory.newInstance().newDocumentBuilder().newDocument();
-        Element root = doc.createElement("develinfo");
+        Element root = doc.createElement("pfxinternals");
         doc.appendChild(root);
+        addFrameworkInfo(root);
+        addEnvironmentInfo(root);
+        addJVMInfo(root);
+        addModuleInfo(root);
         messageList.toXML(root);
         doc = Xml.parse(XsltVersion.XSLT1, doc);
         Templates stvalue = Xslt.loadTemplates(XsltVersion.XSLT1, (ModuleResource)ResourceUtil.getResource(STYLESHEET));
@@ -136,6 +172,81 @@ public class PustefixInternalsRequestHandler implements UriProvidingHttpRequestH
         }
     }
     
+    private void addFrameworkInfo(Element parent) {
+        
+        Element root = parent.getOwnerDocument().createElement("framework");
+        parent.appendChild(root);
+        root.setAttribute("version", FrameworkInfo.getVersion());
+    }
+    
+    private void addEnvironmentInfo(Element parent) {
+        
+        Element envElem = parent.getOwnerDocument().createElement("environment");
+        parent.appendChild(envElem);
+        Element propsElem = parent.getOwnerDocument().createElement("properties");
+        envElem.appendChild(propsElem);
+        Properties props = EnvironmentProperties.getProperties();
+        Element elem = parent.getOwnerDocument().createElement("property");
+        elem.setAttribute("name", "fqdn");
+        elem.setTextContent(props.getProperty("fqdn"));
+        propsElem.appendChild(elem);
+        elem = parent.getOwnerDocument().createElement("property");
+        elem.setAttribute("name", "machine");
+        elem.setTextContent(props.getProperty("machine"));
+        propsElem.appendChild(elem);
+        elem = parent.getOwnerDocument().createElement("property");
+        elem.setAttribute("name", "mode");
+        elem.setTextContent(props.getProperty("mode"));
+        propsElem.appendChild(elem);
+        elem = parent.getOwnerDocument().createElement("property");
+        elem.setAttribute("name", "uid");
+        elem.setTextContent(props.getProperty("uid"));
+        propsElem.appendChild(elem);
+        
+    }
+    
+    private void addJVMInfo(Element parent) {
+        
+        MemoryMXBean mbean = ManagementFactory.getMemoryMXBean(); 
+        MemoryUsage mem = mbean.getHeapMemoryUsage();
+        Element root = parent.getOwnerDocument().createElement("jvm");
+        parent.appendChild(root);
+        Element elem = parent.getOwnerDocument().createElement("memory");
+        root.appendChild(elem);
+        elem.setAttribute("type", "heap");
+        elem.setAttribute("used", String.valueOf(mem.getUsed()));
+        elem.setAttribute("committed", String.valueOf(mem.getCommitted()));
+        elem.setAttribute("max", String.valueOf(mem.getMax()));
+        
+        List<MemoryPoolMXBean> mxbeans = ManagementFactory.getMemoryPoolMXBeans();
+        for(MemoryPoolMXBean mxbean:mxbeans) {
+            if(mxbean.getName().equals("PS Perm Gen")) {
+                elem = parent.getOwnerDocument().createElement("memory");
+                mem = mxbean.getUsage();
+                root.appendChild(elem);
+                elem.setAttribute("type", "permgen");
+                elem.setAttribute("used", String.valueOf(mem.getUsed()));
+                elem.setAttribute("committed", String.valueOf(mem.getCommitted()));
+                elem.setAttribute("max", String.valueOf(mem.getMax()));
+            }
+        }
+    }
+    
+    private void addModuleInfo(Element parent) {
+        
+        Element root = parent.getOwnerDocument().createElement("modules");
+        parent.appendChild(root);
+        Set<String> modules = ModuleInfo.getInstance().getModules();
+        SortedSet<String> sortedModules = new TreeSet<String>();
+        sortedModules.addAll(modules);
+        for(String module: sortedModules) {
+            Element elem = parent.getOwnerDocument().createElement("module");
+            elem.setAttribute("name", module);
+            root.appendChild(elem);
+        }
+    }
+    
+    
     public String[] getRegisteredURIs() {
         return new String[] {handlerURI, handlerURI+"/**"};
     }
@@ -144,13 +255,13 @@ public class PustefixInternalsRequestHandler implements UriProvidingHttpRequestH
         try {
             File tmpDir = (File)servletContext.getAttribute("javax.servlet.context.tempdir");
             if(tmpDir != null && tmpDir.exists()) {
-                File dataFile = new File(tmpDir, "pfx-develinfo.ser");
+                File dataFile = new File(tmpDir, "pfxinternals.ser");
                 ObjectOutputStream out = new ObjectOutputStream(new FileOutputStream(dataFile));
                 out.writeObject(messageList);
                 out.close();
             }
         } catch(IOException x) {
-            LOG.warn("Error while serializing develinfo messages", x);
+            LOG.warn("Error while serializing pfxinternals messages", x);
         }
     }
     
@@ -158,14 +269,14 @@ public class PustefixInternalsRequestHandler implements UriProvidingHttpRequestH
         try {
             File tmpDir = (File)servletContext.getAttribute("javax.servlet.context.tempdir");
             if(tmpDir != null && tmpDir.exists()) {
-                File dataFile = new File(tmpDir, "pfx-develinfo.ser");
+                File dataFile = new File(tmpDir, "pfxinternals.ser");
                 if(dataFile.exists()) {
                     ObjectInputStream in = new ObjectInputStream(new FileInputStream(dataFile));
                     messageList = (MessageList)in.readObject();      
                 }
             }
         } catch(Exception x) {
-            LOG.warn("Error while deserializing develinfo messages", x);
+            LOG.warn("Error while deserializing pfxinternals messages", x);
         }
     }
     
