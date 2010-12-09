@@ -25,6 +25,7 @@ import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.io.Serializable;
+import java.lang.management.GarbageCollectorMXBean;
 import java.lang.management.ManagementFactory;
 import java.lang.management.MemoryMXBean;
 import java.lang.management.MemoryPoolMXBean;
@@ -131,9 +132,8 @@ public class PustefixInternalsRequestHandler implements UriProvidingHttpRequestH
                         serialize();
                         Thread reloadThread = new ReloadThread(servletContext.getRealPath("/"));
                         reloadThread.start();
-                        try { Thread.sleep(1000); } catch(InterruptedException x) {}
                     } else {
-                        messageList.addMessage(Message.Level.WARN, new Date(), "Skipped scheduled webapp reload right after start.");
+                        messageList.addMessage(Message.Level.WARN, new Date(), "Skipped repeated webapp reload scheduling.");
                     }
                     res.sendRedirect(req.getContextPath()+"/xml/pfxinternals#messages");
                     return;
@@ -229,6 +229,15 @@ public class PustefixInternalsRequestHandler implements UriProvidingHttpRequestH
                 elem.setAttribute("committed", String.valueOf(mem.getCommitted()));
                 elem.setAttribute("max", String.valueOf(mem.getMax()));
             }
+        }
+        
+        List<GarbageCollectorMXBean> gcbeans = ManagementFactory.getGarbageCollectorMXBeans();
+        for(GarbageCollectorMXBean gcbean: gcbeans) {
+            elem = parent.getOwnerDocument().createElement("gc");
+            root.appendChild(elem);
+            elem.setAttribute("name", gcbean.getName());
+            elem.setAttribute("count", String.valueOf(gcbean.getCollectionCount()));
+            elem.setAttribute("time", String.valueOf(gcbean.getCollectionTime()));
         }
     }
     
@@ -343,6 +352,7 @@ public class PustefixInternalsRequestHandler implements UriProvidingHttpRequestH
         }
         
         public synchronized void reload(String realPath)  {
+            try {Thread.sleep(500);} catch(InterruptedException x) {}
             ObjectName objectName = getWebModuleObjectName(realPath);
             if(objectName==null) throw new PustefixRuntimeException("Can't reload webapp because "
                     +"no WebModule MBean could be found.");

@@ -107,12 +107,14 @@
             border-spacing:0px;
           }
           table.layout td {
-            padding-right: 20px;
+            padding-right: 30px;
+            vertical-align: top;
           }
           table.barchart {
             border-spacing:0px; 
             padding:0px; 
             margin:0px;
+            margin-top: 5px;
           }
           table.barchart td {
             height: 20px; 
@@ -207,6 +209,22 @@
                   <xsl:with-param name="factor" select="$factor"/>
                 </xsl:apply-templates>
               </td>
+              <td>
+                <table class="info">
+                  <tr>
+                    <th>Garbage collector</th>
+                    <th>Collections</th>
+                    <th>Time</th>
+                  </tr>
+                  <xsl:for-each select="/pfxinternals/jvm/gc">
+                    <tr>
+                      <td><xsl:value-of select="@name"/></td>
+                      <td class="num"><xsl:value-of select="@count"/></td>
+                      <td class="num"><xsl:value-of select="format-number(@time div 1000, '0.0')"/>s</td>
+                    </tr>
+                  </xsl:for-each>
+                </table>
+              </td>
             </tr>
           </table>
         </div>
@@ -245,15 +263,15 @@
       </tr>
       <tr>
         <th>Used:</th>
-        <td class="num"><xsl:value-of select="format-number(@used div 1024 div 1024, '#.0')"/> M</td>
+        <td class="num"><xsl:value-of select="format-number(@used div 1024 div 1024, '0.0')"/> M</td>
       </tr>
       <tr>
         <th>Committed:</th>
-        <td class="num"><xsl:value-of select="format-number(@committed div 1024 div 1024, '#.0')"/> M</td>
+        <td class="num"><xsl:value-of select="format-number(@committed div 1024 div 1024, '0.0')"/> M</td>
       </tr>
       <tr>
         <th>Max:</th>
-        <td class="num"><xsl:value-of select="format-number(@max div 1024 div 1024, '#.0')"/> M</td>
+        <td class="num"><xsl:value-of select="format-number(@max div 1024 div 1024, '0.0')"/> M</td>
       </tr>
     </table>
     <table class="barchart">

@@ -82,7 +82,7 @@ public class ResourceUtil {
     public static FileResource getFileResource(URI uri) {
         String scheme = uri.getScheme();
         if (scheme == null || scheme.equals("")) {
-            throw new IllegalArgumentException("Cannot handle URIs without a scheme");
+            throw new IllegalArgumentException("Cannot handle URIs without a scheme: "+uri);
         }
         String path = uri.getPath();
         if (path == null || path.equals("")) {
