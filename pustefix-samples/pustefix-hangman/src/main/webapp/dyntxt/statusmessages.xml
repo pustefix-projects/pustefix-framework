@@ -9,4 +9,10 @@
     </theme>
   </part>
   
+  <part name="FAILURE">
+    <theme name="default">
+      You lost.
+    </theme>
+  </part>
+  
 </include_parts>

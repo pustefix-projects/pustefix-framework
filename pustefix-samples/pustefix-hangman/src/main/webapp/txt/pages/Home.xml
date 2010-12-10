@@ -5,14 +5,20 @@
     <theme name="default">
 
       <h3><pfx:include part="greeting"/></h3>
- 	
-      <pfx:forminput>
-        Please enter your name:
-        <pfx:xinp type="text" name="registration.name" size="20"/>
-        <pfx:xinp type="submit" value="Submit"/>
-        <show-error field="registration.name"/>
+ 	  
+ 	  <pfx:checkactive prefix="registration">
+        <pfx:forminput>
+          Please enter your name:
+          <pfx:xinp type="text" name="registration.name" size="20"/>
+          <pfx:xinp type="submit" value="Submit"/>
+          <show-error field="registration.name"/>
       </pfx:forminput>
-
+      </pfx:checkactive>
+      
+      <pfx:checknotactive prefix="registration">
+        <pfx:button page="Play">Start playing</pfx:button>  
+      </pfx:checknotactive>
+      
     </theme>
 
   </part>
@@ -22,7 +28,7 @@
       Welcome to <pfx:include href="txt/common.xml" part="title"/>!
     </theme>
     <theme name="en">
-      Willkommen zu <pfx:include href="txt/common.xml" part="title"/>!
+      Willkommen bei <pfx:include href="txt/common.xml" part="title"/>!
     </theme>
   </part>
 

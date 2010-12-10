@@ -5,7 +5,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 
 import sample.games.hangman.Dictionary;
 import sample.games.hangman.context.ContextPlay;
-import sample.games.hangman.context.User;
+import sample.games.hangman.context.ContextUser;
 import sample.games.hangman.wrapper.Registration;
 import de.schlund.pfixcore.generator.IHandler;
 import de.schlund.pfixcore.generator.IWrapper;
@@ -15,7 +15,7 @@ public class RegistrationHandler implements IHandler {
 
 	private Dictionary dictionary;
 	private ContextPlay contextPlay;
-    private User user;
+    private ContextUser user;
 
     public void handleSubmittedData(Context context, IWrapper wrapper) throws Exception {
 
@@ -29,7 +29,7 @@ public class RegistrationHandler implements IHandler {
     }
 
     public boolean isActive(Context context) throws Exception {
-        return true;
+        return user.getName() == null;
     }
 
     public boolean needsData(Context context) throws Exception {
@@ -48,7 +48,7 @@ public class RegistrationHandler implements IHandler {
     }
 
     @Autowired
-    public void setUser(User user) {
+    public void setUser(ContextUser user) {
         this.user = user;
     }
     

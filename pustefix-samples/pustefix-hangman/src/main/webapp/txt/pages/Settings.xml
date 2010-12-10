@@ -1,0 +1,57 @@
+<?xml version="1.0" encoding="utf-8"?>
+<include_parts xmlns:ixsl="http://www.w3.org/1999/XSL/Transform" xmlns:pfx="http://www.schlund.de/pustefix/core">
+  
+  <part name="content">
+    <theme name="default">
+
+      <pfx:forminput>
+        <table class="form">
+          <tr>
+            <th valign="top">
+              <pfx:include part="level"/>
+ 		    </th>
+ 		    <td>
+              <pfx:xinp type="radio" name="settings.Level" value="BEGINNER" default="true">Beginner</pfx:xinp><br/>
+              <pfx:xinp type="radio" name="settings.Level" value="ADVANCED">Advanced</pfx:xinp><br/>
+              <pfx:xinp type="radio" name="settings.Level" value="EXPERT">Expert</pfx:xinp><br/>
+            </td>
+          </tr>
+        </table>
+        <table class="form">
+       	  <tr>
+       	    <th>
+       	      <pfx:include part="memory"/>
+       	    </th>
+            <td>
+              <pfx:xinp type="check" name="settings.Memory" value="true" default="true"/>
+            </td>
+          </tr>
+        </table>
+        <br/>
+        <pfx:xinp type="submit" value="Submit"/>
+        <show-error field="registration.name"/>
+      </pfx:forminput>
+      
+    </theme>
+
+  </part>
+  
+  <part name="level">
+    <theme name="default">
+      Difficulty level
+    </theme>
+    <theme name="de">
+      Schwierigkeitsgrad
+    </theme>
+  </part>
+  
+  <part name="memory">
+    <theme name="default">
+      Memorize checked characters
+    </theme>
+    <theme name="de">
+      Geprüfte Buchstaben merken
+    </theme>
+  </part>
+
+ </include_parts>

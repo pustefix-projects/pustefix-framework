@@ -1,30 +1,94 @@
-/* put your application's common CSS styles here */
-
 body {
-  margin: 0px;
-  background: #fff;
+  margin: 0;
+  padding: 0;
   font-family: sans-serif;
 }
 
-div#header {
-   background: #666;
-   background-image: url(../img/logo.png);
-   background-repeat: no-repeat;
-   background-position:10px 4px;
-   width: 100%; 
-   height: 65px;
-   padding-left: 80px;
-   padding-top: 25px;
-   color: #fff;
-   font-size: 35px;
-   font-family: sans-serif;
+body {
+	background: #fff url(../img/background.png) 0 0 repeat-x;
+}
+	
+#header {
+  height: 68px;
+  margin: 15px;
 }
 
-div.content {
+#navigation {
+  margin: 10px;
+  padding: 10px;
+}
+
+div#content {
 	padding: 10px;
+	margin: 20px;
+   
+}
+
+#footer {
+  position: absolute;
+  top: 20px;
+  right: 200px;
+  font-size: 60%;
+  color: #ccc;
 }
 
 span.error {
   color: red;
   padding-left: 10px;
 }
+
+
+div.field_caption {
+  font-weight: bold;
+  padding-bottom: 5px;	
+}
+
+a.core_button_normal {
+  color: #fff;
+  padding: 10px;
+}
+
+span.core_button_active {
+  color: #fff;
+  font-weight: bold;
+  padding: 10px;	
+}
+
+table.data {
+  border-spacing: 0px;
+  border: 1px solid #fff;
+}
+
+table.data th {
+  background: #ccc;
+  padding: 10px;
+  padding-right: 20px;
+}
+
+table.data td {
+  padding: 10px;
+  padding-right: 20px;
+}
+
+tr.odd {
+  background: #ddd;
+}
+
+tr.even {
+  background: #eee;
+}
+
+table.form {
+  border-spacing: 0px;
+}
+
+table.form th {
+  padding: 10px;
+  padding-left: 0px;	
+}
+
+table.form td {
+  padding: 10px;
+  padding-left: 15px;
+}
+

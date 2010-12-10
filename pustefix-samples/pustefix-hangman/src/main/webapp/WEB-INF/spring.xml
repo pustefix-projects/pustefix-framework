@@ -10,4 +10,6 @@
 
   <bean id="dictionary" class="sample.games.hangman.Dictionary"/>
 
+  <bean id="highscore" class="sample.games.hangman.HighScore"/>
+
 </beans>

@@ -37,5 +37,15 @@
     </xsl:if>
   </xsl:template>
   
+  <xsl:template match="show-messages">
+    <pfx:checkmessage>
+      <pfx:messageloop>
+        <div>
+          <xsl:attribute name="class">{$pfx_class}</xsl:attribute>
+          <pfx:scode/>
+        </div>
+      </pfx:messageloop>
+    </pfx:checkmessage>
+  </xsl:template>
   
 </xsl:stylesheet>

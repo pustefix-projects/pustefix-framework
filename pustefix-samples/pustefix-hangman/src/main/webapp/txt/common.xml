@@ -9,4 +9,14 @@
       Galgenmann
     </theme>
   </part>
+  
+  <part name="powered_by">
+    <theme name="default">
+      Powered by Pustefix Framework <ixsl:value-of select="pfx:getFrameworkVersion()"/>
+    </theme>
+    <theme name="de">
+      Erstellt mit Pustefix Framework <ixsl:value-of select="pfx:getFrameworkVersion()"/>
+    </theme>
+  </part>
+  
 </include_parts>

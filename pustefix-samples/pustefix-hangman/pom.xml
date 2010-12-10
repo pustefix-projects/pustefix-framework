@@ -17,7 +17,7 @@
   <name>Pustefix Hangman Game</name>
 
   <properties>
-    <pustefix.version>0.15.11</pustefix.version>
+    <pustefix.version>0.15.13-SNAPSHOT</pustefix.version>
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
   </properties>
 

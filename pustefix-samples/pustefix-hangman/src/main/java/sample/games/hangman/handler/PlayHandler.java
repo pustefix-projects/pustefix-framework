@@ -3,8 +3,10 @@ package sample.games.hangman.handler;
 
 import org.springframework.beans.factory.annotation.Autowired;
 
+import sample.games.hangman.StatusCodes;
 import sample.games.hangman.context.ContextPlay;
-import sample.games.hangman.context.User;
+import sample.games.hangman.context.ContextSettings;
+import sample.games.hangman.context.ContextUser;
 import sample.games.hangman.wrapper.Play;
 import de.schlund.pfixcore.generator.IHandler;
 import de.schlund.pfixcore.generator.IWrapper;
@@ -13,12 +15,12 @@ import de.schlund.pfixcore.workflow.Context;
 public class PlayHandler implements IHandler {
 
 	private ContextPlay contextPlay;
-    private User user;
+    private ContextUser user;
+    private ContextSettings contextSettings;
 
     public void handleSubmittedData(Context context, IWrapper wrapper) throws Exception {
 
         Play play = (Play)wrapper;
-        System.out.println(play.getLetter());
         
         char ch = play.getLetter().charAt(0);
         
@@ -37,11 +39,15 @@ public class PlayHandler implements IHandler {
         contextPlay.setDisplayWord(sb.toString());
         if(!ok) contextPlay.incTries();
         
+        if(contextPlay.getTries() > 5) {
+            context.addPageMessage(StatusCodes.FAILURE, null, null);
+            context.prohibitContinue();
+        }
         
     }
 
     public boolean isActive(Context context) throws Exception {
-        return user.getName() != null;
+        return user.getName() != null && contextSettings.getDifficultyLevel() != null;
     }
 
     public boolean needsData(Context context) throws Exception {
@@ -57,13 +63,18 @@ public class PlayHandler implements IHandler {
     }
 
     @Autowired
-    public void setUser(User user) {
+    public void setUser(ContextUser user) {
         this.user = user;
     }
 
     @Autowired
     public void setContextPlay(ContextPlay contextPlay) {
     	this.contextPlay = contextPlay;
+    }
+    
+    @Autowired
+    public void setContextSettings(ContextSettings contextSettings) {
+        this.contextSettings = contextSettings;
     }
     
 }

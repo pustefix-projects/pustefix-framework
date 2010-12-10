@@ -9,6 +9,7 @@
       <ixsl:value-of select="/formresult/play/@displayWord"/>
       </div>
       <buttons/>
+      <show-messages/>
     </theme>
   </part>
 </include_parts>
