@@ -1,5 +1,6 @@
 package de.schlund.pfixcore.util;
 import java.io.File;
+import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
@@ -81,6 +82,8 @@ public class JarFileCache {
        
         if(!file.exists()) {
             JarEntry entry = cacheEntry.jarFile.getJarEntry(path);
+            if(entry == null) throw new FileNotFoundException("Jar entry '" + path + 
+                    "' not found in file '" + jarURL.toString() +"'");
             long lastModified = entry.getTime();
             InputStream in = cacheEntry.jarFile.getInputStream(entry);
             if(!file.getParentFile().exists()) file.getParentFile().mkdirs();
