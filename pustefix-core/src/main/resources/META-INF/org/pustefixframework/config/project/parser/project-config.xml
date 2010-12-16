@@ -45,11 +45,6 @@
     <match>/p:project-config/p:application</match>
   </handler>
   
-  <!-- Adds WebappAdmin bean -->
-  <handler class="org.pustefixframework.config.project.parser.WebappAdminParsingHandler">
-    <match>/p:project-config//p:application</match>
-  </handler>
-  
   <!-- Creates PerfLogging bean -->
   <handler class="org.pustefixframework.config.project.parser.PerfLoggingParsingHandler">
     <match>/p:project-config//p:perflogging</match>

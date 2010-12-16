@@ -22,9 +22,12 @@ import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
+import java.lang.management.ManagementFactory;
 import java.util.Enumeration;
 import java.util.Properties;
 
+import javax.management.MBeanServer;
+import javax.management.ObjectName;
 import javax.servlet.ServletContext;
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
@@ -41,6 +44,7 @@ import javax.xml.transform.stream.StreamResult;
 
 import org.apache.log4j.Logger;
 import org.apache.log4j.xml.DOMConfigurator;
+import org.pustefixframework.admin.mbeans.Admin;
 import org.w3c.dom.Document;
 import org.xml.sax.EntityResolver;
 import org.xml.sax.ErrorHandler;
@@ -164,6 +168,8 @@ public class PustefixInit {
     	
     	configureLogging(properties, servletContext);
     	LOG.debug(">>>> LOG4J Init OK <<<<");
+
+    	initAdminMBean();
     	
     	initDone = true;
 
@@ -271,4 +277,31 @@ public class PustefixInit {
         }
     }
 
+    
+    private static void initAdminMBean() {
+        String mode = EnvironmentProperties.getProperties().getProperty("mode");
+        if(!mode.equalsIgnoreCase("prod")) {
+            try {
+                String mletClass = "javax.management.loading.MLet";
+                ObjectName mletName = new ObjectName(Admin.JMX_NAME + ",subtype=MLet");
+                MBeanServer server = ManagementFactory.getPlatformMBeanServer();
+                if(!server.isRegistered(mletName)) {
+                    server.createMBean(mletClass, mletName);
+                    LOG.debug("Created AdminMlet.");
+                    Object mletParams[] = {PustefixInit.class.getProtectionDomain().getCodeSource().getLocation()};
+                    String mletSignature[] = {"java.net.URL"};
+                    server.invoke(mletName, "addURL", mletParams, mletSignature);
+                    String mbeanClass = "org.pustefixframework.admin.mbeans.Admin";
+                    ObjectName mbeanName = new ObjectName(Admin.JMX_NAME);
+                    if(!server.isRegistered(mbeanName)) {
+                        server.createMBean(mbeanClass, mbeanName, mletName);
+                        LOG.debug("Created Admin mbean.");
+                    } else LOG.debug("Already found a registered Admin mbean.");
+                } else LOG.debug("Already found a registered AdminMLet.");
+            } catch(Exception x) {
+                LOG.error("Can't register Admin MBean", x);
+            }
+        }
+    }
+    
 }

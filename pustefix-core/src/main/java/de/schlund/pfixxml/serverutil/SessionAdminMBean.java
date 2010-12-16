@@ -25,6 +25,7 @@ import java.io.IOException;
 public interface SessionAdminMBean {
 
     public void invalidateSession(String id) throws IOException;
+    public void invalidateSessions() throws IOException;
     public int getSessionNumber();
     
 }

@@ -34,7 +34,6 @@ import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
-import java.util.Hashtable;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
@@ -54,6 +53,7 @@ import javax.xml.transform.Templates;
 import javax.xml.transform.stream.StreamResult;
 
 import org.apache.log4j.Logger;
+import org.pustefixframework.admin.mbeans.AdminBroadcaster;
 import org.pustefixframework.container.spring.http.UriProvidingHttpRequestHandler;
 import org.pustefixframework.util.FrameworkInfo;
 import org.springframework.beans.factory.DisposableBean;
@@ -62,7 +62,6 @@ import org.springframework.web.context.ServletContextAware;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 
-import de.schlund.pfixcore.exception.PustefixRuntimeException;
 import de.schlund.pfixcore.util.ModuleInfo;
 import de.schlund.pfixxml.config.EnvironmentProperties;
 import de.schlund.pfixxml.resources.ModuleResource;
@@ -81,10 +80,10 @@ import de.schlund.pfixxml.util.XsltVersion;
  */
 public class PustefixInternalsRequestHandler implements UriProvidingHttpRequestHandler, ServletContextAware, InitializingBean, DisposableBean {
     
-    private Logger LOG = Logger.getLogger(PustefixInternalsRequestHandler.class);
+    private static Logger LOG = Logger.getLogger(PustefixInternalsRequestHandler.class);
     
     private static final String STYLESHEET = "module://pustefix-core/xsl/pfxinternals.xsl";
-    
+      
     private String handlerURI ="/xml/pfxinternals";
     private ServletContext servletContext;
     private SessionAdmin sessionAdmin;
@@ -108,11 +107,11 @@ public class PustefixInternalsRequestHandler implements UriProvidingHttpRequestH
     public void afterPropertiesSet() throws Exception {
         deserialize();
         startTime = System.currentTimeMillis();
-        messageList.addMessage(Message.Level.INFO, new Date(), "Webapp started.");
+        messageList.addMessage(Message.Level.INFO, "Webapp started.");
     }
     
     public void destroy() throws Exception {
-        messageList.addMessage(Message.Level.INFO, new Date(), "Webapp stopped.");
+        messageList.addMessage(Message.Level.INFO, "Webapp stopped.");
         serialize();
     }
     
@@ -123,53 +122,67 @@ public class PustefixInternalsRequestHandler implements UriProvidingHttpRequestH
            return;
        }
         
-        try {
-            String action = req.getParameter("action");
-            if(action != null) {
-                if(action.equals("reload")) {
-                    if((System.currentTimeMillis() - startTime) > reloadTimeout) {
-                        messageList.addMessage(Message.Level.INFO, new Date(), "Scheduled webapp reload.");
-                        serialize();
-                        Thread reloadThread = new ReloadThread(servletContext.getRealPath("/"));
-                        reloadThread.start();
-                    } else {
-                        messageList.addMessage(Message.Level.WARN, new Date(), "Skipped repeated webapp reload scheduling.");
-                    }
-                    res.sendRedirect(req.getContextPath()+"/xml/pfxinternals#messages");
-                    return;
-                } else if(action.equals("invalidate")) {
-                    Set<String> sessionIds = sessionAdmin.getAllSessionIds();
-                    Iterator<String> it = sessionIds.iterator();
-                    while(it.hasNext()) {
-                        String sessionId = it.next();
-                        sessionAdmin.invalidateSession(sessionId);
-                    }
-                    messageList.addMessage(Message.Level.INFO, new Date(), "Invalidated sessions.");
-                    res.sendRedirect(req.getContextPath()+"/xml/pfxinternals#messages");
-                    return;
-                }
-            }
+       try {
+           String action = req.getParameter("action");
+           if(action != null) {
+               if(action.equals("reload")) {
+                   if((System.currentTimeMillis() - startTime) > reloadTimeout) {
+                       messageList.addMessage(Message.Level.INFO, "Scheduled webapp reload.");
+                       serialize();
+                       ObjectName mbeanName = new ObjectName(AdminBroadcaster.JMX_NAME);
+                       MBeanServer server = ManagementFactory.getPlatformMBeanServer();
+                       if(server.isRegistered(mbeanName)) {
+                           if(server != null) {
+                               sessionAdmin.invalidateSessions();
+                               File workDir = (File)servletContext.getAttribute("javax.servlet.context.tempdir");
+                               if(workDir != null) {
+                                   String[] paramTypes = {"java.lang.String"};
+                                   Object[] params = {workDir.getPath()};
+                                   server.invoke(mbeanName, "reload", params, paramTypes);
+                               } else {
+                                   messageList.addMessage(Message.Level.WARN, "Missing servlet context attribute 'javax.servlet.context.tempdir'.");
+                               }
+                           }
+                       } else {
+                           messageList.addMessage(Message.Level.WARN, "Can't do reload because Admin mbean isn't registered.");
+                       }
+                   } else {
+                       messageList.addMessage(Message.Level.WARN, "Skipped repeated webapp reload scheduling.");
+                   }
+                   res.sendRedirect(req.getContextPath()+"/xml/pfxinternals#messages");
+                   return;
+               } else if(action.equals("invalidate")) {
+                   Set<String> sessionIds = sessionAdmin.getAllSessionIds();
+                   Iterator<String> it = sessionIds.iterator();
+                   while(it.hasNext()) {
+                       String sessionId = it.next();
+                       sessionAdmin.invalidateSession(sessionId);
+                   }
+                   messageList.addMessage(Message.Level.INFO, "Invalidated sessions.");
+                   res.sendRedirect(req.getContextPath()+"/xml/pfxinternals#messages");
+                   return;
+               }
+           }
             
-        Document doc = DocumentBuilderFactory.newInstance().newDocumentBuilder().newDocument();
-        Element root = doc.createElement("pfxinternals");
-        doc.appendChild(root);
-        addFrameworkInfo(root);
-        addEnvironmentInfo(root);
-        addJVMInfo(root);
-        addModuleInfo(root);
-        messageList.toXML(root);
-        doc = Xml.parse(XsltVersion.XSLT1, doc);
-        Templates stvalue = Xslt.loadTemplates(XsltVersion.XSLT1, (ModuleResource)ResourceUtil.getResource(STYLESHEET));
-        res.setContentType("text/html");
-        Map<String, Object> params = new HashMap<String, Object>();
-        params.put("__contextpath", req.getContextPath());
-        Xslt.transform(doc, stvalue, params, new StreamResult(res.getOutputStream()));
+           Document doc = DocumentBuilderFactory.newInstance().newDocumentBuilder().newDocument();
+           Element root = doc.createElement("pfxinternals");
+           doc.appendChild(root);
+           addFrameworkInfo(root);
+           addEnvironmentInfo(root);
+           addJVMInfo(root);
+           addModuleInfo(root);
+           messageList.toXML(root);
+           doc = Xml.parse(XsltVersion.XSLT1, doc);
+           Templates stvalue = Xslt.loadTemplates(XsltVersion.XSLT1, (ModuleResource)ResourceUtil.getResource(STYLESHEET));
+           res.setContentType("text/html");
+           Map<String, Object> params = new HashMap<String, Object>();
+           params.put("__contextpath", req.getContextPath());
+           Xslt.transform(doc, stvalue, params, new StreamResult(res.getOutputStream()));
         
-        
-        } catch(Exception x) {
-            LOG.error(x);
-            throw new ServletException("Error while creating info page", x);
-        }
+       } catch(Exception x) {
+           LOG.error(x);
+           throw new ServletException("Error while creating info page", x);
+       }
     }
     
     private void addFrameworkInfo(Element parent) {
@@ -297,8 +310,8 @@ public class PustefixInternalsRequestHandler implements UriProvidingHttpRequestH
         int max = 10;
         List<Message> messages = new ArrayList<Message>();
         
-        synchronized void addMessage(Message.Level level, Date date, String text) {
-            messages.add(new Message(level, date, text));
+        synchronized void addMessage(Message.Level level, String text) {
+            messages.add(new Message(level, text));
             if(messages.size() > max) messages.remove(0);
         }
         
@@ -323,70 +336,16 @@ public class PustefixInternalsRequestHandler implements UriProvidingHttpRequestH
         
         public enum Level { INFO, WARN, ERROR }
         
-        Message(Level level, Date date, String text) {
+        Message(Level level, String text) {
             this.level = level;
-            this.date = date;
             this.text = text;
+            this.date = new Date();
         }
         
         Level level;
         Date date;
         String text;
     
-    }
-    
-    private static class ReloadThread extends Thread {
-        
-        private String realPath;
-        
-        ReloadThread(String realPath) {
-            this.realPath = realPath;
-        }
-        
-        public void run() {
-            try {
-                reload(realPath);
-            } catch(Exception x) {
-                x.printStackTrace();
-            }
-        }
-        
-        public synchronized void reload(String realPath)  {
-            try {Thread.sleep(500);} catch(InterruptedException x) {}
-            ObjectName objectName = getWebModuleObjectName(realPath);
-            if(objectName==null) throw new PustefixRuntimeException("Can't reload webapp because "
-                    +"no WebModule MBean could be found.");
-            MBeanServer mbeanServer = ManagementFactory.getPlatformMBeanServer();
-            try {
-                mbeanServer.invoke(objectName,"reload",new Object[0],new String[0]);
-            } catch(Exception x) {
-                throw new PustefixRuntimeException("Can't reload webapp.",x);
-            }
-        }
-        
-        private ObjectName getWebModuleObjectName(String realPath) {
-            try {
-                Hashtable<String, String> props = new Hashtable<String,String>();
-                props.put("J2EEApplication","none");
-                props.put("J2EEServer","none");
-                props.put("j2eeType","WebModule");
-                props.put("name","//"+"*"+"/*");
-                ObjectName objectNamePattern = new ObjectName("*",props);
-                MBeanServer mbeanServer = ManagementFactory.getPlatformMBeanServer();
-                if(mbeanServer!=null) {
-                    Set<ObjectName> objectNames = mbeanServer.queryNames(objectNamePattern, null);
-                    for(ObjectName objectName:objectNames) {
-                        String docBase =(String)mbeanServer.getAttribute(objectName,"docBase");
-                        if(!docBase.endsWith("/")) docBase += "/";
-                        if(docBase.equals(realPath)) return objectName;
-                    }
-                } 
-                return null;
-            } catch(Exception x) {
-                throw new PustefixRuntimeException("Error while trying to find WebModule mbean name.",x);
-            } 
-        }
-        
     }
     
 }

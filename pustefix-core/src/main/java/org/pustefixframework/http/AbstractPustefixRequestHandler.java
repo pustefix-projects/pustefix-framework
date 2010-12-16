@@ -37,7 +37,6 @@ import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 
 import org.apache.log4j.Logger;
-import org.pustefixframework.admin.mbeans.WebappAdmin;
 import org.pustefixframework.config.contextxmlservice.ServletManagerConfig;
 import org.pustefixframework.container.spring.http.UriProvidingHttpRequestHandler;
 import org.pustefixframework.http.internal.PustefixInit;
@@ -95,7 +94,6 @@ public abstract class AbstractPustefixRequestHandler implements UriProvidingHttp
     private ServletContext servletContext;
     private String handlerURI;
     private SessionAdmin sessionAdmin;
-    private WebappAdmin webappAdmin;
     private ExceptionProcessingConfiguration exceptionProcessingConfig;
     
     protected abstract ServletManagerConfig getServletManagerConfig();
@@ -147,9 +145,7 @@ public abstract class AbstractPustefixRequestHandler implements UriProvidingHttp
     }
 
     public void handleRequest(HttpServletRequest req, HttpServletResponse res) throws ServletException, IOException {
-        
-        if(webappAdmin!=null) webappAdmin.refreshIfTriggered();
-        
+         
         req.setCharacterEncoding(servletEncoding);
         res.setCharacterEncoding(servletEncoding);
         if (LOG.isDebugEnabled()) {
@@ -1028,10 +1024,6 @@ public abstract class AbstractPustefixRequestHandler implements UriProvidingHttp
     
     public SessionAdmin getSessionAdmin() {
         return sessionAdmin;
-    }
-    
-    public void setWebappAdmin(WebappAdmin webappAdmin) {
-        this.webappAdmin = webappAdmin;
     }
     
     public void setExceptionProcessingConfiguration(ExceptionProcessingConfiguration exceptionProcessingConfig) {

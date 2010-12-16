@@ -27,7 +27,6 @@ import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.ParserConfigurationException;
 
-import org.pustefixframework.admin.mbeans.WebappAdmin;
 import org.pustefixframework.config.Constants;
 import org.pustefixframework.config.contextxmlservice.ContextXMLServletConfig;
 import org.pustefixframework.config.customization.CustomizationAwareParsingHandler;
@@ -36,8 +35,8 @@ import org.pustefixframework.config.customization.PropertiesBasedCustomizationIn
 import org.pustefixframework.config.project.EditorInfo;
 import org.pustefixframework.config.project.EditorLocation;
 import org.pustefixframework.config.project.XMLGeneratorInfo;
-import org.pustefixframework.http.PustefixInternalsRequestHandler;
 import org.pustefixframework.http.PustefixContextXMLRequestHandler;
+import org.pustefixframework.http.PustefixInternalsRequestHandler;
 import org.springframework.beans.factory.BeanDefinitionStoreException;
 import org.springframework.beans.factory.config.BeanDefinition;
 import org.springframework.beans.factory.config.BeanDefinitionHolder;
@@ -185,7 +184,6 @@ public class PustefixContextXMLRequestHandlerParsingHandler extends Customizatio
         if(beanReg.isBeanNameInUse(TestRecording.class.getName())) {
             beanBuilder.addPropertyValue("testRecording", new RuntimeBeanReference(TestRecording.class.getName()));
         }
-        beanBuilder.addPropertyValue("webappAdmin", new RuntimeBeanReference(WebappAdmin.class.getName()));
         beanBuilder.addPropertyValue("editorLocation", editorLocation.getLocation());
         beanBuilder.addPropertyValue("checkModtime", info.getCheckModtime());
         beanBuilder.addPropertyValue("sessionCleaner", new RuntimeBeanReference(SessionCleaner.class.getName()));
