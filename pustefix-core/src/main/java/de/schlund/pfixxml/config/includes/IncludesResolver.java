@@ -23,6 +23,8 @@ import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import javax.xml.transform.TransformerException;
 import javax.xml.xpath.XPathConstants;
@@ -128,10 +130,13 @@ public class IncludesResolver {
             boolean wildcardInclude = false;
             if(module != null) {
                 if(filepath.startsWith("/")) filepath = filepath.substring(1);
-                if(module.equals("*")) {
+                if(module.contains("*")) {
+                    Pattern modulePattern = Pattern.compile(module.replaceAll("\\*", ".*"));
                     Set<String> moduleNames = ModuleInfo.getInstance().getModules();
                     for(String moduleName: moduleNames) {
-                        includePaths.add("module://" + moduleName + "/" + filepath);
+                        if(modulePattern.matcher(moduleName).matches()) {
+                            includePaths.add("module://" + moduleName + "/" + filepath);
+                        }
                     }
                     wildcardInclude = true;
                 } else {
