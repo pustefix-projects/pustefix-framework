@@ -435,7 +435,7 @@
     <page name="bar" handler="/xml/config">...</page>
     
     <!-- Configuration fragements are supported as well -->
-    <config-include file="myproject/conf/myfile.xml" section="navigation"/>
+    <config-include file="conf/myfile.xml" section="navigation" module="mymodule"/>
   </navigation>
 
   <!--
@@ -451,7 +451,7 @@
     <!-- <include stylesheet="path/to/AStyleSheetFromModule" module="modulename"/> -->
   </global>
 
-  <config-include file="myproject/conf/myfile.xml" section="targets"/>
+  <config-include file="conf/myfile.xml" section="targets" module="mymodule"/>
 
   <!--
     The only other tags allowed besides the navigation tag are target, global,
@@ -1500,7 +1500,7 @@
       </properties>
     </pagerequest>
     
-    <config-include file="myproject/conf/myfile.xml" section="pagerequests"/>
+    <config-include file="conf/myfile.xml" section="pagerequests" module="mymodule"/>
         ]]></programlisting>
         Includes a part of a config fragments file at this location.
         See <xref linkend="configuration.format.fragments"/> for details on how
@@ -1547,7 +1547,8 @@
               <td><literal>module</literal></td>
               <td><emphasis>Optional</emphasis>.
               Specifies the Pustefix module where the file is located (by default
-              the file is searched in the webapp itself).</td>
+              the file is searched in the webapp itself). You can use simple name patterns to include all 
+              or a subset of modules availabe in the classpath (e.g. <literal>"*"</literal> or <literal>"mod-*-us"</literal>).</td>
             </tr>
           </tbody>
         </informaltable>
@@ -1649,7 +1650,7 @@
          default authconstraint will be used. If no authconstraint is set at all, a
          page requires no authentication.
          <programlisting language="xml"><![CDATA[
-    <config-include file="myproject/conf/myfile.xml" section="directoutputpagerequests"/>
+    <config-include file="conf/myfile.xml" section="directoutputpagerequests" module="mymodule"/>
          ]]></programlisting>
         Includes a part of a config-fragments at this location.
         See <xref linkend="configuration.format.fragments"/> for details on how
@@ -1697,7 +1698,8 @@
               <td><literal>module</literal></td>
               <td><emphasis>Optional</emphasis>.
               Specifies the Pustefix module where the file is located (by default
-              the file is searched in the webapp itself).</td>
+              the file is searched in the webapp itself). You can use simple name patterns to include all 
+              or a subset of modules availabe in the classpath (e.g. <literal>"*"</literal> or <literal>"mod-*-us"</literal>).</td>
             </tr>
 
           </tbody>
