@@ -76,6 +76,16 @@
         e.g. <literal>module="*"</literal> will include all according configuration fragments found in the classpath,
         <literal>module="*-us"</literal> will include only fragments from modules whose name ends with <literal>-us</literal>.
       </para>
+      <para>
+        Added support for conditional unpacking of module resources.
+        Within the module descriptor you can set the optional <literal>resources</literal> element's 
+        attribute <literal>unpack</literal> to <literal>obsolete</literal>. Thus the resources won't be extracted
+	in the current or newer Pustefix versions (despite containing resource mappings).
+        If you still want that obsolete resources are extracted, you can configure the Maven <literal>pustefix-webapp-plugin</literal>
+	by adding <literal>&lt;unpackObsolete&gt;true&lt;/unpackObsolete&gt;</literal> to its configuration.
+	This should help migrating modules and applications towards avoiding extracting resources at all, while keeping
+        backwards compatibility for modules shared between different applications (see <xref linkend="modulessupport"/>).
+      </para>
     </section>
     <section xml:id="news.0_15_13.tooling">
       <title>Tooling enhancements</title>

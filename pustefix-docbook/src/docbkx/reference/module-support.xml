@@ -34,6 +34,11 @@
     In this example the path would be modules/mytest/.
   -->  
   <module-name>mytest</module-name>
+  <!-- You can optionally add the attribute "unpack" with value "obsolete" to the resources
+       element, indicating that the resources shouldn't be extracted in the current or later 
+       Pustefix versions, unless otherwise configured by adding <unpackObsolete>true</unpackObsolete>
+       to the pustefix-webapp-plugin configuration.
+  -->
   <resources>
     <!--
       The srcpath attributes the directory within the JAR archive that contains the
