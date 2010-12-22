@@ -149,7 +149,15 @@ public class DocrootRequestHandler implements UriProvidingHttpRequestHandler, Se
                 LOG.debug("Resource doesn't exist -> send 'not found': " + path);
             }
             return;
-        }  
+        }
+        
+        if(!inputResource.isFile()) {
+            res.sendError(HttpServletResponse.SC_FORBIDDEN, path);
+            if(LOG.isDebugEnabled()) {
+                LOG.debug("Resource isn't a normal file -> send 'forbidden': " + path);
+            }
+            return;
+        }
         
         long contentLength = inputResource.length();
         long lastModified = inputResource.lastModified();

@@ -56,7 +56,7 @@ public class JarFileURLConnection extends JarURLConnection {
     }
     
     @Override
-    public int getContentLength() {
+    public synchronized int getContentLength() {
         int len = -1;
         try {
             connect();
@@ -81,6 +81,16 @@ public class JarFileURLConnection extends JarURLConnection {
         if(getEntryName() == null) return null;
         JarEntry entry = getJarFile().getJarEntry(getEntryName());
         if(entry == null) throw new FileNotFoundException("JAR entry "+ getEntryName() + "not found in " + getJarFileURL());
+        //Work around JDK bug: calling getJarEntry() for directory entry using name with 
+        //no trailing slash returns JarEntry object keeping this name, and calling 
+        //isDirectory() on this object checks for the slash and returns false.
+        //Therefor we additionally check entries with with size 0 and try to get
+        //an entry with a trailing slash
+        if(!entry.isDirectory() && entry.getSize() == 0) {
+            String dirPath = getEntryName() + "/";
+            JarEntry dirEntry = getJarFile().getJarEntry(dirPath);
+            if(dirEntry != null) entry = dirEntry;
+        }
         return entry;
     }
        

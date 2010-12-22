@@ -84,8 +84,15 @@ public class ModuleResource implements Resource {
     }
 
     public boolean isFile() {
-        //TODO: support directory entries
-        return true;
+        if(url == null) return false;
+        try {
+            JarURLConnection con = getConnection();
+            JarEntry entry = con.getJarEntry();
+            if(entry == null) return true; //it's a jar file
+            return !entry.isDirectory();
+        } catch(IOException x) {
+            return false;
+        }
     }
 
     public long lastModified() {
@@ -104,7 +111,7 @@ public class ModuleResource implements Resource {
             JarURLConnection con = getConnection();
             JarEntry entry = con.getJarEntry();
             if(entry != null) {
-                return con.getJarEntry().getSize();
+                return entry.getSize();
             }
         } catch(FileNotFoundException x) {
         } catch(IOException x) {
