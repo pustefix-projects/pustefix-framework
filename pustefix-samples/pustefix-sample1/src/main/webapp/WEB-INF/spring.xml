@@ -32,5 +32,7 @@
   <bean id="testdata_base" abstract="true">
     <property name="text" value="${testdata.defaulttext}"/>
   </bean>
+  
+  <bean id="enctest_handler" class="de.schlund.pfixcore.example.EncodingTestHandler"/>
 
 </beans>

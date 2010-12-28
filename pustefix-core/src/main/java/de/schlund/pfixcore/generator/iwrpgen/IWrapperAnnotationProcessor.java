@@ -55,6 +55,8 @@ import com.sun.mirror.type.TypeMirror;
 import com.sun.mirror.type.VoidType;
 import com.sun.mirror.util.SimpleDeclarationVisitor;
 
+import de.schlund.pfixcore.generator.IHandler;
+
 /**
  * @author mleidig@schlund.de
  */
@@ -197,11 +199,30 @@ public class IWrapperAnnotationProcessor implements AnnotationProcessor {
 
                 iwrapperClass = getIWrapperName(classDecl);
 
+                Element ihandlerElem = doc.createElementNS(XMLNS_IWRP, "iwrp:ihandler");
+                root.appendChild(ihandlerElem);
+                
+                String beanRef = null;
+                String ihandlerClass = null;
+                
+                AnnotationValue beanRefValue = MirrorApiUtils.getAnnotationValue(iwrpMirror, "beanRef");
+                if(beanRefValue != null) {
+                    beanRef = beanRefValue.getValue().toString();
+                    if(beanRef.equals("")) beanRef = null;
+                }
                 AnnotationValue ihandlerValue = MirrorApiUtils.getAnnotationValue(iwrpMirror, "ihandler");
-                if (ihandlerValue != null) {
-                    Element ihandlerElem = doc.createElementNS(XMLNS_IWRP, "iwrp:ihandler");
-                    root.appendChild(ihandlerElem);
-                    ihandlerElem.setAttribute("class", ihandlerValue.getValue().toString());
+                if(ihandlerValue != null) {
+                    ihandlerClass = ihandlerValue.getValue().toString();
+                    if(ihandlerClass.equals(IHandler.class.getName())) ihandlerClass = null;
+                }
+                if(beanRef == null && ihandlerClass == null) {
+                    env.getMessager().printError("Neither beanRef nor ihandler is set: " + classDecl.getQualifiedName());
+                } else if(beanRef != null && ihandlerClass != null) {
+                    env.getMessager().printError("Setting both, beanRef and ihandler, isn't allowed: " + classDecl.getQualifiedName());
+                } else if(beanRef != null) {
+                    ihandlerElem.setAttribute("bean-ref", beanRef);
+                } else if(ihandlerClass != null) {
+                    ihandlerElem.setAttribute("class", ihandlerClass);
                 }
 
             }

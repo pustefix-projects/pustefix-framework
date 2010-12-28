@@ -103,4 +103,15 @@
     </section>
   </section>
 
+  <section xml:id="news.0_15_14">
+    <title>What's new in Pustefix 0.15.14</title>
+
+    <section xml:id="news.0_15_14.iwrapper">
+      <title>IWrapper enhancements</title>
+      <para>Annotation-based IWrappers now also support assigning IHandler beans by name. Therefor the <literal>@IWrapper</literal>
+            annotation provides the new <literal>beanRef</literal> attribute (see <xref linkend="advanced.iwrapperannotations.reference"/>).
+      </para>
+    </section>
+  </section>
+
 </chapter>

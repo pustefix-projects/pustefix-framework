@@ -21,6 +21,8 @@ package org.pustefixframework.maven.plugins;
 import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
 import java.io.PrintWriter;
 import java.util.ArrayList;
 import java.util.List;
@@ -118,8 +120,27 @@ public class Apt {
             ProcessBuilder builder = new ProcessBuilder(cmd);
             builder.directory(basedir);
             builder.redirectErrorStream(true);
-            int ret = builder.start().waitFor();
-            if (ret != 0) throw new MojoExecutionException("Error while executing apt (exit value: " + ret + ").");
+            Process process = builder.start();
+            int ret = process.waitFor();
+            InputStream in = process.getInputStream();
+            StringBuilder sb = new StringBuilder();
+            if(in != null) {
+                InputStreamReader reader = new InputStreamReader(in);
+                char[] buffer = new char[4096];
+                int i = 0;
+                try {
+                    while ((i = reader.read(buffer)) != -1)
+                        sb.append(buffer, 0, i);
+                } finally {
+                    in.close();
+                }
+            }
+            if(ret == 0) {
+                log.debug(sb.toString());
+            } else {
+                log.error(sb.toString());
+                throw new MojoExecutionException("Error while executing apt (exit value: " + ret + ").");
+            }
         } catch (IOException e) {
             throw new MojoExecutionException("Error invoking apt", e);
         } catch (InterruptedException e) {
