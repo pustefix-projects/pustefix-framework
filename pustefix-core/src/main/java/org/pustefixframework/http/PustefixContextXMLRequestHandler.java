@@ -229,9 +229,13 @@ public class PustefixContextXMLRequestHandler extends AbstractPustefixXMLRequest
                 // are redirected to the page selected by the business logic below
                 String scheme = preq.getScheme();
                 String port = String.valueOf(preq.getServerPort());
+                String sessionIdPath = "";
+                if(sessionTrackingStrategy instanceof URLRewriteSessionStrategy) {
+                    sessionIdPath = ";jsessionid=" + preq.getSession(false).getId();
+                }
                 String redirectURL = scheme + "://" + getServerName(preq.getRequest()) 
                     + ":" + port + preq.getContextPath() + preq.getServletPath() + "/" + spdoc.getPagename() 
-                    + (preq.getRequest().isRequestedSessionIdFromCookie()?"":";jsessionid=" + preq.getSession(false).getId()) + "?__reuse=" + spdoc.getTimestamp();
+                    + sessionIdPath + "?__reuse=" + spdoc.getTimestamp();
                 RequestParam rp = preq.getRequestParam("__frame");
                 if (rp != null) {
                     redirectURL += "&__frame=" + rp.getValue();

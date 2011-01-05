@@ -2,9 +2,6 @@ package org.pustefixframework.http;
 
 import java.io.IOException;
 import java.util.regex.Matcher;
-import java.util.regex.Pattern;
-
-import junit.framework.TestCase;
 
 import org.apache.commons.httpclient.Header;
 import org.apache.commons.httpclient.HttpClient;
@@ -13,68 +10,12 @@ import org.apache.commons.httpclient.HttpStatus;
 import org.apache.commons.httpclient.URIException;
 import org.apache.commons.httpclient.cookie.CookiePolicy;
 import org.apache.commons.httpclient.methods.GetMethod;
-import org.apache.commons.httpclient.protocol.Protocol;
-import org.apache.commons.httpclient.protocol.ProtocolSocketFactory;
-import org.apache.log4j.ConsoleAppender;
-import org.apache.log4j.Level;
-import org.apache.log4j.Logger;
-import org.apache.log4j.PatternLayout;
-import org.mortbay.jetty.Server;
-import org.mortbay.jetty.security.SslSocketConnector;
-import org.mortbay.jetty.servlet.AbstractSessionManager;
-import org.mortbay.jetty.servlet.Context;
-import org.mortbay.jetty.servlet.ServletHolder;
 
 
-public class SessionHandlingTest extends TestCase {
-
-    private static Pattern PATTERN_URL = Pattern.compile("(https?)://(([^:]*)(:(\\d+))?)(/[^;?]*)?/?(;jsessionid=([^?]+))?(\\?.*)?");
-    private static Pattern PATTERN_COUNT = Pattern.compile(".*<!--(\\d+)-->.*");
-    
-    private static Server server;
-    
-    private static int HTTP_PORT = 8080;
-    private static int HTTPS_PORT = 8443;
+public class CookieSessionHandlingTest extends AbstractSessionHandlingTest {
     
     protected void setUp() throws Exception {
-        setUp(false);
-    }
-    
-    protected void setUp(boolean cookieSessionHandlingDisabled) throws Exception {
-        
-        if(server == null) {
-            
-            ConsoleAppender appender = new ConsoleAppender(new PatternLayout("%p: %m\n"));
-            Logger logger=Logger.getRootLogger();
-            logger.setLevel((Level)Level.WARN);
-            logger.removeAllAppenders();
-            logger.addAppender(appender);
-            
-            logger = Logger.getLogger("org.pustefixframework");
-            logger.setLevel((Level)Level.DEBUG);
-            logger.addAppender(appender);
-            
-            //Start embedded Jetty
-            server = new Server(HTTP_PORT);
-            SslSocketConnector connector = new SslSocketConnector();
-            connector.setPort(HTTPS_PORT);
-            connector.setKeyPassword("password"); 
-            connector.setPassword("password");
-            connector.setKeystore("src/test/resources/org/pustefixframework/http/keystore");
-            server.addConnector(connector);
-            Context root = new Context(server,"/",Context.SESSIONS);
-            root.addServlet(new ServletHolder(new SessionHandlingTestServlet()), "/*");
-            
-            if(cookieSessionHandlingDisabled) ((AbstractSessionManager)root.getSessionHandler().getSessionManager()).setUsingCookies(false);
-            
-            server.start();
-        
-            //Initialize HttpClient
-            ProtocolSocketFactory protocolFactory = new SSLProtocolSocketFactory();
-            Protocol protocol = new Protocol("https", protocolFactory, 443);
-            Protocol.registerProtocol("https", protocol);
-        }
-    
+        setUp(CookieSessionStrategy.class, false);
     }
         
     public void testNoSessionHttp() throws Exception {
@@ -86,7 +27,6 @@ public class SessionHandlingTest extends TestCase {
         method.getParams().setCookiePolicy(CookiePolicy.BROWSER_COMPATIBILITY);
             
         int statusCode = client.executeMethod(method);
-        //printDump(method);
         
         assertEquals(HttpStatus.SC_MOVED_TEMPORARILY, statusCode);
         String location = method.getResponseHeader("Location").getValue();
@@ -94,31 +34,31 @@ public class SessionHandlingTest extends TestCase {
         assertNotNull(session);
         assertEquals("http", getProtocol(location));
         assertEquals(HTTP_PORT, getPort(location));
+        assertEquals(session, getSessionFromResponseCookie(method));
                   
         method = new GetMethod(location);
         method.setFollowRedirects(false);
         method.getParams().setCookiePolicy(CookiePolicy.BROWSER_COMPATIBILITY);
         
         statusCode = client.executeMethod(method);
-        //printDump(method);
         
         assertEquals(HttpStatus.SC_MOVED_TEMPORARILY, statusCode);
         location = method.getResponseHeader("Location").getValue();
-        assertNull(getSession(location));
+        String noSession = getSession(location);
+        assertNull(noSession);
         assertEquals("http", getProtocol(location));
         assertEquals(HTTP_PORT, getPort(location));
                   
         method = new GetMethod(location);
         method.setFollowRedirects(false);
         method.getParams().setCookiePolicy(CookiePolicy.BROWSER_COMPATIBILITY);
-            
+        
         statusCode = client.executeMethod(method);
-        //printDump(method);
         
         assertEquals(HttpStatus.SC_OK, statusCode);
         assertTrue(method.getResponseBodyAsString().contains("<body>test</body>"));
         assertEquals(1, getCount(method.getResponseBodyAsString()));
-        assertEquals("JSESSIONID=" + session, method.getRequestHeader("Cookie").getValue());
+        assertEquals(session, getSessionFromRequestCookie(method));
 
     }
     
@@ -145,6 +85,7 @@ public class SessionHandlingTest extends TestCase {
         method.getParams().setCookiePolicy(CookiePolicy.BROWSER_COMPATIBILITY);
         
         statusCode = client.executeMethod(method);
+        printDump(method);
         
         assertEquals(HttpStatus.SC_MOVED_TEMPORARILY, statusCode);
         location = method.getResponseHeader("Location").getValue();
@@ -159,6 +100,7 @@ public class SessionHandlingTest extends TestCase {
         method.getParams().setCookiePolicy(CookiePolicy.BROWSER_COMPATIBILITY);
         
         statusCode = client.executeMethod(method);
+        printDump(method);
         
         assertEquals(HttpStatus.SC_OK, statusCode);
         assertTrue(method.getResponseBodyAsString().contains("<body>test</body>"));
@@ -839,6 +781,30 @@ public class SessionHandlingTest extends TestCase {
         return null;
     }
     
+    public static String getSessionFromResponseCookie(HttpMethod method) {
+        Header[] headers = method.getResponseHeaders("Set-Cookie");
+        for(Header header: headers) {
+            String value = header.getValue();
+            if(value != null) {
+                Matcher matcher = COOKIE_SESSION.matcher(value);
+                if(matcher.matches()) return matcher.group(1);
+            }
+        }
+        return null;
+    }
+    
+    public static String getSessionFromRequestCookie(HttpMethod method) {
+        Header[] headers = method.getRequestHeaders("Cookie");
+        for(Header header: headers) {
+            String value = header.getValue();
+            if(value != null) {
+                Matcher matcher = COOKIE_SESSION.matcher(value);
+                if(matcher.matches()) return matcher.group(1);
+            }
+        }
+        return null;
+    }
+    
     public static String getProtocol(String url) {
         Matcher matcher = PATTERN_URL.matcher(url);
         if(matcher.matches()) return matcher.group(1);
@@ -898,6 +864,5 @@ public class SessionHandlingTest extends TestCase {
         }
         return sb.toString();
     }
-    
    
 }

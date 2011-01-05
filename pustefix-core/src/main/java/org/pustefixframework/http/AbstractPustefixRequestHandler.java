@@ -20,42 +20,25 @@ package org.pustefixframework.http;
 
 import java.io.IOException;
 import java.nio.charset.Charset;
-import java.text.NumberFormat;
-import java.text.SimpleDateFormat;
-import java.util.Date;
 import java.util.Enumeration;
-import java.util.HashMap;
-import java.util.Iterator;
-import java.util.LinkedList;
-import java.util.TreeSet;
 
-import javax.servlet.RequestDispatcher;
 import javax.servlet.ServletContext;
 import javax.servlet.ServletException;
-import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-import javax.servlet.http.HttpSession;
 
 import org.apache.log4j.Logger;
 import org.pustefixframework.admin.mbeans.WebappAdmin;
 import org.pustefixframework.config.contextxmlservice.ServletManagerConfig;
 import org.pustefixframework.container.spring.http.UriProvidingHttpRequestHandler;
-import org.pustefixframework.http.internal.PustefixInit;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.web.context.ServletContextAware;
 
 import de.schlund.pfixxml.PfixServletRequest;
-import de.schlund.pfixxml.PfixServletRequestImpl;
 import de.schlund.pfixxml.exceptionprocessor.ExceptionConfig;
 import de.schlund.pfixxml.exceptionprocessor.ExceptionProcessingConfiguration;
 import de.schlund.pfixxml.exceptionprocessor.ExceptionProcessor;
 import de.schlund.pfixxml.serverutil.SessionAdmin;
-import de.schlund.pfixxml.serverutil.SessionHelper;
-import de.schlund.pfixxml.serverutil.SessionInfoStruct;
-import de.schlund.pfixxml.serverutil.SessionInfoStruct.TrailElement;
-import de.schlund.pfixxml.util.CookieUtils;
-import de.schlund.pfixxml.util.MD5Utils;
 
 /**
  * ServletManager.java
@@ -71,21 +54,12 @@ public abstract class AbstractPustefixRequestHandler implements SessionStrategyC
     public static final String           VISIT_ID                      = "__VISIT_ID__";
     public static final String           PROP_LOADINDEX                = "__PROPERTIES_LOAD_INDEX";
     
-    
-    
-    
-    
-    
-    
-    
     public static final String           PROP_COOKIE_SEC_NOT_ENFORCED  = "servletmanager.cookie_security_not_enforced";
     public static final String           PROP_P3PHEADER                = "servletmanager.p3p";
     public static final String           PROP_SSL_REDIRECT_PORT        = "pfixcore.ssl_redirect_port.for.";
     protected static final String        DEF_CONTENT_TYPE              = "text/html";
     private static final String          DEFAULT_ENCODING              = "UTF-8";
     private static final String          SERVLET_ENCODING              = "servlet.encoding";
-    
-    
     
     public static Logger                       LOGGER_VISIT                  = Logger.getLogger("LOGGER_VISIT");
     private static Logger                       LOG                           = Logger.getLogger(AbstractPustefixRequestHandler.class);
@@ -95,7 +69,7 @@ public abstract class AbstractPustefixRequestHandler implements SessionStrategyC
     private SessionAdmin sessionAdmin;
     private WebappAdmin webappAdmin;
     private ExceptionProcessingConfiguration exceptionProcessingConfig;
-    private SessionTrackingStrategy sessionTrackingStrategy = new URLRewriteSessionStrategy(this);
+    protected SessionTrackingStrategy sessionTrackingStrategy;
     
     public abstract ServletManagerConfig getServletManagerConfig();
 
@@ -189,6 +163,10 @@ public abstract class AbstractPustefixRequestHandler implements SessionStrategyC
         }
         
         initServletEncoding();
+        
+        //sessionTrackingStrategy = new URLRewriteSessionStrategy();
+        sessionTrackingStrategy = new CookieSessionStrategy();
+        sessionTrackingStrategy.init(this);
     }
 
 
@@ -309,6 +287,10 @@ public abstract class AbstractPustefixRequestHandler implements SessionStrategyC
     
     public SessionAdmin getSessionAdmin() {
         return sessionAdmin;
+    }
+    
+    public void setSessionTrackingStrategy(SessionTrackingStrategy strategy) {
+        this.sessionTrackingStrategy = strategy;
     }
     
     public void setWebappAdmin(WebappAdmin webappAdmin) {

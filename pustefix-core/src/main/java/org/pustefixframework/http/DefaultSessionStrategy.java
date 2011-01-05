@@ -5,9 +5,7 @@ import java.text.NumberFormat;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.HashMap;
-import java.util.Iterator;
 import java.util.LinkedList;
-import java.util.TreeSet;
 
 import javax.servlet.ServletException;
 import javax.servlet.http.Cookie;
@@ -24,22 +22,17 @@ import de.schlund.pfixxml.serverutil.SessionHelper;
 import de.schlund.pfixxml.serverutil.SessionInfoStruct;
 import de.schlund.pfixxml.serverutil.SessionInfoStruct.TrailElement;
 import de.schlund.pfixxml.util.CookieUtils;
-import de.schlund.pfixxml.util.MD5Utils;
 
-public class URLRewriteSessionStrategy implements SessionTrackingStrategy {
+public class DefaultSessionStrategy implements SessionTrackingStrategy {
 
-    private Logger LOG = Logger.getLogger(URLRewriteSessionStrategy.class);
+    private Logger LOG = Logger.getLogger(DefaultSessionStrategy.class);
     
+    private static final String INITIAL_SESSION_CHECK = "__INITIAL_SESSION_CHECK__";
     private static final String CHECK_FOR_RUNNING_SSL_SESSION = "__CHECK_FOR_RUNNING_SSL_SESSION__";
-    private static final String COOKIE_VALUE_SEPARATOR = "_";
-    private static final String COOKIE_VALUE_SEPARATOR_OLD = ":";
     private static int INC_ID = 0;
-    private static final int MAX_PARALLEL_SEC_SESSIONS = 10;
     private static final String PARAM_FORCELOCAL = "__forcelocal";
     private static final String RAND_SESS_COOKIE_VALUE = "__RAND_SESS_COOKIE_VALUE__";
     private static final String REFUSE_COOKIES = "__REFUSE_COOKIES__";
-    private static final String SECURE_SESS_COOKIE = "__PFIX_SSC_";
-    private static final String SECURE_SESS_COOKIE_OLD = "__PFIX_SEC_";
     private static final String SESSION_COOKIES_MARKER = "__COOKIES_USED_DURING_SESSION__";
     private static final String STORED_REQUEST = "__STORED_PFIXSERVLETREQUEST__";
     private static final String TEST_COOKIE = "__PFIX_TST_";
@@ -60,30 +53,22 @@ public class URLRewriteSessionStrategy implements SessionTrackingStrategy {
         boolean has_ssl_session_secure = false;
         boolean force_jump_back_to_ssl = false;
         boolean force_reuse_visit_id = false;
-        String mark_session_as_no_cookies = null;
+
         boolean does_cookies = false;
         boolean refuse_cookies = false;
-        
-        // Delete JSESSIONID cookie
-        // Otherwise a redirect loop will be caused when a request with an
-        // invalid JSESSIONID cookie is made
-        Cookie[] cookies = CookieUtils.getCookies(req);
-        if (cookies != null) {
-            for (int i = 0; i < cookies.length; i++) {
-                Cookie cookie = cookies[i];
-                if (cookie.getName().equalsIgnoreCase("JSESSIONID")) {
-                    cookie.setMaxAge(0);
-                    cookie.setPath((req.getContextPath().equals("")) ? "/" : req.getContextPath());
-                    res.addCookie(cookie);
-                }
-            }
-        }
         
         if (req.isRequestedSessionIdValid()) {
             session = req.getSession(false);
             has_session = true;
             LOG.debug("*** Found valid session with ID " + session.getId());
 
+            if(session.getAttribute(INITIAL_SESSION_CHECK) != null && req.isRequestedSessionIdFromCookie()) {
+                session.removeAttribute(INITIAL_SESSION_CHECK);
+                String redirect_uri = SessionHelper.getClearedURL(req.getScheme(), AbstractPustefixRequestHandler.getServerName(req), req, context.getServletManagerConfig().getProperties());
+                relocate(res, HttpServletResponse.SC_MOVED_TEMPORARILY, redirect_uri);
+                return;
+            }
+            
             // Much of the advanced security depends on having cookies enabled.  We need to make
             // sure that this isn't defeated by just disabling cookies.  So we mark every session
             // whenever the client has cookies enabled, and don't allow further uses of this session
@@ -123,58 +108,7 @@ public class URLRewriteSessionStrategy implements SessionTrackingStrategy {
                     LOG.debug("*** Found running under SSL");
                     if (secure != null && secure.booleanValue()) {
                         LOG.debug("    ... and session is secure.");
-                        if (does_cookies) {
-                            LOG.debug("*** Client does cookies: Double checking SSL cookie for session ID");
-                            String sec_testid = (String) session.getAttribute(SECURE_SESS_COOKIE + MD5Utils.hex_md5(session.getId()));
-                            LOG.debug("*** Session expects to see the cookie value " + sec_testid);
-                            Cookie cookie = getSecureSessionCookie(req, session.getId());
-                            cleanupCookies(req, res, cookie);
-                            if (cookie != null) {
-                                LOG.debug("*** Found a matching cookie ...");
-                                String tmp = cookie.getValue();
-                                String tmp_sec = tmp.substring(tmp.indexOf(COOKIE_VALUE_SEPARATOR) + 1);
-                                if (tmp_sec.equals(sec_testid)) {
-                                    LOG.debug("   ... and the value is correct! (" + tmp_sec + ")");
-                                    has_ssl_session_secure = true;
-                                    Cookie cookie_new = new Cookie(cookie.getName(), System.currentTimeMillis() + COOKIE_VALUE_SEPARATOR + tmp_sec);
-                                    setCookiePath(req, cookie_new);
-                                    // FIXME (see comment in cleanupCookies
-                                    // cookie_new.setMaxAge(session.getMaxInactiveInterval());
-                                    cookie_new.setMaxAge(-1);
-                                    cookie_new.setSecure(true);
-                                    res.addCookie(cookie_new);
-                                } else {
-                                    LOG.debug("   ... but the value is WRONG!");
-                                    LOG.error("*** Wrong Session-ID for running secure session from cookie. " + "IP:" + req.getRemoteAddr() + " Cookie: " + cookie.getValue()
-                                            + " SessID: " + session.getId());
-                                    session.invalidate();
-                                    has_session = false;
-                                }
-                            } else {
-                                LOG.debug("*** Found NO matching cookie at all, but client does cookies: ***");
-                                LOG.error("*** NOSECSESSIDFROMCOOKIE: " + req.getRemoteAddr() + "|" + session.getId() + "|" + req.getHeader("User-Agent") + "|"
-                                        + req.getHeader("Cookie"));
-                                // Most time when this happens, we are not under attack, but one of
-                                // two things happened: a) a stupid behaviour (bug?)  of IE or opera
-                                // strikes us bad: With these two browsers, if we accept the
-                                // __PFIX_TST_* cookie, but then deny the __PFIX_SEC_* cookie AND
-                                // also deny for all further cookies from the domain, the stupid
-                                // browser will still continue to send the __PFIX_TST_* cookie, so
-                                // we will continue to come into this branch over and over
-                                // again... or b) We simply have stored too many cookies for the
-                                // secure cookie to be send by the client. So we try to mark the now
-                                // created session to decide in the following requests that this
-                                // session does NOT use cookies at all, despite what ever the
-                                // __PFIX_TST_* cookie says.  Basically we completely switch off
-                                // cookie handling for this new session.
-                                mark_session_as_no_cookies = (String) session.getAttribute(VISIT_ID);
-                                session.invalidate();
-                                has_session = false;
-                            }
-                        } else {
-                            // We don't do cookies, so we simply have to believe it...
-                            has_ssl_session_secure = true;
-                        }
+                        has_ssl_session_secure = true;
                     } else {
                         LOG.debug("    ... but session is insecure!");
                         has_ssl_session_insecure = true;
@@ -264,19 +198,19 @@ public class URLRewriteSessionStrategy implements SessionTrackingStrategy {
         }
         if (has_ssl_session_insecure) {
             LOG.debug("=> III");
-            redirectToSecureSSLSession(preq, req, res, mark_session_as_no_cookies);
+            redirectToSecureSSLSession(preq, req, res);
             return;
             // End of request cycle.
         }
         if (context.needsSession() && context.allowSessionCreate() && context.needsSSL(preq) && !has_ssl_session_secure) {
             LOG.debug("=> IV");
-            redirectToInsecureSSLSession(preq, req, res, mark_session_as_no_cookies);
+            redirectToInsecureSSLSession(preq, req, res);
             return;
             // End of request cycle.
         }
         if (!has_session && context.needsSession() && context.allowSessionCreate() && !context.needsSSL(preq)) {
             LOG.debug("=> V");
-            redirectToSession(preq, req, res, mark_session_as_no_cookies);
+            redirectToSession(preq, req, res);
             return;
             // End of request cycle.
         }
@@ -374,7 +308,7 @@ public class URLRewriteSessionStrategy implements SessionTrackingStrategy {
         AbstractPustefixRequestHandler.relocate(res, redirect_uri);
     }
     
-    private void redirectToInsecureSSLSession(PfixServletRequest preq, HttpServletRequest req, HttpServletResponse res, String msanc) {
+    private void redirectToInsecureSSLSession(PfixServletRequest preq, HttpServletRequest req, HttpServletResponse res) {
         boolean reuse_session = false;
         if (req.isRequestedSessionIdValid()) {
             reuse_session = true;
@@ -382,14 +316,7 @@ public class URLRewriteSessionStrategy implements SessionTrackingStrategy {
         }
         HttpSession session = req.getSession(true);
         if (!reuse_session) {
-            if (msanc == null) {
-                registerSession(req, session);
-            } else {
-                session.setAttribute(VISIT_ID, msanc);
-                LOG.debug("*** Setting REFUSE COOKIES flag in session (Id: " + session.getId() + ")");
-                session.setAttribute(REFUSE_COOKIES, Boolean.TRUE);
-                context.getSessionAdmin().registerSession(session, AbstractPustefixRequestHandler.getServerName(req), req.getRemoteAddr());
-            }
+            registerSession(req, session);
         }
 
         session.setAttribute(SessionHelper.SESSION_ID_URL, SessionHelper.getURLSessionId(req));
@@ -397,36 +324,23 @@ public class URLRewriteSessionStrategy implements SessionTrackingStrategy {
         session.setAttribute(SessionAdmin.SESSION_IS_SECURE, Boolean.FALSE);
         session.setAttribute(STORED_REQUEST, preq);
 
-        // Make sure a test cookie is created if needed
-        if (msanc == null) {
-            createTestCookie(req, res);
-        }
-
         LOG.debug("===> Redirecting to insecure SSL URL with session (Id: " + session.getId() + ")");
         String redirect_uri = SessionHelper.encodeURL("https", AbstractPustefixRequestHandler.getServerName(req), req, context.getServletManagerConfig().getProperties());
         AbstractPustefixRequestHandler.relocate(res, redirect_uri);
     }
     
-    private void redirectToSession(PfixServletRequest preq, HttpServletRequest req, HttpServletResponse res, String msanc) {
+    private void redirectToSession(PfixServletRequest preq, HttpServletRequest req, HttpServletResponse res) {
         HttpSession session = req.getSession(true);
         session.setAttribute(SessionHelper.SESSION_ID_URL, SessionHelper.getURLSessionId(req));
-        if (msanc == null) {
-            registerSession(req, session);
-            createTestCookie(req, res);
-        } else {
-            session.setAttribute(VISIT_ID, msanc);
-            LOG.debug("*** Setting REFUSE COOKIES flag in session (Id: " + session.getId() + ")");
-            session.setAttribute(REFUSE_COOKIES, Boolean.TRUE);
-            context.getSessionAdmin().registerSession(session, AbstractPustefixRequestHandler.getServerName(req), req.getRemoteAddr());
-        }
-
+        registerSession(req, session);
+         
         LOG.debug("===> Redirecting to URL with session (Id: " + session.getId() + ")");
         session.setAttribute(STORED_REQUEST, preq);
         String redirect_uri = SessionHelper.encodeURL(req.getScheme(), AbstractPustefixRequestHandler.getServerName(req), req, context.getServletManagerConfig().getProperties());
         AbstractPustefixRequestHandler.relocate(res, redirect_uri);
     }
     
-    private void redirectToSecureSSLSession(PfixServletRequest preq, HttpServletRequest req, HttpServletResponse res, String msanc) {
+    private void redirectToSecureSSLSession(PfixServletRequest preq, HttpServletRequest req, HttpServletResponse res) {
         HttpSession session = req.getSession(false);
         String visit_id = (String) session.getAttribute(VISIT_ID);
         String parentid = (String) session.getAttribute(CHECK_FOR_RUNNING_SSL_SESSION);
@@ -435,31 +349,10 @@ public class URLRewriteSessionStrategy implements SessionTrackingStrategy {
             HttpSession secure_session = context.getSessionAdmin().getChildSessionForParentId(parentid);
             if (secure_session != null) {
                 String secure_id = secure_session.getId();
-                String sec_testid = (String) secure_session.getAttribute(SECURE_SESS_COOKIE + MD5Utils.hex_md5(secure_id));
-                LOG.debug("*** We have found a candidate: SessionId=" + secure_id + " now search for cookie...");
-                LOG.debug("*** Session expects to see the cookie value " + sec_testid);
-                // But we need to make sure that the current request comes
-                // from the same user who created this secure session.
-                // We do this by checking for a (secure) cookie with a corresponding session id.
-                Cookie cookie = getSecureSessionCookie(req, secure_id);
-                if (cookie != null) {
-                    LOG.debug("*** Found a matching cookie ...");
-                    String tmp = cookie.getValue();
-                    String tmp_sec = tmp.substring(tmp.indexOf(COOKIE_VALUE_SEPARATOR) + 1);
-                    if (tmp_sec.equals(sec_testid)) {
-                        LOG.debug("   ... and the value is correct! (" + tmp_sec + ")");
-                        LOG.debug("==> Redirecting to the secure SSL URL with the already running secure session " + secure_id);
-                        String redirect_uri = SessionHelper.encodeURL("https", AbstractPustefixRequestHandler.getServerName(req), req, secure_id, context.getServletManagerConfig().getProperties());
-                        AbstractPustefixRequestHandler.relocate(res, redirect_uri);
-                        return;
-                    } else {
-                        LOG.debug("   ... but the value is WRONG!");
-                        // throw new RuntimeException("Wrong Session-ID for running secure session from cookie.");
-                        LOG.error("Wrong Session-ID for running secure session from cookie.");
-                    }
-                } else {
-                    LOG.debug("*** NO matching SecureSessionCookie (not even a wrong one...)");
-                }
+                LOG.debug("==> Redirecting to the secure SSL URL with the already running secure session " + secure_id);
+                String redirect_uri = SessionHelper.encodeURL("https", AbstractPustefixRequestHandler.getServerName(req), req, secure_id, context.getServletManagerConfig().getProperties());
+                AbstractPustefixRequestHandler.relocate(res, redirect_uri);
+                return;
             }
         }
 
@@ -498,32 +391,6 @@ public class URLRewriteSessionStrategy implements SessionTrackingStrategy {
         LOG.debug("*** Setting SECURE flag");
         session.setAttribute(SessionAdmin.SESSION_IS_SECURE, Boolean.TRUE);
         session.setAttribute(STORED_REQUEST, preq);
-
-        if (msanc == null) {
-            Cookie cookie = getSecureSessionCookie(req, session.getId());
-            if (cookie != null) {
-                setCookiePath(req, cookie);
-                cookie.setMaxAge(0);
-                cookie.setSecure(true);
-                res.addCookie(cookie);
-            }
-
-            String sec_testid = Long.toHexString((long) (Math.random() * Long.MAX_VALUE));
-            LOG.debug("*** Secure Test-ID used in session and cookie: " + sec_testid);
-            String sec_cookie = MD5Utils.hex_md5(session.getId());
-            session.setAttribute(SECURE_SESS_COOKIE + sec_cookie, sec_testid);
-
-            cookie = new Cookie(SECURE_SESS_COOKIE + sec_cookie, System.currentTimeMillis() + COOKIE_VALUE_SEPARATOR + sec_testid);
-            setCookiePath(req, cookie);
-            // FIXME (see comment in cleanupCookies
-            //cookie.setMaxAge(session.getMaxInactiveInterval());
-            cookie.setMaxAge(-1);
-            cookie.setSecure(true);
-            res.addCookie(cookie);
-
-            // Make sure a test cookie is created for the new session if needed
-            createTestCookie(req, res);
-        }
 
         LOG.debug("===> Redirecting to secure SSL URL with session (Id: " + session.getId() + ")");
         String redirect_uri = SessionHelper.encodeURL("https", AbstractPustefixRequestHandler.getServerName(req), req, context.getServletManagerConfig().getProperties());
@@ -568,82 +435,7 @@ public class URLRewriteSessionStrategy implements SessionTrackingStrategy {
             context.getSessionAdmin().registerSession(session, AbstractPustefixRequestHandler.getServerName(req), req.getRemoteAddr());
         }
     }
-    
-    private void cleanupCookies(HttpServletRequest req, HttpServletResponse res, Cookie cookie) {
-        HttpSession session = req.getSession(false);
-        assert (session != null) : "session can't be null here...";
-
-        Long timeout = System.currentTimeMillis() - (1000 * session.getMaxInactiveInterval());
-        assert (timeout > 0) : "timeout can't be negative...";
-
-        Cookie[] cookies = CookieUtils.getCookies(req);
-        if (cookies != null && cookies.length > 0) {
-            TreeSet<SortableCookie> cset = new TreeSet<SortableCookie>();
-            for (int i = 0; i < cookies.length; i++) {
-                Cookie tmp = cookies[i];
-                boolean secCookie=tmp.getName().startsWith(SECURE_SESS_COOKIE);
-                boolean oldSecCookie=secCookie?false:tmp.getName().startsWith(SECURE_SESS_COOKIE_OLD);
-                if ( (secCookie || oldSecCookie)  && (cookie == null || !tmp.getName().equals(cookie.getName()))) {
-                    String value = tmp.getValue();
-                    int sepIndex = -1;
-                    if(secCookie) sepIndex = value.indexOf(COOKIE_VALUE_SEPARATOR);
-                    else {
-                        sepIndex = value.indexOf(COOKIE_VALUE_SEPARATOR_OLD);
-                        if(sepIndex == -1) {
-                            //Value doesn't contain old separator, possibly it's an old cookie
-                            //with a truncated value (due to changed Tomcat cookie parsing behaviour)
-                            sepIndex = value.length();
-                        }
-                    }
-                    String stamp = value.substring(0, sepIndex);
-                    try {
-                        long lasttouch = Long.parseLong(stamp);
-                        cset.add(new SortableCookie(tmp, lasttouch));
-                        LOG.debug("~~~ Adding cookie " + lasttouch + "->" + tmp.getName());
-                    } catch (NumberFormatException e) {
-                        setCookiePath(req, tmp);
-                        tmp.setMaxAge(0);
-                        tmp.setSecure(true);
-                        res.addCookie(tmp);
-                    }
-                }
-            }
-            int count = 0;
-            int length = cset.size();
-            for (Iterator<SortableCookie> iter = cset.iterator(); iter.hasNext(); count++) {
-                SortableCookie current = iter.next();
-                Cookie curr_cookie = current.cookie;
-                long curr_lasttouch = current.lasttouch;
-
-                LOG.debug("--- Checking cookie " + count + "->" + curr_lasttouch + "->" + curr_cookie.getName());
-
-                if (count <= (length - MAX_PARALLEL_SEC_SESSIONS)) {
-                    LOG.debug("   -> removing cookie because number of secure session cookies too high");
-                    curr_cookie.setMaxAge(0);
-                    curr_cookie.setSecure(true);
-                    setCookiePath(req, curr_cookie);
-                    res.addCookie(curr_cookie);
-                } else if (curr_lasttouch < timeout) {
-                    // FIXME We shoudln't need to check for "old" cookies here, because the
-                    // lifetime of a cookie should ideally be set to the max. inactive time of the
-                    // session, so the browser would stop sending old cookies by itself. But I'm not
-                    // entirely sure if we can really depend on having the time set right on all
-                    // clients... What happens if the client clock is set half an hour too early?
-                    // Will the browser stop sending the cookie half an hour before the session is
-                    // really invalidated? As we need the timestamp info anyway to sort the cookies,
-                    // we can also do the timeout removing here.
-                    LOG.debug("   -> removing cookie because timestamp too old");
-                    curr_cookie.setMaxAge(0);
-                    curr_cookie.setSecure(true);
-                    setCookiePath(req, curr_cookie);
-                    res.addCookie(curr_cookie);
-                } else {
-                    break;
-                }
-            }
-        }
-    }
-    
+        
     private void forceRedirectBackToInsecureSSL(PfixServletRequest preq, HttpServletRequest req, HttpServletResponse res) {
         // When we come here, we KNOW that there's a secure SSL session already running, so this session here is
         // only used for the jump to SSL so we can get the cookie to check the identity of the caller.
@@ -654,15 +446,6 @@ public class URLRewriteSessionStrategy implements SessionTrackingStrategy {
         LOG.debug("*** Setting INSECURE flag in session (Id: " + session.getId() + ")");
         session.setAttribute(SessionAdmin.SESSION_IS_SECURE, Boolean.FALSE);
         session.setAttribute(STORED_REQUEST, preq);
-
-        HttpSession child = context.getSessionAdmin().getChildSessionForParentId(parentid);
-        String testrand = (String) child.getAttribute(RAND_SESS_COOKIE_VALUE);
-        if (testrand == null || testrand.equals("")) {
-            // Make sure a test cookie is created
-            createTestCookie(req, res);
-        } else {
-            session.setAttribute(RAND_SESS_COOKIE_VALUE, testrand);
-        }
 
         LOG.debug("===> Redirecting to SSL URL with session (Id: " + session.getId() + ")");
         String redirect_uri = SessionHelper.encodeURL("https", AbstractPustefixRequestHandler.getServerName(req), req, context.getServletManagerConfig().getProperties());
@@ -679,14 +462,6 @@ public class URLRewriteSessionStrategy implements SessionTrackingStrategy {
         String curr_visit_id = (String) child.getAttribute(VISIT_ID);
         HttpSession session = req.getSession(true);
 
-        String testrand = (String) child.getAttribute(RAND_SESS_COOKIE_VALUE);
-        if (testrand == null || testrand.equals("")) {
-            // Make sure a test cookie is created
-            createTestCookie(req, res);
-        } else {
-            session.setAttribute(RAND_SESS_COOKIE_VALUE, testrand);
-        }
-
         LinkedList<TrailElement> traillog = context.getSessionAdmin().getInfo(child).getTraillog();
         session.setAttribute(SessionHelper.SESSION_ID_URL, SessionHelper.getURLSessionId(req));
         session.setAttribute(VISIT_ID, curr_visit_id);
@@ -697,65 +472,17 @@ public class URLRewriteSessionStrategy implements SessionTrackingStrategy {
         AbstractPustefixRequestHandler.relocate(res, redirect_uri);
     }
     
-    private boolean createTestCookie(HttpServletRequest req, HttpServletResponse res) {
-        HttpSession sess = req.getSession(false);
-        String rand = null;
-        if (sess != null) {
-            rand = (String) sess.getAttribute(RAND_SESS_COOKIE_VALUE);
-            if (rand != null) {
-                LOG.debug("*** Already found a test cookie value in session: " + rand);
-            } else {
-                rand = Long.toHexString((long) (Math.random() * Long.MAX_VALUE));
-                LOG.debug("*** Creating a random test cookie value: " + rand);
-            }
-            Cookie newprobe = new Cookie(TEST_COOKIE, rand);
-            setCookiePath(req, newprobe);
-            res.addCookie(newprobe);
-            sess.setAttribute(RAND_SESS_COOKIE_VALUE, rand);
-            return true;
-        }
-        return false;
+    protected void relocate(HttpServletResponse res, String reloc_url) {
+        relocate(res, HttpServletResponse.SC_MOVED_TEMPORARILY, reloc_url);
     }
 
-    
-    private Cookie getSecureSessionCookie(HttpServletRequest req, String sessionid) {
-        Cookie[] cookies = CookieUtils.getCookies(req);
-        Cookie tmp;
-        if (cookies != null) {
-            for (int i = 0; i < cookies.length; i++) {
-                tmp = cookies[i];
-                if (tmp.getName().equals(SECURE_SESS_COOKIE + MD5Utils.hex_md5(sessionid))) return tmp;
-            }
-        }
-        return null;
-    }
- 
-    private void setCookiePath(HttpServletRequest req, Cookie cookie) {
-        if (req.getContextPath().length() > 0) {
-            cookie.setPath(req.getContextPath());
-        } else {
-            cookie.setPath("/");
-        }
-    }
-    
-    private class SortableCookie implements Comparable<SortableCookie> {
-        public final Cookie cookie;
-        public final long   lasttouch;
-
-        public final int compareTo(final SortableCookie in) {
-            if (in.lasttouch > lasttouch) return -1;
-            if (in.lasttouch < lasttouch)
-                return 1;
-            else
-                return 0;
-        }
-
-        public SortableCookie(Cookie cookie, long lasttouch) {
-            this.cookie = cookie;
-            this.lasttouch = lasttouch;
-            assert (cookie != null) : "cookie argument must not be null";
-            assert (lasttouch > 0) : "lasttouch argument must be > 0";
-        }
+    protected void relocate(HttpServletResponse res, int type, String reloc_url) {
+        LOG.debug("\n\n        ======> relocating to " + reloc_url + "\n");
+        res.setHeader("Expires", "Mon, 26 Jul 1997 05:00:00 GMT");
+        res.setHeader("Pragma", "no-cache");
+        res.setHeader("Cache-Control", "no-cache, no-store, private, must-revalidate");
+        res.setStatus(type);
+        res.setHeader("Location", reloc_url);
     }
     
 }

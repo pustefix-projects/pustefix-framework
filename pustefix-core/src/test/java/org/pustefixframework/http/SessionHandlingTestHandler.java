@@ -1,6 +1,7 @@
 package org.pustefixframework.http;
 
 import java.io.PrintWriter;
+import java.util.Properties;
 
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletResponse;
@@ -12,7 +13,18 @@ import de.schlund.pfixxml.PfixServletRequest;
 
 public class SessionHandlingTestHandler extends AbstractPustefixRequestHandler {
 
-    ServletManagerConfig config = new SessionHandlingTestHandlerConfig();
+    Properties properties;
+    ServletManagerConfig config;
+    
+    public SessionHandlingTestHandler(Properties properties) {
+        this.properties = properties;
+    }
+    
+    @Override
+    public void init() throws ServletException {
+        config = new SessionHandlingTestHandlerConfig(properties);
+        super.init();
+    }
     
     @Override
     public ServletManagerConfig getServletManagerConfig() {

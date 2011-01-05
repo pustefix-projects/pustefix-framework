@@ -1,6 +1,7 @@
 package org.pustefixframework.http;
 
 import java.io.IOException;
+import java.util.Properties;
 
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
@@ -15,9 +16,26 @@ public class SessionHandlingTestServlet extends HttpServlet {
 
     private SessionHandlingTestHandler handler;
     
+    private Class<? extends SessionTrackingStrategy> sessionTrackingStrategy;
+    private boolean defaultSessionTracking;
+    private Properties properties;
+    
+    public SessionHandlingTestServlet(Class<? extends SessionTrackingStrategy> sessionTrackingStrategy, boolean defaultSessionTracking, Properties properties) {
+        this.defaultSessionTracking = defaultSessionTracking;
+        this.properties = properties;
+        this.sessionTrackingStrategy = sessionTrackingStrategy;
+    }
+    
     @Override
     public void init() throws ServletException {
-        handler = new SessionHandlingTestHandler();
+        handler = new SessionHandlingTestHandler(properties);
+        SessionTrackingStrategy strategy;
+        try {
+            strategy = sessionTrackingStrategy.newInstance();
+        } catch (Exception x) {
+            throw new ServletException("Can't instantiate SessionTrackingStrategy", x);
+        }
+        strategy.init(handler);
         handler.setServletContext(getServletContext());
         try {
             handler.init();

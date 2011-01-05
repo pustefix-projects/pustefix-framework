@@ -321,8 +321,9 @@ public abstract class AbstractPustefixXMLRequestHandler extends AbstractPustefix
         
         if (session != null) {
             params.put(XSLPARAM_SESSION_ID, session.getId());
-            if(!preq.getRequest().isRequestedSessionIdFromCookie())
+            if(sessionTrackingStrategy instanceof URLRewriteSessionStrategy) {
                 params.put(XSLPARAM_SESSION_ID_PATH, ";jsessionid=" + session.getId());
+            }
             if (doreuse) {
                 synchronized (session) {
                     // Make sure redirect is only done once
