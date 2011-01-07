@@ -40,7 +40,7 @@ public class AbstractSessionHandlingTest extends TestCase {
             logger.addAppender(appender);
             
             logger = Logger.getLogger("org.pustefixframework");
-            logger.setLevel((Level)Level.WARN);
+            logger.setLevel((Level)Level.DEBUG);
             logger.addAppender(appender);
             
             //Start embedded Jetty

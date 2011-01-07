@@ -35,7 +35,7 @@ public class SessionHandlingTestServlet extends HttpServlet {
         } catch (Exception x) {
             throw new ServletException("Can't instantiate SessionTrackingStrategy", x);
         }
-        strategy.init(handler);
+        handler.setSessionTrackingStrategy(strategy);
         handler.setServletContext(getServletContext());
         try {
             handler.init();

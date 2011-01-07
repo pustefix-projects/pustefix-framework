@@ -37,7 +37,7 @@ public class URLSessionHandlingTest extends AbstractSessionHandlingTest {
         method.getParams().setCookiePolicy(CookiePolicy.BROWSER_COMPATIBILITY);
             
         int statusCode = client.executeMethod(method);
-        
+        printDump(method);
         assertEquals(HttpStatus.SC_MOVED_TEMPORARILY, statusCode);
         String location = method.getResponseHeader("Location").getValue();
         String session = getSession(location);
@@ -50,7 +50,7 @@ public class URLSessionHandlingTest extends AbstractSessionHandlingTest {
         method.getParams().setCookiePolicy(CookiePolicy.BROWSER_COMPATIBILITY);
         
         statusCode = client.executeMethod(method);
-        
+        printDump(method);
         assertEquals(HttpStatus.SC_OK, statusCode);
         assertTrue(method.getResponseBodyAsString().contains("<body>test</body>"));
         assertEquals(1, getCount(method.getResponseBodyAsString()));
@@ -69,7 +69,7 @@ public class URLSessionHandlingTest extends AbstractSessionHandlingTest {
         method.getParams().setCookiePolicy(CookiePolicy.BROWSER_COMPATIBILITY);
             
         int statusCode = client.executeMethod(method);
-        
+        printDump(method);
         assertEquals(HttpStatus.SC_MOVED_TEMPORARILY, statusCode);
         String location = method.getResponseHeader("Location").getValue();
         String session = getSession(location);
@@ -82,7 +82,7 @@ public class URLSessionHandlingTest extends AbstractSessionHandlingTest {
         method.getParams().setCookiePolicy(CookiePolicy.BROWSER_COMPATIBILITY);
         
         statusCode = client.executeMethod(method);
-        
+        printDump(method);
         assertEquals(HttpStatus.SC_MOVED_TEMPORARILY, statusCode);
         location = method.getResponseHeader("Location").getValue();
         String newSession = getSession(location);
@@ -96,7 +96,7 @@ public class URLSessionHandlingTest extends AbstractSessionHandlingTest {
         method.getParams().setCookiePolicy(CookiePolicy.BROWSER_COMPATIBILITY);
         
         statusCode = client.executeMethod(method);
-        
+        printDump(method);
         assertEquals(HttpStatus.SC_OK, statusCode);
         assertTrue(method.getResponseBodyAsString().contains("<body>test</body>"));
         assertEquals(1, getCount(method.getResponseBodyAsString()));

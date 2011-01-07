@@ -164,8 +164,7 @@ public abstract class AbstractPustefixRequestHandler implements SessionStrategyC
         
         initServletEncoding();
         
-        //sessionTrackingStrategy = new URLRewriteSessionStrategy();
-        sessionTrackingStrategy = new CookieSessionStrategy();
+        if(sessionTrackingStrategy == null) sessionTrackingStrategy = new NewCookieSessionStrategy();
         sessionTrackingStrategy.init(this);
     }
 
