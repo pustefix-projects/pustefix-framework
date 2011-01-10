@@ -145,6 +145,14 @@
     <xsd:sequence>
       <xsd:element name="docroot-path" type="xsd:string" minOccurs="0"/>
       <xsd:element name="default-path" type="xsd:string" minOccurs="0"/>
+      <xsd:element name="session-tracking-strategy">
+        <xsd:simpleType>
+          <xsd:restriction base="xsd:string">
+            <xsd:enumeration value="COOKIE"/>
+            <xsd:enumeration value="URL"/>
+          </xsd:restriction>
+        </xsd:simpleType>
+      </xsd:element>
       <xsd:element name="context-xml-service">
         <xsd:complexType>
         <xsd:sequence>

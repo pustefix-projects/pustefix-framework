@@ -21,6 +21,8 @@ import java.util.Properties;
 
 import org.pustefixframework.config.Constants;
 import org.pustefixframework.config.contextxmlservice.ServletManagerConfig;
+import org.pustefixframework.config.generic.ParsingUtils;
+import org.pustefixframework.config.project.ApplicationInfo;
 import org.pustefixframework.http.dereferer.DerefRequestHandler;
 import org.springframework.beans.factory.config.BeanDefinition;
 import org.springframework.beans.factory.config.BeanDefinitionHolder;
@@ -60,6 +62,7 @@ public class DerefRequestHandlerParsingHandler implements ParsingHandler {
                 }
                 
             };
+            ApplicationInfo appInfo = ParsingUtils.getSingleTopObject(ApplicationInfo.class, context);
             
             beanBuilder = BeanDefinitionBuilder.genericBeanDefinition(DerefRequestHandler.class);
             beanBuilder.setScope("singleton");
@@ -69,6 +72,7 @@ public class DerefRequestHandlerParsingHandler implements ParsingHandler {
             beanBuilder.addPropertyValue("mustSign", true);
             beanBuilder.addPropertyValue("configuration", config);
             beanBuilder.addPropertyValue("sessionAdmin", new RuntimeBeanReference(SessionAdmin.class.getName()));
+            beanBuilder.addPropertyValue("sessionTrackingStrategy", appInfo.getSessionTrackingStrategy());
             BeanDefinition beanDefinition = beanBuilder.getBeanDefinition();
             BeanDefinitionHolder beanHolder = new BeanDefinitionHolder(beanDefinition, DerefRequestHandler.class.getName());
             context.getObjectTreeElement().addObject(beanHolder);

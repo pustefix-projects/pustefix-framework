@@ -34,6 +34,7 @@ import org.pustefixframework.config.customization.CustomizationInfo;
 import org.pustefixframework.config.directoutputservice.DirectOutputPageRequestConfig;
 import org.pustefixframework.config.directoutputservice.DirectOutputServiceConfig;
 import org.pustefixframework.config.generic.ParsingUtils;
+import org.pustefixframework.config.project.ApplicationInfo;
 import org.pustefixframework.http.PustefixContextDirectOutputRequestHandler;
 import org.springframework.beans.factory.config.BeanDefinition;
 import org.springframework.beans.factory.config.MapFactoryBean;
@@ -116,6 +117,7 @@ public class PustefixContextDirectOutputRequestHandlerParsingHandler extends Cus
         for (DirectOutputPageRequestConfig pConfig : config.getPageRequests()) {
             stateMap.put(pConfig.getPageName(), new RuntimeBeanReference(pConfig.getBeanName()));
         }
+        ApplicationInfo appInfo = ParsingUtils.getSingleTopObject(ApplicationInfo.class, context);
         
         BeanNameGenerator nameGenerator = new DefaultBeanNameGenerator();
         BeanDefinitionBuilder beanBuilder;
@@ -139,6 +141,7 @@ public class PustefixContextDirectOutputRequestHandlerParsingHandler extends Cus
         beanBuilder.addPropertyValue("stateMap", new RuntimeBeanReference(mapBeanName));
         beanBuilder.addPropertyValue("configuration", config);
         beanBuilder.addPropertyValue("sessionAdmin", new RuntimeBeanReference(SessionAdmin.class.getName()));
+        beanBuilder.addPropertyValue("sessionTrackingStrategy", appInfo.getSessionTrackingStrategy());
         beanDefinition = beanBuilder.getBeanDefinition();
         registry.registerBeanDefinition(nameGenerator.generateBeanName(beanDefinition, registry), beanDefinition);
     }
