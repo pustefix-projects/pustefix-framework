@@ -19,7 +19,7 @@ import org.mortbay.jetty.servlet.ServletHolder;
 
 import junit.framework.TestCase;
 
-public class AbstractSessionHandlingTest extends TestCase {
+public abstract class AbstractSessionHandlingTest extends TestCase {
 
     protected static Pattern PATTERN_URL = Pattern.compile("(https?)://(([^:]*)(:(\\d+))?)(/[^;?]*)?/?(;jsessionid=([^?]+))?(\\?.*)?");
     protected static Pattern PATTERN_COUNT = Pattern.compile(".*<!--(\\d+)-->.*");
@@ -40,7 +40,7 @@ public class AbstractSessionHandlingTest extends TestCase {
             logger.addAppender(appender);
             
             logger = Logger.getLogger("org.pustefixframework");
-            logger.setLevel((Level)Level.DEBUG);
+            logger.setLevel((Level)Level.WARN);
             logger.addAppender(appender);
             
             //Start embedded Jetty

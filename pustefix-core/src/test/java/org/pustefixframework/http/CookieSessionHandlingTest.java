@@ -3,6 +3,7 @@ package org.pustefixframework.http;
 import java.io.IOException;
 import java.util.regex.Matcher;
 
+import org.apache.commons.httpclient.Cookie;
 import org.apache.commons.httpclient.Header;
 import org.apache.commons.httpclient.HttpClient;
 import org.apache.commons.httpclient.HttpMethod;
@@ -179,8 +180,8 @@ public class CookieSessionHandlingTest extends AbstractSessionHandlingTest {
         printDump(method);
         assertEquals(HttpStatus.SC_MOVED_TEMPORARILY, statusCode);
         String location = method.getResponseHeader("Location").getValue();
-        String noSession = getSession(location);
-        assertNull(noSession);
+        String insecureSession = getSession(location);
+        assertNotNull(insecureSession);
         assertEquals("https", getProtocol(location));
         assertEquals(HTTPS_PORT, getPort(location));
                    
@@ -206,7 +207,7 @@ public class CookieSessionHandlingTest extends AbstractSessionHandlingTest {
         printDump(method);
         assertEquals(HttpStatus.SC_MOVED_TEMPORARILY, statusCode);
         location = method.getResponseHeader("Location").getValue();
-        noSession = getSession(location);
+        String noSession = getSession(location);
         assertNull(noSession);
         assertEquals("https", getProtocol(location));
         assertEquals(HTTPS_PORT, getPort(location));
@@ -217,7 +218,7 @@ public class CookieSessionHandlingTest extends AbstractSessionHandlingTest {
         method.getParams().setCookiePolicy(CookiePolicy.BROWSER_COMPATIBILITY);
             
         statusCode = client.executeMethod(method);
-        
+        printDump(method);
         assertEquals(HttpStatus.SC_OK, statusCode);
         assertTrue(method.getResponseBodyAsString().contains("<body>test</body>"));
         assertEquals(1, getCount(method.getResponseBodyAsString()));
@@ -276,7 +277,7 @@ public class CookieSessionHandlingTest extends AbstractSessionHandlingTest {
         method.getParams().setCookiePolicy(CookiePolicy.BROWSER_COMPATIBILITY);
             
         int statusCode = client.executeMethod(method);
-        
+        printDump(method);
         assertEquals(HttpStatus.SC_MOVED_PERMANENTLY, statusCode);
         String location = method.getResponseHeader("Location").getValue();
         String session = getSession(location);
@@ -289,7 +290,7 @@ public class CookieSessionHandlingTest extends AbstractSessionHandlingTest {
         method.getParams().setCookiePolicy(CookiePolicy.BROWSER_COMPATIBILITY);
             
         statusCode = client.executeMethod(method);
-        
+        printDump(method);
         assertEquals(HttpStatus.SC_MOVED_TEMPORARILY, statusCode);
         location = method.getResponseHeader("Location").getValue();
         session = getSession(location);
@@ -300,13 +301,74 @@ public class CookieSessionHandlingTest extends AbstractSessionHandlingTest {
         method = new GetMethod(location);
         method.setFollowRedirects(false);
         method.getParams().setCookiePolicy(CookiePolicy.BROWSER_COMPATIBILITY);
+        
+        statusCode = client.executeMethod(method);
+        printDump(method);
+        assertEquals(HttpStatus.SC_MOVED_TEMPORARILY, statusCode);
+        location = method.getResponseHeader("Location").getValue();
+        String noSession = getSession(location);
+        assertNull(noSession);
+        assertEquals("http", getProtocol(location));
+        assertEquals(HTTP_PORT, getPort(location));
+        
+        method = new GetMethod(location);
+        method.setFollowRedirects(false);
+        method.getParams().setCookiePolicy(CookiePolicy.BROWSER_COMPATIBILITY);
             
         statusCode = client.executeMethod(method);
-        
+        printDump(method);
         assertEquals(HttpStatus.SC_OK, statusCode);
         assertTrue(method.getResponseBodyAsString().contains("<body>test</body>"));
         assertEquals(1, getCount(method.getResponseBodyAsString()));
+        assertEquals(session, getSessionFromRequestCookie(method));
 
+    }
+    
+    public void testInvalidSessionCookieHttp() throws Exception {
+        
+        HttpClient client = new HttpClient();
+
+        Cookie cookie = new Cookie("localhost", "JSESSIONID", "xyz");
+        cookie.setPath("/");
+        client.getState().addCookie(cookie);
+        
+        HttpMethod method = new GetMethod("http://localhost:"+HTTP_PORT+"/?nossl&foo=bar");
+        method.setFollowRedirects(false);
+        method.getParams().setCookiePolicy(CookiePolicy.BROWSER_COMPATIBILITY);
+        
+        int statusCode = client.executeMethod(method);
+        printDump(method);
+        assertEquals(HttpStatus.SC_MOVED_TEMPORARILY, statusCode);
+        String location = method.getResponseHeader("Location").getValue();
+        String session = getSession(location);
+        assertNotNull(session);
+        assertEquals("http", getProtocol(location));
+        assertEquals(HTTP_PORT, getPort(location));
+                   
+        method = new GetMethod(location);
+        method.setFollowRedirects(false);
+        method.getParams().setCookiePolicy(CookiePolicy.BROWSER_COMPATIBILITY);
+            
+        statusCode = client.executeMethod(method);
+        printDump(method);
+        assertEquals(HttpStatus.SC_MOVED_TEMPORARILY, statusCode);
+        location = method.getResponseHeader("Location").getValue();
+        String noSession = getSession(location);
+        assertNull(noSession);
+        assertEquals("http", getProtocol(location));
+        assertEquals(HTTP_PORT, getPort(location));
+        
+        method = new GetMethod(location);
+        method.setFollowRedirects(false);
+        method.getParams().setCookiePolicy(CookiePolicy.BROWSER_COMPATIBILITY);
+            
+        statusCode = client.executeMethod(method);
+        printDump(method);
+        assertEquals(HttpStatus.SC_OK, statusCode);
+        assertTrue(method.getResponseBodyAsString().contains("<body>test</body>"));
+        assertEquals(1, getCount(method.getResponseBodyAsString()));
+        assertEquals(session, getSessionFromRequestCookie(method));
+        
     }
     
     public void testInvalidSessionHttps() throws Exception {
@@ -318,7 +380,7 @@ public class CookieSessionHandlingTest extends AbstractSessionHandlingTest {
         method.getParams().setCookiePolicy(CookiePolicy.BROWSER_COMPATIBILITY);
             
         int statusCode = client.executeMethod(method);
-        
+        printDump(method);
         assertEquals(HttpStatus.SC_MOVED_PERMANENTLY, statusCode);
         String location = method.getResponseHeader("Location").getValue();
         String session = getSession(location);
@@ -331,7 +393,7 @@ public class CookieSessionHandlingTest extends AbstractSessionHandlingTest {
         method.getParams().setCookiePolicy(CookiePolicy.BROWSER_COMPATIBILITY);
             
         statusCode = client.executeMethod(method);
-        
+        printDump(method);
         assertEquals(HttpStatus.SC_MOVED_TEMPORARILY, statusCode);
         location = method.getResponseHeader("Location").getValue();
         session = getSession(location);
@@ -344,25 +406,73 @@ public class CookieSessionHandlingTest extends AbstractSessionHandlingTest {
         method.getParams().setCookiePolicy(CookiePolicy.BROWSER_COMPATIBILITY);
             
         statusCode = client.executeMethod(method);
-        
+        printDump(method);
         assertEquals(HttpStatus.SC_MOVED_TEMPORARILY, statusCode);
         location = method.getResponseHeader("Location").getValue();
-        String newSession = getSession(location);
-        assertNotNull(newSession);
-        assertFalse(session.equals(newSession));
+        String noSession = getSession(location);
+        assertNull(noSession);
         assertEquals("https", getProtocol(location));
         assertEquals(HTTPS_PORT, getPort(location));
         
         method = new GetMethod(location);
         method.setFollowRedirects(false);
         method.getParams().setCookiePolicy(CookiePolicy.BROWSER_COMPATIBILITY);
-            
-        statusCode = client.executeMethod(method);
         
+        statusCode = client.executeMethod(method);
+        printDump(method);
         assertEquals(HttpStatus.SC_OK, statusCode);
         assertTrue(method.getResponseBodyAsString().contains("<body>test</body>"));
         assertEquals(1, getCount(method.getResponseBodyAsString()));
+        assertEquals(session, getSessionFromRequestCookie(method));
+        
+    }
+    
+    public void testInvalidSessionCookieHttps() throws Exception {
+        
+        HttpClient client = new HttpClient();
 
+        Cookie cookie = new Cookie("localhost", "JSESSIONID", "xyz");
+        cookie.setPath("/");
+        client.getState().addCookie(cookie);
+        
+        HttpMethod method = new GetMethod("https://localhost:"+HTTPS_PORT+"/?foo=bar");
+        method.setFollowRedirects(false);
+        method.getParams().setCookiePolicy(CookiePolicy.BROWSER_COMPATIBILITY);
+            
+        int statusCode = client.executeMethod(method);
+        printDump(method);
+        assertEquals(HttpStatus.SC_MOVED_TEMPORARILY, statusCode);
+        String location = method.getResponseHeader("Location").getValue();
+        String session = getSession(location);
+        assertNotNull(session);
+        assertEquals(getSessionFromResponseCookie(method), session);
+        assertEquals("https", getProtocol(location));
+        assertEquals(HTTPS_PORT, getPort(location));
+                   
+        method = new GetMethod(location);
+        method.setFollowRedirects(false);
+        method.getParams().setCookiePolicy(CookiePolicy.BROWSER_COMPATIBILITY);
+            
+        statusCode = client.executeMethod(method);
+        printDump(method);
+        assertEquals(HttpStatus.SC_MOVED_TEMPORARILY, statusCode);
+        location = method.getResponseHeader("Location").getValue();
+        assertNull(getSession(location));
+        assertEquals(session, getSessionFromRequestCookie(method));
+        assertEquals("https", getProtocol(location));
+        assertEquals(HTTPS_PORT, getPort(location));
+        
+        method = new GetMethod(location);
+        method.setFollowRedirects(false);
+        method.getParams().setCookiePolicy(CookiePolicy.BROWSER_COMPATIBILITY);
+        
+        statusCode = client.executeMethod(method);
+        printDump(method);
+        assertEquals(HttpStatus.SC_OK, statusCode);
+        assertTrue(method.getResponseBodyAsString().contains("<body>test</body>"));
+        assertEquals(1, getCount(method.getResponseBodyAsString()));
+        assertEquals(session, getSessionFromRequestCookie(method));
+        
     }
     
     public void testInvalidSessionHttpNoCookie() throws Exception {
@@ -374,7 +484,7 @@ public class CookieSessionHandlingTest extends AbstractSessionHandlingTest {
         method.getParams().setCookiePolicy(CookiePolicy.IGNORE_COOKIES);
             
         int statusCode = client.executeMethod(method);
-        
+        printDump(method);
         assertEquals(HttpStatus.SC_MOVED_PERMANENTLY, statusCode);
         String location = method.getResponseHeader("Location").getValue();
         String session = getSession(location);
@@ -387,7 +497,7 @@ public class CookieSessionHandlingTest extends AbstractSessionHandlingTest {
         method.getParams().setCookiePolicy(CookiePolicy.IGNORE_COOKIES);
             
         statusCode = client.executeMethod(method);
-        
+        printDump(method);
         assertEquals(HttpStatus.SC_MOVED_TEMPORARILY, statusCode);
         location = method.getResponseHeader("Location").getValue();
         session = getSession(location);
@@ -400,7 +510,7 @@ public class CookieSessionHandlingTest extends AbstractSessionHandlingTest {
         method.getParams().setCookiePolicy(CookiePolicy.IGNORE_COOKIES);
             
         statusCode = client.executeMethod(method);
-        
+        printDump(method);
         assertEquals(HttpStatus.SC_OK, statusCode);
         assertTrue(method.getResponseBodyAsString().contains("<body>test</body>"));
         assertEquals(1, getCount(method.getResponseBodyAsString()));
@@ -416,7 +526,7 @@ public class CookieSessionHandlingTest extends AbstractSessionHandlingTest {
         method.getParams().setCookiePolicy(CookiePolicy.IGNORE_COOKIES);
             
         int statusCode = client.executeMethod(method);
-
+        printDump(method);
         assertEquals(HttpStatus.SC_MOVED_PERMANENTLY, statusCode);
         String location = method.getResponseHeader("Location").getValue();
         String session = getSession(location);
@@ -429,7 +539,7 @@ public class CookieSessionHandlingTest extends AbstractSessionHandlingTest {
         method.getParams().setCookiePolicy(CookiePolicy.IGNORE_COOKIES);
             
         statusCode = client.executeMethod(method);
-        
+        printDump(method);
         assertEquals(HttpStatus.SC_MOVED_TEMPORARILY, statusCode);
         location = method.getResponseHeader("Location").getValue();
         session = getSession(location);
@@ -442,21 +552,7 @@ public class CookieSessionHandlingTest extends AbstractSessionHandlingTest {
         method.getParams().setCookiePolicy(CookiePolicy.IGNORE_COOKIES);
             
         statusCode = client.executeMethod(method);
-        
-        assertEquals(HttpStatus.SC_MOVED_TEMPORARILY, statusCode);
-        location = method.getResponseHeader("Location").getValue();
-        String newSession = getSession(location);
-        assertNotNull(newSession);
-        assertFalse(session.equals(newSession));
-        assertEquals("https", getProtocol(location));
-        assertEquals(HTTPS_PORT, getPort(location));
-        
-        method = new GetMethod(location);
-        method.setFollowRedirects(false);
-        method.getParams().setCookiePolicy(CookiePolicy.IGNORE_COOKIES);
-            
-        statusCode = client.executeMethod(method);
-        
+        printDump(method);
         assertEquals(HttpStatus.SC_OK, statusCode);
         assertTrue(method.getResponseBodyAsString().contains("<body>test</body>"));
         assertEquals(1, getCount(method.getResponseBodyAsString()));
@@ -472,11 +568,10 @@ public class CookieSessionHandlingTest extends AbstractSessionHandlingTest {
         method.getParams().setCookiePolicy(CookiePolicy.BROWSER_COMPATIBILITY);
             
         int statusCode = client.executeMethod(method);
-        
+        printDump(method);
         assertEquals(HttpStatus.SC_MOVED_PERMANENTLY, statusCode);
         String location = method.getResponseHeader("Location").getValue();
-        String session = getSession(location);
-        assertNull(session);
+        assertNull(getSession(location));
         assertEquals("http", getProtocol(location));
         assertEquals(HTTP_PORT, getPort(location));
                    
@@ -485,11 +580,11 @@ public class CookieSessionHandlingTest extends AbstractSessionHandlingTest {
         method.getParams().setCookiePolicy(CookiePolicy.BROWSER_COMPATIBILITY);
             
         statusCode = client.executeMethod(method);
-        
+        printDump(method);
         assertEquals(HttpStatus.SC_MOVED_TEMPORARILY, statusCode);
         location = method.getResponseHeader("Location").getValue();
-        session = getSession(location);
-        assertNotNull(session);
+        String oldSession = getSession(location);
+        assertNotNull(oldSession);
         assertEquals("https", getProtocol(location));
         assertEquals(HTTPS_PORT, getPort(location));
                    
@@ -498,25 +593,38 @@ public class CookieSessionHandlingTest extends AbstractSessionHandlingTest {
         method.getParams().setCookiePolicy(CookiePolicy.BROWSER_COMPATIBILITY);
             
         statusCode = client.executeMethod(method);
-        
+        printDump(method);
         assertEquals(HttpStatus.SC_MOVED_TEMPORARILY, statusCode);
         location = method.getResponseHeader("Location").getValue();
-        String newSession = getSession(location);
-        assertNotNull(newSession);
+        String session = getSession(location);
+        assertNotNull(session);
         assertEquals("https", getProtocol(location));
         assertEquals(HTTPS_PORT, getPort(location));
-        assertFalse(session.equals(newSession));
+        assertFalse(oldSession.equals(session));
             
         method = new GetMethod(location);
         method.setFollowRedirects(false);
         method.getParams().setCookiePolicy(CookiePolicy.BROWSER_COMPATIBILITY);
             
         statusCode = client.executeMethod(method);
+        printDump(method);
+        assertEquals(HttpStatus.SC_MOVED_TEMPORARILY, statusCode);
+        location = method.getResponseHeader("Location").getValue();
+        assertNull(getSession(location));
+        assertEquals("https", getProtocol(location));
+        assertEquals(HTTPS_PORT, getPort(location));
+        assertEquals(session, getSessionFromRequestCookie(method));
+            
+        method = new GetMethod(location);
+        method.setFollowRedirects(false);
+        method.getParams().setCookiePolicy(CookiePolicy.BROWSER_COMPATIBILITY);
         
+        statusCode = client.executeMethod(method);
+        printDump(method);
         assertEquals(HttpStatus.SC_OK, statusCode);
         assertTrue(method.getResponseBodyAsString().contains("<body>test</body>"));
         assertEquals(1, getCount(method.getResponseBodyAsString()));
-
+        assertEquals(session, getSessionFromRequestCookie(method));
     }
     
     public void testInvalidSessionHttpToHttpsNoCookies() throws Exception {
@@ -528,7 +636,7 @@ public class CookieSessionHandlingTest extends AbstractSessionHandlingTest {
         method.getParams().setCookiePolicy(CookiePolicy.IGNORE_COOKIES);
             
         int statusCode = client.executeMethod(method);
-        
+        printDump(method);
         assertEquals(HttpStatus.SC_MOVED_PERMANENTLY, statusCode);
         String location = method.getResponseHeader("Location").getValue();
         String session = getSession(location);
@@ -541,7 +649,7 @@ public class CookieSessionHandlingTest extends AbstractSessionHandlingTest {
         method.getParams().setCookiePolicy(CookiePolicy.BROWSER_COMPATIBILITY);
             
         statusCode = client.executeMethod(method);
-            
+        printDump(method);
         assertEquals(HttpStatus.SC_MOVED_TEMPORARILY, statusCode);
         location = method.getResponseHeader("Location").getValue();
         session = getSession(location);
@@ -554,7 +662,7 @@ public class CookieSessionHandlingTest extends AbstractSessionHandlingTest {
         method.getParams().setCookiePolicy(CookiePolicy.IGNORE_COOKIES);
             
         statusCode = client.executeMethod(method);
-            
+        printDump(method);
         assertEquals(HttpStatus.SC_MOVED_TEMPORARILY, statusCode);
         location = method.getResponseHeader("Location").getValue();
         String newSession = getSession(location);
@@ -568,7 +676,7 @@ public class CookieSessionHandlingTest extends AbstractSessionHandlingTest {
         method.getParams().setCookiePolicy(CookiePolicy.IGNORE_COOKIES);
             
         statusCode = client.executeMethod(method);
-            
+        printDump(method);
         assertEquals(HttpStatus.SC_OK, statusCode);
         assertTrue(method.getResponseBodyAsString().contains("<body>test</body>"));
         assertEquals(1, getCount(method.getResponseBodyAsString()));
@@ -689,7 +797,7 @@ public class CookieSessionHandlingTest extends AbstractSessionHandlingTest {
         method.getParams().setCookiePolicy(CookiePolicy.IGNORE_COOKIES);
             
         int statusCode = client.executeMethod(method);
-     
+        printDump(method);
         assertEquals(HttpStatus.SC_MOVED_TEMPORARILY, statusCode);
         String location = method.getResponseHeader("Location").getValue();
         String session = getSession(location);
@@ -702,7 +810,7 @@ public class CookieSessionHandlingTest extends AbstractSessionHandlingTest {
         method.getParams().setCookiePolicy(CookiePolicy.IGNORE_COOKIES);
             
         statusCode = client.executeMethod(method);
-        
+        printDump(method);
         assertEquals(HttpStatus.SC_OK, statusCode);
         assertTrue(method.getResponseBodyAsString().contains("<body>test</body>"));
         assertEquals(1, getCount(method.getResponseBodyAsString()));
@@ -713,7 +821,7 @@ public class CookieSessionHandlingTest extends AbstractSessionHandlingTest {
         method.getParams().setCookiePolicy(CookiePolicy.IGNORE_COOKIES);
             
         statusCode = client.executeMethod(method);
-       
+        printDump(method);
         assertEquals(HttpStatus.SC_MOVED_TEMPORARILY, statusCode);
         location = method.getResponseHeader("Location").getValue();
         String newSession = getSession(location);
@@ -726,7 +834,7 @@ public class CookieSessionHandlingTest extends AbstractSessionHandlingTest {
         method.getParams().setCookiePolicy(CookiePolicy.IGNORE_COOKIES);
             
         statusCode = client.executeMethod(method);
-        
+        printDump(method);
         assertEquals(HttpStatus.SC_MOVED_TEMPORARILY, statusCode);
         location = method.getResponseHeader("Location").getValue();
         newSession = getSession(location);
@@ -739,7 +847,7 @@ public class CookieSessionHandlingTest extends AbstractSessionHandlingTest {
         method.getParams().setCookiePolicy(CookiePolicy.IGNORE_COOKIES);
             
         statusCode = client.executeMethod(method);
-        
+        printDump(method);
         assertEquals(HttpStatus.SC_OK, statusCode);
         assertTrue(method.getResponseBodyAsString().contains("<body>test</body>"));
         assertEquals(2, getCount(method.getResponseBodyAsString()));
@@ -749,7 +857,7 @@ public class CookieSessionHandlingTest extends AbstractSessionHandlingTest {
         method.getParams().setCookiePolicy(CookiePolicy.IGNORE_COOKIES);
             
         statusCode = client.executeMethod(method);
-        
+        printDump(method);
         assertEquals(HttpStatus.SC_MOVED_TEMPORARILY, statusCode);
         location = method.getResponseHeader("Location").getValue();
         newSession = getSession(location);
@@ -762,7 +870,7 @@ public class CookieSessionHandlingTest extends AbstractSessionHandlingTest {
         method.getParams().setCookiePolicy(CookiePolicy.IGNORE_COOKIES);
             
         statusCode = client.executeMethod(method);
-            
+        printDump(method);
         assertEquals(HttpStatus.SC_OK, statusCode);
         newSession = getSession(location);
         assertNotNull(newSession);
