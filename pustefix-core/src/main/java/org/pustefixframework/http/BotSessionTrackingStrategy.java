@@ -21,9 +21,9 @@ import de.schlund.pfixxml.serverutil.SessionHelper;
 import de.schlund.pfixxml.serverutil.SessionInfoStruct.TrailElement;
 import de.schlund.pfixxml.util.CookieUtils;
 
-public class CookieSessionStrategy implements SessionTrackingStrategy {
+public class BotSessionTrackingStrategy implements SessionTrackingStrategy {
 
-    private Logger LOG = Logger.getLogger(CookieSessionStrategy.class);
+    private Logger LOG = Logger.getLogger(BotSessionTrackingStrategy.class);
     
     private static final String          INITIAL_SESSION_CHECK         = "__INITIAL_SESSION_CHECK__";
     private static final String          REFUSE_COOKIES                = "__REFUSE_COOKIES__";
@@ -37,9 +37,9 @@ public class CookieSessionStrategy implements SessionTrackingStrategy {
     
     private boolean                      cookie_security_not_enforced  = false;
     
-    private SessionStrategyContext context;
+    private SessionTrackingStrategyContext context;
     
-    public void init(SessionStrategyContext context) {
+    public void init(SessionTrackingStrategyContext context) {
         this.context = context;
     }
     
@@ -80,7 +80,7 @@ public class CookieSessionStrategy implements SessionTrackingStrategy {
             }
             
             if (!does_cookies && !refuse_cookies) {
-                LOG.debug("*** Client doesn't use cookies... " + does_cookies + " " + refuse_cookies);
+                LOG.debug("*** Client doesn't use cookies...");
                 // We still need to check if the session itself thinks differently -
                 // this happens e.g. when cookies are disabled in the middle of the session.
                 Boolean need_cookies = (Boolean) session.getAttribute(SESSION_COOKIES_MARKER);
@@ -236,9 +236,8 @@ public class CookieSessionStrategy implements SessionTrackingStrategy {
                     if (userAgent == null) userAgent = "-";
                     String cookieHeader = req.getHeader("Cookie");
                     LOG.warn("COOKIE_LOSS_WORKAROUND|" + sessionId + "|" + userAgent + "|" + cookieHeader);
-                    return true;
-                } 
-            } else return true;
+                }
+            }
         }
         return false;
     }
@@ -299,7 +298,7 @@ public class CookieSessionStrategy implements SessionTrackingStrategy {
         
         LOG.debug("===> Redirecting to URL with session (Id: " + session.getId() + ")");
         session.setAttribute(STORED_REQUEST, preq);
-        session.setAttribute(INITIAL_SESSION_CHECK, session.getId());
+        session.setAttribute(INITIAL_SESSION_CHECK, true);
         String redirect_uri = SessionHelper.encodeURL(req.getScheme(), AbstractPustefixRequestHandler.getServerName(req), req, context.getServletManagerConfig().getProperties());
         relocate(res, redirect_uri);
     }

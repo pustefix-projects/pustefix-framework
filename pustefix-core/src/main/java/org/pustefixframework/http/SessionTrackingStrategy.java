@@ -8,7 +8,7 @@ import javax.servlet.http.HttpServletResponse;
 
 public interface SessionTrackingStrategy {
 
-    public void init(SessionStrategyContext context);
+    public void init(SessionTrackingStrategyContext context);
     public void handleRequestByStrategy(HttpServletRequest req, HttpServletResponse res) throws ServletException, IOException;
     
 }

@@ -11,7 +11,7 @@ public class URLSessionHandlingTestNC extends URLSessionHandlingTest {
 
     @Override
     protected void setUp() throws Exception {
-        setUp(URLRewriteSessionStrategy.class, true);
+        setUp(URLRewriteSessionTrackingStrategy.class, true);
         cookieSessionHandlingDisabled = true;
     }
     

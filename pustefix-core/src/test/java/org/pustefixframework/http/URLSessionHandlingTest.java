@@ -24,7 +24,7 @@ public class URLSessionHandlingTest extends AbstractSessionHandlingTest {
     
     @Override
     protected void setUp() throws Exception {
-        setUp(URLRewriteSessionStrategy.class, false);
+        setUp(URLRewriteSessionTrackingStrategy.class, false);
         cookieSessionHandlingDisabled = false;
     }
         

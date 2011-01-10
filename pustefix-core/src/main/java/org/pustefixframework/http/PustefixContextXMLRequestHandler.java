@@ -230,7 +230,7 @@ public class PustefixContextXMLRequestHandler extends AbstractPustefixXMLRequest
                 String scheme = preq.getScheme();
                 String port = String.valueOf(preq.getServerPort());
                 String sessionIdPath = "";
-                if(sessionTrackingStrategy instanceof URLRewriteSessionStrategy) {
+                if(sessionTrackingStrategy instanceof URLRewriteSessionTrackingStrategy) {
                     sessionIdPath = ";jsessionid=" + preq.getSession(false).getId();
                 }
                 String redirectURL = scheme + "://" + getServerName(preq.getRequest()) 

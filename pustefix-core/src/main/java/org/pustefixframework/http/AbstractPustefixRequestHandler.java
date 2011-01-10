@@ -49,7 +49,7 @@ import de.schlund.pfixxml.serverutil.SessionAdmin;
  * @author <a href="mailto:jtl@schlund.de">Jens Lautenbacher</a>
  */
 
-public abstract class AbstractPustefixRequestHandler implements SessionStrategyContext, UriProvidingHttpRequestHandler, ServletContextAware, InitializingBean {
+public abstract class AbstractPustefixRequestHandler implements SessionTrackingStrategyContext, UriProvidingHttpRequestHandler, ServletContextAware, InitializingBean {
 
     public static final String           VISIT_ID                      = "__VISIT_ID__";
     public static final String           PROP_LOADINDEX                = "__PROPERTIES_LOAD_INDEX";
@@ -164,7 +164,7 @@ public abstract class AbstractPustefixRequestHandler implements SessionStrategyC
         
         initServletEncoding();
         
-        if(sessionTrackingStrategy == null) sessionTrackingStrategy = new NewCookieSessionStrategy();
+        if(sessionTrackingStrategy == null) sessionTrackingStrategy = new CookieSessionTrackingStrategy();
         sessionTrackingStrategy.init(this);
     }
 

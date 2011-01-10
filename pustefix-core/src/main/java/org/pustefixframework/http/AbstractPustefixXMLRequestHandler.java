@@ -321,7 +321,7 @@ public abstract class AbstractPustefixXMLRequestHandler extends AbstractPustefix
         
         if (session != null) {
             params.put(XSLPARAM_SESSION_ID, session.getId());
-            if(sessionTrackingStrategy instanceof URLRewriteSessionStrategy) {
+            if(sessionTrackingStrategy instanceof URLRewriteSessionTrackingStrategy) {
                 params.put(XSLPARAM_SESSION_ID_PATH, ";jsessionid=" + session.getId());
             }
             if (doreuse) {

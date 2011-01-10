@@ -26,9 +26,9 @@ import de.schlund.pfixxml.serverutil.SessionInfoStruct.TrailElement;
 import de.schlund.pfixxml.util.CookieUtils;
 import de.schlund.pfixxml.util.MD5Utils;
 
-public class URLRewriteSessionStrategy implements SessionTrackingStrategy {
+public class URLRewriteSessionTrackingStrategy implements SessionTrackingStrategy {
 
-    private Logger LOG = Logger.getLogger(URLRewriteSessionStrategy.class);
+    private Logger LOG = Logger.getLogger(URLRewriteSessionTrackingStrategy.class);
     
     private static final String CHECK_FOR_RUNNING_SSL_SESSION = "__CHECK_FOR_RUNNING_SSL_SESSION__";
     private static final String COOKIE_VALUE_SEPARATOR = "_";
@@ -46,9 +46,9 @@ public class URLRewriteSessionStrategy implements SessionTrackingStrategy {
     private static String TIMESTAMP_ID = "";
     public static final String VISIT_ID = "__VISIT_ID__";
     
-    private SessionStrategyContext context;
+    private SessionTrackingStrategyContext context;
     
-    public void init(SessionStrategyContext context) {
+    public void init(SessionTrackingStrategyContext context) {
         this.context = context;
     }
     

@@ -16,7 +16,7 @@ import org.apache.commons.httpclient.methods.GetMethod;
 public class CookieSessionHandlingTest extends AbstractSessionHandlingTest {
     
     protected void setUp() throws Exception {
-        setUp(NewCookieSessionStrategy.class, false);
+        setUp(CookieSessionTrackingStrategy.class, false);
     }
         
     public void testNoSessionHttp() throws Exception {

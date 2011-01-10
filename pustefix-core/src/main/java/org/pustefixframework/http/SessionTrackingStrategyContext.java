@@ -11,7 +11,7 @@ import org.pustefixframework.config.contextxmlservice.ServletManagerConfig;
 import de.schlund.pfixxml.PfixServletRequest;
 import de.schlund.pfixxml.serverutil.SessionAdmin;
 
-public interface SessionStrategyContext {
+public interface SessionTrackingStrategyContext {
 
     public boolean wantsCheckSessionIdValid();
     public boolean needsSession();

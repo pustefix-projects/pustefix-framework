@@ -10,7 +10,7 @@ import org.apache.commons.httpclient.methods.GetMethod;
 public class CookieSessionHandlingTestNC extends CookieSessionHandlingTest {
 
     protected void setUp() throws Exception {
-        setUp(NewCookieSessionStrategy.class, true);
+        setUp(CookieSessionTrackingStrategy.class, true);
     }
     
     public void testNoSessionHttp() throws Exception {

@@ -57,7 +57,7 @@ public abstract class AbstractSessionHandlingTest extends TestCase {
             Properties properties = new Properties();
             properties.setProperty("pfixcore.ssl_redirect_port.for." + HTTP_PORT, "" + HTTPS_PORT);
             properties.setProperty("servlet.encoding", "utf-8");
-            root.addServlet(new ServletHolder(new SessionHandlingTestServlet(sessionTrackingStrategy, false, properties)), "/*");
+            root.addServlet(new ServletHolder(new SessionHandlingTestServlet(sessionTrackingStrategy, properties)), "/*");
             
             if(cookieSessionHandlingDisabled) ((AbstractSessionManager)root.getSessionHandler().getSessionManager()).setUsingCookies(false);
             

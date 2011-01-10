@@ -17,11 +17,9 @@ public class SessionHandlingTestServlet extends HttpServlet {
     private SessionHandlingTestHandler handler;
     
     private Class<? extends SessionTrackingStrategy> sessionTrackingStrategy;
-    private boolean defaultSessionTracking;
     private Properties properties;
     
-    public SessionHandlingTestServlet(Class<? extends SessionTrackingStrategy> sessionTrackingStrategy, boolean defaultSessionTracking, Properties properties) {
-        this.defaultSessionTracking = defaultSessionTracking;
+    public SessionHandlingTestServlet(Class<? extends SessionTrackingStrategy> sessionTrackingStrategy, Properties properties) {
         this.properties = properties;
         this.sessionTrackingStrategy = sessionTrackingStrategy;
     }
