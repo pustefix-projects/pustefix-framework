@@ -7,11 +7,35 @@
     <theme name="default">
       Name isn't valid, it requires at least 3 characters.
     </theme>
+    <theme name="de">
+      Der Name ist ungültig, er muss mindestens 3 Zeichen haben.
+    </theme>
   </part>
   
   <part name="FAILURE">
     <theme name="default">
-      You lost.
+      You have lost. The searched word was <b><pfx:argref pos="1"/></b>.
+    </theme>
+    <theme name="de">
+      Du hast verloren.
+    </theme>
+  </part>
+  
+  <part name="SUCCESS">
+    <theme name="default">
+      You have won!
+    </theme>
+    <theme name="de">
+      Du hast gewonnen!
+    </theme>
+  </part>
+  
+  <part name="SUCCESS_HIGH">
+    <theme name="default">
+      You have won and made it into the highscore!!!
+    </theme>
+    <theme name="de">
+      Du hast gewonnen und es in die Rangliste geschafft!!!
     </theme>
   </part>
   

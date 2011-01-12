@@ -6,7 +6,7 @@
         <tr>
           <th>Player</th>
           <th>Difficulty level</th>
-          <th align="right">Tries</th>
+          <th align="right">Misses</th>
           <th align="right">Time (in s)</th>
         </tr>
         <ixsl:for-each select="/formresult/highscore/scores/score">
@@ -26,4 +26,10 @@
       </table>
     </theme>
   </part>
+  
+  <part name="title">
+    <theme name="default">Highscore</theme>
+    <theme name="de">Rangliste</theme>
+  </part>
+  
 </include_parts>

@@ -9,12 +9,12 @@ public class HighScore {
     private SortedSet<Score> scores = new TreeSet<Score>();
     
     public HighScore() {
-        addScore(new Score(13000,4,DifficultyLevel.BEGINNER,"foo"));
-        addScore(new Score(13000,3,DifficultyLevel.BEGINNER,"foo"));
-        addScore(new Score(10000,3,DifficultyLevel.BEGINNER,"foo"));
-        addScore(new Score(3410400,3,DifficultyLevel.ADVANCED,"foo"));
-        addScore(new Score(10333,3,DifficultyLevel.EXPERT,"foo"));
-        addScore(new Score(10000,2,DifficultyLevel.EXPERT,"foo"));
+//        addScore(new Score(13000,4,DifficultyLevel.BEGINNER,"foo"));
+//        addScore(new Score(13000,3,DifficultyLevel.BEGINNER,"foo"));
+//        addScore(new Score(10000,3,DifficultyLevel.BEGINNER,"foo"));
+//        addScore(new Score(3410400,3,DifficultyLevel.ADVANCED,"foo"));
+//        addScore(new Score(10333,3,DifficultyLevel.EXPERT,"foo"));
+//        addScore(new Score(10000,2,DifficultyLevel.EXPERT,"foo"));
     }
     
     public synchronized boolean addScore(Score score) {

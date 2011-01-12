@@ -18,10 +18,10 @@
       </div>
       
      <div id="navigation">
-        <pfx:button page="Home">Home</pfx:button>
-        <pfx:button page="Settings">Settings</pfx:button>
-        <pfx:button page="Play">Play</pfx:button>
-        <pfx:button page="Highscore">Highscore</pfx:button>
+        <navibutton page="Home"/>
+        <navibutton page="Settings"/>
+        <navibutton page="Play"/>
+        <navibutton page="Highscore"/>
       </div>
       
       <div id="content">

@@ -48,4 +48,8 @@
     </pfx:checkmessage>
   </xsl:template>
   
+  <xsl:template match="navibutton">
+    <pfx:button page="{@page}"><pfx:include href="txt/pages/{@page}.xml" part="title"/></pfx:button>
+  </xsl:template>
+  
 </xsl:stylesheet>

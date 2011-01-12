@@ -1,6 +1,8 @@
 package sample.games.hangman.handler;
 
 
+import java.util.Locale;
+
 import org.springframework.beans.factory.annotation.Autowired;
 
 import sample.games.hangman.DifficultyLevel;
@@ -21,6 +23,8 @@ public class SettingsHandler implements IHandler {
         Settings settings = (Settings)wrapper;
         contextSettings.setDifficultyLevel(DifficultyLevel.valueOf(settings.getLevel()));
         contextSettings.setMemorizeCharacters(settings.getMemory());
+        Locale locale = new Locale(settings.getLanguage());
+        contextSettings.setLocale(locale);
     }
 
     public boolean isActive(Context context) throws Exception {
@@ -50,5 +54,5 @@ public class SettingsHandler implements IHandler {
     public void setUser(ContextUser user) {
         this.user = user;
     }
-
+    
 }

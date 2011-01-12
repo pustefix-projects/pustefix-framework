@@ -2,12 +2,8 @@
 <include_parts xmlns:ixsl="http://www.w3.org/1999/XSL/Transform" xmlns:pfx="http://www.schlund.de/pustefix/core">
   
   <part name="title">
-    <theme name="default">
-      Hangman
-    </theme>
-    <theme name="de">
-      Galgenmann
-    </theme>
+    <theme name="default">Hangman</theme>
+    <theme name="de">Galgenmann</theme>
   </part>
   
   <part name="powered_by">

@@ -9,6 +9,7 @@ Adding new statuscodes has to be done within the originating module.
   </part>
   <part name="MISSING_PARAM">
     <theme name="default">This parameter is mandatory.</theme>
+    <theme name="de">Diese Angabe ist verpflichtend.</theme>
   </part>
   <part name="caster.ERR_TO_BOOLEAN">
     <theme name="default">The entered value is no valid boolean expression.</theme>

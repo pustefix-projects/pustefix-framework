@@ -11,6 +11,12 @@
     </precheck>
   </param>
   
+    <param name="Language" type="java.lang.String" occurrence="mandatory">
+    <precheck class="de.schlund.pfixcore.generator.prechecks.RegexpCheck">
+      <cparam name="regexp" value="/^(en|de)$/"/>
+    </precheck>
+  </param>
+  
   <param name="Memory" type="java.lang.Boolean">
     <default><value>false</value></default> 
     <caster class="de.schlund.pfixcore.generator.casters.ToBoolean"/>

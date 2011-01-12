@@ -3,13 +3,23 @@
   <part name="content">
     <theme name="default">
     
-      <h3>Play!!!</h3>
-      <img src="{$__contextpath}/img/Hangman-{/formresult/play/@tries}.png"/>
+      <img src="{$__contextpath}/img/Hangman-{/formresult/play/@misses}.png"/>
       <div style="padding: 23pt; letter-spacing: 0.3em;font-size:25pt">
+      
       <ixsl:value-of select="/formresult/play/@displayWord"/>
       </div>
-      <buttons/>
+      <ixsl:if test="/formresult/play/@completed='false'">
+      	<buttons/>
+      </ixsl:if>
       <show-messages/>
+      <br/><br/>
+      <pfx:button page="Play" mode="force"><pfx:argument name="play.reset">true</pfx:argument>New game</pfx:button>
     </theme>
   </part>
+  
+  <part name="title">
+    <theme name="default">Play</theme>
+    <theme name="de">Spiel</theme>
+  </part>
+  
 </include_parts>

@@ -24,6 +24,9 @@
     <input policy="NONE">
       <wrapper prefix="registration" class="sample.games.hangman.wrapper.Registration"/>
     </input>
+    <output>
+      <resource node="user" bean-ref="contextUser"/>
+    </output>
   </pagerequest>
   
   <pagerequest name="Settings">
