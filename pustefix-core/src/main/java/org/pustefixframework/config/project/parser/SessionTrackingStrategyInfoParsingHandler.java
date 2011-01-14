@@ -19,7 +19,8 @@
 package org.pustefixframework.config.project.parser;
 
 import org.pustefixframework.config.Constants;
-import org.pustefixframework.config.project.ApplicationInfo;
+import org.pustefixframework.config.project.SessionTrackingStrategyInfo;
+import org.pustefixframework.http.BotSessionTrackingStrategy;
 import org.pustefixframework.http.CookieSessionTrackingStrategy;
 import org.pustefixframework.http.SessionTrackingStrategy;
 import org.pustefixframework.http.URLRewriteSessionTrackingStrategy;
@@ -35,15 +36,15 @@ import com.marsching.flexiparse.parser.exception.ParserException;
  * @author mleidig@schlund.de
  *
  */
-public class ApplicationInfoParsingHandler implements ParsingHandler {
+public class SessionTrackingStrategyInfoParsingHandler implements ParsingHandler {
     
     public void handleNode(HandlerContext context) throws ParserException {
         
-        ApplicationInfo appInfo = new ApplicationInfo();
-        
-        Element elem = (Element) context.getNode();
+        SessionTrackingStrategyInfo strategyInfo = new SessionTrackingStrategyInfo();
         
         Class<? extends SessionTrackingStrategy> clazz;
+        
+        Element elem = (Element) context.getNode();
         NodeList nodes = elem.getElementsByTagNameNS(Constants.NS_PROJECT, "session-tracking-strategy");
         if(nodes.getLength() == 0) {
             clazz = CookieSessionTrackingStrategy.class;
@@ -53,20 +54,21 @@ public class ApplicationInfoParsingHandler implements ParsingHandler {
                 clazz = CookieSessionTrackingStrategy.class;
             } else if(content.equals("URL")) {
                 clazz = URLRewriteSessionTrackingStrategy.class;
+            } else if(content.equals("BOT")) {
+                clazz = BotSessionTrackingStrategy.class;
             } else {
                 throw new ParserException("Session tracking strategy '" + content + "' not supported.");
             }
-        } else {
-            throw new ParserException("Multiple session-tracking-strategy elements found.");
-        }
+        } else throw new ParserException("Multiple session-tracking-strategy elements found");
+       
         try {
             SessionTrackingStrategy strategy = clazz.newInstance();
-            appInfo.setSessionTrackingStrategy(strategy);
+            strategyInfo.setSessionTrackingStrategy(strategy);
         } catch(Exception x) {
             throw new ParserException("Can't create SessionTrackingStrategy instance", x);
         }
         
-        context.getObjectTreeElement().addObject(appInfo);
+        context.getObjectTreeElement().addObject(strategyInfo);
         
     }
     

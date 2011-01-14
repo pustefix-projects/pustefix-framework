@@ -1,5 +1,6 @@
 package org.pustefixframework.http;
 
+
 /**
  * Test URL rewrite session handling with cookies disabled for 
  * session tracking on the Servlet API.
@@ -8,10 +9,18 @@ package org.pustefixframework.http;
  *
  */
 public class URLSessionHandlingTestNC extends URLSessionHandlingTest {
-
-    @Override
-    protected void setUp() throws Exception {
-        setUp(URLRewriteSessionTrackingStrategy.class, true);
+    
+    static {
+        HTTP_PORT = findFreePort();
+        HTTPS_PORT = findFreePort();
+        try {
+            server = createServer(HTTP_PORT, HTTPS_PORT, URLRewriteSessionTrackingStrategy.class, true);
+        } catch(Exception x) {
+            throw new RuntimeException("Error creating embedded server", x);
+        }
+    }
+    
+    public URLSessionHandlingTestNC() {
         cookieSessionHandlingDisabled = true;
     }
     

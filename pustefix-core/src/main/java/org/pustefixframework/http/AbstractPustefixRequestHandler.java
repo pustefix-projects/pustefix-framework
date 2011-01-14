@@ -61,6 +61,8 @@ public abstract class AbstractPustefixRequestHandler implements SessionTrackingS
     private static final String          DEFAULT_ENCODING              = "UTF-8";
     private static final String          SERVLET_ENCODING              = "servlet.encoding";
     
+    public static final String SESSION_ATTR_COOKIE_SESSION = "__PFX_SESSION_FROM_COOKIE__";
+    
     public static Logger                       LOGGER_VISIT                  = Logger.getLogger("LOGGER_VISIT");
     private static Logger                       LOG                           = Logger.getLogger(AbstractPustefixRequestHandler.class);
     private String                       servletEncoding;

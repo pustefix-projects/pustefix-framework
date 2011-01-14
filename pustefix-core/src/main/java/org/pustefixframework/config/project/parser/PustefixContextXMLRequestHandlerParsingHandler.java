@@ -34,7 +34,7 @@ import org.pustefixframework.config.customization.CustomizationAwareParsingHandl
 import org.pustefixframework.config.customization.CustomizationInfo;
 import org.pustefixframework.config.customization.PropertiesBasedCustomizationInfo;
 import org.pustefixframework.config.generic.ParsingUtils;
-import org.pustefixframework.config.project.ApplicationInfo;
+import org.pustefixframework.config.project.SessionTrackingStrategyInfo;
 import org.pustefixframework.config.project.EditorInfo;
 import org.pustefixframework.config.project.EditorLocation;
 import org.pustefixframework.config.project.XMLGeneratorInfo;
@@ -171,7 +171,7 @@ public class PustefixContextXMLRequestHandlerParsingHandler extends Customizatio
         }
         
         ContextXMLServletConfig config = context.getObjectTreeElement().getObjectsOfTypeFromSubTree(ContextXMLServletConfig.class).iterator().next();
-        ApplicationInfo appInfo = ParsingUtils.getSingleTopObject(ApplicationInfo.class, context);
+        SessionTrackingStrategyInfo strategyInfo = ParsingUtils.getSingleTopObject(SessionTrackingStrategyInfo.class, context);
         
         BeanDefinitionBuilder beanBuilder = BeanDefinitionBuilder.genericBeanDefinition(PustefixContextXMLRequestHandler.class);
         beanBuilder.setScope("singleton");
@@ -199,7 +199,7 @@ public class PustefixContextXMLRequestHandlerParsingHandler extends Customizatio
             beanBuilder.addPropertyValue("editModeAllowed", editorInfo.isEnabled());
             beanBuilder.addPropertyValue("includePartsEditableByDefault", editorInfo.isIncludePartsEditableByDefault());
         }
-        beanBuilder.addPropertyValue("sessionTrackingStrategy", appInfo.getSessionTrackingStrategy());
+        beanBuilder.addPropertyValue("sessionTrackingStrategy", strategyInfo.getSessionTrackingStrategy());
         BeanDefinition beanDefinition = beanBuilder.getBeanDefinition();
         BeanDefinitionHolder beanHolder = new BeanDefinitionHolder(beanDefinition, PustefixContextXMLRequestHandler.class.getName() + (path != null ? "#" + path : ""));
         context.getObjectTreeElement().addObject(beanHolder);

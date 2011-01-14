@@ -221,7 +221,10 @@ public class PustefixContextXMLRequestHandler extends AbstractPustefixXMLRequest
                 // handle as usual
                 spdoc = context.handleRequest(preq);
             }
-            if (spdoc != null && !spdoc.isRedirect() && (preq.getPageName() == null || !preq.getPageName().equals(spdoc.getPagename()))) {
+            
+            if (spdoc != null && !spdoc.isRedirect() && 
+                    ( (preq.getPageName() == null && !context.getContextConfig().getDefaultPage(context.getVariant()).equals(spdoc.getPagename()))
+                      || (preq.getPageName() != null && !preq.getPageName().equals(spdoc.getPagename())) )) {
                 // Make sure all requests that don't encode an explicite pagename
                 // (this normally is only the case for the first request)
                 // OR pages that have the "wrong" pagename in their request 
@@ -230,8 +233,9 @@ public class PustefixContextXMLRequestHandler extends AbstractPustefixXMLRequest
                 String scheme = preq.getScheme();
                 String port = String.valueOf(preq.getServerPort());
                 String sessionIdPath = "";
-                if(sessionTrackingStrategy instanceof URLRewriteSessionTrackingStrategy) {
-                    sessionIdPath = ";jsessionid=" + preq.getSession(false).getId();
+                HttpSession session = preq.getSession(false);
+                if(session.getAttribute(AbstractPustefixRequestHandler.SESSION_ATTR_COOKIE_SESSION) == null) {
+                    sessionIdPath = ";jsessionid=" + session.getId();
                 }
                 String redirectURL = scheme + "://" + getServerName(preq.getRequest()) 
                     + ":" + port + preq.getContextPath() + preq.getServletPath() + "/" + spdoc.getPagename() 

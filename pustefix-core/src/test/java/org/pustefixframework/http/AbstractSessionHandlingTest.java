@@ -25,53 +25,50 @@ public abstract class AbstractSessionHandlingTest extends TestCase {
     protected static Pattern PATTERN_COUNT = Pattern.compile(".*<!--(\\d+)-->.*");
     protected static Pattern COOKIE_SESSION = Pattern.compile("JSESSIONID=(\\w++).*");
     
-    protected Server server;
-    protected int HTTP_PORT = 8080;
-    protected int HTTPS_PORT = 8443;
+    protected static Server server;
+    protected static int HTTP_PORT = 8080;
+    protected static int HTTPS_PORT = 8443;
     
-    protected void setUp(Class<? extends SessionTrackingStrategy> sessionTrackingStrategy, boolean cookieSessionHandlingDisabled) throws Exception {
+    protected static Server createServer(int httpPort, int httpsPort, Class<? extends SessionTrackingStrategy> sessionTrackingStrategy, boolean cookieSessionHandlingDisabled) throws Exception {
         
-        if(server == null) {
-            
-            ConsoleAppender appender = new ConsoleAppender(new PatternLayout("%p: %m\n"));
-            Logger logger=Logger.getRootLogger();
-            logger.setLevel((Level)Level.WARN);
-            logger.removeAllAppenders();
-            logger.addAppender(appender);
-            
-            logger = Logger.getLogger("org.pustefixframework");
-            logger.setLevel((Level)Level.WARN);
-            logger.addAppender(appender);
-            
-            //Start embedded Jetty
-            HTTP_PORT = findFreePort();
-            HTTPS_PORT = findFreePort();
-            server = new Server(HTTP_PORT);
-            SslSocketConnector connector = new SslSocketConnector();
-            connector.setPort(HTTPS_PORT);
-            connector.setKeyPassword("password"); 
-            connector.setPassword("password");
-            connector.setKeystore("src/test/resources/org/pustefixframework/http/keystore");
-            server.addConnector(connector);
-            Context root = new Context(server,"/",Context.SESSIONS);
-            Properties properties = new Properties();
-            properties.setProperty("pfixcore.ssl_redirect_port.for." + HTTP_PORT, "" + HTTPS_PORT);
-            properties.setProperty("servlet.encoding", "utf-8");
-            root.addServlet(new ServletHolder(new SessionHandlingTestServlet(sessionTrackingStrategy, properties)), "/*");
-            
-            if(cookieSessionHandlingDisabled) ((AbstractSessionManager)root.getSessionHandler().getSessionManager()).setUsingCookies(false);
-            
-            server.start();
+        ConsoleAppender appender = new ConsoleAppender(new PatternLayout("%p: %m\n"));
+        Logger logger=Logger.getRootLogger();
+        logger.setLevel((Level)Level.WARN);
+        logger.removeAllAppenders();
+        logger.addAppender(appender);
         
-            //Initialize HttpClient
-            ProtocolSocketFactory protocolFactory = new SSLProtocolSocketFactory();
-            Protocol protocol = new Protocol("https", protocolFactory, 443);
-            Protocol.registerProtocol("https", protocol);
-        }
+        logger = Logger.getLogger("org.pustefixframework");
+        logger.setLevel((Level)Level.WARN);
+        logger.addAppender(appender);
+            
+        //Start embedded Jetty
+        Server server = new Server(httpPort);
+        SslSocketConnector connector = new SslSocketConnector();
+        connector.setPort(httpsPort);
+        connector.setKeyPassword("password"); 
+        connector.setPassword("password");
+        connector.setKeystore("src/test/resources/org/pustefixframework/http/keystore");
+        server.addConnector(connector);
+        Context root = new Context(server,"/",Context.SESSIONS);
+        Properties properties = new Properties();
+        properties.setProperty("pfixcore.ssl_redirect_port.for." + httpPort, "" + httpsPort);
+        properties.setProperty("servlet.encoding", "utf-8");
+        root.addServlet(new ServletHolder(new SessionHandlingTestServlet(sessionTrackingStrategy, properties)), "/*");
+            
+        if(cookieSessionHandlingDisabled) ((AbstractSessionManager)root.getSessionHandler().getSessionManager()).setUsingCookies(false);
+            
+        server.start();
+        
+        //Initialize HttpClient
+        ProtocolSocketFactory protocolFactory = new SSLProtocolSocketFactory();
+        Protocol protocol = new Protocol("https", protocolFactory, 443);
+        Protocol.registerProtocol("https", protocol);
+        
+        return server;
     
     }
     
-    private static int findFreePort() {
+    protected static int findFreePort() {
         try {
             ServerSocket server = new ServerSocket(0);
             int port = server.getLocalPort();

@@ -8,8 +8,8 @@
     <match>/p:project-config/p:project</match>
   </handler>
   
-  <handler class="org.pustefixframework.config.project.parser.ApplicationInfoParsingHandler">
-    <match>/p:project-config/p:application</match>
+  <handler class="org.pustefixframework.config.project.parser.SessionTrackingStrategyInfoParsingHandler">
+    <match>/p:project-config</match>
   </handler>
   
   <!-- Adds handler mapping bean -->

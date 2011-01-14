@@ -2,7 +2,7 @@ package org.pustefixframework.config.project;
 
 import org.pustefixframework.http.SessionTrackingStrategy;
 
-public class ApplicationInfo {
+public class SessionTrackingStrategyInfo {
     
     private SessionTrackingStrategy sessionTrackingStrategy;
     

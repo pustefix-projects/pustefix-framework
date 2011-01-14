@@ -29,6 +29,7 @@ import java.util.Properties;
 import java.util.Set;
 
 import javax.servlet.http.Cookie;
+import javax.servlet.http.HttpSession;
 
 import org.apache.log4j.Logger;
 import org.pustefixframework.config.contextxmlservice.PageRequestConfig;
@@ -313,9 +314,13 @@ public class RequestContextImpl implements Cloneable, AuthorizationInterceptor {
             if (port == null) {
                 port = "443";
             }
-
+            String sessionIdPath = "";
+            HttpSession session = preq.getSession(false);
+            if(session.getAttribute(AbstractPustefixRequestHandler.SESSION_ATTR_COOKIE_SESSION) == null) {
+                sessionIdPath = ";jsessionid=" + session.getId();
+            }
             String redirectURL = scheme + "://" + AbstractPustefixRequestHandler.getServerName(preq.getRequest()) + ":" + port + preq.getContextPath()
-                    + preq.getServletPath() + "/" + spdoc.getPagename() + ";jsessionid=" + preq.getSession(false).getId() + "?__reuse="
+                    + preq.getServletPath() + "/" + spdoc.getPagename() + sessionIdPath + "?__reuse="
                     + spdoc.getTimestamp();
 
             RequestParam rp = preq.getRequestParam("__frame");

@@ -3,6 +3,8 @@ package org.pustefixframework.http;
 import java.io.IOException;
 import java.util.regex.Matcher;
 
+import junit.framework.TestCase;
+
 import org.apache.commons.httpclient.Header;
 import org.apache.commons.httpclient.HttpClient;
 import org.apache.commons.httpclient.HttpMethod;
@@ -10,6 +12,7 @@ import org.apache.commons.httpclient.HttpStatus;
 import org.apache.commons.httpclient.URIException;
 import org.apache.commons.httpclient.cookie.CookiePolicy;
 import org.apache.commons.httpclient.methods.GetMethod;
+import org.mortbay.jetty.Server;
 
 /**
  * Test URL rewrite session handling with cookies enabled for 
@@ -19,15 +22,19 @@ import org.apache.commons.httpclient.methods.GetMethod;
  *
  */
 public class URLSessionHandlingTest extends AbstractSessionHandlingTest {
-    
-    protected boolean cookieSessionHandlingDisabled;
-    
-    @Override
-    protected void setUp() throws Exception {
-        setUp(URLRewriteSessionTrackingStrategy.class, false);
-        cookieSessionHandlingDisabled = false;
+   
+    static {
+        HTTP_PORT = findFreePort();
+        HTTPS_PORT = findFreePort();
+        try {
+            server = createServer(HTTP_PORT, HTTPS_PORT, URLRewriteSessionTrackingStrategy.class, false);
+        } catch(Exception x) {
+            throw new RuntimeException("Error creating embedded server", x);
+        }
     }
-        
+    
+    protected boolean cookieSessionHandlingDisabled = false;
+    
     public void testNoSessionHttp() throws Exception {
         
         HttpClient client = new HttpClient();
@@ -37,7 +44,7 @@ public class URLSessionHandlingTest extends AbstractSessionHandlingTest {
         method.getParams().setCookiePolicy(CookiePolicy.BROWSER_COMPATIBILITY);
             
         int statusCode = client.executeMethod(method);
-        printDump(method);
+        
         assertEquals(HttpStatus.SC_MOVED_TEMPORARILY, statusCode);
         String location = method.getResponseHeader("Location").getValue();
         String session = getSession(location);
@@ -50,7 +57,7 @@ public class URLSessionHandlingTest extends AbstractSessionHandlingTest {
         method.getParams().setCookiePolicy(CookiePolicy.BROWSER_COMPATIBILITY);
         
         statusCode = client.executeMethod(method);
-        printDump(method);
+        
         assertEquals(HttpStatus.SC_OK, statusCode);
         assertTrue(method.getResponseBodyAsString().contains("<body>test</body>"));
         assertEquals(1, getCount(method.getResponseBodyAsString()));
@@ -69,7 +76,7 @@ public class URLSessionHandlingTest extends AbstractSessionHandlingTest {
         method.getParams().setCookiePolicy(CookiePolicy.BROWSER_COMPATIBILITY);
             
         int statusCode = client.executeMethod(method);
-        printDump(method);
+        
         assertEquals(HttpStatus.SC_MOVED_TEMPORARILY, statusCode);
         String location = method.getResponseHeader("Location").getValue();
         String session = getSession(location);
@@ -82,7 +89,7 @@ public class URLSessionHandlingTest extends AbstractSessionHandlingTest {
         method.getParams().setCookiePolicy(CookiePolicy.BROWSER_COMPATIBILITY);
         
         statusCode = client.executeMethod(method);
-        printDump(method);
+        
         assertEquals(HttpStatus.SC_MOVED_TEMPORARILY, statusCode);
         location = method.getResponseHeader("Location").getValue();
         String newSession = getSession(location);
@@ -96,7 +103,7 @@ public class URLSessionHandlingTest extends AbstractSessionHandlingTest {
         method.getParams().setCookiePolicy(CookiePolicy.BROWSER_COMPATIBILITY);
         
         statusCode = client.executeMethod(method);
-        printDump(method);
+        
         assertEquals(HttpStatus.SC_OK, statusCode);
         assertTrue(method.getResponseBodyAsString().contains("<body>test</body>"));
         assertEquals(1, getCount(method.getResponseBodyAsString()));
