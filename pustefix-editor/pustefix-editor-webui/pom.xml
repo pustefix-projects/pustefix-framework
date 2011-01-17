@@ -5,14 +5,14 @@
   <parent>
     <artifactId>pustefix-editor</artifactId>
     <groupId>org.pustefixframework.editor</groupId>
-    <version>0.15.17</version>
+    <version>0.15.18-SNAPSHOT</version>
   </parent>
 
   <name>Pustefix Editor Web-Based User Interface</name>
 
   <groupId>org.pustefixframework.editor</groupId>
   <artifactId>pustefix-editor-webui</artifactId>
-  <version>0.15.17</version>
+  <version>0.15.18-SNAPSHOT</version>
   
   <packaging>war</packaging>
   
@@ -21,7 +21,7 @@
       <plugin>
         <groupId>org.pustefixframework.maven.plugins</groupId>
         <artifactId>pustefix-webapp-plugin</artifactId>
-        <version>0.15.17</version>
+        <version>0.15.18-SNAPSHOT</version>
         <executions>
           <execution>
             <goals>
@@ -33,7 +33,7 @@
       <plugin>
         <groupId>org.pustefixframework.maven.plugins</groupId>
         <artifactId>pustefix-statuscode-plugin</artifactId>
-        <version>0.15.17</version>
+        <version>0.15.18-SNAPSHOT</version>
         <executions>
           <execution>
             <goals>
@@ -45,7 +45,7 @@
       <plugin>
         <groupId>org.pustefixframework.maven.plugins</groupId>
         <artifactId>pustefix-iwrapper-plugin</artifactId>
-        <version>0.15.17</version>
+        <version>0.15.18-SNAPSHOT</version>
         <executions>
           <execution>
             <goals>
@@ -71,7 +71,7 @@
     <dependency>
       <groupId>org.pustefixframework.editor</groupId>
       <artifactId>pustefix-editor-common</artifactId>
-      <version>0.15.17</version>
+      <version>0.15.18-SNAPSHOT</version>
     </dependency>
     <dependency>
       <groupId>com.caucho</groupId>
