@@ -95,7 +95,6 @@
     
     <static>
       <path>img</path>
-      <path>modules/animal-module/img</path>
     </static>
     
     <choose>
