@@ -114,4 +114,17 @@
     </section>
   </section>
 
+  <section xml:id="news.0_15_17">
+    <title>What's new in Pustefix 0.15.17</title>
+
+    <section xml:id="news.0_15_17.modules">
+      <title>Module enhancements</title>
+      <para>Modules now can define which directories contain static resources and should be publicly available. Thus you don't have
+            to configure it in every application using the module. This configuration is done in the module deployment descriptor
+            using <literal>&lt;path/&gt;</literal> elements within the <literal>&lt;static/&gt;</literal> top-level section 
+            (see <xref linkend="modulessupport"/>).
+      </para>
+    </section>
+  </section>
+
 </chapter>

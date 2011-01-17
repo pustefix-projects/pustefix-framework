@@ -51,6 +51,17 @@
     <resource-mapping srcpath="PUSTEFIX-INF/images" targetpath="img"/>
   </resources>
 
+  <!-- Here you can define which folders under PUSTEFIX-INF contain static webapp resources 
+       and should be publicly available. The resources then can be accessed under the URL 
+       path '/modules/[module-name]/[static-path]'. If you only want to grant access depending 
+       on the application using the module, you can alternatively configure the static module 
+       path in the project configuration.
+  -->
+  <static>
+    <path>css</path>
+    <path>img</path>
+  </static>
+
   <!--
     Here you can configure which resources from which other module should be
     overridden by your module (see "Dynamic resource resolution").
