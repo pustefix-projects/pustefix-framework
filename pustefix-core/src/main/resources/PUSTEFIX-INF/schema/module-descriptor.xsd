@@ -10,8 +10,10 @@
   
   <xs:complexType name="moduleDescriptorType">
     <xs:sequence>
-      <xs:element name="module-name" type="md:moduleNameType"></xs:element>
-      <xs:element name="resources" type="md:resourcesType" minOccurs="0"></xs:element>
+      <xs:element name="module-name" type="md:moduleNameType"/>
+      <xs:element name="resources" type="md:resourcesType" minOccurs="0"/>
+      <xs:element name="static" type="md:staticType" minOccurs="0"/>
+      <xs:element name="override-modules" type="md:overrideType" minOccurs="0"/>
     </xs:sequence>
   </xs:complexType>
   
@@ -25,6 +27,29 @@
   <xs:complexType name="resourcesType">
     <xs:sequence>
       <xs:element name="resource-mapping" type="md:resourceMappingType" minOccurs="0" maxOccurs="unbounded"></xs:element>
+    </xs:sequence>
+  </xs:complexType>
+  
+  <xs:complexType name="staticType">
+    <xs:sequence>
+      <xs:element name="path" type="xs:string" maxOccurs="unbounded"/>
+    </xs:sequence>
+  </xs:complexType>
+  
+  <xs:complexType name="overrideType">
+    <xs:sequence>
+      <xs:element name="module">
+        <xs:complexType>
+          <xs:sequence>
+            <xs:element name="resource" maxOccurs="unbounded">
+              <xs:complexType>
+                <xs:attribute name="path" type="xs:string"/>
+              </xs:complexType>
+            </xs:element>
+          </xs:sequence>
+          <xs:attribute name="name" type="xs:string"/>
+        </xs:complexType>
+      </xs:element>
     </xs:sequence>
   </xs:complexType>
   
