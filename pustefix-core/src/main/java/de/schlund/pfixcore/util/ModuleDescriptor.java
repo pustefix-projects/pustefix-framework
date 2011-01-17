@@ -51,6 +51,7 @@ public class ModuleDescriptor {
     private String name;
     private Map<String,Set<String>> moduleToResourcePaths = new HashMap<String,Set<String>>();
     private Map<String,Set<String>> moduleToResourcePathPatterns = new HashMap<String,Set<String>>();
+    private List<String> staticPaths = new ArrayList<String>();
     
     private AntPathMatcher antPathMatcher = new AntPathMatcher();
     
@@ -105,6 +106,14 @@ public class ModuleDescriptor {
         return false;
     }
     
+    public void addStaticPath(String staticPath) {
+        staticPaths.add(staticPath);
+    }
+    
+    public List<String> getStaticPaths() {
+        return staticPaths;
+    }
+    
     @Override
     public String toString() {
         return "MODULE " + name;
@@ -140,6 +149,20 @@ public class ModuleDescriptor {
                         String resPath = resElem.getAttribute("path").trim();
                         if(resPath.equals("")) throw new Exception("Element 'resource' requires 'path' attribute!");
                         moduleInfo.addOverridedResource(modName, resPath);
+                    }
+                }
+            }
+            Element staticElem = getSingleChildElement(root, "static", false);
+            if(staticElem != null) {
+                List<Element> pathElems = getChildElements(staticElem, "path");
+                for(Element pathElem: pathElems) {
+                    String path = pathElem.getTextContent().trim();
+                    if(!path.equals("")) {
+                        if(!path.startsWith("/")) path = "/" + path;
+                        if(path.endsWith("/")) path = path.substring(0, path.length() - 1);
+                        if(path.equals("") || path.equals("/PUSTEFIX-INF")) path = "/";
+                        else if(path.startsWith("/PUSTEFIX-INF")) path = path.substring(13);
+                        moduleInfo.addStaticPath(path);
                     }
                 }
             }

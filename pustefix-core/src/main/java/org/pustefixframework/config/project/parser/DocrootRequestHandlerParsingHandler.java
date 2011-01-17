@@ -18,6 +18,9 @@
 
 package org.pustefixframework.config.project.parser;
 
+import java.util.List;
+import java.util.Set;
+
 import org.pustefixframework.config.Constants;
 import org.pustefixframework.config.generic.ParsingUtils;
 import org.pustefixframework.config.project.StaticPathInfo;
@@ -32,6 +35,8 @@ import com.marsching.flexiparse.parser.HandlerContext;
 import com.marsching.flexiparse.parser.ParsingHandler;
 import com.marsching.flexiparse.parser.exception.ParserException;
 
+import de.schlund.pfixcore.util.ModuleDescriptor;
+import de.schlund.pfixcore.util.ModuleInfo;
 import de.schlund.pfixxml.config.EnvironmentProperties;
 
 public class DocrootRequestHandlerParsingHandler implements ParsingHandler {
@@ -61,6 +66,15 @@ public class DocrootRequestHandlerParsingHandler implements ParsingHandler {
             staticPathInfo.addStaticPath("modules/pustefix-core/img");
             staticPathInfo.addStaticPath("modules/pustefix-core/script");
             staticPathInfo.addStaticPath("wsscript");
+            
+            Set<String> moduleNames = ModuleInfo.getInstance().getModules();
+            for(String moduleName: moduleNames) {
+                ModuleDescriptor moduleDesc = ModuleInfo.getInstance().getModuleDescriptor(moduleName);
+                List<String> paths = moduleDesc.getStaticPaths();
+                for(String path: paths) {
+                    staticPathInfo.addStaticPath("modules/" + moduleName + path);
+                }
+            }
             
             staticPathInfo.setBasePath(basePath);
             staticPathInfo.setDefaultPath(defaultPath);
