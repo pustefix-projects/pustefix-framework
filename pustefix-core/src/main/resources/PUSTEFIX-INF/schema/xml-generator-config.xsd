@@ -39,7 +39,6 @@
       </xsd:choice>
     </xsd:sequence>
     <xsd:attribute name="name" type="xsd:string" use="required"/>
-    <xsd:attribute name="handler" type="xsd:string" use="required"/>
     <xsd:attribute name="accesskey" type="xsd:string"/>
     <xsd:anyAttribute namespace="##any" processContents="lax"/>
   </xsd:complexType>
@@ -145,6 +144,7 @@
     <xsd:attribute name="section" type="xsd:string"/>
     <xsd:attribute name="refid" type="xsd:string"/>
     <xsd:attribute name="xpath" type="xsd:string"/>
+    <xsd:attribute name="module" type="xsd:string"/>
   </xsd:complexType>
             
 </xsd:schema>

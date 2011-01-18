@@ -228,11 +228,8 @@
       </xsl:choose>
     </xsl:variable>
 
-    <xsl:variable name="thehandler" select="$thebuttpage/@handler"/>
     <xsl:variable name="thequery">__frame=<xsl:value-of select="$frame_impl"/></xsl:variable>
-    <xsl:variable name="prelink">
-      <xsl:value-of select="$thehandler"/>/<xsl:value-of select="$buttpage_impl"/>
-    </xsl:variable>
+    <xsl:variable name="prelink">/<xsl:value-of select="$buttpage_impl"/></xsl:variable>
     <xsl:variable name="postlink">
       <xsl:text>?</xsl:text><xsl:value-of select="$thequery"/>
     </xsl:variable>

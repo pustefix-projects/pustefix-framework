@@ -174,38 +174,28 @@
         </xsl:otherwise>
       </xsl:choose>
     </xsl:variable>
-    <xsl:variable name="thehandler">
-      <xsl:choose>
-        <xsl:when test="$send-to-page">
-          <xsl:value-of select="$navitree//page[@name=$send-to-page]/@handler"/>
-        </xsl:when>
-        <xsl:otherwise>
-          <xsl:value-of select="$navitree//page[@name=$page]/@handler"/>
-        </xsl:otherwise>
-      </xsl:choose>
-    </xsl:variable>
     <form method="post">
       <xsl:copy-of select="./@*[name()!='send-to-page' and name()!='send-to-pageflow' and name()!='type']"/>
       <ixsl:attribute name="action">
         <ixsl:value-of select="$__contextpath"/>
         <xsl:choose>
           <xsl:when test="$send-to-page">
-            <xsl:value-of select="concat($thehandler, '/', $send-to-page)"/><ixsl:value-of select="$__sessionIdPath"/><xsl:if test="not($theframe = '')"></xsl:if>?__frame=<xsl:value-of select="$theframe"/>
+            <xsl:value-of select="concat('/', $send-to-page)"/><ixsl:value-of select="$__sessionIdPath"/><xsl:if test="not($theframe = '')"></xsl:if>?__frame=<xsl:value-of select="$theframe"/>
           </xsl:when>
           <xsl:otherwise>
             <xsl:choose>
               <xsl:when test="@type='auth'">
                 <ixsl:choose>
                   <ixsl:when test="$__root/formresult/authentication/@targetpage">
-                    <xsl:value-of select="$thehandler"/>/<ixsl:value-of select="$__root/formresult/authentication/@targetpage"/><ixsl:value-of select="$__sessionIdPath"/>
+                    /<ixsl:value-of select="$__root/formresult/authentication/@targetpage"/><ixsl:value-of select="$__sessionIdPath"/>
                   </ixsl:when>
                   <ixsl:otherwise>
-                    <xsl:value-of select="concat($thehandler, '/', $page)"/><ixsl:value-of select="$__sessionIdPath"/><xsl:if test="not($theframe = '')"></xsl:if>?__frame=<xsl:value-of select="$theframe"/>
+                    <xsl:value-of select="concat('/', $page)"/><ixsl:value-of select="$__sessionIdPath"/><xsl:if test="not($theframe = '')"></xsl:if>?__frame=<xsl:value-of select="$theframe"/>
                   </ixsl:otherwise>
                 </ixsl:choose>
               </xsl:when>
               <xsl:otherwise>
-                <xsl:value-of select="concat($thehandler, '/', $page)"/><ixsl:value-of select="$__sessionIdPath"/><xsl:if test="not($theframe = '')"></xsl:if>?__frame=<xsl:value-of select="$theframe"/>
+                <xsl:value-of select="concat('/', $page)"/><ixsl:value-of select="$__sessionIdPath"/><xsl:if test="not($theframe = '')"></xsl:if>?__frame=<xsl:value-of select="$theframe"/>
               </xsl:otherwise>
             </xsl:choose>
           </xsl:otherwise>
