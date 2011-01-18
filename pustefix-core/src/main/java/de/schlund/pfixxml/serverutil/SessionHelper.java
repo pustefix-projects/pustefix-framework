@@ -113,11 +113,13 @@ public class SessionHelper {
 
         HttpSession session = req.getSession(false);
         if (session != null) {
-            rcBuf.append(';').append(ENC_STR).append('=').append(session.getId());
+            if(session.getAttribute(AbstractPustefixRequestHandler.SESSION_ATTR_COOKIE_SESSION) == null) {
+                rcBuf.append(';').append(ENC_STR).append('=').append(session.getId());
+            }
         } else if (oldSessionId != null && 0 < oldSessionId.length()) {
             rcBuf.append(';').append(ENC_STR).append('=').append(oldSessionId);
         }
-
+        
         return rcBuf.toString();
     }
 
