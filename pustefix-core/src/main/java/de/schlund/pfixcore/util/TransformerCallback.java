@@ -36,6 +36,7 @@ import org.apache.log4j.Logger;
 import org.pustefixframework.config.contextxmlservice.IWrapperConfig;
 import org.pustefixframework.config.contextxmlservice.PageRequestConfig;
 import org.pustefixframework.config.contextxmlservice.ProcessActionPageRequestConfig;
+import org.pustefixframework.http.BotDetector;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.Node;
@@ -391,6 +392,10 @@ public class TransformerCallback {
             ExtensionFunctionUtils.setExtensionFunctionError(x);
             throw x;
         }
+    }
+    
+    public static boolean isBot(RequestContextImpl requestContext) {
+        return BotDetector.isBot(requestContext.getPfixServletRequest().getRequest());
     }
     
 }

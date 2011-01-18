@@ -86,4 +86,8 @@
     <func:result select="callback:isAuthorized($__context__,$pageName)"/>
   </func:function>
 
+  <func:function name="pfx:isBot">
+    <func:result select="callback:isBot($__context__)"/>
+  </func:function>
+
 </xsl:stylesheet>

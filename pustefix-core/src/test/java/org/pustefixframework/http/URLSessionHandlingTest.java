@@ -3,8 +3,6 @@ package org.pustefixframework.http;
 import java.io.IOException;
 import java.util.regex.Matcher;
 
-import junit.framework.TestCase;
-
 import org.apache.commons.httpclient.Header;
 import org.apache.commons.httpclient.HttpClient;
 import org.apache.commons.httpclient.HttpMethod;
@@ -12,7 +10,6 @@ import org.apache.commons.httpclient.HttpStatus;
 import org.apache.commons.httpclient.URIException;
 import org.apache.commons.httpclient.cookie.CookiePolicy;
 import org.apache.commons.httpclient.methods.GetMethod;
-import org.mortbay.jetty.Server;
 
 /**
  * Test URL rewrite session handling with cookies enabled for 

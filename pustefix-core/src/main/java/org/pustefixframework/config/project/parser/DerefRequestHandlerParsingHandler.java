@@ -72,7 +72,7 @@ public class DerefRequestHandlerParsingHandler implements ParsingHandler {
             beanBuilder.addPropertyValue("mustSign", true);
             beanBuilder.addPropertyValue("configuration", config);
             beanBuilder.addPropertyValue("sessionAdmin", new RuntimeBeanReference(SessionAdmin.class.getName()));
-            beanBuilder.addPropertyValue("sessionTrackingStrategy", strategyInfo.getSessionTrackingStrategy());
+            beanBuilder.addPropertyValue("sessionTrackingStrategy", strategyInfo.getSessionTrackingStrategyInstance());
             BeanDefinition beanDefinition = beanBuilder.getBeanDefinition();
             BeanDefinitionHolder beanHolder = new BeanDefinitionHolder(beanDefinition, DerefRequestHandler.class.getName());
             context.getObjectTreeElement().addObject(beanHolder);

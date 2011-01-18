@@ -18,9 +18,16 @@
 
 package org.pustefixframework.http;
 
+import java.io.BufferedReader;
 import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
+import java.net.URL;
 import java.nio.charset.Charset;
+import java.util.ArrayList;
 import java.util.Enumeration;
+import java.util.List;
+import java.util.regex.Pattern;
 
 import javax.servlet.ServletContext;
 import javax.servlet.ServletException;
@@ -72,6 +79,7 @@ public abstract class AbstractPustefixRequestHandler implements SessionTrackingS
     private WebappAdmin webappAdmin;
     private ExceptionProcessingConfiguration exceptionProcessingConfig;
     protected SessionTrackingStrategy sessionTrackingStrategy;
+    private BotSessionTrackingStrategy botSessionTrackingStrategy;
     
     public abstract ServletManagerConfig getServletManagerConfig();
 
@@ -144,8 +152,12 @@ public abstract class AbstractPustefixRequestHandler implements SessionTrackingS
             res.addHeader("P3P", p3pHeader);
         }
         
-        sessionTrackingStrategy.handleRequestByStrategy(req, res);
-        
+        if(BotDetector.isBot(req)) {
+            botSessionTrackingStrategy.handleRequest(req, res);
+        } else {
+            sessionTrackingStrategy.handleRequest(req, res);
+        }
+            
     }
     
     
@@ -168,6 +180,8 @@ public abstract class AbstractPustefixRequestHandler implements SessionTrackingS
         
         if(sessionTrackingStrategy == null) sessionTrackingStrategy = new CookieSessionTrackingStrategy();
         sessionTrackingStrategy.init(this);
+        botSessionTrackingStrategy = new BotSessionTrackingStrategy();
+        botSessionTrackingStrategy.init(this);
     }
 
 
@@ -227,6 +241,30 @@ public abstract class AbstractPustefixRequestHandler implements SessionTrackingS
         LOG.debug("Servlet encoding was set to '" + servletEncoding + "'.");
     }
 
+    protected static List<Pattern> getBotPatterns() {
+        List<Pattern> patterns = new ArrayList<Pattern>();
+        try {
+            Enumeration<URL> urls = AbstractPustefixRequestHandler.class.getClassLoader().getResources("META-INF/org/pustefixframework/http/bot-user-agents.txt");
+            while(urls.hasMoreElements()) {
+                URL url = urls.nextElement();
+                InputStream in = url.openStream();
+                BufferedReader reader = new BufferedReader(new InputStreamReader(in, "utf8"));
+                String line;
+                while((line = reader.readLine()) != null) {
+                    line = line.trim();
+                    if(!line.startsWith("#")) {
+                        Pattern pattern = Pattern.compile(line);
+                        patterns.add(pattern);
+                    }
+                }
+                in.close();
+            }
+        } catch (IOException e) {
+            throw new RuntimeException("Error reading bot user-agent configuration", e);
+        }
+        return patterns;
+    }
+    
     protected abstract void process(PfixServletRequest preq, HttpServletResponse res) throws Exception;
 
     public static final int HTTP_PORT  = 80;

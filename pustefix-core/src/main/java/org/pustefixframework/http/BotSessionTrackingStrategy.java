@@ -32,7 +32,7 @@ public class BotSessionTrackingStrategy implements SessionTrackingStrategy {
         this.context = context;
     }
     
-    public void handleRequestByStrategy(HttpServletRequest req, HttpServletResponse res) throws ServletException, IOException {
+    public void handleRequest(HttpServletRequest req, HttpServletResponse res) throws ServletException, IOException {
         
         if(req.getRequestedSessionId() != null && req.isRequestedSessionIdFromURL()) {
             String redirect_uri = SessionHelper.getClearedURL(req.getScheme(), AbstractPustefixRequestHandler.getServerName(req), req, context.getServletManagerConfig().getProperties());

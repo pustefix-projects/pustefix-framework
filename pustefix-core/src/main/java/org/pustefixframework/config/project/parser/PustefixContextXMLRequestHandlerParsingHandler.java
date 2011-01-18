@@ -199,7 +199,7 @@ public class PustefixContextXMLRequestHandlerParsingHandler extends Customizatio
             beanBuilder.addPropertyValue("editModeAllowed", editorInfo.isEnabled());
             beanBuilder.addPropertyValue("includePartsEditableByDefault", editorInfo.isIncludePartsEditableByDefault());
         }
-        beanBuilder.addPropertyValue("sessionTrackingStrategy", strategyInfo.getSessionTrackingStrategy());
+        beanBuilder.addPropertyValue("sessionTrackingStrategy", strategyInfo.getSessionTrackingStrategyInstance());
         BeanDefinition beanDefinition = beanBuilder.getBeanDefinition();
         BeanDefinitionHolder beanHolder = new BeanDefinitionHolder(beanDefinition, PustefixContextXMLRequestHandler.class.getName() + (path != null ? "#" + path : ""));
         context.getObjectTreeElement().addObject(beanHolder);

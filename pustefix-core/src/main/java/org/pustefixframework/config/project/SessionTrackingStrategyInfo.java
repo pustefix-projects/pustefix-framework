@@ -4,14 +4,18 @@ import org.pustefixframework.http.SessionTrackingStrategy;
 
 public class SessionTrackingStrategyInfo {
     
-    private SessionTrackingStrategy sessionTrackingStrategy;
+    private Class<? extends SessionTrackingStrategy> sessionTrackingStrategy;
     
-    public SessionTrackingStrategy getSessionTrackingStrategy() {
-        return sessionTrackingStrategy;
+    public void setSessionTrackingStrategy(Class<? extends SessionTrackingStrategy> sessionTrackingStrategy) {
+        this.sessionTrackingStrategy = sessionTrackingStrategy;
     }
     
-    public void setSessionTrackingStrategy(SessionTrackingStrategy sessionTrackingStrategy) {
-        this.sessionTrackingStrategy = sessionTrackingStrategy;
+    public SessionTrackingStrategy getSessionTrackingStrategyInstance() {
+        try {
+            return sessionTrackingStrategy.newInstance();
+        } catch(Exception x) {
+            throw new RuntimeException("Can't instantiate session tracking strategy", x);
+        }
     }
 
 }

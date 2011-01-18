@@ -41,7 +41,7 @@ public class CookieSessionTrackingStrategy implements SessionTrackingStrategy {
         this.context = context;
     }
     
-    public void handleRequestByStrategy(HttpServletRequest req, HttpServletResponse res) throws ServletException, IOException {
+    public void handleRequest(HttpServletRequest req, HttpServletResponse res) throws ServletException, IOException {
         
         HttpSession session = null;
         boolean has_session = false;

@@ -141,7 +141,7 @@ public class PustefixContextDirectOutputRequestHandlerParsingHandler extends Cus
         beanBuilder.addPropertyValue("stateMap", new RuntimeBeanReference(mapBeanName));
         beanBuilder.addPropertyValue("configuration", config);
         beanBuilder.addPropertyValue("sessionAdmin", new RuntimeBeanReference(SessionAdmin.class.getName()));
-        beanBuilder.addPropertyValue("sessionTrackingStrategy", strategyInfo.getSessionTrackingStrategy());
+        beanBuilder.addPropertyValue("sessionTrackingStrategy", strategyInfo.getSessionTrackingStrategyInstance());
         beanDefinition = beanBuilder.getBeanDefinition();
         registry.registerBeanDefinition(nameGenerator.generateBeanName(beanDefinition, registry), beanDefinition);
     }

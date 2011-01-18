@@ -61,12 +61,7 @@ public class SessionTrackingStrategyInfoParsingHandler implements ParsingHandler
             }
         } else throw new ParserException("Multiple session-tracking-strategy elements found");
        
-        try {
-            SessionTrackingStrategy strategy = clazz.newInstance();
-            strategyInfo.setSessionTrackingStrategy(strategy);
-        } catch(Exception x) {
-            throw new ParserException("Can't create SessionTrackingStrategy instance", x);
-        }
+        strategyInfo.setSessionTrackingStrategy(clazz);
         
         context.getObjectTreeElement().addObject(strategyInfo);
         
