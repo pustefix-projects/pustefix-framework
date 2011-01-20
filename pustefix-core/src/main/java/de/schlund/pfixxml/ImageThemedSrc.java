@@ -39,6 +39,7 @@ import de.schlund.pfixxml.util.XsltContext;
  * @version 1.0
  */
 public class ImageThemedSrc {
+    
     private final static Logger LOG = Logger.getLogger(ImageThemedSrc.class);
 
     /** xslt extension */
@@ -55,6 +56,15 @@ public class ImageThemedSrc {
         if(module!=null) {
             module = module.trim();
             if(module.equals("")) module = null;
+            if(module == null) {
+                if(!(src.startsWith("modules/") || src.startsWith("/modules/"))) {
+                    String parentSystemId = context.getSystemId();
+                    URI parentURI = new URI(parentSystemId);
+                    if("module".equals(parentURI.getScheme())) module = parentURI.getAuthority();
+                }
+            } else if(module.equalsIgnoreCase("WEBAPP")) {
+                module = null;
+            }
         }
         
         String[]        themes    = null;
@@ -77,7 +87,7 @@ public class ImageThemedSrc {
             LOG.debug("  -> Register image src '" + src + "'");
             if(dynamic) {
                 String uri =  "dynamic:/"+src+"?project="+gen.getName();
-                if(module != null && !module.equalsIgnoreCase("WEBAPP")) uri += "&module="+module;
+                if(module != null) uri += "&module="+module;
                 Resource res = ResourceUtil.getResource(uri);
                 URI resUri = res.toURI();
                 if("module".equals(resUri.getScheme()) && res.exists()) {
@@ -89,7 +99,7 @@ public class ImageThemedSrc {
                 DependencyTracker.logImage(context, src, parent_part_in, parent_product_in, targetGen, targetKey, "image");
                 return src;
             } else {
-                if(module!=null && !module.equalsIgnoreCase("WEBAPP")) src =  "modules/"+module+"/"+src;
+                if(module!=null) src = "modules/"+module+"/"+src;
                 DependencyTracker.logImage(context, src, parent_part_in, parent_product_in, targetGen, targetKey, "image");
                 return src;
             }
@@ -108,7 +118,7 @@ public class ImageThemedSrc {
                 }
                 String uri =  "dynamic:/" + themed_path +"/THEME/" + themed_img +"?project="+gen.getName();
                 uri += themeParam;
-                if(module != null && !module.equalsIgnoreCase("WEBAPP")) uri += "&module="+module;
+                if(module != null) uri += "&module="+module;
                 Resource res = ResourceUtil.getResource(uri);
                 URI resUri = res.toURI();
                 if("module".equals(resUri.getScheme()) && res.exists()) {
@@ -127,8 +137,8 @@ public class ImageThemedSrc {
                 String currtheme = themes[i];
                 testsrc = themed_path + "/" + currtheme + "/" + themed_img;
                 
-                if(module!=null && !module.equalsIgnoreCase("WEBAPP")) {
-                    testsrc =  "modules/"+module+"/"+testsrc;
+                if(module!=null) {
+                    testsrc = "modules/"+module+"/"+testsrc;
                 }
                 
                 LOG.info("  -> Trying to find image src '" + testsrc + "'");
