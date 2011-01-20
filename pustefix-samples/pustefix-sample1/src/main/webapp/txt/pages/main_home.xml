@@ -10,7 +10,7 @@
       </pfx:externalform>
       <br/>
       <hr/>
-        <pfx:forminput target="_top">
+        <pfx:forminput>
           <table width="400">
             <tr>
               <td align="left">

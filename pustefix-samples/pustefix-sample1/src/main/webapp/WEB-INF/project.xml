@@ -54,6 +54,13 @@
     </choose>
   </xml-generator>
 
+  <!-- Supported Session tracking strategies are:
+       - URL: always use URL rewriting 
+       - COOKIE: use cookies if supported by client and server
+       Default is COOKIE.
+  -->
+  <session-tracking-strategy>COOKIE</session-tracking-strategy>
+  
   <application>
     
     <docroot-path>docroot:/htdocs</docroot-path>
