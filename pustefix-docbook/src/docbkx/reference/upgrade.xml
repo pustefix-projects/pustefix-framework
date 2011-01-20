@@ -50,6 +50,17 @@
       </para>
     </section>
 
+    <section xml:id="upgrade.0_15_to_0_16.taglib">
+      <title>Tag library</title>
+      <para>
+        The <literal>&lt;pfx:image/&gt;</literal> tag behaviour changed when used within XML includes coming from modules. Without specifying
+        a module using the <literal>module</literal> attribute, the image source now is searched within the module itself instead of the
+        webapp. You either have to add the <literal>search="dynamic"</literal> attribute to look up the image in the webapp before trying to
+        get it from the module or you can set the <literal>module</literal> attribute to the special value <literal>WEBAPP</literal> to force
+        getting it from the webapp.  
+      </para>
+    </section>
+
     <section xml:id="upgrade.0_15_to_0_16.webservices">
       <title>AJAX webservices</title>
       <para>
