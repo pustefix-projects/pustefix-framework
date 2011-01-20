@@ -28,7 +28,6 @@
   <application>
     
     <docroot-path>docroot:/htdocs</docroot-path>
-    <default-path>/</default-path>
     
     <context-xml-service>
       <config-file>docroot:/WEB-INF/config.conf.xml</config-file>

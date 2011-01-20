@@ -17,13 +17,13 @@
   </namespaces>
   
   <navigation>
-    <page name="calculator" handler="/xml/main"/>
-    <page name="chat" handler="/xml/main"/>
-    <page name="counter" handler="/xml/main"/>
-    <page name="data" handler="/xml/main"/>
-    <page name="typetest" handler="/xml/main"/>
-    <page name="calltest" handler="/xml/main"/>
-    <page name="beantest" handler="/xml/main"/>
+    <page name="calculator"/>
+    <page name="chat"/>
+    <page name="counter"/>
+    <page name="data"/>
+    <page name="typetest"/>
+    <page name="calltest"/>
+    <page name="beantest"/>
   </navigation>
 
   <standardmaster>
