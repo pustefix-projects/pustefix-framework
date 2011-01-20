@@ -30,10 +30,8 @@
   <application>
     
     <docroot-path>docroot:/htdocs</docroot-path>
-    <default-path>/xml/main</default-path>
     
     <context-xml-service>
-      <path>/xml/main</path>
       <config-file>docroot:/WEB-INF/config.conf.xml</config-file>
       <additional-trail-info>de.schlund.pfixxml.perflogging.DefaultAdditionalTrailInfoImpl</additional-trail-info>
       <choose>
