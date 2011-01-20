@@ -46,6 +46,14 @@
           <xsd:element name="authadmin"/>
         </xsd:choice>
         <xsd:element name="xml-generator" type="xml-generator-type"/>
+        <xsd:element name="session-tracking-strategy" minOccurs="0">
+          <xsd:simpleType>
+            <xsd:restriction base="xsd:string">
+              <xsd:enumeration value="COOKIE"/>
+              <xsd:enumeration value="URL"/>
+            </xsd:restriction>
+          </xsd:simpleType>
+        </xsd:element>
         <xsd:element name="application" type="application-type"/>
         <xsd:element name="dynamic-includes" type="dynamic-includes-type" minOccurs="0"/>
         <xsd:element name="properties" type="properties-type" minOccurs="0"/>
@@ -145,14 +153,6 @@
     <xsd:sequence>
       <xsd:element name="docroot-path" type="xsd:string" minOccurs="0"/>
       <xsd:element name="default-path" type="xsd:string" minOccurs="0"/>
-      <xsd:element name="session-tracking-strategy">
-        <xsd:simpleType>
-          <xsd:restriction base="xsd:string">
-            <xsd:enumeration value="COOKIE"/>
-            <xsd:enumeration value="URL"/>
-          </xsd:restriction>
-        </xsd:simpleType>
-      </xsd:element>
       <xsd:element name="context-xml-service">
         <xsd:complexType>
         <xsd:sequence>
