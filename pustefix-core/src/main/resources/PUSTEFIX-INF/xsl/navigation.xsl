@@ -11,7 +11,17 @@
   <xsl:template match="pfx:active"/>
   <xsl:template match="pfx:normal"/>
   <xsl:template match="pfx:argument"/>
-  <xsl:template match="pfx:command"/>
+  <xsl:template match="pfx:command">
+    <ixsl:call-template name="__formwarn">
+      <ixsl:with-param name="targetpage">
+        <xsl:choose>
+          <xsl:when test="ancestor::pfx:forminput[position()=1]/@send-to-page"><xsl:value-of select="ancestor::pfx:forminput[position()=1]/@send-to-page"/></xsl:when>
+          <xsl:otherwise><xsl:value-of select="$page"/></xsl:otherwise>
+        </xsl:choose>
+      </ixsl:with-param>
+      <ixsl:with-param name="fullname"><xsl:value-of select="text()"/></ixsl:with-param>
+    </ixsl:call-template>
+  </xsl:template>
   <xsl:template match="pfx:anchor"/>
   <xsl:template match="pfx:host"/>
 
