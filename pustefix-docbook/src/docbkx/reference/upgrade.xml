@@ -19,18 +19,23 @@
     <section xml:id="upgrade.0_15_to_0_16.project_xml">
       <title>project.xml</title>
       <para>
-        In Pustefix 0.16 URL paths no longer start with <literal>/xml/xyz</literal>.
+        In Pustefix 0.16 URL paths no longer start with <literal>/xml/xyz</literal>. You should adapt the according path configurations
+        in <literal>src/main/webapp/WEB-INF/project.xml</literal>.
         Within the <literal>&lt;application/&gt;</literal> section you can remove the according path configurations:
         the <literal>&lt;default-path&gt;</literal> element and 
         the <literal>&lt;path/&gt;</literal> elements beneath <literal>&lt;context-xml-service/&gt;</literal>,
         <literal>&lt;direct-output-service/&gt;</literal> and <literal>&lt;deref-service/&gt;</literal> (if available).
+      </para>
+      <para>
+        If you're referencing a XML schema, you can change the schema location to
+        <literal>http://www.pustefix-framework.org/2008/namespace/project-config-0_16.xsd</literal> to get and updated version.
       </para>
     </section>
 
     <section xml:id="upgrade.0_15_to_0_16.depend_xml">
       <title>depend.xml</title>
       <para>
-        With Pustefix 0.16 URLs all kind of pages (dynamic, directoutput) are directly served under the servlet context without using an additional
+        With Pustefix 0.16 URLs of all kind of pages (dynamic, directoutput) are directly served under the servlet context without using an additional
         path prefix. Therefore every page requires a unique name. If you use the same page name multiple times, e.g. for normal and directoutput pages,
         you will have to rename it making it unique.
       </para>
@@ -40,7 +45,7 @@
       </para>
       <para>
         If you're referencing a XML schema, you can change the schema location to
-        <literal>xsi:noNamespaceSchemaLocation="http://www.pustefix-framework.org/2008/namespace/xml-generator-config-0_16.xsd"</literal>
+        <literal>http://www.pustefix-framework.org/2008/namespace/xml-generator-config-0_16.xsd</literal>
         to get an updated version.
       </para>
     </section>
