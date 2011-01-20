@@ -89,5 +89,24 @@
   <func:function name="pfx:isBot">
     <func:result select="callback:isBot($__context__)"/>
   </func:function>
+  
+  <func:function name="pfx:__addParams">
+    <xsl:param name="params"/>
+    <xsl:choose>
+      <xsl:when test="$params=''">
+        <func:result></func:result> 
+      </xsl:when>
+      <xsl:otherwise>
+        <xsl:choose>
+          <xsl:when test="starts-with($params,'&amp;')">
+            <func:result select="concat('?',substring-after($params,'&amp;'))"/>
+          </xsl:when>
+          <xsl:otherwise>
+            <func:result select="concat('?',$params)"/>
+          </xsl:otherwise>
+        </xsl:choose>
+      </xsl:otherwise>
+    </xsl:choose>
+  </func:function>
 
 </xsl:stylesheet>

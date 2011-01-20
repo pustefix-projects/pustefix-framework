@@ -324,7 +324,7 @@ public class RequestContextImpl implements Cloneable, AuthorizationInterceptor {
                     + spdoc.getTimestamp();
 
             RequestParam rp = preq.getRequestParam("__frame");
-            if (rp != null) {
+            if (rp != null && rp.getValue() != null && !rp.getValue().equals("")) {
                 redirectURL += "&__frame=" + rp.getValue();
             }
             rp = preq.getRequestParam("__lf");

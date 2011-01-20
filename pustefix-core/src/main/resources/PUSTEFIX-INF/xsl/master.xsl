@@ -156,7 +156,10 @@
       <ixsl:param name="__remote_addr"/>
       <ixsl:param name="__server_name"/>
       <ixsl:param name="__request_scheme"/>
-      <ixsl:param name="__frame">_top</ixsl:param>
+      <ixsl:param name="__frame">
+        <xsl:if test="/pfx:document/pfx:frameset or /pfx:document/html/pfx:frameset">_top</xsl:if>
+      </ixsl:param>
+      
       <ixsl:param name="__reusestamp">-1</ixsl:param>
       
       <ixsl:param name="__lf"/>

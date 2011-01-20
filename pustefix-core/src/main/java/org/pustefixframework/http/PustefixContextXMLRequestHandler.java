@@ -241,7 +241,7 @@ public class PustefixContextXMLRequestHandler extends AbstractPustefixXMLRequest
                     + ":" + port + preq.getContextPath() + preq.getServletPath() + "/" + spdoc.getPagename() 
                     + sessionIdPath + "?__reuse=" + spdoc.getTimestamp();
                 RequestParam rp = preq.getRequestParam("__frame");
-                if (rp != null) {
+                if (rp != null && rp.getValue() != null && !rp.getValue().equals("")) {
                     redirectURL += "&__frame=" + rp.getValue();
                 }
                 rp = preq.getRequestParam("__lf");

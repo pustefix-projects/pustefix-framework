@@ -300,7 +300,7 @@ public abstract class AbstractPustefixXMLRequestHandler extends AbstractPustefix
         // if __reuse is set, we will try to reuse a stored DomTree, if __reuse is
         // not set, we store the DomTree from getDom in the Session as servletname + _saved_dom
         if ((value = preq.getRequestParam(PARAM_FRAME)) != null)
-            if (value.getValue() != null) {
+            if (value.getValue() != null && !value.getValue().equals("")) {
                 params.put(XSLPARAM_FRAME, value.getValue());
             }
         params.put(XSLPARAM_URI, preq.getRequestURI());
