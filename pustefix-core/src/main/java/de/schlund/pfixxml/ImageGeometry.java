@@ -19,14 +19,18 @@
 package de.schlund.pfixxml;
 
 import java.io.IOException;
+import java.net.HttpURLConnection;
+import java.net.URL;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.StringTokenizer;
 
 import org.apache.log4j.Logger;
 
+import de.schlund.pfixxml.ImageGeometryData;
 import de.schlund.pfixxml.resources.Resource;
 import de.schlund.pfixxml.resources.ResourceUtil;
+import de.schlund.pfixxml.util.ExtensionFunctionUtils;
 
 
 /**
@@ -45,34 +49,53 @@ public class ImageGeometry {
     private final static Logger                         LOG       = Logger.getLogger(ImageGeometry.class); 
     
     
-    public static int getHeight(String path) {
-        ImageGeometryData data = getImageGeometryData(path);
-        if (data == null) {
-            return -1;
-        } else {
-            return data.getHeight();
+    public static int getHeight(String path) throws Exception {
+    	try {
+	        ImageGeometryData data = getImageGeometryData(path);
+	        if (data == null) {
+	            return -1;
+	        } else {
+	            return data.getHeight();
+	        }
+    	} catch (Exception x) {
+            ExtensionFunctionUtils.setExtensionFunctionError(x);
+            x.printStackTrace();
+            throw x;
         }
     }
     
-    public static int getWidth(String path) {
-        ImageGeometryData data = getImageGeometryData(path);
-        if (data == null) {
-            return -1;
-        } else {
-            return data.getWidth();
+    public static int getWidth(String path) throws Exception {
+    	try {
+	        ImageGeometryData data = getImageGeometryData(path);
+	        if (data == null) {
+	            return -1;
+	        } else {
+	            return data.getWidth();
+	        }
+    	} catch (Exception x) {
+            ExtensionFunctionUtils.setExtensionFunctionError(x);
+            x.printStackTrace();
+            throw x;
         }
     }
 
-    public static String getType(String path) {
-        ImageGeometryData data = getImageGeometryData(path);
-        if (data == null) {
-            return null;
-        } else {
-            return data.getType();
-        }
+    public static String getType(String path) throws Exception {
+        try {
+	        ImageGeometryData data = getImageGeometryData(path);
+	        if (data == null) {
+	            return null;
+	        } else {
+	            return data.getType();
+	        }
+		} catch (Exception x) {
+	        ExtensionFunctionUtils.setExtensionFunctionError(x);
+	        x.printStackTrace();
+	        throw x;
+	    }
     }
     
-    public static String getStyleStringForImage(String path, String userStyle, String userWidth, String userHeight) {
+    public static String getStyleStringForImage(String path, String userStyle, String userWidth, String userHeight) throws Exception {
+    	try {
         ImageGeometryData data = getImageGeometryData(path);
         int targetWidth=-1;
         int targetHeight=-1;
@@ -148,9 +171,18 @@ public class ImageGeometry {
         }
         
         return genStyle.toString();
+    	} catch (Exception x) {
+    		x.printStackTrace();
+            ExtensionFunctionUtils.setExtensionFunctionError(x);
+            throw x;
+        }
     }
 
     private static ImageGeometryData getImageGeometryData(String path) {
+    	System.out.println("TEST:"+path);
+        if(path.startsWith("http") || path.startsWith("//")) {
+            return getRemoteImageGeometryData(path);
+        }
         synchronized (imageinfo) {
             if(path.startsWith("modules/")) path = "module://" + path.substring(8);
             Resource img = ResourceUtil.getResource(path);
@@ -178,5 +210,34 @@ public class ImageGeometry {
             return null;
         }
     }
-    
+
+    private static ImageGeometryData getRemoteImageGeometryData(String path) {
+        synchronized (imageinfo) {
+            ImageGeometryData geom = imageinfo.get(path);
+            if(geom != null) return geom; 
+        }
+        try {
+            String urlStr = path;
+            if (urlStr.startsWith("https")) {
+            	urlStr = "http" + urlStr.substring(5);
+            }
+            else if(urlStr.startsWith("//")) {
+            	urlStr = "http:" + urlStr;
+            }
+            URL url = new URL(urlStr);
+            HttpURLConnection con=(HttpURLConnection)url.openConnection();
+            con.setConnectTimeout(3000);
+            con.setReadTimeout(3000);
+            ImageGeometryData geom = new ImageGeometryData(con);
+            //TODO: notice HTTP caching headers
+            synchronized (imageinfo) {
+                imageinfo.put(path, geom);
+            }
+            return geom;
+        } catch(Exception x) {
+            LOG.error("Couldn't get image size for " + path, x);
+            return null;
+        }
+    }
+
 }// ImageGeometry

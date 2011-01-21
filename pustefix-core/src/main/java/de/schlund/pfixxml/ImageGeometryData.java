@@ -20,7 +20,9 @@ package de.schlund.pfixxml;
 
 import java.io.IOException;
 import java.io.InputStream;
+import java.net.HttpURLConnection;
 
+import de.schlund.pfixxml.ImageInfo;
 import de.schlund.pfixxml.resources.Resource;
 
 
@@ -49,6 +51,20 @@ public class ImageGeometryData {
         if (info.check()) {
             ok     = true;
             mtime  = img.lastModified();
+            type   = info.getFormatName();
+            width  = info.getWidth();
+            height = info.getHeight(); 
+        }
+        img_stream.close();
+    }
+
+    public ImageGeometryData(HttpURLConnection con) throws IOException {
+        ImageInfo       info       = new ImageInfo();
+        InputStream     img_stream = con.getInputStream();
+        info.setInput(img_stream);
+        if (info.check()) {
+            ok     = true;
+            mtime  = con.getLastModified();
             type   = info.getFormatName();
             width  = info.getWidth();
             height = info.getHeight(); 
