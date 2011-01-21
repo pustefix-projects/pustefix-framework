@@ -234,6 +234,15 @@ public class SessionAdmin implements HttpSessionBindingListener, SessionAdminMBe
         getSession(id).invalidate();
     }
     
+    public void invalidateSessions() throws IOException {
+        synchronized(sessioninfo) {
+            Iterator<SessionInfoStruct> infos = sessioninfo.values().iterator();
+            while(infos.hasNext()) {
+                infos.next().getSession().invalidate();
+            }
+        }
+    }
+    
     public HttpSession getSession(String id) throws IOException {
         SessionInfoStruct info = getInfo(id);
         if (info == null) {

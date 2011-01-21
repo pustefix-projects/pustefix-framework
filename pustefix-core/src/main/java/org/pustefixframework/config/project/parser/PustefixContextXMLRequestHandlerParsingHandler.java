@@ -27,7 +27,6 @@ import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.ParserConfigurationException;
 
-import org.pustefixframework.admin.mbeans.WebappAdmin;
 import org.pustefixframework.config.Constants;
 import org.pustefixframework.config.contextxmlservice.ContextXMLServletConfig;
 import org.pustefixframework.config.customization.CustomizationAwareParsingHandler;
@@ -39,6 +38,7 @@ import org.pustefixframework.config.project.EditorInfo;
 import org.pustefixframework.config.project.EditorLocation;
 import org.pustefixframework.config.project.XMLGeneratorInfo;
 import org.pustefixframework.http.PustefixContextXMLRequestHandler;
+import org.pustefixframework.http.PustefixInternalsRequestHandler;
 import org.springframework.beans.factory.BeanDefinitionStoreException;
 import org.springframework.beans.factory.config.BeanDefinition;
 import org.springframework.beans.factory.config.BeanDefinitionHolder;
@@ -184,7 +184,6 @@ public class PustefixContextXMLRequestHandlerParsingHandler extends Customizatio
         if(beanReg.isBeanNameInUse(TestRecording.class.getName())) {
             beanBuilder.addPropertyValue("testRecording", new RuntimeBeanReference(TestRecording.class.getName()));
         }
-        beanBuilder.addPropertyValue("webappAdmin", new RuntimeBeanReference(WebappAdmin.class.getName()));
         beanBuilder.addPropertyValue("editorLocation", editorLocation.getLocation());
         beanBuilder.addPropertyValue("checkModtime", info.getCheckModtime());
         beanBuilder.addPropertyValue("sessionCleaner", new RuntimeBeanReference(SessionCleaner.class.getName()));
@@ -202,6 +201,13 @@ public class PustefixContextXMLRequestHandlerParsingHandler extends Customizatio
         beanBuilder.addPropertyValue("sessionTrackingStrategy", strategyInfo.getSessionTrackingStrategyInstance());
         BeanDefinition beanDefinition = beanBuilder.getBeanDefinition();
         BeanDefinitionHolder beanHolder = new BeanDefinitionHolder(beanDefinition, PustefixContextXMLRequestHandler.class.getName() + (path != null ? "#" + path : ""));
+        context.getObjectTreeElement().addObject(beanHolder);
+        
+        beanBuilder = BeanDefinitionBuilder.genericBeanDefinition(PustefixInternalsRequestHandler.class);
+        beanBuilder.setScope("singleton");
+        beanBuilder.addPropertyValue("sessionAdmin", new RuntimeBeanReference(SessionAdmin.class.getName()));
+        beanDefinition = beanBuilder.getBeanDefinition();
+        beanHolder = new BeanDefinitionHolder(beanDefinition, PustefixInternalsRequestHandler.class.getName());
         context.getObjectTreeElement().addObject(beanHolder);
         
     }

@@ -2,11 +2,17 @@
 <include_parts xmlns:ixsl="http://www.w3.org/1999/XSL/Transform" xmlns:pfx="http://www.schlund.de/pustefix/core">
   
   <part name="title">
+    <theme name="default">Hangman</theme>
+    <theme name="de">Galgenmann</theme>
+  </part>
+  
+  <part name="powered_by">
     <theme name="default">
-      Hangman
+      Powered by Pustefix Framework <ixsl:value-of select="pfx:getFrameworkVersion()"/>
     </theme>
     <theme name="de">
-      Galgenmann
+      Erstellt mit Pustefix Framework <ixsl:value-of select="pfx:getFrameworkVersion()"/>
     </theme>
   </part>
+  
 </include_parts>

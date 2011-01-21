@@ -1,5 +1,6 @@
 package de.schlund.pfixcore.util;
 import java.io.File;
+import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
@@ -81,20 +82,36 @@ public class JarFileCache {
        
         if(!file.exists()) {
             JarEntry entry = cacheEntry.jarFile.getJarEntry(path);
-            long lastModified = entry.getTime();
-            InputStream in = cacheEntry.jarFile.getInputStream(entry);
-            if(!file.getParentFile().exists()) file.getParentFile().mkdirs();
-            FileOutputStream out = new FileOutputStream(file);
-            byte[] buffer = new byte[4096];
-            int no = 0;
-            try {
-                while ((no = in.read(buffer)) != -1)
-                    out.write(buffer, 0, no);
-            } finally {
-                in.close();
-                out.close();
+            if(entry == null) throw new FileNotFoundException("Jar entry '" + path + 
+                    "' not found in file '" + jarURL.toString() +"'");
+            //Work around JDK bug: calling getJarEntry() for directory entry using name with 
+            //no trailing slash returns JarEntry object keeping this name, and calling 
+            //isDirectory() on this object checks for the slash and returns false.
+            //Therefor we additionally check entries with with size 0 and try to get
+            //an entry with a trailing slash
+            if(!entry.isDirectory() && entry.getSize() == 0) {
+                String dirPath = path + "/";
+                JarEntry dirEntry = cacheEntry.jarFile.getJarEntry(dirPath);
+                if(dirEntry != null) entry = dirEntry;
             }
-            file.setLastModified(lastModified);
+            if(entry.isDirectory()) {
+                file.mkdirs();
+            } else {
+                long lastModified = entry.getTime();
+                InputStream in = cacheEntry.jarFile.getInputStream(entry);
+                if(!file.getParentFile().exists()) file.getParentFile().mkdirs();
+                FileOutputStream out = new FileOutputStream(file);
+                byte[] buffer = new byte[4096];
+                int no = 0;
+                try {
+                    while ((no = in.read(buffer)) != -1)
+                        out.write(buffer, 0, no);
+                } finally {
+                    in.close();
+                    out.close();
+                }
+                file.setLastModified(lastModified);
+            }
         }
         return file;    
     }

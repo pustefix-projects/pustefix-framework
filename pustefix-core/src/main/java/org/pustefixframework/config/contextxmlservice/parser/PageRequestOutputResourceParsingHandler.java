@@ -51,8 +51,10 @@ public class PageRequestOutputResourceParsingHandler implements ParsingHandler {
         String beanRef = element.getAttribute("bean-ref").trim();
         if (className.length() == 0 && beanRef.length() == 0) {
             throw new ParserException("Either attribute 'class' or attribute 'bean-ref' required.");
-        }
-        if (className.length() > 0) {
+        } else if (className.length() > 0 && beanRef.length() > 0) {
+            throw new ParserException("Only one of the attributes 'class' or 'bean-ref' is allowed at a 'resource' element: " +
+                    "class='" + className + "' bean-ref='" + beanRef +"'");
+        } else if (className.length() > 0) {
             Class<?> clazz;
             try {
                 clazz = Class.forName(className);

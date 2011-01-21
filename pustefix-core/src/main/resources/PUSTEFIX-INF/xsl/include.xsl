@@ -256,13 +256,13 @@
           <xsl:when test="$noedit = 'true'"/> <!-- Do NOTHING! -->
           <xsl:when test="not($__target_key = '__NONE__') and $prohibitEdit = 'no'">
             <ixsl:if test="$__editmode='admin'">
-              <img border="0" alt="[" src="{{$__contextpath}}/modules/pustefix-core/img/edit_start.gif"/>
+              <span class="pfx_inc_start"/>
             </ixsl:if>
           </xsl:when>
           <xsl:when test="$__target_key = '__NONE__' and $__editmode = 'admin'">
-            <img border="0" alt="[" src="{$__contextpath}/modules/pustefix-core/img/edit_start.gif"/>
+            <span class="pfx_inc_start"/>
           </xsl:when>
-        </xsl:choose>
+        </xsl:choose>        
         <!-- -->
         <xsl:variable name="used_theme">
           <xsl:choose>
@@ -299,15 +299,22 @@
                 <xsl:when test="$incnodes/parent::part/@editable='true'">
                   <xsl:call-template name="pfx:include_internal_render_edit">
                     <xsl:with-param name="part" select="$part"/>
-                    <xsl:with-param name="realpath" select="$realpath"/>
-                    <xsl:with-param name="used_theme" select="$used_theme"/>
+                    <xsl:with-param name="theme" select="$used_theme"/>
+                    <xsl:with-param name="path" select="$realpath"/>
                     <xsl:with-param name="resolved_uri" select="$__resolveduri"/>
+                    <xsl:with-param name="search" select="$search"/>
+                    <xsl:with-param name="module" select="$module_name"/>
                   </xsl:call-template>
                 </xsl:when>
                 <xsl:when test="$incnodes/parent::part/@editable='false'">
-                  <xsl:call-template name="pfx:include_internal_render_noedit">
+                  <xsl:call-template name="pfx:include_internal_render_edit">
                     <xsl:with-param name="part" select="$part"/>
+                    <xsl:with-param name="theme" select="$used_theme"/>
+                    <xsl:with-param name="path" select="$realpath"/>
                     <xsl:with-param name="resolved_uri" select="$__resolveduri"/>
+                    <xsl:with-param name="search" select="$search"/>
+                    <xsl:with-param name="module" select="$module_name"/>
+                    <xsl:with-param name="editable">false</xsl:with-param>
                   </xsl:call-template>
                 </xsl:when>
                 <xsl:otherwise>
@@ -315,15 +322,22 @@
                     <ixsl:when test="$__editor_include_parts_editable_by_default='true'">
                       <xsl:call-template name="pfx:include_internal_render_edit">
                         <xsl:with-param name="part" select="$part"/>
-                        <xsl:with-param name="realpath" select="$realpath"/>
-                        <xsl:with-param name="used_theme" select="$used_theme"/>
+                        <xsl:with-param name="theme" select="$used_theme"/>
+                        <xsl:with-param name="path" select="$realpath"/>
                         <xsl:with-param name="resolved_uri" select="$__resolveduri"/>
+                        <xsl:with-param name="search" select="$search"/>
+                        <xsl:with-param name="module" select="$module_name"/>
                       </xsl:call-template>
                     </ixsl:when>
                     <ixsl:otherwise>
-                      <xsl:call-template name="pfx:include_internal_render_noedit">
+                      <xsl:call-template name="pfx:include_internal_render_edit">
                         <xsl:with-param name="part" select="$part"/>
+                        <xsl:with-param name="theme" select="$used_theme"/>
+                        <xsl:with-param name="path" select="$realpath"/>
                         <xsl:with-param name="resolved_uri" select="$__resolveduri"/>
+                        <xsl:with-param name="search" select="$search"/>
+                        <xsl:with-param name="module" select="$module_name"/>
+                        <xsl:with-param name="editable">false</xsl:with-param>
                       </xsl:call-template>
                     </ixsl:otherwise>
                   </ixsl:choose>
@@ -334,17 +348,24 @@
           <xsl:when test="$__target_key='__NONE__' and $__editmode = 'admin'">
             <xsl:choose>
               <xsl:when test="$incnodes/parent::part/@editable='true' or (not($incnodes/parent::part/@editable='false') and $__editor_include_parts_editable_by_default='true')">
-                <xsl:call-template name="pfx:include_internal_render_edit_runtime">
+                <xsl:call-template name="pfx:include_internal_render_edit">
                   <xsl:with-param name="part" select="$part"/>
-                  <xsl:with-param name="realpath" select="$realpath"/>
-                  <xsl:with-param name="used_theme" select="$used_theme"/>
+                  <xsl:with-param name="theme" select="$used_theme"/>
+                  <xsl:with-param name="path" select="$realpath"/>
                   <xsl:with-param name="resolved_uri" select="$__resolveduri"/>
+                  <xsl:with-param name="search" select="$search"/>
+                  <xsl:with-param name="module" select="$module_name"/>
                 </xsl:call-template>
               </xsl:when>
               <xsl:otherwise>
-                <xsl:call-template name="pfx:include_internal_render_noedit_runtime">
+                <xsl:call-template name="pfx:include_internal_render_edit">
                   <xsl:with-param name="part" select="$part"/>
+                  <xsl:with-param name="theme" select="$used_theme"/>
+                  <xsl:with-param name="path" select="$realpath"/>
                   <xsl:with-param name="resolved_uri" select="$__resolveduri"/>
+                  <xsl:with-param name="search" select="$search"/>
+                  <xsl:with-param name="module" select="$module_name"/>
+                  <xsl:with-param name="editable">false</xsl:with-param>
                 </xsl:call-template>
               </xsl:otherwise>
             </xsl:choose>
@@ -356,40 +377,52 @@
   
   <xsl:template name="pfx:include_internal_render_edit">
     <xsl:param name="part"/>
-    <xsl:param name="realpath"/>
-    <xsl:param name="used_theme"/>
+    <xsl:param name="theme"/>
+    <xsl:param name="path"/>
     <xsl:param name="resolved_uri"/>
-    <a href="#">
-      <ixsl:attribute name="onclick">window.open('<ixsl:value-of select="$__editor_url"/>?__scriptedflow=selectinclude&amp;theme=<xsl:value-of select="string($used_theme)"/>&amp;path=<xsl:value-of select="$resolved_uri"/>&amp;part=<xsl:value-of select="$part"/>&amp;uri=<ixsl:value-of select="$__application_url"/>&amp;type=include&amp;__anchor=left_navi|<xsl:value-of select="$realpath"/>','PustefixEditor','menubar=yes,status=yes,resizable=yes');return(false);</ixsl:attribute>
-      <img border="0" src="{{$__contextpath}}/modules/pustefix-core/img/edit.gif"
-           alt="] Edit include: '{$part}' in resource '{$resolved_uri}'"
-           title="Edit include: '{$part}' in resource '{$resolved_uri}'"/>
-    </a>
-  </xsl:template>
-
-  <xsl:template name="pfx:include_internal_render_noedit">
-    <xsl:param name="part"/>
-    <xsl:param name="resolved_uri"/>
-    <img border="0" src="{{$__contextpath}}/modules/pustefix-core/img/noedit.gif"
-      alt="] Info: '{$part}' in resource '{$resolved_uri}'"
-      title="Info: '{$part}' in resource '{$resolved_uri}'"/>
-  </xsl:template>
-
-  <xsl:template name="pfx:include_internal_render_edit_runtime">
-    <xsl:param name="part"/>
-    <xsl:param name="realpath"/>
-    <xsl:param name="used_theme"/>
-    <xsl:param name="resolved_uri"/>
-    <a href="#">
-      <xsl:attribute name="onClick">window.open('<xsl:value-of select="$__editor_url"/>?__scriptedflow=selectinclude&amp;theme=<xsl:value-of select="string($used_theme)"/>&amp;path=<xsl:value-of select="$realpath"/>&amp;part=<xsl:value-of select="$part"/>&amp;name=<xsl:value-of select="$product"/>&amp;uri=<xsl:value-of select="$__application_url"/>&amp;type=dyninclude&amp;__anchor=left_navi|<xsl:value-of select="$realpath"/>','PustefixEditor','menubar=yes,status=yes,resizable=yes');return(false);</xsl:attribute>
-      <img border="0" src="{$__contextpath}/modules/pustefix-core/img/edit.gif" alt="] Edit include: '{$part}' in file '{$realpath}'" title="Edit include: '{$part}' in file '{$realpath}'"/>
-    </a>
-  </xsl:template>
-
-  <xsl:template name="pfx:include_internal_render_noedit_runtime">
-    <xsl:param name="part"/>
-    <xsl:param name="resolved_uri"/>
-    <img border="0" src="{$__contextpath}/modules/pustefix-core/img/noedit.gif" alt="] Info: '{$part}' in file '{$realpath}'" title="Info: '{$part}' in file '{$realpath}'"/>
+    <xsl:param name="search"/>
+    <xsl:param name="module"/>
+    <xsl:param name="editable">true</xsl:param>
+    <xsl:variable name="resolved_module">
+      <xsl:choose>
+        <xsl:when test="starts-with($resolved_uri,'module://')"><xsl:value-of select="substring-before(substring-after($resolved_uri,'module://'),'/')"/></xsl:when>
+        <xsl:otherwise>webapp</xsl:otherwise>
+      </xsl:choose>
+    </xsl:variable>
+    <xsl:variable name="requested_module">
+      <xsl:choose>
+        <xsl:when test="not($module = '')">
+          <xsl:choose>
+            <xsl:when test="$module='WEBAPP' or $module='webapp'"></xsl:when>
+            <xsl:otherwise><xsl:value-of select="$module"/></xsl:otherwise>
+          </xsl:choose>
+        </xsl:when>
+        <xsl:when test="starts-with(include:getSystemId(),'module://')">
+          <xsl:value-of select="substring-before(substring-after(include:getSystemId(),'//'),'/')"/>  
+        </xsl:when>
+      </xsl:choose>
+    </xsl:variable>
+    <xsl:variable name="classes">
+      <xsl:choose>
+        <xsl:when test="$editable='true'">pfx_inc_end</xsl:when>
+        <xsl:otherwise>pfx_inc_end pfx_inc_ro</xsl:otherwise>
+      </xsl:choose>
+    </xsl:variable>
+    <xsl:choose>
+      <xsl:when test="$search='dynamic'">
+        <xsl:choose>
+          <xsl:when test="$__target_key='__NONE__'">
+            <span class="{$classes}" title="{pfx:getDynIncInfo($part,$theme,$path,$resolved_module,$requested_module)}"/>
+          </xsl:when>
+          <xsl:otherwise>
+            <span class="{$classes}" title="{{pfx:getDynIncInfo('{$part}','{$theme}','{$path}','{$resolved_module}','{$requested_module}')}}"/>
+          </xsl:otherwise>
+        </xsl:choose>
+      </xsl:when>
+      <xsl:otherwise>
+        <span class="{$classes}" title="{$part}|{$theme}|{$path}|{$resolved_module}"/>
+      </xsl:otherwise>
+    </xsl:choose>
   </xsl:template>
 
   <xsl:template match="pfx:include[@level='runtime']">
@@ -621,6 +654,15 @@
   
   <func:function name="pfx:getIncludePath">
     <func:result select="include:getRelativePathFromSystemId()"/>
+  </func:function>
+  
+  <func:function name="pfx:getDynIncInfo">
+    <xsl:param name="part"/>
+    <xsl:param name="theme"/>
+    <xsl:param name="path"/>
+    <xsl:param name="resolved_module"/>
+    <xsl:param name="requested_module"/>
+    <func:result select="include:getDynIncInfo($part, $theme, $path, $resolved_module, $requested_module)"/>
   </func:function>
  
 </xsl:stylesheet>

@@ -719,6 +719,7 @@
     </xs:attribute>
     <xs:attribute name="refid" type="xs:NCName" use="optional"></xs:attribute>
     <xs:attribute name="xpath" type="xs:string" use="optional"></xs:attribute>
+    <xs:attribute name="module" type="xs:string" use="optional"></xs:attribute>
   </xs:complexType>
 
  

@@ -8,19 +8,30 @@
   <global-config />
 
   <context defaultpage="Home">
-    <resource bean-name="contextUser" class="sample.games.hangman.context.User"/>
+    <resource bean-name="contextUser" class="sample.games.hangman.context.ContextUser"/>
     <resource bean-name="contextPlay" class="sample.games.hangman.context.ContextPlay"/>
+    <resource bean-name="contextSettings" class="sample.games.hangman.context.ContextSettings"/>
   </context>
 
   <pageflow name="MainFlow" final="Home">
     <flowstep name="Home"/>
+    <flowstep name="Settings"/>
     <flowstep name="Play"/>
-    <flowstep name="Bye"/>
+    <flowstep name="Highscore"/>
   </pageflow>
 
   <pagerequest name="Home">
-    <input>
+    <input policy="NONE">
       <wrapper prefix="registration" class="sample.games.hangman.wrapper.Registration"/>
+    </input>
+    <output>
+      <resource node="user" bean-ref="contextUser"/>
+    </output>
+  </pagerequest>
+  
+  <pagerequest name="Settings">
+    <input>
+      <wrapper prefix="settings" class="sample.games.hangman.wrapper.Settings"/>
     </input>
   </pagerequest>
   
@@ -33,10 +44,9 @@
     </output>
   </pagerequest>
 
- <pagerequest name="Bye">
-    <state class="sample.games.hangman.state.ByeState"/>
+  <pagerequest name="Highscore">
     <output>
-      <resource node="user" bean-ref="contextUser"/>
+      <resource node="highscore" bean-ref="highscore"/>
     </output>
   </pagerequest>
 

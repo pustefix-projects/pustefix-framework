@@ -22,7 +22,7 @@
       <extension>
         <groupId>org.apache.maven.archetype</groupId>
         <artifactId>archetype-packaging</artifactId>
-        <version>2.0-alpha-5</version>
+        <version>2.0</version>
       </extension>
     </extensions>
 
@@ -30,11 +30,29 @@
       <plugins>
         <plugin>
           <artifactId>maven-archetype-plugin</artifactId>
-          <version>2.0-alpha-5</version>
+          <version>2.0</version>
           <extensions>true</extensions>
         </plugin>
       </plugins>
     </pluginManagement>
+    <resources>
+      <resource>
+        <targetPath>${project.build.directory}/classes</targetPath>
+        <filtering>false</filtering>
+        <directory>src/main/resources</directory>
+        <excludes>
+          <exclude>META-INF/maven/archetype-metadata.xml</exclude>
+        </excludes>
+      </resource>
+      <resource>
+        <targetPath>${project.build.directory}/classes</targetPath>
+        <filtering>true</filtering>
+        <directory>src/main/resources</directory>
+        <includes>
+          <include>META-INF/maven/archetype-metadata.xml</include>
+        </includes>
+      </resource>
+    </resources>
   </build>
 
 </project>

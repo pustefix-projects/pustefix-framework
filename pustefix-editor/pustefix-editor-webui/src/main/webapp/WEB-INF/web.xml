@@ -1,5 +1,14 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <web-app xmlns="http://java.sun.com/xml/ns/javaee" xmlns:jee="http://java.sun.com/xml/ns/javaee">
+   <context-param>
+      <!-- Make sure we're in mode "prod" to disable live resolving.
+           The editor has strange problem in mode "test": 
+           the live mechanism causes the editor to load the application's pfixlog.xml instead of his own pfixlog.xml.
+           That fails because the jar file for unifiedlogging.Config is not part ot the editor's jar files.
+        -->
+      <param-name>mode</param-name>
+      <param-value>prod</param-value>
+   </context-param>
    <!--
    <context-param>
       <param-name>editor.userdata</param-name>

@@ -32,6 +32,7 @@ import com.marsching.flexiparse.parser.ClasspathConfiguredParser;
 import com.marsching.flexiparse.parser.exception.ParserException;
 
 import de.schlund.pfixxml.config.EnvironmentProperties;
+import de.schlund.pfixxml.config.GlobalConfig;
 import de.schlund.pfixxml.resources.FileResource;
 
 /**
@@ -60,8 +61,11 @@ public class PropertyFileReader {
     }
     
     public static void read(InputSource in, Properties properties) throws ParserException {
-        
-        PropertiesBasedCustomizationInfo customizationInfo = new PropertiesBasedCustomizationInfo(EnvironmentProperties.getProperties());
+        Properties cusProps = new Properties(EnvironmentProperties.getProperties());
+        if(GlobalConfig.getDocroot() != null) {
+            cusProps.setProperty("docroot", GlobalConfig.getDocroot());
+        }
+        PropertiesBasedCustomizationInfo customizationInfo = new PropertiesBasedCustomizationInfo(cusProps);
         ClasspathConfiguredParser parser = new ClasspathConfiguredParser("META-INF/org/pustefixframework/config/generic/properties-config.xml");
         
         parser.parse(in, customizationInfo, properties);

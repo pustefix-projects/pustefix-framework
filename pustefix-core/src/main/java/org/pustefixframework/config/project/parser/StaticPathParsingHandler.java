@@ -18,34 +18,31 @@
 
 package org.pustefixframework.config.project.parser;
 
-import org.pustefixframework.admin.mbeans.WebappAdmin;
 import org.pustefixframework.config.customization.CustomizationAwareParsingHandler;
 import org.pustefixframework.config.generic.ParsingUtils;
-import org.pustefixframework.config.project.ProjectInfo;
-import org.springframework.beans.factory.config.BeanDefinitionHolder;
-import org.springframework.beans.factory.support.BeanDefinitionBuilder;
+import org.pustefixframework.config.project.StaticPathInfo;
+import org.w3c.dom.Element;
 
 import com.marsching.flexiparse.parser.HandlerContext;
 import com.marsching.flexiparse.parser.exception.ParserException;
 
 /**
+ * Handler reading /p:project-config/p:application/p:static//p:path elements
  * 
  * @author mleidig@schlund.de
  *
  */
-public class WebappAdminParsingHandler extends CustomizationAwareParsingHandler {
-
+public class StaticPathParsingHandler extends CustomizationAwareParsingHandler {
+    
     @Override
-    public void handleNodeIfActive(HandlerContext context) throws ParserException {
+    protected void handleNodeIfActive(HandlerContext context) throws ParserException {
         
-        BeanDefinitionBuilder beanBuilder = BeanDefinitionBuilder.genericBeanDefinition(WebappAdmin.class);
-        beanBuilder.setScope("singleton");
-        ProjectInfo projectInfo = ParsingUtils.getSingleTopObject(ProjectInfo.class, context);
-        beanBuilder.addPropertyValue("projectName", projectInfo.getProjectName());
-        BeanDefinitionHolder beanHolder = new BeanDefinitionHolder(beanBuilder.getBeanDefinition(), WebappAdmin.class.getName());
-        
-        context.getObjectTreeElement().addObject(beanHolder);
-       
+        Element element = (Element)context.getNode();
+        String path = element.getTextContent().trim();
+        if(path.length() > 0) {
+            StaticPathInfo staticPathInfo = ParsingUtils.getSingleTopObject(StaticPathInfo.class, context);
+            staticPathInfo.addStaticPath(path);
+        }
     }
-
+    
 }

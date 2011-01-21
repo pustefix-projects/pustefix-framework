@@ -1,7 +1,7 @@
 package sample.games.hangman.context;
 
 
-public class User {
+public class ContextUser {
 
 	private String name;
     

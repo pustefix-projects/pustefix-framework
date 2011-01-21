@@ -7,13 +7,34 @@
       <link href="{$__contextpath}/css/style.css" media="all" rel="stylesheet" type="text/css"/>
     </head>
     <body>
+      
+     <div id="container">
+     
+      
       <div id="header">
-        <pfx:include href="txt/common.xml" part="title"/>
+        <!-- <pfx:include href="txt/common.xml" part="title"/> -->
+        <pfx:image themed-path="img" themed-img="logo.png" align="middle"/>
+        <span id="footer"><pfx:include href="txt/common.xml" part="powered_by"/></span>
       </div>
-      <div class="content">
+      
+     <div id="navigation">
+        <navibutton page="Home"/>
+        <navibutton page="Settings"/>
+        <navibutton page="Play"/>
+        <navibutton page="Highscore"/>
+      </div>
+      
+      <div id="content">
         <pfx:maincontent prefix=""/>
+        <pfx:editconsole/>
       </div>
-      <pfx:editconsole/>
+      
+      
+      
+    
+    
+    </div>  
+    
     </body>
   </html>
 </pfx:document>

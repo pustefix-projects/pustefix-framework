@@ -8,7 +8,7 @@
     <title>What's new in Pustefix 0.15.6</title>
   
     <section xml:id="news.0_15_6.modules">
-      <title>New module enhancements</title>
+      <title>Module enhancements</title>
       <para>
         Introduced pre-defined special module names <literal>WEBAPP</literal> and 
         <literal>PAGEDEF</literal>, which can be set as <literal>module</literal> values at <literal>&lt;pfx:include&gt;</literal>
@@ -28,7 +28,7 @@
     <title>What's new in Pustefix 0.15.7</title>
 
     <section xml:id="news.0_15_7.modules">
-      <title>New module enhancements</title>
+      <title>Module enhancements</title>
       <para>
         Static web resources now can be delivered directly from modules without having to extract them to the webapp folder first
         by the build process. Thus it's no longer necessary to define resource mappings in the module's descriptor file (see
@@ -50,7 +50,7 @@
     <title>What's new in Pustefix 0.15.11</title>
 
     <section xml:id="news.0_15_11.config">
-      <title>New configuration system enhancements</title>
+      <title>Configuration system enhancements</title>
       <para>
         We improved the configuration customization support by making context init parameters available as environment properties
         and thus usable as XPath variables during the customization process (see <xref linkend="configuration.customization"/>).
@@ -61,6 +61,69 @@
         config customizations can be controlled by setting according context init parameters.
       </para>
    
+    </section>
+  </section>
+
+  <section xml:id="news.0_15_13">
+    <title>What's new in Pustefix 0.15.13</title>
+
+    <section xml:id="news.0_15_13.config">
+      <title>Module/configuration enhancements</title>
+      <para>
+        Including configuration fragments from modules now can be done without having to directly specify the module names.
+        Therefor the <literal>config-include</literal> element now supports <literal>module</literal> attribute values
+        containing simple patterns, which will be matched against the names of the modules available in the classpath,
+        e.g. <literal>module="*"</literal> will include all according configuration fragments found in the classpath,
+        <literal>module="*-us"</literal> will include only fragments from modules whose name ends with <literal>-us</literal>.
+      </para>
+      <para>
+        Added support for conditional unpacking of module resources.
+        Within the module descriptor you can set the optional <literal>resources</literal> element's 
+        attribute <literal>unpack</literal> to <literal>obsolete</literal>. Thus the resources won't be extracted
+	in the current or newer Pustefix versions (despite containing resource mappings).
+        If you still want that obsolete resources are extracted, you can configure the Maven <literal>pustefix-webapp-plugin</literal>
+	by adding <literal>&lt;unpackObsolete&gt;true&lt;/unpackObsolete&gt;</literal> to its configuration.
+	This should help migrating modules and applications towards avoiding extracting resources at all, while keeping
+        backwards compatibility for modules shared between different applications (see <xref linkend="modulessupport"/>).
+      </para>
+    </section>
+    <section xml:id="news.0_15_13.tooling">
+      <title>Tooling enhancements</title>
+      <para>
+        When hovering the closing include part delimiters displayed in edit mode, the tooltip now shows additional information for dynamic
+        includes. It prints out the complete dynamic search chain, e.g. something like 
+        <literal>webapp(?) module-a(-) module-aa(+) module-ab(+)</literal>, whereas <literal>(?)</literal> means that the file doesn't
+        exist, <literal>(-)</literal> says that the file exists but doesn't contain the part, and <literal>(+)</literal> implies 
+        that a file containing the part is found.
+      </para>
+      <para>
+        Introduced the Pustefix internals page. Similar to the DOM tree view this page provides some additional information useful
+        during development, e.g. environment, JVM and module information (see <xref linkend="tooling.pfxinternals"/>). 
+      </para>
+    </section>
+  </section>
+
+  <section xml:id="news.0_15_14">
+    <title>What's new in Pustefix 0.15.14</title>
+
+    <section xml:id="news.0_15_14.iwrapper">
+      <title>IWrapper enhancements</title>
+      <para>Annotation-based IWrappers now also support assigning IHandler beans by name. Therefor the <literal>@IWrapper</literal>
+            annotation provides the new <literal>beanRef</literal> attribute (see <xref linkend="advanced.iwrapperannotations.reference"/>).
+      </para>
+    </section>
+  </section>
+
+  <section xml:id="news.0_15_17">
+    <title>What's new in Pustefix 0.15.17</title>
+
+    <section xml:id="news.0_15_17.modules">
+      <title>Module enhancements</title>
+      <para>Modules now can define which directories contain static resources and should be publicly available. Thus you don't have
+            to configure it in every application using the module. This configuration is done in the module deployment descriptor
+            using <literal>&lt;path/&gt;</literal> elements within the <literal>&lt;static/&gt;</literal> top-level section 
+            (see <xref linkend="modulessupport"/>).
+      </para>
     </section>
   </section>
 

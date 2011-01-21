@@ -1,0 +1,112 @@
+<?xml version="1.0" encoding="utf-8"?>
+<include_parts xmlns:ixsl="http://www.w3.org/1999/XSL/Transform" xmlns:pfx="http://www.schlund.de/pustefix/core">
+  
+  <part name="content">
+    <theme name="default">
+
+      <pfx:forminput>
+       	
+       	<div class="setting"><pfx:include part="level"/></div>
+ 		<pfx:xinp class="radio" type="radio" name="settings.Level" value="BEGINNER" default="true"> <pfx:include part="beginner"/></pfx:xinp><br/>
+        <pfx:xinp class="radio" type="radio" name="settings.Level" value="ADVANCED"> <pfx:include part="advanced"/></pfx:xinp><br/>
+        <pfx:xinp class="radio" type="radio" name="settings.Level" value="EXPERT"> <pfx:include part="expert"/></pfx:xinp><br/>
+      
+        <div class="setting"><pfx:include part="language"/></div>
+ 		<pfx:xinp class="radio" type="radio" name="settings.Language" value="en"><pfx:include part="default_en"/> <pfx:include part="english"/></pfx:xinp><br/>
+        <pfx:xinp class="radio" type="radio" name="settings.Language" value="de"><pfx:include part="default_de"/> <pfx:include part="german"/></pfx:xinp><br/>
+              
+       	<div class="setting">
+       	  <pfx:include part="memory"/>
+       	  <pfx:xinp type="check" name="settings.Memory" value="true" default="true"/>
+        </div>
+        
+        <br/>
+        <pfx:xinp type="submit"><pfx:value><pfx:include part="submit"/></pfx:value></pfx:xinp>
+        <show-error field="registration.name"/>
+      </pfx:forminput>
+      
+    </theme>
+
+  </part>
+  
+  <part name="level">
+    <theme name="default">
+      Difficulty level
+    </theme>
+    <theme name="de">
+      Schwierigkeitsgrad
+    </theme>
+  </part>
+  
+  <part name="language">
+    <theme name="default">
+      Dictionary language
+    </theme>
+    <theme name="de">
+      Wörterbuch-Sprache
+    </theme>
+  </part>
+  
+  <part name="english">
+    <theme name="default">
+      English
+    </theme>
+    <theme name="de">
+      Englisch
+    </theme>
+  </part>
+  
+  <part name="german">
+    <theme name="default">
+      German
+    </theme>
+    <theme name="de">
+      Deutsch
+    </theme>
+  </part>
+  
+  <part name="default_de">
+    <theme name="default"></theme>
+    <theme name="de"><pfx:default>true</pfx:default></theme>
+  </part>
+  
+  <part name="default_en">
+    <theme name="default"><pfx:default>true</pfx:default></theme>
+    <theme name="de"></theme>
+  </part>
+  
+  <part name="memory">
+    <theme name="default">
+      Memorize checked characters
+    </theme>
+    <theme name="de">
+      Geprüfte Buchstaben merken
+    </theme>
+  </part>
+  
+  <part name="beginner">
+    <theme name="default">Beginner</theme>
+    <theme name="de">Anfänger</theme>
+  </part>
+  
+  <part name="advanced">
+    <theme name="default">Advanced</theme>
+    <theme name="de">Fortgeschrittener</theme>
+  </part>
+  
+  <part name="expert">
+    <theme name="default">Expert</theme>
+    <theme name="de">Experte</theme>
+  </part>
+  
+  <part name="submit">
+    <theme name="default">Save</theme>
+    <theme name="de">Speichern</theme>
+  </part>
+  
+  <part name="title">
+    <theme name="default">Settings</theme>
+    <theme name="de">Einstellungen</theme>
+  </part>
+
+ </include_parts>

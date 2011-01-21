@@ -23,6 +23,8 @@ import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import javax.xml.transform.TransformerException;
 import javax.xml.xpath.XPathConstants;
@@ -37,6 +39,7 @@ import org.xml.sax.SAXException;
 
 import com.marsching.flexiparse.util.DOMBasedNamespaceContext;
 
+import de.schlund.pfixcore.util.ModuleInfo;
 import de.schlund.pfixxml.resources.Resource;
 import de.schlund.pfixxml.resources.ResourceUtil;
 import de.schlund.pfixxml.util.Generics;
@@ -123,65 +126,88 @@ public class IncludesResolver {
             if (filepath == null) {
                 throw new SAXException("The attribute \"file\" must be set for the include tag!");
             }
+            List<String> includePaths = new ArrayList<String>();
+            boolean wildcardInclude = false;
             if(module != null) {
-            	if(filepath.startsWith("/")) filepath = filepath.substring(1);
-            	filepath = "module://" + module + "/" + filepath;
-            }
-            
-
-            // Look if the same include has been performed ealier in the recursion
-            // If yes, we have a cyclic dependency
-            Set<Tupel<String, String>> list = includesList.get();
-            if (list == null) {
-                list = new HashSet<Tupel<String, String>>();
-                includesList.set(list);
-            }
-            if (list.contains(filepath + "#" + xpath)) {
-                throw new SAXException("Cyclic dependency in include detected: " + filepath.toString());
-            }
-            
-            Resource includeFile = ResourceUtil.getResource(filepath);
-            Document includeDocument;
-            try {
-                includeDocument = Xml.parseMutable(includeFile);
-            } catch (IOException e) {
-                throw new SAXException("I/O exception on included file " + includeFile.toString(), e);
-            }
-            
-            if (!CONFIG_FRAGMENTS_NS.equals(includeDocument.getDocumentElement().getNamespaceURI()) || !CONFIG_FRAGMENTS_ROOT_TAG.equals(includeDocument.getDocumentElement().getLocalName())) {
-                throw new SAXException("File " + filepath + " seems not to be a valid configuration fragments file!");
-            }
-
-            list.add(new Tupel<String, String>(filepath, xpath));
-            try {
-                resolveIncludes(includeDocument);
-            } finally {
-                list.remove(new Tupel<String, String>(filepath, xpath));
-            }
-            
-            NodeList includeNodes;
-            try {
-                javax.xml.xpath.XPath xpathProc = XPathFactory.newInstance().newXPath();
-                xpathProc.setNamespaceContext(new DOMBasedNamespaceContext(elem));
-                includeNodes = (NodeList) xpathProc.evaluate(xpath, includeDocument, XPathConstants.NODESET);
-            } catch (XPathExpressionException e) {
-                throw new SAXException("XPath Expression invalid: " + xpath);
-            }
-            
-            for (int i=0; i < includeNodes.getLength(); i++) {
-                Node node = includeNodes.item(i);
-                Node newNode = doc.importNode(node, true);
-                if(module != null) {
-                	newNode.setUserData("module", module, null);
+                if(filepath.startsWith("/")) filepath = filepath.substring(1);
+                if(module.contains("*")) {
+                    Pattern modulePattern = Pattern.compile(module.replaceAll("\\*", ".*"));
+                    Set<String> moduleNames = ModuleInfo.getInstance().getModules();
+                    for(String moduleName: moduleNames) {
+                        if(modulePattern.matcher(moduleName).matches()) {
+                            includePaths.add("module://" + moduleName + "/" + filepath);
+                        }
+                    }
+                    wildcardInclude = true;
+                } else {
+                    filepath = "module://" + module + "/" + filepath;
+                    includePaths.add(filepath);
                 }
-                elem.getParentNode().insertBefore(newNode, elem);
+            } else {
+                includePaths.add(filepath);
             }
-            elem.getParentNode().removeChild(elem);
             
-            // Trigger event
-            FileIncludeEvent ev = new FileIncludeEvent(this, includeFile);
-            for (FileIncludeEventListener listener : listeners) {
-                listener.fileIncluded(ev);
+            for(String includePath: includePaths) {
+
+                // Look if the same include has been performed ealier in the recursion
+                // If yes, we have a cyclic dependency
+                Set<Tupel<String, String>> list = includesList.get();
+                if (list == null) {
+                    list = new HashSet<Tupel<String, String>>();
+                    includesList.set(list);
+                }
+                if (list.contains(includePath + "#" + xpath)) {
+                    throw new SAXException("Cyclic dependency in include detected: " + includePath.toString());
+                }
+                
+                Resource includeFile = ResourceUtil.getResource(includePath);
+                if(includeFile.exists()) {
+                    
+                    Document includeDocument;
+                    try {
+                        includeDocument = Xml.parseMutable(includeFile);
+                    } catch (IOException e) {
+                        throw new SAXException("I/O exception on included file " + includeFile.toString(), e);
+                    }
+                    
+                    if (!CONFIG_FRAGMENTS_NS.equals(includeDocument.getDocumentElement().getNamespaceURI()) || !CONFIG_FRAGMENTS_ROOT_TAG.equals(includeDocument.getDocumentElement().getLocalName())) {
+                        throw new SAXException("File " + includePath + " seems not to be a valid configuration fragments file!");
+                    }
+        
+                    list.add(new Tupel<String, String>(includePath, xpath));
+                    try {
+                        resolveIncludes(includeDocument);
+                    } finally {
+                        list.remove(new Tupel<String, String>(includePath, xpath));
+                    }
+                    
+                    NodeList includeNodes;
+                    try {
+                        javax.xml.xpath.XPath xpathProc = XPathFactory.newInstance().newXPath();
+                        xpathProc.setNamespaceContext(new DOMBasedNamespaceContext(elem));
+                        includeNodes = (NodeList) xpathProc.evaluate(xpath, includeDocument, XPathConstants.NODESET);
+                    } catch (XPathExpressionException e) {
+                        throw new SAXException("XPath Expression invalid: " + xpath);
+                    }
+                    
+                    for (int i=0; i < includeNodes.getLength(); i++) {
+                        Node node = includeNodes.item(i);
+                        Node newNode = doc.importNode(node, true);
+                        if(module != null) {
+                        	newNode.setUserData("module", module, null);
+                        }
+                        elem.getParentNode().insertBefore(newNode, elem);
+                    }
+                    elem.getParentNode().removeChild(elem);
+                    
+                    // Trigger event
+                    FileIncludeEvent ev = new FileIncludeEvent(this, includeFile);
+                    for (FileIncludeEventListener listener : listeners) {
+                        listener.fileIncluded(ev);
+                    }
+                } else if(!wildcardInclude) {
+                    throw new SAXException("Included config fragment file '" + includeFile.toString() +"' doesn't exist.");
+                }
             }
         }
     }

@@ -199,7 +199,8 @@
   <pagerequest name="encoding">
     <state class="de.schlund.pfixcore.example.EncodingTestState" />
     <input>
-      <wrapper prefix="text" class="de.schlund.pfixcore.example.iwrapper.EncodingTest" />
+      <wrapper prefix="text" class="de.schlund.pfixcore.example.iwrapper.EncodingTestWrapper" />
+      <wrapper prefix="upload" class="de.schlund.pfixcore.example.iwrapper.EncodingTestUpload" />
     </input>
     <output>
       <resource node="text" class="de.schlund.pfixcore.example.ContextEncodingTest" />

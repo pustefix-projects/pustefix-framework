@@ -37,5 +37,19 @@
     </xsl:if>
   </xsl:template>
   
+  <xsl:template match="show-messages">
+    <pfx:checkmessage>
+      <pfx:messageloop>
+        <div>
+          <xsl:attribute name="class">{$pfx_class}</xsl:attribute>
+          <pfx:scode/>
+        </div>
+      </pfx:messageloop>
+    </pfx:checkmessage>
+  </xsl:template>
+  
+  <xsl:template match="navibutton">
+    <pfx:button page="{@page}"><pfx:include href="txt/pages/{@page}.xml" part="title"/></pfx:button>
+  </xsl:template>
   
 </xsl:stylesheet>

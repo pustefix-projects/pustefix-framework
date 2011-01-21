@@ -29,7 +29,7 @@
         <artifactId>pustefix-statuscode-plugin</artifactId>
         <version>0.16.0-SNAPSHOT</version>
         <configuration>
-          <module>${artifactId}</module>
+          <module>${project.artifactId}</module>
           <includes>
             <include>dyntxt/statuscodeinfo.xml</include>
           </includes>

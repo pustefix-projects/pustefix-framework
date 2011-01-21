@@ -33,6 +33,8 @@ import org.w3c.dom.Element;
 import org.w3c.dom.Node;
 import org.xml.sax.SAXException;
 
+import de.schlund.pfixxml.resources.DynamicResourceInfo;
+import de.schlund.pfixxml.resources.DynamicResourceProvider;
 import de.schlund.pfixxml.resources.FileResource;
 import de.schlund.pfixxml.resources.Resource;
 import de.schlund.pfixxml.resources.ResourceUtil;
@@ -67,6 +69,8 @@ public final class IncludeDocumentExtension {
     private static ThreadLocal<String> resolvedUri = new ThreadLocal<String>();
     
     private static Pattern dynamicUriPattern = Pattern.compile("dynamic://[^?#]*(\\?([^#]*))?(#.*)?");
+    
+    private static DynamicResourceProvider dynamicResourceProvider = new DynamicResourceProvider();
     
     //~ Methods
     // ....................................................................................
@@ -325,6 +329,23 @@ public final class IncludeDocumentExtension {
     
     public static String getResolvedURI() {
         return resolvedUri.get();
+    }
+    
+    public static String getDynIncInfo(String part, String theme, String path, String resolvedModule, String requestedModule) {
+        try {
+            StringBuilder sb = new StringBuilder();
+            sb.append(part).append("|").append(theme).append("|").append(path).append("|").append(resolvedModule);
+            sb.append("|").append(requestedModule).append("|");
+            if(!path.startsWith("/")) path = "/" + path;
+            URI uri = new URI("dynamic://" + requestedModule + path + "?part=" + part);
+            DynamicResourceInfo info = new DynamicResourceInfo();
+            dynamicResourceProvider.getResource(uri, info);
+            sb.append(info.toString());
+            return sb.toString();
+        } catch (Exception x) {
+            LOG.error("Error getting dynamic include information", x);
+            return "n/a";
+        }
     }
 
     private static final Node errorNode(XsltContext context,String prodname) {

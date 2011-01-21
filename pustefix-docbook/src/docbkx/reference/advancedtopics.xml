@@ -1804,6 +1804,7 @@ public @interface CustomerSerializer {}]]></programlisting>
         public @interface IWrapper {
           String name() default "";
           Class<? extends IHandler> ihandler() default IHandler.class;
+          String beanRef() default "";
         }
         
         @IWrapper(name="MyBeanWrapper",ihandler=MyBeanHandler.class)
@@ -1817,7 +1818,8 @@ public @interface CustomerSerializer {}]]></programlisting>
         an IWrapper. The <literal>name</literal> attribute denotes the class name of the
         generated IWrapper class (without package). By default the bean name with the
         suffix <literal>Wrapper</literal> is used (and the same package). The <literal>ihandler</literal>
-        attribute denotes the <literal>IHandler</literal> implementation class.
+        attribute denotes the <literal>IHandler</literal> implementation class. Alternatively you can
+        use the <literal>beanRef</literal> attribute to reference a Spring managed IHandler bean by name.
       </para>
       <para>
       <programlisting language="java"><![CDATA[

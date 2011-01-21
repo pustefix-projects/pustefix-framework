@@ -5,24 +5,59 @@
     <theme name="default">
 
       <h3><pfx:include part="greeting"/></h3>
- 	
-      <pfx:forminput>
-        Please enter your name:
-        <pfx:xinp type="text" name="registration.name" size="20"/>
-        <pfx:xinp type="submit" value="Submit"/>
-        <show-error field="registration.name"/>
-      </pfx:forminput>
-
+ 	  
+ 	  <pfx:checkactive prefix="registration">
+        <pfx:forminput>
+          <pfx:include part="name"/>
+          <pfx:xinp type="text" name="registration.name" size="20" class="data"/>
+          <pfx:xinp type="submit">
+            <pfx:value><pfx:include part="submit"/></pfx:value>
+          </pfx:xinp>
+          <show-error field="registration.name"/>
+        </pfx:forminput>
+      </pfx:checkactive>
+      
+      <pfx:checknotactive prefix="registration">
+        <pfx:button page="Play" mode="force"><pfx:include part="play"/> <ixsl:value-of select="/formresult/user/@name"/>!</pfx:button>  
+      </pfx:checknotactive>
+      
     </theme>
-
+  </part>
+  
+  <part name="title">
+    <theme name="default">Home</theme>
+    <theme name="de">Start</theme>
   </part>
   
   <part name="greeting">
     <theme name="default">
       Welcome to <pfx:include href="txt/common.xml" part="title"/>!
     </theme>
-    <theme name="en">
-      Willkommen zu <pfx:include href="txt/common.xml" part="title"/>!
+    <theme name="de">
+      Willkommen bei <pfx:include href="txt/common.xml" part="title"/>!
+    </theme>
+  </part>
+
+  <part name="name">
+    <theme name="default">
+      Please enter your name:
+    </theme>
+    <theme name="de">
+      Bitte gib deinen Namen ein:
+    </theme>
+  </part>
+  
+  <part name="submit">
+    <theme name="default">Submit</theme>
+    <theme name="de">Senden</theme>
+  </part>
+  
+  <part name="play">
+    <theme name="default">
+      Let's play,
+    </theme>
+    <theme name="de">
+      Lass uns spielen,
     </theme>
   </part>
 

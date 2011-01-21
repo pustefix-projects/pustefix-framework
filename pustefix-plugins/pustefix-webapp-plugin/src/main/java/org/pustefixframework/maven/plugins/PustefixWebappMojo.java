@@ -28,8 +28,6 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Enumeration;
 import java.util.List;
-import java.util.Map;
-import java.util.Properties;
 import java.util.jar.JarEntry;
 import java.util.jar.JarFile;
 import java.util.zip.ZipEntry;
@@ -77,6 +75,14 @@ public class PustefixWebappMojo extends AbstractMojo {
      * @parameter default-value="${project.build.directory}/${project.artifactId}-${project.version}/modules"
      */
     private String modulesdir;
+    
+    /**
+     * Set if resources from modules should be unpacked even though marked as obsolete in the
+     * module descriptor.
+     * 
+     * @parameter default-value=false
+     */
+    private boolean unpackObsolete;
     
     /**
      * Where to place apt-generated classes.
@@ -179,22 +185,6 @@ public class PustefixWebappMojo extends AbstractMojo {
          src.close();
     }
     
-    private Properties getProperties() {
-    	Properties orig;
-    	Properties result;
-    	String key;
-    	
-    	result = new Properties();
-    	orig = project.getProperties();
-        for (Map.Entry<Object, Object> entry: orig.entrySet()) {
-        	key = (String) entry.getKey();
-        	if (key.startsWith("pustefix.")) {
-        		result.setProperty(key, (String) entry.getValue());
-        	}
-        }
-    	return result;
-    }
-    
     private static List<String> pathStrings(Collection<Artifact> artifacts) {
         List<String> lst;
         
@@ -218,7 +208,7 @@ public class PustefixWebappMojo extends AbstractMojo {
         if (modulesdir == null) {
             throw new MojoExecutionException("Mandatory attribute extractdir is not set!");
         }
-        artifacts = project.getCompileArtifacts();
+        artifacts = getProjectCompileArtifacts();
         count = 0;
         for (Artifact artifact : artifacts) {
             if ("jar".equals(artifact.getType())) {
@@ -229,6 +219,11 @@ public class PustefixWebappMojo extends AbstractMojo {
             }
         }
         return count;
+    }
+    
+    @SuppressWarnings("unchecked")
+    private List<Artifact> getProjectCompileArtifacts() {
+        return (List<Artifact>)project.getCompileArtifacts();
     }
     
     /** @return unpacked directory */
@@ -346,34 +341,37 @@ public class PustefixWebappMojo extends AbstractMojo {
                 this.mappings = new ArrayList<ResourceMapping>();
                 return;
             }
-            temp = ((Element)temp.item(0)).getElementsByTagName("resource-mapping");
             ArrayList<ResourceMapping> mappings = new ArrayList<ResourceMapping>();
-            for (int i=0; i<temp.getLength(); i++) {
-                Element el = (Element) temp.item(i);
-                String srcpath = el.getAttribute("srcpath");
-                if (srcpath == null) {
-                    throw new TransformerException("Mandatory attribute srcpath not set on resource-mapping attribute");
+            String unpackValue = ((Element)temp.item(0)).getAttribute("unpack").trim();
+            if(!unpackValue.equalsIgnoreCase("obsolete") || unpackObsolete) {
+                temp = ((Element)temp.item(0)).getElementsByTagName("resource-mapping");
+                for (int i=0; i<temp.getLength(); i++) {
+                    Element el = (Element) temp.item(i);
+                    String srcpath = el.getAttribute("srcpath");
+                    if (srcpath == null) {
+                        throw new TransformerException("Mandatory attribute srcpath not set on resource-mapping attribute");
+                    }
+                    if (srcpath.startsWith("/")) {
+                        srcpath = srcpath.substring(1);
+                    }
+                    if (srcpath.endsWith("/")) {
+                        srcpath = srcpath.substring(0, srcpath.length()-1);
+                    }
+                    String targetpath = el.getAttribute("targetpath");
+                    if (targetpath == null) {
+                        targetpath = "";
+                    }
+                    if (targetpath.startsWith("/")) {
+                        targetpath = targetpath.substring(1);
+                    }
+                    if (targetpath.endsWith("/")) {
+                        targetpath = targetpath.substring(0, targetpath.length()-1);
+                    }
+                    ResourceMapping rm = new ResourceMapping();
+                    rm.sourcePath = srcpath;
+                    rm.targetPath = targetpath;
+                    mappings.add(rm);
                 }
-                if (srcpath.startsWith("/")) {
-                    srcpath = srcpath.substring(1);
-                }
-                if (srcpath.endsWith("/")) {
-                    srcpath = srcpath.substring(0, srcpath.length()-1);
-                }
-                String targetpath = el.getAttribute("targetpath");
-                if (targetpath == null) {
-                    targetpath = "";
-                }
-                if (targetpath.startsWith("/")) {
-                    targetpath = targetpath.substring(1);
-                }
-                if (targetpath.endsWith("/")) {
-                    targetpath = targetpath.substring(0, targetpath.length()-1);
-                }
-                ResourceMapping rm = new ResourceMapping();
-                rm.sourcePath = srcpath;
-                rm.targetPath = targetpath;
-                mappings.add(rm);
             }
             this.mappings = mappings;
         }

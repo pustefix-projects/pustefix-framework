@@ -88,14 +88,17 @@ public class DocrootRequestHandler implements UriProvidingHttpRequestHandler, Se
 
     public void handleRequest(HttpServletRequest req, HttpServletResponse res)
             throws ServletException, IOException {
-
+        
         String path = req.getPathInfo();
         
         // Handle default (root) request
         if(path == null || path.length() == 0 || (path.equals("/") && !defaultpath.equals("/"))) {
-            String redirect = req.getContextPath() + defaultpath;
-            if(req.getQueryString() != null) redirect += "?" + req.getQueryString();
-            res.sendRedirect(redirect);
+            StringBuilder sb = new StringBuilder();
+            sb.append(req.getScheme()).append("://").append(getServerName(req));
+            if(!(req.getServerPort() == 80 || req.getServerPort() == 443)) sb.append(":" + req.getServerPort());
+            sb.append(req.getContextPath()).append(defaultpath);
+            if(req.getQueryString() != null && !req.getQueryString().equals("")) sb.append("?" + req.getQueryString());
+            res.sendRedirect(sb.toString());
             return;
         }
 
@@ -111,55 +114,53 @@ public class DocrootRequestHandler implements UriProvidingHttpRequestHandler, Se
             return;
         }
 
-        InputStream in = null;
-        long contentLength = -1;
-        long lastModified = -1;
-        
-        try {
-
-            if (path.startsWith("/")) {
-                path = path.substring(1);
-            }
-            
-            if (passthroughPaths != null) {
-                for (String prefix : this.passthroughPaths) {
-                    if (path.startsWith(prefix)) {
-                        Resource resource = null;
-                        if(path.startsWith("modules/") && !extractedPaths.contains(prefix)) {
-                            String moduleUri = "module://" + path.substring(8);
-                            resource = ResourceUtil.getResource(moduleUri);
-                        } else {
-                            resource = ResourceUtil.getFileResourceFromDocroot(path);
-                        }
-                        if(resource.exists()) {
-                            contentLength = resource.length();
-                            lastModified = resource.lastModified();
-                            in = resource.getInputStream();
-                            break;
-                        }
+        Resource inputResource = null;
+        if (path.startsWith("/")) {
+            path = path.substring(1);
+        }
+        if (passthroughPaths != null) {
+            for (String prefix : this.passthroughPaths) {
+                if (path.startsWith(prefix)) {
+                    Resource resource = null;
+                    if(path.startsWith("modules/") && !extractedPaths.contains(prefix)) {
+                        String moduleUri = "module://" + path.substring(8);
+                        resource = ResourceUtil.getResource(moduleUri);
+                    } else {
+                        resource = ResourceUtil.getFileResourceFromDocroot(path);
+                    }
+                    if(resource.exists()) {
+                        inputResource = resource;
+                        break;
                     }
                 }
-                if (in == null) {
-                    FileResource baseResource = ResourceUtil.getFileResource(base);
-                    FileResource resource = ResourceUtil.getFileResource(baseResource, path);
-                    contentLength = resource.length();
-                    lastModified = resource.lastModified();
-                    in = resource.getInputStream();
+            }
+            if (inputResource == null) {
+                FileResource baseResource = ResourceUtil.getFileResource(base);
+                FileResource resource = ResourceUtil.getFileResource(baseResource, path);
+                if(resource.exists()) {
+                    inputResource = resource;
                 }
             }
-            
-        } catch(IOException x) {
-            LOG.warn("Resource can't be read: " + path, x);
-            //send 'not found' below
         }
-            
-        if(in == null) {
+        
+        if(inputResource == null) {
             res.sendError(HttpServletResponse.SC_NOT_FOUND, path);
             if(LOG.isDebugEnabled()) {
                 LOG.debug("Resource doesn't exist -> send 'not found': " + path);
             }
             return;
         }
+        
+        if(!inputResource.isFile()) {
+            res.sendError(HttpServletResponse.SC_FORBIDDEN, path);
+            if(LOG.isDebugEnabled()) {
+                LOG.debug("Resource isn't a normal file -> send 'forbidden': " + path);
+            }
+            return;
+        }
+        
+        long contentLength = inputResource.length();
+        long lastModified = inputResource.lastModified();
             
         String reqETag = req.getHeader("If-None-Match");
         if(reqETag != null) {
@@ -173,7 +174,7 @@ public class DocrootRequestHandler implements UriProvidingHttpRequestHandler, Se
                 return;
             }
         }
-            
+     
         long reqMod = req.getDateHeader("If-Modified-Since");
         if(reqMod != -1) {
             if(lastModified < reqMod + 1000) {
@@ -208,7 +209,7 @@ public class DocrootRequestHandler implements UriProvidingHttpRequestHandler, Se
         }
             
         OutputStream out = new BufferedOutputStream(res.getOutputStream());
-
+        InputStream in = inputResource.getInputStream();
         int bytes_read;
         byte[] buffer = new byte[8];
         while ((bytes_read = in.read(buffer)) != -1) {
@@ -244,5 +245,15 @@ public class DocrootRequestHandler implements UriProvidingHttpRequestHandler, Se
             }
         }
     }
+    
+    public static String getServerName(HttpServletRequest req) {
+        String forward = req.getHeader("X-Forwarded-Server");
+        if (forward != null && !forward.equals("")) {
+            return forward;
+        } else {
+            return req.getServerName();
+        }
+    }
+    
     
 }

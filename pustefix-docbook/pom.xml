@@ -143,6 +143,7 @@
       <plugin>
         <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-changes-plugin</artifactId>
+        <version>2.3</version>
         <reportSets>
           <reportSet>
             <reports>
@@ -153,7 +154,7 @@
         <configuration>
           <tracUser>mvnchr</tracUser>
           <tracPassword>k7XvGD9i3MNz2bV4d78P</tracPassword>
-          <query>order=priority&amp;milestone=${pom.version}</query>
+          <query>order=priority&amp;milestone=${project.version}</query>
         </configuration>
       </plugin>
     </plugins>

@@ -5,5 +5,9 @@
                                        http://www.pustefix-framework.org/2008/namespace/module-descriptor.xsd">
 
   <module-name>animal-module</module-name>
+  
+  <static>
+    <path>img</path>
+  </static>
 
 </module-descriptor>

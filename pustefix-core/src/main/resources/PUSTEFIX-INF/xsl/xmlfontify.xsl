@@ -24,6 +24,10 @@
           .datatable td {padding:4px;}
           .datatable th {padding:4px;text-align:left;font-weight:normal;border-bottom: 1px solid black;}
           .rowsep {border-bottom: 1px dotted #888888;}
+          table.info {padding-left: 20px;}
+          table.info th,td {text-align:left; padding:4px;}
+          table.info td {color: #666666; font-weight: normal;}
+          table.info th {color: #000000; font-weight: normal;}
         </style>
       </head>
       <body>
