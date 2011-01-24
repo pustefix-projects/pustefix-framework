@@ -113,7 +113,6 @@ pfx.net.HTTPRequest.prototype.start = function( content, headers, reqId ) {
 
       try {
         pfx.net.HTTPRequest._xml[i] = new XMLHttpRequest();
-        
       } catch(e) {
         pfx.net.HTTPRequest._xml[i] = null;
         if( this.iframes == pfx.net.HTTPRequest.IFRAMES_NEVER ) {
@@ -397,20 +396,26 @@ pfx.net.HTTPRequest.prototype.getQueryParameter = function( url, field ) {
 //
 //*****************************************************************************
 pfx.net.HTTPRequest.prototype._getResponse = function(request) {
-  var ctype=request.getResponseHeader("Content-Type");
-  if(ctype==null) {
-    if(request.status==0) {
-       //Handle aborted requests in Firefox
-       request.aborted = true;
-       return null;
+
+  if(!qx.bom.client.Engine.MSHTML && request.getResponseHeader) {
+    var ctype=request.getResponseHeader("Content-Type");
+    if(ctype==null) {
+      if(request.status==0) {
+         //Handle aborted requests in Firefox
+         request.aborted = true;
+         return null;
+      }
+      throw new Error("Missing response content type");
+    } else if(ctype.indexOf("text/plain")==0) {
+      return request.responseText;
+    } else if(ctype.indexOf("text/xml")==0) {
+      return request.responseXML;
+    } else {
+      throw new Error("Illegal response content type: "+ctype);
     }
-    throw new Error("Missing response content type");
-  } else if(ctype.indexOf("text/plain")==0) {
-    return request.responseText;
-  } else if(ctype.indexOf("text/xml")==0) {
-    return request.responseXML;
   } else {
-    throw new Error("Illegal response content type: "+ctype);
+  /* IE8 quick bug fix */
+    return request.responseText;
   }
 };
 
