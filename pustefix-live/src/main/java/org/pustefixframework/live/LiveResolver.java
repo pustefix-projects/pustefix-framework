@@ -213,7 +213,7 @@ public class LiveResolver {
             if (targetDir != null && targetDir.getName().equals("target")) {
                 File projectDir = targetDir.getParentFile();
                 if (projectDir != null) {
-                    File srcMainWebappDir = new File(projectDir, "src/main/webapp");
+                    File srcMainWebappDir = new File(projectDir, "src" + File.separator + "main" + File.separator + "webapp");
                     if (srcMainWebappDir.exists() && srcMainWebappDir.isDirectory()) {
                         return srcMainWebappDir;
                     }

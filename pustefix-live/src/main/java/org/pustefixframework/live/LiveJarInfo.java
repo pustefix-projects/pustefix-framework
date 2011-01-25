@@ -97,9 +97,9 @@ public class LiveJarInfo {
         // fallback: use live.xml/life.xml from old location in ~/.m2
         if (file == null) {
             String homeDir = System.getProperty("user.home");
-            File oldFile = new File(homeDir + "/.m2/live.xml");
+            File oldFile = new File(homeDir + File.separator + ".m2" + File.separator + "live.xml");
             if (!oldFile.exists()) {
-                oldFile = new File(homeDir + "/.m2/life.xml"); // support old misspelled name
+                oldFile = new File(homeDir + File.separator + ".m2" + File.separator + "life.xml"); // support old misspelled name
             }
             if (oldFile.exists()) {
                 file = oldFile;

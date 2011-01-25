@@ -45,7 +45,7 @@ public class LiveResolverTest {
         createProjectLayout();
 
         LiveResolver liveResolver = new LiveResolver();
-        String docroot = new File(APP1_BASE_DIR, "target/app1").toString();
+        String docroot = new File(APP1_BASE_DIR, "target" + File.separator + "app1").toString();
 
         // path must start with a slash
         try {
@@ -55,7 +55,7 @@ public class LiveResolverTest {
             // expected
         }
 
-        File liveRoot = liveResolver.resolveLiveRoot(docroot, "/file.xml");
+        File liveRoot = liveResolver.resolveLiveRoot(docroot, File.separator + "file.xml");
         assertNotNull(liveRoot);
         assertEquals("/tmp/app1/src/main/webapp", liveRoot.toString());
     }
@@ -71,9 +71,9 @@ public class LiveResolverTest {
         createProjectLayout();
 
         LiveResolver liveResolver = new LiveResolver();
-        String docroot = new File(APP1_BASE_DIR, "target/editor").toString();
+        String docroot = new File(APP1_BASE_DIR, "target" + File.separator + "editor").toString();
 
-        File liveRoot = liveResolver.resolveLiveRoot(docroot, "/file.xml");
+        File liveRoot = liveResolver.resolveLiveRoot(docroot, File.separator + "file.xml");
         assertNull(liveRoot);
     }
 
@@ -85,9 +85,9 @@ public class LiveResolverTest {
         LiveResolver liveResolver = new LiveResolver();
         String moduleJarPath = new File(WORKSPACE_BASE_DIR, "sample-module-A-0.14.4-SNAPSHOT.jar").toString();
 
-        File liveRoot = liveResolver.resolveLiveRoot(moduleJarPath, "/file.xml");
+        File liveRoot = liveResolver.resolveLiveRoot(moduleJarPath, File.separator + "file.xml");
         assertNotNull(liveRoot);
-        assertEquals("/tmp/sample/src/main/resources", liveRoot.toString());
+        assertEquals(File.separator + "tmp" + File.separator + "sample" + File.separator + "src" + File.separator + "main" + File.separator + "resources", liveRoot.toString());
     }
 
     /**
@@ -101,14 +101,14 @@ public class LiveResolverTest {
         createProjectLayout();
 
         LiveResolver liveResolver = new LiveResolver();
-        String docroot = new File(APP1_BASE_DIR, "target/app1").toString();
+        String docroot = new File(APP1_BASE_DIR, "target" + File.separator + "app1").toString();
 
-        URL liveDocroot = liveResolver.resolveLiveDocroot(docroot, "/path/to/file.xml");
+        URL liveDocroot = liveResolver.resolveLiveDocroot(docroot, File.separator + "path" + File.separator + "to" + File.separator + "file.xml");
         assertNotNull(liveDocroot);
-        assertEquals("/tmp/app1/src/main/webapp", liveDocroot.getFile());
+        assertEquals(File.separator + "tmp" + File.separator + "app1" + File.separator + "src" + File.separator + "main" + File.separator + "webapp", liveDocroot.getFile());
 
         // non-existing docroot
-        liveDocroot = liveResolver.resolveLiveDocroot("/tmp", "/path/to/file.xml");
+        liveDocroot = liveResolver.resolveLiveDocroot(File.separator + "tmp", File.separator + "path" + File.separator + "to" + File.separator + "file.xml");
         assertNull(liveDocroot);
     }
 
@@ -123,9 +123,9 @@ public class LiveResolverTest {
         createProjectLayout();
 
         LiveResolver liveResolver = new LiveResolver();
-        String docroot = new File(APP1_BASE_DIR, "target/editor").toString();
+        String docroot = new File(APP1_BASE_DIR, "target" + File.separator + "editor").toString();
 
-        URL liveDocroot = liveResolver.resolveLiveDocroot(docroot, "/path/to/file.xml");
+        URL liveDocroot = liveResolver.resolveLiveDocroot(docroot, File.separator + "path" + File.separator + "to" + File.separator + "file.xml");
         assertNull(liveDocroot);
     }
 
@@ -139,18 +139,18 @@ public class LiveResolverTest {
         createProjectLayout();
 
         LiveResolver liveResolver = new LiveResolver();
-        String docroot = new File(APP1_BASE_DIR, "target/app1").toString();
+        String docroot = new File(APP1_BASE_DIR, "target" + File.separator + "app1").toString();
 
-        URL liveDocroot = liveResolver.resolveLiveDocroot(docroot, "/file.xml");
+        URL liveDocroot = liveResolver.resolveLiveDocroot(docroot, File.separator + "file.xml");
         assertNotNull(liveDocroot);
-        assertEquals(new File(APP1_BASE_DIR, "src/main/webapp").toString() + "/", liveDocroot.getFile());
+        assertEquals(new File(APP1_BASE_DIR, "src" + File.separator + "main" + File.separator + "webapp").toString() + File.separator, liveDocroot.getFile());
 
         // the default mechanism doesn't check if file exists in src/main/webapp
-        liveDocroot = liveResolver.resolveLiveDocroot(docroot, "/no-such-file.xml");
+        liveDocroot = liveResolver.resolveLiveDocroot(docroot, File.separator + "no-such-file.xml");
         assertNotNull(liveDocroot);
 
         // the default mechanism uses default exclusions
-        liveDocroot = liveResolver.resolveLiveDocroot(docroot, "/core/file.xml");
+        liveDocroot = liveResolver.resolveLiveDocroot(docroot, File.separator + "core" + File.separator + "file.xml");
         assertNull(liveDocroot);
     }
 
@@ -164,20 +164,20 @@ public class LiveResolverTest {
         createProjectLayout();
 
         LiveResolver liveResolver = new LiveResolver();
-        String docroot = new File(APP1_BASE_DIR, "src/main/webapp").toString();
+        String docroot = new File(APP1_BASE_DIR, "src" + File.separator + "main" + File.separator + "webapp").toString();
 
         // the fallback mechanism uses default inclusions, "/core/" is included
-        URL liveDocroot = liveResolver.resolveLiveDocroot(docroot, "/core/file.xml");
+        URL liveDocroot = liveResolver.resolveLiveDocroot(docroot, File.separator + "core" + File.separator + "file.xml");
         assertNotNull(liveDocroot);
-        assertEquals(new File(APP1_BASE_DIR, "target/app1").toString() + "/", liveDocroot.getFile());
+        assertEquals(new File(APP1_BASE_DIR, "target" + File.separator + "app1").toString() + File.separator, liveDocroot.getFile());
 
         // the fallback mechanism doesn't check if file exists
-        liveDocroot = liveResolver.resolveLiveDocroot(docroot, "/core/no-such-file.xml");
+        liveDocroot = liveResolver.resolveLiveDocroot(docroot, File.separator + "core" + File.separator + "no-such-file.xml");
         assertNotNull(liveDocroot);
-        assertEquals(new File(APP1_BASE_DIR, "target/app1").toString() + "/", liveDocroot.getFile());
+        assertEquals(new File(APP1_BASE_DIR, "target" + File.separator + "app1").toString() + File.separator, liveDocroot.getFile());
 
         // the fallback mechanism uses default inclusions, "/" is not included
-        liveDocroot = liveResolver.resolveLiveDocroot(docroot, "/file.xml");
+        liveDocroot = liveResolver.resolveLiveDocroot(docroot, File.separator + "file.xml");
         assertNull(liveDocroot);
     }
 
