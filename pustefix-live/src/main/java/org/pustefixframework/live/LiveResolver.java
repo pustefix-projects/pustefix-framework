@@ -60,7 +60,7 @@ public class LiveResolver {
         URL url;
         File file = new File(root);
 
-        if (!path.startsWith(File.separator)) {
+        if (!path.startsWith("/")) {
             throw new IllegalArgumentException(path);
         }
 

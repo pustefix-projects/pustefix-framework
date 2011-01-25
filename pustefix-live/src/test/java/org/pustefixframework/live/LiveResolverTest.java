@@ -55,7 +55,7 @@ public class LiveResolverTest {
             // expected
         }
 
-        File liveRoot = liveResolver.resolveLiveRoot(docroot, File.separator + "file.xml");
+        File liveRoot = liveResolver.resolveLiveRoot(docroot, "/" + "file.xml");
         assertNotNull(liveRoot);
         assertEquals("/tmp/app1/src/main/webapp", liveRoot.toString());
     }
@@ -73,7 +73,7 @@ public class LiveResolverTest {
         LiveResolver liveResolver = new LiveResolver();
         String docroot = new File(APP1_BASE_DIR, "target" + File.separator + "editor").toString();
 
-        File liveRoot = liveResolver.resolveLiveRoot(docroot, File.separator + "file.xml");
+        File liveRoot = liveResolver.resolveLiveRoot(docroot, "/" + "file.xml");
         assertNull(liveRoot);
     }
 
@@ -85,7 +85,7 @@ public class LiveResolverTest {
         LiveResolver liveResolver = new LiveResolver();
         String moduleJarPath = new File(WORKSPACE_BASE_DIR, "sample-module-A-0.14.4-SNAPSHOT.jar").toString();
 
-        File liveRoot = liveResolver.resolveLiveRoot(moduleJarPath, File.separator + "file.xml");
+        File liveRoot = liveResolver.resolveLiveRoot(moduleJarPath, "/" + "file.xml");
         assertNotNull(liveRoot);
         assertEquals(File.separator + "tmp" + File.separator + "sample" + File.separator + "src" + File.separator + "main" + File.separator + "resources", liveRoot.toString());
     }
