@@ -27,7 +27,7 @@ public class Helper {
     public static final File FALLBACK_LIFE_XML = new File(HOME_DIR, ".m2" + File.separator + "life.xml");
     public static final File FALLBACK_LIVE_XML = new File(HOME_DIR, ".m2" + File.separator + "live.xml");
 
-    public static final File WORKSPACE_BASE_DIR = new File(Helper.class.getResource(File.separator).getFile());
+    public static final File WORKSPACE_BASE_DIR = new File(Helper.class.getResource("/").getFile());
     public static final File WORKSPACE_LIVE_XML = new File(WORKSPACE_BASE_DIR, "live.xml");
 
     public static final File MOD1_BASE_DIR = new File(WORKSPACE_BASE_DIR, "mod1");
