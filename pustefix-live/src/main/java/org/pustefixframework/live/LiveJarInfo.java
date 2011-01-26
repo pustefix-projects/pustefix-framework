@@ -54,8 +54,10 @@ import org.w3c.dom.Node;
 public class LiveJarInfo {
 
     private static Logger LOG = Logger.getLogger(LiveJarInfo.class);
-    public static final String[] DEFAULT_DOCROOT_LIVE_EXCLUSIONS = { "/WEB-INF/web.xml",
-            "/.cache/", "/core/", "/modules/", "/wsscript/", "/wsdl/", "/.editorbackup/" };
+    public static final String[] DEFAULT_DOCROOT_LIVE_EXCLUSIONS = { File.separator + "WEB-INF" + File.separator + "web.xml",
+            File.separator + ".cache" + File.separator, File.separator + "core" + File.separator,
+            File.separator + "modules" + File.separator, File.separator + "wsscript" + File.separator,
+            File.separator + "wsdl" + File.separator, File.separator + ".editorbackup" + File.separator };
 
     /** The live.xml file */
     private File file;

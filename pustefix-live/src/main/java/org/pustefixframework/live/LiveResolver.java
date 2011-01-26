@@ -25,7 +25,8 @@ import org.apache.log4j.Logger;
 public class LiveResolver {
 
     private static Logger LOG = Logger.getLogger(LiveResolver.class);
-
+    private final static String SRC_MAIN_WEBAPP = "src" + File.separator + "main" + File.separator + "webapp";
+    
     private LiveJarInfo liveJarInfo;
 
     private LiveJarInfo getLiveJarInfo() {
@@ -53,14 +54,14 @@ public class LiveResolver {
      * @param root
      *            path to the root file or root directory;
      * @param path
-     *            the resource path, relative to root. Must start with a slash
+     *            the resource path, relative to root. Must start with a slash or backslash (Windows)
      * @return the resolved live root, or null if no live root was found
      */
     public File resolveLiveRoot(String root, String path) throws Exception {
         URL url;
         File file = new File(root);
-
-        if (!path.startsWith("/")) {
+        
+        if (!path.startsWith(File.separator)) {
             throw new IllegalArgumentException(path);
         }
 
@@ -71,7 +72,10 @@ public class LiveResolver {
         }
 
         if (file.isFile()) {
-            URL liveModuleRoot = resolveLiveModuleRoot(new URL("jar:" + url.toString() + "!" + path), path);
+            // The String path from a windows systems can't be used to create a new URL 
+        	// like here without changing backslashes to slashes.
+            String slashSeparatedPath = path.replace(File.separator, "/");
+            URL liveModuleRoot = resolveLiveModuleRoot(new URL("jar:" + url.toString() + "!" + slashSeparatedPath), path);
             return liveModuleRoot != null ? new File(liveModuleRoot.getFile()) : null;
         } else {
             URL liveDocRoot = resolveLiveDocroot(root, path);
@@ -125,7 +129,7 @@ public class LiveResolver {
      */
     public URL resolveLiveDocroot(String docroot, String path) throws Exception {
 
-        if (getLiveJarInfo().hasWarEntries() && !docroot.endsWith("src/main/webapp")) {
+    	if (getLiveJarInfo().hasWarEntries() && !docroot.endsWith(SRC_MAIN_WEBAPP)) {
             // live.xml defines live folders for web applications, use this information
             if (LOG.isDebugEnabled()) {
                 LOG.debug("Resolving live docroot from live.xml for " + docroot + ":" + path);
@@ -137,7 +141,7 @@ public class LiveResolver {
                 }
                 return liveDocroot.toURI().toURL();
             }
-        } else if (docroot.endsWith("src/main/webapp")) {
+        } else if (docroot.endsWith(SRC_MAIN_WEBAPP)) {
             // Support for running webapps from source with 'mvn tomcat:run'
             // Set the target artifact directory as alternative docroot if docroot is source location
             if (LOG.isDebugEnabled()) {
@@ -147,8 +151,11 @@ public class LiveResolver {
             if (dir != null) {
                 String fallbackDocroot = dir.getAbsolutePath();
                 if (fallbackDocroot != null
-                        && (path.startsWith("/core/") || path.startsWith("/modules/") || path.startsWith("/.cache/")
-                                || path.startsWith("/wsscript/") || path.startsWith("/wsdl/"))) {
+                        && (path.startsWith(File.separator + "core" + File.separator) 
+                        		|| path.startsWith(File.separator + "modules" + File.separator) 
+                        		|| path.startsWith(File.separator + ".cache" + File.separator)
+                                || path.startsWith(File.separator + "wsscript" + File.separator) 
+                                || path.startsWith(File.separator + "wsdl" + File.separator))) {
                     if (LOG.isDebugEnabled()) {
                         LOG.debug("  --> " + dir);
                     }
@@ -213,7 +220,7 @@ public class LiveResolver {
             if (targetDir != null && targetDir.getName().equals("target")) {
                 File projectDir = targetDir.getParentFile();
                 if (projectDir != null) {
-                    File srcMainWebappDir = new File(projectDir, "src" + File.separator + "main" + File.separator + "webapp");
+                    File srcMainWebappDir = new File(projectDir, SRC_MAIN_WEBAPP);
                     if (srcMainWebappDir.exists() && srcMainWebappDir.isDirectory()) {
                         return srcMainWebappDir;
                     }
