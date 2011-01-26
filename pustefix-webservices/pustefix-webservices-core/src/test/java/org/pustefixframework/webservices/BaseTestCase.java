@@ -45,7 +45,7 @@ public abstract class BaseTestCase {
         logger.addAppender(appender);
         
         if(GlobalConfig.getDocroot()==null)
-            GlobalConfigurator.setDocroot(new File("src" + File.separator + "test" + File.separator + "resources").getAbsoluteFile().getAbsolutePath());
+            GlobalConfigurator.setDocroot(new File("src/test/resources").getAbsoluteFile().getAbsolutePath());
     }
     
 }
