@@ -61,6 +61,27 @@
       </para>
     </section>
 
+    <section xml:id="upgrade.0_15_to_0_16.sessions">
+      <title>Session handling</title>
+      <para>
+        Since 0.16 Pustefix supports different session tracking strategies, whereas the new cookie based approach became the default strategy.
+        Although Pustefix tries to make session id handling transparent to the application by hiding it in its core templates and internal code,
+        there are use cases where applications directly access the session id, e.g. for creating links without using the core tags.
+      </para>
+      <para>
+      	Because URL rewriting of the session id now by default is only done if the client disabled cookies, you will have to adapt code, which
+        manually creates session-aware links. You should only include the session id, if necessary. Therefor Pustefix introduced two new 
+        XSL parameters: <literal>__sessionId</literal>, which is always set to the current session id, and <literal>__sessionIdPath</literal>, which
+        is set to the path extension for the session on demand , e.g. <literal>;jsessionid=xyz</literal>. The <literal>__sessionIdPath</literal> parameter
+        will be empty if the session id came from a cookie. Thus you can easily create session-aware URLs by just adding the value to your URL
+        without having to take care if cookies are enabled or not.
+      </para>
+      <para>
+        The XSL parameter <literal>__sessid</literal> was removed as its contract doesn't exactly match one of the new parameters. You will have to
+        replace it according to your requirements using one the new ones.
+      </para>
+    </section>
+
     <section xml:id="upgrade.0_15_to_0_16.webservices">
       <title>AJAX webservices</title>
       <para>
