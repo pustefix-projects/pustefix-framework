@@ -242,8 +242,8 @@ public class LiveResolverTest {
         File[] roots = File.listRoots();
         boolean rootEqualsliveModuleRoot = false;
         for (File root : roots) {
-        	String rootPathToFile = root.toString() + "tmp" + File.separator + "sample" + File.separator + "src" + File.separator + "main" + File.separator + "resources";
-        	if (rootPathToFile.equals(liveModuleRoot.getFile())) {
+        	String urlPathToFile = root.toURI().toURL() + "tmp/sample/src/main/resources";
+        	if (urlPathToFile.equals(liveModuleRoot.toString())) {
         		rootEqualsliveModuleRoot = true;
         	}
         }
