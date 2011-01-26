@@ -56,7 +56,7 @@ public class LiveResolverTest {
             // expected
         }
 
-        File liveRoot = liveResolver.resolveLiveRoot(docroot, "/" + "file.xml");
+        File liveRoot = liveResolver.resolveLiveRoot(docroot, File.separator + "file.xml");
         assertNotNull(liveRoot);
 
         // Make the test run under Windows
@@ -84,7 +84,7 @@ public class LiveResolverTest {
         LiveResolver liveResolver = new LiveResolver();
         String docroot = new File(APP1_BASE_DIR, "target" + File.separator + "editor").toString();
 
-        File liveRoot = liveResolver.resolveLiveRoot(docroot, "/" + "file.xml");
+        File liveRoot = liveResolver.resolveLiveRoot(docroot, File.separator + "file.xml");
         assertNull(liveRoot);
     }
 
@@ -96,7 +96,7 @@ public class LiveResolverTest {
         LiveResolver liveResolver = new LiveResolver();
         String moduleJarPath = new File(WORKSPACE_BASE_DIR, "sample-module-A-0.14.4-SNAPSHOT.jar").toString();
 
-        File liveRoot = liveResolver.resolveLiveRoot(moduleJarPath, "/" + "file.xml");
+        File liveRoot = liveResolver.resolveLiveRoot(moduleJarPath, File.separator + "file.xml");
         assertNotNull(liveRoot);
         
         // Make the test run under Windows
