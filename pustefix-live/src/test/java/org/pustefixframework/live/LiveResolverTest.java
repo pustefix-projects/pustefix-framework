@@ -126,7 +126,7 @@ public class LiveResolverTest {
 
         URL liveDocroot = liveResolver.resolveLiveDocroot(docroot, File.separator + "path" + File.separator + "to" + File.separator + "file.xml");
         assertNotNull(liveDocroot);       
-        assertEquals(File.separator + "tmp" + File.separator + "app1" + File.separator + "src" + File.separator + "main" + File.separator + "webapp", liveDocroot.getFile());
+        assertEquals("/tmp/app1/src/main/webapp", liveDocroot.getFile());
 
         // non-existing docroot
         liveDocroot = liveResolver.resolveLiveDocroot(File.separator + "tmp", File.separator + "path" + File.separator + "to" + File.separator + "file.xml");
@@ -169,6 +169,7 @@ public class LiveResolverTest {
 
         URL liveDocroot = liveResolver.resolveLiveDocroot(docroot, File.separator + "file.xml");
         assertNotNull(liveDocroot);
+
         assertEquals(new File(APP1_BASE_DIR, "src" + File.separator + "main" + File.separator + "webapp").toString() + File.separator, liveDocroot.getFile());
 
         // the default mechanism doesn't check if file exists in src/main/webapp
@@ -236,8 +237,17 @@ public class LiveResolverTest {
         URL jarUrl = new URL("jar:" + path + "!/");
         URL liveModuleRoot = liveResolver.resolveLiveModuleRoot(jarUrl, "/file.xml");
         assertNotNull(liveModuleRoot);
-        assertEquals("/tmp/sample/src/main/resources", liveModuleRoot.getFile());
 
+        // Make the test run under Windows
+        File[] roots = File.listRoots();
+        boolean rootEqualsliveModuleRoot = false;
+        for (File root : roots) {
+        	String rootPathToFile = root.toString() + "tmp" + File.separator + "sample" + File.separator + "src" + File.separator + "main" + File.separator + "resources";
+        	if (rootPathToFile.equals(liveModuleRoot.getFile())) {
+        		rootEqualsliveModuleRoot = true;
+        	}
+        }
+        assertTrue(rootEqualsliveModuleRoot);
     }
 
 }
