@@ -51,7 +51,6 @@ public class BotSessionTrackingStrategy implements SessionTrackingStrategy {
         HttpSession session = null;
         if(context.needsSession()) {
             session = req.getSession(true);
-            session.setAttribute(SessionHelper.SESSION_ID_URL, SessionHelper.getURLSessionId(req));
             registerSession(req, session);
             session.setAttribute(STORED_REQUEST, preq);
             session.setAttribute(AbstractPustefixRequestHandler.SESSION_ATTR_COOKIE_SESSION, true);

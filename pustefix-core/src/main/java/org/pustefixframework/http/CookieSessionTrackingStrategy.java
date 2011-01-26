@@ -253,7 +253,6 @@ public class CookieSessionTrackingStrategy implements SessionTrackingStrategy {
             registerSession(req, session);
         }
 
-        session.setAttribute(SessionHelper.SESSION_ID_URL, SessionHelper.getURLSessionId(req));
         LOG.debug("*** Setting INSECURE flag in session (Id: " + session.getId() + ")");
         session.setAttribute(SessionAdmin.SESSION_IS_SECURE, Boolean.FALSE);
         session.setAttribute(STORED_REQUEST, preq);
@@ -265,9 +264,7 @@ public class CookieSessionTrackingStrategy implements SessionTrackingStrategy {
     
     private void redirectToSession(PfixServletRequest preq, HttpServletRequest req, HttpServletResponse res) {
         HttpSession session = req.getSession(true);
-        session.setAttribute(SessionHelper.SESSION_ID_URL, SessionHelper.getURLSessionId(req));
         registerSession(req, session);
-
         LOG.debug("===> Redirecting to URL with session (Id: " + session.getId() + ")");
         session.setAttribute(STORED_REQUEST, preq);
         session.setAttribute(INITIAL_SESSION_CHECK, session.getId());
@@ -277,7 +274,6 @@ public class CookieSessionTrackingStrategy implements SessionTrackingStrategy {
     
     private void redirectToSSLSession(PfixServletRequest preq, HttpServletRequest req, HttpServletResponse res) {
         HttpSession session = req.getSession(true);
-        session.setAttribute(SessionHelper.SESSION_ID_URL, SessionHelper.getURLSessionId(req));
         registerSession(req, session);
 
         LOG.debug("===> Redirecting to URL with session (Id: " + session.getId() + ")");
@@ -322,8 +318,6 @@ public class CookieSessionTrackingStrategy implements SessionTrackingStrategy {
         LOG.debug("*** Got new Session (Id: " + session.getId() + ")");
         LOG.debug("*** Copying data back to new session");
         SessionHelper.copySessionData(map, session);
-        session.setAttribute(SessionHelper.SESSION_ID_URL, SessionHelper.getURLSessionId(req));
-        LOG.debug("*** Setting " + SessionHelper.SESSION_ID_URL + "  to " + session.getAttribute(SessionHelper.SESSION_ID_URL));
         LOG.debug("*** Setting SECURE flag");
         session.setAttribute(SessionAdmin.SESSION_IS_SECURE, Boolean.TRUE);
         session.setAttribute(STORED_REQUEST, preq);
@@ -378,7 +372,6 @@ public class CookieSessionTrackingStrategy implements SessionTrackingStrategy {
         // only used for the jump to SSL so we can get the cookie to check the identity of the caller.
         String parentid = req.getRequestedSessionId();
         HttpSession session = req.getSession(true);
-        session.setAttribute(SessionHelper.SESSION_ID_URL, SessionHelper.getURLSessionId(req));
         session.setAttribute(CHECK_FOR_RUNNING_SSL_SESSION, parentid);
         LOG.debug("*** Setting INSECURE flag in session (Id: " + session.getId() + ")");
         session.setAttribute(SessionAdmin.SESSION_IS_SECURE, Boolean.FALSE);
@@ -400,7 +393,6 @@ public class CookieSessionTrackingStrategy implements SessionTrackingStrategy {
         HttpSession session = req.getSession(true);
 
         LinkedList<TrailElement> traillog = context.getSessionAdmin().getInfo(child).getTraillog();
-        session.setAttribute(SessionHelper.SESSION_ID_URL, SessionHelper.getURLSessionId(req));
         session.setAttribute(VISIT_ID, curr_visit_id);
         context.getSessionAdmin().registerSession(session, traillog, AbstractPustefixRequestHandler.getServerName(req), req.getRemoteAddr());
         LOG.debug("===> Redirecting with session (Id: " + session.getId() + ") using OLD VISIT_ID: " + curr_visit_id);
