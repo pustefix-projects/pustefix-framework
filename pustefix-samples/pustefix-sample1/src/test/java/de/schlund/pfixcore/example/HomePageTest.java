@@ -51,7 +51,6 @@ public class HomePageTest extends AbstractJUnit38SpringContextTests {
         MockHttpSession session = new MockHttpSession(servletContext);
         req.setSession(session);
         RequestContextHolder.setRequestAttributes(new ServletRequestAttributes(req));
-        session.setAttribute(SessionHelper.SESSION_ID_URL, SessionHelper.getURLSessionId(req));
         
         requestHandler.handleRequest(req, res);
         Assert.assertTrue(res.getContentAsString(), res.getContentAsString().contains("<title>Pustefix Sample</title>"));
