@@ -221,7 +221,17 @@ public class LiveResolverTest {
         URL liveModuleRoot = liveResolver.resolveLiveModuleRoot(new URL("jar:file:/tmp/a.b.c+mod1+0.1.jar!/"),
                 "/file.xml");
         assertNotNull(liveModuleRoot);
-        assertEquals("/tmp/mod1/src/main/resources", liveModuleRoot.getFile());
+        
+        // Make the test run under Windows
+        File[] roots = File.listRoots();
+        boolean rootEqualsliveModuleRoot = false;
+        for (File root : roots) {
+        	String urlPathToFile = root.toURI().toURL() + "tmp/mod1/src/main/resources";
+        	if (urlPathToFile.equals(liveModuleRoot.toString())) {
+        		rootEqualsliveModuleRoot = true;
+        	}
+        }
+        assertTrue(rootEqualsliveModuleRoot);
     }
 
     /**
