@@ -20,6 +20,7 @@ package org.pustefixframework.live;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
 import static org.pustefixframework.live.Helper.APP1_BASE_DIR;
 import static org.pustefixframework.live.Helper.WORKSPACE_BASE_DIR;
@@ -57,7 +58,17 @@ public class LiveResolverTest {
 
         File liveRoot = liveResolver.resolveLiveRoot(docroot, "/" + "file.xml");
         assertNotNull(liveRoot);
-        assertEquals("/tmp/app1/src/main/webapp", liveRoot.toString());
+
+        // Make the test run under Windows
+        File[] roots = File.listRoots();
+        boolean rootEqualsLifeRoot = false;
+        for (File root : roots) {
+        	String rootPathToFile = root.toString() + "tmp" + File.separator + "app1" + File.separator + "src" + File.separator + "main" + File.separator + "webapp";
+        	if (rootPathToFile.equals(liveRoot.toString())) {
+        		rootEqualsLifeRoot = true;
+        	}
+        }
+        assertTrue(rootEqualsLifeRoot);
     }
 
     /**
@@ -87,7 +98,17 @@ public class LiveResolverTest {
 
         File liveRoot = liveResolver.resolveLiveRoot(moduleJarPath, "/" + "file.xml");
         assertNotNull(liveRoot);
-        assertEquals(File.separator + "tmp" + File.separator + "sample" + File.separator + "src" + File.separator + "main" + File.separator + "resources", liveRoot.toString());
+        
+        // Make the test run under Windows
+        File[] roots = File.listRoots();
+        boolean rootEqualsLifeRoot = false;
+        for (File root : roots) {
+        	String rootPathToFile = root.toString() + "tmp" + File.separator + "sample" + File.separator + "src" + File.separator + "main" + File.separator + "resources";
+        	if (rootPathToFile.equals(liveRoot.toString())) {
+        		rootEqualsLifeRoot = true;
+        	}
+        }
+        assertTrue(rootEqualsLifeRoot);
     }
 
     /**
@@ -104,7 +125,7 @@ public class LiveResolverTest {
         String docroot = new File(APP1_BASE_DIR, "target" + File.separator + "app1").toString();
 
         URL liveDocroot = liveResolver.resolveLiveDocroot(docroot, File.separator + "path" + File.separator + "to" + File.separator + "file.xml");
-        assertNotNull(liveDocroot);
+        assertNotNull(liveDocroot);       
         assertEquals(File.separator + "tmp" + File.separator + "app1" + File.separator + "src" + File.separator + "main" + File.separator + "webapp", liveDocroot.getFile());
 
         // non-existing docroot
@@ -125,8 +146,13 @@ public class LiveResolverTest {
         LiveResolver liveResolver = new LiveResolver();
         String docroot = new File(APP1_BASE_DIR, "target" + File.separator + "editor").toString();
 
-        URL liveDocroot = liveResolver.resolveLiveDocroot(docroot, File.separator + "path" + File.separator + "to" + File.separator + "file.xml");
-        assertNull(liveDocroot);
+        // Make the test run under Windows
+        File[] roots = File.listRoots();
+        for (File root : roots) {
+            URL liveDocroot = liveResolver.resolveLiveDocroot(docroot, root.toString() + "path" + File.separator + "to" + File.separator + "file.xml");
+            assertNull(liveDocroot);
+        }
+
     }
 
     /**
