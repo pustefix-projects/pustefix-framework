@@ -108,7 +108,7 @@ public class Test extends TestCase {
         bean.setStrVal("aaa");
         bean.setBooleanArray(new Boolean[] { Boolean.TRUE, Boolean.FALSE });
         bean.type = ComplexTestBean.class;
-        bean.file = new File("/tmp");
+        bean.file = new File(File.separator + "tmp");
         Properties props = new Properties();
         props.setProperty("key1", "val1");
         props.setProperty("key2", "val2");
