@@ -71,7 +71,7 @@ public class PathTest extends TestCase {
     }
 
     public void testGetDir() {
-        assertEquals("baz", Path.create(new File("/bar"), "baz/foo.tgz").getDir());
+        assertEquals("baz", Path.create(new File(File.listRoots()[0].getAbsolutePath().toString() + "bar"), "baz/foo.tgz").getDir());
         assertNull(Path.create("foo").getDir());
         assertNull(Path.create("").getDir());
     }
