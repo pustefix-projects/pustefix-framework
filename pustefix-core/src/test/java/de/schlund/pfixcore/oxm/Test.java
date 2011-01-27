@@ -108,7 +108,11 @@ public class Test extends TestCase {
         bean.setStrVal("aaa");
         bean.setBooleanArray(new Boolean[] { Boolean.TRUE, Boolean.FALSE });
         bean.type = ComplexTestBean.class;
-        bean.file = new File(File.separator + "tmp");
+        // bean.file = new File("tmp") will always be changed to "\tmp" with any kind of 
+        // file separator on windows (e.g "/tmp" and also "\tmp").        
+        // Because the field "file" in testcomplex.xml will always be parsed to "/..."
+        // by OxmTestHelper.createDocument(getInputStream("testcomplex.xml")) this won't work on windows.
+        bean.file = new File("tmp");
         Properties props = new Properties();
         props.setProperty("key1", "val1");
         props.setProperty("key2", "val2");
