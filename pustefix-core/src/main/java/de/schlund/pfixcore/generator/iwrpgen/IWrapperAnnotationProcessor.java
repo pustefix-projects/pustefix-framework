@@ -18,6 +18,7 @@
 
 package de.schlund.pfixcore.generator.iwrpgen;
 
+import java.io.File;
 import java.io.InputStream;
 import java.io.PrintWriter;
 import java.util.Collection;
@@ -258,7 +259,7 @@ public class IWrapperAnnotationProcessor implements AnnotationProcessor {
                     PrintWriter writer = filer.createSourceFile(iwrapperClass);
 
                     TransformerFactory tf = TransformerFactory.newInstance();
-                    InputStream fis = getClass().getResourceAsStream("/pustefix/xsl/iwrapper.xsl");
+                    InputStream fis = getClass().getResourceAsStream(File.separator + "pustefix" + File.separator + "xsl" + File.separator + "iwrapper.xsl");
                     Transformer t = tf.newTransformer(new StreamSource(fis));
                     // t.setOutputProperty(OutputKeys.INDENT,"yes");
                     int ind = iwrapperClass.lastIndexOf('.');

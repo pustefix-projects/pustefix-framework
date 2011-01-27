@@ -79,7 +79,7 @@ public class GlobalConfig {
         if (target.isDirectory()) {
             for (File dir : target.listFiles()) {
                 if (dir.isDirectory()) {
-                    root = new File(dir, "WEB-INF/web.xml");
+                    root = new File(dir, "WEB-INF" + File.separator + "web.xml");
                     if (root.exists()) {
                         return dir;
                     }

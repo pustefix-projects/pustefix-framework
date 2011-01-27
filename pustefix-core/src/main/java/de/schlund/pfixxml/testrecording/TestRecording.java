@@ -17,6 +17,7 @@
  */
 package de.schlund.pfixxml.testrecording;
 
+import java.io.File;
 import java.io.IOException;
 import java.lang.management.ManagementFactory;
 import java.util.ArrayList;
@@ -101,7 +102,7 @@ public class TestRecording implements TestRecordingMBean, InitializingBean, Disp
    public ApplicationList getApplicationList(boolean tomcat, String sessionSuffix) {
       FileResource file;
       
-      file = ResourceUtil.getFileResourceFromDocroot("WEB-INF/projects.xml");
+      file = ResourceUtil.getFileResourceFromDocroot("WEB-INF" + File.separator + "projects.xml");
       try {
           return ApplicationList.load(Xml.parseMutable(file), tomcat, sessionSuffix);
       } catch (Exception e) {

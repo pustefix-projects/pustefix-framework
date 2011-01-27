@@ -17,6 +17,7 @@
  */
 package de.schlund.pfixcore.util;
 
+import java.io.File;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.Enumeration;
@@ -33,7 +34,7 @@ public class ModuleInfo {
     
 	private static Logger LOG = Logger.getLogger(ModuleInfo.class);
 	
-    private static String MODULE_DESCRIPTOR_LOCATION = "META-INF/pustefix-module.xml";
+    private static String MODULE_DESCRIPTOR_LOCATION = "META-INF" + File.separator + "pustefix-module.xml";
     
     private static ModuleInfo instance = new ModuleInfo();
     
