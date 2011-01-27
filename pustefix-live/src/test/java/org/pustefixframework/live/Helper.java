@@ -44,12 +44,12 @@ public class Helper {
     // public static final File RESOURCES_DIR = new File(BASE_DIR, "src/main/resources");
 
     public static void createFallBackLife() throws Exception {
-        String data = "<life><jar><id><group>a.b.c</group><artifact>d</artifact><version>0.1</version></id><directory>/tmp/d/src/main/resources</directory></jar></life>";
+        String data = "<life><jar><id><group>a.b.c</group><artifact>d</artifact><version>0.1</version></id><directory>" + File.separator + "tmp" + File.separator + "d" + File.separator + "src" + File.separator + "main" + File.separator + "resources</directory></jar></life>";
         FileUtils.writeStringToFile(FALLBACK_LIFE_XML, data, "UTF-8");
     }
 
     public static void createFallBackLive() throws Exception {
-        String data = "<live><war><id><group>a.b.c</group><artifact>f</artifact><version>0.2</version></id><directory>/tmp/f/src/main/webapp</directory></war></live>";
+        String data = "<live><war><id><group>a.b.c</group><artifact>f</artifact><version>0.2</version></id><directory>" + File.separator + "tmp" + File.separator + "f" + File.separator + "src" + File.separator + "main" + File.separator + "webapp</directory></war></live>";
         FileUtils.writeStringToFile(FALLBACK_LIVE_XML, data, "UTF-8");
     }
 
