@@ -37,7 +37,7 @@ public class PathTest extends TestCase {
 
     public void testAbsolute() {
         path = Path.create(new File(File.listRoots()[0].getAbsolutePath()),"foo");
-        assertEquals(new File("/foo"), path.resolve());
+        assertEquals(new File(File.listRoots()[0].getAbsolutePath() + "foo"), path.resolve());
     }
     
     public void testEmptyRelative() {
