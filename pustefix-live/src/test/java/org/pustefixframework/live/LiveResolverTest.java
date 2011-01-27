@@ -196,12 +196,13 @@ public class LiveResolverTest {
         // the fallback mechanism uses default inclusions, "/core/" is included
         URL liveDocroot = liveResolver.resolveLiveDocroot(docroot, File.separator + "core" + File.separator + "file.xml");
         assertNotNull(liveDocroot);
-        assertEquals(new File(APP1_BASE_DIR, "target" + File.separator + "app1").toString() + File.separator, liveDocroot.getFile());
+        String pathToCompare = APP1_BASE_DIR.toURI().toURL().toString() + "target/app1/";
+        assertEquals(pathToCompare, liveDocroot.toString());
 
         // the fallback mechanism doesn't check if file exists
         liveDocroot = liveResolver.resolveLiveDocroot(docroot, File.separator + "core" + File.separator + "no-such-file.xml");
         assertNotNull(liveDocroot);
-        assertEquals(new File(APP1_BASE_DIR, "target" + File.separator + "app1").toString() + File.separator, liveDocroot.getFile());
+        assertEquals(pathToCompare, liveDocroot.toString());
 
         // the fallback mechanism uses default inclusions, "/" is not included
         liveDocroot = liveResolver.resolveLiveDocroot(docroot, File.separator + "file.xml");
