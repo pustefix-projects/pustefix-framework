@@ -125,8 +125,18 @@ public class LiveResolverTest {
         String docroot = new File(APP1_BASE_DIR, "target" + File.separator + "app1").toString();
 
         URL liveDocroot = liveResolver.resolveLiveDocroot(docroot, File.separator + "path" + File.separator + "to" + File.separator + "file.xml");
-        assertNotNull(liveDocroot);       
-        assertEquals("/tmp/app1/src/main/webapp", liveDocroot.getFile());
+        assertNotNull(liveDocroot);
+        
+        // Make the test run under Windows
+        File[] roots = File.listRoots();
+        boolean rootEqualsliveModuleRoot = false;
+        for (File root : roots) {
+        	String urlPathToFile = root.toURI().toURL() + "tmp/app1/src/main/webapp";
+        	if (urlPathToFile.equals(liveDocroot.toString())) {
+        		rootEqualsliveModuleRoot = true;
+        	}
+        }
+        assertTrue(rootEqualsliveModuleRoot);
 
         // non-existing docroot
         liveDocroot = liveResolver.resolveLiveDocroot(File.separator + "tmp", File.separator + "path" + File.separator + "to" + File.separator + "file.xml");
