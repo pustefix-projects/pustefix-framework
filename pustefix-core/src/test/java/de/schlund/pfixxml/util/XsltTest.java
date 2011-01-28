@@ -36,6 +36,7 @@ import org.w3c.dom.NodeList;
 import com.icl.saxon.om.AbstractNode;
 import com.icl.saxon.om.NodeInfo;
 
+import de.schlund.pfixcore.util.FileUriTransformer;
 import de.schlund.pfixxml.resources.ResourceUtil;
 
 public class XsltTest extends TestCase {
@@ -93,7 +94,7 @@ public class XsltTest extends TestCase {
         Templates trafo;
 
         doc = Xml.parse(getXsltVersion(), new File(PREFIX + xml));
-        trafo = Xslt.loadTemplates(getXsltVersion(), ResourceUtil.getFileResource("file://" + (new File(PREFIX + xsl)).getAbsolutePath()));
+        trafo = Xslt.loadTemplates(getXsltVersion(), ResourceUtil.getFileResource(FileUriTransformer.getFileUriWithoutWindowsDriveSpecifier(new File(PREFIX + xsl))));
         Xslt.transform(doc, trafo, null, result);
     }
 

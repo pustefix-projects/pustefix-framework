@@ -56,6 +56,7 @@ import org.xml.sax.SAXParseException;
 import org.xml.sax.XMLReader;
 import org.xml.sax.helpers.XMLReaderFactory;
 
+import de.schlund.pfixcore.util.FileUriTransformer;
 import de.schlund.pfixxml.SPDocument;
 import de.schlund.pfixxml.resources.FileResource;
 import de.schlund.pfixxml.resources.ModuleResource;
@@ -170,14 +171,7 @@ public class Xml {
     }
 
     private static String toUri(File file) {
-        // TODO: file.toURI returns single-slash.uri ...
-    	// build uri without the windows root (e.g get rid of C:),
-    	// because javax.xml.transform.Transformer can't handle it.
-    	String absolutePath = file.getAbsolutePath();
-    	if (absolutePath.charAt(1) == ':') {
-    		absolutePath = absolutePath.substring(2).replace(File.separatorChar, '/');
-    	}
-        return "file://" + absolutePath;
+        return FileUriTransformer.getFileUriWithoutWindowsDriveSpecifier(file);
     }
 
     public static Document parse(XsltVersion xsltVersion, Source input) throws TransformerException {
