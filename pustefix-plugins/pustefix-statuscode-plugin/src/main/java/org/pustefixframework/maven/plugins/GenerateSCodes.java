@@ -302,6 +302,10 @@ public class GenerateSCodes {
     
     private static URI getModuleURI(String relPath, String module, boolean dynamic) {
         String uriStr;
+
+        //Fix for Windows '\' in relPath.
+        relPath.replace(File.separatorChar, '/');
+
         if(module != null) {
             if(dynamic) {
                 uriStr = "dynamic://"+module+"/"+relPath;
