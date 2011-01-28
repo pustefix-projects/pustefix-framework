@@ -86,7 +86,7 @@ public class XsltTest extends TestCase {
     }
 
     private void transform(String name, Result result) throws Exception {
-        final String PREFIX = "src/test/java/de/schlund/pfixxml/util/"; // TODO: windows
+        final String PREFIX = "src" + File.separator + "test" + File.separator + "java" + File.separator + "de" + File.separator + "schlund" + File.separator + "pfixxml" + File.separator + "util" + File.separator;
         final String xml = name + ".xml";
         final String xsl = name + ".xsl";
         Document doc;
