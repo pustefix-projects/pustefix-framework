@@ -171,7 +171,13 @@ public class Xml {
 
     private static String toUri(File file) {
         // TODO: file.toURI returns single-slash.uri ...
-        return "file://" + file.getAbsolutePath().replace(File.separatorChar, '/');
+    	// build uri without the windows root (e.g get rid of C:),
+    	// because javax.xml.transform.Transformer can't handle it.
+    	String absolutePath = file.getAbsolutePath();
+    	if (absolutePath.charAt(1) == ':') {
+    		absolutePath = absolutePath.substring(2).replace(File.separatorChar, '/');
+    	}
+        return "file://" + absolutePath;
     }
 
     public static Document parse(XsltVersion xsltVersion, Source input) throws TransformerException {
