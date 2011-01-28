@@ -171,7 +171,7 @@ public class Xml {
 
     private static String toUri(File file) {
         // TODO: file.toURI returns single-slash.uri ...
-        return "file://" + file.getAbsolutePath();
+        return "file://" + file.getAbsolutePath().replace(File.separatorChar, '/');
     }
 
     public static Document parse(XsltVersion xsltVersion, Source input) throws TransformerException {
