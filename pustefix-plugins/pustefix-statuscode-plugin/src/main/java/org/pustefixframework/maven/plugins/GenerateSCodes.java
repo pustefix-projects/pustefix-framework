@@ -304,7 +304,7 @@ public class GenerateSCodes {
         String uriStr;
 
         //Fix for Windows '\' in relPath.
-        relPath.replace(File.separatorChar, '/');
+        relPath = relPath.replace(File.separatorChar, '/');
 
         if(module != null) {
             if(dynamic) {
