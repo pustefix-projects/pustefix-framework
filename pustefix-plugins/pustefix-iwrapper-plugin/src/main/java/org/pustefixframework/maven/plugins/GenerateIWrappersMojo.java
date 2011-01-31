@@ -118,18 +118,20 @@ public class GenerateIWrappersMojo extends AbstractMojo {
             File targetFile = new File(genDir, targetPath);
             if(pustefixVersionChanged || (iwrpFile.lastModified() > targetFile.lastModified())) {
                 
-                int ind = file.lastIndexOf("/");
-                if(ind == -1) throw new MojoExecutionException("IWrapper definition file must be inside package: "+file);
-                String packageName = file.substring(0,ind);
-                packageName = packageName.replace("/",".");
-                String className = file.substring(ind+1,file.lastIndexOf('.'));
+                int ind = file.lastIndexOf(File.separator);
                 
             	getLog().info("444================");
             	getLog().info("444 srcDir: " + srcDir);
             	getLog().info("444 genDir: " + genDir);
             	getLog().info("444 targetPath: " + targetPath);
             	getLog().info("444 file: " + file);
+            	getLog().info("444 ind: " + ind);
             	getLog().info("444================");
+                
+                if(ind == -1) throw new MojoExecutionException("IWrapper definition file must be inside package: "+file);
+                String packageName = file.substring(0,ind);
+                packageName = packageName.replace("/",".");
+                String className = file.substring(ind+1,file.lastIndexOf('.'));
                 
                 if(!targetFile.getParentFile().exists()) targetFile.getParentFile().mkdirs();
                 
