@@ -120,7 +120,7 @@ public class GenerateIWrappersMojo extends AbstractMojo {
                 int ind = file.lastIndexOf(File.separator);               
                 if(ind == -1) throw new MojoExecutionException("IWrapper definition file must be inside package: "+file);
                 String packageName = file.substring(0,ind);
-                packageName = packageName.replace("/",".");
+                packageName = packageName.replace(File.separator,".");
                 String className = file.substring(ind+1,file.lastIndexOf('.'));
                 
                 if(!targetFile.getParentFile().exists()) targetFile.getParentFile().mkdirs();
