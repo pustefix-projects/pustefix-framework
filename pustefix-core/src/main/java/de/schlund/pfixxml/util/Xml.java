@@ -337,10 +337,15 @@ public class Xml {
         dest.write('\n');
 
         dest.close();
-        if (!tmpfile.renameTo(finalfile)) {
+
+        // tmpfile.renameTo(finalfile) fails on windows, because of the different
+        // file locking handling on windows.
+        try {
+			FileUtils.copyFile(tmpfile, finalfile);
+		} catch (IOException e) {
             throw new RuntimeException("Could not rename temporary file '" +
                     tmpfile + "' to file '" + finalfile + "'!");
-        }
+		}
     }
     
     public static void serialize(Node node, OutputStream dest, boolean pp, boolean decl) throws IOException {
