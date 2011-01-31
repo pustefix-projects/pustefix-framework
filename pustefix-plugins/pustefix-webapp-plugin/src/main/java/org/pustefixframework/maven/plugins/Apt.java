@@ -45,14 +45,14 @@ public class Apt {
     
     public Apt(File basedir, File preprocessDir, Log log) {
         this.basedir = basedir;
-        this.srcDir = new File(basedir, "src/main/java");
-        this.destDir = new File(basedir, "target/classes");
+        this.srcDir = new File(basedir, "src" + File.separator + "main" + File.separator + "java");
+        this.destDir = new File(basedir, "target" + File.separator + "classes");
         this.preprocessDir = preprocessDir;
         this.log = log;
     }
 
     public int execute(String classpath) throws MojoExecutionException {
-        File lastRunFile = new File(basedir, "target/.lastaptrun");
+        File lastRunFile = new File(basedir, "target" + File.separator + ".lastaptrun");
         long lastRun = lastRunFile.lastModified();
         List<File> modified = getModifiedFiles(lastRun);
         if (modified.size() > 0) {
