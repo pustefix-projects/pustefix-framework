@@ -75,10 +75,16 @@ public class IWrapperInfo {
                         elem.setAttribute("frequency", def.getFrequency());
                         String getterName = "get" + def.getName();
                         Method getter = null;
+                        Class<?>[] paramTypes;
+                        if(def.getOccurance().equals("indexed")) {
+                            paramTypes = new Class[] {String.class};
+                        } else {
+                            paramTypes = new Class[0];
+                        }
                         try {
-                            getter = iwrpClass.getMethod(getterName, new Class[0]);
+                            getter = iwrpClass.getMethod(getterName, paramTypes);
                         } catch (NoSuchMethodException x) {
-                            LOG.warn("Getter not found: " + getterName);
+                            LOG.warn("Getter not found: " + iwrpClass.getName() + "." + getterName);
                         }
                         IWrapperParamCaster caster = def.getCaster();
                         if (caster != null) {
