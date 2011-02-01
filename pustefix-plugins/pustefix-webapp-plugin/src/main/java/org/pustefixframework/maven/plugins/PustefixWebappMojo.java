@@ -113,6 +113,13 @@ public class PustefixWebappMojo extends AbstractMojo {
     public void execute() throws MojoExecutionException {
         File basedir;
 
+        System.out.println("docroot: " + docroot);
+        System.out.println("modulesdir: " + modulesdir);
+        System.out.println("aptdir: " + aptdir);
+        if (true) {
+        	throw new MojoExecutionException("TEST");
+        }
+        
         // allow plugin declaration in parent pom
         if ("pom".equals(project.getPackaging())) {
             return;
