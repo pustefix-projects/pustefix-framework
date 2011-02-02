@@ -404,7 +404,7 @@ public class RequestContextImpl implements Cloneable, AuthorizationInterceptor {
                     }
                 }
                 if (action == null) {
-                    throw new PustefixApplicationException("Page " + currentpagerequest.getName() + " has been called with unknown action " + actionname);
+                    throw new UnknownActionException(actionname.getValue(), currentpagerequest.getName());
                 }
             } else {
                 LOG.warn("Page " + currentpagerequest.getName() + " has been called with action, but isn't configured.");
