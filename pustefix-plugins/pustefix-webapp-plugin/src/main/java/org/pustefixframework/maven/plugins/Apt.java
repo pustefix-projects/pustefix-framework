@@ -121,7 +121,6 @@ public class Apt {
             builder.directory(basedir);
             builder.redirectErrorStream(true);
             Process process = builder.start();
-            int ret = process.waitFor();
             InputStream in = process.getInputStream();
             StringBuilder sb = new StringBuilder();
             if(in != null) {
@@ -135,6 +134,11 @@ public class Apt {
                     in.close();
                 }
             }
+            // Input Stream handling is necessary before calling process.waitFor() to prevent,
+            // that this process will go on forever in windows:
+            // http://www.javaworld.com/javaworld/jw-12-2000/jw-1229-traps.html?
+            int ret = process.waitFor();
+
             if(ret == 0) {
                 log.debug(sb.toString());
             } else {
@@ -148,4 +152,6 @@ public class Apt {
         }
         filelist.delete();
     }
+    
+    
 }
