@@ -364,4 +364,9 @@ public class ContextImpl implements AccessibilityChecker, ExtendedContext, Token
     public PageMap getPageMap() {
         return getServerContext().getPageMap();
     }
+    
+    public boolean needsLastFlow(String pageName, String lastFlowName) {
+        return getRequestContextForCurrentThreadWithError().needsLastFlow(pageName, lastFlowName);
+    }
+    
 }

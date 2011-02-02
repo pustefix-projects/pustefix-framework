@@ -58,7 +58,7 @@ public class NavigationFactory {
         navi = navis.get(navifile.toURI().toString());
         
         if (navi == null || navi.needsReload()) {
-            LOG.warn("***** Creating Navigation object *******");
+            LOG.info("***** Creating Navigation object *******");
             try {
                 navi     = new Navigation(navifile,xsltVersion);
             } catch (TransformerConfigurationException e) {
