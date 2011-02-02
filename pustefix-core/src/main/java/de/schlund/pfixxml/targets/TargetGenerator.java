@@ -128,21 +128,7 @@ public class TargetGenerator implements Comparable<TargetGenerator> {
         this.config_path = confile;
         this.cacheDir = cacheDir;
         Meminfo.print("TG: Before loading " + confile.toString());
-        long t1=System.currentTimeMillis();
-//        Thread t = new Thread() {
-//          @Override
-//          public void run() {
-//              try {
-//              loadConfig(confile);
-//              } catch(Exception x) {
-//                  throw new RuntimeException(x);
-//              }
-//          }  
-//        };
-//        t.start();
         loadConfig(confile);
-        long t2=System.currentTimeMillis();
-        System.out.println("SSSSSSSSSSSSSSSSSSSSSSS: "+(t2-t1));
         Meminfo.print("TG: after loading targets for " + confile.toString());
     }
         
