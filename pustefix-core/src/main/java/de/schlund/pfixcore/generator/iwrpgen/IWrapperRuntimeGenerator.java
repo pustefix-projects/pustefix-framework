@@ -252,7 +252,7 @@ public class IWrapperRuntimeGenerator {
             Transformer t = tf.newTransformer();
             t.transform(new DOMSource(doc), new StreamResult(System.out));
 
-            t = tf.newTransformer(new StreamSource(IWrapperRuntimeGenerator.class.getResourceAsStream(File.separator + "pustefix" + File.separator + "xsl" + File.separator + "iwrapper.xsl")));
+            t = tf.newTransformer(new StreamSource(IWrapperRuntimeGenerator.class.getResourceAsStream("/pustefix/xsl/iwrapper.xsl")));
             t.transform(new DOMSource(doc), new StreamResult(new FileOutputStream(destFile)));
         } catch (Exception x) {
             x.printStackTrace();
