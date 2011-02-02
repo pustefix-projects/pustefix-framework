@@ -141,6 +141,23 @@
            	padding-left: 10px;
           }
         </style>
+        <script type="text/javascript">
+
+          function removeCookies() {
+            var d = 0;
+            var c = document.cookie.split(";");
+            for(var i=0; i &lt; c.length; i++) {
+              var e = c[i].indexOf("=");
+              var n = e > -1 ? c[i].substr(0,e) : c[i];
+              if(n != "") {
+                document.cookie = n + "=;expires=Thu, 01 Jan 1970 00:00:00 GMT";
+                d++;
+              }
+            }
+            alert("Removed " + d + " cookie" + (d==1 ? "" : "s"));
+          }
+          
+        </script>
       </head>
       <body>
       
@@ -254,10 +271,11 @@
         <div class="section">
           <table class="actions">
             <tr>
-              <td><a href="{$__contextpath}/xml/pfxinternals?action=reload">Schedule webapp reload</a></td>
+              <td><a href="{$__contextpath}/pfxinternals?action=reload">Schedule webapp reload</a></td>
+              <td><a href="javascript:removeCookies()">Remove cookies</a></td>
             </tr>
             <tr>   
-              <td><a href="{$__contextpath}/xml/pfxinternals?action=invalidate">Invalidate all running sessions</a></td>
+              <td><a href="{$__contextpath}/pfxinternals?action=invalidate">Invalidate all running sessions</a></td>
             </tr>
           </table>
         </div>
