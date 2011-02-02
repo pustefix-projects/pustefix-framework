@@ -139,7 +139,7 @@ public class PustefixWebappMojo extends AbstractMojo {
         result = new StringBuilder();
         for (String path : pathStrings(pluginClasspath)) {
             if (result.length() > 0) {
-                result.append(':');
+                result.append(File.pathSeparatorChar);
             } 
             result.append(path);
         }
