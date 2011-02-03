@@ -36,7 +36,8 @@
       <para>
         The elements <literal>&lt;perflogging&gt;</literal> and <literal>&lt;testrecording&gt;</literal> became obsolete because the 
         performance logging and testrecording mechanisms are no longer 
-        part of the Pustefix core framework. You can just remove these elements.
+        part of the Pustefix core framework. You can just remove these elements. The <literal>&lt;authadmin&gt;</literal> element is also no 
+        longer supported and should be removed.
       </para>
       <para>
         If you're referencing a XML schema, you can change the schema location to
