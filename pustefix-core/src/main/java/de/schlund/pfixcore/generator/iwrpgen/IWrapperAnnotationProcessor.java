@@ -18,7 +18,6 @@
 
 package de.schlund.pfixcore.generator.iwrpgen;
 
-import java.io.File;
 import java.io.InputStream;
 import java.io.PrintWriter;
 import java.util.Collection;

@@ -34,7 +34,7 @@ public class ModuleInfo {
     
 	private static Logger LOG = Logger.getLogger(ModuleInfo.class);
 	
-    private static String MODULE_DESCRIPTOR_LOCATION = "META-INF" + File.separator + "pustefix-module.xml";
+    private static String MODULE_DESCRIPTOR_LOCATION = "META-INF/pustefix-module.xml";
     
     private static ModuleInfo instance = new ModuleInfo();
     

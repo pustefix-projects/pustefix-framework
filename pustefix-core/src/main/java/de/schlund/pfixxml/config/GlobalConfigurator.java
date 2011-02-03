@@ -45,7 +45,7 @@ public class GlobalConfigurator {
         if (!path.startsWith("/") && path.charAt(1) != ':') {
             throw new IllegalArgumentException("Path has to be absolute");
         }
-        if (path.endsWith("/")) {
+        if (path.endsWith("/") || path.endsWith("\\")) {
             path = path.substring(0, path.length() - 1);
         }
         GlobalConfig.setDocroot(path);
