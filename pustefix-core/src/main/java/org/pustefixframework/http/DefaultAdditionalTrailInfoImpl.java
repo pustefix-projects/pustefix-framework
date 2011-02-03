@@ -15,11 +15,10 @@
  * along with Pustefix; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  */
-package de.schlund.pfixxml.perflogging;
+package org.pustefixframework.http;
 
 import java.util.LinkedHashMap;
 
-import org.pustefixframework.http.AbstractPustefixXMLRequestHandler;
 
 import de.schlund.pfixxml.PfixServletRequest;
 

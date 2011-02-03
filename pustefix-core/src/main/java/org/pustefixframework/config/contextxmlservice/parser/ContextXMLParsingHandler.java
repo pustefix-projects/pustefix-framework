@@ -54,7 +54,6 @@ import de.schlund.pfixcore.workflow.PageMap;
 import de.schlund.pfixcore.workflow.State;
 import de.schlund.pfixcore.workflow.app.ResdocFinalizer;
 import de.schlund.pfixcore.workflow.context.ServerContextImpl;
-import de.schlund.pfixxml.perflogging.PerfLogging;
 
 /**
  * 
@@ -215,10 +214,6 @@ public class ContextXMLParsingHandler implements ParsingHandler {
             beanBuilder.setInitMethodName("init");
             beanBuilder.addPropertyReference("serverContext", ServerContextImpl.class.getName());
             beanBuilder.addPropertyReference("contextResourceManager", ContextResourceManagerImpl.class.getName());
-            
-            if(beanReg.isBeanNameInUse(PerfLogging.class.getName())) {
-                beanBuilder.addPropertyReference("perfLogging", PerfLogging.class.getName());
-            }
             
             beanDefinition = beanBuilder.getBeanDefinition();
             beanHolder = new BeanDefinitionHolder(beanDefinition, ContextImpl.class.getName(), new String[] {"pustefixContext"});

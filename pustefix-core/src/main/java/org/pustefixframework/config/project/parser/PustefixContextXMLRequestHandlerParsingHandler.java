@@ -37,6 +37,8 @@ import org.pustefixframework.config.project.SessionTrackingStrategyInfo;
 import org.pustefixframework.config.project.EditorInfo;
 import org.pustefixframework.config.project.EditorLocation;
 import org.pustefixframework.config.project.XMLGeneratorInfo;
+import org.pustefixframework.http.AdditionalTrailInfo;
+import org.pustefixframework.http.DefaultAdditionalTrailInfoImpl;
 import org.pustefixframework.http.PustefixContextXMLRequestHandler;
 import org.pustefixframework.http.PustefixInternalsRequestHandler;
 import org.springframework.beans.factory.BeanDefinitionStoreException;
@@ -90,21 +92,30 @@ public class PustefixContextXMLRequestHandlerParsingHandler extends Customizatio
             renderExternal = Boolean.parseBoolean(renderExtElement.getTextContent().trim());
         }
         
-        String additionalTrailInfoRef = null;
+        Class<?> trailInfoClass = DefaultAdditionalTrailInfoImpl.class;
         Element infoElement = (Element) serviceElement.getElementsByTagNameNS(Constants.NS_PROJECT, "additional-trail-info").item(0);
         if (infoElement != null) {
             String className = infoElement.getTextContent().trim();
-            Class<?> clazz;
-            try {
-                clazz = Class.forName(className);
-            } catch(ClassNotFoundException x) {
-                throw new ParserException("Can't get additional-trail-info class: " + className, x);
+            if(className.equals("")) {
+                trailInfoClass = null;
+            } else {
+                try {
+                    trailInfoClass = Class.forName(className);
+                } catch(ClassNotFoundException x) {
+                    throw new ParserException("Can't get additional-trail-info class: " + className, x);
+                }
+                if(!AdditionalTrailInfo.class.isAssignableFrom(trailInfoClass)) {
+                    throw new ParserException("Class '" + trailInfoClass.getName() + "' doesn't implement '" + AdditionalTrailInfo.class.getName() + "'.");
+                }
             }
-            BeanDefinitionBuilder beanBuilder = BeanDefinitionBuilder.genericBeanDefinition(clazz);
+        }
+        String additionalTrailInfoRef = null;
+        if(trailInfoClass != null) {
+            BeanDefinitionBuilder beanBuilder = BeanDefinitionBuilder.genericBeanDefinition(trailInfoClass);
             beanBuilder.setScope("singleton");
-            BeanDefinitionHolder beanHolder = new BeanDefinitionHolder(beanBuilder.getBeanDefinition(), className);
+            BeanDefinitionHolder beanHolder = new BeanDefinitionHolder(beanBuilder.getBeanDefinition(), trailInfoClass.getName());
             context.getObjectTreeElement().addObject(beanHolder);
-            additionalTrailInfoRef = className;
+            additionalTrailInfoRef = trailInfoClass.getName();
         }
         
         int maxStoredDoms = 5;

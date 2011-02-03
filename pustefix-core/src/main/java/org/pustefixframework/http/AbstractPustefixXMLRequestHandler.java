@@ -63,7 +63,6 @@ import de.schlund.pfixxml.SPDocument;
 import de.schlund.pfixxml.SessionCleaner;
 import de.schlund.pfixxml.Variant;
 import de.schlund.pfixxml.config.EnvironmentProperties;
-import de.schlund.pfixxml.perflogging.AdditionalTrailInfo;
 import de.schlund.pfixxml.serverutil.SessionHelper;
 import de.schlund.pfixxml.targets.PageInfo;
 import de.schlund.pfixxml.targets.PageInfoFactory;
