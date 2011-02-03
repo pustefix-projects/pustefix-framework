@@ -27,6 +27,17 @@
         <literal>&lt;direct-output-service/&gt;</literal> and <literal>&lt;deref-service/&gt;</literal> (if available).
       </para>
       <para>
+        The <literal>&lt;additional-trail-info&gt;</literal> element now is optional. If missing, Pustefix by default registers
+        the default <literal>AdditionalTrailInfo</literal> implementation <literal>org.pustefixframework.http.DefaultAdditionalTrailInfoImpl</literal>.
+        You have to be aware that the package name of the interface and the implementation changed from <literal>de.schlund.pfixxml.perflogging</literal>
+        to <literal>org.pustefixframework.http</literal>. You either will have to adapt the package names, or if you're relying on
+        the default implementation, you can just remove the complete <literal>&lt;additional-trail-info/&gt;</literal> element.
+      </para>
+      <para>
+        The element <literal>&lt;perflogging&gt;</literal> became obsolete because the performance logging mechanism is no longer 
+        part of the Pustefix core framework. You can just remove the element.
+      </para>
+      <para>
         If you're referencing a XML schema, you can change the schema location to
         <literal>http://www.pustefix-framework.org/2008/namespace/project-config-0_16.xsd</literal> to get and updated version.
       </para>
