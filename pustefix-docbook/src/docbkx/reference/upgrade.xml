@@ -34,8 +34,9 @@
         the default implementation, you can just remove the complete <literal>&lt;additional-trail-info/&gt;</literal> element.
       </para>
       <para>
-        The element <literal>&lt;perflogging&gt;</literal> became obsolete because the performance logging mechanism is no longer 
-        part of the Pustefix core framework. You can just remove the element.
+        The elements <literal>&lt;perflogging&gt;</literal> and <literal>&lt;testrecording&gt;</literal> became obsolete because the 
+        performance logging and testrecording mechanisms are no longer 
+        part of the Pustefix core framework. You can just remove these elements.
       </para>
       <para>
         If you're referencing a XML schema, you can change the schema location to
