@@ -40,6 +40,7 @@ import org.w3c.dom.Element;
 
 import com.sun.tools.ws.ant.WsGen;
 
+import de.schlund.pfixcore.util.FileUriTransformer;
 import de.schlund.pfixxml.config.GlobalConfig;
 import de.schlund.pfixxml.config.GlobalConfigurator;
 import de.schlund.pfixxml.resources.FileResource;
@@ -158,7 +159,7 @@ public class PustefixWebserviceMojo extends AbstractMojo {
                     GlobalServiceConfig refGlobConf = null;
                     boolean globalConfChanged = false;
                     // read last built webservice configuration
-                    FileResource refWsConfFile = ResourceUtil.getFileResource("file://" + tmpDir.getAbsolutePath() + "/" + "webservice.conf.ser");
+                    FileResource refWsConfFile = ResourceUtil.getFileResource(FileUriTransformer.getFileUriWithoutWindowsDriveSpecifier(tmpDir) + "/" + "webservice.conf.ser");
                     if (refWsConfFile.exists()) {
                         try {
                             refSrvConf = ConfigurationReader.deserialize(refWsConfFile);
