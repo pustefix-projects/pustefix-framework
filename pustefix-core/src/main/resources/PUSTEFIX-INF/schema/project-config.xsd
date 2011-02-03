@@ -22,7 +22,6 @@
                 <xsd:element name="when" maxOccurs="unbounded">
                   <xsd:complexType>
                     <xsd:choice>
-                      <xsd:element name="testrecording"/>
                       <xsd:element name="authadmin"/>
                     </xsd:choice>
                     <xsd:attribute name="test" type="xsd:string" use="required"/>
@@ -31,7 +30,6 @@
                 <xsd:element name="otherwise" minOccurs="0">
                   <xsd:complexType>
                     <xsd:choice>
-                      <xsd:element name="testrecording"/>
                       <xsd:element name="authadmin"/>
                     </xsd:choice>
                   </xsd:complexType>
@@ -39,7 +37,6 @@
               </xsd:sequence>
             </xsd:complexType>
           </xsd:element>
-          <xsd:element name="testrecording"/>
           <xsd:element name="authadmin"/>
         </xsd:choice>
         <xsd:element name="xml-generator" type="xml-generator-type"/>

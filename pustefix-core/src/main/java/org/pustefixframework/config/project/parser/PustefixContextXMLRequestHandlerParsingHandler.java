@@ -33,9 +33,9 @@ import org.pustefixframework.config.customization.CustomizationAwareParsingHandl
 import org.pustefixframework.config.customization.CustomizationInfo;
 import org.pustefixframework.config.customization.PropertiesBasedCustomizationInfo;
 import org.pustefixframework.config.generic.ParsingUtils;
-import org.pustefixframework.config.project.SessionTrackingStrategyInfo;
 import org.pustefixframework.config.project.EditorInfo;
 import org.pustefixframework.config.project.EditorLocation;
+import org.pustefixframework.config.project.SessionTrackingStrategyInfo;
 import org.pustefixframework.config.project.XMLGeneratorInfo;
 import org.pustefixframework.http.AdditionalTrailInfo;
 import org.pustefixframework.http.DefaultAdditionalTrailInfoImpl;
@@ -68,7 +68,6 @@ import de.schlund.pfixxml.exceptionprocessor.ExceptionProcessingConfiguration;
 import de.schlund.pfixxml.resources.FileResource;
 import de.schlund.pfixxml.resources.ResourceUtil;
 import de.schlund.pfixxml.serverutil.SessionAdmin;
-import de.schlund.pfixxml.testrecording.TestRecording;
 
 public class PustefixContextXMLRequestHandlerParsingHandler extends CustomizationAwareParsingHandler {
 
@@ -192,9 +191,6 @@ public class PustefixContextXMLRequestHandlerParsingHandler extends Customizatio
         beanBuilder.addPropertyValue("context", new RuntimeBeanReference(ContextImpl.class.getName()));
         beanBuilder.addPropertyValue("configuration", config);
         beanBuilder.addPropertyValue("sessionAdmin", new RuntimeBeanReference(SessionAdmin.class.getName()));
-        if(beanReg.isBeanNameInUse(TestRecording.class.getName())) {
-            beanBuilder.addPropertyValue("testRecording", new RuntimeBeanReference(TestRecording.class.getName()));
-        }
         beanBuilder.addPropertyValue("editorLocation", editorLocation.getLocation());
         beanBuilder.addPropertyValue("checkModtime", info.getCheckModtime());
         beanBuilder.addPropertyValue("sessionCleaner", new RuntimeBeanReference(SessionCleaner.class.getName()));
