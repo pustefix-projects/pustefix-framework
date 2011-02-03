@@ -17,12 +17,10 @@
  */
 package de.schlund.pfixcore.util;
 
-import java.io.File;
-
 import org.apache.log4j.xml.DOMConfigurator;
 
 public class Logging {
     public static void configure(String file) {
-        DOMConfigurator.configure(Logging.class.getResource("pustefix" + File.separator + "logging" + File.separator + file));
+        DOMConfigurator.configure(Logging.class.getResource("pustefix/logging/"+ file));
     }   
 }

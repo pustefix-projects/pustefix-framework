@@ -23,7 +23,7 @@ import javax.servlet.http.HttpServletRequest;
  */
 public class BotDetector {
 
-    private static String CONFIG = "META-INF" + File.separator + "org" + File.separator + "pustefixframework" + File.separator + "http" + File.separator + "bot-user-agents.txt";
+    private static String CONFIG = "META-INF/org/pustefixframework/http/bot-user-agents.txt";
     private static Pattern pattern = getBotPattern();
     
     public static boolean isBot(HttpServletRequest request) {

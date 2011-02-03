@@ -19,7 +19,6 @@
 package org.pustefixframework.http;
 
 import java.io.BufferedReader;
-import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
@@ -241,7 +240,7 @@ public abstract class AbstractPustefixRequestHandler implements SessionTrackingS
     protected static List<Pattern> getBotPatterns() {
         List<Pattern> patterns = new ArrayList<Pattern>();
         try {
-            Enumeration<URL> urls = AbstractPustefixRequestHandler.class.getClassLoader().getResources("META-INF" + File.separator + "org" + File.separator + "pustefixframework" + File.separator + "http" + File.separator + "bot-user-agents.txt");
+            Enumeration<URL> urls = AbstractPustefixRequestHandler.class.getClassLoader().getResources("META-INF/org/pustefixframework/http/bot-user-agents.txt");
             while(urls.hasMoreElements()) {
                 URL url = urls.nextElement();
                 InputStream in = url.openStream();
