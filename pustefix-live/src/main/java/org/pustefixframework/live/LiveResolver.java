@@ -27,8 +27,14 @@ public class LiveResolver {
     private static Logger LOG = Logger.getLogger(LiveResolver.class);
     private final static String SRC_MAIN_WEBAPP = "src" + File.separator + "main" + File.separator + "webapp";
     
+    private static LiveResolver instance = new LiveResolver();
+    
     private LiveJarInfo liveJarInfo;
 
+    public static LiveResolver getInstance() {
+        return instance;
+    }
+    
     private LiveJarInfo getLiveJarInfo() {
 
         if (liveJarInfo == null) {

@@ -61,11 +61,15 @@ public class LiveJarInfo {
             File.separator + "wsdl" + File.separator, File.separator + ".editorbackup" + File.separator };
 
     public static String PROP_LIVEROOT = "pustefix.liveroot";
+    public static String PROP_LIVEROOT_MAXDEPTH = "pustefix.liveroot.maxdepth";
+    
+    private static int DEFAULT_LIVEROOT_MAXDEPTH = 4;
     
     /** The live.xml file */
     private File file;
 
     private File liveRootDir;
+    private int liveRootMaxDepth = DEFAULT_LIVEROOT_MAXDEPTH;
     
     private long lastReadTimestamp;
 
@@ -93,6 +97,12 @@ public class LiveJarInfo {
                 throw new RuntimeException("Can't read liveroot dir '" + liveRootDir.getPath() + "'.");
             }
             if(!liveRootDir.exists()) throw new RuntimeException("Liveroot dir '" + liveRootDir.getPath() + "' doesn't exist.");
+            
+            String value = System.getProperty(PROP_LIVEROOT_MAXDEPTH);
+            if(value != null) {
+                liveRootMaxDepth = Integer.parseInt(value);
+            }
+            
             LOG.info("Using maven projects found in '" + liveRootDir.getPath() + "' to look up live resources."); 
             
         } else {
@@ -155,7 +165,7 @@ public class LiveJarInfo {
             }
         } else if(liveRootDir != null) {
             long t1 = System.currentTimeMillis();
-            findMavenProjects(liveRootDir, 0, 5);
+            findMavenProjects(liveRootDir, 0, liveRootMaxDepth);
             long t2 = System.currentTimeMillis();
             LOG.info("Finding Maven projects took " + (t2-t1) + "ms.");
         }
