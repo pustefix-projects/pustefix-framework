@@ -3,6 +3,7 @@ package org.pustefixframework.agent;
 import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.FileInputStream;
+import java.io.IOException;
 import java.io.InputStream;
 import java.lang.instrument.ClassFileTransformer;
 import java.lang.instrument.IllegalClassFormatException;
@@ -16,6 +17,12 @@ import java.util.jar.Attributes;
 import java.util.jar.JarFile;
 import java.util.jar.Manifest;
 
+/**
+ * Replaces bytecode of class by bytecode loaded from live fallback location.
+ * 
+ * @author mleidig@schlund.de
+ *
+ */
 public class LiveClassFileTransformer implements ClassFileTransformer {
     
     private LiveInfo liveInfo;
@@ -27,12 +34,9 @@ public class LiveClassFileTransformer implements ClassFileTransformer {
         this.liveInfo = liveInfo;
     }
     
-    public byte[] transform(ClassLoader loader, String className,
-            Class<?> classBeingRedefined, ProtectionDomain protectionDomain,
-            byte[] classfileBuffer) throws IllegalClassFormatException {
+    public byte[] transform(ClassLoader loader, String className, Class<?> classBeingRedefined, 
+            ProtectionDomain protectionDomain, byte[] classfileBuffer) throws IllegalClassFormatException {
        
-        
-        
         URL location = protectionDomain.getCodeSource().getLocation();
         if(location != null && location.getProtocol().equals("file")) {
             if(location.getPath().endsWith(".jar") && location.getPath().contains("WEB-INF/lib")) {
@@ -63,12 +67,16 @@ public class LiveClassFileTransformer implements ClassFileTransformer {
                             } 
                         }
                     } catch(Exception x) {
-                        x.printStackTrace();
+                        System.err.println("Error reading JAR manifest [" + x.getMessage() + "]");
                     }
                 }
                 if(liveLocation != null) {
                     String cpath = liveLocation + "/" + className + ".class";
-                    return loadClass(new File(cpath));
+                    try {
+                        return loadClass(new File(cpath));
+                    } catch(IOException x) {
+                        System.err.println("Can't load live class '" + cpath + "' [" + x.getMessage() + "]");
+                    }
                 }
             } else if(location.getPath().endsWith(".class") && location.getPath().contains("WEB-INF/classes")) {
                 String path = location.getPath();
@@ -80,7 +88,11 @@ public class LiveClassFileTransformer implements ClassFileTransformer {
                     if(path.endsWith("/target")) {
                         path += "/classes";
                         String cpath = path + "/" +className + ".class";
-                        return loadClass(new File(cpath));
+                        try {
+                            return loadClass(new File(cpath));
+                        } catch(IOException x) {
+                            System.err.println("Can't load live class '" + cpath + "' [" + x.getMessage() + "]");
+                        }
                     }
                 }
                 
@@ -88,30 +100,25 @@ public class LiveClassFileTransformer implements ClassFileTransformer {
         }
         
         return classfileBuffer;
-        
     }
     
     public String getLiveLocation(String jarPath) {
         return locationToLive.get(jarPath);
     }
     
-    private byte[] loadClass(File clFile) {
+    private byte[] loadClass(File clFile) throws IOException {
+        ByteArrayOutputStream out = new ByteArrayOutputStream();
+        InputStream in = new FileInputStream(clFile);
+        byte[] buffer = new byte[4096];
+        int no = 0;
         try {
-            ByteArrayOutputStream out = new ByteArrayOutputStream();
-            InputStream in = new FileInputStream(clFile);
-            byte[] buffer = new byte[4096];
-            int no = 0;
-            try {
-                while ((no = in.read(buffer)) != -1)
-                    out.write(buffer, 0, no);
-            } finally {
-                in.close();
-                out.close();
-            }
-            return out.toByteArray();
-        } catch(Exception x) {
-            throw new RuntimeException(x);
+            while ((no = in.read(buffer)) != -1)
+                out.write(buffer, 0, no);
+        } finally {
+            in.close();
+            out.close();
         }
+        return out.toByteArray();
     }
 
 }

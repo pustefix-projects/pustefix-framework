@@ -1,8 +1,6 @@
 package org.pustefixframework.agent;
 
 import java.io.File;
-import java.net.MalformedURLException;
-import java.net.URL;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -15,11 +13,18 @@ import org.w3c.dom.Element;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 
+/**
+ * Manages live fallback location lookup for classes
+ * based on live.xml or automatic Maven project detection.
+ * 
+ * @author mleidig@schlund.de
+ *
+ */
 public class LiveInfo {
 
     private Map<POMInfo, String> liveUrls = new HashMap<POMInfo, String>();
     
-    public LiveInfo() {
+    public LiveInfo() throws Exception {
 
         File live = null;
         
@@ -41,21 +46,21 @@ public class LiveInfo {
         }
         
         if(live != null) {
-            try {
-                read(live);
-            } catch(Exception e) {
-                e.printStackTrace();
-                //TODO: log
-            }
+            read(live);
         }
 
+    }
+    
+    public LiveInfo(File liveRootDir, int liveRootMaxDepth) {
+        findMavenProjects(liveRootDir, 0, liveRootMaxDepth);
     }
     
     public String getLiveLocation(POMInfo pomInfo) {
         return liveUrls.get(pomInfo);
     }
     
-    public void read(File file) throws Exception {
+    private void read(File file) throws Exception {
+        
         DocumentBuilderFactory dbf = DocumentBuilderFactory.newInstance();
         Document doc = dbf.newDocumentBuilder().parse(file);
         List<Element> jarElems = getChildElements(doc.getDocumentElement(), "jar");
@@ -108,23 +113,30 @@ public class LiveInfo {
         return children;
     }
     
-    public static void find(File dir, int level, int maxDepth) {
+    private void findMavenProjects(File dir, int level, int maxDepth) {
         
+        POMParser pomParser = new POMParser();
         File[] files = dir.listFiles();
         for(File file: files) {
-            if(file.isDirectory() && !file.isHidden() && !file.getName().equals("CVS")) {
-                if(level < maxDepth) find(file, level + 1, maxDepth);
+            if(file.isDirectory() && !file.isHidden() && !file.getName().equals("CVS")
+                    && !file.getName().equals("target") && !file.getName().equals("src")) {
+                if(level < maxDepth) findMavenProjects(file, level + 1, maxDepth);
             } else if(file.isFile() && file.getName().equals("pom.xml") && file.canRead()) {
-                System.out.println(dir.getAbsolutePath());
+                
+                    POMInfo pomInfo = null;
+                    try {
+                        pomInfo = pomParser.parse(file);
+                    } catch (Exception e) {
+                        System.err.println("Error reading POM file '" + file.getAbsolutePath() + "' [" +
+                                e.getMessage() + "].");
+                    }
+                    if(pomInfo != null) {
+                        String targetDir = new File(file.getParentFile(), "target/classes").getAbsolutePath();
+                        liveUrls.put(pomInfo, targetDir);
+                    }
             }
         }
         
-    }
-    
-    public static void main(String[] args) {
-        //LiveInfo li = new LiveInfo();
-        File dir = new File("/data/checkouts/pustefix.svn.sourceforge.net");
-        LiveInfo.find(dir, 0, 4);
     }
     
 }

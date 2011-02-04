@@ -10,9 +10,16 @@ import org.xml.sax.XMLReader;
 import org.xml.sax.helpers.DefaultHandler;
 import org.xml.sax.helpers.XMLReaderFactory;
 
+/**
+ * Fast SAX-based parser to get groupId, artifactId and version from POM.
+ * 
+ * @author mleidig@schlund.de
+ *
+ */
 public class POMParser {
     
     public POMInfo parse(File file) throws Exception {
+        
         FileInputStream fis = null;
         ParsingHandler handler = new ParsingHandler();
         try {
@@ -82,17 +89,6 @@ public class POMParser {
 
         private static final long serialVersionUID = 8137076865306267682L;
         
-    }
-    
-    public static void main(String[] args) throws Exception {
-        File file = new File("/data/checkouts/pustefix.svn.sourceforge.net/pustefix-0.16.x/pom.xml");
-        POMParser parser = new POMParser();
-        long t1 = System.currentTimeMillis();
-        for(int i = 0; i<10000; i++) {
-            parser.parse(file);
-        }
-        long t2 = System.currentTimeMillis();
-        System.out.println(t2-t1);
     }
     
 }

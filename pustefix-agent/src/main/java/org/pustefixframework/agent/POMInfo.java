@@ -1,5 +1,11 @@
 package org.pustefixframework.agent;
 
+/**
+ * Holder of basic POM information (groupId, artifactId, version)
+ * 
+ * @author mleidig@schlund.de
+ *
+ */
 public class POMInfo {
     
     private String groupId;
