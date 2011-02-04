@@ -97,8 +97,6 @@ public class PustefixInternalsRequestHandler implements UriProvidingHttpRequestH
     
     private MessageList messageList = new MessageList();
     
-    private LiveResolver liveResolver = new LiveResolver();
-    
     public void setHandlerURI(String handlerURI) {
         this.handlerURI = handlerURI;
     }
@@ -325,7 +323,7 @@ public class PustefixInternalsRequestHandler implements UriProvidingHttpRequestH
             elem.setAttribute("name", module);
             ModuleDescriptor desc = ModuleInfo.getInstance().getModuleDescriptor(module);
             try {
-                URL url = liveResolver.resolveLiveModuleRoot(desc.getURL(), "/");
+                URL url = LiveResolver.getInstance().resolveLiveModuleRoot(desc.getURL(), "/");
                 if(url != null) elem.setAttribute("url", url.toString());
             } catch(Exception x) {
                 LOG.warn("Error while live-resolving module", x);

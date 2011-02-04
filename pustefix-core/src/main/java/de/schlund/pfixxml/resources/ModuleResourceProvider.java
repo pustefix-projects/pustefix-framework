@@ -43,8 +43,6 @@ public class ModuleResourceProvider implements ResourceProvider {
     
     private String[] supportedSchemes = {MODULE_SCHEME};
     
-    private LiveResolver liveResolver;
-    
     public String[] getSupportedSchemes() {
         return supportedSchemes;
     }
@@ -66,11 +64,8 @@ public class ModuleResourceProvider implements ResourceProvider {
                 if (LOG.isDebugEnabled()) {
                     LOG.debug("Getting live resource for " + uri);
                 }
-                if (liveResolver == null) {
-                    liveResolver = new LiveResolver();
-                }
                 try {
-                    URL resolvedUrl = liveResolver.resolveLiveModuleRoot(url, uri.getPath());
+                    URL resolvedUrl = LiveResolver.getInstance().resolveLiveModuleRoot(url, uri.getPath());
                     if (resolvedUrl != null) {
                         // jar or file?
                         if (resolvedUrl.getProtocol().equals("jar")) {
