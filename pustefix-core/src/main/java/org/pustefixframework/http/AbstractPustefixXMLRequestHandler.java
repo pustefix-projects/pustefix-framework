@@ -63,7 +63,6 @@ import de.schlund.pfixxml.SPDocument;
 import de.schlund.pfixxml.SessionCleaner;
 import de.schlund.pfixxml.Variant;
 import de.schlund.pfixxml.config.EnvironmentProperties;
-import de.schlund.pfixxml.perflogging.AdditionalTrailInfo;
 import de.schlund.pfixxml.serverutil.SessionHelper;
 import de.schlund.pfixxml.targets.PageInfo;
 import de.schlund.pfixxml.targets.PageInfoFactory;
@@ -71,8 +70,6 @@ import de.schlund.pfixxml.targets.PageTargetTree;
 import de.schlund.pfixxml.targets.Target;
 import de.schlund.pfixxml.targets.TargetGenerationException;
 import de.schlund.pfixxml.targets.TargetGenerator;
-import de.schlund.pfixxml.testrecording.TestRecording;
-import de.schlund.pfixxml.testrecording.TrailLogger;
 import de.schlund.pfixxml.util.CacheValueLRU;
 import de.schlund.pfixxml.util.MD5Utils;
 import de.schlund.pfixxml.util.Xml;
@@ -164,8 +161,6 @@ public abstract class AbstractPustefixXMLRequestHandler extends AbstractPustefix
     private final static Logger LOGGER       = Logger.getLogger(AbstractPustefixXMLRequestHandler.class);
     
     private AdditionalTrailInfo additionalTrailInfo = null;
-    
-    private TestRecording testRecording;
     
     private SessionCleaner sessionCleaner;
     
@@ -374,9 +369,7 @@ public abstract class AbstractPustefixXMLRequestHandler extends AbstractPustefix
                     throw e;
                 }
             }
-	    
             
-            TrailLogger.log(preq, spdoc, session);
             RequestParam[] anchors   = preq.getAllRequestParams(PARAM_ANCHOR);
             Map<String, String> anchormap;
             if (anchors != null && anchors.length > 0) {
@@ -780,7 +773,7 @@ public abstract class AbstractPustefixXMLRequestHandler extends AbstractPustefix
         } else {
             throw new IllegalArgumentException("invalid value for " + PARAM_XMLONLY + ": " + value);
         }
-        if (xmlOnlyAllowed || (testRecording!=null && testRecording.isKnownClient(pfreq.getRemoteAddr()))) {
+        if (xmlOnlyAllowed) {
             return rendering;
         } else {
             return RENDERMODE.RENDER_NORMAL;
@@ -994,10 +987,6 @@ public abstract class AbstractPustefixXMLRequestHandler extends AbstractPustefix
     
     public void setTargetGenerator(TargetGenerator tgen) {
         this.generator = tgen;
-    }
-    
-    public void setTestRecording(TestRecording testRecording) {
-        this.testRecording = testRecording;
     }
     
     public void setEditorLocation(String editorLocation) {

@@ -69,7 +69,7 @@ public class PropertyObjectManager {
             synchronized (confObjs) {
                 confObj = confObjs.get(objClass);
                 if (confObj == null) {
-                    LOG.warn("******* Creating new ConfigurableObject " + objClass.getName());
+                    LOG.info("******* Creating new ConfigurableObject " + objClass.getName());
                     confObj = objClass.newInstance();
                     confObj.init(config);
                     confObjs.put(objClass, confObj);

@@ -113,4 +113,15 @@
     <func:result select="callback:getFrameworkVersion()"/>
   </func:function>
   
+  <func:function name="pfx:__needsLastFlow">
+    <xsl:param name="page"/>
+    <xsl:param name="lastFlow"/>
+    <func:result select="callback:needsLastFlow($__context__,$page,$lastFlow)"/>
+  </func:function>
+  
+  <func:function name="pfx:__omitPage">
+    <xsl:param name="page"/>
+    <func:result select="callback:omitPage($__context__,$page)"/>
+  </func:function>
+  
 </xsl:stylesheet>

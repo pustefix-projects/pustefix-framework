@@ -327,9 +327,9 @@ public class RequestContextImpl implements Cloneable, AuthorizationInterceptor {
             if (rp != null && rp.getValue() != null && !rp.getValue().equals("")) {
                 redirectURL += "&__frame=" + rp.getValue();
             }
-            rp = preq.getRequestParam("__lf");
+            rp = preq.getRequestParam(PARAM_LASTFLOW);
             if (rp != null) {
-            	redirectURL += "&__lf=" + rp.getValue();
+            	redirectURL += "&" + PARAM_LASTFLOW + "=" + rp.getValue();
             }
             spdoc.setRedirect(redirectURL);
 
@@ -404,7 +404,7 @@ public class RequestContextImpl implements Cloneable, AuthorizationInterceptor {
                     }
                 }
                 if (action == null) {
-                    throw new PustefixApplicationException("Page " + currentpagerequest.getName() + " has been called with unknown action " + actionname);
+                    throw new UnknownActionException(actionname.getValue(), currentpagerequest.getName());
                 }
             } else {
                 LOG.warn("Page " + currentpagerequest.getName() + " has been called with action, but isn't configured.");
@@ -491,11 +491,11 @@ public class RequestContextImpl implements Cloneable, AuthorizationInterceptor {
             }
 
             if (currentpageflow != null) {
-                spdoc.setProperty("__lf", currentpageflow.getRootName());
+                spdoc.setProperty(PARAM_LASTFLOW, currentpageflow.getRootName());
                 spdoc.setProperty("pageflow", currentpageflow.getRootName());
                 addPageFlowInfo(spdoc);
             } else if (lastflow != null) {
-                spdoc.setProperty("__lf", lastflow.getRootName());
+                spdoc.setProperty(PARAM_LASTFLOW, lastflow.getRootName());
             }
 
             Variant var = getVariant();
@@ -966,6 +966,17 @@ public class RequestContextImpl implements Cloneable, AuthorizationInterceptor {
             state = parentcontext.getContextConfig().getDefaultState();
         }
         return state;
+    }
+    
+    public boolean needsLastFlow(String pageName, String lastFlowName) {
+        if(lastFlowName != null && !lastFlowName.equals("")) {
+            PageFlow lastFlow = pageflowmanager.getPageFlowByName(lastFlowName, variant);
+            if(lastFlow != null) {
+                PageRequest page = createPageRequest(pageName);
+                return pageflowmanager.needsLastFlow(lastFlow, page);
+            }
+        }
+        return false;
     }
 
 }

@@ -49,21 +49,6 @@
     <match>/p:project-config/p:application</match>
   </handler>
   
-  <!-- Creates PerfLogging bean -->
-  <handler class="org.pustefixframework.config.project.parser.PerfLoggingParsingHandler">
-    <match>/p:project-config//p:perflogging</match>
-  </handler>
-  
-  <!-- Creates AuthAdmin bean -->
-  <handler class="org.pustefixframework.config.project.parser.AuthAdminParsingHandler">
-    <match>/p:project-config//p:authadmin</match>
-  </handler>
-  
-  <!-- Creates TestRecording bean -->
-  <handler class="org.pustefixframework.config.project.parser.TestRecordingParsingHandler">
-    <match>/p:project-config//p:testrecording</match>
-  </handler>
-  
   <!-- Reads path to depend.xml file -->
   <handler class="org.pustefixframework.config.project.parser.XMLGeneratorInfoParsingHandler">
     <match>/p:project-config/p:xml-generator</match>

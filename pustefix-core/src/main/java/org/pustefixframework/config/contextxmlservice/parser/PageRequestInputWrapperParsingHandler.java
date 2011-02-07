@@ -54,7 +54,7 @@ public class PageRequestInputWrapperParsingHandler implements ParsingHandler {
         try {
             wrapperClass = Class.forName(className);
         } catch (ClassNotFoundException e) {
-            throw new ParserException("Could not load wrapper class \"" + className + "\"!");
+            throw new ParserException("Could not load wrapper class \"" + className + "\"!", e);
         }
         if (!IWrapper.class.isAssignableFrom(wrapperClass)) {
             throw new ParserException("Input wrapper class " + wrapperClass + " on page " + pageConfig.getPageName() + " does not implement " + IWrapper.class + " interface!");

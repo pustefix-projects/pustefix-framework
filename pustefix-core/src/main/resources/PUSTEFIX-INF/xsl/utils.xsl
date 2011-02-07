@@ -85,17 +85,22 @@
                 </td>
                 <td align="left">
                   <a target="pfixcore_internals__">
-                    <ixsl:attribute name="href"><ixsl:value-of select="$__contextpath"/>/xml/pfxinternals</ixsl:attribute>
+                    <ixsl:attribute name="href"><ixsl:value-of select="$__contextpath"/>/pfxinternals</ixsl:attribute>
                     <img border="0" alt="Show XML" title="Show last XML tree" src="{{$__contextpath}}/modules/pustefix-core/img/show_info.gif"/></a>
+                </td>
+                <td align="left">
+                  <a>
+                    <ixsl:attribute name="href"><ixsl:value-of select="$__contextpath"/>/pfxinternals?action=reload&amp;page=<ixsl:value-of select="$page"/></ixsl:attribute>
+                    <img border="0" alt="Reload webapp" title="Reload webapp" src="{{$__contextpath}}/modules/pustefix-core/img/reload.gif"/></a>
                 </td>
               </tr>
               <tr>
-                <td nowrap="nowrap" colspan="3" style="font-family: Verdana,Sans; font-size: 10px; background-color: black; color: white; padding-left: 5px; padding-right: 2px;">
+                <td nowrap="nowrap" colspan="4" style="font-family: Verdana,Sans; font-size: 10px; background-color: black; color: white; padding-left: 5px; padding-right: 2px;">
                   P: <ixsl:value-of select="$page"/>
                 </td>
               </tr>
               <tr>
-                <td nowrap="nowrap" colspan="3" style="font-family: Verdana,Sans; font-size: 10px; background-color: black; color: white; padding-left: 5px; padding-right: 2px;">
+                <td nowrap="nowrap" colspan="4" style="font-family: Verdana,Sans; font-size: 10px; background-color: black; color: white; padding-left: 5px; padding-right: 2px;">
                   F: <ixsl:value-of select="$__root/formresult/pageflow/@name"/>
                 </td>
               </tr>
@@ -277,8 +282,12 @@
                   <img border="0" alt="Show XML" title="Show last XML tree" src="{{$__contextpath}}/modules/pustefix-core/img/console_showxml.gif" style="margin-left:5px"/>
                 </a>
                 <a target="pfixcore_internals__">
-                  <ixsl:attribute name="href"><ixsl:value-of select="$__contextpath"/>/xml/pfxinternals</ixsl:attribute>
+                  <ixsl:attribute name="href"><ixsl:value-of select="$__contextpath"/>/pfxinternals</ixsl:attribute>
                   <img border="0" alt="Show Pustefix internals" title="Show Pustefix internals" src="{{$__contextpath}}/modules/pustefix-core/img/console_showinfo.gif" style="margin-left:5px"/>
+                </a>
+                <a>
+                  <ixsl:attribute name="href"><ixsl:value-of select="$__contextpath"/>/pfxinternals?action=reload&amp;page=<ixsl:value-of select="$page"/></ixsl:attribute>
+                  <img border="0" alt="Reload webapp" title="Reload webapp" src="{{$__contextpath}}/modules/pustefix-core/img/console_reload.gif" style="margin-left:5px"/>
                 </a>
                 <xsl:if test="@webserviceconsole='true'">
                   <a target="pfixcore_web_service_monitor">

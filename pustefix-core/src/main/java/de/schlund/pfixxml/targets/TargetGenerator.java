@@ -124,7 +124,7 @@ public class TargetGenerator implements Comparable<TargetGenerator> {
 
     //--
 
-    public TargetGenerator(FileResource confile, FileResource cacheDir) throws IOException, SAXException, XMLException {
+    public TargetGenerator(final FileResource confile, FileResource cacheDir) throws IOException, SAXException, XMLException {
         this.config_path = confile;
         this.cacheDir = cacheDir;
         Meminfo.print("TG: Before loading " + confile.toString());
@@ -216,7 +216,7 @@ public class TargetGenerator implements Comparable<TargetGenerator> {
 
     public synchronized boolean tryReinit() throws Exception {
         if (needsReload()) {
-            LOG.warn("\n\n###############################\n" + "#### Reloading depend file: " + this.config_path.toString() + "\n" + "###############################\n");
+            LOG.info("\n\n###############################\n" + "#### Reloading depend file: " + this.config_path.toString() + "\n" + "###############################\n");
             synchronized (alltargets) {
                 if (alltargets != null && !alltargets.isEmpty()) {
                     TargetDependencyRelation.getInstance().resetAllRelations((Collection<Target>) alltargets.values());
@@ -259,7 +259,7 @@ public class TargetGenerator implements Comparable<TargetGenerator> {
     private void loadConfig(FileResource configFile) throws XMLException, IOException, SAXException {
         config_mtime = System.currentTimeMillis();
         String path = configFile.toURI().toString();
-        LOG.warn("\n***** CAUTION! ***** loading config " + path + "...");
+        LOG.info("\n***** CAUTION! ***** loading config " + path + "...");
 
         Document config;
 
@@ -470,17 +470,17 @@ public class TargetGenerator implements Comparable<TargetGenerator> {
             struct.setParams(params);
             allstructs.put(nameattr, struct);
         }
-        LOG.warn("\n=====> Preliminaries took " + (System.currentTimeMillis() - start) + "ms. Now looping over " + allstructs.keySet().size() + " targets");
+        LOG.info("\n=====> Preliminaries took " + (System.currentTimeMillis() - start) + "ms. Now looping over " + allstructs.keySet().size() + " targets");
         start = System.currentTimeMillis();
         String tgParam = configFile.toString();
         for (Iterator<String> i = allstructs.keySet().iterator(); i.hasNext();) {
             TargetStruct struct = allstructs.get(i.next());
             createTargetFromTargetStruct(struct, allstructs, depxmls, depxsls, tgParam);
         }
-        LOG.warn("\n=====> Creating targets took " + (System.currentTimeMillis() - start) + "ms. Now init pagetree");
+        LOG.info("\n=====> Creating targets took " + (System.currentTimeMillis() - start) + "ms. Now init pagetree");
         start = System.currentTimeMillis();
         pagetree.initTargets();
-        LOG.warn("\n=====> Init of Pagetree took " + (System.currentTimeMillis() - start) + "ms. Ready...");
+        LOG.info("\n=====> Init of Pagetree took " + (System.currentTimeMillis() - start) + "ms. Ready...");
     }
 
     private TargetRW createTargetFromTargetStruct(TargetStruct struct, HashMap<String, TargetStruct> allstructs, HashSet<String> depxmls, HashSet<String> depxsls, String tgParam) throws XMLException {
@@ -565,7 +565,7 @@ public class TargetGenerator implements Comparable<TargetGenerator> {
             if (!depxmls.contains(key) && !depxsls.contains(key)) {
                 // it's a toplevel target...
                 if (pagename == null) {
-                    LOG.warn("*** WARNING *** Target '" + key + "' is top-level, but has no 'page' attribute set! Ignoring it... ***");
+                    LOG.info("*** WARNING *** Target '" + key + "' is top-level, but has no 'page' attribute set! Ignoring it... ***");
                 } else {
                     //CAT.warn("REGISTER " + pagename + " " + variantname);
                     PageInfo info = PageInfoFactory.getInstance().getPage(this, pagename, variantname);

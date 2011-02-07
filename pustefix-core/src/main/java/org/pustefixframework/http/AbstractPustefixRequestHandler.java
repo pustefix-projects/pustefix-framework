@@ -167,7 +167,7 @@ public abstract class AbstractPustefixRequestHandler implements SessionTrackingS
         int major = ctx.getMajorVersion();
         int minor = ctx.getMinorVersion();
         if ((major == 2 && minor >= 3) || (major > 2)) {
-            LOG.warn("*** Servlet container with support for Servlet API " + major + "." + minor + " detected");
+            LOG.info("*** Servlet container with support for Servlet API " + major + "." + minor + " detected");
         } else {
             throw new ServletException("*** Can't detect servlet container with support for Servlet API 2.3 or higher");
         }
@@ -212,7 +212,7 @@ public abstract class AbstractPustefixRequestHandler implements SessionTrackingS
         //Try to get servlet encoding from properties:
         String encoding = this.getServletManagerConfig().getProperties().getProperty(SERVLET_ENCODING);
         if (encoding == null || encoding.trim().equals(""))
-            LOG.warn("No servlet encoding property set");
+            LOG.info("No servlet encoding property set");
         else if (!Charset.isSupported(encoding))
             LOG.error("Servlet encoding '" + encoding + "' is not supported.");
         else
@@ -222,7 +222,7 @@ public abstract class AbstractPustefixRequestHandler implements SessionTrackingS
         if (servletEncoding == null) {
             encoding = getServletEncoding();
             if (encoding == null || encoding.trim().equals(""))
-                LOG.warn("No servlet encoding init parameter set");
+                LOG.info("No servlet encoding init parameter set");
             else if (!Charset.isSupported(encoding))
                 LOG.error("Servlet encoding '" + encoding + "' is not supported.");
             else
@@ -231,7 +231,7 @@ public abstract class AbstractPustefixRequestHandler implements SessionTrackingS
         //Use default servlet encoding:
         if (servletEncoding == null) {
             servletEncoding = DEFAULT_ENCODING;
-            LOG.warn("Using default servlet encoding: " + DEFAULT_ENCODING);
+            LOG.info("Using default servlet encoding: " + DEFAULT_ENCODING);
         }
 
         LOG.debug("Servlet encoding was set to '" + servletEncoding + "'.");

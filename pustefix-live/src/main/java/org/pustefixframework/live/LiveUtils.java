@@ -35,6 +35,21 @@ public class LiveUtils {
         String entryKey = groupId + "+" + artifactId + "+" + version;
         return entryKey;
     }
+    
+    public static LiveJarInfo.Entry getEntryFromPom(File pomFile) throws Exception {
+        Element root = getRootFromPom(pomFile);
+        Element groupElem = getSingleChildElement(root, "groupId", true);
+        String groupId = groupElem.getTextContent().trim();
+        Element artifactElem = getSingleChildElement(root, "artifactId", true);
+        String artifactId = artifactElem.getTextContent().trim();
+        Element versionElem = getSingleChildElement(root, "version", true);
+        String version = versionElem.getTextContent().trim();
+        LiveJarInfo.Entry entry = new LiveJarInfo.Entry();
+        entry.setGroupId(groupId);
+        entry.setArtifactId(artifactId);
+        entry.setVersion(version);
+        return entry;
+    }
 
     public static Element getRootFromPom(File pomFile) throws Exception {
         DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();

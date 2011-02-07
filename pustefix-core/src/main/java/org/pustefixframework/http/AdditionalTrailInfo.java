@@ -15,18 +15,13 @@
  * along with Pustefix; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  */
-package de.schlund.pfixxml.perflogging;
+package org.pustefixframework.http;
 
-import java.util.Map;
+import java.util.LinkedHashMap;
 
-/**
- * @author mleidig@schlund.de
- */
-public interface PerfLoggingMBean {
-    
-    public boolean isPerfLoggingRunning();
-    public void startPerfLogging();
-    public String stopPerfLogging();
-    public Map<String, Map<String, int[]>> stopPerfLoggingMap();
-    
+import de.schlund.pfixxml.PfixServletRequest;
+
+public interface AdditionalTrailInfo {
+    LinkedHashMap<String,Object> getData(PfixServletRequest preq);
+    void reset();
 }

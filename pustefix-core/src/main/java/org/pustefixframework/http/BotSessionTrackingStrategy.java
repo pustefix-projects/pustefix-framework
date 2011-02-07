@@ -59,7 +59,7 @@ public class BotSessionTrackingStrategy implements SessionTrackingStrategy {
         
         context.callProcess(preq, req, res);
        
-        session.setMaxInactiveInterval(10);
+        if(session != null) session.setMaxInactiveInterval(10);
     }
     
     private void registerSession(HttpServletRequest req, HttpSession session) {
