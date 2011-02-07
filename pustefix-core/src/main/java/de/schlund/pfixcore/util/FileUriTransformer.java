@@ -19,6 +19,10 @@ public class FileUriTransformer {
 	 */
 	public static String getFileUriWithoutWindowsDriveSpecifier(File file) {
 		String absolutePath = file.getAbsolutePath();
+		return getFileUriWithoutWindowsDriveSpecifier(absolutePath);
+	}
+	
+	public static String getFileUriWithoutWindowsDriveSpecifier(String absolutePath) {
 		if (absolutePath.charAt(1) == ':') {
 			absolutePath = absolutePath.substring(2).replace(
 					File.separatorChar, '/');
