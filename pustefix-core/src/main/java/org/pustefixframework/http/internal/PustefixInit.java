@@ -200,41 +200,41 @@ public class PustefixInit {
 
     private static void configureLog4j(FileResource configFile) throws SAXException, FileNotFoundException, IOException {
         log4jmtime = configFile.lastModified();
-        XMLReader xreader = XMLReaderFactory.createXMLReader();
-        TransformerFactory tf = TransformerFactory.newInstance();
-        if (tf.getFeature(SAXTransformerFactory.FEATURE)) {
-            SAXTransformerFactory stf = (SAXTransformerFactory) tf;
-            TransformerHandler th;
+        XMLReader xmlReader = XMLReaderFactory.createXMLReader();
+        TransformerFactory transformerFactory = TransformerFactory.newInstance();
+        if (transformerFactory.getFeature(SAXTransformerFactory.FEATURE)) {
+            SAXTransformerFactory saxtransformerFactory = (SAXTransformerFactory) transformerFactory;
+            TransformerHandler transformerHandler;
             try {
-                th = stf.newTransformerHandler();
+                transformerHandler = saxtransformerFactory.newTransformerHandler();
             } catch (TransformerConfigurationException e) {
                 throw new RuntimeException(
                         "Failed to configure TransformerFactory!", e);
             }
-            DOMResult dr = new DOMResult();
-            th.setResult(dr);
-            DefaultHandler dh = new TransformerHandlerAdapter(th);
-            CustomizationHandler cushandler = new CustomizationHandler(dh);
-            cushandler.setFallbackDocroot();
-            xreader.setContentHandler(cushandler);
-            xreader.setDTDHandler(cushandler);
-            xreader.setErrorHandler(cushandler);
-            xreader.setEntityResolver(cushandler);
-            xreader.parse(new InputSource(configFile.getInputStream()));
+            DOMResult domResult = new DOMResult();
+            transformerHandler.setResult(domResult);
+            DefaultHandler defaultHandler = new TransformerHandlerAdapter(transformerHandler);
+            CustomizationHandler customizationHandler = new CustomizationHandler(defaultHandler);
+            customizationHandler.setFallbackDocroot();
+            xmlReader.setContentHandler(customizationHandler);
+            xmlReader.setDTDHandler(customizationHandler);
+            xmlReader.setErrorHandler(customizationHandler);
+            xmlReader.setEntityResolver(customizationHandler);
+            xmlReader.parse(new InputSource(configFile.getInputStream()));
             ByteArrayOutputStream bufferStream = new ByteArrayOutputStream();
             try {
-                Transformer t = SimpleResolver.configure(tf, "/pustefix/xsl/log4j.xsl");
-                t.transform(new DOMSource(dr.getNode()), new StreamResult(bufferStream));
+                Transformer transformer = SimpleResolver.configure(transformerFactory, "/pustefix/xsl/log4j.xsl");
+                transformer.transform(new DOMSource(domResult.getNode()), new StreamResult(bufferStream));
             } catch (TransformerException e) {
                 throw new SAXException(e);
             }
-            DocumentBuilderFactory dbf = DocumentBuilderFactory.newInstance();
-            dbf.setValidating(true);
-            dbf.setNamespaceAware(true);
+            DocumentBuilderFactory documentBuilderFactory = DocumentBuilderFactory.newInstance();
+            documentBuilderFactory.setValidating(true);
+            documentBuilderFactory.setNamespaceAware(true);
             Document confDoc;
             try {
-                DocumentBuilder db = dbf.newDocumentBuilder();
-                db.setEntityResolver(new EntityResolver() {
+                DocumentBuilder documentBuilder = documentBuilderFactory.newDocumentBuilder();
+                documentBuilder.setEntityResolver(new EntityResolver() {
 
                     public InputSource resolveEntity(String publicId, String systemId) throws SAXException, IOException {
                         if (systemId.equals("http://logging.apache.org/log4j/docs/api/org/apache/log4j/xml/log4j.dtd")) {
@@ -242,9 +242,9 @@ public class PustefixInit {
                         }
                         return null;
                     }
-                    
+
                 });
-                db.setErrorHandler(new ErrorHandler() {
+                documentBuilder.setErrorHandler(new ErrorHandler() {
 
                     public void warning(SAXParseException exception) throws SAXException {
                         System.err.println("Warning while parsing log4j configuration: ");
@@ -261,7 +261,7 @@ public class PustefixInit {
                         exception.printStackTrace(System.err);                    }
                     
                 });
-                confDoc = db.parse(new ByteArrayInputStream(bufferStream.toByteArray()));
+                confDoc = documentBuilder.parse(new ByteArrayInputStream(bufferStream.toByteArray()));
             } catch (SAXException e) {
                 throw e;
             } catch (IOException e) {
