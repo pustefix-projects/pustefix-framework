@@ -24,6 +24,7 @@
     <module>pustefix-webapp-plugin</module>
     <module>pustefix-webservice-plugin</module>
     <module>pustefix-validator-plugin</module>
+    <module>pustefix-xslt-plugin</module>
   </modules>
 
   <profiles>
