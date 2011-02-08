@@ -38,8 +38,8 @@ import org.apache.maven.plugin.MojoExecutionException;
 import org.apache.maven.project.MavenProject;
 
 /**
- * Make XSL transformation (supports stylesheet coming
- * from jar file using the classpath URL scheme)
+ * Make XSL transformation (supports referencing stylesheet 
+ * from the project classpath using the 'classpath:' URL scheme)
  *
  * @author mleidig@schlund.de
  *
@@ -113,6 +113,7 @@ public class XSLTMojo extends AbstractMojo {
                     t.setParameter(name, value);
                 }
                 StreamSource inSrc = new StreamSource(in);
+                if(!out.getParentFile().exists()) out.getParentFile().mkdirs();
                 FileOutputStream outStream = new FileOutputStream(out);
                 StreamResult outRes = new StreamResult(outStream);
                 t.transform(inSrc, outRes);
