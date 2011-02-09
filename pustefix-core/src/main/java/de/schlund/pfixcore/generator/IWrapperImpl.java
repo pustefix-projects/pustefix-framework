@@ -49,7 +49,7 @@ import de.schlund.pfixxml.resources.ResourceUtil;
 public abstract class IWrapperImpl implements IWrapper {
     protected RequestData req;
     protected String      prefix   = "__undef";
-    protected Integer     order    = new Integer(0);
+    protected Integer     order    = Integer.valueOf(0);
     private   Logger      LOG      = Logger.getLogger(this.getClass());
     private   FileResource logdir  = null; 
     private   String      pagename = null;
@@ -155,7 +155,7 @@ public abstract class IWrapperImpl implements IWrapper {
     }
 
     public final void defineOrder(int order) {
-        this.order = new Integer(order);
+        this.order = Integer.valueOf(order);
     }
 
     public final Integer gimmeOrder() {
