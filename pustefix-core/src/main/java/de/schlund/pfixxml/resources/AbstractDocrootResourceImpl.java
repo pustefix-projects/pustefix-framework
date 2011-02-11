@@ -177,6 +177,9 @@ public abstract class AbstractDocrootResourceImpl implements DocrootResource {
         AbstractDocrootResourceImpl res;
         try {
             res = (AbstractDocrootResourceImpl) o;
+            if (res == null) {
+            	return false;
+            }
         } catch (ClassCastException e) {
             return false;
         }

@@ -197,6 +197,9 @@ public class RefCountingCollection<E> implements Collection<E> {
         RefCountingCollection<?> incoll;
         try {
             incoll = (RefCountingCollection<?>) object;
+            if (incoll == null) {
+            	return false;
+            }
         } catch (ClassCastException e) {
             return false;
         }

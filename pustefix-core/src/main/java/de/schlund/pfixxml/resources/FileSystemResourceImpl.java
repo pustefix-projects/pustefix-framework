@@ -205,6 +205,9 @@ class FileSystemResourceImpl implements FileSystemResource {
         FileSystemResourceImpl res;
         try {
             res = (FileSystemResourceImpl) o;
+            if (res == null) {
+            	return false;
+            }
         } catch (ClassCastException e) {
             return false;
         }
