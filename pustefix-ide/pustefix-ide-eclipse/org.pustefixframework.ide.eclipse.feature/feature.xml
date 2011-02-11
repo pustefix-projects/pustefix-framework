@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<feature
+      id="org.pustefixframework.ide.eclipse.plugin"
+      label="Pustefix Eclipse Plugin"
+      version="1.0.0"
+      provider-name="Pustefix">
+
+   <description>
+      The Pustefix Eclipse Plugin provides an incremental project builder
+for IWrapper and StatusCodeLib generation.
+   </description>
+
+   <copyright>
+      (c) Copyright Pustefix contributors and others 2006, 2007.  All
+rights reserved.
+   </copyright>
+
+   <license url="http://www.gnu.org/licenses/lgpl.html">
+      The original code of the Eclipse Pustefix Plugin is released
+under the GNU Lesser General Public License (LGPL).
+   </license>
+
+   <plugin
+         id="org.pustefixframework.ide.eclipse.plugin"
+         download-size="0"
+         install-size="0"
+         version="1.0.0"
+         unpack="false"/>
+
+</feature>
