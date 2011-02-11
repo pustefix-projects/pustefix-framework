@@ -49,7 +49,7 @@ public class SessionHandlingTestHandler extends AbstractPustefixRequestHandler {
         int count = 1;
         if(session != null) {
             Integer counter = (Integer)session.getAttribute("COUNTER");
-            if(counter == null) counter = new Integer(1);
+            if(counter == null) counter = Integer.valueOf(1);
             else counter = Integer.valueOf(counter + 1);
             session.setAttribute("COUNTER", counter);
             count = counter;
