@@ -126,7 +126,7 @@ public class PustefixInit {
     	Properties properties = new Properties(System.getProperties());
         
     	File tempDir = (File)servletContext.getAttribute("javax.servlet.context.tempdir");
-    	if(tempDir != null && !tempDir.equals("")) {
+    	if(tempDir != null && !tempDir.getPath().equals("")) {
     	    File cacheDir = new File(tempDir, "pustefix-jar-cache");
     	    JarFileCache.setCacheDir(cacheDir);
     	}
