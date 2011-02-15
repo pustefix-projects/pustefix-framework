@@ -31,7 +31,6 @@
     
     <context-xml-service>
       <config-file>docroot:/WEB-INF/config.conf.xml</config-file>
-      <additional-trail-info>de.schlund.pfixxml.perflogging.DefaultAdditionalTrailInfoImpl</additional-trail-info>
       <choose>
         <when test="$mode='prod'">
           <session-cleaner-timeout>20</session-cleaner-timeout>
