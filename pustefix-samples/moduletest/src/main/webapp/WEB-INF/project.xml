@@ -32,12 +32,9 @@
   <application>
     
     <docroot-path>docroot:/htdocs</docroot-path>
-    <default-path>/xml/config</default-path>
     
     <context-xml-service>
-      <path>/xml/config</path>
       <config-file>docroot:/WEB-INF/config.conf.xml</config-file>
-      <additional-trail-info>de.schlund.pfixxml.perflogging.DefaultAdditionalTrailInfoImpl</additional-trail-info>
       <choose>
         <when test="$mode='prod'">
           <session-cleaner-timeout>20</session-cleaner-timeout>
@@ -48,15 +45,7 @@
       </choose>
     </context-xml-service>
     
-    <deref-service>
-      <path>/xml/deref</path>            <!-- optional: default is /xml/deref -->
-      <validtime>3600</validtime>        <!-- optional: default is 3600 (seconds) -->
-      <mustsign>false</mustsign>         <!-- optional: default is false -->
-    </deref-service>
-    
     <static>
-      <path>core/img</path>
-      <path>core/script</path>
       <path>img</path>
       <path>css</path>
     </static>
