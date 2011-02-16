@@ -56,7 +56,6 @@
       <!-- Set this to true if you want to skip the last transformation and only get a
            xml document containing all needed information for an external renderer -->
       <!-- <render-external>true</render-external> -->  
-      <!-- <additional-trail-info>org.pustefixframework.http.DefaultAdditionalTrailInfoImpl</additional-trail-info> -->
       <!-- <max-stored-doms>5</max-stored-doms> -->
       <!-- Set the timeout for removing old SPDocuments. (in seconds) -->
       <choose>
