@@ -24,6 +24,12 @@
             </xsd:restriction>
           </xsd:simpleType>
         </xsd:element>
+        <xsd:element name="initial-session-timeout" minOccurs="0">
+          <xsd:complexType>
+            <xsd:attribute name="value" type="xsd:int"/>
+            <xsd:attribute name="requestlimit" type="xsd:int"/>
+          </xsd:complexType>
+        </xsd:element>
         <xsd:element name="application" type="application-type"/>
         <xsd:element name="dynamic-includes" type="dynamic-includes-type" minOccurs="0"/>
         <xsd:element name="properties" type="properties-type" minOccurs="0"/>
