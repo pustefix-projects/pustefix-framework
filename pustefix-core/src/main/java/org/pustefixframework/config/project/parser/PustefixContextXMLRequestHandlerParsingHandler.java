@@ -35,6 +35,7 @@ import org.pustefixframework.config.customization.PropertiesBasedCustomizationIn
 import org.pustefixframework.config.generic.ParsingUtils;
 import org.pustefixframework.config.project.EditorInfo;
 import org.pustefixframework.config.project.EditorLocation;
+import org.pustefixframework.config.project.SessionTimeoutInfo;
 import org.pustefixframework.config.project.SessionTrackingStrategyInfo;
 import org.pustefixframework.config.project.XMLGeneratorInfo;
 import org.pustefixframework.http.AdditionalTrailInfo;
@@ -182,6 +183,7 @@ public class PustefixContextXMLRequestHandlerParsingHandler extends Customizatio
         
         ContextXMLServletConfig config = context.getObjectTreeElement().getObjectsOfTypeFromSubTree(ContextXMLServletConfig.class).iterator().next();
         SessionTrackingStrategyInfo strategyInfo = ParsingUtils.getSingleTopObject(SessionTrackingStrategyInfo.class, context);
+        SessionTimeoutInfo timeoutInfo = ParsingUtils.getFirstTopObject(SessionTimeoutInfo.class, context, false);
         
         BeanDefinitionBuilder beanBuilder = BeanDefinitionBuilder.genericBeanDefinition(PustefixContextXMLRequestHandler.class);
         beanBuilder.setScope("singleton");
@@ -206,6 +208,9 @@ public class PustefixContextXMLRequestHandlerParsingHandler extends Customizatio
             beanBuilder.addPropertyValue("includePartsEditableByDefault", editorInfo.isIncludePartsEditableByDefault());
         }
         beanBuilder.addPropertyValue("sessionTrackingStrategy", strategyInfo.getSessionTrackingStrategyInstance());
+        if(timeoutInfo != null) {
+            beanBuilder.addPropertyValue("sessionTimeoutInfo", timeoutInfo);
+        }
         BeanDefinition beanDefinition = beanBuilder.getBeanDefinition();
         BeanDefinitionHolder beanHolder = new BeanDefinitionHolder(beanDefinition, PustefixContextXMLRequestHandler.class.getName() + (path != null ? "#" + path : ""));
         context.getObjectTreeElement().addObject(beanHolder);
