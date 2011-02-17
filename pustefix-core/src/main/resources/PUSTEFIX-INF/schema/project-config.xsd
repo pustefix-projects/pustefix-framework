@@ -15,37 +15,21 @@
       <xsd:sequence>
         <xsd:element name="project" type="project-type"/>
         <xsd:element name="editor" type="editor-type" minOccurs="0"/>
-        <xsd:choice minOccurs="0" maxOccurs="unbounded">
-          <xsd:element name="choose">
-            <xsd:complexType>
-              <xsd:sequence>
-                <xsd:element name="when" maxOccurs="unbounded">
-                  <xsd:complexType>
-                    <xsd:choice>
-                      <xsd:element name="perflogging" type="perflogging-type"/>
-                      <xsd:element name="testrecording"/>
-                      <xsd:element name="authadmin"/>
-                    </xsd:choice>
-                    <xsd:attribute name="test" type="xsd:string" use="required"/>
-                  </xsd:complexType>
-                </xsd:element>
-                <xsd:element name="otherwise" minOccurs="0">
-                  <xsd:complexType>
-                    <xsd:choice>
-                      <xsd:element name="perflogging" type="perflogging-type"/>
-                      <xsd:element name="testrecording"/>
-                      <xsd:element name="authadmin"/>
-                    </xsd:choice>
-                  </xsd:complexType>
-                </xsd:element>
-              </xsd:sequence>
-            </xsd:complexType>
-          </xsd:element>
-          <xsd:element name="perflogging" type="perflogging-type"/>
-          <xsd:element name="testrecording"/>
-          <xsd:element name="authadmin"/>
-        </xsd:choice>
         <xsd:element name="xml-generator" type="xml-generator-type"/>
+        <xsd:element name="session-tracking-strategy" minOccurs="0">
+          <xsd:simpleType>
+            <xsd:restriction base="xsd:string">
+              <xsd:enumeration value="COOKIE"/>
+              <xsd:enumeration value="URL"/>
+            </xsd:restriction>
+          </xsd:simpleType>
+        </xsd:element>
+        <xsd:element name="initial-session-timeout" minOccurs="0">
+          <xsd:complexType>
+            <xsd:attribute name="value" type="xsd:int"/>
+            <xsd:attribute name="requestlimit" type="xsd:int"/>
+          </xsd:complexType>
+        </xsd:element>
         <xsd:element name="application" type="application-type"/>
         <xsd:element name="dynamic-includes" type="dynamic-includes-type" minOccurs="0"/>
         <xsd:element name="properties" type="properties-type" minOccurs="0"/>
@@ -89,12 +73,6 @@
       <xsd:element name="location" type="xsd:string"/>
       <xsd:element name="secret" type="xsd:string"/>
     </xsd:sequence>
-  </xsd:complexType>
-  
-  <xsd:complexType name="perflogging-type">
-    <xsd:attribute name="buffersize" type="xsd:int"/>
-    <xsd:attribute name="autostart" type="xsd:boolean"/>
-    <xsd:attribute name="offermaxwait" type="xsd:int"/>
   </xsd:complexType>
   
   <xsd:complexType name="xml-generator-type">
@@ -143,12 +121,11 @@
   
   <xsd:complexType name="application-type">
     <xsd:sequence>
-      <xsd:element name="docroot-path" type="xsd:string"/>
-      <xsd:element name="default-path" type="xsd:string"/>
+      <xsd:element name="docroot-path" type="xsd:string" minOccurs="0"/>
+      <xsd:element name="default-path" type="xsd:string" minOccurs="0"/>
       <xsd:element name="context-xml-service">
         <xsd:complexType>
         <xsd:sequence>
-          <xsd:element name="path" type="xsd:string"/>
           <xsd:element name="config-file" type="xsd:string"/>
           <xsd:element name="additional-trail-info" type="xsd:string" minOccurs="0"/>
           <xsd:choice minOccurs="0">
@@ -181,7 +158,6 @@
       <xsd:element name="direct-output-service" minOccurs="0">
         <xsd:complexType>
           <xsd:sequence>
-            <xsd:element name="path" type="xsd:string"/>
             <xsd:element name="config-file" type="xsd:string"/>
           </xsd:sequence>
         </xsd:complexType>
@@ -189,7 +165,6 @@
       <xsd:element name="deref-service" minOccurs="0">
         <xsd:complexType>
           <xsd:sequence>
-            <xsd:element name="path" type="xsd:string"/>
             <xsd:element name="validtime" type="xsd:int"/>
             <xsd:element name="mustsign" type="xsd:boolean"/>
           </xsd:sequence>
@@ -198,7 +173,6 @@
       <xsd:element name="webservice-service" minOccurs="0">
         <xsd:complexType>
           <xsd:sequence>
-            <xsd:element name="path" type="xsd:string"/>
             <xsd:element name="config-file" type="xsd:string"/>
           </xsd:sequence>
         </xsd:complexType>

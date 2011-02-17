@@ -43,10 +43,6 @@ public class WebServiceRequestHandlerParsingHandler implements ParsingHandler {
       
         Element serviceElement = (Element)context.getNode();
         
-        Element pathElement = (Element)serviceElement.getElementsByTagNameNS(Constants.NS_PROJECT,"path").item(0);
-        if (pathElement == null) throw new ParserException("Could not find expected <path> element");
-        String path = pathElement.getTextContent().trim();
-        
         Element configurationFileElement = (Element)serviceElement.getElementsByTagNameNS(Constants.NS_PROJECT,"config-file").item(0);
         if (configurationFileElement == null) throw new ParserException("Could not find expected <config-file> element");
         String configurationFile = configurationFileElement.getTextContent().trim();
@@ -54,10 +50,10 @@ public class WebServiceRequestHandlerParsingHandler implements ParsingHandler {
         BeanDefinitionBuilder beanBuilder = BeanDefinitionBuilder.genericBeanDefinition(WebServiceHttpRequestHandler.class);
         beanBuilder.setScope("singleton");
         beanBuilder.addPropertyValue("configFile", configurationFile);
-        beanBuilder.addPropertyValue("handlerURI", path + "/**");
+        beanBuilder.addPropertyValue("handlerURI", "/webservice");
         beanBuilder.addPropertyValue("serviceRuntime", new RuntimeBeanReference(ServiceRuntime.class.getName()));
         BeanDefinition beanDefinition = beanBuilder.getBeanDefinition();
-        BeanDefinitionHolder beanHolder = new BeanDefinitionHolder(beanDefinition, WebServiceHttpRequestHandler.class.getName()+"#"+path);
+        BeanDefinitionHolder beanHolder = new BeanDefinitionHolder(beanDefinition, WebServiceHttpRequestHandler.class.getName());
         context.getObjectTreeElement().addObject(beanHolder);
         
         beanBuilder = BeanDefinitionBuilder.genericBeanDefinition(ServiceRuntime.class);

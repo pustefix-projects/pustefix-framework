@@ -36,6 +36,7 @@ import org.apache.log4j.Logger;
 import org.pustefixframework.config.contextxmlservice.IWrapperConfig;
 import org.pustefixframework.config.contextxmlservice.PageRequestConfig;
 import org.pustefixframework.config.contextxmlservice.ProcessActionPageRequestConfig;
+import org.pustefixframework.http.BotDetector;
 import org.pustefixframework.util.FrameworkInfo;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
@@ -394,8 +395,33 @@ public class TransformerCallback {
         }
     }
     
+    public static boolean isBot(RequestContextImpl requestContext) {
+        return BotDetector.isBot(requestContext.getPfixServletRequest().getRequest());
+    }
+    
     public static String getFrameworkVersion() {
         return FrameworkInfo.getVersion();
+    }
+    
+    public static boolean needsLastFlow(RequestContextImpl requestContext, String pageName, String lastFlowName) throws Exception {
+        try {
+            ContextImpl context = requestContext.getParentContext();
+            return context.needsLastFlow(pageName, lastFlowName);
+        } catch (Exception x) {
+            ExtensionFunctionUtils.setExtensionFunctionError(x);
+            throw x;
+        }
+    }
+    
+    public static String omitPage(RequestContextImpl requestContext, String pageName) throws Exception {
+        try {
+            ContextImpl context = requestContext.getParentContext();
+            String defaultPage = context.getContextConfig().getDefaultPage(context.getVariant());
+            return defaultPage.equals(pageName)?"":pageName;
+        } catch (Exception x) {
+            ExtensionFunctionUtils.setExtensionFunctionError(x);
+            throw x;
+        }
     }
     
 }

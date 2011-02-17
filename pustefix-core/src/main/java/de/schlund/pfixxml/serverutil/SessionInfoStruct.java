@@ -83,14 +83,6 @@ public class SessionInfoStruct {
         max_trail_elem = max;
     }
     
-    /**
-     * Get the value of URI part with sessid.
-     * @return value of URI part with sessid.
-     */
-    public String getSessionIdURI() {
-        return (String)session.getAttribute(SessionHelper.SESSION_ID_URL);
-    }
-    
     public HttpSession getSession() {
         return session;
     }

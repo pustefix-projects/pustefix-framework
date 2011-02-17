@@ -2,7 +2,7 @@
 <project-config xmlns="http://www.pustefix-framework.org/2008/namespace/project-config"
                 xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
                 xsi:schemaLocation="http://www.pustefix-framework.org/2008/namespace/project-config 
-                                    http://www.pustefix-framework.org/2008/namespace/project-config.xsd">
+                                    http://www.pustefix-framework.org/2008/namespace/project-config-0_16.xsd">
   
   <project>
     <name>sample1</name>
@@ -18,21 +18,7 @@
     <location>http://cms.${fqdn}:9090/pustefix-editor-webui/</location>
     <secret>foobar</secret>
   </editor>
-  
-  <!-- Performance logging options:
-         buffersize: size of buffer for perfevents (default: 1000)
-         autostart: start perflogging automatically (default: false)
-         offermaxwait: max time a the put-thread will wait when putting perfevent into a full buffer (default: 5)-->
-  <perflogging buffersize="200" autostart="true" offermaxwait="5"/>
-  
-  <!-- JMX remote authentication administration -->
-  <!--
-  <authadmin/>
-  -->
-  
-  <!-- Testrecording via JMX -->
-  <testrecording/>
-  
+ 
   <xml-generator>
     <config-file>docroot:/WEB-INF/depend.xml</config-file>
     <choose>
@@ -54,18 +40,26 @@
     </choose>
   </xml-generator>
 
+  <!-- Supported Session tracking strategies are:
+       - URL: always use URL rewriting 
+       - COOKIE: use cookies if supported by client and server
+       Default is COOKIE.
+  -->
+  <session-tracking-strategy>COOKIE</session-tracking-strategy>
+  
+  <!-- Set an initial session timeout 'value' (in seconds) used until 
+       more than 'requestlimit' requests are made within a session -->
+  <initial-session-timeout value="600" requestlimit="3"/>
+
   <application>
     
     <docroot-path>docroot:/htdocs</docroot-path>
-    <default-path>/xml/main</default-path>
     
     <context-xml-service>
-      <path>/xml/main</path>
       <config-file>docroot:/WEB-INF/config.conf.xml</config-file>
       <!-- Set this to true if you want to skip the last transformation and only get a
            xml document containing all needed information for an external renderer -->
       <!-- <render-external>true</render-external> -->  
-      <additional-trail-info>de.schlund.pfixxml.perflogging.DefaultAdditionalTrailInfoImpl</additional-trail-info>
       <!-- <max-stored-doms>5</max-stored-doms> -->
       <!-- Set the timeout for removing old SPDocuments. (in seconds) -->
       <choose>
@@ -79,7 +73,7 @@
     </context-xml-service>
     
     <direct-output-service>
-      <path>/xml/download</path>
+      <!-- <path>/xml/download</path>-->
       <config-file>docroot:/WEB-INF/direct.conf.xml</config-file>
     </direct-output-service>
    

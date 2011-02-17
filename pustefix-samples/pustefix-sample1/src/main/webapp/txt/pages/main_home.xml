@@ -10,7 +10,7 @@
       </pfx:externalform>
       <br/>
       <hr/>
-        <pfx:forminput target="_top">
+        <pfx:forminput>
           <table width="400">
             <tr>
               <td align="left">
@@ -111,7 +111,7 @@
         <pfx:argument name="foo"><ixsl:value-of select="/formresult/@serial"/></pfx:argument>
         Goto Gimp!</pfx:elink>  
         <pfx:button page="install">Download README.1st (text/plain)</pfx:button>  
-        <pfx:elink href="ftp://ftp.rz.uni-karlsruhe.de" target="_popup">
+        <pfx:elink href="ftp://ftp.scc.kit.edu/" target="_popup">
         Goto FTP UniKa!</pfx:elink>
         <br/>
         <pfx:button page="geninc">Test generated runtime stylesheet include</pfx:button>  
@@ -249,9 +249,6 @@
         </tr>
         <tr>
           <td>Server name</td><td><ixsl:value-of select="$__server_name"/></td>
-        </tr>
-        <tr>
-          <td>Servletpath</td><td><ixsl:value-of select="$__servletpath"/></td>
         </tr>
         <tr>
           <td>Complete uri</td><td><ixsl:value-of select="$__uri"/></td>

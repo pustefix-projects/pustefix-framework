@@ -17,8 +17,8 @@
     <pr:pagerequest name="IncludeConfPage" />
   </fr:pagerequests>
   <fr:directoutputpagerequests id="directtest">
-    <d:directoutputpagerequest name="test">
-      <d:directoutputstate class="de.schlund.pfixcore.workflow.app.FileDownloadDOState" />
+    <d:directoutputpagerequest name="dotest">
+      <d:directoutputstate class="de.schlund.pfixcore.workflow.app.FileDownloadDOState"/>
       <d:properties>
         <d:prop name="downloadfile">htdocs/style.css</d:prop>
         <d:prop name="downloadmimetype">text/plain</d:prop>

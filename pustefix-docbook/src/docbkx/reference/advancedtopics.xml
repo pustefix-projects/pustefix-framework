@@ -839,14 +839,6 @@ public class PremiumCustomerCondition implements Condition {
   <webservice-global>
 
     <!--
-      Set the path under which the webservice servlet is reachable (as defined in you project
-      configuration)
-      
-      [Optional - Default: /xml/webservice]
-    -->  
-    <requestpath>/xml/webservice</requestpath>
-
-    <!--
       Set if WSDL should be generated for SOAP-enabled webservices and where to store it (absolute path within
       the project's webapp directory)
       

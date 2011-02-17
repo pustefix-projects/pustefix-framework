@@ -85,17 +85,22 @@
                 </td>
                 <td align="left">
                   <a target="pfixcore_internals__">
-                    <ixsl:attribute name="href"><ixsl:value-of select="$__contextpath"/>/xml/pfxinternals</ixsl:attribute>
+                    <ixsl:attribute name="href"><ixsl:value-of select="$__contextpath"/>/pfxinternals</ixsl:attribute>
                     <img border="0" alt="Show XML" title="Show last XML tree" src="{{$__contextpath}}/modules/pustefix-core/img/show_info.gif"/></a>
+                </td>
+                <td align="left">
+                  <a>
+                    <ixsl:attribute name="href"><ixsl:value-of select="$__contextpath"/>/pfxinternals?action=reload&amp;page=<ixsl:value-of select="$page"/></ixsl:attribute>
+                    <img border="0" alt="Reload webapp" title="Reload webapp" src="{{$__contextpath}}/modules/pustefix-core/img/reload.gif"/></a>
                 </td>
               </tr>
               <tr>
-                <td nowrap="nowrap" colspan="3" style="font-family: Verdana,Sans; font-size: 10px; background-color: black; color: white; padding-left: 5px; padding-right: 2px;">
+                <td nowrap="nowrap" colspan="4" style="font-family: Verdana,Sans; font-size: 10px; background-color: black; color: white; padding-left: 5px; padding-right: 2px;">
                   P: <ixsl:value-of select="$page"/>
                 </td>
               </tr>
               <tr>
-                <td nowrap="nowrap" colspan="3" style="font-family: Verdana,Sans; font-size: 10px; background-color: black; color: white; padding-left: 5px; padding-right: 2px;">
+                <td nowrap="nowrap" colspan="4" style="font-family: Verdana,Sans; font-size: 10px; background-color: black; color: white; padding-left: 5px; padding-right: 2px;">
                   F: <ixsl:value-of select="$__root/formresult/pageflow/@name"/>
                 </td>
               </tr>
@@ -140,7 +145,7 @@
             	var uri = '';
             	if(data[3]=='webapp') uri = 'docroot:/' + data[2];
             	else uri = 'module://' + data[3] + '/' + data[2];
-            	window.open('<ixsl:value-of select="$__editor_url"/>/xml/main?__scriptedflow=selectinclude&amp;' +
+            	window.open('<ixsl:value-of select="$__editor_url"/>?__scriptedflow=selectinclude&amp;' +
             	            'theme=' + data[1] + '&amp;path=' + uri + '&amp;part=' + data[0] + '&amp;' +
             	            'uri=<ixsl:value-of select="$__application_url"/>&amp;type=include&amp;__anchor=left_navi|' + data[2]
             	            ,'PustefixEditor','menubar=yes,status=yes,resizable=yes');
@@ -277,19 +282,23 @@
                   <img border="0" alt="Show XML" title="Show last XML tree" src="{{$__contextpath}}/modules/pustefix-core/img/console_showxml.gif" style="margin-left:5px"/>
                 </a>
                 <a target="pfixcore_internals__">
-                  <ixsl:attribute name="href"><ixsl:value-of select="$__contextpath"/>/xml/pfxinternals</ixsl:attribute>
+                  <ixsl:attribute name="href"><ixsl:value-of select="$__contextpath"/>/pfxinternals</ixsl:attribute>
                   <img border="0" alt="Show Pustefix internals" title="Show Pustefix internals" src="{{$__contextpath}}/modules/pustefix-core/img/console_showinfo.gif" style="margin-left:5px"/>
+                </a>
+                <a>
+                  <ixsl:attribute name="href"><ixsl:value-of select="$__contextpath"/>/pfxinternals?action=reload&amp;page=<ixsl:value-of select="$page"/></ixsl:attribute>
+                  <img border="0" alt="Reload webapp" title="Reload webapp" src="{{$__contextpath}}/modules/pustefix-core/img/console_reload.gif" style="margin-left:5px"/>
                 </a>
                 <xsl:if test="@webserviceconsole='true'">
                   <a target="pfixcore_web_service_monitor">
                     <ixsl:attribute name="href">
-                      <ixsl:value-of select="concat($__contextpath, '/xml/webservice;',$__sessid,'?monitor')"/>
+                      <ixsl:value-of select="concat($__contextpath, '/webservice',$__sessionIdPath,'?monitor')"/>
                     </ixsl:attribute>
                     <img border="0" alt="Webservice monitor" title="Show webservice monitor" src="{{$__contextpath}}/modules/pustefix-core/img/console_webservicemonitor.gif" style="margin-left:5px"/>
                   </a>
                   <a target="pfixcore_web_service_admin">
                     <ixsl:attribute name="href">
-                      <ixsl:value-of select="concat($__contextpath, '/xml/webservice;',$__sessid,'?admin')"/>
+                      <ixsl:value-of select="concat($__contextpath, '/webservice',$__sessionIdPath,'?admin')"/>
                     </ixsl:attribute>
                     <img border="0" alt="Webservice admin" title="Show webservice admin" src="{{$__contextpath}}/modules/pustefix-core/img/console_webserviceadmin.gif" style="margin-left:5px"/>
                   </a>
@@ -331,13 +340,13 @@
         Web service tools:
         <a target="pfixcore_web_service_monitor">
           <ixsl:attribute name="href">
-            <ixsl:value-of select="concat($__contextpath, '/xml/webservice;',$__sessid,'?monitor')"/>
+            <ixsl:value-of select="concat($__contextpath, '/webservice',$__sessionIdPath,'?monitor')"/>
           </ixsl:attribute>
           Monitor
         </a>
         <a target="pfixcore_web_service_admin">
           <ixsl:attribute name="href">
-            <ixsl:value-of select="concat($__contextpath, '/xml/webservice;',$__sessid,'?admin')"/>
+            <ixsl:value-of select="concat($__contextpath, '/webservice',$__sessionIdPath,'?admin')"/>
           </ixsl:attribute>
           Admin
         </a>

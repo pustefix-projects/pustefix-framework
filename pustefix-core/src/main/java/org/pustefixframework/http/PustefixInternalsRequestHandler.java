@@ -24,17 +24,18 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
+import java.io.PrintWriter;
 import java.io.Serializable;
 import java.lang.management.GarbageCollectorMXBean;
 import java.lang.management.ManagementFactory;
 import java.lang.management.MemoryMXBean;
 import java.lang.management.MemoryPoolMXBean;
 import java.lang.management.MemoryUsage;
+import java.net.URL;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Properties;
@@ -43,6 +44,7 @@ import java.util.SortedSet;
 import java.util.TreeSet;
 
 import javax.management.MBeanServer;
+import javax.management.MalformedObjectNameException;
 import javax.management.ObjectName;
 import javax.servlet.ServletContext;
 import javax.servlet.ServletException;
@@ -55,6 +57,7 @@ import javax.xml.transform.stream.StreamResult;
 import org.apache.log4j.Logger;
 import org.pustefixframework.admin.mbeans.AdminBroadcaster;
 import org.pustefixframework.container.spring.http.UriProvidingHttpRequestHandler;
+import org.pustefixframework.live.LiveResolver;
 import org.pustefixframework.util.FrameworkInfo;
 import org.springframework.beans.factory.DisposableBean;
 import org.springframework.beans.factory.InitializingBean;
@@ -62,6 +65,7 @@ import org.springframework.web.context.ServletContextAware;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 
+import de.schlund.pfixcore.util.ModuleDescriptor;
 import de.schlund.pfixcore.util.ModuleInfo;
 import de.schlund.pfixxml.config.EnvironmentProperties;
 import de.schlund.pfixxml.resources.ModuleResource;
@@ -84,11 +88,11 @@ public class PustefixInternalsRequestHandler implements UriProvidingHttpRequestH
     
     private static final String STYLESHEET = "module://pustefix-core/xsl/pfxinternals.xsl";
       
-    private String handlerURI ="/xml/pfxinternals";
+    private String handlerURI ="/pfxinternals";
     private ServletContext servletContext;
     private SessionAdmin sessionAdmin;
     private long startTime;
-    private long reloadTimeout = 1000 * 10;
+    private long reloadTimeout = 1000 * 5;
     
     private MessageList messageList = new MessageList();
     
@@ -149,17 +153,17 @@ public class PustefixInternalsRequestHandler implements UriProvidingHttpRequestH
                    } else {
                        messageList.addMessage(Message.Level.WARN, "Skipped repeated webapp reload scheduling.");
                    }
-                   res.sendRedirect(req.getContextPath()+"/xml/pfxinternals#messages");
+                   String page = req.getParameter("page");
+                   if(page == null) {
+                       res.sendRedirect(req.getContextPath() + handlerURI + "#messages");
+                   } else {
+                       sendReloadPage(req, res);
+                   }
                    return;
                } else if(action.equals("invalidate")) {
-                   Set<String> sessionIds = sessionAdmin.getAllSessionIds();
-                   Iterator<String> it = sessionIds.iterator();
-                   while(it.hasNext()) {
-                       String sessionId = it.next();
-                       sessionAdmin.invalidateSession(sessionId);
-                   }
+                   sessionAdmin.invalidateSessions();
                    messageList.addMessage(Message.Level.INFO, "Invalidated sessions.");
-                   res.sendRedirect(req.getContextPath()+"/xml/pfxinternals#messages");
+                   res.sendRedirect(req.getContextPath()+ handlerURI + "#messages");
                    return;
                }
            }
@@ -183,6 +187,43 @@ public class PustefixInternalsRequestHandler implements UriProvidingHttpRequestH
            LOG.error(x);
            throw new ServletException("Error while creating info page", x);
        }
+    }
+    
+    private void sendReloadPage(HttpServletRequest req, HttpServletResponse res) throws IOException {
+        res.setContentType("text/html");
+        PrintWriter writer = res.getWriter();
+        writer.println("<html>");
+        writer.println("  <head>");
+        writer.println("    <title>Pustefix internals - Reloading webapp</title>");
+        String url = req.getRequestURI();
+        url = url.replace("pfxinternals", req.getParameter("page"));
+        writer.println("    <meta http-equiv=\"refresh\" content=\"1; URL=" + url + "\"></meta>");
+        writer.println("    <style type=\"text/css\">");
+        writer.println("      body {background: white; color: black;}");
+        writer.println("      table {width: 100%; height: 100%;}");
+        writer.println("      td {text-align: center; vertical-align: middle; font-size:150%; font-style:italic; font-family: serif;}");
+        writer.println("      span {color:white;}");
+        writer.println("    </style>");
+        writer.println("    <script type=\"text/javascript\">");
+        writer.println("      var no = -1;");
+        writer.println("      function showProgress() {");
+        writer.println("        no++;");
+        writer.println("        if(no == 10) {");
+        writer.println("          no = 0;");
+        writer.println("          for(var i=0; i<10; i++) document.getElementById(i).style.color = \"white\";");
+        writer.println("        }");
+        writer.println("        document.getElementById(no).style.color = \"black\";");
+        writer.println("      }");
+        writer.println("      window.setInterval(\"showProgress()\", 500);");
+        writer.println("    </script>");
+        writer.println("  </head>");
+        writer.print("<body><table><tr><td>");
+        writer.print("Reloading webapp ");
+        for(int i=0; i<10; i++) {
+            writer.print("<span id=\"" + i + "\">.</span>");
+        }
+        writer.println("</td></tr></table></body></html>");
+        writer.close();
     }
     
     private void addFrameworkInfo(Element parent) {
@@ -261,11 +302,38 @@ public class PustefixInternalsRequestHandler implements UriProvidingHttpRequestH
         Set<String> modules = ModuleInfo.getInstance().getModules();
         SortedSet<String> sortedModules = new TreeSet<String>();
         sortedModules.addAll(modules);
+        
+        ObjectName name;
+        try {
+            name = new ObjectName("Pustefix:type=LiveAgent");
+        } catch(MalformedObjectNameException e) {
+            throw new RuntimeException(e);
+        }
+        MBeanServer mbeanServer = ManagementFactory.getPlatformMBeanServer();
+        String[] signature = new String[] {"java.lang.String"};
+        
         for(String module: sortedModules) {
             Element elem = parent.getOwnerDocument().createElement("module");
             elem.setAttribute("name", module);
+            ModuleDescriptor desc = ModuleInfo.getInstance().getModuleDescriptor(module);
+            try {
+                URL url = LiveResolver.getInstance().resolveLiveModuleRoot(desc.getURL(), "/");
+                if(url != null) elem.setAttribute("url", url.toString());
+            } catch(Exception x) {
+                LOG.warn("Error while live-resolving module", x);
+            }
             root.appendChild(elem);
+            try {
+                String jarPath = desc.getURL().getPath();
+                int ind = jarPath.lastIndexOf('!');
+                if(ind > -1) jarPath = jarPath.substring(0, ind);
+                String result = (String)mbeanServer.invoke(name, "getLiveLocation", new Object[] {jarPath}, signature);
+                if(result != null) elem.setAttribute("classurl", result);
+            } catch(Exception x) {
+                LOG.warn("Error while getting live location", x);
+            }
         }
+        
     }
     
     

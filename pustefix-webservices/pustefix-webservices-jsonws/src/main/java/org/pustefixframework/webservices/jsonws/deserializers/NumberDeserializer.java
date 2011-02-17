@@ -33,7 +33,11 @@ public class NumberDeserializer extends Deserializer {
     @Override
     public boolean canDeserialize(DeserializationContext ctx, Object jsonValue, Type targetType) {
         Class<?> targetClass=(Class<?>)targetType;
-        if(jsonValue instanceof Number && Number.class.isAssignableFrom(targetClass)) return true;
+        if(jsonValue instanceof Number && 
+               ( Number.class.isAssignableFrom(targetClass)) || ( targetClass.isPrimitive() && 
+                       ( targetClass == int.class || targetClass == float.class || 
+                               targetClass == long.class || targetClass == double.class || 
+                               targetClass == byte.class || targetClass == short.class))) return true;
         return false;
     }
     

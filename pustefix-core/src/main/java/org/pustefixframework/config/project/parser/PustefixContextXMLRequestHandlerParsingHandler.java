@@ -32,9 +32,14 @@ import org.pustefixframework.config.contextxmlservice.ContextXMLServletConfig;
 import org.pustefixframework.config.customization.CustomizationAwareParsingHandler;
 import org.pustefixframework.config.customization.CustomizationInfo;
 import org.pustefixframework.config.customization.PropertiesBasedCustomizationInfo;
+import org.pustefixframework.config.generic.ParsingUtils;
 import org.pustefixframework.config.project.EditorInfo;
 import org.pustefixframework.config.project.EditorLocation;
+import org.pustefixframework.config.project.SessionTimeoutInfo;
+import org.pustefixframework.config.project.SessionTrackingStrategyInfo;
 import org.pustefixframework.config.project.XMLGeneratorInfo;
+import org.pustefixframework.http.AdditionalTrailInfo;
+import org.pustefixframework.http.DefaultAdditionalTrailInfoImpl;
 import org.pustefixframework.http.PustefixContextXMLRequestHandler;
 import org.pustefixframework.http.PustefixInternalsRequestHandler;
 import org.springframework.beans.factory.BeanDefinitionStoreException;
@@ -64,7 +69,6 @@ import de.schlund.pfixxml.exceptionprocessor.ExceptionProcessingConfiguration;
 import de.schlund.pfixxml.resources.FileResource;
 import de.schlund.pfixxml.resources.ResourceUtil;
 import de.schlund.pfixxml.serverutil.SessionAdmin;
-import de.schlund.pfixxml.testrecording.TestRecording;
 
 public class PustefixContextXMLRequestHandlerParsingHandler extends CustomizationAwareParsingHandler {
 
@@ -72,17 +76,14 @@ public class PustefixContextXMLRequestHandlerParsingHandler extends Customizatio
     public void handleNodeIfActive(HandlerContext context) throws ParserException {
         Element serviceElement = (Element) context.getNode();
         
+        String path = null; 
         Element pathElement = (Element) serviceElement.getElementsByTagNameNS(Constants.NS_PROJECT, "path").item(0);
-        if (pathElement == null) {
-            throw new ParserException("Could not find expected <path> element");
-        }
+        if(pathElement != null) path = pathElement.getTextContent().trim();
         
         Element configurationFileElement = (Element) serviceElement.getElementsByTagNameNS(Constants.NS_PROJECT, "config-file").item(0);
         if (configurationFileElement == null) {
             throw new ParserException("Could not find expected <config-file> element");
         }
-        
-        String path = pathElement.getTextContent().trim();
         String configurationFile = configurationFileElement.getTextContent().trim();
         
         boolean renderExternal = false;
@@ -91,21 +92,30 @@ public class PustefixContextXMLRequestHandlerParsingHandler extends Customizatio
             renderExternal = Boolean.parseBoolean(renderExtElement.getTextContent().trim());
         }
         
-        String additionalTrailInfoRef = null;
+        Class<?> trailInfoClass = DefaultAdditionalTrailInfoImpl.class;
         Element infoElement = (Element) serviceElement.getElementsByTagNameNS(Constants.NS_PROJECT, "additional-trail-info").item(0);
         if (infoElement != null) {
             String className = infoElement.getTextContent().trim();
-            Class<?> clazz;
-            try {
-                clazz = Class.forName(className);
-            } catch(ClassNotFoundException x) {
-                throw new ParserException("Can't get additional-trail-info class: " + className, x);
+            if(className.equals("")) {
+                trailInfoClass = null;
+            } else {
+                try {
+                    trailInfoClass = Class.forName(className);
+                } catch(ClassNotFoundException x) {
+                    throw new ParserException("Can't get additional-trail-info class: " + className, x);
+                }
+                if(!AdditionalTrailInfo.class.isAssignableFrom(trailInfoClass)) {
+                    throw new ParserException("Class '" + trailInfoClass.getName() + "' doesn't implement '" + AdditionalTrailInfo.class.getName() + "'.");
+                }
             }
-            BeanDefinitionBuilder beanBuilder = BeanDefinitionBuilder.genericBeanDefinition(clazz);
+        }
+        String additionalTrailInfoRef = null;
+        if(trailInfoClass != null) {
+            BeanDefinitionBuilder beanBuilder = BeanDefinitionBuilder.genericBeanDefinition(trailInfoClass);
             beanBuilder.setScope("singleton");
-            BeanDefinitionHolder beanHolder = new BeanDefinitionHolder(beanBuilder.getBeanDefinition(), className);
+            BeanDefinitionHolder beanHolder = new BeanDefinitionHolder(beanBuilder.getBeanDefinition(), trailInfoClass.getName());
             context.getObjectTreeElement().addObject(beanHolder);
-            additionalTrailInfoRef = className;
+            additionalTrailInfoRef = trailInfoClass.getName();
         }
         
         int maxStoredDoms = 5;
@@ -172,18 +182,17 @@ public class PustefixContextXMLRequestHandlerParsingHandler extends Customizatio
         }
         
         ContextXMLServletConfig config = context.getObjectTreeElement().getObjectsOfTypeFromSubTree(ContextXMLServletConfig.class).iterator().next();
+        SessionTrackingStrategyInfo strategyInfo = ParsingUtils.getSingleTopObject(SessionTrackingStrategyInfo.class, context);
+        SessionTimeoutInfo timeoutInfo = ParsingUtils.getFirstTopObject(SessionTimeoutInfo.class, context, false);
         
         BeanDefinitionBuilder beanBuilder = BeanDefinitionBuilder.genericBeanDefinition(PustefixContextXMLRequestHandler.class);
         beanBuilder.setScope("singleton");
         beanBuilder.setInitMethodName("init");
         beanBuilder.addPropertyValue("targetGenerator", new RuntimeBeanReference(info.getTargetGeneratorBeanName()));
-        beanBuilder.addPropertyValue("handlerURI", path + "/**");
+        if(path != null && !path.equals("") && !path.equals("/")) beanBuilder.addPropertyValue("handlerURI", path + "/**");
         beanBuilder.addPropertyValue("context", new RuntimeBeanReference(ContextImpl.class.getName()));
         beanBuilder.addPropertyValue("configuration", config);
         beanBuilder.addPropertyValue("sessionAdmin", new RuntimeBeanReference(SessionAdmin.class.getName()));
-        if(beanReg.isBeanNameInUse(TestRecording.class.getName())) {
-            beanBuilder.addPropertyValue("testRecording", new RuntimeBeanReference(TestRecording.class.getName()));
-        }
         beanBuilder.addPropertyValue("editorLocation", editorLocation.getLocation());
         beanBuilder.addPropertyValue("checkModtime", info.getCheckModtime());
         beanBuilder.addPropertyValue("sessionCleaner", new RuntimeBeanReference(SessionCleaner.class.getName()));
@@ -198,8 +207,12 @@ public class PustefixContextXMLRequestHandlerParsingHandler extends Customizatio
             beanBuilder.addPropertyValue("editModeAllowed", editorInfo.isEnabled());
             beanBuilder.addPropertyValue("includePartsEditableByDefault", editorInfo.isIncludePartsEditableByDefault());
         }
+        beanBuilder.addPropertyValue("sessionTrackingStrategy", strategyInfo.getSessionTrackingStrategyInstance());
+        if(timeoutInfo != null) {
+            beanBuilder.addPropertyValue("sessionTimeoutInfo", timeoutInfo);
+        }
         BeanDefinition beanDefinition = beanBuilder.getBeanDefinition();
-        BeanDefinitionHolder beanHolder = new BeanDefinitionHolder(beanDefinition, PustefixContextXMLRequestHandler.class.getName() + "#" + path);
+        BeanDefinitionHolder beanHolder = new BeanDefinitionHolder(beanDefinition, PustefixContextXMLRequestHandler.class.getName() + (path != null ? "#" + path : ""));
         context.getObjectTreeElement().addObject(beanHolder);
         
         beanBuilder = BeanDefinitionBuilder.genericBeanDefinition(PustefixInternalsRequestHandler.class);

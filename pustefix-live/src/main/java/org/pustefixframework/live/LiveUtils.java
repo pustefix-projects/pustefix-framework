@@ -18,22 +18,14 @@ public class LiveUtils {
     private static Logger LOG = Logger.getLogger(LiveUtils.class);
 
     public static String getArtifactFromPom(File pomFile) throws Exception {
-        DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
-        factory.setNamespaceAware(true);
-        DocumentBuilder builder = factory.newDocumentBuilder();
-        Document document = builder.parse(pomFile);
-        Element root = document.getDocumentElement();
+    	Element root = getRootFromPom(pomFile);
         Element artifactElem = getSingleChildElement(root, "artifactId", true);
         String artifactId = artifactElem.getTextContent().trim();
         return artifactId;
     }
 
     public static String getKeyFromPom(File pomFile) throws Exception {
-        DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
-        factory.setNamespaceAware(true);
-        DocumentBuilder builder = factory.newDocumentBuilder();
-        Document document = builder.parse(pomFile);
-        Element root = document.getDocumentElement();
+        Element root = getRootFromPom(pomFile);
         Element groupElem = getSingleChildElement(root, "groupId", true);
         String groupId = groupElem.getTextContent().trim();
         Element artifactElem = getSingleChildElement(root, "artifactId", true);
@@ -43,7 +35,31 @@ public class LiveUtils {
         String entryKey = groupId + "+" + artifactId + "+" + version;
         return entryKey;
     }
+    
+    public static LiveJarInfo.Entry getEntryFromPom(File pomFile) throws Exception {
+        Element root = getRootFromPom(pomFile);
+        Element groupElem = getSingleChildElement(root, "groupId", true);
+        String groupId = groupElem.getTextContent().trim();
+        Element artifactElem = getSingleChildElement(root, "artifactId", true);
+        String artifactId = artifactElem.getTextContent().trim();
+        Element versionElem = getSingleChildElement(root, "version", true);
+        String version = versionElem.getTextContent().trim();
+        LiveJarInfo.Entry entry = new LiveJarInfo.Entry();
+        entry.setGroupId(groupId);
+        entry.setArtifactId(artifactId);
+        entry.setVersion(version);
+        return entry;
+    }
 
+    public static Element getRootFromPom(File pomFile) throws Exception {
+        DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
+        factory.setNamespaceAware(true);
+        DocumentBuilder builder = factory.newDocumentBuilder();
+        Document document = builder.parse(pomFile);
+        Element root = document.getDocumentElement();
+        return root;
+    }
+    
     public static File guessPom(String docroot) throws Exception {
         if (LOG.isDebugEnabled()) {
             LOG.debug("Guessing pom.xml for " + docroot);

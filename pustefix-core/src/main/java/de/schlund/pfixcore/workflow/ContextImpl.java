@@ -40,7 +40,6 @@ import de.schlund.pfixcore.workflow.context.SessionContextImpl;
 import de.schlund.pfixxml.PfixServletRequest;
 import de.schlund.pfixxml.SPDocument;
 import de.schlund.pfixxml.Variant;
-import de.schlund.pfixxml.perflogging.PerfLogging;
 import de.schlund.util.statuscodes.StatusCode;
 
 public class ContextImpl implements AccessibilityChecker, ExtendedContext, TokenManager, HttpSessionBindingListener {
@@ -48,7 +47,6 @@ public class ContextImpl implements AccessibilityChecker, ExtendedContext, Token
     private SessionContextImpl              sessioncontext;
     private ServerContextImpl               servercontext;
     private ThreadLocal<RequestContextImpl> requestcontextstore = new ThreadLocal<RequestContextImpl>();
-    private PerfLogging perfLogging;
     
     public ContextImpl() {
         this.sessioncontext = new SessionContextImpl();
@@ -60,10 +58,6 @@ public class ContextImpl implements AccessibilityChecker, ExtendedContext, Token
     
     public void setContextResourceManager(ContextResourceManager crm) {
         sessioncontext.setContextResourceManager(crm);
-    }
-    
-    public void setPerfLogging(PerfLogging perfLogging) {
-        this.perfLogging = perfLogging;
     }
     
     public void addCookie(Cookie cookie) {
@@ -234,7 +228,6 @@ public class ContextImpl implements AccessibilityChecker, ExtendedContext, Token
     public void prepareForRequest() {
         // This allows to use OLDER servercontexts during requests
         requestcontextstore.set(new RequestContextImpl(servercontext, this));
-        if(perfLogging != null) PerfLogging.setInstanceForThread(perfLogging);
     }
     
     public void setPfixServletRequest(PfixServletRequest pfixReq) {
@@ -253,7 +246,6 @@ public class ContextImpl implements AccessibilityChecker, ExtendedContext, Token
 
     public void cleanupAfterRequest() {
         requestcontextstore.set(null);
-        PerfLogging.setInstanceForThread(null);
     }
 
     // Used by TransformerCallback to set the right RequestContextImpl when
@@ -364,4 +356,9 @@ public class ContextImpl implements AccessibilityChecker, ExtendedContext, Token
     public PageMap getPageMap() {
         return getServerContext().getPageMap();
     }
+    
+    public boolean needsLastFlow(String pageName, String lastFlowName) {
+        return getRequestContextForCurrentThreadWithError().needsLastFlow(pageName, lastFlowName);
+    }
+    
 }

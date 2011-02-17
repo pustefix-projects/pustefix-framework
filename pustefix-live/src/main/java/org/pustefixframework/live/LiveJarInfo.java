@@ -54,12 +54,23 @@ import org.w3c.dom.Node;
 public class LiveJarInfo {
 
     private static Logger LOG = Logger.getLogger(LiveJarInfo.class);
-    public static final String[] DEFAULT_DOCROOT_LIVE_EXCLUSIONS = { "/WEB-INF/web.xml",
-            "/.cache/", "/core/", "/modules/", "/wsscript/", "/wsdl/", "/.editorbackup/" };
+    
+    public static final String[] DEFAULT_DOCROOT_LIVE_EXCLUSIONS = { File.separator + "WEB-INF" + File.separator + "web.xml",
+            File.separator + ".cache" + File.separator, File.separator + "core" + File.separator,
+            File.separator + "modules" + File.separator, File.separator + "wsscript" + File.separator,
+            File.separator + "wsdl" + File.separator, File.separator + ".editorbackup" + File.separator };
 
+    public static String PROP_LIVEROOT = "pustefix.liveroot";
+    public static String PROP_LIVEROOT_MAXDEPTH = "pustefix.liveroot.maxdepth";
+    
+    private static int DEFAULT_LIVEROOT_MAXDEPTH = 4;
+    
     /** The live.xml file */
     private File file;
 
+    private File liveRootDir;
+    private int liveRootMaxDepth = DEFAULT_LIVEROOT_MAXDEPTH;
+    
     private long lastReadTimestamp;
 
     /** The jar entries */
@@ -76,40 +87,62 @@ public class LiveJarInfo {
      */
     public LiveJarInfo() {
 
-        // search live.xml in workspace
-        URL classpathUrl = getClass().getResource("/");
-        if (classpathUrl != null) {
-            String classpathDir = classpathUrl.getFile();
-            if (classpathDir != null && classpathDir.length() > 0) {
-                File dir = new File(classpathDir);
-                do {
-                    File test = new File(dir, "live.xml");
-                    if (test.exists()) {
-                        file = test;
-                        LOG.info("Detected live.xml: " + file);
-                        break;
-                    }
-                    dir = dir.getParentFile();
-                } while (dir != null);
+        String liveRoot = System.getProperty(PROP_LIVEROOT);
+        if(liveRoot != null) {
+            
+            liveRootDir = new File(liveRoot);
+            try {
+                liveRootDir = liveRootDir.getCanonicalFile();
+            } catch (IOException e) {
+                throw new RuntimeException("Can't read liveroot dir '" + liveRootDir.getPath() + "'.");
             }
-        }
-
-        // fallback: use live.xml/life.xml from old location in ~/.m2
-        if (file == null) {
-            String homeDir = System.getProperty("user.home");
-            File oldFile = new File(homeDir + "/.m2/live.xml");
-            if (!oldFile.exists()) {
-                oldFile = new File(homeDir + "/.m2/life.xml"); // support old misspelled name
+            if(!liveRootDir.exists()) throw new RuntimeException("Liveroot dir '" + liveRootDir.getPath() + "' doesn't exist.");
+            
+            String value = System.getProperty(PROP_LIVEROOT_MAXDEPTH);
+            if(value != null) {
+                liveRootMaxDepth = Integer.parseInt(value);
             }
-            if (oldFile.exists()) {
-                file = oldFile;
-                LOG.warn("Using live.xml from old location: " + file);
+            
+            LOG.info("Using maven projects found in '" + liveRootDir.getPath() + "' to look up live resources."); 
+            
+        } else {
+        
+            // search live.xml in workspace
+            URL classpathUrl = getClass().getResource("/");
+            if (classpathUrl != null) {
+                String classpathDir = classpathUrl.getFile();
+                if (classpathDir != null && classpathDir.length() > 0) {
+                    File dir = new File(classpathDir);
+                    do {
+                        File test = new File(dir, "live.xml");
+                        if (test.exists()) {
+                            file = test;
+                            LOG.info("Detected live.xml: " + file);
+                            break;
+                        }
+                        dir = dir.getParentFile();
+                    } while (dir != null);
+                }
             }
+    
+            // fallback: use live.xml/life.xml from old location in ~/.m2
+            if (file == null) {
+                String homeDir = System.getProperty("user.home");
+                File oldFile = new File(homeDir + File.separator + ".m2" + File.separator + "live.xml");
+                if (!oldFile.exists()) {
+                    oldFile = new File(homeDir + File.separator + ".m2" + File.separator + "life.xml"); // support old misspelled name
+                }
+                if (oldFile.exists()) {
+                    file = oldFile;
+                    LOG.warn("Using live.xml from old location: " + file);
+                }
+            }
+            if (file == null) {
+                LOG.info("No live.xml detected, default settings for live resources may be used!");
+            }
+    
         }
-        if (file == null) {
-            LOG.info("No live.xml detected, default settings for live resources may be used!");
-        }
-
+        
         init();
     }
 
@@ -127,11 +160,17 @@ public class LiveJarInfo {
         if (file != null) {
             try {
                 read();
-                LOG.info(toString());
             } catch (Exception x) {
                 throw new RuntimeException(x);
             }
+        } else if(liveRootDir != null) {
+            long t1 = System.currentTimeMillis();
+            findMavenProjects(liveRootDir, 0, liveRootMaxDepth);
+            long t2 = System.currentTimeMillis();
+            LOG.info("Finding Maven projects took " + (t2-t1) + "ms.");
         }
+        
+        LOG.info(toString());
     }
 
     private void read() throws Exception {
@@ -439,6 +478,41 @@ public class LiveJarInfo {
         sb.append(" and " + noWar + " live war entr" + (noJar == 1 ? "y" : "ies"));
         return sb.toString();
     }
+    
+    private void findMavenProjects(File dir, int level, int maxDepth) {
+        File[] files = dir.listFiles();
+        for(File file: files) {
+            if(file.isDirectory() && !file.isHidden() && !file.getName().equals("CVS") 
+                    && !file.getName().equals("target") && !file.getName().equals("src")) {
+                if(level < maxDepth) findMavenProjects(file, level + 1, maxDepth);
+            } else if(file.isFile() && file.getName().equals("pom.xml") && file.canRead()) {
+                Entry entry = null;
+                try {
+                    entry = LiveUtils.getEntryFromPom(file);
+                } catch (Exception e) {
+                    LOG.warn("Error reading POM: " + file.getAbsolutePath(), e);
+                }
+                if(entry != null) {
+                    File resDir = new File(file.getParentFile(), "src/main/resources");
+                    if(resDir.exists()) {
+                        List<File> resDirs = new ArrayList<File>();
+                        resDirs.add(resDir);
+                        entry.setDirectories(resDirs);
+                        jarEntries.put(entry.getId(), entry);
+                    } else {
+                        resDir = new File(file.getParentFile(), "src/main/webapp");
+                        if(resDir.exists()) {
+                            List<File> resDirs = new ArrayList<File>();
+                            resDirs.add(resDir);
+                            entry.setDirectories(resDirs);
+                            warEntries.put(entry.getId(), entry);
+                        }
+                    }
+                }
+            }
+        }
+    }
+    
 
     public static class Entry {
 
@@ -484,5 +558,5 @@ public class LiveJarInfo {
         }
 
     }
-
+    
 }

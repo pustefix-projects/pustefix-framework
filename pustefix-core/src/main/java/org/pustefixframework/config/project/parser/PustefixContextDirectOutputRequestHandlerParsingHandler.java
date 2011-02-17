@@ -34,6 +34,8 @@ import org.pustefixframework.config.customization.CustomizationInfo;
 import org.pustefixframework.config.directoutputservice.DirectOutputPageRequestConfig;
 import org.pustefixframework.config.directoutputservice.DirectOutputServiceConfig;
 import org.pustefixframework.config.generic.ParsingUtils;
+import org.pustefixframework.config.project.SessionTimeoutInfo;
+import org.pustefixframework.config.project.SessionTrackingStrategyInfo;
 import org.pustefixframework.http.PustefixContextDirectOutputRequestHandler;
 import org.springframework.beans.factory.config.BeanDefinition;
 import org.springframework.beans.factory.config.MapFactoryBean;
@@ -63,15 +65,15 @@ public class PustefixContextDirectOutputRequestHandlerParsingHandler extends Cus
     @Override
     public void handleNodeIfActive(HandlerContext context) throws ParserException {
         Element serviceElement = (Element) context.getNode();
+        
+        String path = null; 
         Element pathElement = (Element) serviceElement.getElementsByTagNameNS(Constants.NS_PROJECT, "path").item(0);
-        if (pathElement == null) {
-            throw new ParserException("Could not find expected <path> element");
-        }
+        if(pathElement != null) path = pathElement.getTextContent().trim();
+        
         Element configurationFileElement = (Element) serviceElement.getElementsByTagNameNS(Constants.NS_PROJECT, "config-file").item(0);
         if (configurationFileElement == null) {
             throw new ParserException("Could not find expected <config-file> element");
         }
-        String path = pathElement.getTextContent().trim();
         String configurationFile = configurationFileElement.getTextContent().trim();
 
         Collection<CustomizationInfo> infoCollection = context.getObjectTreeElement().getObjectsOfTypeFromTopTree(CustomizationInfo.class);
@@ -116,6 +118,8 @@ public class PustefixContextDirectOutputRequestHandlerParsingHandler extends Cus
         for (DirectOutputPageRequestConfig pConfig : config.getPageRequests()) {
             stateMap.put(pConfig.getPageName(), new RuntimeBeanReference(pConfig.getBeanName()));
         }
+        SessionTrackingStrategyInfo strategyInfo = ParsingUtils.getSingleTopObject(SessionTrackingStrategyInfo.class, context);
+        SessionTimeoutInfo timeoutInfo = ParsingUtils.getFirstTopObject(SessionTimeoutInfo.class, context, false);
         
         BeanNameGenerator nameGenerator = new DefaultBeanNameGenerator();
         BeanDefinitionBuilder beanBuilder;
@@ -134,11 +138,15 @@ public class PustefixContextDirectOutputRequestHandlerParsingHandler extends Cus
         beanBuilder = BeanDefinitionBuilder.genericBeanDefinition(PustefixContextDirectOutputRequestHandler.class);
         beanBuilder.setScope("singleton");
         beanBuilder.setInitMethodName("init");
-        beanBuilder.addPropertyValue("handlerURI", path + "/**");
+        if(path != null && !path.equals("") && !path.equals("/")) beanBuilder.addPropertyValue("handlerURI", path + "/**");
         beanBuilder.addPropertyValue("context", new RuntimeBeanReference(ContextImpl.class.getName()));
         beanBuilder.addPropertyValue("stateMap", new RuntimeBeanReference(mapBeanName));
         beanBuilder.addPropertyValue("configuration", config);
         beanBuilder.addPropertyValue("sessionAdmin", new RuntimeBeanReference(SessionAdmin.class.getName()));
+        beanBuilder.addPropertyValue("sessionTrackingStrategy", strategyInfo.getSessionTrackingStrategyInstance());
+        if(timeoutInfo != null) {
+            beanBuilder.addPropertyValue("sessionTimeoutInfo", timeoutInfo);
+        }
         beanDefinition = beanBuilder.getBeanDefinition();
         registry.registerBeanDefinition(nameGenerator.generateBeanName(beanDefinition, registry), beanDefinition);
     }

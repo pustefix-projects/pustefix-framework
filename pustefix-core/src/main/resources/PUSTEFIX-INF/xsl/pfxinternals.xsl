@@ -126,7 +126,38 @@
             margin:0px; 
             border: 0px;
           }
+          div.info {
+            font-size: 80%;
+          }
+          span.liveclasses {
+            color: green;
+            font-size: 150%;
+            padding-left: 3px;
+            padding-right: 20px;
+          }
+          span.liveresources {
+            color: green;
+           	font-size: 150%;
+           	padding-left: 10px;
+          }
         </style>
+        <script type="text/javascript">
+
+          function removeCookies() {
+            var d = 0;
+            var c = document.cookie.split(";");
+            for(var i=0; i &lt; c.length; i++) {
+              var e = c[i].indexOf("=");
+              var n = e > -1 ? c[i].substr(0,e) : c[i];
+              if(n != "") {
+                document.cookie = n + "=;path=<xsl:value-of select="$__contextpath"/>;expires=Thu, 01 Jan 1970 00:00:00 GMT";
+                d++;
+              }
+            }
+            alert("Removed " + d + " cookie" + (d==1 ? "" : "s"));
+          }
+          
+        </script>
       </head>
       <body>
       
@@ -240,10 +271,11 @@
         <div class="section">
           <table class="actions">
             <tr>
-              <td><a href="{$__contextpath}/xml/pfxinternals?action=reload">Schedule webapp reload</a></td>
+              <td><a href="{$__contextpath}/pfxinternals?action=reload">Schedule webapp reload</a></td>
+              <td><a href="javascript:removeCookies()">Remove cookies</a></td>
             </tr>
             <tr>   
-              <td><a href="{$__contextpath}/xml/pfxinternals?action=invalidate">Invalidate all running sessions</a></td>
+              <td><a href="{$__contextpath}/pfxinternals?action=invalidate">Invalidate all running sessions</a></td>
             </tr>
           </table>
         </div>
@@ -289,11 +321,13 @@
       <xsl:for-each select="module[position() &lt;= $rows]">
         <xsl:variable name="pos" select="position()"/>
         <tr>
-          <td><xsl:value-of select="./@name"/></td>
+          <td>
+            <xsl:apply-templates select="."/>
+          </td>
           <td> 
             <xsl:choose>
 	          <xsl:when test="../module[$pos + $rows]">
-	            <xsl:value-of select="../module[$pos + $rows]/@name"/>
+	            <xsl:apply-templates select="../module[$pos + $rows]"/>
               </xsl:when>
               <xsl:otherwise></xsl:otherwise>
             </xsl:choose>
@@ -301,7 +335,7 @@
           <td>
             <xsl:choose>
 	          <xsl:when test="../module[$pos + $rows +$rows]">
-	            <xsl:value-of select="../module[$pos + $rows + $rows]/@name"/>
+	            <xsl:apply-templates select="../module[$pos + $rows + $rows]"/>
               </xsl:when>
               <xsl:otherwise></xsl:otherwise>
             </xsl:choose>
@@ -309,6 +343,26 @@
         </tr>
       </xsl:for-each>
     </table>
+  </xsl:template>
+
+  <xsl:template match="module">
+    <xsl:value-of select="@name"/>
+    <xsl:choose>
+      <xsl:when test="@url">
+        <span class="liveresources" title="Live resources in {@url}">&#11089;</span>
+      </xsl:when>
+      <xsl:otherwise>
+        <span class="liveresources" title="No live resources">&#11090;</span>
+      </xsl:otherwise>
+    </xsl:choose>
+    <xsl:choose>
+      <xsl:when test="@classurl">
+        <span class="liveclasses" title="Live classes in {@classurl}">&#11089;</span>
+      </xsl:when>
+      <xsl:otherwise>
+        <span class="liveclasses" title="No live classes">&#11090;</span>
+      </xsl:otherwise>
+    </xsl:choose>
   </xsl:template>
 
   <xsl:template match="messages">

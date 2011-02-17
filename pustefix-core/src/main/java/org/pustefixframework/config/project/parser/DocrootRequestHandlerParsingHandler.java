@@ -46,14 +46,12 @@ public class DocrootRequestHandlerParsingHandler implements ParsingHandler {
         if(context.getRunOrder() == RunOrder.START) {
         
             Element applicationElement = (Element) context.getNode();
-            
+           
+            String defaultPath = null;
             NodeList defaultPathList = applicationElement.getElementsByTagNameNS(Constants.NS_PROJECT, "default-path");
-            if (defaultPathList.getLength() != 1) {
-                throw new ParserException("Found " + defaultPathList.getLength() + " <default-path> elements but expected one.");
-            }
             Element defaultPathElement = (Element) defaultPathList.item(0);
-            String defaultPath = defaultPathElement.getTextContent();
-    
+            if(defaultPathElement != null) defaultPath = defaultPathElement.getTextContent().trim(); 
+
             NodeList basePathList = applicationElement.getElementsByTagNameNS(Constants.NS_PROJECT, "docroot-path");
             if (basePathList.getLength() != 1) {
                 throw new ParserException("Found " + basePathList.getLength() + " <docroot-path> elements but expected one.");
@@ -65,8 +63,10 @@ public class DocrootRequestHandlerParsingHandler implements ParsingHandler {
             //Add pre-defined static paths
             staticPathInfo.addStaticPath("modules/pustefix-core/img");
             staticPathInfo.addStaticPath("modules/pustefix-core/script");
+            staticPathInfo.addStaticPath("modules/pustefix-webservices-jaxws/script");
+            staticPathInfo.addStaticPath("modules/pustefix-webservices-jsonws/script");
             staticPathInfo.addStaticPath("wsscript");
-            
+ 
             Set<String> moduleNames = ModuleInfo.getInstance().getModules();
             for(String moduleName: moduleNames) {
                 ModuleDescriptor moduleDesc = ModuleInfo.getInstance().getModuleDescriptor(moduleName);
@@ -88,7 +88,7 @@ public class DocrootRequestHandlerParsingHandler implements ParsingHandler {
             BeanDefinitionBuilder beanBuilder = BeanDefinitionBuilder.genericBeanDefinition(DocrootRequestHandler.class);
             beanBuilder.setScope("singleton");
             beanBuilder.addPropertyValue("base", staticPathInfo.getBasePath());
-            beanBuilder.addPropertyValue("defaultPath", staticPathInfo.getDefaultPath());
+            if(staticPathInfo.getDefaultPath() != null && !staticPathInfo.getDefaultPath().equals("")) beanBuilder.addPropertyValue("defaultPath", staticPathInfo.getDefaultPath());
             beanBuilder.addPropertyValue("passthroughPaths", staticPathInfo.getStaticPaths());
             beanBuilder.addPropertyValue("mode", EnvironmentProperties.getProperties().getProperty("mode"));
             

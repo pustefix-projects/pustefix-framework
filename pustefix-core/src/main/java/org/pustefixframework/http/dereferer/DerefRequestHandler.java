@@ -38,8 +38,8 @@ import de.schlund.pfixxml.util.Base64Utils;
 /**
  * This class implements a "Dereferer" servlet to get rid of Referer
  * headers. <b>ALL LINKS THAT GO TO AN OUTSIDE DOMAIN MUST USE THIS SERVLET!</b>
- * If this servlet is bound to e.g. /xml/deref than every outside link
- * (say to http://www.gimp.org) must be written like <a href="/xml/deref?link=http://www.gimp.org">Gimp</a>
+ * If this servlet is bound to e.g. /deref than every outside link
+ * (say to http://www.gimp.org) must be written like <a href="/deref?link=http://www.gimp.org">Gimp</a>
  *
  */
 
@@ -64,12 +64,12 @@ public class DerefRequestHandler extends AbstractPustefixRequestHandler {
     }
     
     @Override
-    protected boolean allowSessionCreate() {
+    public boolean allowSessionCreate() {
         return (false);
     }
 
     @Override
-    protected boolean needsSession() {
+    public boolean needsSession() {
         return (false);
     }
 
@@ -233,12 +233,12 @@ public class DerefRequestHandler extends AbstractPustefixRequestHandler {
     }
     
     @Override
-    protected boolean wantsCheckSessionIdValid() {
+    public boolean wantsCheckSessionIdValid() {
         return false;
     }
 
     @Override
-    protected ServletManagerConfig getServletManagerConfig() {
+    public ServletManagerConfig getServletManagerConfig() {
         return this.config;
     }
     
@@ -250,6 +250,11 @@ public class DerefRequestHandler extends AbstractPustefixRequestHandler {
         String redirectUrl = getServerURL(req) + req.getContextPath();
         res.setStatus(HttpServletResponse.SC_MOVED_PERMANENTLY);
         res.setHeader("Location", redirectUrl);
+    }
+    
+    @Override
+    public String[] getRegisteredURIs() {
+        return new String[] { handlerURI, handlerURI + "/**" };
     }
     
 }

@@ -87,7 +87,7 @@ public class GenerateSCodes {
                 if(!filePath.startsWith("/")) {
                     // try to get resource relative to info file
                     String path = infoFile;
-                    path=path.substring(0,path.lastIndexOf('/'))+"/"+filePath;
+                    path=path.substring(0,path.lastIndexOf(File.separatorChar))+File.separator+filePath;
                     File tmp = new File(resDir, path);
                     if(tmp.exists()) res = path;
                 }
@@ -97,7 +97,7 @@ public class GenerateSCodes {
                     if(tmp.exists()) res = filePath;
                 }
                 if(res==null) throw new RuntimeException("Statusmessage file not found: "+filePath);
-                if (res.startsWith("/")) {
+                if (res.startsWith(File.separator)) {
                     res = res.substring(1);
                 }
                 scXmlFiles.add(res);
@@ -111,7 +111,7 @@ public class GenerateSCodes {
     
     public static boolean generate(List<String> scXmlFiles, String resDir, File genDir, String className, String module, boolean dynamic) throws IOException, SAXException {
         
-        String scLibPath = className.replace('.','/')+".java";
+        String scLibPath = className.replace('.',File.separatorChar)+".java";
         File scLibFile = new File(genDir, scLibPath);
         if (scLibFile.exists()) {
             boolean differentFiles = false;
@@ -188,7 +188,7 @@ public class GenerateSCodes {
       
         if (!scXmlFile.exists()) throw new IOException("statuscode file doesn't exist: "+scXmlFile.getAbsolutePath());
         
-        String scLibPath = className.replace('.','/')+".java";
+        String scLibPath = className.replace('.',File.separatorChar)+".java";
         File scLibFile = new File(genDir, scLibPath);
         if (scLibFile.exists()) {
             if(scXmlFile.lastModified() < scLibFile.lastModified()) return;

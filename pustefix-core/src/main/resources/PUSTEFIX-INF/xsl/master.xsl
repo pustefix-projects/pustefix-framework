@@ -133,11 +133,7 @@
       <ixsl:param name="__register_frame_helper__"/>
       
       <!-- these parameters will always be passed in by the servlet -->
-      <!-- e.g. /xml/static/FOOBAR;jsessionid=1E668C65F42697962A31177EB5319D8B.foo -->
       <ixsl:param name="__uri"/>
-      
-      <!-- e.g. jsessionid=1E668C65F42697962A31177EB5319D8B.foo -->
-      <!--<ixsl:param name="__sessid"/>--> <!-- defined in include.xsl.in -->
 
       <!-- e.g. 1E668C65F42697962A31177EB5319D8B.foo -->
       <!--
@@ -152,8 +148,6 @@
       -->
       <ixsl:param name="__external_session_ref"/>
       
-      <!-- e.g. /xml/static -->
-      <ixsl:param name="__servletpath"/>
       <!-- e.g. /context -->
       <ixsl:param name="__contextpath"/>
 
@@ -162,7 +156,10 @@
       <ixsl:param name="__remote_addr"/>
       <ixsl:param name="__server_name"/>
       <ixsl:param name="__request_scheme"/>
-      <ixsl:param name="__frame">_top</ixsl:param>
+      <ixsl:param name="__frame">
+        <xsl:if test="/pfx:document/pfx:frameset or /pfx:document/html/pfx:frameset">_top</xsl:if>
+      </ixsl:param>
+      
       <ixsl:param name="__reusestamp">-1</ixsl:param>
       
       <ixsl:param name="__lf"/>
@@ -192,7 +189,7 @@
       </ixsl:template>
       
       <ixsl:template name="__fake_session_id_argument">
-        <ixsl:value-of select="deref:getFakeSessionIdArgument($__sessid)"/>
+        <ixsl:value-of select="deref:getFakeSessionIdArgument($__sessionIdPath)"/>
       </ixsl:template>
       
       <ixsl:template name="__deref">
@@ -212,7 +209,7 @@
           </ixsl:call-template>
         </ixsl:variable>
         <ixsl:value-of select="$__contextpath"/>
-        <ixsl:text>/xml/deref</ixsl:text>
+        <ixsl:text>/deref</ixsl:text>
         <ixsl:call-template name="__fake_session_id_argument"/>
         <ixsl:text>?link=</ixsl:text>
         <ixsl:value-of select="$enclink"/>&amp;__sign=<ixsl:value-of select="$sign"/>&amp;__ts=<ixsl:value-of select="$ts"/>
@@ -257,16 +254,6 @@
                   <div style="position: absolute; color: #000000; background-color: #eeaaaa; border: solid 1px #aa8888; font-family: sans-serif; font-size:9px; font-weight: normal;" 
                   onclick="if (event.stopPropagation) event.stopPropagation(); else if (typeof event.cancelBubble != 'undefined') event.cancelBubble = true; this.style.display='none';">
                     Warning: Parameter <b><ixsl:value-of select="$name"/></b> in wrapper <b><ixsl:value-of select="$prefix"/></b> on page <b><ixsl:value-of select="$targetpage"/> must be indexed</b>
-                  </div>
-                </ixsl:when>
-              </ixsl:choose>
-            </ixsl:if>
-            <ixsl:if test="not(contains($fullname, '.'))">
-              <ixsl:choose>
-                <ixsl:when test="not(pfx:getIWrapperInfo($targetpage,$fullname))">
-                  <div style="position: absolute; color: #000000; background-color: #eeaaaa; border: solid 1px #aa8888; font-family: sans-serif; font-size:9px; font-weight: normal;" 
-                  onclick="if (event.stopPropagation) event.stopPropagation(); else if (typeof event.cancelBubble != 'undefined') event.cancelBubble = true; this.style.display='none';return false;">
-                    Warning: Unknown wrapper <b><ixsl:value-of select="$fullname"/></b> on page <b><ixsl:value-of select="$targetpage"/></b>
                   </div>
                 </ixsl:when>
               </ixsl:choose>
@@ -419,8 +406,8 @@
   <xsl:template match="pfx:wsscript">
     <script type="text/javascript">
       <ixsl:attribute name="src">
-        <ixsl:value-of select="concat($__contextpath,'/xml/webservice')"/>
-        <xsl:if test="@session='true'">;<ixsl:value-of select="$__sessid"/></xsl:if>
+        <ixsl:value-of select="concat($__contextpath,'/webservice')"/>
+        <xsl:if test="@session='true'"><ixsl:value-of select="$__sessionIdPath"/></xsl:if>
         <ixsl:value-of select="concat('?wsscript&amp;name=',url:encode('{@name}','{$outputencoding}'),'&amp;type=')"/>
         <xsl:choose>
           <xsl:when test="@type"><xsl:value-of select="@type"/></xsl:when>

@@ -39,8 +39,6 @@ public class DocrootResourceOnFileSystemProvider extends DocrootResourceProvider
 
     private String docroot;
 
-    private LiveResolver liveResolver;
-
     public DocrootResourceOnFileSystemProvider(String docroot) {
         this.docroot = docroot;
     }
@@ -56,11 +54,8 @@ public class DocrootResourceOnFileSystemProvider extends DocrootResourceProvider
             if (LOG.isDebugEnabled()) {
                 LOG.debug("Getting live resource for " + uri);
             }
-            if (liveResolver == null) {
-                liveResolver = new LiveResolver();
-            }
             try {
-                URL resolvedLiveDocroot = liveResolver.resolveLiveDocroot(docroot, uri.getPath());
+                URL resolvedLiveDocroot = LiveResolver.getInstance().resolveLiveDocroot(docroot, uri.getPath());
                 if (resolvedLiveDocroot != null) {
                     return new DocrootResourceOnFileSystemImpl(uri, resolvedLiveDocroot.getFile());
                 }

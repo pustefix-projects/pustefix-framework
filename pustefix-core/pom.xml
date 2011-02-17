@@ -5,12 +5,12 @@
   <parent>
     <groupId>org.pustefixframework</groupId>
     <artifactId>pustefixframework</artifactId>
-    <version>0.15.19-SNAPSHOT</version>
+    <version>0.16.0</version>
   </parent>
 
   <groupId>org.pustefixframework</groupId>
   <artifactId>pustefix-core</artifactId>
-  <version>0.15.19-SNAPSHOT</version>
+  <version>0.16.0</version>
   <packaging>jar</packaging>
 
   <name>Pustefix Core</name>
@@ -146,6 +146,19 @@
       <version>2.4</version>
       <scope>provided</scope>
     </dependency>
+    <dependency>
+      <groupId>org.mortbay.jetty</groupId>
+      <artifactId>jetty</artifactId>
+      <version>6.1.25</version>
+      <scope>test</scope>
+    </dependency>
+    <dependency>
+      <groupId>commons-httpclient</groupId>
+      <artifactId>commons-httpclient</artifactId>
+      <version>3.1</version>
+      <scope>test</scope>
+    </dependency>
+    
   </dependencies>
  
   <build>
@@ -187,7 +200,7 @@
       <plugin>
         <groupId>org.pustefixframework.maven.plugins</groupId>
         <artifactId>pustefix-statuscode-plugin</artifactId>
-        <version>0.15.19-SNAPSHOT</version>
+        <version>0.16.0</version>
         <executions>
           <execution>
             <configuration>
@@ -202,6 +215,7 @@
           </execution>
         </executions>
       </plugin>
+      
     </plugins>
   </build>
 

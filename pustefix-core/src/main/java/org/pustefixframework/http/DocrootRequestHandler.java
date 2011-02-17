@@ -52,7 +52,7 @@ public class DocrootRequestHandler implements UriProvidingHttpRequestHandler, Se
     
     private String base;
 
-    private String defaultpath;
+    private String defaultpath = "/";
     
     private List<String> passthroughPaths;
     
@@ -92,7 +92,7 @@ public class DocrootRequestHandler implements UriProvidingHttpRequestHandler, Se
         String path = req.getPathInfo();
         
         // Handle default (root) request
-        if (defaultpath != null && (path == null || path.length() == 0 || path.equals("/"))) {
+        if(path == null || path.length() == 0 || (path.equals("/") && !defaultpath.equals("/"))) {
             StringBuilder sb = new StringBuilder();
             sb.append(req.getScheme()).append("://").append(getServerName(req));
             if(!(req.getServerPort() == 80 || req.getServerPort() == 443)) sb.append(":" + req.getServerPort());
@@ -223,7 +223,10 @@ public class DocrootRequestHandler implements UriProvidingHttpRequestHandler, Se
 
     
     public String[] getRegisteredURIs() {
-        return new String[] {"/**", "/xml/**"};
+        String[] uris;
+        if(defaultpath.equals("/")) uris = new String[] {"/?*", "/?*/**"};
+        else uris = new String[] {"/**", "/xml/**"};
+        return uris;
     }
     
     

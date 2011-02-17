@@ -2,7 +2,7 @@
 <project-config xmlns="http://www.pustefix-framework.org/2008/namespace/project-config"
                 xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
                 xsi:schemaLocation="http://www.pustefix-framework.org/2008/namespace/project-config 
-                                    http://www.pustefix-framework.org/2008/namespace/project-config.xsd">
+                                    http://www.pustefix-framework.org/2008/namespace/project-config-0_16.xsd">
   
   <project>
     <name>webservice</name>
@@ -28,12 +28,9 @@
   <application>
     
     <docroot-path>docroot:/htdocs</docroot-path>
-    <default-path>/xml/main</default-path>
     
     <context-xml-service>
-      <path>/xml/main</path>
       <config-file>docroot:/WEB-INF/config.conf.xml</config-file>
-      <additional-trail-info>de.schlund.pfixxml.perflogging.DefaultAdditionalTrailInfoImpl</additional-trail-info>
       <choose>
         <when test="$mode='prod'">
           <session-cleaner-timeout>20</session-cleaner-timeout>
@@ -45,13 +42,11 @@
     </context-xml-service>
     
     <deref-service>
-      <path>/xml/deref</path>            <!-- optional: default is /xml/deref -->
       <validtime>3600</validtime>        <!-- optional: default is 3600 (seconds) -->
       <mustsign>false</mustsign>         <!-- optional: default is false -->
     </deref-service>
     
     <webservice-service>
-      <path>/xml/webservice</path>
       <config-file>docroot:/WEB-INF/webservice.conf.xml</config-file>
     </webservice-service>
     

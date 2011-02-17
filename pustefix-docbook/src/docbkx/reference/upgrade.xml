@@ -1,0 +1,128 @@
+<?xml version="1.0"?>
+<chapter xml:id="upgrade" xmlns="http://docbook.org/ns/docbook" xmlns:xlink="http://www.w3.org/1999/xlink"
+  xmlns:xi="http://www.w3.org/2001/XInclude" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xsi:schemaLocation="http://docbook.org/ns/docbook http://www.docbook.org/xml/5.0CR7/xsd/docbook.xsd"
+>
+  <title>Upgrading to a newer Pustefix version</title>    
+  <section xml:id="upgrade.0_15_to_0_16">
+    <title>Upgrading from Pustefix 0.15 to 0.16</title>
+  
+    <section xml:id="upgrade.0_15_to_0_16.web_xml">
+      <title>web.xml</title>
+      <para>
+        With Pustefix 0.16 URLs referencing pages no longer contain the <literal>/xml/xyz</literal> path prefix. Thus the according servlet
+        mappings in <literal>src/main/webapp/WEB-INF/web.xml</literal> become obsolete. You can remove all <literal>&lt;servlet-mapping/&gt;</literal>
+        elements containing an <literal>&lt;url-pattern&gt;</literal> starting with <literal>/xml</literal>.
+      </para>
+    </section>
+
+    <section xml:id="upgrade.0_15_to_0_16.project_xml">
+      <title>project.xml</title>
+      <para>
+        In Pustefix 0.16 URL paths no longer start with <literal>/xml/xyz</literal>. You should adapt the according path configurations
+        in <literal>src/main/webapp/WEB-INF/project.xml</literal>.
+        Within the <literal>&lt;application/&gt;</literal> section you can remove the according path configurations:
+        the <literal>&lt;default-path&gt;</literal> element and 
+        the <literal>&lt;path/&gt;</literal> elements beneath <literal>&lt;context-xml-service/&gt;</literal>,
+        <literal>&lt;direct-output-service/&gt;</literal> and <literal>&lt;deref-service/&gt;</literal> (if available).
+      </para>
+      <para>
+        The <literal>&lt;additional-trail-info&gt;</literal> element now is optional. If missing, Pustefix by default registers
+        the default <literal>AdditionalTrailInfo</literal> implementation <literal>org.pustefixframework.http.DefaultAdditionalTrailInfoImpl</literal>.
+        You have to be aware that the package name of the interface and the implementation changed from <literal>de.schlund.pfixxml.perflogging</literal>
+        to <literal>org.pustefixframework.http</literal>. You either will have to adapt the package names, or if you're relying on
+        the default implementation, you can just remove the complete <literal>&lt;additional-trail-info/&gt;</literal> element.
+      </para>
+      <para>
+        The elements <literal>&lt;perflogging&gt;</literal> and <literal>&lt;testrecording&gt;</literal> became obsolete because the 
+        performance logging and testrecording mechanisms are no longer 
+        part of the Pustefix core framework. You can just remove these elements. The <literal>&lt;authadmin&gt;</literal> element is also no 
+        longer supported and should be removed.
+      </para>
+      <para>
+        If you're referencing a XML schema, you can change the schema location to
+        <literal>http://www.pustefix-framework.org/2008/namespace/project-config-0_16.xsd</literal> to get and updated version.
+      </para>
+    </section>
+
+    <section xml:id="upgrade.0_15_to_0_16.depend_xml">
+      <title>depend.xml</title>
+      <para>
+        With Pustefix 0.16 URLs of all kind of pages (dynamic, directoutput) are directly served under the servlet context without using an additional
+        path prefix. Therefore every page requires a unique name. If you use the same page name multiple times, e.g. for normal and directoutput pages,
+        you will have to rename it making it unique.
+      </para>
+      <para>
+        No longer requiring a path prefix for pages, you can remove all <literal>handler</literal> attributes from the
+        <literal>&lt;page/&gt;</literal> elements within the <literal>&lt;navigation/&gt;</literal> section.
+      </para>
+      <para>
+        If you're referencing a XML schema, you can change the schema location to
+        <literal>http://www.pustefix-framework.org/2008/namespace/xml-generator-config-0_16.xsd</literal>
+        to get an updated version.
+      </para>
+    </section>
+
+    <section xml:id="upgrade.0_15_to_0_16.taglib">
+      <title>Tag library</title>
+      <para>
+        The <literal>&lt;pfx:image/&gt;</literal> tag behaviour changed when used within XML includes coming from modules. Without specifying
+        a module using the <literal>module</literal> attribute, the image source now is searched within the module itself instead of the
+        webapp. You either have to add the <literal>search="dynamic"</literal> attribute to look up the image in the webapp before trying to
+        get it from the module or you can set the <literal>module</literal> attribute to the special value <literal>WEBAPP</literal> to force
+        getting it from the webapp.  
+      </para>
+    </section>
+
+    <section xml:id="upgrade.0_15_to_0_16.sessions">
+      <title>Session handling</title>
+      <para>
+        Since 0.16 Pustefix supports different session tracking strategies, whereas the new cookie based approach became the default strategy.
+        Although Pustefix tries to make session id handling transparent to the application by hiding it in its core templates and internal code,
+        there are use cases where applications directly access the session id, e.g. for creating links without using the core tags.
+      </para>
+      <para>
+      	Because URL rewriting of the session id now by default is only done if the client disabled cookies, you will have to adapt code, which
+        manually creates session-aware links. You should only include the session id, if necessary. Therefor Pustefix introduced two new 
+        XSL parameters: <literal>__sessionId</literal>, which is always set to the current session id, and <literal>__sessionIdPath</literal>, which
+        is set to the path extension for the session on demand , e.g. <literal>;jsessionid=xyz</literal>. The <literal>__sessionIdPath</literal> parameter
+        will be empty if the session id came from a cookie. Thus you can easily create session-aware URLs by just adding the value to your URL
+        without having to take care if cookies are enabled or not.
+      </para>
+      <para>
+        The XSL parameter <literal>__sessid</literal> was removed as its contract doesn't exactly match one of the new parameters. You will have to
+        replace it according to your requirements using one the new ones.
+      </para>
+    </section>
+
+    <section xml:id="upgrade.0_15_to_0_16.webservices">
+      <title>AJAX webservices</title>
+      <para>
+        The JSON and SOAP Javascript libraries were moved from the Pustefix core module to the Pustefix webservice modules.
+        If you're application uses these libraries, you will have to adapt the according <literal>script</literal> tags, replacing
+        <literal>pustefix-core</literal> by <literal>pustefix-webservices-jaxws</literal> or <literal>pustefix-webservices-jsonws</literal>,
+        e.g.
+<programlisting language="xml"><![CDATA[<script type="text/javascript" src="{$__contextpath}/modules/pustefix-core/script/webservice.js"></script>
+<script type="text/javascript" src="{$__contextpath}/modules/pustefix-core/script/webservice_json.js"></script>]]></programlisting>
+        has to be changed to:
+<programlisting language="xml"><![CDATA[<script type="text/javascript" src="{$__contextpath}/modules/pustefix-webservices-jaxws/script/webservice.js"></script>
+<script type="text/javascript" src="{$__contextpath}/modules/pustefix-webservices-jsonws/script/webservice_json.js"></script>]]></programlisting>
+      </para>
+      <para>
+        Generated Javascript SOAP stubs aren't delivered statically any longer, i.e. you also have to use the <literal>pfx:wsscript</literal> tag
+        to include the stub file (instead of statically referencing it), e.g.
+<programlisting language="xml"><![CDATA[<script type="text/javascript" src="{$__contextpath}/xml/wsscript/MyService.js"></script>]]></programlisting>
+        has to be changed to:
+<programlisting language="xml"><![CDATA[<pfx:wsscript name="MyService" type="soap"/>]]></programlisting>
+        The <literal>type</literal> attribute only is required if you enabled multiple webservice protocols for the service within the configuration.
+      </para>
+      <para>
+        If you manually build webservice URLs, e.g. if you don't want to use the generated stubs, you have to be aware that the request path no
+        longer contains the <literal>xml</literal> part, e.g. you will have to change <literal>http://anyhost/xml/webservice/MyService</literal> to
+        <literal>http://anyhost/webservice/MyService</literal>.
+      </para>
+    </section>
+  
+  </section>
+  
+</chapter>

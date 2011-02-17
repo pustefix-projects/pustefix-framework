@@ -160,7 +160,7 @@ public class AdminWebapp {
                         srvConf.getProtocolType().equals(Constants.PROTOCOL_TYPE_SOAP)) {
                     String wsdlUri=req.getRequestURI()+"/"+name+";jsessionid="+session.getId()+"?WSDL";
                     writer.println("&nbsp;&nbsp;<a style=\"color:#666666\" target=\"_blank\" href=\""+wsdlUri+"\" title=\"Show generated WSDL\">WSDL</a>");
-                    String soapUri=req.getContextPath()+"/xml"+globConf.getStubRepository()+"/"+srvConf.getName()+".js";
+                    String soapUri=req.getRequestURI()+"?wsscript&name="+srvConf.getName()+"&type=soap";
                     writer.println("&nbsp;&nbsp;<a style=\"color:#666666\" target=\"_blank\" href=\""+soapUri+"\" title=\"Show generated SOAP Javascript stub\">SOAP JS</a>");
                 }
                 if(srvConf.getProtocolType().equals(Constants.PROTOCOL_TYPE_ANY)||

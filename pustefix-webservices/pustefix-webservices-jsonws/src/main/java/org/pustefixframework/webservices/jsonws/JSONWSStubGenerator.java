@@ -39,7 +39,7 @@ import org.pustefixframework.webservices.jsgen.JsStatement;
  */
 public class JSONWSStubGenerator implements ServiceStubGenerator {
 
-    public void generateStub(ServiceConfig service,OutputStream out) throws ServiceException,IOException {
+    public void generateStub(ServiceConfig service, String requestPath, OutputStream out) throws ServiceException,IOException {
         ServiceDescriptor desc=new ServiceDescriptor(service);
         JsParam[] constParams=new JsParam[] {new JsParam("context"),new JsParam("scope")};
        
@@ -57,7 +57,7 @@ public class JSONWSStubGenerator implements ServiceStubGenerator {
         }
         JsClass jsClass=new JsClass(jsClassName,"pfx.ws.json.BaseStub",constParams);
         JsBlock block=jsClass.getConstructorBody();
-        block.addStatement(new JsStatement("pfx.ws.json.BaseStub.call(this,\""+service.getName()+"\",context,scope)"));
+        block.addStatement(new JsStatement("pfx.ws.json.BaseStub.call(this,\"" + service.getName() + "\",context,scope,\"" + requestPath + "\")"));
         for(String methName:desc.getMethods()) {
             List<Method> meths=desc.getMethods(methName);
             for(Method meth:meths) {

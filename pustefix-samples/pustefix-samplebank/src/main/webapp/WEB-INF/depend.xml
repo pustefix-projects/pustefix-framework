@@ -14,12 +14,12 @@
   </namespaces>
   
   <navigation>
-    <page name="home" handler="/xml/main"/>
-    <page name="login"     handler="/xml/main"/>
-    <page name="accountoverview"     handler="/xml/main" accesskey="H"/>
-    <page name="accountdetails"    handler="/xml/main" accesskey="O"/>
-    <page name="test"     handler="/xml/main"/>
-    <page name="logout"     handler="/xml/main"/>
+    <page name="home"/>
+    <page name="login"/>
+    <page name="accountoverview" accesskey="H"/>
+    <page name="accountdetails" accesskey="O"/>
+    <page name="test"/>
+    <page name="logout"/>
   </navigation>
   
   <standardmaster/>

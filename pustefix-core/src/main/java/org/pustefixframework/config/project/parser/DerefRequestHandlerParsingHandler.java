@@ -21,6 +21,8 @@ import java.util.Properties;
 
 import org.pustefixframework.config.Constants;
 import org.pustefixframework.config.contextxmlservice.ServletManagerConfig;
+import org.pustefixframework.config.generic.ParsingUtils;
+import org.pustefixframework.config.project.SessionTrackingStrategyInfo;
 import org.pustefixframework.http.dereferer.DerefRequestHandler;
 import org.springframework.beans.factory.config.BeanDefinition;
 import org.springframework.beans.factory.config.BeanDefinitionHolder;
@@ -60,15 +62,17 @@ public class DerefRequestHandlerParsingHandler implements ParsingHandler {
                 }
                 
             };
+            SessionTrackingStrategyInfo strategyInfo = ParsingUtils.getSingleSubObjectFromRoot(SessionTrackingStrategyInfo.class, context);
             
             beanBuilder = BeanDefinitionBuilder.genericBeanDefinition(DerefRequestHandler.class);
             beanBuilder.setScope("singleton");
             beanBuilder.setInitMethodName("init");
-            beanBuilder.addPropertyValue("handlerURI", "/xml/deref/**");
+            beanBuilder.addPropertyValue("handlerURI", "/deref");
             beanBuilder.addPropertyValue("validTime", 1000 * 60 * 60);
             beanBuilder.addPropertyValue("mustSign", true);
             beanBuilder.addPropertyValue("configuration", config);
             beanBuilder.addPropertyValue("sessionAdmin", new RuntimeBeanReference(SessionAdmin.class.getName()));
+            beanBuilder.addPropertyValue("sessionTrackingStrategy", strategyInfo.getSessionTrackingStrategyInstance());
             BeanDefinition beanDefinition = beanBuilder.getBeanDefinition();
             BeanDefinitionHolder beanHolder = new BeanDefinitionHolder(beanDefinition, DerefRequestHandler.class.getName());
             context.getObjectTreeElement().addObject(beanHolder);
@@ -77,7 +81,7 @@ public class DerefRequestHandlerParsingHandler implements ParsingHandler {
         
             Element serviceElement = (Element) context.getNode();
             
-            String path="/xml/deref";
+            String path="/deref";
             Element element = (Element) serviceElement.getElementsByTagNameNS(Constants.NS_PROJECT, "path").item(0);
             if (element != null) path = element.getTextContent().trim();
             
@@ -89,7 +93,7 @@ public class DerefRequestHandlerParsingHandler implements ParsingHandler {
             element = (Element) serviceElement.getElementsByTagNameNS(Constants.NS_PROJECT, "mustsign").item(0);
             if (element != null) mustSign = Boolean.parseBoolean(element.getTextContent().trim());
             
-            beanBuilder.addPropertyValue("handlerURI", path + "/**");
+            beanBuilder.addPropertyValue("handlerURI", path);
             beanBuilder.addPropertyValue("validTime", validTime);
             beanBuilder.addPropertyValue("mustSign", mustSign);
         }

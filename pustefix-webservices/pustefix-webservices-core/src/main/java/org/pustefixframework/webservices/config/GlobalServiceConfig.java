@@ -45,7 +45,7 @@ public class GlobalServiceConfig implements Serializable {
      */
     private static final long serialVersionUID = -8134435783633908273L;
     private String                 server;
-    private String                 reqPath          = "/xml/webservice";
+    private String                 reqPath          = "/webservice";
     private Boolean                wsdlSupport      = Boolean.TRUE;
     private String                 wsdlRepo         = "/wsdl";
     private Boolean                stubGeneration   = Boolean.TRUE;

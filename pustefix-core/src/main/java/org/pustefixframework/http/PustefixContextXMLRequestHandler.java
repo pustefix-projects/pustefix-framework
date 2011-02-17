@@ -19,7 +19,11 @@
 package org.pustefixframework.http;
 
 import java.io.ByteArrayOutputStream;
+import java.util.List;
+import java.util.Set;
+import java.util.SortedSet;
 import java.util.TreeMap;
+import java.util.TreeSet;
 
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
@@ -49,6 +53,7 @@ import de.schlund.pfixxml.PfixServletRequestImpl;
 import de.schlund.pfixxml.RenderOutputListener;
 import de.schlund.pfixxml.RequestParam;
 import de.schlund.pfixxml.SPDocument;
+import de.schlund.pfixxml.targets.PageInfo;
 
 /**
  * @author jtl
@@ -89,7 +94,7 @@ public class PustefixContextXMLRequestHandler extends AbstractPustefixXMLRequest
     }
     
     @Override
-    protected boolean needsSSL(PfixServletRequest preq) throws ServletException {
+    public boolean needsSSL(PfixServletRequest preq) throws ServletException {
         if (super.needsSSL(preq)) {
             return true;
         } else {
@@ -105,12 +110,12 @@ public class PustefixContextXMLRequestHandler extends AbstractPustefixXMLRequest
     }
 
     @Override
-    protected boolean needsSession() {
+    public boolean needsSession() {
         return true;
     }
 
     @Override
-    protected boolean allowSessionCreate() {
+    public boolean allowSessionCreate() {
         return true;
     }
     
@@ -217,7 +222,9 @@ public class PustefixContextXMLRequestHandler extends AbstractPustefixXMLRequest
                 spdoc = context.handleRequest(preq);
             }
             
-            if (spdoc != null && !spdoc.isRedirect() && (preq.getPageName() == null || !preq.getPageName().equals(spdoc.getPagename()))) {
+            if (spdoc != null && !spdoc.isRedirect() && 
+                    ( (preq.getPageName() == null && !context.getContextConfig().getDefaultPage(context.getVariant()).equals(spdoc.getPagename()))
+                      || (preq.getPageName() != null && !preq.getPageName().equals(spdoc.getPagename())) )) {
                 // Make sure all requests that don't encode an explicite pagename
                 // (this normally is only the case for the first request)
                 // OR pages that have the "wrong" pagename in their request 
@@ -225,11 +232,16 @@ public class PustefixContextXMLRequestHandler extends AbstractPustefixXMLRequest
                 // are redirected to the page selected by the business logic below
                 String scheme = preq.getScheme();
                 String port = String.valueOf(preq.getServerPort());
+                String sessionIdPath = "";
+                HttpSession session = preq.getSession(false);
+                if(session.getAttribute(AbstractPustefixRequestHandler.SESSION_ATTR_COOKIE_SESSION) == null) {
+                    sessionIdPath = ";jsessionid=" + session.getId();
+                }
                 String redirectURL = scheme + "://" + getServerName(preq.getRequest()) 
                     + ":" + port + preq.getContextPath() + preq.getServletPath() + "/" + spdoc.getPagename() 
-                    + ";jsessionid=" + preq.getSession(false).getId() + "?__reuse=" + spdoc.getTimestamp();
+                    + sessionIdPath + "?__reuse=" + spdoc.getTimestamp();
                 RequestParam rp = preq.getRequestParam("__frame");
-                if (rp != null) {
+                if (rp != null && rp.getValue() != null && !rp.getValue().equals("")) {
                     redirectURL += "&__frame=" + rp.getValue();
                 }
                 rp = preq.getRequestParam("__lf");
@@ -329,4 +341,32 @@ public class PustefixContextXMLRequestHandler extends AbstractPustefixXMLRequest
     public void setContext(ContextImpl context) {
         this.context = context;
     }
+    
+    @Override
+    public String[] getRegisteredURIs() {
+
+        SortedSet<String> uris = new TreeSet<String>();
+        
+        uris.add("/");
+        
+        //add path mapping for backwards compatibility
+        String[] regUris = super.getRegisteredURIs();
+        for(String regUri: regUris) uris.add(regUri);
+        
+        //add page mappings for configured pagerequests
+        List<? extends PageRequestConfig> pages = config.getContextConfig().getPageRequestConfigs();
+        for(PageRequestConfig page: pages) {
+            uris.add("/" + page.getPageName());
+        }
+        
+        //add page mappings for standardpages
+        Set<PageInfo> pageInfos = generator.getPageTargetTree().getPageInfos();
+        for(PageInfo pageInfo: pageInfos) {
+            uris.add("/" + pageInfo.getName());
+        }
+        
+        String[] uriArr = uris.toArray(new String[uris.size()]);
+        return uriArr;
+    }
+    
 }

@@ -49,6 +49,7 @@ import javax.xml.transform.stream.StreamResult;
 import org.apache.log4j.Logger;
 import org.pustefixframework.config.contextxmlservice.AbstractXMLServletConfig;
 import org.pustefixframework.config.contextxmlservice.ServletManagerConfig;
+import org.pustefixframework.http.internal.PustefixInit;
 import org.w3c.dom.Document;
 
 import de.schlund.pfixcore.exception.PustefixApplicationException;
@@ -62,7 +63,6 @@ import de.schlund.pfixxml.SPDocument;
 import de.schlund.pfixxml.SessionCleaner;
 import de.schlund.pfixxml.Variant;
 import de.schlund.pfixxml.config.EnvironmentProperties;
-import de.schlund.pfixxml.perflogging.AdditionalTrailInfo;
 import de.schlund.pfixxml.serverutil.SessionHelper;
 import de.schlund.pfixxml.targets.PageInfo;
 import de.schlund.pfixxml.targets.PageInfoFactory;
@@ -70,8 +70,6 @@ import de.schlund.pfixxml.targets.PageTargetTree;
 import de.schlund.pfixxml.targets.Target;
 import de.schlund.pfixxml.targets.TargetGenerationException;
 import de.schlund.pfixxml.targets.TargetGenerator;
-import de.schlund.pfixxml.testrecording.TestRecording;
-import de.schlund.pfixxml.testrecording.TrailLogger;
 import de.schlund.pfixxml.util.CacheValueLRU;
 import de.schlund.pfixxml.util.MD5Utils;
 import de.schlund.pfixxml.util.Xml;
@@ -106,9 +104,9 @@ public abstract class AbstractPustefixXMLRequestHandler extends AbstractPustefix
     private static final String PARAM_REUSE           = "__reuse"; // internally used
     
     private static final String   XSLPARAM_LANG           = "lang";
-    private static final String   XSLPARAM_SESSID         = "__sessid";
+    private static final String   XSLPARAM_SESSION_ID     = "__sessionId";
+    private static final String   XSLPARAM_SESSION_ID_PATH = "__sessionIdPath";
     private static final String   XSLPARAM_URI            = "__uri";
-    private static final String   XSLPARAM_SERVP          = "__servletpath";
     private static final String   XSLPARAM_CONTEXTPATH    = "__contextpath";
     private static final String   XSLPARAM_REMOTE_ADDR    = "__remote_addr";
     private static final String   XSLPARAM_SERVER_NAME    = "__server_name";
@@ -147,7 +145,7 @@ public abstract class AbstractPustefixXMLRequestHandler extends AbstractPustefix
     protected String editorLocation;
     
     @Override
-    protected ServletManagerConfig getServletManagerConfig() {
+    public ServletManagerConfig getServletManagerConfig() {
         return this.getAbstractXMLServletConfig();
     }
     
@@ -163,8 +161,6 @@ public abstract class AbstractPustefixXMLRequestHandler extends AbstractPustefix
     private final static Logger LOGGER       = Logger.getLogger(AbstractPustefixXMLRequestHandler.class);
     
     private AdditionalTrailInfo additionalTrailInfo = null;
-    
-    private TestRecording testRecording;
     
     private SessionCleaner sessionCleaner;
     
@@ -257,6 +253,9 @@ public abstract class AbstractPustefixXMLRequestHandler extends AbstractPustefix
      */
     @Override
     protected void process(PfixServletRequest preq, HttpServletResponse res) throws Exception {
+        
+        PustefixInit.tryReloadLog4j();
+        
         Properties  params     = new Properties();
         HttpSession session    = preq.getSession(false);
         CacheValueLRU<String,SPDocument> storeddoms = null;
@@ -296,11 +295,10 @@ public abstract class AbstractPustefixXMLRequestHandler extends AbstractPustefix
         // if __reuse is set, we will try to reuse a stored DomTree, if __reuse is
         // not set, we store the DomTree from getDom in the Session as servletname + _saved_dom
         if ((value = preq.getRequestParam(PARAM_FRAME)) != null)
-            if (value.getValue() != null) {
+            if (value.getValue() != null && !value.getValue().equals("")) {
                 params.put(XSLPARAM_FRAME, value.getValue());
             }
         params.put(XSLPARAM_URI, preq.getRequestURI());
-        params.put(XSLPARAM_SERVP, preq.getContextPath() + preq.getServletPath());
         params.put(XSLPARAM_CONTEXTPATH, preq.getContextPath());
         if (preq.getRemoteAddr() != null)
             params.put(XSLPARAM_REMOTE_ADDR, preq.getRemoteAddr());
@@ -317,7 +315,10 @@ public abstract class AbstractPustefixXMLRequestHandler extends AbstractPustefix
         params.put(XSL_PARAM_APP_URL, getApplicationURL(preq));
         
         if (session != null) {
-            params.put(XSLPARAM_SESSID, session.getAttribute(SessionHelper.SESSION_ID_URL));
+            params.put(XSLPARAM_SESSION_ID, session.getId());
+            if(session.getAttribute(AbstractPustefixRequestHandler.SESSION_ATTR_COOKIE_SESSION) == null) {
+                params.put(XSLPARAM_SESSION_ID_PATH, ";jsessionid=" + session.getId());
+            }
             if (doreuse) {
                 synchronized (session) {
                     // Make sure redirect is only done once
@@ -368,9 +369,7 @@ public abstract class AbstractPustefixXMLRequestHandler extends AbstractPustefix
                     throw e;
                 }
             }
-	    
             
-            TrailLogger.log(preq, spdoc, session);
             RequestParam[] anchors   = preq.getAllRequestParams(PARAM_ANCHOR);
             Map<String, String> anchormap;
             if (anchors != null && anchors.length > 0) {
@@ -774,7 +773,7 @@ public abstract class AbstractPustefixXMLRequestHandler extends AbstractPustefix
         } else {
             throw new IllegalArgumentException("invalid value for " + PARAM_XMLONLY + ": " + value);
         }
-        if (xmlOnlyAllowed || (testRecording!=null && testRecording.isKnownClient(pfreq.getRemoteAddr()))) {
+        if (xmlOnlyAllowed) {
             return rendering;
         } else {
             return RENDERMODE.RENDER_NORMAL;
@@ -988,10 +987,6 @@ public abstract class AbstractPustefixXMLRequestHandler extends AbstractPustefix
     
     public void setTargetGenerator(TargetGenerator tgen) {
         this.generator = tgen;
-    }
-    
-    public void setTestRecording(TestRecording testRecording) {
-        this.testRecording = testRecording;
     }
     
     public void setEditorLocation(String editorLocation) {

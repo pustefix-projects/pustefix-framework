@@ -11,17 +11,7 @@
   <xsl:template match="pfx:active"/>
   <xsl:template match="pfx:normal"/>
   <xsl:template match="pfx:argument"/>
-  <xsl:template match="pfx:command">
-    <ixsl:call-template name="__formwarn">
-      <ixsl:with-param name="targetpage">
-        <xsl:choose>
-          <xsl:when test="ancestor::pfx:forminput[position()=1]/@send-to-page"><xsl:value-of select="ancestor::pfx:forminput[position()=1]/@send-to-page"/></xsl:when>
-          <xsl:otherwise><xsl:value-of select="$page"/></xsl:otherwise>
-        </xsl:choose>
-      </ixsl:with-param>
-      <ixsl:with-param name="fullname"><xsl:value-of select="text()"/></ixsl:with-param>
-    </ixsl:call-template>
-  </xsl:template>
+  <xsl:template match="pfx:command"/>
   <xsl:template match="pfx:anchor"/>
   <xsl:template match="pfx:host"/>
 
@@ -211,7 +201,7 @@
         <xsl:when test="ancestor-or-self::pfx:frame[position()=2]/@name">
           <xsl:value-of select="ancestor-or-self::pfx:frame[position()=2]/@name"/>
         </xsl:when>
-        <xsl:otherwise>_top</xsl:otherwise>
+        <xsl:when test="/pfx:document/pfx:frameset or /pfx:document/html/pfx:frameset">_top</xsl:when>
       </xsl:choose>
     </xsl:param>
     <xsl:param name="target_impl">
@@ -237,18 +227,11 @@
         <xsl:otherwise><xsl:value-of select="$thebuttpage/@accesskey"/></xsl:otherwise>
       </xsl:choose>
     </xsl:variable>
-
-    <xsl:variable name="thehandler" select="$thebuttpage/@handler"/>
-    <xsl:variable name="thequery">__frame=<xsl:value-of select="$frame_impl"/></xsl:variable>
-    <xsl:variable name="prelink">
-      <xsl:value-of select="$thehandler"/>/<xsl:value-of select="$buttpage_impl"/>
-    </xsl:variable>
-    <xsl:variable name="postlink">
-      <xsl:text>?</xsl:text><xsl:value-of select="$thequery"/>
-    </xsl:variable>
     <xsl:variable name="fulllink">
-      <ixsl:value-of select="$__contextpath"/><xsl:value-of select="$prelink"/>;<ixsl:value-of select="$__sessid"/><xsl:value-of select="$postlink"/>
-      <ixsl:if test="not($__lf = '')">&amp;__lf=<ixsl:value-of select="$__lf"/></ixsl:if>
+      <ixsl:value-of select="$__contextpath"/>/<ixsl:value-of select="pfx:__omitPage('{$buttpage_impl}')"/><ixsl:value-of select="$__sessionIdPath"/>
+      <ixsl:variable name="params">
+      <xsl:if test="not($frame_impl='')">__frame=<xsl:value-of select="$frame_impl"/></xsl:if>
+      <ixsl:if test="not($__lf = '') and pfx:__needsLastFlow('{$buttpage_impl}',$__lf)">&amp;__lf=<ixsl:value-of select="$__lf"/></ixsl:if>
       <xsl:if test="$args and not($nodata) and not($startwithflow = 'true')">&amp;__sendingdata=1</xsl:if>
       <xsl:for-each select="$args">&amp;<xsl:value-of select="./@name"/>=<ixsl:call-template name="__enc"><ixsl:with-param name="in"><xsl:apply-templates select="./node()"/></ixsl:with-param></ixsl:call-template></xsl:for-each>
       <xsl:if test="$jumptopage">&amp;__jumptopage=<xsl:value-of select="$jumptopage"/></xsl:if>
@@ -259,6 +242,8 @@
       <xsl:if test="$action">&amp;__action=<xsl:value-of select="$action"/></xsl:if>
       <xsl:for-each select="$cmds">&amp;__CMD[<xsl:choose><xsl:when test="./@page"><xsl:value-of select="./@page"/></xsl:when><xsl:otherwise><xsl:value-of select="$buttpage_impl"/></xsl:otherwise></xsl:choose>]:<xsl:value-of select="./@name"/>=<xsl:apply-templates select="./node()"/></xsl:for-each>
       <xsl:for-each select="$anchors[@frame != '']">&amp;__anchor=<xsl:value-of select="@frame"/>|<xsl:apply-templates select="./node()"/></xsl:for-each>
+      </ixsl:variable>
+      <ixsl:value-of select="pfx:__addParams($params)"/>
       <xsl:if test="$anchors[not(@frame) or @frame = '']">#<xsl:apply-templates select="$anchors[not(@frame) or @frame = ''][1]/node()"/></xsl:if>
     </xsl:variable>
     <xsl:variable name="excluded_button_attrs">|accesskey|action|activeclass|buttpage|forcestop|frame|invisibleclass|jumptopage|jumptopageflow|mode|nodata|normalclass|page|pageflow|popup|popupfeatures|popupheight|popupid|popupwidth|startwithflow|target|</xsl:variable>
