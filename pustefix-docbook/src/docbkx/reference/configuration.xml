@@ -360,7 +360,7 @@
   <!-- Set an initial session timeout 'value' (in seconds) used until 
        more than 'requestlimit' requests are made within a session.
        This element is optional. By default no separate timeout
-       for the initial requests are made. -->
+       for the initial requests is used. -->
   <initial-session-timeout value="600" requestlimit="3"/>
 
   <application>
