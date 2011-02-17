@@ -11,7 +11,7 @@
       <para>
         The Pustefix internals page provides some useful information for application developers (e.g. environment properties, JVM statistics, 
         loaded modules).
-        The page is only available at development time and can be accessed under <literal>/xml/pfxinternals</literal> (the 
+        The page is only available at development time and can be accessed under <literal>/pfxinternals</literal> (the 
         <literal>&lt;pfx:editconsole/&gt;</literal> contains a link too).
       </para>
       <para>
