@@ -47,6 +47,10 @@
   -->
   <session-tracking-strategy>COOKIE</session-tracking-strategy>
   
+  <!-- Set an initial session timeout 'value' (in seconds) used until 
+       more than 'requestlimit' requests are made within a session -->
+  <initial-session-timeout value="600" requestlimit="3"/>
+
   <application>
     
     <docroot-path>docroot:/htdocs</docroot-path>
