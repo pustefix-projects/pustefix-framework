@@ -69,9 +69,7 @@ public class SessionInfoParsingHandler implements ParsingHandler {
         if(nodes.getLength() == 1) {
             Element node = (Element)nodes.item(0);
             int timeout = Integer.parseInt(node.getAttribute("value"));
-            if(timeout < 10 || timeout > 60 * 60 * 3) throw new ParserException("Illegal initial-session-timeout value: " + timeout);
             int limit = Integer.parseInt(node.getAttribute("requestlimit"));
-            if(limit < 1 || limit > 1000) throw new ParserException("Illegal initial-session-timeout requestlimit: " + limit);
             SessionTimeoutInfo info = new SessionTimeoutInfo();
             info.setInitialTimeout(timeout);
             info.setRequestLimit(limit);
