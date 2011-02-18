@@ -28,7 +28,7 @@ public class GeneralPropertyPage extends BasePropertyPage {
 	public void init(IWorkbench workbench) {}
 	
 	@Override
-	public Control createSettingsContent(Composite parent) {
+	public Control createStaticContent(Composite parent) {
 		
 		Composite composite=createDefaultComposite(parent,1);
 		
@@ -64,7 +64,7 @@ public class GeneralPropertyPage extends BasePropertyPage {
 	
 	@Override
 	protected boolean hasProjectSpecificOptions(IProject project) {
-	    return true;
+	    return false;
 	}
 	
 	@Override

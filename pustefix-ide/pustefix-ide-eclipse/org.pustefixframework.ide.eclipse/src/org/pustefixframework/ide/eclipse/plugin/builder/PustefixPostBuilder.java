@@ -27,7 +27,7 @@ import org.pustefixframework.ide.eclipse.plugin.util.ResourceUtils;
 
 public class PustefixPostBuilder extends IncrementalProjectBuilder {
 
-	public static final String BUILDER_ID = "org.pustefixframework.ide.eclipse.plugin.pustefixPostBuilder";
+	public static final String BUILDER_ID = "org.pustefixframework.ide.eclipse.plugin.builder.pustefixpostbuilder";
 	
 	private boolean initialized;
 	

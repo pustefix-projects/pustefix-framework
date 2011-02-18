@@ -8,7 +8,7 @@ import org.eclipse.core.runtime.CoreException;
 import org.eclipse.jdt.core.IJavaProject;
 import org.eclipse.jdt.ui.StandardJavaElementContentProvider;
 
-import org.pustefixframework.ide.eclipse.plugin.builder.PustefixNature;
+import org.pustefixframework.ide.eclipse.plugin.PustefixNature;
 
 public class ProjectElementContentProvider extends StandardJavaElementContentProvider {
 

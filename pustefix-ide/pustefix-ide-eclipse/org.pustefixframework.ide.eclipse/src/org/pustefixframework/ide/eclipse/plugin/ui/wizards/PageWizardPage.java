@@ -40,7 +40,7 @@ import org.eclipse.ui.dialogs.SelectionDialog;
 
 import org.pustefixframework.ide.eclipse.plugin.Activator;
 import org.pustefixframework.ide.eclipse.plugin.Logger;
-import org.pustefixframework.ide.eclipse.plugin.builder.PustefixNature;
+import org.pustefixframework.ide.eclipse.plugin.PustefixNature;
 import org.pustefixframework.ide.eclipse.plugin.ui.preferences.PreferenceConstants;
 import org.pustefixframework.ide.eclipse.plugin.ui.util.SettingsStore;
 import org.pustefixframework.ide.eclipse.plugin.ui.util.StatusInfo;

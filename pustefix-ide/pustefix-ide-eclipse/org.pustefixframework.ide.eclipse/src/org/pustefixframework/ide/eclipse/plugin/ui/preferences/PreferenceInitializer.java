@@ -19,7 +19,7 @@ public class PreferenceInitializer extends AbstractPreferenceInitializer {
 		IPreferenceStore store=Activator.getDefault().getPreferenceStore();
 		store.setDefault(PreferenceConstants.PREF_IWRPSRCDIR, "src/main/java");
 		store.setDefault(PreferenceConstants.PREF_IWRPTARGETDIR, "target/generated-sources/iwrappers");
-		store.setDefault(PreferenceConstants.PREF_SCODESRCDIR_WEBAPP, "src/main/webapp");
+		store.setDefault(PreferenceConstants.PREF_SCODESRCDIR_WEBAPP, "src/main/webapp/dyntxt");
 		store.setDefault(PreferenceConstants.PREF_SCODESRCDIR_MODULE, "src/main/resources/PUSTEFIX-INF");
         store.setDefault(PreferenceConstants.PREF_SCODETARGETDIR, "target/generated-sources/statuscodes");
 		store.setDefault(PreferenceConstants.PREF_GENERATEIWRAPPERS, true);

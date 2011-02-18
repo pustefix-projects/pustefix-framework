@@ -9,7 +9,6 @@ import org.eclipse.jdt.core.IJavaElementDelta;
 import org.eclipse.jdt.core.IJavaModel;
 import org.eclipse.jdt.core.IJavaProject;
 
-import org.pustefixframework.ide.eclipse.plugin.builder.PustefixNature;
 import org.pustefixframework.ide.eclipse.plugin.core.internal.PustefixCore;
 
 public class ClassPathChangeDetector implements IElementChangedListener {

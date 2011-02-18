@@ -2,7 +2,9 @@ package org.pustefixframework.ide.eclipse.plugin.builder;
 
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
+import java.io.InputStream;
 import java.lang.reflect.Method;
+import java.net.URL;
 
 import javax.xml.transform.Templates;
 import javax.xml.transform.Transformer;
@@ -20,12 +22,11 @@ import org.eclipse.core.resources.IResourceDeltaVisitor;
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IPath;
 import org.eclipse.core.runtime.IProgressMonitor;
-import org.xml.sax.SAXParseException;
-
 import org.pustefixframework.ide.eclipse.plugin.Activator;
 import org.pustefixframework.ide.eclipse.plugin.Environment;
 import org.pustefixframework.ide.eclipse.plugin.Logger;
 import org.pustefixframework.ide.eclipse.plugin.util.ResourceUtils;
+import org.xml.sax.SAXParseException;
 
 public class IWrapperGenerator {
 
@@ -34,12 +35,14 @@ public class IWrapperGenerator {
 	private Environment environment;
 	private IResourceDeltaVisitor srcVisitor;
 	private IResourceDeltaVisitor genSrcVisitor;
+	private URL iwrapperTemplateURL;
 	private Templates iwrapperTemplates;
 	
-	public IWrapperGenerator(Environment environment) {
-		this.environment=environment;
-		srcVisitor=new SourceVisitor();
-		genSrcVisitor=new GeneratedSourceVisitor();
+	public IWrapperGenerator(Environment environment, URL iwrapperTemplateURL) {
+		this.environment = environment;
+		this.iwrapperTemplateURL = iwrapperTemplateURL;
+		srcVisitor = new SourceVisitor();
+		genSrcVisitor = new GeneratedSourceVisitor();
 	}
 	
 	public void incrementalBuild(IResourceDelta delta,IProgressMonitor monitor) throws CoreException {
@@ -156,14 +159,12 @@ public class IWrapperGenerator {
 	
 	private Templates getIWrapperXSL(IProject project) {
 		if(iwrapperTemplates==null) {
-			//TODO:
-		    //IPath path=environment.getCoreDataPath().append("build/iwrapper.xsl");
-			IPath path = null;
-		    IFile file=project.getFile(path);
-			TransformerFactory tf=TransformerFactory.newInstance();
 			try {
-				StreamSource source=new StreamSource(file.getContents());
+			    InputStream in = iwrapperTemplateURL.openStream();
+	            TransformerFactory tf=TransformerFactory.newInstance();
+				StreamSource source=new StreamSource(in);
 				iwrapperTemplates=tf.newTemplates(source);
+				in.close();
 			} catch(Exception x) {
 				LOG.error(x);
 				ResourceUtils.addProblemMarker(project,x.getMessage(),1);

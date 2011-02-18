@@ -1,4 +1,4 @@
-package org.pustefixframework.ide.eclipse.plugin.builder;
+package org.pustefixframework.ide.eclipse.plugin.builder.v0_15_0;
 
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
@@ -8,120 +8,149 @@ import java.io.OutputStreamWriter;
 import java.io.Writer;
 import java.lang.reflect.Method;
 import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Map;
+import java.util.Set;
 
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 
 import org.eclipse.core.resources.IFile;
+import org.eclipse.core.resources.IFolder;
 import org.eclipse.core.resources.IProject;
+import org.eclipse.core.resources.IResource;
 import org.eclipse.core.resources.IResourceDelta;
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IPath;
 import org.eclipse.core.runtime.IProgressMonitor;
-import org.pustefixframework.ide.eclipse.plugin.Activator;
-import org.pustefixframework.ide.eclipse.plugin.Environment;
-import org.pustefixframework.ide.eclipse.plugin.Logger;
-import org.pustefixframework.ide.eclipse.plugin.util.ResourceUtils;
+import org.eclipse.core.runtime.Path;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.NodeList;
 import org.xml.sax.SAXParseException;
 
+import org.pustefixframework.ide.eclipse.plugin.Activator;
+import org.pustefixframework.ide.eclipse.plugin.Environment;
+import org.pustefixframework.ide.eclipse.plugin.Logger;
+import org.pustefixframework.ide.eclipse.plugin.builder.StatusCodeGenerator;
+import org.pustefixframework.ide.eclipse.plugin.util.ResourceUtils;
 
-public class StatusCodeGeneratorV0_13 implements StatusCodeGenerator {
+
+public class StatusCodeGeneratorImpl implements StatusCodeGenerator {
 	
 	private static Logger LOG=Activator.getLogger();
 
-	private StatusCodeInfo statusCodeInfo;
+	private Map<IFile,StatusCodeInfo> statusCodeInfos;
 	
 	public void incrementalBuild(Environment environment, IResourceDelta delta,IProgressMonitor monitor) throws CoreException {
-//		IProject project=delta.getResource().getProject();
-//		IResourceDelta prjDelta=delta.findMember(environment.getStatusCodeSourceDirForWebapp());
-//	
-//		Set<StatusCodeClass> scheduledClasses = new HashSet<StatusCodeClass>();
-//		
-//		if(prjDelta!=null) {
-//			boolean dyntxtChanged = false;
-//			IResourceDelta infoDelta = prjDelta.findMember(new Path("statuscodeinfo.xml"));
-//			if(infoDelta!=null) {
-//			    IResource infoRes = infoDelta.getResource();
-//			    if(infoDelta.getKind()==IResourceDelta.REMOVED) {
-//			        if(statusCodeInfo != null) {
-//                        for(StatusCodeClass scClass:statusCodeInfo.getStatusCodeClasses()) {
-//                            String className = scClass.getClassName();
-//                            String relPath = className.replace('.',IPath.SEPARATOR)+".java";
-//                            IPath targetPath=environment.getStatusCodeTargetDir().append(relPath);
-//                            IFile scFile = project.getFile(targetPath);
-//                            if(scFile.exists()) scFile.delete(true,null);
-//                        }
-//                        statusCodeInfo = null;
-//                    }
-//			    } else if(infoDelta.getKind()==IResourceDelta.ADDED) {
-//			        IFile file =(IFile)infoRes;
-//			        statusCodeInfo = readStatusCodeInfo(file);
-//			        for(StatusCodeClass scClass:statusCodeInfo.getStatusCodeClasses()) {
-//			            scheduledClasses.add(scClass);
-//			        }
-//			    } else if(infoDelta.getKind()==IResourceDelta.CHANGED) {
-//			        IFile file =(IFile)infoRes;
-//					StatusCodeInfo oldInfo = statusCodeInfo;
-//					statusCodeInfo = readStatusCodeInfo(file);
-//					if(oldInfo!=null) {
-//					    for(StatusCodeClass scClass:statusCodeInfo.getStatusCodeClasses()) {
-//					        if(!oldInfo.contains(scClass)) scheduledClasses.add(scClass);
-//					    }
-//					    for(StatusCodeClass scClass:oldInfo.getStatusCodeClasses()) {
-//					        if(!statusCodeInfo.containsClassName(scClass.getClassName())) {
-//					            String className = scClass.getClassName();
-//					            String relPath = className.replace('.',IPath.SEPARATOR)+".java";
-//					            IPath targetPath=environment.getStatusCodeTargetDir().append(relPath);
-//					            IFile scFile = project.getFile(targetPath);
-//					            if(scFile.exists()) scFile.delete(true,null);
-//					        }
-//					    }
-//								} else {
-//									for(StatusCodeClass scClass:scInfo.getStatusCodeClasses()) {
-//										scheduledClasses.add(scClass);
-//									}
-//								}
-//								
-//							}
-//						}
-//					}
-//					if(!dyntxtChanged) {
-//						IResourceDelta dyntxtDelta = appDirDelta.findMember(dynPath);
-//						if(dyntxtDelta!=null) dyntxtChanged=true;
-//					}
-//				}
-//			}
-//			if(dyntxtChanged) {		
-//				if(statusCodeInfos==null) statusCodeInfos = readStatusCodeInfos(project);
-//				for(StatusCodeInfo statusCodeInfo:statusCodeInfos.values()) {
-//					for(StatusCodeClass statusCodeClass:statusCodeInfo.getStatusCodeClasses()) {
-//						for(IFile messageFile:statusCodeClass.getMessageFiles()) {
-//							IResourceDelta fileDelta=delta.findMember(messageFile.getProjectRelativePath());
-//							if(fileDelta!=null) {
-//								int kind=fileDelta.getKind();
-//								if(kind==IResourceDelta.ADDED || delta.getKind()==IResourceDelta.CHANGED
-//										|| kind==IResourceDelta.REMOVED) {
-//									scheduledClasses.add(statusCodeClass);
-//								}
-//							}
-//						}
-//					}
-//				}
-//			}
-//			
-//			//TODO: check if generated StatusCode classes were removed and schedule them for rebuild
-//			
-//			for(StatusCodeClass scClass:scheduledClasses) {
-//				
-//				build(environment,project,scClass);
-//			}
-//				
-//		}
+		IProject project=delta.getResource().getProject();
+		IResourceDelta prjDelta=delta.findMember(environment.getStatusCodeSourceDirForWebapp());
+	
+		Set<StatusCodeClass> scheduledClasses = new HashSet<StatusCodeClass>();
+		
+		if(prjDelta!=null) {
+			boolean dyntxtChanged = false;
+			IResourceDelta[] appDirDeltas = prjDelta.getAffectedChildren();
+			for(IResourceDelta appDirDelta:appDirDeltas) {
+				IResource appDirRes = appDirDelta.getResource();
+				System.out.println("RES: "+appDirRes);
+				if(appDirRes.getType() == IResource.FOLDER) {
+				    System.out.println("IIIIIIIIIINC");
+					IPath dynPath = new Path("dyntxt");
+					IPath[] infoPaths = {new Path("statuscodeinfo.xml")};
+					for(IPath infoPath:infoPaths) {
+						IResourceDelta infoDelta = appDirDelta.findMember(infoPath);
+						if(infoDelta!=null) {
+							IResource infoRes = infoDelta.getResource();
+							if(infoDelta.getKind()==IResourceDelta.REMOVED) {
+								IFile file =(IFile)infoRes;
+								if(statusCodeInfos==null) statusCodeInfos=readStatusCodeInfos(project);
+								StatusCodeInfo statusCodeInfo = statusCodeInfos.get(file);
+								if(statusCodeInfo!=null) {
+									for(StatusCodeClass scClass:statusCodeInfo.getStatusCodeClasses()) {
+										String className = scClass.getClassName();
+										String relPath = className.replace('.',IPath.SEPARATOR)+".java";
+										IPath targetPath=environment.getStatusCodeTargetDir().append(relPath);
+										IFile scFile = project.getFile(targetPath);
+										if(scFile.exists()) scFile.delete(true,null);
+									}
+									statusCodeInfos.remove(file);
+								}
+							} else if(infoDelta.getKind()==IResourceDelta.ADDED) {
+	
+								IFile file =(IFile)infoRes;
+								if(statusCodeInfos==null) statusCodeInfos=readStatusCodeInfos(project);
+								StatusCodeInfo scInfo = readStatusCodeInfo(file);
+								statusCodeInfos.put(scInfo.getInfoFile(),scInfo);
+								for(StatusCodeClass scClass:scInfo.getStatusCodeClasses()) {
+									scheduledClasses.add(scClass);
+								}
+							} else if(infoDelta.getKind()==IResourceDelta.CHANGED) {
+							
+								IFile file =(IFile)infoRes;
+								if(statusCodeInfos==null) statusCodeInfos=readStatusCodeInfos(project);
+								StatusCodeInfo oldInfo = statusCodeInfos.get(file);
+								StatusCodeInfo scInfo = readStatusCodeInfo(file);
+								statusCodeInfos.put(scInfo.getInfoFile(),scInfo);
+								if(oldInfo!=null) {
+									for(StatusCodeClass scClass:scInfo.getStatusCodeClasses()) {
+										if(!oldInfo.contains(scClass)) scheduledClasses.add(scClass);
+									}
+									for(StatusCodeClass scClass:oldInfo.getStatusCodeClasses()) {
+										if(!scInfo.containsClassName(scClass.getClassName())) {
+											String className = scClass.getClassName();
+											String relPath = className.replace('.',IPath.SEPARATOR)+".java";
+											IPath targetPath=environment.getStatusCodeTargetDir().append(relPath);
+											IFile scFile = project.getFile(targetPath);
+											
+											if(scFile.exists()) scFile.delete(true,null);
+										
+										}
+									}
+								} else {
+									for(StatusCodeClass scClass:scInfo.getStatusCodeClasses()) {
+										scheduledClasses.add(scClass);
+									}
+								}
+								
+							}
+						}
+					}
+					if(!dyntxtChanged) {
+						IResourceDelta dyntxtDelta = appDirDelta.findMember(dynPath);
+						if(dyntxtDelta!=null) dyntxtChanged=true;
+					}
+				}
+			}
+			if(dyntxtChanged) {		
+				if(statusCodeInfos==null) statusCodeInfos = readStatusCodeInfos(project);
+				for(StatusCodeInfo statusCodeInfo:statusCodeInfos.values()) {
+					for(StatusCodeClass statusCodeClass:statusCodeInfo.getStatusCodeClasses()) {
+						for(IFile messageFile:statusCodeClass.getMessageFiles()) {
+							IResourceDelta fileDelta=delta.findMember(messageFile.getProjectRelativePath());
+							if(fileDelta!=null) {
+								int kind=fileDelta.getKind();
+								if(kind==IResourceDelta.ADDED || delta.getKind()==IResourceDelta.CHANGED
+										|| kind==IResourceDelta.REMOVED) {
+									scheduledClasses.add(statusCodeClass);
+								}
+							}
+						}
+					}
+				}
+			}
+			
+			//TODO: check if generated StatusCode classes were removed and schedule them for rebuild
+			
+			for(StatusCodeClass scClass:scheduledClasses) {
+				
+				build(environment,project,scClass);
+			}
+				
+		}
 	}
 	
 	
@@ -279,6 +308,37 @@ public class StatusCodeGeneratorV0_13 implements StatusCodeGenerator {
         writer.write("        return scode;\n");
         writer.write("    }\n\n");
     }
+
+	
+   
+    
+	private Map<IFile,StatusCodeInfo> readStatusCodeInfos(IProject project) {
+	    System.out.println("READ");
+		Map<IFile,StatusCodeInfo> infoMap = new HashMap<IFile,StatusCodeInfo>();
+		IFolder projectsDir = project.getFolder("projects");
+		try {
+			IResource[] appDirs = projectsDir.members();
+			for(IResource appDir:appDirs) {
+				if(appDir.getType()==IResource.FOLDER) {
+					IPath infoPath=new Path("conf/statuscodeinfo.xml");
+					IResource infoRes = ((IFolder)appDir).findMember(infoPath);
+					if(infoRes!=null && infoRes.getType()==IResource.FILE) {
+						StatusCodeInfo info = readStatusCodeInfo((IFile)infoRes);
+						if(info!=null) infoMap.put((IFile)infoRes,info);
+					}
+					infoPath=new Path("dyntxt/statuscodeinfo.xml");
+					infoRes = ((IFolder)appDir).findMember(infoPath);
+					if(infoRes!=null && infoRes.getType()==IResource.FILE) {
+						StatusCodeInfo info = readStatusCodeInfo((IFile)infoRes);
+						if(info!=null) infoMap.put((IFile)infoRes,info);
+					}
+				}
+			}
+		} catch(CoreException x) {
+			LOG.error(x);
+		}
+		return infoMap;
+	}
     
     private StatusCodeInfo readStatusCodeInfo(IFile infoFile) {
     	StatusCodeInfo scInfo = null;
@@ -286,7 +346,7 @@ public class StatusCodeGeneratorV0_13 implements StatusCodeGenerator {
     		DocumentBuilder db = DocumentBuilderFactory.newInstance().newDocumentBuilder();
 			InputStream in = infoFile.getContents();
 			Document doc = db.parse(in);
-			scInfo = new StatusCodeInfo();
+			scInfo = new StatusCodeInfo(infoFile);
 			NodeList scNodes = doc.getElementsByTagName("statuscodes");
 			if(scNodes!=null) {
 				for(int i=0;i<scNodes.getLength();i++) {
@@ -323,10 +383,16 @@ public class StatusCodeGeneratorV0_13 implements StatusCodeGenerator {
     
     class StatusCodeInfo {
     	
+    	private IFile infoFile;
     	private List<StatusCodeClass> statusCodeClasses;
     	
-    	public StatusCodeInfo() {
+    	public StatusCodeInfo(IFile infoFile) {
+    		this.infoFile = infoFile;
     		statusCodeClasses = new ArrayList<StatusCodeClass>();
+    	}
+    	
+    	public IFile getInfoFile() {
+    		return infoFile;
     	}
     	
     	public void add(StatusCodeClass statusCodeClass) {

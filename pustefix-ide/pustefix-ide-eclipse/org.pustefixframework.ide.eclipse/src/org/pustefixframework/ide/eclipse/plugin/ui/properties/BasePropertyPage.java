@@ -13,7 +13,6 @@ import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
-import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Link;
 import org.eclipse.ui.IWorkbenchPropertyPage;
 import org.eclipse.ui.dialogs.PreferencesUtil;
@@ -22,6 +21,7 @@ import org.pustefixframework.ide.eclipse.plugin.ui.util.PageData;
 
 public abstract class BasePropertyPage extends BasePreferencePage implements IWorkbenchPropertyPage {
 	
+    private Control staticContent;
 	private IAdaptable adaptable;
 	private IProject project;
 	
@@ -55,8 +55,6 @@ public abstract class BasePropertyPage extends BasePreferencePage implements IWo
 		
 		if(getProject()!=null) {
 		
-		    if(hasProjectSpecificOptions()) {
-		    
 			prjSpecButton=new Button(composite,SWT.CHECK);
 			prjSpecButton.setText("Enable pr&oject specific settings");
 			GridData gd = new GridData();
@@ -71,13 +69,6 @@ public abstract class BasePropertyPage extends BasePreferencePage implements IWo
 					switchSettingsContent(enabled);
 				}
 			});
-			
-		    } else {
-		        
-		        Label label = new Label(composite, SWT.NONE);
-		        
-		        
-		    }
 		
 			settingLink= new Link(composite, SWT.NONE);
 			settingLink.setFont(composite.getFont());
@@ -106,10 +97,6 @@ public abstract class BasePropertyPage extends BasePreferencePage implements IWo
 		return prjSpecButton.getSelection();
 	}
 	
-	protected boolean hasProjectSpecificOptions() {
-	    return true;
-	}
-	
 	private void openWorkspacePreferences() {
 		PageData data= new PageData();
 		data.put(OPTION_NOLINK,Boolean.TRUE);
@@ -132,8 +119,16 @@ public abstract class BasePropertyPage extends BasePreferencePage implements IWo
 		createPrologContent(composite);
 		
 		settingsContent=createSettingsContent(composite);
-		GridData data=new GridData(SWT.FILL,SWT.FILL,true,true);
-		settingsContent.setLayoutData(data);
+		if(settingsContent != null) {
+		    GridData data=new GridData(SWT.FILL,SWT.FILL,true,true);
+		    settingsContent.setLayoutData(data);
+		}
+		    
+		staticContent=createStaticContent(composite);
+		if(staticContent != null) {
+		    GridData data = new GridData(SWT.FILL,SWT.FILL,true,true);
+	        staticContent.setLayoutData(data);
+		}
 		
 		boolean enabled = hasProjectSpecificOptions(getProject());
 		prjSpecButton.setSelection(enabled);
@@ -147,18 +142,25 @@ public abstract class BasePropertyPage extends BasePreferencePage implements IWo
 	
 	protected void switchSettingsContent(boolean enabled) {
 	    if(enabled) {
-			if(settingsContentState!=null) {
+			if(settingsContentState != null) {
 				settingsContentState.restore();
-				settingsContentState=null;
+				settingsContentState = null;
 			}
 			settingLink.setEnabled(false);
 		} else {
-			settingsContentState=ControlEnableState.disable(settingsContent);
+			if(settingsContent != null) {
+			    settingsContentState = ControlEnableState.disable(settingsContent);
+			}
 			settingLink.setEnabled(true);
 		}
 	}
 	
-	public abstract Control createSettingsContent(Composite parent);
+	public Control createSettingsContent(Composite parent) {
+	    return null;
+	}
 	
+	public Control createStaticContent(Composite parent) {
+	    return null;
+	}
 	
 }

@@ -3,7 +3,7 @@ package org.pustefixframework.ide.eclipse.plugin.util;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-public class PustefixVersion {
+public class PustefixVersion implements Comparable<PustefixVersion> {
 	
     private static String VERSION_PATTERN_STR = "(\\d+)(\\.(\\d+))?(\\.(\\d+))?(-(\\w+))?";
     private static Pattern VERSION_PATTERN = Pattern.compile(VERSION_PATTERN_STR);
@@ -70,6 +70,23 @@ public class PustefixVersion {
 	public String toString() {
 		return majorVersion + "." + minorVersion + "." + microVersion
 		        + (qualifier == null ? "" : "-" + qualifier);
+	}
+	
+	@Override
+	public int compareTo(PustefixVersion version) {
+	    if(majorVersion == version.getMajorVersion()) {
+	        if(minorVersion == version.getMinorVersion()) {
+	            if(microVersion == version.getMicroVersion()) {
+	                return 0;
+	            } else {
+	                return microVersion - version.getMicroVersion();
+	            }
+	        } else {
+	            return minorVersion - version.getMinorVersion();
+	        }
+	    } else {
+	        return majorVersion - version.getMajorVersion();
+	    }
 	}
 	
 }

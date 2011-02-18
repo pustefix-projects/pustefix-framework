@@ -2,44 +2,32 @@
 <?eclipse version="3.2"?>
 <plugin>
 
-   <extension
-         id="pustefixBuilder"
-         name="Pustefix Builder"
-         point="org.eclipse.core.resources.builders">
-      <builder
-            hasNature="true">
-         <run
-               class="org.pustefixframework.ide.eclipse.plugin.builder.PustefixBuilder">
-         </run>
+   <extension id="org.pustefixframework.ide.eclipse.plugin.builder.pustefixbuilder"
+              name="Pustefix Builder"
+              point="org.eclipse.core.resources.builders">
+      <builder hasNature="true">
+         <run class="org.pustefixframework.ide.eclipse.plugin.builder.PustefixBuilder"/>
       </builder>
    </extension>
-      <extension
-         id="pustefixPostBuilder"
-         name="Pustefix PostBuilder"
-         point="org.eclipse.core.resources.builders">
-      <builder
-            hasNature="true">
-         <run
-               class="org.pustefixframework.ide.eclipse.plugin.builder.PustefixPostBuilder">
-         </run>
+   
+   <extension id="org.pustefixframework.ide.eclipse.plugin.builder.pustefixpostbuilder"
+              name="Pustefix Post-Java Builder"
+              point="org.eclipse.core.resources.builders">
+      <builder hasNature="true">
+         <run class="org.pustefixframework.ide.eclipse.plugin.builder.PustefixPostBuilder"/>
       </builder>
    </extension>
-   <extension
-         id="pustefixNature"
-         name="Pustefix Nature"
-         point="org.eclipse.core.resources.natures">
+   
+   <extension id="org.pustefixframework.ide.eclipse.plugin.pustefixnature"
+              name="Pustefix Nature"
+              point="org.eclipse.core.resources.natures">
       <runtime>
-         <run
-               class="org.pustefixframework.ide.eclipse.plugin.builder.PustefixNature">
-         </run>
+         <run class="org.pustefixframework.ide.eclipse.plugin.PustefixNature"/>
       </runtime>
-      <builder
-            id="org.pustefixframework.ide.eclipse.plugin.pustefixBuilder">
-      </builder>
-      <builder
-            id="org.pustefixframework.ide.eclipse.plugin.pustefixPostBuilder">
-      </builder>
+      <builder id="org.pustefixframework.ide.eclipse.plugin.builder.pustefixbuilder"/>
+      <builder id="org.pustefixframework.ide.eclipse.plugin.builder.pustefixpostbuilder"/>
    </extension>
+   
    <extension
          point="org.eclipse.ui.popupMenus">
       <objectContribution
@@ -55,7 +43,7 @@
          	<not>
             	<objectState
             		name="projectNature"
-               		value="org.pustefixframework.ide.eclipse.plugin.pustefixNature"/>
+               		value="org.pustefixframework.ide.eclipse.plugin.pustefixnature"/>
             </not>
             </and>
          	</visibility>
@@ -80,7 +68,7 @@
          			value="org.eclipse.jdt.core.javanature"/>	
             	<objectState
             		name="projectNature"
-               		value="org.pustefixframework.ide.eclipse.plugin.pustefixNature"/>
+               		value="org.pustefixframework.ide.eclipse.plugin.pustefixnature"/>
                	
             </and>
          	</visibility>
@@ -103,7 +91,7 @@
             objectClass="org.eclipse.core.resources.IProject">
             <filter
                name="projectNature"
-               value="org.pustefixframework.ide.eclipse.plugin.pustefixNature"/>
+               value="org.pustefixframework.ide.eclipse.plugin.pustefixnature"/>
      </page>
      <page
             adaptable="true"
@@ -114,7 +102,7 @@
             objectClass="org.eclipse.core.resources.IProject">
             <filter
                name="projectNature"
-               value="org.pustefixframework.ide.eclipse.plugin.pustefixNature"/>
+               value="org.pustefixframework.ide.eclipse.plugin.pustefixnature"/>
      </page>
      <page
             adaptable="true"
@@ -125,7 +113,7 @@
             objectClass="org.eclipse.core.resources.IProject">
             <filter
                name="projectNature"
-               value="org.pustefixframework.ide.eclipse.plugin.pustefixNature"/>
+               value="org.pustefixframework.ide.eclipse.plugin.pustefixnature"/>
      </page>
    </extension>
    <extension

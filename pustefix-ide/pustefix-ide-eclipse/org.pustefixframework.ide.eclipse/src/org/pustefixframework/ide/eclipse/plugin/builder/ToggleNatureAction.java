@@ -11,6 +11,7 @@ import org.eclipse.jface.viewers.ISelection;
 import org.eclipse.jface.viewers.IStructuredSelection;
 import org.eclipse.ui.IObjectActionDelegate;
 import org.eclipse.ui.IWorkbenchPart;
+import org.pustefixframework.ide.eclipse.plugin.PustefixNature;
 
 public class ToggleNatureAction implements IObjectActionDelegate {
 
@@ -91,6 +92,7 @@ public class ToggleNatureAction implements IObjectActionDelegate {
 			project.setDescription(description, null);
 			
 		} catch (CoreException e) {
+		    e.printStackTrace();
 		}
 	}
 
