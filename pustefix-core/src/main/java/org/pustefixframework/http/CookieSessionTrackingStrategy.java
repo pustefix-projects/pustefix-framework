@@ -255,6 +255,7 @@ public class CookieSessionTrackingStrategy implements SessionTrackingStrategy {
             LOG.debug("*** reusing existing session for jump http=>https");
         }
         HttpSession session = req.getSession(true);
+        LOG.warn("SESSION1|" + session.getId());
         if (!reuse_session) {
             registerSession(req, session);
         }
@@ -270,6 +271,7 @@ public class CookieSessionTrackingStrategy implements SessionTrackingStrategy {
     
     private void redirectToSession(PfixServletRequest preq, HttpServletRequest req, HttpServletResponse res) {
         HttpSession session = req.getSession(true);
+        LOG.warn("GETSESSION2|" + session.getId());
         registerSession(req, session);
         LOG.debug("===> Redirecting to URL with session (Id: " + session.getId() + ")");
         session.setAttribute(STORED_REQUEST, preq);
@@ -280,6 +282,7 @@ public class CookieSessionTrackingStrategy implements SessionTrackingStrategy {
     
     private void redirectToSSLSession(PfixServletRequest preq, HttpServletRequest req, HttpServletResponse res) {
         HttpSession session = req.getSession(true);
+        LOG.warn("GETSESSION3|" + session.getId());
         registerSession(req, session);
 
         LOG.debug("===> Redirecting to URL with session (Id: " + session.getId() + ")");
@@ -310,6 +313,7 @@ public class CookieSessionTrackingStrategy implements SessionTrackingStrategy {
         LOG.debug("*** Invalidation old session (Id: " + old_id + ")");
         session.invalidate();
         session = req.getSession(true);
+        LOG.warn("GETSESSION4|" + session.getId());
 
         // First of all we put the old session id into the new session (__PARENT_SESSION_ID__)
         session.setAttribute(SessionAdmin.PARENT_SESS_ID, old_id);
@@ -378,6 +382,7 @@ public class CookieSessionTrackingStrategy implements SessionTrackingStrategy {
         // only used for the jump to SSL so we can get the cookie to check the identity of the caller.
         String parentid = req.getRequestedSessionId();
         HttpSession session = req.getSession(true);
+        LOG.warn("GETSESSION5|" + session.getId());
         session.setAttribute(CHECK_FOR_RUNNING_SSL_SESSION, parentid);
         LOG.debug("*** Setting INSECURE flag in session (Id: " + session.getId() + ")");
         session.setAttribute(SessionAdmin.SESSION_IS_SECURE, Boolean.FALSE);
@@ -397,6 +402,7 @@ public class CookieSessionTrackingStrategy implements SessionTrackingStrategy {
         HttpSession child = context.getSessionAdmin().getChildSessionForParentId(parentid);
         String curr_visit_id = (String) child.getAttribute(VISIT_ID);
         HttpSession session = req.getSession(true);
+        LOG.warn("GETSESSION6|" + session.getId());
 
         LinkedList<TrailElement> traillog = context.getSessionAdmin().getInfo(child).getTraillog();
         session.setAttribute(VISIT_ID, curr_visit_id);
