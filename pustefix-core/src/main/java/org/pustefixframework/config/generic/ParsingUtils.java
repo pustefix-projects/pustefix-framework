@@ -79,8 +79,9 @@ public class ParsingUtils {
     
     public static <T> T getFirstTopObject(Class<T> clazz, HandlerContext context, boolean mandatory) throws ParserException {
         Collection<T> configs = context.getObjectTreeElement().getObjectsOfTypeFromTopTree(clazz);
-        if(configs.size()==0 && mandatory) {
-            throw new ParserException("Object tree contains no instance of type '"+clazz.getName()+"'.");
+        if(configs.size()==0) {
+            if(mandatory) throw new ParserException("Object tree contains no instance of type '"+clazz.getName()+"'.");
+            else return null;
         }
         return configs.iterator().next();
     }
