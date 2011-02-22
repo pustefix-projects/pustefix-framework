@@ -118,7 +118,7 @@ public class CookieSessionTrackingStrategy implements SessionTrackingStrategy {
                 String forcelocal = req.getParameter(PARAM_FORCELOCAL);
                 if (forcelocal != null && (forcelocal.equals("1") || forcelocal.equals("true") || forcelocal.equals("yes"))) {
                     LOG.debug("    ... but found __forcelocal parameter to be set.");
-                } else if(req.isRequestedSessionIdFromURL()) {
+                } else {
                     LOG.debug("    ... and __forcelocal is NOT set.");
                     redirectToClearedRequest(req, res);
                     return;
@@ -233,6 +233,12 @@ public class CookieSessionTrackingStrategy implements SessionTrackingStrategy {
     private void redirectToClearedRequest(HttpServletRequest req, HttpServletResponse res) {
         LOG.debug("===> Redirecting to cleared Request URL");
         String redirect_uri = SessionHelper.getClearedURL(req.getScheme(), AbstractPustefixRequestHandler.getServerName(req), req, context.getServletManagerConfig().getProperties());
+        if(req.isRequestedSessionIdFromCookie()) {
+            Cookie cookie = new Cookie("JSESSIONID", "");
+            cookie.setMaxAge(0);
+            cookie.setPath((req.getContextPath().equals("")) ? "/" : req.getContextPath());
+            res.addCookie(cookie);
+        }
         AbstractPustefixRequestHandler.relocate(res, HttpServletResponse.SC_MOVED_PERMANENTLY, redirect_uri);
     }
     
