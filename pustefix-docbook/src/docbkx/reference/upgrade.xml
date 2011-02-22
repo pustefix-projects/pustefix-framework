@@ -74,6 +74,16 @@
       </para>
     </section>
 
+    <section xml:id="upgrade.0_15_to_0_16.modules">
+      <title>Modules</title>
+      <para>
+        Pustefix 0.16 no longer extracts resources from modules (the former <literal>resource-mappings</literal> from the Pustefix module
+        descriptor are ignored now). Pustefix itself meanwhile can load every type of required resource directly from the module Jar files.
+        If your application code directly accesses extracted resources, e.g. using <literal>java.io.File</literal>, you will have to change
+        this and switch over to loading the resources via the classpath, ServletContext or Pustefix's resource abstraction layer.
+      </para> 
+    </section>
+
     <section xml:id="upgrade.0_15_to_0_16.sessions">
       <title>Session handling</title>
       <para>
