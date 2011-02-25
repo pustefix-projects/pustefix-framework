@@ -239,7 +239,7 @@ public class ProjectCreator {
 			if(file.exists()) {
 				file.setContents(new ByteArrayInputStream(out.toByteArray()),true,false,null);
 			} else {
-				ResourceUtils.createParentFolder(file);
+				ResourceUtils.createParentFolder(file, null);
 				file.create(new ByteArrayInputStream(out.toByteArray()),false,null);
 			}
 		} catch(Exception x) {

@@ -1,13 +1,16 @@
 package org.pustefixframework.ide.eclipse.plugin.builder;
 
-import org.eclipse.core.resources.IResourceDelta;
-import org.eclipse.core.runtime.CoreException;
-import org.eclipse.core.runtime.IProgressMonitor;
+import java.io.IOException;
+import java.io.Writer;
+import java.util.List;
 
-import org.pustefixframework.ide.eclipse.plugin.Environment;
+import org.w3c.dom.Document;
 
 public interface StatusCodeGenerator {
 
-	public void incrementalBuild(Environment environment, IResourceDelta delta,IProgressMonitor monitor) throws CoreException;
-	
+    public void createHeader(Writer writer, String className) throws IOException;
+    public void createResources(Writer writer, List<String> docRelPaths) throws IOException;
+    public void createStatusCodes(Writer writer, Document doc, int resIndex) throws IOException;
+    public String getModulePath(String relPath, String module);
+    
 }

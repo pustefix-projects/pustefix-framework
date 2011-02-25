@@ -44,7 +44,7 @@ public class ServletConfigValidator {
 	}
 	
 	public void validate(IFile file) {
-		ResourceUtils.deleteProblemMarkers(file);
+		ResourceUtils.deleteProblemMarkers(file, false);
 		try {
 			XMLReader reader=XMLReaderFactory.createXMLReader();
 			reader.setContentHandler(new MyContentHandler(file,javaProject));
@@ -56,7 +56,7 @@ public class ServletConfigValidator {
 	}
 	
 	public void undoValidate(IFile file) {
-		ResourceUtils.deleteProblemMarkers(file);
+		ResourceUtils.deleteProblemMarkers(file, false);
 	}
 	
 	class ServletConfigVisitor implements IResourceDeltaVisitor {

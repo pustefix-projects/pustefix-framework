@@ -35,7 +35,6 @@ public class VersionCheck {
 				//if(entry.getEntryKind()==IClasspathEntry.CPE_LIBRARY) {
 					//TODO: try to get from MANIFEST.MF
 					String name = entry.getPath().lastSegment();
-					System.out.println(name);
 					PustefixVersion pv = PustefixVersion.parseVersion(name);
 					if(pv != null) return pv;
 				//}

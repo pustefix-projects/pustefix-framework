@@ -6,9 +6,7 @@ import java.util.Map;
 
 import org.eclipse.core.resources.IFile;
 import org.eclipse.core.resources.IProject;
-import org.eclipse.core.resources.IResource;
 import org.eclipse.core.resources.IResourceDelta;
-import org.eclipse.core.resources.IResourceVisitor;
 import org.eclipse.core.resources.IncrementalProjectBuilder;
 import org.eclipse.core.resources.ProjectScope;
 import org.eclipse.core.runtime.CoreException;
@@ -19,7 +17,6 @@ import org.eclipse.core.runtime.preferences.IPreferencesService;
 import org.eclipse.core.runtime.preferences.IScopeContext;
 import org.eclipse.core.runtime.preferences.InstanceScope;
 import org.eclipse.jdt.core.JavaCore;
-
 import org.pustefixframework.ide.eclipse.plugin.Environment;
 import org.pustefixframework.ide.eclipse.plugin.core.ProjectModel;
 import org.pustefixframework.ide.eclipse.plugin.core.PustefixModel;
@@ -54,14 +51,7 @@ public class PustefixPostBuilder extends IncrementalProjectBuilder {
 		}
 	}
 	
-	class SampleResourceVisitor implements IResourceVisitor {
-		public boolean visit(IResource resource) {
-			//iwrpGenerator.build(resource);
-			//scodeGenerator.build(resource);
-			//return true to continue visiting children.
-			return true;
-		}
-	}
+	
 	
 
 	/*
@@ -91,10 +81,7 @@ public class PustefixPostBuilder extends IncrementalProjectBuilder {
 
 	private void fullBuild(final IProgressMonitor monitor)
 			throws CoreException {
-		try {
-			getProject().accept(new SampleResourceVisitor());
-		} catch (CoreException e) {
-		}
+		
 	}
 
 	private void incrementalBuild(IResourceDelta delta,

@@ -22,7 +22,7 @@ public class Environment implements IPreferenceChangeListener {
 	private IPath scodeSrcDirModule;
 	private IPath scodeTargetDir;
 	
-	public Environment(IPreferencesService service,IScopeContext[] scopes) {
+	public Environment(IPreferencesService service, IScopeContext[] scopes) {
 		this.service=service;
 		this.scopes=scopes;
 		loadPreferences();

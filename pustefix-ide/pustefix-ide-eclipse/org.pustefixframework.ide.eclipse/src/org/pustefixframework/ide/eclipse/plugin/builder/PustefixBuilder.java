@@ -5,9 +5,7 @@ import java.net.URL;
 import java.util.Map;
 
 import org.eclipse.core.resources.IProject;
-import org.eclipse.core.resources.IResource;
 import org.eclipse.core.resources.IResourceDelta;
-import org.eclipse.core.resources.IResourceVisitor;
 import org.eclipse.core.resources.IncrementalProjectBuilder;
 import org.eclipse.core.resources.ProjectScope;
 import org.eclipse.core.runtime.CoreException;
@@ -35,8 +33,8 @@ public class PustefixBuilder extends IncrementalProjectBuilder {
 	private IScopeContext[] prefScopes;
 	
 	private Environment environment;
-	private IWrapperGenerator iwrpGenerator;
-	private StatusCodeGenerator scodeGenerator;
+	private BuilderDelegate iwrpBuilder;
+	private BuilderDelegate scodeBuilder;
 	private VersionLoader versionLoader;
 	
 	private boolean initialized;
@@ -44,14 +42,16 @@ public class PustefixBuilder extends IncrementalProjectBuilder {
 	private PustefixVersion pustefixVersion;
 	
 	public PustefixBuilder() {
-		
+		System.out.println("CREATE");
 	}
 	
 	private void init() {
+	    System.out.println("INIT");
 		if(!initialized) {
 			prefService=Platform.getPreferencesService();
 			prefScopes=new IScopeContext[] {new ProjectScope(getProject()),new InstanceScope(),new DefaultScope()};
-			environment=new Environment(prefService,prefScopes);
+			
+			environment=new Environment(prefService, prefScopes);
 			try {
                 versionLoader = new VersionLoader();
             } catch (IOException e) {
@@ -59,6 +59,7 @@ public class PustefixBuilder extends IncrementalProjectBuilder {
             }
 			checkVersion();
 			initialized = true;
+			
 		}
 	}
 	
@@ -74,26 +75,18 @@ public class PustefixBuilder extends IncrementalProjectBuilder {
 	    System.out.println(">>> OLD VERSION: " + oldVersion);
 	    System.out.println(">>> NEW VERSION: " + pustefixVersion);
 	    if(oldVersion==null || oldVersion.compareTo(pustefixVersion) != 0) {
+	        StatusCodeGenerator scodeGenerator;
 	        Class<?> clazz = versionLoader.loadClass("StatusCodeGeneratorImpl", pustefixVersion);
 	        try {
                 scodeGenerator = (StatusCodeGenerator)clazz.newInstance();
             } catch(Exception e) {
                 throw new RuntimeException(e);
             }
+            scodeBuilder = new StatusCodeBuilderDelegate(getProject(), environment, scodeGenerator);
             URL url = versionLoader.loadResource("iwrapper.xsl", pustefixVersion);
-            iwrpGenerator = new IWrapperGenerator(environment, url);
+            iwrpBuilder = new IWrapperBuilderDelegate(getProject(), environment, url);
 	    }
 	        
-	}
-	
-	
-	class SampleResourceVisitor implements IResourceVisitor {
-		public boolean visit(IResource resource) {
-			//iwrpGenerator.build(resource);
-			//scodeGenerator.build(resource);
-			//return true to continue visiting children.
-			return true;
-		}
 	}
 	
 
@@ -105,10 +98,16 @@ public class PustefixBuilder extends IncrementalProjectBuilder {
 	 */
 	protected IProject[] build(int kind, Map args, IProgressMonitor monitor)
 			throws CoreException {
-		
+		System.out.println("*** BUILD ***");
+		if(kind == AUTO_BUILD) System.out.println(">>> AUTO");
+		else if(kind == CLEAN_BUILD) System.out.println(">>> CLEAN");
+		else if(kind == FULL_BUILD) System.out.println(">>> FULL");
+		else if(kind == INCREMENTAL_BUILD) System.out.println(">>> INC");
+		else System.out.println(">>> "+kind);
 		try {
 		init();
 		if (kind == FULL_BUILD) {
+		    System.out.println("DELTA: " + getDelta(getProject()));
 			fullBuild(monitor);
 		} else {
 			IResourceDelta delta = getDelta(getProject());
@@ -127,27 +126,43 @@ public class PustefixBuilder extends IncrementalProjectBuilder {
 	}
 
 
+	@Override
+	protected void clean(IProgressMonitor monitor) throws CoreException {
+	   System.out.println("*** CLEAN ***");
+	   init();
+	   iwrpBuilder.clean(monitor);
+	   scodeBuilder.clean(monitor);
+	}
+	
+	
 	private void fullBuild(final IProgressMonitor monitor)
 			throws CoreException {
-		checkVersion();
-		try {
-			getProject().accept(new SampleResourceVisitor());
-		} catch (CoreException e) {
-		}
+
+	    if(PustefixCore.getInstance().hasClassPathChanged(getProject())) {
+            checkVersion();
+            PustefixCore.getInstance().classPathChangeHandled(getProject());
+        }
+        
+        boolean iwrpGen=prefService.getBoolean(Activator.PLUGIN_ID,PreferenceConstants.PREF_GENERATEIWRAPPERS,false,prefScopes);
+        if(iwrpGen) iwrpBuilder.fullBuild(monitor);
+        boolean scodeGen=prefService.getBoolean(Activator.PLUGIN_ID,PreferenceConstants.PREF_GENERATESTATUSCODES,false,prefScopes);
+        if(scodeGen) scodeBuilder.fullBuild(monitor);
+        
+	    
 	}
 
 	private void incrementalBuild(IResourceDelta delta,
 			IProgressMonitor monitor) throws CoreException {
-		
+
 		if(PustefixCore.getInstance().hasClassPathChanged(getProject())) {
 		    checkVersion();
 		    PustefixCore.getInstance().classPathChangeHandled(getProject());
 		}
 		
 		boolean iwrpGen=prefService.getBoolean(Activator.PLUGIN_ID,PreferenceConstants.PREF_GENERATEIWRAPPERS,false,prefScopes);
-		if(iwrpGen) iwrpGenerator.incrementalBuild(delta,monitor);
+		if(iwrpGen) iwrpBuilder.incrementalBuild(delta, monitor);
 		boolean scodeGen=prefService.getBoolean(Activator.PLUGIN_ID,PreferenceConstants.PREF_GENERATESTATUSCODES,false,prefScopes);
-		if(scodeGen) scodeGenerator.incrementalBuild(environment, delta, monitor);
+		if(scodeGen) scodeBuilder.incrementalBuild(delta, monitor);
 		
 	}
 	
