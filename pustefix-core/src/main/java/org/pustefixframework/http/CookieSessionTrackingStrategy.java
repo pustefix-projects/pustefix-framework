@@ -4,6 +4,7 @@ import java.io.IOException;
 import java.text.NumberFormat;
 import java.text.SimpleDateFormat;
 import java.util.Date;
+import java.util.Enumeration;
 import java.util.HashMap;
 import java.util.LinkedList;
 
@@ -191,6 +192,33 @@ public class CookieSessionTrackingStrategy implements SessionTrackingStrategy {
 
         LOG.debug("*** >>> End of redirection management, handling request now.... <<< ***\n");
 
+        if(session != null) {
+            if(session.getAttribute(VISIT_ID) == null) {
+                StringBuilder sb = new StringBuilder();
+                sb.append("Found session without visit_id: ");
+                sb.append(req.getRemoteAddr()).append("|");
+                sb.append(req.getRequestURI()).append("|");
+                sb.append(session.getId()).append("|");
+                SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss,SSS");
+                sb.append(format.format(new Date(session.getCreationTime()))).append("|");
+                sb.append(format.format(new Date(session.getLastAccessedTime()))).append("|");
+                Enumeration<?> e = session.getAttributeNames();
+                while(e.hasMoreElements()) sb.append(e.nextElement()).append("|");
+                e = req.getHeaderNames();
+                while(e.hasMoreElements()) {
+                    String name = (String)e.nextElement();
+                    Enumeration<?> v = req.getHeaders(name);
+                    while(v.hasMoreElements()) {
+                        String value = (String)v.nextElement();
+                        sb.append(name).append(":").append(value).append("|");
+                    }
+                }
+                LOG.warn(sb.toString());
+                session.invalidate();
+                redirectToClearedRequest(req, res);
+            }
+        }
+        
         context.callProcess(preq, req, res);
     }
    
