@@ -216,6 +216,7 @@ public class CookieSessionTrackingStrategy implements SessionTrackingStrategy {
                 LOG.warn(sb.toString());
                 session.invalidate();
                 redirectToClearedRequest(req, res);
+                return;
             }
         }
         
