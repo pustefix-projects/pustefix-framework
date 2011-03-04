@@ -12,7 +12,7 @@
              This fix is ugly, but it works...               
         -->
         <script language="javascript"><ixsl:text disable-output-escaping="yes">&lt;!--</ixsl:text>
-        var pfx_editor_sessid = "<ixsl:value-of select="$__sessid"/>";
+        var pfx_editor_sessid = "<ixsl:value-of select="$__sessionIdPath"/>";
         var pfx_editor_contextpath = "<ixsl:value-of select="$__contextpath"/>";
         var pfx_editor_inc_root = new pfx_editor_TreeRoot(document.getElementById("editor_includes_sidebar_content"));
         var pfx_editor_inc_dir = false;
@@ -151,7 +151,7 @@
           </tr>
         </ixsl:if>
         
-        <ixsl:if test="not(starts-with(/formresult/includes/currentinclude/@path, 'module://'))">
+        <ixsl:if test="not(/formresult/includes/currentinclude/@readOnly='true')">
         
         <ixsl:if test="./currentinclude/possiblethemes">
           <tr><td colspan="2"><hr/></td></tr>
@@ -259,13 +259,13 @@
                 </tbody>
               </table>
               <br/>
-              <ixsl:if test="starts-with(/formresult/includes/currentinclude/@path, 'module://')">
+              <ixsl:if test="/formresult/includes/currentinclude/@readOnly='true'">
                 <div class="important_note">
                   <img align="left" src="{$__contextpath}/img/info.png"/>
-                  <span class="important_note">The include part was supplied by a module. Therefore it can't be changed within the CMS editor.</span>
+                  <span class="important_note">The include part is read-only and can't be changed within the CMS editor.</span>
                 </div>
               </ixsl:if>
-              <ixsl:if test="not(starts-with(/formresult/includes/currentinclude/@path, 'module://'))">
+              <ixsl:if test="not(/formresult/includes/currentinclude/@readOnly='true')">
               <div style="text-align:left">
                 <pfx:xinp type="check" name="upload.PreserveFormat" value="true"/>
                 <span style="cursor:default" onClick="document.forms[0].elements['upload.PreserveFormat'].checked = !document.forms[0].elements['upload.PreserveFormat'].checked">Preserve format (do not append or prepend whitespace)</span>
@@ -365,7 +365,7 @@
                      </div>
                     </td>
                   </tr>
-                  <ixsl:if test="not(starts-with(/formresult/includes/currentinclude/@path, 'module://'))">
+                  <ixsl:if test="not(/formresult/includes/currentinclude/@readOnly='true')">
                   <tr>
                     <td style="text-align:center; padding:4px 0 4px 0;">
                       <pfx:xinp type="hidden" name="upload.StoredContent"/>

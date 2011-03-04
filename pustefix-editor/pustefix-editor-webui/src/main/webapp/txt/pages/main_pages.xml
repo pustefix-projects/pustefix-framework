@@ -65,7 +65,6 @@
                   <ixsl:value-of select="@name"/><ixsl:if test="@variant">::<ixsl:value-of select="@variant"/></ixsl:if>
                 </pfx:button>
               </td>
-              <td class="editor_dim" nowrap="nowrap" width="1%">[<ixsl:value-of select="@handler"/>]</td>
             </tr>
           </ixsl:for-each>
         </table>

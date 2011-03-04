@@ -29,7 +29,7 @@ import de.schlund.pfixxml.util.xsltimpl.XsltContextSaxon2;
  */
 public class DependencyTrackerSaxon2 {
 
-    public static String logImage(XPathContext context,String path,String parent_part_in,String parent_theme_in,
+    public static String logImage(XPathContext context,Resource path,String parent_part_in,String parent_theme_in,
             String targetGen,String targetKey,String type) throws Exception {
         XsltContext xsltContext=new XsltContextSaxon2(context);
         return DependencyTracker.logImage(xsltContext,path,parent_part_in,parent_theme_in,targetGen,targetKey,type);

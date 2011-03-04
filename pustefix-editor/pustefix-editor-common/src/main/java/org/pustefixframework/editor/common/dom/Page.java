@@ -52,13 +52,6 @@ public interface Page extends Comparable<Page> {
     String getFullName();
 
     /**
-     * Returns the path of the handler used for this Page (e.g. /xml/config)
-     * 
-     * @return Path to the handler used in the URL of this Page
-     */
-    String getHandlerPath();
-
-    /**
      * Returns the XSL target which is used to generate the output of this Page
      * 
      * @return Target of type TARGET_XSL representing the stylesheet being used

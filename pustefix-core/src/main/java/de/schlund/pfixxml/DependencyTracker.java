@@ -34,7 +34,7 @@ public class DependencyTracker {
     private final static Logger LOG = Logger.getLogger(DependencyTracker.class);
     
     /** xslt extension */
-    public static String logImage(XsltContext context, String path,
+    public static String logImage(XsltContext context, Resource path,
                                   String parent_part_in, String parent_theme_in,
                                   String targetGen, String targetKey, String type) throws Exception {
 
@@ -60,14 +60,10 @@ public class DependencyTracker {
             LOG.error("Error adding Dependency: target not found (targetGen=" + targetGen + ", targetKey=" + targetKey + ")");
             return "1";
         }
-        if (path.length() == 0) {
-            LOG.error("Error adding Dependency: empty path"); 
-            return "1"; 
-        }
-        Resource relativePath   = ResourceUtil.getResource(path);
+        
         Resource relativeParent = parent_path.equals("") ? null : ResourceUtil.getResource(parent_path);
         try {
-            logTyped(type, relativePath, "", "", relativeParent, parent_part, parent_theme, target);
+            logTyped(type, path, "", "", relativeParent, parent_part, parent_theme, target);
             return "0";
         } catch (Exception e) {
             LOG.error("Error adding Dependency: ",e); 

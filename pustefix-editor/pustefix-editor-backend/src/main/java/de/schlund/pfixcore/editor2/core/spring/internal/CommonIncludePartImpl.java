@@ -161,8 +161,7 @@ public abstract class CommonIncludePartImpl extends AbstractIncludePart {
             }
 
             // Remove from file, if existing there
-            File xmlFile = new File(this.pathresolver.resolve(this
-                    .getIncludeFile().getPath()));
+            File xmlFile = this.pathresolver.resolve(this.getIncludeFile().getPath());
             Object lock = this.filesystem.getLock(xmlFile);
             synchronized (lock) {
                 Document doc;

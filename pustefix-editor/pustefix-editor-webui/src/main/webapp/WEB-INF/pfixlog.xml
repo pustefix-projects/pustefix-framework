@@ -276,11 +276,8 @@
 
   <root>
     <cus:choose>
-      <cus:when test="$uid = 'jtl'">
-        <priority value="DEBUG"/>
-      </cus:when>
       <cus:when test="$mode = 'prod'">
-        <priority value="WARN"/>
+        <priority value="DEBUG"/>
       </cus:when>
       <cus:otherwise>
         <priority value="DEBUG"/>

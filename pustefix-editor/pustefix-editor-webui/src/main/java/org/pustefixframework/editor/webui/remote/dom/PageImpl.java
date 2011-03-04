@@ -58,11 +58,6 @@ public class PageImpl extends AbstractPage {
         this.pageTO = pageTO;
     }
     
-    public String getHandlerPath() {
-        initPageTO();
-        return pageTO.handlerPath;
-    }
-    
     public String getName() {
         return name;
     }

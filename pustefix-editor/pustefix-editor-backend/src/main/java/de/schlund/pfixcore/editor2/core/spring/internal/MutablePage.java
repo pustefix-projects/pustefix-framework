@@ -36,10 +36,4 @@ public interface MutablePage extends Page {
      */
     public void setSubPages(Collection<Page> pages);
     
-    /**
-     * Set the path to the handler that is used for this page
-     * 
-     * @param path String specifying the path (e.g. "/xml/handler")
-     */
-    public void setHandlerPath(String path);
 }

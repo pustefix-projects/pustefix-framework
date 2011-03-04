@@ -111,7 +111,7 @@ public class ImageImpl extends AbstractImage {
 
     public void replaceFile(File newFile) throws EditorIOException,
             EditorSecurityException {
-        File imageFile = new File(this.pathresolver.resolve(this.getPath()));
+        File imageFile = this.pathresolver.resolve(this.getPath());
 
         // Log change
         this.writeChangeLog();

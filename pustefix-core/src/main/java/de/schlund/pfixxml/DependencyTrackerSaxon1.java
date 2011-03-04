@@ -30,7 +30,7 @@ import de.schlund.pfixxml.util.xsltimpl.XsltContextSaxon1;
  */
 public class DependencyTrackerSaxon1 {
 
-    public static String logImage(Context context,String path,String parent_part_in,String parent_theme_in,
+    public static String logImage(Context context,Resource path,String parent_part_in,String parent_theme_in,
             String targetGen,String targetKey,String type) throws Exception {
         XsltContext xsltContext=new XsltContextSaxon1(context);
         return DependencyTracker.logImage(xsltContext,path,parent_part_in,parent_theme_in,targetGen,targetKey,type);

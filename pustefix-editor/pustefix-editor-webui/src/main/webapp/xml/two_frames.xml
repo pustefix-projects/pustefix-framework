@@ -8,7 +8,7 @@
       <html>
         <head>
           <style type="text/css">
-            <pfx:include href="core/txt/styles.xml" part="standard"/>
+            <pfx:include href="txt/styles.xml" module="pustefix-core" part="standard"/>
             <pfx:include href="txt/styles.xml" part="standard"/>
           </style>
         </head>
@@ -21,7 +21,7 @@
       <html>
 	<head>
           <style type="text/css">
-            <pfx:include href="core/txt/styles.xml" part="standard"/>
+            <pfx:include href="txt/styles.xml" module="pustefix-core" part="standard"/>
             <pfx:include href="txt/styles.xml" part="standard"/>
           </style>
         </head>

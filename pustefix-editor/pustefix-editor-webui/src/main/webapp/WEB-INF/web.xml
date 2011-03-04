@@ -34,22 +34,6 @@
    </servlet>
    <servlet-mapping>
       <servlet-name>dispatcher</servlet-name>
-      <url-pattern>/xml/main/*</url-pattern>
-   </servlet-mapping>
-   <servlet-mapping>
-      <servlet-name>dispatcher</servlet-name>
-      <url-pattern>/xml/deref/*</url-pattern>
-   </servlet-mapping>
-   <servlet-mapping>
-      <servlet-name>dispatcher</servlet-name>
-      <url-pattern>/xml/download/*</url-pattern>
-   </servlet-mapping>
-   <servlet-mapping>
-      <servlet-name>dispatcher</servlet-name>
-      <url-pattern>/xml/*</url-pattern>
-   </servlet-mapping>
-   <servlet-mapping>
-      <servlet-name>dispatcher</servlet-name>
       <url-pattern>/*</url-pattern>
    </servlet-mapping>
    <filter>
@@ -58,7 +42,7 @@
    </filter>
    <filter-mapping>
       <filter-name>editor-session-cookie-filter</filter-name>
-      <url-pattern>/xml/main/*</url-pattern>
+      <url-pattern>/*</url-pattern>
    </filter-mapping>
    <session-config>
       <session-timeout>60</session-timeout>

@@ -188,7 +188,6 @@ public class ProjectImpl extends AbstractProject {
         // Add pages from target definitions which are not present in navigation tree
         for (PageInfo pinfo : gen.getPageTargetTree().getPageInfos()) {
             String pageName = pinfo.getName();
-            String pageHandler = "none";
             String variantName = pinfo.getVariant();
             Variant pageVariant;
             if (variantName != null) {
@@ -203,8 +202,7 @@ public class ProjectImpl extends AbstractProject {
                 // with the same name and same variant before
                 MutablePage page;
                 page = this.pagefactory.getMutablePage(pageName,
-                        pageVariant, pageHandler, pageThemes, this);
-                page.setHandlerPath(pageHandler);
+                        pageVariant, pageThemes, this);
                 pages.add(page);
                 this.recursePage(page, pagemap);
                 allpages.add(page);
@@ -259,7 +257,6 @@ public class ProjectImpl extends AbstractProject {
         Page defaultPage = null;
 
         String pageName = nav.getName();
-        String pageHandler = nav.getHandler();
         Collection<PageInfo> pinfos = ptree.getPageInfoForPageName(pageName);
         if (pinfos == null) {
             String msg = "Could not load PageInfo from PageTree for page "
@@ -283,9 +280,8 @@ public class ProjectImpl extends AbstractProject {
                     // Create new page only if there has not been a page
                     // with the same name and same variant before
                     page = this.pagefactory.getMutablePage(pageName,
-                            pageVariant, pageHandler, pageThemes, this);
+                            pageVariant, pageThemes, this);
                 }
-                page.setHandlerPath(pageHandler);
                 pages.add(page);
                 if (pageVariant == null) {
                     defaultPage = page;
@@ -297,8 +293,7 @@ public class ProjectImpl extends AbstractProject {
         // otherwise, subpages cannot not be handled correctly
         if (defaultPage == null) {
             MutablePage page;
-            page = this.pagefactory.getMutablePage(pageName, null, pageHandler, new ThemeListImpl(this.themefactory, new Themes("default")), this);
-            page.setHandlerPath(pageHandler);
+            page = this.pagefactory.getMutablePage(pageName, null, new ThemeListImpl(this.themefactory, new Themes("default")), this);
             pages.add(page);
             defaultPage = page;
         }

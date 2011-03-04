@@ -30,10 +30,8 @@
   <application>
     
     <docroot-path>docroot:/docroot</docroot-path>
-    <default-path>/xml/main</default-path>
     
     <context-xml-service>
-      <path>/xml/main</path>
       <config-file>docroot:/WEB-INF/edit.conf.xml</config-file>
       <choose>
         <when test="$mode='prod'">

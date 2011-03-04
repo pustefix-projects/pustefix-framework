@@ -18,6 +18,8 @@
 
 package de.schlund.pfixcore.editor2.core.spring;
 
+import java.io.File;
+
 /**
  * Resolves a relative (to docroot) path to an absolute one.
  * 
@@ -30,5 +32,5 @@ public interface PathResolverService {
      * @param path Path relative to docroot
      * @return Absolute path
      */
-    String resolve(String path);
+    File resolve(String path);
 }

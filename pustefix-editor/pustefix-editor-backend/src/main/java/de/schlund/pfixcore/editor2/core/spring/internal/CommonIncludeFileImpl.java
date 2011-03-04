@@ -129,6 +129,7 @@ public abstract class CommonIncludeFileImpl extends AbstractIncludeFile {
     }
 
     public Document getContentXML(boolean forceUpdate) {
+        
         if(getPath().startsWith("module://")) {
             Resource res = ResourceUtil.getResource(getPath());
             try {
@@ -144,7 +145,7 @@ public abstract class CommonIncludeFileImpl extends AbstractIncludeFile {
             }
         }
 
-        File xmlFile = new File(this.pathresolver.resolve(this.getPath()));
+        File xmlFile = this.pathresolver.resolve(this.getPath());
         if (!forceUpdate && this.xmlCache != null) {
             synchronized (this.xmlCache) {
                 if (xmlFile.lastModified() <= this.lastModTime) {
@@ -227,6 +228,14 @@ public abstract class CommonIncludeFileImpl extends AbstractIncludeFile {
             
             return this.currentSerial;
         }
+    }
+    
+    public boolean isReadOnly() {
+        Resource res = ResourceUtil.getResource(getPath());
+        if(res.getClass() == ModuleResource.class) {
+            return true;
+        }
+        return false;
     }
 
 }
