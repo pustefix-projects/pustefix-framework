@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="UTF-8"?><include_parts xmlns:ixsl="http://www.w3.org/1999/XSL/Transform" xmlns:pfx="http://www.schlund.de/pustefix/core">
+
+  <part name="content">
+    <theme name="default">
+      <table>
+        <tr>
+          <td colspan="2">
+            <pfx:image src="img/logo.png"/>
+          </td>
+        </tr>
+        <tr>
+          <td>Version:</td>
+          <td><ixsl:value-of select="pfx:getFrameworkVersion()"/></td>
+        </tr>
+        <tr>
+          <td>Application:</td>
+          <td><pfx:include href="txt/common.xml" part="appname" search="dynamic"/></td>
+        </tr>
+      </table>
+      CCCCCCCCCCCCCCC
+    </theme>
+  </part>
+  
+  <part name="appname">
+    <theme name="default">
+      Unknown
+    </theme>
+  </part>
+
+</include_parts>

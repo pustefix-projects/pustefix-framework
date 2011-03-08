@@ -15,8 +15,8 @@
         <enabled>true</enabled>
       </when>
     </choose>
-    <location>http://cms.${fqdn}:9090/pustefix-editor-webui/</location>
-    <secret>foobar</secret>
+    <location>http://cms.${fqdn}:9090/</location>
+    <secret>foobar</secret> 
   </editor>
  
   <xml-generator>
@@ -49,8 +49,9 @@
   
   <!-- Set an initial session timeout 'value' (in seconds) used until 
        more than 'requestlimit' requests are made within a session -->
+<!--
   <initial-session-timeout value="600" requestlimit="3"/>
-
+-->
   <application>
     
     <docroot-path>docroot:/htdocs</docroot-path>
@@ -102,6 +103,12 @@
     </choose>
     
   </application>
+  
+  <dynamic-includes>
+    <default-search>
+      <module>common-module</module>
+    </default-search>
+  </dynamic-includes>
   
   <properties>
     

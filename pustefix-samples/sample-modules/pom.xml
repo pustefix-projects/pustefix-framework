@@ -17,6 +17,7 @@
 
   <modules>
     <module>animal-module</module>
+    <module>common-module</module>
     <module>sample-module-A</module>
     <module>sample-module-B</module>
     <module>sample-module-C</module>

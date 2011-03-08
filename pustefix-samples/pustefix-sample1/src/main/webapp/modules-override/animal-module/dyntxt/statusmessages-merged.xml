@@ -5,7 +5,7 @@ You can modify this file to change the messages for exisiting statuscodes.
 Adding new statuscodes has to be done within the originating module.
 -->
   <part name="MISSING_SELECTION">
-    <theme name="default">XXXYou have to select an animal!</theme>
+    <theme name="default">You have to select an animal!</theme>
     <theme name="en">You have to select an animal!</theme>
   </part>
 </include_parts>
