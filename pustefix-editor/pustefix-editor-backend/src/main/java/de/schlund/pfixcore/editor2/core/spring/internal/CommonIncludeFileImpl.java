@@ -37,7 +37,10 @@ import org.xml.sax.SAXException;
 
 import de.schlund.pfixcore.editor2.core.spring.FileSystemService;
 import de.schlund.pfixcore.editor2.core.spring.PathResolverService;
+import de.schlund.pfixcore.util.ModuleDescriptor;
+import de.schlund.pfixcore.util.ModuleInfo;
 import de.schlund.pfixxml.resources.ModuleResource;
+import de.schlund.pfixxml.resources.ModuleSourceResource;
 import de.schlund.pfixxml.resources.Resource;
 import de.schlund.pfixxml.resources.ResourceUtil;
 import de.schlund.pfixxml.util.XPath;
@@ -49,6 +52,7 @@ import de.schlund.pfixxml.util.Xml;
  * @author Sebastian Marsching <sebastian.marsching@1und1.de>
  */
 public abstract class CommonIncludeFileImpl extends AbstractIncludeFile {
+    
     private String path;
 
     private HashMap<String, IncludePart> cache;
@@ -62,6 +66,8 @@ public abstract class CommonIncludeFileImpl extends AbstractIncludeFile {
     private Document xmlCache;
 
     private long currentSerial = 0;
+    
+    //private Boolean readOnly;
 
     protected abstract IncludePart createIncludePartInstance(String name,
             Element el, long serial);
@@ -130,22 +136,30 @@ public abstract class CommonIncludeFileImpl extends AbstractIncludeFile {
 
     public Document getContentXML(boolean forceUpdate) {
         
+        File xmlFile = null;
+        
         if(getPath().startsWith("module://")) {
             Resource res = ResourceUtil.getResource(getPath());
-            try {
-                return Xml.parseMutable((ModuleResource)res);
-            } catch(SAXException x) {
-                x.printStackTrace();
-                Logger.getLogger(this.getClass()).warn(x);
-                return null;
-            } catch(IOException x) {
-                x.printStackTrace();
-                Logger.getLogger(this.getClass()).warn(x);
-                return null;
+            if(res instanceof ModuleSourceResource) {
+                xmlFile = ((ModuleSourceResource)res).getFile();
+            } else {
+                if(xmlCache == null) {
+                    try {
+                        xmlCache = Xml.parseMutable((ModuleResource)res);
+                    } catch(SAXException x) {
+                        Logger.getLogger(this.getClass()).warn(x);
+                        return null;
+                    } catch(IOException x) {
+                        Logger.getLogger(this.getClass()).warn(x);
+                        return null;
+                    }
+                }
+                return xmlCache;
             }
         }
 
-        File xmlFile = this.pathresolver.resolve(this.getPath());
+        if(xmlFile == null) xmlFile = this.pathresolver.resolve(this.getPath());
+        
         if (!forceUpdate && this.xmlCache != null) {
             synchronized (this.xmlCache) {
                 if (xmlFile.lastModified() <= this.lastModTime) {
@@ -231,11 +245,26 @@ public abstract class CommonIncludeFileImpl extends AbstractIncludeFile {
     }
     
     public boolean isReadOnly() {
-        Resource res = ResourceUtil.getResource(getPath());
-        if(res.getClass() == ModuleResource.class) {
-            return true;
+        Boolean readOnly = null;
+        if(readOnly == null) {
+            Resource res = ResourceUtil.getResource(getPath());
+            if(res instanceof ModuleResource) {
+                if(res.getClass() == ModuleSourceResource.class) {
+                    String module = ((ModuleSourceResource)res).toURI().getAuthority();
+                    ModuleDescriptor desc = ModuleInfo.getInstance().getModuleDescriptor(module);
+                    if(desc != null && desc.isContentEditable()) {
+                        readOnly = false;
+                    } else {
+                        readOnly = true;
+                    }
+                } else {
+                    readOnly = true;
+                }
+            } else {
+                readOnly = false;
+            }
         }
-        return false;
+        return readOnly;
     }
 
 }
