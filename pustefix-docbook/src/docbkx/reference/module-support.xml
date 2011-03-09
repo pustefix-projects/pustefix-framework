@@ -88,7 +88,7 @@
 mvn archetype:create \
 -DarchetypeGroupId=org.pustefixframework.maven.archetypes \
 -DarchetypeArtifactId=pustefix-archetype-module \
--DarchetypeVersion=0.16.4 \
+-DarchetypeVersion=0.16.5 \
 -DgroupId=mytld.myorg.mysection \
 -DartifactId=mymodule \
 -Dversion=1.0  
