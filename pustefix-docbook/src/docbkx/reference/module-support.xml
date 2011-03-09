@@ -29,6 +29,12 @@
   -->  
   <module-name>mytest</module-name>
 
+  <!--
+    Controls if module resources are editable via the CMS (if the module is loaded using
+    the live mechanism). By default module resources are readonly.
+  -->
+  <content-editable>true</content-editable>
+
   <!-- Here you can define which folders under PUSTEFIX-INF contain static webapp resources 
        and should be publicly available. The resources then can be accessed under the URL 
        path '/modules/[module-name]/[static-path]'. If you only want to grant access depending 
