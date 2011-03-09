@@ -17,7 +17,6 @@
           <td><pfx:include href="txt/common.xml" part="appname" search="dynamic"/></td>
         </tr>
       </table>
-      CCCCCCCCCCCCCCC
     </theme>
   </part>
   
