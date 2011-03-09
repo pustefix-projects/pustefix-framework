@@ -5,13 +5,13 @@
   <parent>
     <groupId>org.pustefixframework</groupId>
     <artifactId>pustefixframework</artifactId>
-    <version>0.16.5-SNAPSHOT</version>
+    <version>0.16.5</version>
   </parent>
 
   <groupId>org.pustefixframework.maven.plugins</groupId>
   <artifactId>pustefix-plugins</artifactId>
   <packaging>pom</packaging>
-  <version>0.16.5-SNAPSHOT</version>
+  <version>0.16.5</version>
 
   <name>Pustefix Plugins</name>
   <description>Pustefix Plugins</description>
