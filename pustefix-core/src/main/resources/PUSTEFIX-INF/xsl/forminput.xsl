@@ -227,17 +227,26 @@
         <ixsl:attribute name="value"><ixsl:value-of select="./text()"/></ixsl:attribute>
       </input>
     </ixsl:for-each>
-    <xsl:if test="not(.//pfx:token)">
-      <xsl:variable name="pageName">
-        <xsl:choose>
-          <xsl:when test="@send-to-page"><xsl:value-of select="@send-to-page"/></xsl:when>
-          <xsl:otherwise><xsl:value-of select="$page"/></xsl:otherwise>
-        </xsl:choose>
-      </xsl:variable>
-      <ixsl:if test="pfx:requiresToken('{$pageName}')">
-        <xsl:call-template name="createToken">
-          <xsl:with-param name="tokenName"><xsl:value-of select="concat($pageName,'#',generate-id())"/></xsl:with-param>
-        </xsl:call-template>
+    <xsl:if test="not(.//pfx:token)">   
+      <ixsl:if>
+        <xsl:attribute name="test">
+          <xsl:choose>
+            <xsl:when test="@send-to-page">pfx:requiresToken('<xsl:value-of select="@send-to-page"/>')</xsl:when>
+            <xsl:otherwise>pfx:requiresToken($page)</xsl:otherwise>
+          </xsl:choose>
+        </xsl:attribute>
+        <input type="hidden" name="__token">
+          <ixsl:variable name="__token">
+            <xsl:choose>
+              <xsl:when test="@send-to-page"><xsl:value-of select="@send-to-page"/></xsl:when>
+              <xsl:otherwise><ixsl:value-of select="$page"/></xsl:otherwise>
+            </xsl:choose>
+            <xsl:value-of select="concat('#',generate-id())"/>
+          </ixsl:variable>
+          <ixsl:attribute name="value">
+            <ixsl:value-of select="$__token"/>::<ixsl:value-of select="pfx:getToken($__token)"/>
+          </ixsl:attribute>
+        </input>
       </ixsl:if>
     </xsl:if>
   </xsl:template>
@@ -792,24 +801,22 @@
 <!--    </xsl:if>-->
 <!--  </xsl:template>-->
 
-  <xsl:template match="pfx:token" name="createToken">
-    <xsl:param name="tokenName">
-      <xsl:choose>
-          <xsl:when test="@name">
-            <xsl:value-of select="@name"/>
-          </xsl:when>
+  <xsl:template match="pfx:token">
+    <input type="hidden" name="__token">
+      <ixsl:variable name="__token">
+        <xsl:choose>
+          <xsl:when test="@name"><xsl:value-of select="@name"/></xsl:when>
           <xsl:otherwise>
             <xsl:choose>
               <xsl:when test="ancestor::pfx:forminput[position()=1]/@send-to-page"><xsl:value-of select="ancestor::pfx:forminput[position()=1]/@send-to-page"/></xsl:when>
-              <xsl:otherwise><xsl:value-of select="$page"/></xsl:otherwise>
+              <xsl:otherwise><ixsl:value-of select="$page"/></xsl:otherwise>
             </xsl:choose>
             <xsl:value-of select="concat('#',generate-id())"/>
           </xsl:otherwise>
         </xsl:choose>
-    </xsl:param>
-    <input type="hidden" name="__token">
+      </ixsl:variable>
       <ixsl:attribute name="value">
-        <xsl:value-of select="$tokenName"/>:<xsl:value-of select="@errorpage"/>:<ixsl:value-of select="pfx:getToken('{$tokenName}')"/>
+        <ixsl:value-of select="$__token"/>:<xsl:value-of select="@errorpage"/>:<ixsl:value-of select="pfx:getToken($__token)"/>
       </ixsl:attribute>
     </input>
   </xsl:template>

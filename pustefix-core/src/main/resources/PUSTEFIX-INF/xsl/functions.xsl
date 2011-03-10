@@ -114,14 +114,14 @@
   </func:function>
   
   <func:function name="pfx:__needsLastFlow">
-    <xsl:param name="page"/>
+    <xsl:param name="pageName"/>
     <xsl:param name="lastFlow"/>
-    <func:result select="callback:needsLastFlow($__context__,$page,$lastFlow)"/>
+    <func:result select="callback:needsLastFlow($__context__,$pageName,$lastFlow)"/>
   </func:function>
   
   <func:function name="pfx:__omitPage">
-    <xsl:param name="page"/>
-    <func:result select="callback:omitPage($__context__,$page)"/>
+    <xsl:param name="pageName"/>
+    <func:result select="callback:omitPage($__context__,$pageName)"/>
   </func:function>
   
 </xsl:stylesheet>
