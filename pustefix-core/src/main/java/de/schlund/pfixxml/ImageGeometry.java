@@ -179,7 +179,6 @@ public class ImageGeometry {
     }
 
     private static ImageGeometryData getImageGeometryData(String path) {
-    	System.out.println("TEST:"+path);
         if(path.startsWith("http") || path.startsWith("//")) {
             return getRemoteImageGeometryData(path);
         }
