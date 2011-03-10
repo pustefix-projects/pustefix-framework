@@ -55,7 +55,7 @@ public class LiveJarInfo {
 
     private static Logger LOG = Logger.getLogger(LiveJarInfo.class);
     public static final String[] DEFAULT_DOCROOT_LIVE_EXCLUSIONS = { "/WEB-INF/web.xml",
-            "/.cache/", "/core/", "/modules/", "/wsscript/", "/wsdl/", "/.editorbackup/" };
+            "/.cache/", "/core/", "/modules/", "/wsscript/", "/wsdl/", "/.editorbackup/", "/htdocs/sitemap.xml"};
 
     /** The live.xml file */
     private File file;
