@@ -314,7 +314,7 @@
         <xsl:value-of select="ancestor::pfx:forminput[position() = 1]/@send-to-page"/>
       </xsl:when>
       <xsl:otherwise>
-        <xsl:value-of select="$page"/>
+        <ixsl:value-of select="$page"/>
       </xsl:otherwise>
     </xsl:choose>]:<xsl:value-of select="@name"/></ixsl:attribute><ixsl:attribute name="value"><xsl:apply-templates select="./node()"/></ixsl:attribute></input>
     </xsl:for-each>
