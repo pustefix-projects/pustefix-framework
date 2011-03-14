@@ -16,37 +16,29 @@
   <xsl:template match="pfx:host"/>
 
   <xsl:template match="pfx:visited">
-    <xsl:param name="thepagename"><xsl:value-of select="$page"/></xsl:param>
+    <xsl:param name="thepagename"/>
     <xsl:variable name="pagename_impl">
       <xsl:choose>
-        <xsl:when test="@page">
-          <xsl:value-of select="@page"/>
-        </xsl:when>
-        <xsl:otherwise>
-          <xsl:value-of select="$thepagename"/>
-        </xsl:otherwise>
+        <xsl:when test="@page">'<xsl:value-of select="@page"/>'</xsl:when>
+        <xsl:when test="$thepagename">'<xsl:value-of select="$thepagename"/>'</xsl:when>
+        <xsl:otherwise>$page</xsl:otherwise>
       </xsl:choose>
     </xsl:variable>
-    <xsl:variable name="thebuttpage" select="$navitree//page[@name = $pagename_impl]"/>
-    <ixsl:if test="callback:isVisited($__context__, '{$pagename_impl}') = 1">
+    <ixsl:if test="callback:isVisited($__context__, {$pagename_impl}) = 1">
       <xsl:apply-templates/>
     </ixsl:if>
   </xsl:template>
 
   <xsl:template match="pfx:unvisited">
-    <xsl:param name="thepagename"><xsl:value-of select="$page"/></xsl:param>
+    <xsl:param name="thepagename"/>
     <xsl:variable name="pagename_impl">
       <xsl:choose>
-        <xsl:when test="@page">
-          <xsl:value-of select="@page"/>
-        </xsl:when>
-        <xsl:otherwise>
-          <xsl:value-of select="$thepagename"/>
-        </xsl:otherwise>
+        <xsl:when test="@page">'<xsl:value-of select="@page"/>'</xsl:when>
+        <xsl:when test="$thepagename">'<xsl:value-of select="$thepagename"/>'</xsl:when>
+        <xsl:otherwise>$page</xsl:otherwise>
       </xsl:choose>
     </xsl:variable>
-    <xsl:variable name="thebuttpage" select="$navitree//page[@name = $pagename_impl]"/>
-    <ixsl:if test="callback:isVisited($__context__, '{$pagename_impl}') = 0">
+    <ixsl:if test="callback:isVisited($__context__, {$pagename_impl}) = 0">
       <xsl:apply-templates/>
     </ixsl:if>
   </xsl:template>
