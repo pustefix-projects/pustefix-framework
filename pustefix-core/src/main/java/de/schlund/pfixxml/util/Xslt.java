@@ -281,8 +281,10 @@ public class Xslt {
             //version specific stylesheet here
             if(href.equals("module://pustefix-core/xsl/include.xsl")) {
                 if(xsltVersion==XsltVersion.XSLT2) href="module://pustefix-core/xsl/include_xslt2.xsl";
+            } else if(href.equals("module://pustefix-core/xsl/render.xsl")) {
+                if(xsltVersion==XsltVersion.XSLT2) href="module://pustefix-core/xsl/render_xslt2.xsl";
             }
-            
+                
             try {
                 uri = new URI(href);
             } catch (URISyntaxException e) {

@@ -3,7 +3,33 @@
   <part name="content">
     <theme name="default">
       <center>
-      Test of deref-server for forms: 
+
+<div>
+  <pfx:button page="encoding">encoding1</pfx:button>      
+  <pfx:button page="encoding" mode="force">encoding2</pfx:button>
+</div>
+<div>
+  <pfx:button page="home">home1</pfx:button>
+  <pfx:button page="home" mode="force">home2</pfx:button>
+</div>
+<div>
+  <pfx:button page="order" accesskey="Q">order1</pfx:button>
+  <pfx:button page="order" mode="force" accesskey="Q">order2</pfx:button>
+</div>
+<div>
+  <pfx:button>home3</pfx:button>
+  <pfx:button mode="force">home4</pfx:button>
+</div>
+
+<pfx:render href="txt/common.xml" part="content"/>
+<pfx:render href="txt/common.xml" part="content"/>
+<pfx:render href="txt/common.xml" part="content"/>
+<pfx:render href="txt/common.xml" part="content"/>
+<pfx:render href="txt/common.xml" part="content"/>
+
+
+
+Test of deref-server for forms: 
       <pfx:externalform href="http://www.gimp.org">
         <input type="text" name="FOO"/>
         <input type="submit"/>

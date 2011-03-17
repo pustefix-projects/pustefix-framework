@@ -103,6 +103,7 @@
       <ixsl:import href="module://pustefix-core/xsl/default_copy.xsl"/>
       <ixsl:import href="module://pustefix-core/xsl/include.xsl"/>
       <ixsl:import href="module://pustefix-core/xsl/functions.xsl"/>
+      <ixsl:import href="module://pustefix-core/xsl/render.xsl"/>
 
       <!-- generate user defined imports -->
       <xsl:call-template name="gen_ixsl_import">
@@ -166,7 +167,7 @@
       <ixsl:param name="pageflow"/>
       
       <ixsl:param name="lang"><xsl:value-of select="$lang"/></ixsl:param>
-      <ixsl:variable name="page"><xsl:value-of select="$page"/></ixsl:variable>
+      <ixsl:param name="page"><xsl:value-of select="$page"/></ixsl:param>
       <ixsl:variable name="product"><xsl:value-of select="$product"/></ixsl:variable>
       <ixsl:variable name="__root" select="/"/>
       
@@ -263,6 +264,7 @@
     </ixsl:template>    
 
       <ixsl:template match="/">
+        <ixsl:call-template name="__render_start__"/>
         <xsl:choose>
           <!-- <xsl:when test="//frameset"> -->
           <xsl:when test="key('frameset_key','fset')">

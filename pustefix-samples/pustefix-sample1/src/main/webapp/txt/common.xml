@@ -6,4 +6,12 @@
     </theme>
   </part>
 
+  <part name="content">
+    <theme name="default">
+      <h1>XSL Component</h1>
+      PAGE: <ixsl:value-of select="$page"/>
+    </theme>
+  </part>
+
+
 </include_parts>
