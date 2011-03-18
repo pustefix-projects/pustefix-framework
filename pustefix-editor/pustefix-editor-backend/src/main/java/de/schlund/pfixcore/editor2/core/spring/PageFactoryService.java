@@ -53,6 +53,6 @@ public interface PageFactoryService {
      * @param pinfo
      *            Used to identify this page within the Pustefix generator
      */
-    MutablePage getMutablePage(String pageName, Variant variant, String handler,
+    MutablePage getMutablePage(String pageName, Variant variant,
             ThemeList themes, Project project);
 }

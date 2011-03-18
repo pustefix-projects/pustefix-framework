@@ -8,7 +8,7 @@
     <match>/p:project-config/p:project</match>
   </handler>
   
-  <handler class="org.pustefixframework.config.project.parser.SessionTrackingStrategyInfoParsingHandler">
+  <handler class="org.pustefixframework.config.project.parser.SessionInfoParsingHandler">
     <match>/p:project-config</match>
   </handler>
   

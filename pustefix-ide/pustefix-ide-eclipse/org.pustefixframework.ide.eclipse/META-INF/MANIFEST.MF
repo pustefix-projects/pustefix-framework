@@ -1,0 +1,16 @@
+Manifest-Version: 1.0
+Bundle-ManifestVersion: 2
+Bundle-Name: org.pustefixframework.ide.eclipse
+Bundle-SymbolicName: org.pustefixframework.ide.eclipse;singleton:=true
+Bundle-Version: 1.0.0
+Bundle-Activator: org.pustefixframework.ide.eclipse.plugin.Activator
+Bundle-Localization: plugin
+Require-Bundle: org.eclipse.ui,
+ org.eclipse.core.runtime,
+ org.eclipse.core.resources,
+ org.eclipse.ui.ide,
+ org.eclipse.jdt.core,
+ org.eclipse.jdt.ui
+Eclipse-LazyStart: true
+Bundle-Vendor: United Internet
+Bundle-ClassPath: .

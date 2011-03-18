@@ -153,8 +153,7 @@ public class TargetPfixImpl extends AbstractTarget {
         File file;
         if (this.pfixTarget.getType() == de.schlund.pfixxml.targets.TargetType.XML_LEAF
                 || this.pfixTarget.getType() == de.schlund.pfixxml.targets.TargetType.XSL_LEAF) {
-            file = new File(this.pathresolver.resolve(this.pfixTarget
-                    .getTargetKey()));
+            file = this.pathresolver.resolve(this.pfixTarget.getTargetKey());
         } else {
             // Make sure file is existing
             try {
@@ -167,7 +166,7 @@ public class TargetPfixImpl extends AbstractTarget {
             FileResource targetFile = this.pfixTarget.getTargetGenerator().getDisccachedir();
             if (targetFile instanceof DocrootResource) {
                 String targetPath = ((DocrootResource) targetFile).getRelativePath();
-                file = new File(this.pathresolver.resolve(targetPath + "/" + this.pfixTarget.getTargetKey()));
+                file = this.pathresolver.resolve(targetPath + "/" + this.pfixTarget.getTargetKey());
             } else if (targetFile instanceof FileSystemResource) {
                 String targetPath = ((FileSystemResource) targetFile).getPathOnFileSystem();
                 file = new File(targetPath);

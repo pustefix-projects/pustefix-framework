@@ -12,8 +12,8 @@
   </fr:navigation>
   
   <fr:targets>
-    <standardpage name="SelectAnimal" xml="xml/one_frame.xml"/>
-    <standardpage name="DisplayAnimal" xml="xml/one_frame.xml"/>
+    <standardpage name="SelectAnimal" xml="xml/frame.xml" module="common-module"/>
+    <standardpage name="DisplayAnimal" xml="xml/frame.xml" module="common-module"/>
   </fr:targets>
   
   <fr:resources>

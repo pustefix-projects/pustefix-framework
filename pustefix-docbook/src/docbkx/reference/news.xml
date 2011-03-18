@@ -40,5 +40,16 @@
     <para>If you're migrating an existing appliation to Pustefix 0.16.0, you should have a look at <xref linkend="upgrade"/>.</para>
   
   </section>
+
+  <section xml:id="news.0_16_5">
+    <title>What's new in Pustefix 0.16.5</title>
+  
+    <para>Pustefix 0.16.5 brings some CMS improvements. The CMS editor now supports editing of resources coming from modules
+          (if they're loaded via the live mechanism). Modules are readonly by default, but can be made editable by adding
+          <literal>&lt;content-editable&gt;true&lt;/content-editable&gt;</literal> to the module descriptor 
+          (see <xref linkend="modulessupport.types.new"/>). 
+    </para>
+
+  </section>
   
 </chapter>

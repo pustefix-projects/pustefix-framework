@@ -94,13 +94,13 @@ public class PagesResource {
                         Image image = i.next();
                         Element imageElement = resdoc.createSubNode(imagesElement, "image");
                         String path = image.getPath();
-                        String url;
+                        String url = projectPool.getURIForProject(projectsResource.getSelectedProject());
                         if (path.startsWith("docroot:/")) {
-                            url = projectPool.getURIForProject(projectsResource.getSelectedProject())
-                                + path.substring(10);
+                            url = url + path.substring(9);
+                        } else if(path.startsWith("module://")) {
+                            url = url + "modules/" + path.substring(9);
                         } else {
-                            url = projectPool.getURIForProject(projectsResource.getSelectedProject())
-                            + path;
+                            url = url + path;
                         }
                         imageElement.setAttribute("url", url);
                         imageElement.setAttribute("path", path);
@@ -146,7 +146,6 @@ public class PagesResource {
                 this.renderPageElement(subpage, node);
             }
         }
-        node.setAttribute("handler", page.getHandlerPath());
         if (this.selectedPage != null && page.equals(selectedPage)) {
             node.setAttribute("selected", "true");
         }

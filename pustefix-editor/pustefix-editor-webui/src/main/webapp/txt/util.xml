@@ -135,7 +135,7 @@
         <table class="core_errorbox_table" width="100%">
           <tr valign="top">
             <td class="core_errorbox_td">
-              <img src="/core/img/error.gif"/>
+              <img src="/modules/pustefix-core/img/error.gif"/>
             </td>
             <td class="core_errorlabel_text">
               Permission denied!

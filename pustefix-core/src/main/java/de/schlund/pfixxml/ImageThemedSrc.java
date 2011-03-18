@@ -48,12 +48,12 @@ public class ImageThemedSrc {
                                 String targetGen, String targetKey, String module, String search) throws Exception {
         
         boolean dynamic = false;
-        if(search!=null && !search.trim().equals("")) {
+        if(search != null && !search.trim().equals("")) {
             if(search.equals("dynamic")) dynamic = true;
             else throw new XMLException("Unsupported include search argument: " + search);
         }
         
-        if(module!=null) {
+        if(module != null) {
             module = module.trim();
             if(module.equals("")) module = null;
             if(module == null) {
@@ -84,25 +84,31 @@ public class ImageThemedSrc {
             if (src.startsWith("/")) {
                 src = src.substring(1);
             }
+            Resource res;
             LOG.debug("  -> Register image src '" + src + "'");
             if(dynamic) {
                 String uri =  "dynamic:/"+src+"?project="+gen.getName();
                 if(module != null) uri += "&module="+module;
-                Resource res = ResourceUtil.getResource(uri);
+                res = ResourceUtil.getResource(uri);
                 URI resUri = res.toURI();
-                if("module".equals(resUri.getScheme()) && res.exists()) {
+                if("module".equals(resUri.getScheme())) {
                     src = "modules/"+resUri.getAuthority()+"/"+src;
                 } else {
                     src = resUri.getPath();
                     if(src.startsWith("/")) src=src.substring(1);
                 }
-                DependencyTracker.logImage(context, src, parent_part_in, parent_product_in, targetGen, targetKey, "image");
-                return src;
             } else {
-                if(module!=null) src = "modules/"+module+"/"+src;
-                DependencyTracker.logImage(context, src, parent_part_in, parent_product_in, targetGen, targetKey, "image");
-                return src;
+                String uri = null;
+                if(module != null) {
+                    uri = "module://" + module + "/" + src;
+                    src = "modules/" + module + "/" + src;
+                } else {
+                    uri = "docroot:/" + src;
+                }
+                res = ResourceUtil.getResource(uri);
             }
+            DependencyTracker.logImage(context, res, parent_part_in, parent_product_in, targetGen, targetKey, "image");
+            return src;
         } else if (isThemedSrc(src, themed_path, themed_img)) {
             if (themed_path.startsWith("/")) {
                 themed_path = themed_path.substring(1);
@@ -136,25 +142,28 @@ public class ImageThemedSrc {
             for (int i = 0; i < themes.length; i++) {
                 String currtheme = themes[i];
                 testsrc = themed_path + "/" + currtheme + "/" + themed_img;
-                
+                String uri = null;
                 if(module!=null) {
-                    testsrc = "modules/"+module+"/"+testsrc;
+                    uri = "module://" + module + "/" + testsrc;
+                    testsrc = "modules/" + module + "/" + testsrc;
+                } else {
+                    uri = "docroot:/" + testsrc;
                 }
-                
+                Resource res = ResourceUtil.getResource(uri);
                 LOG.info("  -> Trying to find image src '" + testsrc + "'");
-                if (existsImage(testsrc)) {
+                if (res.exists()) {
                     LOG.info("    -> Found src '" + testsrc + "'");
-                    DependencyTracker.logImage(context, testsrc, parent_part_in, parent_product_in, targetGen, targetKey, "image");
+                    DependencyTracker.logImage(context, res, parent_part_in, parent_product_in, targetGen, targetKey, "image");
                     return testsrc;
                 }
                 if (i < (themes.length - 1)) {
                     // FIXME: the next commented line should be used sometime so we can discriminate between
                     // "real" missing and "missing, but we found a better version" -- but make sure editor copes with it.
                     //DependencyTracker.logImage(context, testsrc, parent_part_in, parent_product_in, targetGen, targetKey, "shadow");
-                    DependencyTracker.logImage(context, testsrc, parent_part_in, parent_product_in, targetGen, targetKey, "image");
+                    DependencyTracker.logImage(context, res, parent_part_in, parent_product_in, targetGen, targetKey, "image");
                     LOG.info("    -> Image src '" + testsrc + "' not found, trying next theme");
                 } else {
-                    DependencyTracker.logImage(context, testsrc, parent_part_in, parent_product_in, targetGen, targetKey, "image");
+                    DependencyTracker.logImage(context, res, parent_part_in, parent_product_in, targetGen, targetKey, "image");
                     LOG.warn("    -> No themed image found!");
                 }
             }
@@ -173,11 +182,6 @@ public class ImageThemedSrc {
 
     private static boolean isThemedSrc(String src, String path, String img) {
         return ((src == null || src.equals("")) && path != null && !path.equals("") && img != null && !img.equals(""));
-    }
-
-    private static boolean existsImage(String path) {
-        FileResource img = ResourceUtil.getFileResourceFromDocroot(path);
-        return (img.exists() && img.canRead() && img.isFile());
     }
 
 }

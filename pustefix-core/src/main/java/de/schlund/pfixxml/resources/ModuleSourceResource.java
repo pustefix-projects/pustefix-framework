@@ -67,4 +67,7 @@ public class ModuleSourceResource extends ModuleResource {
         return file.length();
     }
     
+    public File getFile() {
+        return file;
+    }
 }

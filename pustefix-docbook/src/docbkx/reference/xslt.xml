@@ -377,7 +377,7 @@
         external sites must be propagated via a special servlet, the <literal>de.schlund.pfixxml.DerefServer</literal>.
       </para>
       <para>
-        Every Pustefix project has this servlet configured to be accessible under the path <filename>/xml/deref</filename>.
+        Every Pustefix project has this servlet configured to be accessible under the path <filename>/deref</filename>.
         To make the handling of external URLs easier, there also exists a special tag <literal>&lt;pfx:elink&gt;</literal>
         that automates the creation of the correct link.
       </para>

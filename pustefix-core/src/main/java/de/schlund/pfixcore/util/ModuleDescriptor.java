@@ -49,6 +49,7 @@ public class ModuleDescriptor {
     
     private URL url;
     private String name;
+    private boolean contentEditable;
     private Map<String,Set<String>> moduleToResourcePaths = new HashMap<String,Set<String>>();
     private Map<String,Set<String>> moduleToResourcePathPatterns = new HashMap<String,Set<String>>();
     private List<String> staticPaths = new ArrayList<String>();
@@ -66,6 +67,14 @@ public class ModuleDescriptor {
     
     public String getName() {
         return name;
+    }
+    
+    public boolean isContentEditable() {
+        return contentEditable;
+    }
+    
+    public void setContentEditable(boolean contentEditable) {
+        this.contentEditable = contentEditable;
     }
     
     /**
@@ -138,6 +147,11 @@ public class ModuleDescriptor {
             String name = nameElem.getTextContent().trim();
             if(name.equals("")) throw new Exception("Text content of element 'module-name' must not be empty!");
             moduleInfo = new ModuleDescriptor(url, name);
+            Element editElem = getSingleChildElement(root, "content-editable", false);
+            if(editElem != null) {
+                boolean editable = Boolean.valueOf(editElem.getTextContent());
+                moduleInfo.setContentEditable(editable);
+            }
             Element overElem = getSingleChildElement(root, "override-modules", false);
             if(overElem != null) {
                 List<Element> modElems = getChildElements(overElem, "module");

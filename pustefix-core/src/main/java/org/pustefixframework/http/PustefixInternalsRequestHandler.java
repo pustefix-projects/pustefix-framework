@@ -36,7 +36,6 @@ import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Properties;
@@ -162,12 +161,7 @@ public class PustefixInternalsRequestHandler implements UriProvidingHttpRequestH
                    }
                    return;
                } else if(action.equals("invalidate")) {
-                   Set<String> sessionIds = sessionAdmin.getAllSessionIds();
-                   Iterator<String> it = sessionIds.iterator();
-                   while(it.hasNext()) {
-                       String sessionId = it.next();
-                       sessionAdmin.invalidateSession(sessionId);
-                   }
+                   sessionAdmin.invalidateSessions();
                    messageList.addMessage(Message.Level.INFO, "Invalidated sessions.");
                    res.sendRedirect(req.getContextPath()+ handlerURI + "#messages");
                    return;

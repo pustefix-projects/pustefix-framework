@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<site>
+   <description url="http://pustefixframework.org/eclipseplugin">
+      Pustefix-Eclipse-Plugin Update Site
+   </description>
+   <!--
+   <feature url="features/org.pustefixframework.ide.eclipse.plugin_0.1.0.jar" id="org.pustefixframework.ide.eclipse.plugin" version="0.1.0"/>
+   <feature url="features/org.pustefixframework.ide.eclipse.plugin_0.2.0.jar" id="org.pustefixframework.ide.eclipse.plugin" version="0.2.0"/>
+   <feature url="features/org.pustefixframework.ide.eclipse.plugin_0.3.0.jar" id="org.pustefixframework.ide.eclipse.plugin" version="0.3.0"/>
+   -->
+   <feature url="features/org.pustefixframework.ide.eclipse.plugin_1.0.0.jar" id="org.pustefixframework.ide.eclipse.plugin" version="1.0.0"/>
+</site>

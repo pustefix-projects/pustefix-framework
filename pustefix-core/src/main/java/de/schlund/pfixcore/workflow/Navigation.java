@@ -55,7 +55,7 @@ import de.schlund.pfixxml.util.Xml;
 import de.schlund.pfixxml.util.XsltVersion;
 
 public class Navigation {
-    private NavigationElement                   pageroot = new NavigationElement("__NONE__", "__NONE__");
+    private NavigationElement                   pageroot = new NavigationElement("__NONE__");
     private Map<String, NavigationElement> pagetonavi;
     
     private Set<Resource> fileDependencies = new HashSet<Resource>();
@@ -133,9 +133,7 @@ public class Navigation {
         for (int i = 0; i < nl.size(); i++) {
             Element page    = (Element) nl.get(i);
             String  name    = page.getAttribute("name");
-            String  handler = page.getAttribute("handler");
-            
-            NavigationElement elem = new NavigationElement(name, handler);
+            NavigationElement elem = new NavigationElement(name);
             pagetonavi.put(name, elem);
             parent.addChild(elem);
             List<Node> tmp = XPath.select(page, "./page");
@@ -154,13 +152,12 @@ public class Navigation {
     }
 
     public class NavigationElement {
+        
         private ArrayList<NavigationElement> children = new ArrayList<NavigationElement>();
         private String    name;
-        private String    handler;
         
-        public NavigationElement (String name, String handler) {
+        public NavigationElement (String name) {
             this.name = name;
-            this.handler = handler;
         }
         
         public void addChild(NavigationElement elem) {
@@ -169,10 +166,6 @@ public class Navigation {
         
         public String getName() {
             return name;
-        }
-        
-        public String getHandler() {
-            return handler;
         }
         
         public boolean hasChildren() {

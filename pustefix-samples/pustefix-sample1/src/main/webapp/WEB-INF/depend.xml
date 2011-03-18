@@ -29,6 +29,8 @@
     <page name="C"/>
 
     <page name="testchecks"/>
+    
+    <page name="moduletest"/>
 
     <config-include file="WEB-INF/fragments.xml" section="navigation"/>
     <config-include file="conf/fragments.xml" section="navigation" module="animal-module"/>
@@ -103,6 +105,8 @@
   </standardpage>
 
   <standardpage name="testchecks" xml="xml/one_frame.xml"/> 
+
+  <standardpage name="moduletest" xml="xml/frame.xml" module="common-module"/>
 
   <target name="generatedruntime.xsl" type="xml">
     <depxml name="xsl/generatedruntime.xsl"/>

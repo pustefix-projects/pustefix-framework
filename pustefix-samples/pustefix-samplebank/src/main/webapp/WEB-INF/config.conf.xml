@@ -83,9 +83,7 @@
   </pagerequest>
 
   <pagerequest name="accountoverview">
-    <authconstraint authpage="login">
-      <hasrole name="UNRESTRICTED" />
-    </authconstraint>
+    <authconstraint ref="CS_ACCOUNT"/>
     <input>
       <wrapper prefix="select" class="de.schlund.pfixcore.example.bank.iwrapper.SelectAccount" />
     </input>

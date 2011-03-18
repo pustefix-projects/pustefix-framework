@@ -132,13 +132,13 @@ public class TargetsResource {
                     Image image = i.next();
                     Element imageNode = resdoc.createSubNode(imagesNode, "image");
                     String path = image.getPath();
-                    String url;
+                    String url = projectPool.getURIForProject(projectsResource.getSelectedProject());
                     if (path.startsWith("docroot:/")) {
-                        url = projectPool.getURIForProject(projectsResource.getSelectedProject())
-                            + path.substring(10);
+                        url = url + path.substring(9);
+                    } else if(path.startsWith("module://")) {
+                        url = url + "modules/" + path.substring(9);
                     } else {
-                        url = projectPool.getURIForProject(projectsResource.getSelectedProject())
-                        + path;
+                        url = url + path;
                     }
                     imageNode.setAttribute("url", url);
                     imageNode.setAttribute("path", path);

@@ -9,7 +9,7 @@
   <pageflow name="mainflow" final="home">
     <flowstep name="home"/>
     <flowstep name="include"/>
-    <flowstep name="dyanmic"/>
+    <flowstep name="dynamic"/>
   </pageflow>
 
   <pagerequest name="home">

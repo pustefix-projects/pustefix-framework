@@ -30,12 +30,9 @@
   <application>
     
     <docroot-path>docroot:/docroot</docroot-path>
-    <default-path>/xml/main</default-path>
     
     <context-xml-service>
-      <path>/xml/main</path>
       <config-file>docroot:/WEB-INF/edit.conf.xml</config-file>
-      <additional-trail-info>de.schlund.pfixxml.perflogging.DefaultAdditionalTrailInfoImpl</additional-trail-info>
       <choose>
         <when test="$mode='prod'">
           <session-cleaner-timeout>20</session-cleaner-timeout>

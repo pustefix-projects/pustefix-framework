@@ -34,6 +34,7 @@ import org.pustefixframework.config.customization.CustomizationInfo;
 import org.pustefixframework.config.directoutputservice.DirectOutputPageRequestConfig;
 import org.pustefixframework.config.directoutputservice.DirectOutputServiceConfig;
 import org.pustefixframework.config.generic.ParsingUtils;
+import org.pustefixframework.config.project.SessionTimeoutInfo;
 import org.pustefixframework.config.project.SessionTrackingStrategyInfo;
 import org.pustefixframework.http.PustefixContextDirectOutputRequestHandler;
 import org.springframework.beans.factory.config.BeanDefinition;
@@ -118,6 +119,7 @@ public class PustefixContextDirectOutputRequestHandlerParsingHandler extends Cus
             stateMap.put(pConfig.getPageName(), new RuntimeBeanReference(pConfig.getBeanName()));
         }
         SessionTrackingStrategyInfo strategyInfo = ParsingUtils.getSingleTopObject(SessionTrackingStrategyInfo.class, context);
+        SessionTimeoutInfo timeoutInfo = ParsingUtils.getFirstTopObject(SessionTimeoutInfo.class, context, false);
         
         BeanNameGenerator nameGenerator = new DefaultBeanNameGenerator();
         BeanDefinitionBuilder beanBuilder;
@@ -142,6 +144,9 @@ public class PustefixContextDirectOutputRequestHandlerParsingHandler extends Cus
         beanBuilder.addPropertyValue("configuration", config);
         beanBuilder.addPropertyValue("sessionAdmin", new RuntimeBeanReference(SessionAdmin.class.getName()));
         beanBuilder.addPropertyValue("sessionTrackingStrategy", strategyInfo.getSessionTrackingStrategyInstance());
+        if(timeoutInfo != null) {
+            beanBuilder.addPropertyValue("sessionTimeoutInfo", timeoutInfo);
+        }
         beanDefinition = beanBuilder.getBeanDefinition();
         registry.registerBeanDefinition(nameGenerator.generateBeanName(beanDefinition, registry), beanDefinition);
     }

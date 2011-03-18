@@ -147,8 +147,7 @@ public abstract class CommonIncludePartThemeVariantImpl extends
      */
     public void setXML(Node xml, boolean indent) throws EditorIOException,
             EditorParsingException, EditorSecurityException {
-        File xmlFile = new File(this.pathresolver.resolve(this.getIncludePart()
-                .getIncludeFile().getPath()));
+        File xmlFile = this.pathresolver.resolve(this.getIncludePart().getIncludeFile().getPath());
         Object lock = this.filesystem.getLock(xmlFile);
         synchronized (lock) {
             Document doc;
@@ -425,6 +424,10 @@ public abstract class CommonIncludePartThemeVariantImpl extends
         return md5;
     }
 
+    public boolean isReadOnly() {
+        return part.getIncludeFile().isReadOnly();
+    }
+    
     public Collection<String> getBackupVersions() {
         return backup.listIncludeVersions(this);
     }

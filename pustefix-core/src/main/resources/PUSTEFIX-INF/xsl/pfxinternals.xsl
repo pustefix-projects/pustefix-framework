@@ -150,7 +150,7 @@
               var e = c[i].indexOf("=");
               var n = e > -1 ? c[i].substr(0,e) : c[i];
               if(n != "") {
-                document.cookie = n + "=;expires=Thu, 01 Jan 1970 00:00:00 GMT";
+                document.cookie = n + "=;path=<xsl:value-of select="$__contextpath"/>;expires=Thu, 01 Jan 1970 00:00:00 GMT";
                 d++;
               }
             }

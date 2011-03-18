@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="UTF-8"?><include_parts xmlns:ixsl="http://www.w3.org/1999/XSL/Transform" xmlns:pfx="http://www.schlund.de/pustefix/core">
+  
+  <part name="appname">
+    <theme name="default">
+      Sample1
+    </theme>
+  </part>
+
+</include_parts>

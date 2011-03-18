@@ -33,9 +33,11 @@ import javax.servlet.ServletContext;
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import javax.servlet.http.HttpSession;
 
 import org.apache.log4j.Logger;
 import org.pustefixframework.config.contextxmlservice.ServletManagerConfig;
+import org.pustefixframework.config.project.SessionTimeoutInfo;
 import org.pustefixframework.container.spring.http.UriProvidingHttpRequestHandler;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.web.context.ServletContextAware;
@@ -68,6 +70,8 @@ public abstract class AbstractPustefixRequestHandler implements SessionTrackingS
     private static final String          SERVLET_ENCODING              = "servlet.encoding";
     
     public static final String SESSION_ATTR_COOKIE_SESSION = "__PFX_SESSION_FROM_COOKIE__";
+    private static final String SESSION_ATTR_REQUEST_COUNT = "__PFX_REQUEST_COUNT__";
+    private static final String SESSION_ATTR_ORIGINAL_TIMEOUT = "__PFX_SESSION_ORIGINAL_TIMEOUT__";
     
     public static Logger                       LOGGER_VISIT                  = Logger.getLogger("LOGGER_VISIT");
     private static Logger                       LOG                           = Logger.getLogger(AbstractPustefixRequestHandler.class);
@@ -78,6 +82,7 @@ public abstract class AbstractPustefixRequestHandler implements SessionTrackingS
     private ExceptionProcessingConfiguration exceptionProcessingConfig;
     protected SessionTrackingStrategy sessionTrackingStrategy;
     private BotSessionTrackingStrategy botSessionTrackingStrategy;
+    private SessionTimeoutInfo sessionTimeoutInfo;
     
     public abstract ServletManagerConfig getServletManagerConfig();
 
@@ -183,6 +188,28 @@ public abstract class AbstractPustefixRequestHandler implements SessionTrackingS
 
 
     public void callProcess(PfixServletRequest preq, HttpServletRequest req, HttpServletResponse res) throws ServletException, IOException {
+        
+        if(sessionTimeoutInfo != null) {
+            HttpSession session = req.getSession(false);
+            if(session != null) {
+                Integer count = (Integer)session.getAttribute(SESSION_ATTR_REQUEST_COUNT);
+                if(count == null) {
+                    count = 1;
+                    session.setAttribute(SESSION_ATTR_ORIGINAL_TIMEOUT, session.getMaxInactiveInterval());
+                    session.setMaxInactiveInterval(sessionTimeoutInfo.getInitialTimeout());
+                } else {
+                    if(count == sessionTimeoutInfo.getRequestLimit()) {
+                        Integer origTimeout = (Integer)session.getAttribute(SESSION_ATTR_ORIGINAL_TIMEOUT);
+                        if(origTimeout != null) {
+                            session.setMaxInactiveInterval(origTimeout);
+                        }
+                    }
+                    count++;
+                }
+                session.setAttribute(SESSION_ATTR_REQUEST_COUNT, count);
+            }
+        }
+        
         try {
             res.setContentType(DEF_CONTENT_TYPE);
             process(preq, res);
@@ -326,6 +353,10 @@ public abstract class AbstractPustefixRequestHandler implements SessionTrackingS
     
     public void setSessionTrackingStrategy(SessionTrackingStrategy strategy) {
         this.sessionTrackingStrategy = strategy;
+    }
+    
+    public void setSessionTimeoutInfo(SessionTimeoutInfo sessionTimeoutInfo) {
+        this.sessionTimeoutInfo = sessionTimeoutInfo;
     }
     
     public void setExceptionProcessingConfiguration(ExceptionProcessingConfiguration exceptionProcessingConfig) {

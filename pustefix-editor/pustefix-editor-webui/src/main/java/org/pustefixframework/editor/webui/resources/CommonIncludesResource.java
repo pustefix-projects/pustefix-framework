@@ -50,6 +50,7 @@ import org.xml.sax.SAXException;
 
 import de.schlund.pfixcore.beans.InsertStatus;
 import de.schlund.pfixcore.editor2.core.dom.SessionInfo;
+import de.schlund.pfixcore.editor2.core.spring.ProjectPool;
 import de.schlund.pfixcore.editor2.core.spring.SecurityManagerService;
 import de.schlund.pfixxml.ResultDocument;
 import de.schlund.pfixxml.util.Xml;
@@ -59,6 +60,8 @@ public abstract class CommonIncludesResource {
     private SessionInfoStore sessionInfoStore;
     
     private ProjectsResource projectsResource;
+
+    private ProjectPool projectPool;
     
     protected SecurityManagerService securitymanager;
     
@@ -108,6 +111,7 @@ public abstract class CommonIncludesResource {
             } else {
                 currentInclude.setAttribute("mayEdit", "false");
             }
+            currentInclude.setAttribute("readOnly", String.valueOf(this.selectedIncludePart.isReadOnly()));
 
             // Render possible new branches
             Collection<Page> pages = this.selectedIncludePart.getAffectedPages();
@@ -173,6 +177,17 @@ public abstract class CommonIncludesResource {
                     Element imageNode = resdoc.createSubNode(imagesNode, "image");
                     imageNode.setAttribute("path", image.getPath());
                     imageNode.setAttribute("modtime", Long.toString(image.getLastModTime()));
+                    
+                    String path = image.getPath();
+                    String url = projectPool.getURIForProject(project);
+                    if (path.startsWith("docroot:/")) {
+                        url = url + path.substring(9);
+                    } else if(path.startsWith("module://")) {
+                        url = url + "modules/" + path.substring(9);
+                    } else {
+                        url = url + path;
+                    }
+                    imageNode.setAttribute("url", url);
                 }
             }
 
@@ -603,7 +618,7 @@ public abstract class CommonIncludesResource {
         if (!this.securitymanager.mayEditIncludes(project)) {
             return false;
         }
-
+        
         Node xmlNode = includePartThemeVariant.getIncludePart().getContentXML();
         if (xmlNode.getNodeType() == Node.ELEMENT_NODE) {
             Element xmlElement = (Element) xmlNode;
@@ -622,6 +637,11 @@ public abstract class CommonIncludesResource {
         this.projectsResource = projectsResource;
     }
 
+    @Inject
+    public void setProjectPool(ProjectPool projectPool) {
+        this.projectPool = projectPool;
+    }
+    
     @Inject
     public void setSessionInfoStore(SessionInfoStore sessionInfoStore) {
         this.sessionInfoStore = sessionInfoStore;

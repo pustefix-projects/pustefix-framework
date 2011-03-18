@@ -109,4 +109,7 @@ public interface IncludeFile extends Comparable<IncludeFile> {
      * @return Number identifying the current version
      */
     long getSerial();
+    
+    boolean isReadOnly();
+    
 }

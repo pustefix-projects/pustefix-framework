@@ -68,7 +68,6 @@ public class RemotePageServiceImpl implements RemotePageService {
         PageTO to = new PageTO();
         to.name = page.getName();
         to.variant = (page.getVariant() == null) ? null : page.getVariant().getName();
-        to.handlerPath = page.getHandlerPath();
         if (page.getPageTarget() != null) {
             to.target = page.getPageTarget().getName();
         }

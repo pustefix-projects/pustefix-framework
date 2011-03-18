@@ -31,7 +31,7 @@
   <xsl:param name="__application_url"/>
   <xsl:param name="themes"/>
   <xsl:param name="prohibitEdit">no</xsl:param>
-  <xsl:param name="__defining_module"/>
+  <xsl:param name="__defining_module">WEBAPP</xsl:param>
 
   <xsl:template match="pfx:langselect">
     <xsl:param name="__env"/>

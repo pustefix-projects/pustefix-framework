@@ -18,11 +18,15 @@
 
 package de.schlund.pfixcore.editor2.core.spring;
 
+import java.io.File;
 import java.net.URL;
 
 import org.pustefixframework.live.LiveResolver;
 
 import de.schlund.pfixxml.config.GlobalConfig;
+import de.schlund.pfixxml.resources.ModuleSourceResource;
+import de.schlund.pfixxml.resources.Resource;
+import de.schlund.pfixxml.resources.ResourceUtil;
 
 /**
  * Implementation using {@link de.schlund.pfixxml.config.GlobalConfig} to get
@@ -47,13 +51,17 @@ public class PathResolverServiceImpl implements PathResolverService {
      * 
      * @see de.schlund.pfixcore.editor2.core.spring.PathResolverService#resolve(java.lang.String)
      */
-    public String resolve(String path) {
+    public File resolve(String path) {
         URL url;
 
         if (path.startsWith("docroot:")) {
             path = path.substring(9);
         } else if (path.startsWith("module:")) {
-            return path;
+            Resource res = ResourceUtil.getResource(path);
+            if(res != null && res instanceof ModuleSourceResource){
+                return ((ModuleSourceResource)res).getFile();
+            }
+            return null;
         }
         if (!path.startsWith("/")) {
             path = "/" + path;
@@ -65,12 +73,13 @@ public class PathResolverServiceImpl implements PathResolverService {
         }
         if (url != null) {
             if (url.getProtocol().equals("file")) {
-                return url.getFile() + path;
+                return new File(url.getFile() + path);
             } else {
                 throw new IllegalStateException("file protocol expected, got " + url.getProtocol());
             }
         } else {
-            return docroot + path;
+            return new File(docroot + path);
         }
+        
     }
 }

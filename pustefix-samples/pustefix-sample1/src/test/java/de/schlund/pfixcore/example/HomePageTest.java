@@ -20,6 +20,7 @@ package de.schlund.pfixcore.example;
 import javax.servlet.ServletContext;
 
 import org.junit.Assert;
+import org.pustefixframework.http.AbstractPustefixRequestHandler;
 import org.pustefixframework.http.PustefixContextXMLRequestHandler;
 import org.pustefixframework.test.PustefixWebApplicationContextLoader;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -51,8 +52,10 @@ public class HomePageTest extends AbstractJUnit38SpringContextTests {
         MockHttpSession session = new MockHttpSession(servletContext);
         req.setSession(session);
         RequestContextHolder.setRequestAttributes(new ServletRequestAttributes(req));
+        session.setAttribute(AbstractPustefixRequestHandler.VISIT_ID, "foo");
         
         requestHandler.handleRequest(req, res);
+        System.out.println(res.getStatus());
         Assert.assertTrue(res.getContentAsString(), res.getContentAsString().contains("<title>Pustefix Sample</title>"));
     }
 

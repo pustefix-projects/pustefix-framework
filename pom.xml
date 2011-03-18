@@ -4,14 +4,15 @@
 
   <groupId>org.pustefixframework</groupId>
   <artifactId>pustefixframework</artifactId>
-  <version>0.16.0-SNAPSHOT</version>
+  <version>0.16.6-SNAPSHOT</version>
   <packaging>pom</packaging>
   <name>Pustefix Framework</name>
-  <!--<url>http://pustefixframework.org</url>-->
+  <url>http://pustefix-framework.org</url>
+  <description>Pustefix Web Application Framework</description>
 
   <licenses>
     <license>
-      <name>LGPL</name>
+      <name>GNU Lesser General Public License, Version 2.1</name>
       <url>http://www.gnu.org/licenses/lgpl-2.1.txt</url>
       <distribution>repo</distribution>
     </license>
@@ -28,9 +29,9 @@
   </issueManagement>
 
   <scm>
-    <connection>scm:svn:https://pustefix.svn.sourceforge.net/svnroot/pustefix/branches/release-0.15.x</connection>
-    <developerConnection>scm:svn:https://pustefix.svn.sourceforge.net/svnroot/pustefix/branches/release-0.15.x</developerConnection>
-    <url>http://dev.pustefix-framework.org/browser/branches/release-0.15.x</url>
+    <connection>scm:svn:https://pustefix.svn.sourceforge.net/svnroot/pustefix/branches/release-0.16.x</connection>
+    <developerConnection>scm:svn:https://pustefix.svn.sourceforge.net/svnroot/pustefix/branches/release-0.16.x</developerConnection>
+    <url>http://dev.pustefix-framework.org/browser/branches/release-0.16.x</url>
   </scm>
 
   <properties>
@@ -49,19 +50,9 @@
 
   <developers>
     <developer>
-      <name>Jens Lautenbacher</name>
-      <id>jenstl</id>
-      <email>jenstl@users.sourceforge.net</email>
-      <organization>United Internet</organization>
-      <roles>
-        <role>Java Development</role>
-      </roles>
-      <timezone>+1</timezone>
-    </developer>
-    <developer>
       <name>Martin Leidig</name>
       <id>mtld</id>
-      <email>mtld@users.sourceforge.net</email>
+      <email>mtld@schlund.de</email>
       <organization>United Internet</organization>
       <roles>
         <role>Java Development</role>
@@ -79,9 +70,19 @@
       <timezone>+1</timezone>
     </developer>
     <developer>
+      <name>Jens Lautenbacher</name>
+      <id>jenstl</id>
+      <email>jenstl@users.sourceforge.net</email>
+      <organization>United Internet</organization>
+      <roles>
+        <role>Java Development</role>
+      </roles>
+      <timezone>+1</timezone>
+    </developer>
+    <developer>
       <name>Michael Hartmeier</name>
       <id>mlhartme</id>
-      <email>mlhartme@users.sourceforge.net</email>
+      <email>mlhartme@michael.hartmeier@1und1.de</email>
       <organization>United Internet</organization>
       <roles>
         <role>Java Development</role>
@@ -169,9 +170,6 @@
            <artifactId>maven-release-plugin</artifactId>
            <version>2.1</version>
            <configuration>
-             <!-- TODO: also building the site failed persistently with !ClassNotFoundException for !GlobalConfig 
-                      (yes, I tried mvn install, it did not help). -->
-             <goals>deploy</goals>
              <!-- Workaround for http://jira.codehaus.org/browse/MRELEASE-271 -->
              <preparationGoals>clean install</preparationGoals>
            </configuration>
@@ -205,44 +203,73 @@
   </reporting> 
   <distributionManagement>
     <repository>
-      <id>pustefix</id>
-      <name>Pustefix Maven Release Repository</name>
-      <url>scpexe://pustefix@pustefix-hp.schlund.de/home/pustefix/repository/maven</url>
-      <uniqueVersion>false</uniqueVersion>
+      <id>sonatype-nexus-staging</id>
+      <name>Sonatype Nexus Staging Repository</name>
+      <url>https://oss.sonatype.org/service/local/staging/deploy/maven2/</url>
     </repository>
     <snapshotRepository>
-      <id>pustefix-snapshots</id>
-      <name>Pustefix Maven Snapshot Repository</name>
-      <url>scpexe://pustefix@pustefix-hp.schlund.de/home/pustefix/repository/maven</url>
-      <uniqueVersion>true</uniqueVersion>
+      <id>sonatype-nexus-snapshots</id>
+      <name>Sonatype Nexus Snapshots Repository</name>
+      <url>https://oss.sonatype.org/content/repositories/snapshots/</url>
     </snapshotRepository>
     <site>
       <id>pustefix</id>
-      <url>scpexe://pustefix@pustefix-hp.schlund.de/home/pustefix/www/pustefix-docs/0.15.x</url>
+      <url>scpexe://pustefix@pustefix-hp.schlund.de/home/pustefix/www/pustefix-docs/0.16.x</url>
     </site>
   </distributionManagement>
+  
   <profiles>
     <profile>
-      <id>oneandone</id>
-      <properties>
-        <oneandone.releases>http://mavenrepo.united.domain:8081/nexus/content/repositories/1und1-stable</oneandone.releases>
-        <oneandone.snapshots>http://mavenrepo.united.domain:8081/nexus/content/repositories/1und1-snapshots</oneandone.snapshots>
-        <oneandone.tools.releases>http://mavenrepo.united.domain:8081/nexus/content/repositories/1und1-tools-releases</oneandone.tools.releases>
-        <oneandone.tools.snapshots>http://mavenrepo.united.domain:8081/nexus/content/repositories/1und1-tools-snapshots</oneandone.tools.snapshots>
-      </properties>
-      <distributionManagement>
-        <repository>
-          <id>oneandone-releases</id>
-          <url>${oneandone.releases}</url>
-        </repository>
-        <snapshotRepository>
-          <id>oneandone-snapshots</id>
-          <url>${oneandone.snapshots}</url>
-        </snapshotRepository>
-      </distributionManagement>
+      <id>release-signed-artifacts</id>
+      <activation>
+        <property>
+          <name>performRelease</name>
+          <value>true</value>
+        </property>
+      </activation>
+      <build>
+        <plugins>
+          <plugin>
+            <groupId>org.apache.maven.plugins</groupId>
+            <artifactId>maven-enforcer-plugin</artifactId>
+            <executions>
+              <execution>
+                <id>enforce-gpg-passphrase</id>
+                <goals>
+                  <goal>enforce</goal>
+                </goals>
+                <configuration>
+                  <rules>
+                    <requireProperty>
+                      <property>gpg.passphrase</property>
+                    </requireProperty>
+                  </rules>
+                  <fail>true</fail>
+                </configuration>
+              </execution>
+            </executions>
+          </plugin>
+          <plugin>
+            <groupId>org.apache.maven.plugins</groupId>
+            <artifactId>maven-gpg-plugin</artifactId>
+            <executions>
+              <execution>
+                <id>sign-artifacts</id>
+                <phase>verify</phase>
+                <configuration>
+                  <passphrase>${gpg.passphrase}</passphrase>
+                </configuration>
+                <goals>
+                  <goal>sign</goal>
+                </goals>
+              </execution>
+            </executions>
+          </plugin>
+        </plugins>
+      </build>
     </profile>
   </profiles>
- 
+
   <modules>
     <module>pustefix-libs</module>
     <module>pustefix-webservices</module>

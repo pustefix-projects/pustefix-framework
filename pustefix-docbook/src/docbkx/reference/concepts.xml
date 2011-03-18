@@ -61,7 +61,7 @@
         <title>DerefRequestHandler</title>
         <para>
           This is a small request handler that should be used whenever a link to a URL outside the own site is made. All such
-          external links must be of the form <uri>/xml/deref?link=http://some.other.domain/foo/bar</uri>. This is important
+          external links must be of the form <uri>/deref?link=http://some.other.domain/foo/bar</uri>. This is important
           because for any link that goes directly to a foreign destination (e.g. <literal>&lt;a href="http://some.other.domain/foo/bar"&gt;</literal>)
           the session id visible in the logfile of the foreign site's webserver (via the Referer header). This is of course
           a security problem. Using the <literal>DerefServlet</literal> avoids this by using a redirect loop so the <literal>Referer</literal>
@@ -328,8 +328,8 @@ public interface State {
                   PageRequests).</para>
                 </td>
                 <td>
-                  Supplied by the request via either the third request path element (e.g.
-                  http://host.dom/xml/config/PAGE?...) or if this is not given via the request parameter
+                  Supplied by the request via either the first request path element (e.g.
+                  http://host.dom/PAGE?...) or if this is not given via the request parameter
                   <code>__page</code>.
                   
                   <para> In Pustefix, this is usually transparent to the user: For POST requests, use the

@@ -19,6 +19,7 @@
 package org.pustefixframework.config.project.parser;
 
 import org.pustefixframework.config.Constants;
+import org.pustefixframework.config.project.SessionTimeoutInfo;
 import org.pustefixframework.config.project.SessionTrackingStrategyInfo;
 import org.pustefixframework.http.BotSessionTrackingStrategy;
 import org.pustefixframework.http.CookieSessionTrackingStrategy;
@@ -36,7 +37,7 @@ import com.marsching.flexiparse.parser.exception.ParserException;
  * @author mleidig@schlund.de
  *
  */
-public class SessionTrackingStrategyInfoParsingHandler implements ParsingHandler {
+public class SessionInfoParsingHandler implements ParsingHandler {
     
     public void handleNode(HandlerContext context) throws ParserException {
         
@@ -62,8 +63,20 @@ public class SessionTrackingStrategyInfoParsingHandler implements ParsingHandler
         } else throw new ParserException("Multiple session-tracking-strategy elements found");
        
         strategyInfo.setSessionTrackingStrategy(clazz);
-        
         context.getObjectTreeElement().addObject(strategyInfo);
+        
+        nodes = elem.getElementsByTagNameNS(Constants.NS_PROJECT, "initial-session-timeout");
+        if(nodes.getLength() == 1) {
+            Element node = (Element)nodes.item(0);
+            int timeout = Integer.parseInt(node.getAttribute("value"));
+            int limit = Integer.parseInt(node.getAttribute("requestlimit"));
+            SessionTimeoutInfo info = new SessionTimeoutInfo();
+            info.setInitialTimeout(timeout);
+            info.setRequestLimit(limit);
+            context.getObjectTreeElement().addObject(info);
+        } else if(nodes.getLength() > 1) {
+            throw new ParserException("Multiple initial-session-timeout elements found");
+        }
         
     }
     

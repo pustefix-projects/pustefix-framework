@@ -4,6 +4,7 @@ import java.io.IOException;
 import java.text.NumberFormat;
 import java.text.SimpleDateFormat;
 import java.util.Date;
+import java.util.Enumeration;
 import java.util.HashMap;
 import java.util.LinkedList;
 
@@ -118,7 +119,7 @@ public class CookieSessionTrackingStrategy implements SessionTrackingStrategy {
                 String forcelocal = req.getParameter(PARAM_FORCELOCAL);
                 if (forcelocal != null && (forcelocal.equals("1") || forcelocal.equals("true") || forcelocal.equals("yes"))) {
                     LOG.debug("    ... but found __forcelocal parameter to be set.");
-                } else if(req.isRequestedSessionIdFromURL()) {
+                } else {
                     LOG.debug("    ... and __forcelocal is NOT set.");
                     redirectToClearedRequest(req, res);
                     return;
@@ -191,6 +192,34 @@ public class CookieSessionTrackingStrategy implements SessionTrackingStrategy {
 
         LOG.debug("*** >>> End of redirection management, handling request now.... <<< ***\n");
 
+        if(session != null) {
+            if(session.getAttribute(VISIT_ID) == null) {
+                StringBuilder sb = new StringBuilder();
+                sb.append("Found session without visit_id: ");
+                sb.append(req.getRemoteAddr()).append("|");
+                sb.append(req.getRequestURI()).append("|");
+                sb.append(session.getId()).append("|");
+                SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss,SSS");
+                sb.append(format.format(new Date(session.getCreationTime()))).append("|");
+                sb.append(format.format(new Date(session.getLastAccessedTime()))).append("|");
+                Enumeration<?> e = session.getAttributeNames();
+                while(e.hasMoreElements()) sb.append(e.nextElement()).append("|");
+                e = req.getHeaderNames();
+                while(e.hasMoreElements()) {
+                    String name = (String)e.nextElement();
+                    Enumeration<?> v = req.getHeaders(name);
+                    while(v.hasMoreElements()) {
+                        String value = (String)v.nextElement();
+                        sb.append(name).append(":").append(value).append("|");
+                    }
+                }
+                LOG.warn(sb.toString());
+                session.invalidate();
+                redirectToClearedRequest(req, res);
+                return;
+            }
+        }
+        
         context.callProcess(preq, req, res);
     }
    
@@ -233,6 +262,12 @@ public class CookieSessionTrackingStrategy implements SessionTrackingStrategy {
     private void redirectToClearedRequest(HttpServletRequest req, HttpServletResponse res) {
         LOG.debug("===> Redirecting to cleared Request URL");
         String redirect_uri = SessionHelper.getClearedURL(req.getScheme(), AbstractPustefixRequestHandler.getServerName(req), req, context.getServletManagerConfig().getProperties());
+        if(req.isRequestedSessionIdFromCookie()) {
+            Cookie cookie = new Cookie("JSESSIONID", "");
+            cookie.setMaxAge(0);
+            cookie.setPath((req.getContextPath().equals("")) ? "/" : req.getContextPath());
+            res.addCookie(cookie);
+        }
         AbstractPustefixRequestHandler.relocate(res, HttpServletResponse.SC_MOVED_PERMANENTLY, redirect_uri);
     }
     
@@ -249,6 +284,7 @@ public class CookieSessionTrackingStrategy implements SessionTrackingStrategy {
             LOG.debug("*** reusing existing session for jump http=>https");
         }
         HttpSession session = req.getSession(true);
+        LOG.warn("SESSION1|" + session.getId());
         if (!reuse_session) {
             registerSession(req, session);
         }
@@ -264,6 +300,7 @@ public class CookieSessionTrackingStrategy implements SessionTrackingStrategy {
     
     private void redirectToSession(PfixServletRequest preq, HttpServletRequest req, HttpServletResponse res) {
         HttpSession session = req.getSession(true);
+        LOG.warn("GETSESSION2|" + session.getId());
         registerSession(req, session);
         LOG.debug("===> Redirecting to URL with session (Id: " + session.getId() + ")");
         session.setAttribute(STORED_REQUEST, preq);
@@ -274,6 +311,7 @@ public class CookieSessionTrackingStrategy implements SessionTrackingStrategy {
     
     private void redirectToSSLSession(PfixServletRequest preq, HttpServletRequest req, HttpServletResponse res) {
         HttpSession session = req.getSession(true);
+        LOG.warn("GETSESSION3|" + session.getId());
         registerSession(req, session);
 
         LOG.debug("===> Redirecting to URL with session (Id: " + session.getId() + ")");
@@ -304,6 +342,7 @@ public class CookieSessionTrackingStrategy implements SessionTrackingStrategy {
         LOG.debug("*** Invalidation old session (Id: " + old_id + ")");
         session.invalidate();
         session = req.getSession(true);
+        LOG.warn("GETSESSION4|" + session.getId());
 
         // First of all we put the old session id into the new session (__PARENT_SESSION_ID__)
         session.setAttribute(SessionAdmin.PARENT_SESS_ID, old_id);
@@ -372,6 +411,7 @@ public class CookieSessionTrackingStrategy implements SessionTrackingStrategy {
         // only used for the jump to SSL so we can get the cookie to check the identity of the caller.
         String parentid = req.getRequestedSessionId();
         HttpSession session = req.getSession(true);
+        LOG.warn("GETSESSION5|" + session.getId());
         session.setAttribute(CHECK_FOR_RUNNING_SSL_SESSION, parentid);
         LOG.debug("*** Setting INSECURE flag in session (Id: " + session.getId() + ")");
         session.setAttribute(SessionAdmin.SESSION_IS_SECURE, Boolean.FALSE);
@@ -391,6 +431,7 @@ public class CookieSessionTrackingStrategy implements SessionTrackingStrategy {
         HttpSession child = context.getSessionAdmin().getChildSessionForParentId(parentid);
         String curr_visit_id = (String) child.getAttribute(VISIT_ID);
         HttpSession session = req.getSession(true);
+        LOG.warn("GETSESSION6|" + session.getId());
 
         LinkedList<TrailElement> traillog = context.getSessionAdmin().getInfo(child).getTraillog();
         session.setAttribute(VISIT_ID, curr_visit_id);

@@ -121,7 +121,7 @@ public class TargetAuxDepImpl extends AbstractTarget {
      */
     public Document getContentXML() throws EditorIOException,
             EditorParsingException {
-        File file = new File(this.pathresolver.resolve(auxdep.getPath().toURI().toString()));
+        File file = this.pathresolver.resolve(auxdep.getPath().toURI().toString());
         Object lock = this.filesystem.getLock(file);
         synchronized (lock) {
             try {
