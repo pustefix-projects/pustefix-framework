@@ -32,10 +32,7 @@
         -->
         <include-cache capacity="50"/>
         <target-cache capacity="50"/>
-        <!-- Configure cache statistic.
-             Defaults (should work for the most cases and element can be left out):
-             <cache-statistic queuesize="60" queueticks="60000"/>
-        -->
+        <render-cache capacity="50"/>
       </when>
     </choose>
   </xml-generator>

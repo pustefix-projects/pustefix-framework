@@ -40,11 +40,6 @@ public class TargetGeneratorTest extends TestCase {
     static {
         if(GlobalConfig.getDocroot()==null) GlobalConfigurator.setDocroot(DOCROOT.getAbsolutePath());
     }
-
-    @Override
-    protected void tearDown() throws Exception {
-        TargetGeneratorFactory.getInstance().reset();
-    }
     
     public void testEmpty() throws Exception {
 
