@@ -21,11 +21,9 @@ import java.net.URI;
 
 import org.apache.log4j.Logger;
 
-import de.schlund.pfixxml.resources.FileResource;
 import de.schlund.pfixxml.resources.Resource;
 import de.schlund.pfixxml.resources.ResourceUtil;
 import de.schlund.pfixxml.targets.TargetGenerator;
-import de.schlund.pfixxml.targets.TargetGeneratorFactory;
 import de.schlund.pfixxml.targets.VirtualTarget;
 import de.schlund.pfixxml.util.XsltContext;
     
@@ -45,7 +43,7 @@ public class ImageThemedSrc {
     /** xslt extension */
     public static String getSrc(XsltContext context, String src, String themed_path, String themed_img,
                                 String parent_part_in, String parent_product_in,
-                                String targetGen, String targetKey, String module, String search) throws Exception {
+                                TargetGenerator targetGen, String targetKey, String module, String search) throws Exception {
         
         boolean dynamic = false;
         if(search != null && !search.trim().equals("")) {
@@ -68,16 +66,14 @@ public class ImageThemedSrc {
         }
         
         String[]        themes    = null;
-        FileResource    tgen_path = ResourceUtil.getFileResource(targetGen);
-        TargetGenerator gen       = TargetGeneratorFactory.getInstance().createGenerator(tgen_path);
           
         VirtualTarget target = null;
         if (!targetKey.equals("__NONE__")) {
-            target = (VirtualTarget) gen.getTarget(targetKey);
+            target = (VirtualTarget) targetGen.getTarget(targetKey);
             themes               = target.getThemes().getThemesArr();
         }
         if (themes == null) {
-            themes = gen.getGlobalThemes().getThemesArr();
+            themes = targetGen.getGlobalThemes().getThemesArr();
         }
         
         if (isSimpleSrc(src, themed_path, themed_img)) {
@@ -87,7 +83,7 @@ public class ImageThemedSrc {
             Resource res;
             LOG.debug("  -> Register image src '" + src + "'");
             if(dynamic) {
-                String uri =  "dynamic:/"+src+"?project="+gen.getName();
+                String uri =  "dynamic:/"+src+"?project="+targetGen.getName();
                 if(module != null) uri += "&module="+module;
                 res = ResourceUtil.getResource(uri);
                 URI resUri = res.toURI();
@@ -122,7 +118,7 @@ public class ImageThemedSrc {
                     themeParam += themes[i];
                     if(i<themes.length-1) themeParam += ",";
                 }
-                String uri =  "dynamic:/" + themed_path +"/THEME/" + themed_img +"?project="+gen.getName();
+                String uri =  "dynamic:/" + themed_path +"/THEME/" + themed_img +"?project="+targetGen.getName();
                 uri += themeParam;
                 if(module != null) uri += "&module="+module;
                 Resource res = ResourceUtil.getResource(uri);

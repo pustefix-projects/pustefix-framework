@@ -35,11 +35,9 @@ import org.xml.sax.SAXException;
 
 import de.schlund.pfixxml.resources.DynamicResourceInfo;
 import de.schlund.pfixxml.resources.DynamicResourceProvider;
-import de.schlund.pfixxml.resources.FileResource;
 import de.schlund.pfixxml.resources.Resource;
 import de.schlund.pfixxml.resources.ResourceUtil;
 import de.schlund.pfixxml.targets.TargetGenerator;
-import de.schlund.pfixxml.targets.TargetGeneratorFactory;
 import de.schlund.pfixxml.targets.VirtualTarget;
 import de.schlund.pfixxml.util.ExtensionFunctionUtils;
 import de.schlund.pfixxml.util.URIParameters;
@@ -93,7 +91,7 @@ public final class IncludeDocumentExtension {
      * @throws Exception on all errors
      */
     public static final Object get(XsltContext context, String path_str, String part,
-                                   String targetgen, String targetkey,
+                                   TargetGenerator targetgen, String targetkey,
                                    String parent_part_in, String parent_theme_in, String computed_inc,
                                    String module, String search) throws Exception {
        
@@ -112,7 +110,6 @@ public final class IncludeDocumentExtension {
         String       parent_uri_str  = "";
         String       parent_part     = "";
         String       parent_theme    = "";
-        FileResource tgen_path       = ResourceUtil.getFileResource(targetgen);
         
         String parentSystemId = getSystemId(context);
         URI parentURI = new URI(parentSystemId);
@@ -124,8 +121,6 @@ public final class IncludeDocumentExtension {
         }
         
         String uriStr = path_str;
-        
-        TargetGenerator tgen = TargetGeneratorFactory.getInstance().createGenerator(tgen_path);
         
         if(!uriStr.matches("^\\w+:.*")) {
             boolean dynamic = false;
@@ -180,9 +175,9 @@ public final class IncludeDocumentExtension {
             IncludeDocument    iDoc        = null;
             Document           doc;
 
-            VirtualTarget target = (VirtualTarget) tgen.getTarget(targetkey);
+            VirtualTarget target = (VirtualTarget) targetgen.getTarget(targetkey);
 
-            String[] themes = tgen.getGlobalThemes().getThemesArr();
+            String[] themes = targetgen.getGlobalThemes().getThemesArr();
             if (!targetkey.equals(NOTARGET)) {
                 themes = target.getThemes().getThemesArr();
             }
@@ -197,7 +192,7 @@ public final class IncludeDocumentExtension {
                 throw ex;
             }
             
-            String DEF_THEME = tgen.getDefaultTheme();
+            String DEF_THEME = targetgen.getDefaultTheme();
 
             if (path == null || !path.exists()) {
                 if (dolog) {

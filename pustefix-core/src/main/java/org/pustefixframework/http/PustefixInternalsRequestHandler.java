@@ -64,6 +64,7 @@ import org.springframework.beans.factory.InitializingBean;
 import org.springframework.web.context.ServletContextAware;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
+import org.w3c.dom.Node;
 
 import de.schlund.pfixcore.util.ModuleDescriptor;
 import de.schlund.pfixcore.util.ModuleInfo;
@@ -71,6 +72,7 @@ import de.schlund.pfixxml.config.EnvironmentProperties;
 import de.schlund.pfixxml.resources.ModuleResource;
 import de.schlund.pfixxml.resources.ResourceUtil;
 import de.schlund.pfixxml.serverutil.SessionAdmin;
+import de.schlund.pfixxml.targets.cachestat.CacheStatistic;
 import de.schlund.pfixxml.util.Xml;
 import de.schlund.pfixxml.util.Xslt;
 import de.schlund.pfixxml.util.XsltVersion;
@@ -91,6 +93,7 @@ public class PustefixInternalsRequestHandler implements UriProvidingHttpRequestH
     private String handlerURI ="/pfxinternals";
     private ServletContext servletContext;
     private SessionAdmin sessionAdmin;
+    private CacheStatistic cacheStatistic;
     private long startTime;
     private long reloadTimeout = 1000 * 5;
     
@@ -106,6 +109,10 @@ public class PustefixInternalsRequestHandler implements UriProvidingHttpRequestH
     
     public void setSessionAdmin(SessionAdmin sessionAdmin) {
         this.sessionAdmin = sessionAdmin;
+    }
+    
+    public void setCacheStatistic(CacheStatistic cacheStatistic) {
+        this.cacheStatistic = cacheStatistic;
     }
     
     public void afterPropertiesSet() throws Exception {
@@ -175,6 +182,7 @@ public class PustefixInternalsRequestHandler implements UriProvidingHttpRequestH
            addEnvironmentInfo(root);
            addJVMInfo(root);
            addModuleInfo(root);
+           addCacheStatistics(root);
            messageList.toXML(root);
            doc = Xml.parse(XsltVersion.XSLT1, doc);
            Templates stvalue = Xslt.loadTemplates(XsltVersion.XSLT1, (ModuleResource)ResourceUtil.getResource(STYLESHEET));
@@ -334,6 +342,12 @@ public class PustefixInternalsRequestHandler implements UriProvidingHttpRequestH
             }
         }
         
+    }
+    
+    private void addCacheStatistics(Element parent) {
+        Document doc = cacheStatistic.getAsXML();
+        Node imported = parent.getOwnerDocument().importNode(doc.getDocumentElement(), true);
+        parent.appendChild(imported);
     }
     
     

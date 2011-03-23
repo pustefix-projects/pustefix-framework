@@ -13,7 +13,6 @@
   <cus:custom_xsl/>
 
   <xsl:param name="page"/>
-  <xsl:param name="navigation"><cus:navigation/></xsl:param>
   <xsl:param name="__navitree"/>
   <xsl:param name="navitree" select="$__navitree"/>
   

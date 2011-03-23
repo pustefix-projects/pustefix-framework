@@ -32,6 +32,7 @@ import org.w3c.dom.Element;
 import com.marsching.flexiparse.parser.HandlerContext;
 import com.marsching.flexiparse.parser.exception.ParserException;
 
+import de.schlund.pfixxml.config.EnvironmentProperties;
 import de.schlund.pfixxml.targets.SPCacheFactory;
 import de.schlund.pfixxml.targets.TargetGenerator;
 import de.schlund.pfixxml.targets.TargetGeneratorFactoryBean;
@@ -56,18 +57,23 @@ public class XMLGeneratorInfoParsingHandler extends CustomizationAwareParsingHan
         	cacheBeanBuilder.addPropertyValue("targetCacheClass", "de.schlund.pfixxml.targets.LRUCache");
         	cacheBeanBuilder.addPropertyValue("includeCacheCapacity", 30);
         	cacheBeanBuilder.addPropertyValue("includeCacheClass", "de.schlund.pfixxml.targets.LRUCache");
+        	cacheBeanBuilder.addPropertyReference("cacheStatistic", CacheStatistic.class.getName());
         	cacheBeanBuilder.setInitMethodName("init");
         	BeanDefinitionHolder beanHolder = new BeanDefinitionHolder(cacheBeanBuilder.getBeanDefinition(), SPCacheFactory.class.getName());
         	context.getObjectTreeElement().addObject(beanHolder);
         	
         	statsBeanBuilder = BeanDefinitionBuilder.genericBeanDefinition(CacheStatistic.class);
         	statsBeanBuilder.setScope("singleton");
-        	statsBeanBuilder.setFactoryMethod("getInstance");
-        	statsBeanBuilder.addPropertyValue("queueSize", 60);
-        	statsBeanBuilder.addPropertyValue("queueTicks", 60000);
+        	int queueSize = 10;
+        	int queueTicks = 10000;
+        	if(EnvironmentProperties.getProperties().getProperty("mode").equals("prod")) {
+        	    queueSize = 60;
+        	    queueTicks = 60000;
+        	}
+        	statsBeanBuilder.addPropertyValue("queueSize", queueSize);
+        	statsBeanBuilder.addPropertyValue("queueTicks", queueTicks);
         	ProjectInfo projectInfo = ParsingUtils.getSingleTopObject(ProjectInfo.class, context);
         	statsBeanBuilder.addPropertyValue("projectName", projectInfo.getProjectName());
-        	statsBeanBuilder.setInitMethodName("init");
         	beanHolder = new BeanDefinitionHolder(statsBeanBuilder.getBeanDefinition(), CacheStatistic.class.getName());
         	context.getObjectTreeElement().addObject(beanHolder);
         	

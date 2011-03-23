@@ -22,6 +22,7 @@ import net.sf.saxon.expr.XPathContext;
 
 import org.w3c.dom.Node;
 
+import de.schlund.pfixxml.targets.TargetGenerator;
 import de.schlund.pfixxml.util.XsltContext;
 import de.schlund.pfixxml.util.xsltimpl.XsltContextSaxon2;
 
@@ -30,7 +31,7 @@ import de.schlund.pfixxml.util.xsltimpl.XsltContextSaxon2;
  */
 public class IncludeDocumentExtensionSaxon2 {
 
-    public static Node get(XPathContext context,String path_str,String part,String targetgen,String targetkey,
+    public static Node get(XPathContext context,String path_str,String part,TargetGenerator targetgen,String targetkey,
             String parent_part_in,String parent_theme_in,String computed_inc,String module,String search) throws Exception {    
         XsltContext xsltContext=new XsltContextSaxon2(context);
         return (Node)IncludeDocumentExtension.get(xsltContext,path_str,part,targetgen,targetkey,

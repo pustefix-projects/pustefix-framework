@@ -29,7 +29,6 @@ import org.apache.log4j.Logger;
 import de.schlund.pfixxml.XMLException;
 import de.schlund.pfixxml.resources.FileResource;
 import de.schlund.pfixxml.resources.ResourceUtil;
-import de.schlund.pfixxml.targets.cachestat.CacheStatistic;
 
 /**
  * TargetImpl.java
@@ -214,8 +213,6 @@ public abstract class TargetImpl implements TargetRW, Comparable<Target> {
      */
     public Object getCurrValue() throws TransformerException {
         Object obj = getValueFromSPCache();
-        // add cache access to cache statistic
-        doCacheStatistic(obj);
         // look if the target exists in memory cache and if the file in disk cache is newer.
         if (obj == null || isDiskCacheNewerThenMemCache()) {
             synchronized (this) {   // TODO: double-checked locking is broken ...
@@ -302,14 +299,6 @@ public abstract class TargetImpl implements TargetRW, Comparable<Target> {
      */
     public void setStoredException(Exception stored) {
         this.storedException = stored;
-    }
-    
-    private void doCacheStatistic(Object value) {
-        if (value == null) {
-            CacheStatistic.getInstance().registerCacheMiss(this);
-        } else {
-            CacheStatistic.getInstance().registerCacheHit(this);
-        }
     }
     
     public AuxDependencyManager getAuxDependencyManager() {

@@ -166,16 +166,19 @@
         <div class="section">
           <table class="navi">
             <tr>
-              <td><a href="#framework">Framework information</a></td>   
-              <td><a href="#modules">Loaded modules</a></td>
+              <td><a href="#framework">Framework information</a></td>
+              <td><a href="#cache">Cache statistics</a></td>
+              <td><a href="#messages">Messages</a></td>
             </tr>
             <tr>
               <td><a href="#environment">Environment properties</a></td>
-              <td><a href="#actions">Actions</a></td>
+              <td><a href="#modules">Loaded modules</a></td>
+              <td></td>
             </tr>
             <tr>
               <td><a href="#jvm">JVM information</a></td>
-              <td><a href="#messages">Messages</a></td>
+              <td><a href="#actions">Actions</a></td>
+              <td></td>
             </tr>
           </table>
         </div>
@@ -260,6 +263,18 @@
           </table>
         </div>
         
+        <a name="cache"/>
+        <div class="title">Cache statistics</div>
+        <div class="section">
+          <table>
+            <tr>
+          <xsl:apply-templates select="/pfxinternals/cachestatistic/cache">
+            <xsl:with-param name="title">Heap memory usage</xsl:with-param>
+          </xsl:apply-templates>
+            </tr>
+          </table>
+        </div>
+        
         <a name="modules"/>
         <div class="title">Loaded modules</div>
         <div class="section">
@@ -313,6 +328,49 @@
         <td><hr style="background:green; width: {(@max - @committed) * $factor}px; height:20px;"/></td>
       </tr>
     </table>
+  </xsl:template>
+  
+  <xsl:template match="cache">
+    <xsl:param name="title"/>
+    <td>
+    <table class="info">
+      <tr>
+        <th class="title" colspan="2">Cache '<xsl:value-of select="@id"/>':</th>
+      </tr>
+      <tr>
+        <th>Size/capacity:</th>
+        <td class="num"><xsl:value-of select="@size"/>/<xsl:value-of select="@capacity"/></td>
+      </tr>
+    </table>
+    <table class="barchart">
+       <xsl:variable name="max">
+              <xsl:for-each select="../cache">
+                <xsl:sort select="@capacity" data-type="number" order="descending" />
+                <xsl:if test="position()=1">
+                  <xsl:value-of select="@capacity" />
+                </xsl:if>
+              </xsl:for-each>
+            </xsl:variable>
+            <xsl:variable name="factor" select="200 div $max"/>
+      <tr>
+        <td><hr style="background:#bbb; width: {@size * $factor}px; height:20px;"/></td>
+        <td><hr style="background:#ddd; width: {(@capacity - @size) * $factor}px; height:20px;"/></td>
+      </tr>
+    </table>
+    <table class="info">
+      <tr>
+        <th>Hit rate:</th>
+        <td class="num"><xsl:value-of select="@hitrate"/>%</td>
+      </tr>
+    </table>
+    <table class="barchart">
+            <xsl:variable name="factor">2</xsl:variable>
+      <tr>
+        <td><hr style="background:green; width: {@hitrate * $factor}px; height:20px;"/></td>
+        <td><hr style="background:red; width: {(100 - @hitrate) * $factor}px; height:20px;"/></td>
+      </tr>
+    </table>
+    </td>
   </xsl:template>
   
   <xsl:template match="modules">

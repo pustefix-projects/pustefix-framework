@@ -18,7 +18,7 @@
 
      NOTE: THIS IS NOT A WORKING MASTER STYLESHEET!  You need to
      process it with a customization stylesheet that handles the tags
-     <cus:product/>, <cus:lang/>, <cus:navigation/> and <cus:custom_xsl/>.
+     <cus:product/>, <cus:lang/> and <cus:custom_xsl/>.
 
      Let me repeat once again: NEVER EVER change anything here that
      doesn't apply to the most general case. If the need arises, do
@@ -68,8 +68,6 @@
   <xsl:param name="lang"><cus:lang/></xsl:param>
   <xsl:param name="product"><cus:product/></xsl:param>
 
-  <!-- Needed for navibuttons to work. Normally not needed in the resulting stylesheet -->
-  <xsl:param name="navigation"><cus:navigation/></xsl:param>
   <xsl:param name="page"/>
   <xsl:param name="__navitree"/>
   <xsl:param name="navitree" select="$__navitree"/>

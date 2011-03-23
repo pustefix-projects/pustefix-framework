@@ -166,7 +166,12 @@ public abstract class VirtualTarget extends TargetImpl {
      */
     @Override
     public void storeValue(Object obj) {
-        SPCache<Object, Object> cache = SPCacheFactory.getInstance().getCache();
+        SPCache<Object,Object> cache = null;
+        if(getFullName().contains("$")) {
+            cache = SPCacheFactory.getInstance().getRenderCache();
+        } else {
+            cache = SPCacheFactory.getInstance().getCache();
+        }
         cache.setValue(this, obj);
     }
 
@@ -199,7 +204,12 @@ public abstract class VirtualTarget extends TargetImpl {
      */
     @Override
     protected Object getValueFromSPCache() {
-        SPCache<Object, Object> cache = SPCacheFactory.getInstance().getCache();
+        SPCache<Object,Object> cache = null;
+        if(getFullName().contains("$")) {
+            cache = SPCacheFactory.getInstance().getRenderCache();
+        } else {
+            cache = SPCacheFactory.getInstance().getCache();
+        }
         return cache.getValue(this);
     }
 

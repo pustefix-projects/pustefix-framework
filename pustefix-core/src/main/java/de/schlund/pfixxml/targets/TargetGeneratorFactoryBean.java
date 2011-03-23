@@ -30,7 +30,7 @@ import de.schlund.pfixxml.util.FileUtils;
 
 
 /**
- * Factory bean providing an adapter to {@link TargetGeneratorFactory}.
+ * Factory bean providing an adapter to {@link TargetGenerator}.
  * Returns an instance of {@link TargetGenerator} for the configuration
  * file set using the {@link #setConfigFile(String)} method.  
  * 
@@ -40,7 +40,7 @@ public class TargetGeneratorFactoryBean implements ServletContextAware {
     
     private ServletContext servletContext;
     private FileResource configFile;
-
+    
     /**
      * Returns the TargetGenerator instance for the configured configuration
      * file path.
@@ -58,9 +58,9 @@ public class TargetGeneratorFactoryBean implements ServletContextAware {
                 cacheDir.mkdir();
             }
             FileResource cacheRes = ResourceUtil.getFileResource(cacheDir.toURI());
-            generator = TargetGeneratorFactory.getInstance().createGenerator(configFile, cacheRes);
+            generator = new TargetGenerator(configFile, cacheRes);
         } else {
-            generator = TargetGeneratorFactory.getInstance().createGenerator(configFile);
+            generator = new TargetGenerator(configFile);
         }
         return generator;
     }

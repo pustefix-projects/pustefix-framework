@@ -28,9 +28,24 @@
 
   <xsl:template match="pfx:render">
     <ixsl:call-template name="pfx:render">
-      <ixsl:with-param name="href"><xsl:value-of select="@href"/></ixsl:with-param>
-      <ixsl:with-param name="part"><xsl:value-of select="@part"/></ixsl:with-param>
-      <ixsl:with-param name="module"><xsl:value-of select="@module"/></ixsl:with-param>
+      <ixsl:with-param name="href">
+        <xsl:choose>
+          <xsl:when test="pfx:href"><xsl:apply-templates select="pfx:href/node()"/></xsl:when>
+          <xsl:otherwise><xsl:value-of select="@href"/></xsl:otherwise>
+        </xsl:choose>
+      </ixsl:with-param>
+      <ixsl:with-param name="part">
+        <xsl:choose>
+          <xsl:when test="pfx:part"><xsl:apply-templates select="pfx:part/node()"/></xsl:when>
+          <xsl:otherwise><xsl:value-of select="@part"/></xsl:otherwise>
+        </xsl:choose>
+      </ixsl:with-param>
+      <ixsl:with-param name="module">
+        <xsl:choose>
+          <xsl:when test="pfx:module"><xsl:apply-templates select="pfx:module/node()"/></xsl:when>
+          <xsl:otherwise><xsl:value-of select="@module"/></xsl:otherwise>
+        </xsl:choose>
+      </ixsl:with-param>
       <ixsl:with-param name="search"><xsl:value-of select="@search"/></ixsl:with-param>
     </ixsl:call-template>
   </xsl:template>

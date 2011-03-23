@@ -105,7 +105,12 @@ public abstract class LeafTarget extends TargetImpl {
     @Override
     public void storeValue(Object obj) {
         synchronized (sharedleaf) {
-            SPCache<Object, Object> cache = SPCacheFactory.getInstance().getCache();
+            SPCache<Object,Object> cache = null;
+            if(getFullName().contains("$")) {
+                cache = SPCacheFactory.getInstance().getRenderCache();
+            } else {
+                cache = SPCacheFactory.getInstance().getCache();
+            }
             cache.setValue(sharedleaf, obj);
         }
     }
@@ -126,7 +131,13 @@ public abstract class LeafTarget extends TargetImpl {
     @Override
     protected Object getValueFromSPCache() {
         synchronized (sharedleaf) {
-            return SPCacheFactory.getInstance().getCache().getValue(sharedleaf);
+            SPCache<Object,Object> cache = null;
+            if(getFullName().contains("$")) {
+                cache = SPCacheFactory.getInstance().getRenderCache();
+            } else {
+                cache = SPCacheFactory.getInstance().getCache();
+            }
+            return cache.getValue(sharedleaf);
         }
     }
 

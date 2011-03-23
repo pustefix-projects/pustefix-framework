@@ -56,8 +56,7 @@ public class TargetGeneratorRunner {
         FileResource cacheDir = ResourceUtil.getFileResource(cache.toURI());
         
         try { 
-            TargetGeneratorFactory genFactory = TargetGeneratorFactory.getInstance();
-            TargetGenerator gen = genFactory.createGenerator(confFile, cacheDir);
+            TargetGenerator gen = new TargetGenerator(confFile, cacheDir);
             gen.setIsGetModTimeMaybeUpdateSkipped(false);
             gen.generateAll();
             output.write(TargetGenerator.getReportAsString());

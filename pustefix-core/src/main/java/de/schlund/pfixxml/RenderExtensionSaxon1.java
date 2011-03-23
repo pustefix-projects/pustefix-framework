@@ -16,39 +16,36 @@ import org.w3c.dom.Node;
 import com.icl.saxon.Context;
 
 import de.schlund.pfixcore.workflow.context.RequestContextImpl;
-import de.schlund.pfixxml.resources.FileResource;
-import de.schlund.pfixxml.resources.ResourceUtil;
 import de.schlund.pfixxml.targets.Target;
 import de.schlund.pfixxml.targets.TargetGenerator;
-import de.schlund.pfixxml.targets.TargetGeneratorFactory;
 import de.schlund.pfixxml.util.Xml;
 import de.schlund.pfixxml.util.Xslt;
 import de.schlund.pfixxml.util.XsltVersion;
 
 public class RenderExtensionSaxon1 extends RenderExtension {
 
+    //TODO: Reset
     static ThreadLocal<Map<String, Templates>> templateCache = new ThreadLocal<Map<String, Templates>>();
     
-    public static Node render(Context saxonContext, String targetGenerator, String href, String part, 
+    public static Node render(Context saxonContext, TargetGenerator targetGenerator, String href, String part, 
             String module, String search, Node node, RequestContextImpl requestContext, 
             RenderContext renderContext, boolean output) throws Exception {
 
         try {
-        long t1 = System.currentTimeMillis();
         
-        FileResource tgenPath = ResourceUtil.getFileResource(targetGenerator);
-        TargetGenerator tgen = TargetGeneratorFactory.getInstance().createGenerator(tgenPath);
+        long t1 = System.currentTimeMillis();
         
         Map<String, Object> subParams = new HashMap<String, Object>();
         Map<String, Object> parentParams = renderContext.getParameters();
         for(String name: parentParams.keySet()) subParams.put(name, parentParams.get(name));
-        RenderContextSaxon1 subRenderContext = (RenderContextSaxon1)RenderContext.create(tgen.getXsltVersion());
+        RenderContextSaxon1 subRenderContext = (RenderContextSaxon1)RenderContext.create(targetGenerator.getXsltVersion());
         subRenderContext.setParent(renderContext);
         
         String componentKey = TargetGenerator.createComponentKey(href, part, module, search);
         
-        String page = "__COMPONENT__";
-        subParams.put("page", page);
+        String page = (String)parentParams.get("page");
+        //String page = "__COMPONENT__";
+        //subParams.put("page", page);
         subParams.put("__rendercontext__", subRenderContext);
         subRenderContext.setParameters(Collections.unmodifiableMap(subParams));
         subRenderContext.setOutputter(saxonContext.getOutputter());
@@ -62,10 +59,12 @@ public class RenderExtensionSaxon1 extends RenderExtension {
         }
         Templates style = templateCacheMap.get(componentKey);
         if(style == null) {
-            Target target = tgen.getTarget(componentKey);
+            Target target = targetGenerator.getTarget(componentKey);
             style = (Templates)target.getValue();
             templateCacheMap.put(componentKey, style);
         }
+        //Target target = targetGenerator.getTarget(componentKey);
+        //Templates style = (Templates)target.getValue();
         long t3 = System.currentTimeMillis();
         
         Result res;
@@ -95,7 +94,7 @@ public class RenderExtensionSaxon1 extends RenderExtension {
         } catch(Exception x) {
             x.printStackTrace();
             throw x;
-        }
+        } 
     }
         
     public static void renderStart(Context saxonContext, RenderContextSaxon1 renderContext) throws TransformerException {

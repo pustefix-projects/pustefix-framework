@@ -125,10 +125,6 @@
     </xsl:if>
   </xsl:template>
 
-  <xsl:template match="cus:navigation">
-    <xsl:value-of select="$__target_gen"/>
-  </xsl:template>
-
   <xsl:template match="cus:product">
     <xsl:value-of select="$product"/>
   </xsl:template>

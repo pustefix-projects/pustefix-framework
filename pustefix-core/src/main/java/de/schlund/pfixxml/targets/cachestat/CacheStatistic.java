@@ -21,8 +21,6 @@ package de.schlund.pfixxml.targets.cachestat;
 import java.lang.management.ManagementFactory;
 import java.text.DecimalFormat;
 import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.Hashtable;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Timer;
@@ -36,12 +34,7 @@ import org.springframework.beans.factory.InitializingBean;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 
-import de.schlund.pfixxml.XMLException;
 import de.schlund.pfixxml.targets.SPCache;
-import de.schlund.pfixxml.targets.SPCacheFactory;
-import de.schlund.pfixxml.targets.SharedLeaf;
-import de.schlund.pfixxml.targets.Target;
-import de.schlund.pfixxml.targets.TargetGenerator;
 import de.schlund.pfixxml.util.Xml;
 
 /**
@@ -54,39 +47,40 @@ import de.schlund.pfixxml.util.Xml;
  */
 public class CacheStatistic implements CacheStatisticMBean, InitializingBean, DisposableBean {
     
-    private static CacheStatistic theInstance = new CacheStatistic();
-    private static int REGISTER_MISS = 0;
-    private static int REGISTER_HIT = 1;
     private final static Logger LOG = Logger.getLogger(CacheStatistic.class);
     private int queueSize = 0;
     private int queueTicks = 0;
     
-    /** Maps TargetGenerators to AdvanceCacheStatistic */
-    private Hashtable<TargetGenerator, AdvanceCacheStatistic> targetGen2AdvanceStatMapping;
     /** Format for hitrate */
     private DecimalFormat hitrateFormat = new DecimalFormat("##0.00");
     /** Timer used for AdvanceCacheStatistic */
-    private Timer tickTimer = new Timer("Timer-CacheStatistic", true);
+    private Timer tickTimer;
+    
     private String projectName;
 
+    private List<SPCacheStatProxy<?,?>> cacheStatistics = new ArrayList<SPCacheStatProxy<?,?>>();
+    
     public void afterPropertiesSet() throws Exception {
         try {
             MBeanServer mbeanServer = ManagementFactory.getPlatformMBeanServer(); 
             ObjectName objectName = new ObjectName("Pustefix:type=CacheStatistic,project="+projectName);
             if(mbeanServer.isRegistered(objectName)) mbeanServer.unregisterMBean(objectName);
-            mbeanServer.registerMBean(this, objectName);
+            mbeanServer.registerMBean(this, objectName);   
         } catch(Exception x) {
             LOG.error("Can't register SPCacheStatistic MBean!",x);
         }
+        tickTimer = new Timer("Timer-CacheStatistic", true);
+    }
+    
+    public <T1,T2> SPCache<T1, T2> monitor(SPCache<T1, T2> cache, String id) {        
+        AdvanceCacheStatistic stat = new AdvanceCacheStatistic(id, tickTimer, queueSize, queueTicks);
+        SPCacheStatProxy<T1, T2> proxy = new SPCacheStatProxy<T1, T2>(cache, stat);
+        cacheStatistics.add(proxy);
+        return proxy;
     }
     
     public void setProjectName(String projectName) {
         this.projectName = projectName;
-    }
-    
-    public static void reset() {
-        theInstance.tickTimer.cancel();
-        theInstance = new CacheStatistic();
     }
 
     public void setQueueSize(int queueSize) {
@@ -97,227 +91,60 @@ public class CacheStatistic implements CacheStatisticMBean, InitializingBean, Di
     	this.queueTicks = queueTicks;
     }
     
-     /**
-     * Retrieve information which maps the config file
-     * of an TargetGenerator to a product name and get the
-     * needed properties supplied by FactoryInit.
-     * @throws XMLException if properties are not sensible.
-     * @see de.schlund.util.FactoryInit#init(java.util.Properties)
-     */
-    public void init() throws Exception {
-    }
-
-    
     public void destroy() throws Exception {
         if(tickTimer != null) {
             tickTimer.cancel();
             tickTimer = null;
         }
     }
-    
-    
-    /**
-     * Private constructor of a singleton.
-     */
-    private CacheStatistic() {
-        targetGen2AdvanceStatMapping = new Hashtable<TargetGenerator, AdvanceCacheStatistic>();
-    }
-
-    /**
-     * Get the one and only instance.
-     */
-    public static CacheStatistic getInstance() {
-        return theInstance;
-    }
-    
-   
-    /**
-     * This is called from outside (TargetImpl) to
-     * register a cache miss.
-     */
-    public void registerCacheMiss(Target target) {
-        registerForTarget(target, REGISTER_MISS);
-    }
-
-    /**
-     * This is called from outside (TargetImpl) to
-     * register a cache hit.
-     */
-    public void registerCacheHit(Target target) {
-        registerForTarget(target, REGISTER_HIT);
-    }
 
     /**
 	 * Create cache-statistic in XML-format.
 	 */
-    @SuppressWarnings("unchecked")
     public Document getAsXML() {
-        
-        // do clone or synchronize? We need a stable iterator.
-        Hashtable<TargetGenerator, AdvanceCacheStatistic> targetgentoinfomap_clone =  
-            (Hashtable<TargetGenerator, AdvanceCacheStatistic>) targetGen2AdvanceStatMapping.clone();
 
         Document doc = Xml.createDocument();
-        Element top = doc.createElement("spcachestatistic");
-
-        SPCache<Object, Object> currentcache = SPCacheFactory.getInstance().getCache();
-
-        Element ele_currentcache = doc.createElement("currentcache");
-        setCacheAttributesXML(currentcache, ele_currentcache);
-        top.appendChild(ele_currentcache);
-
-        // Get information on the entries in the cache.
-        TargetsInSPCache targetsincache = new TargetsInSPCache();
-        targetsincache.inspectCache();
-
-        Element ele_hitmiss = doc.createElement("products");
-        attachTargetGenerators2XML(doc, targetsincache, ele_hitmiss, targetgentoinfomap_clone);
-        attachShared2XML(doc, targetsincache, ele_hitmiss);
-        top.appendChild(ele_hitmiss);
-
-        doc.appendChild(top);
-
+        Element root = doc.createElement("cachestatistic");    
+        doc.appendChild(root);
+        Iterator<SPCacheStatProxy<?,?>> it = cacheStatistics.iterator();
+        while(it.hasNext()) {
+            SPCacheStatProxy<?,?> statProxy = it.next();
+            AdvanceCacheStatistic stat = statProxy.getStatistic();
+            Element elem = doc.createElement("cache");
+            elem.setAttribute("id",  stat.getId());
+            elem.setAttribute("size", String.valueOf(statProxy.getSize()));
+            elem.setAttribute("capacity", String.valueOf(statProxy.getCapacity()));
+            elem.setAttribute("saturation", formatSaturation(statProxy.getSize(), statProxy.getCapacity()));
+            long hits = stat.getHits();
+            long misses = stat.getMisses();
+            String hitrate = formatHitrate(hits, misses);
+            elem.setAttribute("hitrate", hitrate);
+            elem.setAttribute("hits", "" + hits);
+            elem.setAttribute("misses", "" + misses);
+            root.appendChild(elem);
+        }
         return doc;
     }
     
     /**
      * Create cache-statistic in special format.
      */
-    @SuppressWarnings("unchecked")
     public String getAsString() {
-        StringBuffer sb = new StringBuffer(128);
-        // do clone or synchronize 
-        Hashtable<TargetGenerator, AdvanceCacheStatistic> targetgentoinfomap_clone = 
-            (Hashtable<TargetGenerator, AdvanceCacheStatistic>) targetGen2AdvanceStatMapping.clone();
-
-        long totalmisses = 0;
-        long totalhits = 0;
-        for (Iterator<TargetGenerator> i = targetgentoinfomap_clone.keySet().iterator(); i.hasNext();) {
-            TargetGenerator tgen = i.next();
-            AdvanceCacheStatistic stat = targetgentoinfomap_clone.get(tgen);
+        StringBuilder sb = new StringBuilder();
+        Iterator<SPCacheStatProxy<?,?>> it = cacheStatistics.iterator();
+        while(it.hasNext()) {
+            SPCacheStatProxy<?,?> statProxy = it.next();
+            AdvanceCacheStatistic stat = statProxy.getStatistic();
             long hits = stat.getHits();
             long misses = stat.getMisses();
             String hitrate = formatHitrate(hits, misses);
-            sb.append("|" + tgen.getName() + ":" + hits + "," + misses + "," + hitrate);
-            totalmisses += misses;
-            totalhits += hits;
+            String saturation = formatSaturation(statProxy.getSize(), statProxy.getCapacity());
+            sb.append(stat.getId()).append(",").append(statProxy.getSize()).append(",")
+                .append(statProxy.getCapacity()).append(",").append(saturation).append(",")
+                .append(hits).append(",").append(misses).append(",").append(hitrate);
+            if(it.hasNext()) sb.append("|");
         }
-
-        String hitrate = formatHitrate(totalhits, totalmisses);
-        sb.insert(0, "TOTAL:" + totalhits + "," + totalmisses + "," + hitrate);
-
         return sb.toString();
-    }
-
-    /** 
-     * Register a cache-hit or cache-miss for a given target.
-     * For the TargetGenerator of the given target a AdvanceCacheStatistic
-     * will be created (if not already exists) and will be stored in
-     * the targetGen2AdvanceStatMapping map. Each hit or miss
-     * for a target will be handled by the belonging AdvanceCacheStatistic.
-     **/
-    private void registerForTarget(Target target, int mode) {
-        TargetGenerator tgen = target.getTargetGenerator();
-        if (targetGen2AdvanceStatMapping.containsKey(tgen)) {
-            AdvanceCacheStatistic stat = (AdvanceCacheStatistic) targetGen2AdvanceStatMapping.get(tgen);
-            if(LOG.isDebugEnabled()) LOG.debug("Found: "+stat.hashCode()+" for target: "+target);
-            if (mode == REGISTER_HIT) {
-                stat.registerHit();
-            } else {
-                stat.registerMiss();
-            }
-        } else {
-            AdvanceCacheStatistic stat = new AdvanceCacheStatistic(tickTimer, queueSize, queueTicks);
-            if(LOG.isDebugEnabled())   LOG.debug("New: "+stat.hashCode()+" for target: "+target);
-            if (mode == REGISTER_HIT) {
-                stat.registerHit();
-            } else {
-                stat.registerMiss();
-            }
-            targetGen2AdvanceStatMapping.put(tgen, stat);
-        }
-    }
-
-    /**
-     *  Attach the cachestatistic for all known targetgenerators.
-     **/
-    private void attachTargetGenerators2XML(Document doc, TargetsInSPCache targetsincache, Element ele_hitmiss, Hashtable<TargetGenerator, AdvanceCacheStatistic> targetgentoinfomap) {
-
-        for (Iterator<TargetGenerator> i = targetgentoinfomap.keySet().iterator(); i.hasNext();) {
-            TargetGenerator tgen = i.next();
-            Element ele_tg = doc.createElement("product");
-
-            ele_tg.setAttribute("name", tgen.getName());
-            AdvanceCacheStatistic stat = targetgentoinfomap.get(tgen);
-            long hits = stat.getHits();
-            long misses = stat.getMisses();
-            String hitrate = formatHitrate(hits, misses) + "%";
-            ele_tg.setAttribute("hitrate", hitrate);
-            ele_tg.setAttribute("hits", "" + hits);
-            ele_tg.setAttribute("misses", "" + misses);
-
-            attachTargets2XML(doc, targetsincache, tgen, ele_tg);
-            ele_hitmiss.appendChild(ele_tg);
-        }
-    }
-
-    /**
-     *  Attach all targets belonging to a given TargetGenerator.
-     **/
-    private void attachTargets2XML(Document doc, TargetsInSPCache targetsincache, TargetGenerator tgen, Element ele_tg) {
-        if (targetsincache.containsTargetGenerator(tgen)) {
-            List<Target> targets = targetsincache.getTargetsForTargetGenerator(tgen);
-            for (Iterator<Target> j = targets.iterator(); j.hasNext();) {
-                Element entry_ele = doc.createElement("target");
-                Target t = j.next();
-                entry_ele.setAttribute("id", t.getTargetKey());
-                ele_tg.appendChild(entry_ele);
-            }
-        }
-    }
-
-    /**
-     *  Attach the SharedLeafs-targets to the cachestatistic
-     */
-    private void attachShared2XML(Document doc, TargetsInSPCache targetsincache, Element ele_hitmiss) {
-        if (!targetsincache.getSharedTargets().isEmpty()) {
-            Element ele_shared = doc.createElement("shared");
-            for (Iterator<SharedLeaf> i = targetsincache.getSharedTargets().iterator(); i.hasNext();) {
-                Element entry_ele = doc.createElement("sharedtarget");
-                SharedLeaf sleaf = i.next();
-                entry_ele.setAttribute("id", sleaf.getPath().toString());
-                ele_shared.appendChild(entry_ele);
-            }
-            ele_hitmiss.appendChild(ele_shared);
-        }
-    }
-
-    /**
-     * Attach general information about the cache and create the total rates
-     * by iterating over all known targetGenerators in the targetGen2AdvanceStatMapping-map.
-     */
-    private void setCacheAttributesXML(SPCache<Object, Object> currentcache, Element ele_currentcache) {
-        ele_currentcache.setAttribute("class", currentcache.getClass().getName());
-        ele_currentcache.setAttribute("capacity", "" + currentcache.getCapacity());
-        ele_currentcache.setAttribute("size", "" + currentcache.getSize());
-
-        long totalhits = 0;
-        long totalmisses = 0;
-
-        for (Iterator<TargetGenerator> i = targetGen2AdvanceStatMapping.keySet().iterator(); i.hasNext();) {
-            TargetGenerator tgen = i.next();
-            AdvanceCacheStatistic stat = targetGen2AdvanceStatMapping.get(tgen);
-
-            long hits = stat.getHits();
-            long misses = stat.getMisses();
-            totalmisses += misses;
-            totalhits += hits;
-        }
-
-        ele_currentcache.setAttribute("hits", "" + totalhits);
-        ele_currentcache.setAttribute("misses", "" + totalmisses);
-        String hitrate = formatHitrate(totalhits, totalmisses) + "%";
-        ele_currentcache.setAttribute("hitrate", hitrate);
     }
 
     private String formatHitrate(double hits, double misses) {
@@ -335,81 +162,10 @@ public class CacheStatistic implements CacheStatisticMBean, InitializingBean, Di
         }
         return rate;
     }
-}
-
-
-
-
-/**
- * Encapsulates information on targets in the cache.
- */
-final class TargetsInSPCache {
-    /**
-     *  Maps tgen as key to List with targets as values 
-     **/
-    private HashMap<TargetGenerator, List<Target>> targettgenMapping = new HashMap<TargetGenerator, List<Target>>();
-    /**
-     * Includes all SharedLeafs in SPCache 
-     **/
-    private ArrayList<SharedLeaf> sharedTargets = new ArrayList<SharedLeaf>();
-
-    /**
-     * Trigger collection of cache information.
-     */
-    void inspectCache() {
-        getTargetsForTargetGeneratorFromSPCache();
-    }
-
-    /**
-     * Get all SharedLeaf-targets in the cache.
-     */
-    List<SharedLeaf> getSharedTargets() {
-        return sharedTargets;
-    }
-
-    /**
-     * Get all targets for a given TargetGenerator.
-     */
-    List<Target> getTargetsForTargetGenerator(TargetGenerator tgen) {
-        return targettgenMapping.get(tgen);
-    }
-
-    boolean containsTargetGenerator(TargetGenerator tgen) {
-        return targettgenMapping.containsKey(tgen);
-    }
-
-    private void addSharedTarget(SharedLeaf leaf) {
-        sharedTargets.add(leaf);
-    }
-
-    private void setTargetsForTargetGenerator(TargetGenerator tgen, List<Target> targets) {
-        targettgenMapping.put(tgen, targets);
-    }
-
-    /**
-	 * Inspect SPCache and collect all Targets belonging to a TargetGenerator
-	 * and all Shared Leafs
-	 */
-    private void getTargetsForTargetGeneratorFromSPCache() {
-        SPCache<Object, Object> cache = SPCacheFactory.getInstance().getCache();
-
-        for (Iterator<?> i = cache.getIterator(); i.hasNext();) {
-            Object obj = i.next();
-            if (obj instanceof Target) {
-                Target target = (Target) obj;
-                TargetGenerator tgen = target.getTargetGenerator();
-                if (containsTargetGenerator(tgen)) {
-                    List<Target> list = getTargetsForTargetGenerator(tgen);
-                    list.add(target);
-                } else {
-                    ArrayList<Target> list = new ArrayList<Target>();
-                    list.add(target);
-                    setTargetsForTargetGenerator(tgen, list);
-                }
-            } else if (obj instanceof SharedLeaf) {
-                addSharedTarget((SharedLeaf) obj);
-            }
-        }
+    
+    private String formatSaturation(int size, int capacity) {
+        double rate = (double)size / capacity  * 100;
+        return hitrateFormat.format(rate);
     }
     
 }

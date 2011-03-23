@@ -23,6 +23,7 @@ import org.apache.log4j.Logger;
 
 import de.schlund.pfixcore.exception.PustefixRuntimeException;
 import de.schlund.pfixxml.IncludeDocument;
+import de.schlund.pfixxml.targets.cachestat.CacheStatistic;
 
 /**
  * SPCacheFactory.java
@@ -33,47 +34,54 @@ import de.schlund.pfixxml.IncludeDocument;
  * @author <a href="mailto:jtl@schlund.de">Jens Lautenbacher</a> 
  * @author <a href="mailto:haecker@schlund.de">Joerg Haecker</a>      
  *  
- * This class realises the factory and the singleton pattern and implements the {@link FactoryInit}
+ * This class applies the factory and the singleton pattern and implements the {@link FactoryInit}
  * interface. It is responsible to create and store the caches uses by the PUSTEFIX system. 
  * Currently PUSTEFIX uses one cache for the targets and one for the include-modules. The
  * properties of the caches are passed via the init-method of the FactoryInit-interface. 
- * If the propertries can't be interpreted correctly or the init-method is not called,
- * {@link LRUCache} initialised with default values will be returned.
+ * If the properties can't be interpreted correctly or the init-method is not called,
+ * {@link LRUCache} initialized with default values will be returned.
  *
  */
 
 public class SPCacheFactory {
+    
     private final static Logger LOG = Logger.getLogger(SPCacheFactory.class);
     private static SPCacheFactory instance= new SPCacheFactory();
 
     private SPCache<Object, Object> targetCache;
     private SPCache<String, IncludeDocument> documentCache;
+    private SPCache<Object, Object> renderCache;
 
     private int targetCacheCapacity = 30;
     private int includeCacheCapacity = 30;
+    private int renderCacheCapacity = 30;
     
     private String targetCacheClass = LRUCache.class.getName();
     private String includeCacheClass = LRUCache.class.getName();
+    private String renderCacheClass = LRUCache.class.getName();
+    
+    private CacheStatistic cacheStatistic;
     
     private SPCacheFactory() {
-    	init();
     }
 
     /**
      * Implemented from FactoryInit.
      */
     public void init() {
-        targetCache = getCache(targetCacheClass, targetCacheCapacity);
-        documentCache = getCache(includeCacheClass, includeCacheCapacity);
+        targetCache = getCache(targetCacheClass, targetCacheCapacity, "target");
+        documentCache = getCache(includeCacheClass, includeCacheCapacity, "include");
+        renderCache = getCache(renderCacheClass, renderCacheCapacity, "render");
         if(LOG.isInfoEnabled()) {
         	LOG.info("SPCacheFactory initialized: ");
         	LOG.info("  TargetCache   : Class="+targetCache.getClass().getName()+" Capacity=" + targetCache.getCapacity() + " Size="+targetCache.getSize());
         	LOG.info("  DocumentCache : Class="+documentCache.getClass().getName()+" Capacity=" + documentCache.getCapacity() + " Size="+documentCache.getSize());
+        	LOG.info("  RenderCache   : Class="+renderCache.getClass().getName()+" Capacity=" + renderCache.getCapacity() + " Size="+renderCache.getSize());
         }
     }
 
     @SuppressWarnings({"unchecked","rawtypes"})
-    private <T1, T2> SPCache<T1, T2> getCache(String className, int capacity) {
+    private <T1, T2> SPCache<T1, T2> getCache(String className, int capacity, String id) {
         SPCache<T1, T2> retval= null;
         try {
             Constructor<? extends SPCache> constr = Class.forName(className).asSubclass(SPCache.class).getConstructor((Class[]) null);
@@ -82,6 +90,9 @@ public class SPCacheFactory {
         } catch (Exception e) {
             LOG.error("unable to instantiate class [" + className + "]", e);
             throw new PustefixRuntimeException("Can't create TargetGenerator cache", e);
+        }
+        if(cacheStatistic != null) {
+            retval = cacheStatistic.monitor(retval, id);
         }
         return retval;
     }
@@ -100,6 +111,10 @@ public class SPCacheFactory {
     	return targetCache;
     }
 
+    public SPCache<Object, Object> getRenderCache() {
+        return renderCache;
+    }
+    
     /**
      * Get the cache for include-modules.
      */
@@ -119,6 +134,10 @@ public class SPCacheFactory {
     	 this.targetCacheCapacity = targetCacheCapacity;
      }
      
+     public void setRenderCacheCapacity(int renderCacheCapacity) {
+         this.renderCacheCapacity = renderCacheCapacity;
+     }
+     
      public void setIncludeCacheCapacity(int includeCacheCapacity) {
     	 this.includeCacheCapacity = includeCacheCapacity;
      }
@@ -127,9 +146,16 @@ public class SPCacheFactory {
     	 this.targetCacheClass = targetCacheClass;
      }
      
+     public void setRenderCacheClass(String renderCacheClass) {
+         this.renderCacheClass = renderCacheClass;
+     }
+     
      public void setIncludeCacheClass(String includeCacheClass) {
     	 this.includeCacheClass = includeCacheClass;
      }
+     
+     public void setCacheStatistic(CacheStatistic cacheStatistic) {
+         this.cacheStatistic = cacheStatistic;
+     }
     
-
 } // SPCacheFactory

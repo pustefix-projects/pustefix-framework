@@ -36,21 +36,24 @@ import org.apache.log4j.Logger;
  */
 
 public class AdvanceCacheStatistic {
+    
+    private String id;
     private CacheHitMissPair[] statQueue;
     private int index = 0;
     private int queueSize = 0;
     private final static Logger LOG = Logger.getLogger(AdvanceCacheStatistic.class);
 
-    public AdvanceCacheStatistic(Timer timer, int queuesize, int queueticks) {
+    public AdvanceCacheStatistic(String id, Timer timer, int queuesize, int queueticks) {
+        this.id = id;
         if(timer == null) {
             throw new IllegalArgumentException("A NP passed as timer is not valid here.");
         }
         if(queuesize < 1) {
-            queuesize = 60;
+            queuesize = 5;
             //throw new IllegalArgumentException("queuesize must not be < 1");
         }
         if(queueticks < 1) {
-            queueticks = 60000;
+            queueticks = 6000;
             //throw new IllegalArgumentException("queueticks must not be < 1");
         }
         
@@ -62,6 +65,10 @@ public class AdvanceCacheStatistic {
         timer.schedule(new AdvanceTask(), queueticks, queueticks);    
     }
 
+    public String getId() {
+        return id;
+    }
+    
     public long getHits() {
         long hits = 0;
         for(int i=0; i<statQueue.length; i++) {
@@ -87,12 +94,12 @@ public class AdvanceCacheStatistic {
     }
 
     
-    synchronized void registerHit() {
+    public synchronized void registerHit() {
         statQueue[index].increaseHits();
     }
 
     
-    synchronized void registerMiss() {
+    public synchronized void registerMiss() {
         statQueue[index].increaseMisses();
     }
 

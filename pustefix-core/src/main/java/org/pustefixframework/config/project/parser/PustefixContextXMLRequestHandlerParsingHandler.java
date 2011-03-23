@@ -69,6 +69,7 @@ import de.schlund.pfixxml.exceptionprocessor.ExceptionProcessingConfiguration;
 import de.schlund.pfixxml.resources.FileResource;
 import de.schlund.pfixxml.resources.ResourceUtil;
 import de.schlund.pfixxml.serverutil.SessionAdmin;
+import de.schlund.pfixxml.targets.cachestat.CacheStatistic;
 
 public class PustefixContextXMLRequestHandlerParsingHandler extends CustomizationAwareParsingHandler {
 
@@ -218,6 +219,7 @@ public class PustefixContextXMLRequestHandlerParsingHandler extends Customizatio
         beanBuilder = BeanDefinitionBuilder.genericBeanDefinition(PustefixInternalsRequestHandler.class);
         beanBuilder.setScope("singleton");
         beanBuilder.addPropertyValue("sessionAdmin", new RuntimeBeanReference(SessionAdmin.class.getName()));
+        beanBuilder.addPropertyValue("cacheStatistic", new RuntimeBeanReference(CacheStatistic.class.getName()));
         beanDefinition = beanBuilder.getBeanDefinition();
         beanHolder = new BeanDefinitionHolder(beanDefinition, PustefixInternalsRequestHandler.class.getName());
         context.getObjectTreeElement().addObject(beanHolder);

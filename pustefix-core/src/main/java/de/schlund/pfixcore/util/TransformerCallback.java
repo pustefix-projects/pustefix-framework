@@ -57,10 +57,7 @@ import de.schlund.pfixcore.workflow.State;
 import de.schlund.pfixcore.workflow.context.AccessibilityChecker;
 import de.schlund.pfixcore.workflow.context.RequestContextImpl;
 import de.schlund.pfixxml.ResultDocument;
-import de.schlund.pfixxml.resources.FileResource;
-import de.schlund.pfixxml.resources.ResourceUtil;
 import de.schlund.pfixxml.targets.TargetGenerator;
-import de.schlund.pfixxml.targets.TargetGeneratorFactory;
 import de.schlund.pfixxml.util.ExtensionFunctionUtils;
 import de.schlund.pfixxml.util.Xml;
 import de.schlund.pfixxml.util.XsltVersion;
@@ -83,18 +80,13 @@ public class TransformerCallback {
     // spdoc.setNostore(true);
     // }
 
-    public static int isAccessible(RequestContextImpl requestcontext, String targetgen, String pagename) throws Exception {
+    public static int isAccessible(RequestContextImpl requestcontext, TargetGenerator targetgen, String pagename) throws Exception {
         try {
             ContextImpl context = requestcontext.getParentContext();
             
             boolean pageExists = true;
             if(context.getContextConfig().getPageRequestConfig(pagename) == null) {
-                TargetGenerator gen = TargetGeneratorFactory.getInstance().getGenerator(targetgen);
-                if(gen == null) {
-                    FileResource res = ResourceUtil.getFileResource(targetgen);
-                    gen = TargetGeneratorFactory.getInstance().createGenerator(res);
-                }
-                pageExists = (gen.getPageTargetTree().getPageInfoForPageName(pagename) != null);
+                pageExists = (targetgen.getPageTargetTree().getPageInfoForPageName(pagename) != null);
             }
             if(pageExists) {
                 AccessibilityChecker check = (AccessibilityChecker) context;

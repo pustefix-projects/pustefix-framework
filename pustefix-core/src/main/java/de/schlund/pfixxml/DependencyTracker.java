@@ -21,12 +21,10 @@ package de.schlund.pfixxml;
 
 import org.apache.log4j.Logger;
 
-import de.schlund.pfixxml.resources.FileResource;
 import de.schlund.pfixxml.resources.Resource;
 import de.schlund.pfixxml.resources.ResourceUtil;
 import de.schlund.pfixxml.targets.DependencyType;
 import de.schlund.pfixxml.targets.TargetGenerator;
-import de.schlund.pfixxml.targets.TargetGeneratorFactory;
 import de.schlund.pfixxml.targets.VirtualTarget;
 import de.schlund.pfixxml.util.XsltContext;
 
@@ -36,15 +34,13 @@ public class DependencyTracker {
     /** xslt extension */
     public static String logImage(XsltContext context, Resource path,
                                   String parent_part_in, String parent_theme_in,
-                                  String targetGen, String targetKey, String type) throws Exception {
+                                  TargetGenerator targetGen, String targetKey, String type) throws Exception {
 
         if (targetKey.equals("__NONE__")) {
             return "0";
         }
 
-        FileResource    tgen_path = ResourceUtil.getFileResource(targetGen);
-        TargetGenerator gen       = TargetGeneratorFactory.getInstance().createGenerator(tgen_path);
-        VirtualTarget   target    = (VirtualTarget) gen.getTarget(targetKey);
+        VirtualTarget   target    = (VirtualTarget) targetGen.getTarget(targetKey);
 
         String parent_path  = "";
         String parent_part  = "";

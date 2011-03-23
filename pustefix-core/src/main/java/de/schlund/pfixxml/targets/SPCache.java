@@ -15,21 +15,17 @@
  * along with Pustefix; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  */
-
 package de.schlund.pfixxml.targets;
 
 import java.util.Iterator;
 
-/**
- *
- *
- */
-
 public interface SPCache<T1, T2> {
+    
     void createCache(int capacity);
     Iterator<T1> getIterator();
-    T2   getValue(T1 key);
-    void     setValue(T1 key, T2 value);
-    int      getCapacity();
-    int      getSize();
+    T2 getValue(T1 key);
+    void setValue(T1 key, T2 value);
+    int getCapacity();
+    int getSize();
+
 }

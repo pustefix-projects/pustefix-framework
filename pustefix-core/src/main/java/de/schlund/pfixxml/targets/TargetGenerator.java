@@ -69,7 +69,6 @@ import de.schlund.pfixxml.resources.DocrootResource;
 import de.schlund.pfixxml.resources.FileResource;
 import de.schlund.pfixxml.resources.Resource;
 import de.schlund.pfixxml.resources.ResourceUtil;
-import de.schlund.pfixxml.targets.cachestat.CacheStatistic;
 import de.schlund.pfixxml.util.SimpleResolver;
 import de.schlund.pfixxml.util.TransformerHandlerAdapter;
 import de.schlund.pfixxml.util.XMLUtils;
@@ -500,10 +499,9 @@ public class TargetGenerator implements Comparable<TargetGenerator> {
         
         LOG.info("\n=====> Preliminaries took " + (System.currentTimeMillis() - start) + "ms. Now looping over " + allstructs.keySet().size() + " targets");
         start = System.currentTimeMillis();
-        String tgParam = configFile.toString();
         for (Iterator<String> i = allstructs.keySet().iterator(); i.hasNext();) {
             TargetStruct struct = allstructs.get(i.next());
-            createTargetFromTargetStruct(struct, allstructs, depxmls, depxsls, tgParam);
+            createTargetFromTargetStruct(struct, allstructs, depxmls, depxsls);
         }
         LOG.info("\n=====> Creating targets took " + (System.currentTimeMillis() - start) + "ms. Now init pagetree");
         start = System.currentTimeMillis();
@@ -511,7 +509,7 @@ public class TargetGenerator implements Comparable<TargetGenerator> {
         LOG.info("\n=====> Init of Pagetree took " + (System.currentTimeMillis() - start) + "ms. Ready...");
     }
 
-    private TargetRW createTargetFromTargetStruct(TargetStruct struct, HashMap<String, TargetStruct> allstructs, HashSet<String> depxmls, HashSet<String> depxsls, String tgParam) throws XMLException {
+    private TargetRW createTargetFromTargetStruct(TargetStruct struct, HashMap<String, TargetStruct> allstructs, HashSet<String> depxmls, HashSet<String> depxsls) throws XMLException {
 
         String key = struct.getName();
         String type = struct.getType();
@@ -536,14 +534,14 @@ public class TargetGenerator implements Comparable<TargetGenerator> {
             if (!allstructs.containsKey(xmldep)) {
                 xmlsource = createTarget(TargetType.XML_LEAF, xmldep, null);
             } else {
-                xmlsource = createTargetFromTargetStruct(allstructs.get(xmldep), allstructs, depxmls, depxsls, tgParam);
+                xmlsource = createTargetFromTargetStruct(allstructs.get(xmldep), allstructs, depxmls, depxsls);
             }
 
             // Check if xsldep is a leaf node or virtual:
             if (!allstructs.containsKey(xsldep)) {
                 xslsource = createTarget(TargetType.XSL_LEAF, xsldep, null);
             } else {
-                xslsource = createTargetFromTargetStruct(allstructs.get(xsldep), allstructs, depxmls, depxsls, tgParam);
+                xslsource = createTargetFromTargetStruct(allstructs.get(xsldep), allstructs, depxmls, depxsls);
             }
 
             String themes_str = struct.getThemes();
@@ -582,7 +580,7 @@ public class TargetGenerator implements Comparable<TargetGenerator> {
                 LOG.debug("* Adding Param " + pname + " with value " + value);
                 virtual.addParam(pname, value);
             }
-            virtual.addParam(XSLPARAM_TG, tgParam);
+            virtual.addParam(XSLPARAM_TG, this);
             virtual.addParam(XSLPARAM_TKEY, key);
             try {
                 virtual.addParam(XSLPARAM_NAVITREE, navigation.getNavigationXMLElement());
@@ -613,7 +611,7 @@ public class TargetGenerator implements Comparable<TargetGenerator> {
         String[] comps = splitComponentKey(componentKey);
         String href = comps[0];
         String part = comps[1];
-        String module = "";
+        String module = "WEBAPP";
         if(comps.length>2) module = comps[2];
         String search = "";
         if(comps.length>3) search = comps[3];
@@ -621,15 +619,13 @@ public class TargetGenerator implements Comparable<TargetGenerator> {
         Themes themes = global_themes;
                 
         if(getTargetRW(name) != null) throw new RuntimeException("Target already exists"); 
-                
-        String tgParam = config_path.toString();
-                
+                       
         XMLVirtualTarget xmlTarget = (XMLVirtualTarget)createTarget(TargetType.XML_VIRTUAL, componentKey + ".xml", themes);
-        Target xmlSource = createTarget(TargetType.XML_LEAF, "xml/component.xml", null);
+        Target xmlSource = createTarget(TargetType.XML_LEAF, "module://pustefix-core/xml/component.xml", null);
         Target xslSource = createTarget(TargetType.XSL_VIRTUAL, "metatags.xsl", null);
         xmlTarget.setXMLSource(xmlSource);
         xmlTarget.setXSLSource(xslSource);
-        xmlTarget.addParam(XSLPARAM_TG, tgParam);
+        xmlTarget.addParam(XSLPARAM_TG, this);
         xmlTarget.addParam(XSLPARAM_TKEY, componentKey + ".xml");
         xmlTarget.addParam("component_href", href);
         xmlTarget.addParam("component_part", part);
@@ -641,7 +637,7 @@ public class TargetGenerator implements Comparable<TargetGenerator> {
         xslSource = createTarget(TargetType.XSL_VIRTUAL, "master.xsl", null);
         xslTarget.setXMLSource(xmlSource);
         xslTarget.setXSLSource(xslSource);
-        xslTarget.addParam(XSLPARAM_TG, tgParam);
+        xslTarget.addParam(XSLPARAM_TG, this);
         xslTarget.addParam(XSLPARAM_TKEY, componentKey + ".xsl");
                 
         return xslTarget;
@@ -782,12 +778,11 @@ public class TargetGenerator implements Comparable<TargetGenerator> {
 
                     FileResource file = ResourceUtil.getFileResourceFromDocroot(args[i]);
                     if (file.exists() && file.canRead() && file.isFile()) {
-                        gen = TargetGeneratorFactory.getInstance().createGenerator(file);
+                        gen = new TargetGenerator(file);
                         gen.setIsGetModTimeMaybeUpdateSkipped(false);
                         System.out.println("---------- Doing " + args[i] + "...");
                         gen.generateAll();
                         System.out.println("---------- ...done [" + args[i] + "]");
-                        TargetGeneratorFactory.getInstance().remove(file);
                     } else {
                         LOG.error("Couldn't read configfile '" + args[i] + "'");
                         throw (new XMLException("Oops!"));
@@ -805,16 +800,6 @@ public class TargetGenerator implements Comparable<TargetGenerator> {
         }
     }
 
-    /**
-     * Make sure this target generator object is properly configured before calling this method.
-     * To obtain a propely configured TargetGenerator Object follow these steps:
-     * <ul>
-     * <li/><code>String log4jconfig    = System.getProperty("log4jconfig"); DOMConfigurator.configure(log4jconfig);</code>
-     * <li/>{@link TargetGenerator} gen = {@link TargetGeneratorFactory}.{@link TargetGeneratorFactory#getInstance()}.{@link TargetGeneratorFactory#createGenerator(String)};
-     * <li/>gen.{@link TargetGenerator#setIsGetModTimeMaybeUpdateSkipped(boolean)};
-     * </ul>
-     * @throws Exception
-     */
     public void generateAll() throws Exception {
         for (Iterator<String> e = getAllTargets().keySet().iterator(); e.hasNext();) {
             Target current = getTarget(e.next());
@@ -930,8 +915,6 @@ public class TargetGenerator implements Comparable<TargetGenerator> {
     }
 
     public static void resetFactories() {
-        CacheStatistic.reset();
-        TargetGeneratorFactory.getInstance().reset();
         TargetFactory.getInstance().reset();
         IncludeDocumentFactory.getInstance().reset();
         PageInfoFactory.getInstance().reset();

@@ -710,6 +710,7 @@ public abstract class AbstractPustefixXMLRequestHandler extends AbstractPustefix
         RenderContext renderContext = RenderContext.create(generator.getXsltVersion());
         paramhash.put("__rendercontext__", renderContext);
         renderContext.setParameters(Collections.unmodifiableMap(paramhash));
+        paramhash.put("page", spdoc.getPagename());
         try {
             long t1 = System.currentTimeMillis();
             Xslt.transform(spdoc.getDocument(), stylevalue, paramhash, new StreamResult(output), getServletEncoding());
@@ -813,7 +814,7 @@ public abstract class AbstractPustefixXMLRequestHandler extends AbstractPustefix
                 }
             }
         }
-        paramhash.put(TargetGenerator.XSLPARAM_TG, generator.getConfigPath().toURI().toString());
+        paramhash.put(TargetGenerator.XSLPARAM_TG, generator);
         paramhash.put(TargetGenerator.XSLPARAM_TKEY, VALUE_NONE);
         paramhash.put(TargetGenerator.XSLPARAM_NAVITREE, NavigationFactory.getInstance().getNavigation(generator.getConfigPath(), generator.getXsltVersion()).getNavigationXMLElement());
         paramhash.put(XSLPARAM_EDITOR_INCLUDE_PARTS_EDITABLE_BY_DEFAULT, Boolean.toString(includePartsEditableByDefault));
