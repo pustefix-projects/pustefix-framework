@@ -707,15 +707,15 @@ public abstract class AbstractPustefixXMLRequestHandler extends AbstractPustefix
             LOGGER.warn("stylevalue MUST NOT be null: stylesheet=" + stylesheet + "; " +
                      ((spdoc != null) ? ("pagename=" +  spdoc.getPagename()) : "spdoc==null")); 
         }
+        paramhash.put("page", spdoc.getPagename());
         RenderContext renderContext = RenderContext.create(generator.getXsltVersion());
         paramhash.put("__rendercontext__", renderContext);
         renderContext.setParameters(Collections.unmodifiableMap(paramhash));
-        paramhash.put("page", spdoc.getPagename());
         try {
             long t1 = System.currentTimeMillis();
             Xslt.transform(spdoc.getDocument(), stylevalue, paramhash, new StreamResult(output), getServletEncoding());
             long t2 = System.currentTimeMillis();
-            System.out.println("TTTTTTTTTTTTTTTTTTTT: " + (t2-t1));
+            System.out.println("TTTTTTTTTTTTTTTTTTTT: " + (t2-t1) + " " + renderContext.getTemplateCreationTime() + " " + renderContext.getTransformationTime());
         } catch (TransformerException e) {
             Throwable inner = e.getException();
             Throwable cause = null;

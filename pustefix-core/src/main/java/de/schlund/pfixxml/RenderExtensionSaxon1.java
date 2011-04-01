@@ -1,105 +1,43 @@
 package de.schlund.pfixxml;
 
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.Map;
-
-import javax.xml.transform.Result;
-import javax.xml.transform.Templates;
-import javax.xml.transform.TransformerException;
-import javax.xml.transform.dom.DOMResult;
-import javax.xml.transform.stream.StreamResult;
-
-import org.w3c.dom.Document;
 import org.w3c.dom.Node;
 
 import com.icl.saxon.Context;
 
 import de.schlund.pfixcore.workflow.context.RequestContextImpl;
-import de.schlund.pfixxml.targets.Target;
 import de.schlund.pfixxml.targets.TargetGenerator;
-import de.schlund.pfixxml.util.Xml;
-import de.schlund.pfixxml.util.Xslt;
-import de.schlund.pfixxml.util.XsltVersion;
+import de.schlund.pfixxml.util.ExtensionFunctionUtils;
 
-public class RenderExtensionSaxon1 extends RenderExtension {
-
-    //TODO: Reset
-    static ThreadLocal<Map<String, Templates>> templateCache = new ThreadLocal<Map<String, Templates>>();
+public class RenderExtensionSaxon1 {
     
-    public static Node render(Context saxonContext, TargetGenerator targetGenerator, String href, String part, 
-            String module, String search, Node node, RequestContextImpl requestContext, 
-            RenderContext renderContext, boolean output) throws Exception {
+    public static void render(Context saxonContext, TargetGenerator targetGenerator, String href, 
+            String part, String module, String search, Node node, RequestContextImpl requestContext, 
+            RenderContext renderContext) throws Exception {
 
         try {
-        
-        long t1 = System.currentTimeMillis();
-        
-        Map<String, Object> subParams = new HashMap<String, Object>();
-        Map<String, Object> parentParams = renderContext.getParameters();
-        for(String name: parentParams.keySet()) subParams.put(name, parentParams.get(name));
-        RenderContextSaxon1 subRenderContext = (RenderContextSaxon1)RenderContext.create(targetGenerator.getXsltVersion());
-        subRenderContext.setParent(renderContext);
-        
-        String componentKey = TargetGenerator.createComponentKey(href, part, module, search);
-        
-        String page = (String)parentParams.get("page");
-        //String page = "__COMPONENT__";
-        //subParams.put("page", page);
-        subParams.put("__rendercontext__", subRenderContext);
-        subRenderContext.setParameters(Collections.unmodifiableMap(subParams));
-        subRenderContext.setOutputter(saxonContext.getOutputter());
-        
-        long t2 = System.currentTimeMillis();
-        
-        Map<String,Templates> templateCacheMap = templateCache.get();
-        if(templateCacheMap == null) {
-            templateCacheMap = new HashMap<String,Templates>();
-            templateCache.set(templateCacheMap);
-        }
-        Templates style = templateCacheMap.get(componentKey);
-        if(style == null) {
-            Target target = targetGenerator.getTarget(componentKey);
-            style = (Templates)target.getValue();
-            templateCacheMap.put(componentKey, style);
-        }
-        //Target target = targetGenerator.getTarget(componentKey);
-        //Templates style = (Templates)target.getValue();
-        long t3 = System.currentTimeMillis();
-        
-        Result res;
-        if(!output) res = new DOMResult();
-        else res = new StreamResult(System.err);
-        
-        Xslt.transform(node.getOwnerDocument(), style, subParams, res, "utf-8");
-        
-        long t4 = System.currentTimeMillis();
-        
-        Document resultDoc = null;
-        if(!output) {
-            XsltVersion xsltVersion = Xml.getXsltVersion(node);
-            resultDoc = Xml.parse(xsltVersion, (Document)((DOMResult)res).getNode());
-        }
+           
+            RenderContextSaxon1 saxonRenderContext = (RenderContextSaxon1)renderContext;
+            if(saxonRenderContext.getOutputter() == null) {
+                saxonRenderContext.setOutputter(saxonContext.getOutputter());
+            }
             
-        long t5 = System.currentTimeMillis();
-        
-        System.out.println("*** RENDER " + page + " *** " + output);
-        System.out.println("TOTAL: " + (t5-t1));
-        System.out.println("TEMPLATE: " + (t3-t2));
-        System.out.println("TRANSFORM: " + (t4-t3));
-        System.out.println("TINYTREE: " + (t5-t4));
-        
-        return resultDoc;
-        
+            RenderExtension.render(targetGenerator, href, part, module, search, 
+                    node, requestContext, saxonRenderContext);
+                
         } catch(Exception x) {
-            x.printStackTrace();
+            ExtensionFunctionUtils.setExtensionFunctionError(x);
             throw x;
-        } 
+        }
     }
         
-    public static void renderStart(Context saxonContext, RenderContextSaxon1 renderContext) throws TransformerException {
-        if(renderContext.getParent() != null) {
-            saxonContext.getController().resetOutputDestination(renderContext.getOutputter());
+    public static void renderStart(Context saxonContext, RenderContextSaxon1 renderContext) throws Exception {     
+        try {
+            if(renderContext.getOutputter() != null) {
+                saxonContext.getController().resetOutputDestination(renderContext.getOutputter());
+            }
+        } catch(Exception x) {
+            ExtensionFunctionUtils.setExtensionFunctionError(x);
+            throw x;
         }
     }
     

@@ -2,7 +2,10 @@ package de.schlund.pfixxml;
 
 import java.util.Map;
 
+import javax.xml.transform.Templates;
+
 import de.schlund.pfixcore.exception.PustefixRuntimeException;
+import de.schlund.pfixxml.util.SimpleCacheLRU;
 import de.schlund.pfixxml.util.XsltVersion;
 
 public abstract class RenderContext {
@@ -12,6 +15,12 @@ public abstract class RenderContext {
     
     private RenderContext parent;
     private Map<String, Object> parameters;
+    
+    //Second-level template cache only available within the current transformation
+    private SimpleCacheLRU<String, Templates> templatesCache = new SimpleCacheLRU<String, Templates>(10);
+    
+    private long templateCreationTime;
+    private long transformationTime;
     
     public RenderContext() {
     }
@@ -30,6 +39,27 @@ public abstract class RenderContext {
     
     public void setParameters(Map<String, Object> parameters) {
         this.parameters = parameters;
+    }
+    
+    public Templates getTemplates(String templatesId) {
+        return templatesCache.get(templatesId);
+    }
+    
+    public void setTemplates(String templatesId, Templates templates) {
+        templatesCache.put(templatesId, templates);
+    }
+    
+    public void profile(long templateCreationTime, long transformationTime) {
+        this.templateCreationTime += templateCreationTime;
+        this.transformationTime += transformationTime;
+    }
+    
+    public long getTemplateCreationTime() {
+        return templateCreationTime;
+    }
+    
+    public long getTransformationTime() {
+        return transformationTime;
     }
     
     public static RenderContext create(XsltVersion xsltVersion) {

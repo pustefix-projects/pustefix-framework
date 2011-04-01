@@ -122,18 +122,25 @@
       <version>6.5.5</version>
     </dependency>
     <dependency>
-      <groupId>net.sf.saxon</groupId>
-      <artifactId>saxon-dom</artifactId>
-      <version>8.7</version>
+      <groupId>net.sourceforge.saxon</groupId>
+      <artifactId>saxon</artifactId>
+      <version>9.1.0.8</version>
+      <classifier>dom</classifier>
       <optional>true</optional>
     </dependency>
     <dependency>
-      <groupId>net.sf.saxon</groupId>
-      <artifactId>saxon-xpath</artifactId>
-      <version>8.7</version>
+      <groupId>net.sourceforge.saxon</groupId>
+      <artifactId>saxon</artifactId>
+      <version>9.1.0.8</version>
+      <classifier>xpath</classifier>
       <optional>true</optional>
     </dependency>
-    
+    <dependency>
+      <groupId>net.sourceforge.saxon</groupId>
+      <artifactId>saxon</artifactId>
+      <version>9.1.0.8</version>
+      <optional>true</optional>
+    </dependency>
     <dependency>
       <groupId>bsf</groupId>
       <artifactId>bsf</artifactId>

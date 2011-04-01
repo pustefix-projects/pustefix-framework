@@ -8,21 +8,21 @@
 
   <xsl:param name="__rendercontext__"/>
 
-  <xsl:param name="component_href"/>
-  <xsl:param name="component_part"/>
-  <xsl:param name="component_module"/>
-  <xsl:param name="component_search"/>
+  <xsl:param name="render_href"/>
+  <xsl:param name="render_part"/>
+  <xsl:param name="render_module"/>
+  <xsl:param name="render_search"/>
 
   <xsl:template name="__render_start__">
     <xsl:if test="rex:renderStart($__rendercontext__)"/>
   </xsl:template>
 
-  <xsl:template match="pfx:component">
+  <xsl:template match="pfx:rendercontent">
     <xsl:call-template name="pfx:include">
-      <xsl:with-param name="href"><xsl:value-of select="$component_href"/></xsl:with-param>
-      <xsl:with-param name="part"><xsl:value-of select="$component_part"/></xsl:with-param>
-      <xsl:with-param name="module"><xsl:value-of select="$component_module"/></xsl:with-param>
-      <xsl:with-param name="search"><xsl:value-of select="$component_search"/></xsl:with-param>
+      <xsl:with-param name="href"><xsl:value-of select="$render_href"/></xsl:with-param>
+      <xsl:with-param name="part"><xsl:value-of select="$render_part"/></xsl:with-param>
+      <xsl:with-param name="module"><xsl:value-of select="$render_module"/></xsl:with-param>
+      <xsl:with-param name="search"><xsl:value-of select="$render_search"/></xsl:with-param>
     </xsl:call-template>
   </xsl:template>
 
@@ -55,15 +55,7 @@
     <xsl:param name="part"/>
     <xsl:param name="module"/>
     <xsl:param name="search"/>
-    <xsl:param name="mode">output</xsl:param>
-    <xsl:choose>
-      <xsl:when test="$mode='output'">
-        <xsl:if test="rex:render($__target_gen, $href, $part, $module, $search, node(), $__context__, $__rendercontext__, true())"/>
-      </xsl:when>
-      <xsl:when test="$mode='copy'">
-        <xsl:copy-of select="rex:render($__target_gen, $href, $part, $module, $search, node(), $__context__, $__rendercontext__, false())"/>
-      </xsl:when>
-    </xsl:choose>
+    <xsl:if test="rex:render($__target_gen, $href, $part, $module, $search, node(), $__context__, $__rendercontext__)"/>
   </xsl:template>
 
 </xsl:stylesheet>

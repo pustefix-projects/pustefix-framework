@@ -187,8 +187,8 @@ public class TargetGenerator implements Comparable<TargetGenerator> {
         synchronized (alltargets) {
             Target target = (Target) alltargets.get(key);
             if(target == null && key.contains("$")) {
-                Target compTarget = createTargetForComponent(key);
-                return compTarget;
+                Target renderTarget = createTargetForRender(key);
+                return renderTarget;
             }
             return target;
         }
@@ -606,9 +606,9 @@ public class TargetGenerator implements Comparable<TargetGenerator> {
 
     // *******************************************************************************************
     
-    private TargetRW createTargetForComponent(String componentKey) {
+    private TargetRW createTargetForRender(String renderKey) {
         
-        String[] comps = splitComponentKey(componentKey);
+        String[] comps = splitRenderKey(renderKey);
         String href = comps[0];
         String part = comps[1];
         String module = "WEBAPP";
@@ -620,25 +620,25 @@ public class TargetGenerator implements Comparable<TargetGenerator> {
                 
         if(getTargetRW(name) != null) throw new RuntimeException("Target already exists"); 
                        
-        XMLVirtualTarget xmlTarget = (XMLVirtualTarget)createTarget(TargetType.XML_VIRTUAL, componentKey + ".xml", themes);
-        Target xmlSource = createTarget(TargetType.XML_LEAF, "module://pustefix-core/xml/component.xml", null);
+        XMLVirtualTarget xmlTarget = (XMLVirtualTarget)createTarget(TargetType.XML_VIRTUAL, renderKey + ".xml", themes);
+        Target xmlSource = createTarget(TargetType.XML_LEAF, "module://pustefix-core/xml/render.xml", null);
         Target xslSource = createTarget(TargetType.XSL_VIRTUAL, "metatags.xsl", null);
         xmlTarget.setXMLSource(xmlSource);
         xmlTarget.setXSLSource(xslSource);
         xmlTarget.addParam(XSLPARAM_TG, this);
-        xmlTarget.addParam(XSLPARAM_TKEY, componentKey + ".xml");
-        xmlTarget.addParam("component_href", href);
-        xmlTarget.addParam("component_part", part);
-        xmlTarget.addParam("component_module", module);
-        xmlTarget.addParam("component_search", search);
+        xmlTarget.addParam(XSLPARAM_TKEY, renderKey + ".xml");
+        xmlTarget.addParam("render_href", href);
+        xmlTarget.addParam("render_part", part);
+        xmlTarget.addParam("render_module", module);
+        xmlTarget.addParam("render_search", search);
                 
-        XSLVirtualTarget xslTarget = (XSLVirtualTarget)createTarget(TargetType.XSL_VIRTUAL, componentKey + ".xsl", themes);
+        XSLVirtualTarget xslTarget = (XSLVirtualTarget)createTarget(TargetType.XSL_VIRTUAL, renderKey + ".xsl", themes);
         xmlSource = xmlTarget;
         xslSource = createTarget(TargetType.XSL_VIRTUAL, "master.xsl", null);
         xslTarget.setXMLSource(xmlSource);
         xslTarget.setXSLSource(xslSource);
         xslTarget.addParam(XSLPARAM_TG, this);
-        xslTarget.addParam(XSLPARAM_TKEY, componentKey + ".xsl");
+        xslTarget.addParam(XSLPARAM_TKEY, renderKey + ".xsl");
                 
         return xslTarget;
     }
@@ -954,7 +954,7 @@ public class TargetGenerator implements Comparable<TargetGenerator> {
     }
     
       
-    public static String createComponentKey(String href, String part, String module, String search) {
+    public static String createRenderKey(String href, String part, String module, String search) {
         if(href == null || href.equals("")) throw new IllegalArgumentException("Argument 'href' must not be empty");
         if(part == null || part.equals("")) throw new IllegalArgumentException("Argument 'part' must not be empty");
         if(module == null) module = "";
@@ -979,8 +979,8 @@ public class TargetGenerator implements Comparable<TargetGenerator> {
         return str;
     }
         
-    public static String[] splitComponentKey(String componentKey) {
-        String[] comps = componentKey.split("\\$");
+    private static String[] splitRenderKey(String renderKey) {
+        String[] comps = renderKey.split("\\$");
         for(int i=0; i<comps.length; i++) {
             comps[i] = decode(comps[i]);
         }
