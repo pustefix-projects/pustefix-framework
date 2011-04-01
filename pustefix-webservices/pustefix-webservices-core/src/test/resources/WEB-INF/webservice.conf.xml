@@ -1,8 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <webservice-config
-  xmlns="http://pustefix.sourceforge.net/wsconfig200401"
-  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-  xsi:schemaLocation="http://pustefix.sourceforge.net/wsconfig200401 ../../core/schema/wsconfig200401.xsd">
+  xmlns="http://www.pustefix-framework.org/2008/namespace/webservice-config">
 
   <import href="WEB-INF/webservice-import.xml"/>
 
