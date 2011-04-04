@@ -67,6 +67,17 @@ public class ParsingUtils {
         return configs.iterator().next();
     }
     
+    public static <T> T getSingleObject(Class<T> clazz, HandlerContext context, boolean mandatory) throws ParserException {
+        Collection<T> configs = context.getObjectTreeElement().getObjectsOfType(clazz);
+        if(configs.size()==0) {
+            if(mandatory) throw new ParserException("Object tree element contains no instance of type '"+clazz.getName()+"'.");
+            else return null;
+        } else if(configs.size()>1) {
+            throw new ParserException("Object tree element contains multiple instances of type '"+clazz.getName()+"'.");
+        }
+        return configs.iterator().next();
+    }
+    
     public static <T> T getSingleTopObject(Class<T> clazz, HandlerContext context) throws ParserException {
         Collection<T> configs = context.getObjectTreeElement().getObjectsOfTypeFromTopTree(clazz);
         if(configs.size()==0) {
@@ -91,6 +102,18 @@ public class ParsingUtils {
         Collection<T> configs = treeElem.getObjectsOfTypeFromSubTree(clazz);
         if(configs.size()==0) {
             throw new ParserException("Object tree contains no instance of type '"+clazz.getName()+"'.");
+        } else if(configs.size()>1) {
+            throw new ParserException("Object tree contains multiple instances of type '"+clazz.getName()+"'.");
+        }
+        return configs.iterator().next();
+    }
+    
+    public static <T> T getSingleSubObjectFromRoot(Class<T> clazz, HandlerContext context, boolean mandatory) throws ParserException {
+        ObjectTreeElement treeElem = context.getObjectTreeElement().getRoot();
+        Collection<T> configs = treeElem.getObjectsOfTypeFromSubTree(clazz);
+        if(configs.size()==0) {
+            if(mandatory) throw new ParserException("Object tree contains no instance of type '"+clazz.getName()+"'.");
+            else return null;
         } else if(configs.size()>1) {
             throw new ParserException("Object tree contains multiple instances of type '"+clazz.getName()+"'.");
         }
