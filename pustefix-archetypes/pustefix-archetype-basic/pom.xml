@@ -6,12 +6,12 @@
   <parent>
     <groupId>org.pustefixframework.maven.archetypes</groupId>
     <artifactId>pustefix-archetypes</artifactId>
-    <version>0.15.22-SNAPSHOT</version>
+    <version>0.15.22</version>
   </parent>
 
   <groupId>org.pustefixframework</groupId>
   <artifactId>pustefix-archetype-basic</artifactId>
-  <version>0.15.22-SNAPSHOT</version>
+  <version>0.15.22</version>
   <packaging>maven-archetype</packaging>
 
   <name>Pustefix Archetype Basic Application</name>
