@@ -143,6 +143,7 @@
             pfx.editor.openEditor=function(title) {
             	var data = title.split('|');
             	var uri = '';
+            	if(data[2].indexOf("/")==0) data[2] = data[2].substr(1);
             	if(data[3]=='webapp') uri = 'docroot:/' + data[2];
             	else uri = 'module://' + data[3] + '/' + data[2];
             	window.open('<ixsl:value-of select="$__editor_url"/>?__scriptedflow=selectinclude&amp;' +
