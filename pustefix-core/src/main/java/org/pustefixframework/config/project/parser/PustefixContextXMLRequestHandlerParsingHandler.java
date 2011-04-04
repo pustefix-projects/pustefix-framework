@@ -32,8 +32,8 @@ import org.pustefixframework.config.contextxmlservice.ContextXMLServletConfig;
 import org.pustefixframework.config.customization.CustomizationAwareParsingHandler;
 import org.pustefixframework.config.customization.CustomizationInfo;
 import org.pustefixframework.config.customization.PropertiesBasedCustomizationInfo;
+import org.pustefixframework.config.generic.ParsingUtils;
 import org.pustefixframework.config.project.EditorInfo;
-import org.pustefixframework.config.project.EditorLocation;
 import org.pustefixframework.config.project.XMLGeneratorInfo;
 import org.pustefixframework.http.PustefixContextXMLRequestHandler;
 import org.pustefixframework.http.PustefixInternalsRequestHandler;
@@ -120,13 +120,7 @@ public class PustefixContextXMLRequestHandlerParsingHandler extends Customizatio
         }
         XMLGeneratorInfo info = infoCollection.iterator().next();
         
-        Collection<EditorLocation> editorLocationCollection = context.getObjectTreeElement().getRoot().getObjectsOfTypeFromSubTree(EditorLocation.class);
-        EditorLocation editorLocation;
-        if (editorLocationCollection.size() > 0) {
-            editorLocation = editorLocationCollection.iterator().next();
-        } else {
-            editorLocation = new EditorLocation(null);
-        }
+       
        
         FileResource fileRes = ResourceUtil.getFileResource(configurationFile);
         Resource res = null;
@@ -172,6 +166,7 @@ public class PustefixContextXMLRequestHandlerParsingHandler extends Customizatio
         }
         
         ContextXMLServletConfig config = context.getObjectTreeElement().getObjectsOfTypeFromSubTree(ContextXMLServletConfig.class).iterator().next();
+        EditorInfo editorInfo = ParsingUtils.getSingleSubObjectFromRoot(EditorInfo.class, context, false);
         
         BeanDefinitionBuilder beanBuilder = BeanDefinitionBuilder.genericBeanDefinition(PustefixContextXMLRequestHandler.class);
         beanBuilder.setScope("singleton");
@@ -184,7 +179,9 @@ public class PustefixContextXMLRequestHandlerParsingHandler extends Customizatio
         if(beanReg.isBeanNameInUse(TestRecording.class.getName())) {
             beanBuilder.addPropertyValue("testRecording", new RuntimeBeanReference(TestRecording.class.getName()));
         }
-        beanBuilder.addPropertyValue("editorLocation", editorLocation.getLocation());
+        if(editorInfo != null) {
+            beanBuilder.addPropertyValue("editorLocation", editorInfo.getLocation());
+        }
         beanBuilder.addPropertyValue("checkModtime", info.getCheckModtime());
         beanBuilder.addPropertyValue("sessionCleaner", new RuntimeBeanReference(SessionCleaner.class.getName()));
         beanBuilder.addPropertyValue("renderExternal", renderExternal);
@@ -192,9 +189,7 @@ public class PustefixContextXMLRequestHandlerParsingHandler extends Customizatio
             beanBuilder.addPropertyValue("additionalTrailInfo", new RuntimeBeanReference(additionalTrailInfoRef));
         beanBuilder.addPropertyValue("maxStoredDoms", maxStoredDoms);
         beanBuilder.addPropertyValue("exceptionProcessingConfiguration", new RuntimeBeanReference(ExceptionProcessingConfiguration.class.getName()));
-        Collection<EditorInfo> editorInfos = context.getObjectTreeElement().getRoot().getObjectsOfTypeFromSubTree(EditorInfo.class);
-        if(editorInfos.size()>0) {
-            EditorInfo editorInfo = editorInfos.iterator().next();
+        if(editorInfo != null) {
             beanBuilder.addPropertyValue("editModeAllowed", editorInfo.isEnabled());
             beanBuilder.addPropertyValue("includePartsEditableByDefault", editorInfo.isIncludePartsEditableByDefault());
         }
