@@ -4,6 +4,7 @@ public class EditorInfo {
     
     private boolean enabled;
     private boolean includePartsEditableByDefault = true;
+    private String location;
     
     public void setEnabled(boolean enabled) {
         this.enabled = enabled;
@@ -19,6 +20,14 @@ public class EditorInfo {
 
     public boolean isIncludePartsEditableByDefault() {
         return includePartsEditableByDefault;
+    }
+    
+    public void setLocation(String location) {
+        this.location = location;
+    }
+    
+    public String getLocation() {
+        return location;
     }
 
 }

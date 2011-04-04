@@ -80,7 +80,7 @@
   </handler>
   
   <!-- Saves editor info -->
-  <handler class="org.pustefixframework.config.project.parser.EditorInfoParsingHandler">
+  <handler class="org.pustefixframework.config.project.parser.EditorInfoParsingHandler" run-order="both">
     <match>/p:project-config/p:editor</match>
   </handler>
   

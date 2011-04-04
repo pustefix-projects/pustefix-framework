@@ -34,7 +34,6 @@ import org.pustefixframework.config.customization.CustomizationInfo;
 import org.pustefixframework.config.customization.PropertiesBasedCustomizationInfo;
 import org.pustefixframework.config.generic.ParsingUtils;
 import org.pustefixframework.config.project.EditorInfo;
-import org.pustefixframework.config.project.EditorLocation;
 import org.pustefixframework.config.project.SessionTimeoutInfo;
 import org.pustefixframework.config.project.SessionTrackingStrategyInfo;
 import org.pustefixframework.config.project.XMLGeneratorInfo;
@@ -131,13 +130,7 @@ public class PustefixContextXMLRequestHandlerParsingHandler extends Customizatio
         }
         XMLGeneratorInfo info = infoCollection.iterator().next();
         
-        Collection<EditorLocation> editorLocationCollection = context.getObjectTreeElement().getRoot().getObjectsOfTypeFromSubTree(EditorLocation.class);
-        EditorLocation editorLocation;
-        if (editorLocationCollection.size() > 0) {
-            editorLocation = editorLocationCollection.iterator().next();
-        } else {
-            editorLocation = new EditorLocation(null);
-        }
+       
        
         FileResource fileRes = ResourceUtil.getFileResource(configurationFile);
         Resource res = null;
@@ -185,6 +178,7 @@ public class PustefixContextXMLRequestHandlerParsingHandler extends Customizatio
         ContextXMLServletConfig config = context.getObjectTreeElement().getObjectsOfTypeFromSubTree(ContextXMLServletConfig.class).iterator().next();
         SessionTrackingStrategyInfo strategyInfo = ParsingUtils.getSingleTopObject(SessionTrackingStrategyInfo.class, context);
         SessionTimeoutInfo timeoutInfo = ParsingUtils.getFirstTopObject(SessionTimeoutInfo.class, context, false);
+        EditorInfo editorInfo = ParsingUtils.getSingleSubObjectFromRoot(EditorInfo.class, context, false);
         
         BeanDefinitionBuilder beanBuilder = BeanDefinitionBuilder.genericBeanDefinition(PustefixContextXMLRequestHandler.class);
         beanBuilder.setScope("singleton");
@@ -194,7 +188,9 @@ public class PustefixContextXMLRequestHandlerParsingHandler extends Customizatio
         beanBuilder.addPropertyValue("context", new RuntimeBeanReference(ContextImpl.class.getName()));
         beanBuilder.addPropertyValue("configuration", config);
         beanBuilder.addPropertyValue("sessionAdmin", new RuntimeBeanReference(SessionAdmin.class.getName()));
-        beanBuilder.addPropertyValue("editorLocation", editorLocation.getLocation());
+        if(editorInfo != null) {
+            beanBuilder.addPropertyValue("editorLocation", editorInfo.getLocation());
+        }
         beanBuilder.addPropertyValue("checkModtime", info.getCheckModtime());
         beanBuilder.addPropertyValue("sessionCleaner", new RuntimeBeanReference(SessionCleaner.class.getName()));
         beanBuilder.addPropertyValue("renderExternal", renderExternal);
@@ -202,9 +198,7 @@ public class PustefixContextXMLRequestHandlerParsingHandler extends Customizatio
             beanBuilder.addPropertyValue("additionalTrailInfo", new RuntimeBeanReference(additionalTrailInfoRef));
         beanBuilder.addPropertyValue("maxStoredDoms", maxStoredDoms);
         beanBuilder.addPropertyValue("exceptionProcessingConfiguration", new RuntimeBeanReference(ExceptionProcessingConfiguration.class.getName()));
-        Collection<EditorInfo> editorInfos = context.getObjectTreeElement().getRoot().getObjectsOfTypeFromSubTree(EditorInfo.class);
-        if(editorInfos.size()>0) {
-            EditorInfo editorInfo = editorInfos.iterator().next();
+        if(editorInfo != null) {
             beanBuilder.addPropertyValue("editModeAllowed", editorInfo.isEnabled());
             beanBuilder.addPropertyValue("includePartsEditableByDefault", editorInfo.isIncludePartsEditableByDefault());
         }
