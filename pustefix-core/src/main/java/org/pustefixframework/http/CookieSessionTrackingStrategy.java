@@ -34,6 +34,7 @@ public class CookieSessionTrackingStrategy implements SessionTrackingStrategy {
     private static final String STORED_REQUEST = "__STORED_PFIXSERVLETREQUEST__";
     private static String TIMESTAMP_ID = "";
     private static final String          INITIAL_SESSION_CHECK         = "__INITIAL_SESSION_CHECK__";
+    private static final String COOKIE_SESSION_RESET = "__PFIX_RST_";
     public static final String VISIT_ID = "__VISIT_ID__";
     
     private SessionTrackingStrategyContext context;
@@ -120,9 +121,20 @@ public class CookieSessionTrackingStrategy implements SessionTrackingStrategy {
                 if (forcelocal != null && (forcelocal.equals("1") || forcelocal.equals("true") || forcelocal.equals("yes"))) {
                     LOG.debug("    ... but found __forcelocal parameter to be set.");
                 } else {
-                    LOG.debug("    ... and __forcelocal is NOT set.");
-                    redirectToClearedRequest(req, res);
-                    return;
+                    boolean resetTry = false;
+                    Cookie[] cookies = CookieUtils.getCookies(req);
+                    if(cookies != null) {
+                        for(Cookie cookie: cookies) {
+                            if(cookie.getName().equals(COOKIE_SESSION_RESET)) {
+                                if(cookie.getValue().equals(req.getRequestedSessionId())) resetTry = true;
+                            }
+                        }
+                    }
+                    if(!resetTry) {
+                        LOG.debug("    ... and __forcelocal is NOT set.");
+                        redirectToClearedRequest(req, res);
+                        return;
+                    }
                     // End of request cycle.
                 }
             }
@@ -267,6 +279,10 @@ public class CookieSessionTrackingStrategy implements SessionTrackingStrategy {
             cookie.setMaxAge(0);
             cookie.setPath((req.getContextPath().equals("")) ? "/" : req.getContextPath());
             res.addCookie(cookie);
+            Cookie resetCookie = new Cookie(COOKIE_SESSION_RESET, req.getRequestedSessionId());
+            resetCookie.setMaxAge(60);
+            resetCookie.setPath((req.getContextPath().equals("")) ? "/" : req.getContextPath());
+            res.addCookie(resetCookie);
         }
         AbstractPustefixRequestHandler.relocate(res, HttpServletResponse.SC_MOVED_PERMANENTLY, redirect_uri);
     }
