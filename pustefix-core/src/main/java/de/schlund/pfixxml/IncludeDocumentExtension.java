@@ -204,7 +204,7 @@ public final class IncludeDocumentExtension {
             }
             // get the includedocument
             try {
-                iDoc = IncludeDocumentFactory.getInstance().getIncludeDocument(context.getXsltVersion(), path, false);
+                iDoc = targetgen.getIncludeDocumentFactory().getIncludeDocument(context.getXsltVersion(), path, false);
             } catch (SAXException saxex) {
                 if (dolog)
                     DependencyTracker.logTyped("text", path, part, DEF_THEME,

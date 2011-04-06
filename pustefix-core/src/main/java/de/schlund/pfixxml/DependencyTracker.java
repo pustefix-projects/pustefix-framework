@@ -71,7 +71,6 @@ public class DependencyTracker {
                                 Resource parent_path, String parent_part, String parent_theme,
                                 VirtualTarget target) {
         if (LOG.isDebugEnabled()) {
-            String project = target.getTargetGenerator().getName();
             LOG.debug("Adding dependency to AuxdependencyManager :+\n"+
                       "Type       = " + type + "\n" +
                       "Path       = " + path.toURI().toString() + "\n" +
@@ -79,8 +78,7 @@ public class DependencyTracker {
                       "Theme      = " + theme + "\n" +
                       "ParentPath = " + ((parent_path == null)? "null" : parent_path.toURI().toString()) + "\n" +
                       "ParentPart = " + parent_part + "\n" +
-                      "ParentProd = " + parent_theme + "\n" +
-                      "Project    = " + project + "\n");
+                      "ParentProd = " + parent_theme + "\n");
         }
         DependencyType  thetype   = DependencyType.getByTag(type);
         if (thetype == DependencyType.TEXT) {

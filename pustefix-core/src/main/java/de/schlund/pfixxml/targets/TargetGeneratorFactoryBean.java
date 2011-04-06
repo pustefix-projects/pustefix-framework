@@ -40,6 +40,7 @@ public class TargetGeneratorFactoryBean implements ServletContextAware {
     
     private ServletContext servletContext;
     private FileResource configFile;
+    private SPCacheFactory cacheFactory;
     
     /**
      * Returns the TargetGenerator instance for the configured configuration
@@ -58,9 +59,9 @@ public class TargetGeneratorFactoryBean implements ServletContextAware {
                 cacheDir.mkdir();
             }
             FileResource cacheRes = ResourceUtil.getFileResource(cacheDir.toURI());
-            generator = new TargetGenerator(configFile, cacheRes);
+            generator = new TargetGenerator(configFile, cacheRes, cacheFactory);
         } else {
-            generator = new TargetGenerator(configFile);
+            generator = new TargetGenerator(configFile, cacheFactory);
         }
         return generator;
     }
@@ -78,6 +79,10 @@ public class TargetGeneratorFactoryBean implements ServletContextAware {
  
     public void setServletContext(ServletContext servletContext) {
         this.servletContext = servletContext;
+    }
+    
+    public void setCacheFactory(SPCacheFactory cacheFactory) {
+        this.cacheFactory = cacheFactory;
     }
     
 }

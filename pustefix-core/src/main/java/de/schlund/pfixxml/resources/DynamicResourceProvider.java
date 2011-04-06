@@ -22,15 +22,10 @@ import java.net.URISyntaxException;
 import java.util.List;
 
 import org.apache.log4j.Logger;
-import org.w3c.dom.Document;
-import org.w3c.dom.Node;
 
 import de.schlund.pfixcore.util.ModuleInfo;
-import de.schlund.pfixxml.IncludeDocument;
-import de.schlund.pfixxml.IncludeDocumentFactory;
+import de.schlund.pfixxml.IncludePartsInfoFactory;
 import de.schlund.pfixxml.util.URIParameters;
-import de.schlund.pfixxml.util.XPath;
-import de.schlund.pfixxml.util.XsltProvider;
 
 /**
  * 
@@ -43,6 +38,8 @@ public class DynamicResourceProvider implements ResourceProvider {
     
     private static String DYNAMIC_SCHEME = "dynamic";
     private static String[] supportedSchemes = {DYNAMIC_SCHEME};
+    
+    private IncludePartsInfoFactory incInfo = new IncludePartsInfoFactory();
     
     public String[] getSupportedSchemes() {
         return supportedSchemes;
@@ -215,15 +212,8 @@ public class DynamicResourceProvider implements ResourceProvider {
     }
  
     private boolean containsPart(Resource res, String part) throws ResourceProviderException {
-        try {
-            IncludeDocument incDoc = IncludeDocumentFactory.getInstance().getIncludeDocument(XsltProvider.getPreferredXsltVersion(), res, false);
-            Document doc = incDoc.getDocument();
-            List<Node> ns = XPath.select(doc, "/include_parts/part[@name='" + part + "']");
-            if(ns.size()>0) return true;
-            return false;
-        } catch (Exception x) {
-            throw new ResourceProviderException("Error while searching part in document: " + res.toURI(), x);
-        }
+        boolean ret = incInfo.containsPart(res, part);
+        return ret;
     }
     
 }

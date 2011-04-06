@@ -30,14 +30,13 @@ package de.schlund.pfixxml.targets;
  */
 
 public class PageInfo implements Comparable<PageInfo> {
+    
     private String          name;
     private String          variant;
-    private TargetGenerator generator;
     
-    protected PageInfo(TargetGenerator gen, String pagename, String pagevariant) {
+    protected PageInfo(String pagename, String pagevariant) {
         name      = pagename;
         variant   = pagevariant;
-        generator = gen;
     }
         
     public String getName() {
@@ -48,33 +47,25 @@ public class PageInfo implements Comparable<PageInfo> {
         return variant;
     }
 
-    public TargetGenerator getTargetGenerator() {
-        return generator;
-    }
-
     public int compareTo(PageInfo in) {
-        if (getTargetGenerator().getName().compareTo(in.getTargetGenerator().getName()) != 0) {
-            return getTargetGenerator().getName().compareTo(in.getTargetGenerator().getName());
+        if (!getName().equals(in.getName())) {
+            return getName().compareTo(in.getName());
         } else {
-            if (!getName().equals(in.getName())) {
-                return getName().compareTo(in.getName());
+            if (getVariant() == null && in.getVariant() == null) {
+                return 0;
+            } else if (getVariant() == null && in.getVariant() != null) {
+                return 1;
+            } else if (getVariant() != null && in.getVariant() == null) {
+                return -1;
             } else {
-                if (getVariant() == null && in.getVariant() == null) {
-                    return 0;
-                } else if (getVariant() == null && in.getVariant() != null) {
-                    return 1;
-                } else if (getVariant() != null && in.getVariant() == null) {
-                    return -1;
-                } else {
-                    return getVariant().compareTo(in.getVariant());
-                }
+                return getVariant().compareTo(in.getVariant());
             }
         }
     }
 
     @Override
     public String toString() {
-        return "[PAGE: " + name + " " + generator.getName() + "/" + getVariant() + "]";
+        return "[PAGE: " + name + "/" + getVariant() + "]";
     }
     
 }// PageInfo

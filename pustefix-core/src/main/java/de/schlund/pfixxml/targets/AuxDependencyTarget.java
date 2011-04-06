@@ -37,8 +37,7 @@ public class AuxDependencyTarget extends AbstractAuxDependency {
         this.type = DependencyType.TARGET;
         this.tgen = tgen;
         this.targetkey = targetkey;
-        this.hashCode = (tgen.getConfigPath().toString() + ":" + targetkey)
-                .hashCode();
+        this.hashCode = targetkey.hashCode();
     }
 
     /**
@@ -69,12 +68,6 @@ public class AuxDependencyTarget extends AbstractAuxDependency {
         }
 
         AuxDependencyTarget a = (AuxDependencyTarget) o;
-        
-        comp = tgen.getConfigPath().compareTo(a.tgen.getConfigPath());
-        if (comp != 0) {
-            return comp;
-        }
-        
         return targetkey.compareTo(a.targetkey);
     }
 
@@ -94,8 +87,7 @@ public class AuxDependencyTarget extends AbstractAuxDependency {
 
     @Override
     public String toString() {
-        String path = tgen.getConfigPath().toURI().toString();
-        return "[AUX/" + getType() + " " + path + ": " + targetkey + "]";
+        return "[AUX/" + getType() + ": " + targetkey + "]";
     }
 
 }

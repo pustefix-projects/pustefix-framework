@@ -53,8 +53,6 @@ import org.xml.sax.helpers.XMLReaderFactory;
 
 import de.schlund.pfixcore.util.Meminfo;
 import de.schlund.pfixcore.workflow.Navigation;
-import de.schlund.pfixcore.workflow.NavigationFactory;
-import de.schlund.pfixcore.workflow.NavigationInitializationException;
 import de.schlund.pfixxml.IncludeDocumentFactory;
 import de.schlund.pfixxml.XMLException;
 import de.schlund.pfixxml.config.CustomizationHandler;
@@ -71,7 +69,6 @@ import de.schlund.pfixxml.resources.Resource;
 import de.schlund.pfixxml.resources.ResourceUtil;
 import de.schlund.pfixxml.util.SimpleResolver;
 import de.schlund.pfixxml.util.TransformerHandlerAdapter;
-import de.schlund.pfixxml.util.XMLUtils;
 import de.schlund.pfixxml.util.Xml;
 import de.schlund.pfixxml.util.XsltVersion;
 
@@ -81,7 +78,7 @@ import de.schlund.pfixxml.util.XsltVersion;
  *
  */
 
-public class TargetGenerator implements Comparable<TargetGenerator> {
+public class TargetGenerator {
 
     public static final String XSLPARAM_TG = "__target_gen";
 
@@ -125,27 +122,46 @@ public class TargetGenerator implements Comparable<TargetGenerator> {
     private Navigation navigation;
     
     private FileResource cacheDir;
+    
+    private SPCacheFactory cacheFactory;
+    private IncludeDocumentFactory includeDocumentFactory;
+    private AuxDependencyFactory auxDependencyFactory;
+    private TargetDependencyRelation targetDependencyRelation;
+    private TargetFactory targetFactory;
+    private SharedLeafFactory sharedLeafFactory;
+    private PageInfoFactory pageInfoFactory;
 
     //--
 
-    public TargetGenerator(final FileResource confile, FileResource cacheDir) throws IOException, SAXException, XMLException {
+    public TargetGenerator(final FileResource confile, final FileResource cacheDir) throws IOException, SAXException, XMLException {
+        this(confile, cacheDir, new SPCacheFactory().init());
+    }
+    
+    public TargetGenerator(final FileResource confile, final FileResource cacheDir, final SPCacheFactory cacheFactory) throws IOException, SAXException, XMLException {
         this.config_path = confile;
         this.cacheDir = cacheDir;
+        this.cacheFactory = cacheFactory;
+        includeDocumentFactory = new IncludeDocumentFactory(cacheFactory);
+        targetDependencyRelation = new TargetDependencyRelation();
+        auxDependencyFactory = new AuxDependencyFactory(targetDependencyRelation);
+        targetFactory = new TargetFactory();
+        sharedLeafFactory = new SharedLeafFactory();
+        pageInfoFactory = new PageInfoFactory();
+        //TODO: factory init on reload
         Meminfo.print("TG: Before loading " + confile.toString());
         loadConfig(confile);
         Meminfo.print("TG: after loading targets for " + confile.toString());
     }
         
     public TargetGenerator(FileResource confile) throws IOException, SAXException, XMLException {
-        this(confile, null);
+        this(confile, null, new SPCacheFactory().init());
     }
     
-
-    //-- attributes
-
-    public String getName() {
-        return name;
+    public TargetGenerator(FileResource confile, SPCacheFactory cacheFactory) throws IOException, SAXException, XMLException {
+        this(confile, null, cacheFactory);
     }
+    
+    //-- attributes
     
     public XsltVersion getXsltVersion() {
         return xsltVersion;
@@ -175,6 +191,30 @@ public class TargetGenerator implements Comparable<TargetGenerator> {
         return navigation;
     }
 
+    public SPCacheFactory getCacheFactory() {
+        return cacheFactory;
+    }
+    
+    public IncludeDocumentFactory getIncludeDocumentFactory() {
+        return includeDocumentFactory;
+    }
+    
+    public AuxDependencyFactory getAuxDependencyFactory() {
+        return auxDependencyFactory;
+    }
+    
+    public TargetDependencyRelation getTargetDependencyRelation() {
+        return targetDependencyRelation;
+    }
+    
+    public SharedLeafFactory getSharedLeafFactory() {
+        return sharedLeafFactory;
+    }
+    
+    public PageInfoFactory getPageInfoFactory() {
+        return pageInfoFactory;
+    }
+    
     //-- targets
 
     public TreeMap<String, Target> getAllTargets() {
@@ -222,7 +262,7 @@ public class TargetGenerator implements Comparable<TargetGenerator> {
 
     @Override
     public String toString() {
-        return "[TG: " + getName() + "; " + alltargets.size() + " targets defined.]";
+        return "[TG: " + alltargets.size() + " targets defined.]";
     }
 
     // *******************************************************************************************
@@ -232,7 +272,7 @@ public class TargetGenerator implements Comparable<TargetGenerator> {
             LOG.info("\n\n###############################\n" + "#### Reloading depend file: " + this.config_path.toString() + "\n" + "###############################\n");
             synchronized (alltargets) {
                 if (alltargets != null && !alltargets.isEmpty()) {
-                    TargetDependencyRelation.getInstance().resetAllRelations((Collection<Target>) alltargets.values());
+                    targetDependencyRelation.resetAllRelations((Collection<Target>) alltargets.values());
                 }
             }
             pagetree = new PageTargetTree();
@@ -350,12 +390,6 @@ public class TargetGenerator implements Comparable<TargetGenerator> {
         } else {
             throw new RuntimeException("Could not get instance of SAXTransformerFactory!");
         }
-        
-        try {
-            XMLUtils.serialize(config);
-        } catch(Exception x) {
-            x.printStackTrace();
-        }
 
         Element root = (Element) config.getElementsByTagName("make").item(0);
         
@@ -409,7 +443,7 @@ public class TargetGenerator implements Comparable<TargetGenerator> {
         default_theme = def_theme_str;
 
         if(cacheDir == null) {
-            cacheDir = ResourceUtil.getFileResourceFromDocroot(CACHEDIR + "/" + getName());
+            cacheDir = ResourceUtil.getFileResourceFromDocroot(CACHEDIR);
             if (!cacheDir.exists()) {
                 cacheDir.mkdirs();
             } else if (!cacheDir.isDirectory() || !cacheDir.canRead()) {
@@ -492,8 +526,8 @@ public class TargetGenerator implements Comparable<TargetGenerator> {
         }
         
         try {
-            navigation = NavigationFactory.getInstance().getNavigation(this.config_path,getXsltVersion());
-        } catch (NavigationInitializationException e) {
+            navigation = new Navigation(config_path, getXsltVersion());
+        } catch (Exception e) {
             throw new XMLException("Error reading page navigation.");
         }
         
@@ -507,6 +541,7 @@ public class TargetGenerator implements Comparable<TargetGenerator> {
         start = System.currentTimeMillis();
         pagetree.initTargets();
         LOG.info("\n=====> Init of Pagetree took " + (System.currentTimeMillis() - start) + "ms. Ready...");
+    
     }
 
     private TargetRW createTargetFromTargetStruct(TargetStruct struct, HashMap<String, TargetStruct> allstructs, HashSet<String> depxmls, HashSet<String> depxsls) throws XMLException {
@@ -594,7 +629,7 @@ public class TargetGenerator implements Comparable<TargetGenerator> {
                     LOG.info("*** WARNING *** Target '" + key + "' is top-level, but has no 'page' attribute set! Ignoring it... ***");
                 } else {
                     //CAT.warn("REGISTER " + pagename + " " + variantname);
-                    PageInfo info = PageInfoFactory.getInstance().getPage(this, pagename, variantname);
+                    PageInfo info = pageInfoFactory.getPage(pagename, variantname);
                     pagetree.addEntry(info, virtual);
                 }
             } else if (pagename != null) {
@@ -650,8 +685,8 @@ public class TargetGenerator implements Comparable<TargetGenerator> {
     }
 
     private TargetRW createTarget(TargetType type, String key, Themes themes) {
-        TargetFactory tfac = TargetFactory.getInstance();
-        TargetRW tmp = tfac.getTarget(type, this, key, themes);
+        
+        TargetRW tmp = targetFactory.getTarget(type, this, key, themes);
         TargetRW tmp2 = getTargetRW(key);
 
         if (tmp2 == null) {
@@ -754,8 +789,7 @@ public class TargetGenerator implements Comparable<TargetGenerator> {
     // *******************************************************************************************
 
     public static void main(String[] args) {
-        TargetGenerator gen = null;
-
+       
         String log4jconfig = System.getProperty("log4jconfig");
         if (log4jconfig == null || log4jconfig.equals("")) {
             System.out.println("*** FATAL: Need the log4jconfig property. Exiting... ***");
@@ -772,13 +806,9 @@ public class TargetGenerator implements Comparable<TargetGenerator> {
 
             for (int i = 1; i < args.length; i++) {
                 try {
-                    /* resetting the factories for better memory performance */
-                    TargetGenerator.resetFactories();
-                    System.gc();
-
                     FileResource file = ResourceUtil.getFileResourceFromDocroot(args[i]);
                     if (file.exists() && file.canRead() && file.isFile()) {
-                        gen = new TargetGenerator(file);
+                        TargetGenerator gen = new TargetGenerator(file);
                         gen.setIsGetModTimeMaybeUpdateSkipped(false);
                         System.out.println("---------- Doing " + args[i] + "...");
                         gen.generateAll();
@@ -825,7 +855,7 @@ public class TargetGenerator implements Comparable<TargetGenerator> {
                     notifyListenerTargetDone(target);
                 } catch (TargetGenerationException tgex) {
                     notifyListenerTargetException(target, tgex);
-                    report.addError(tgex, getName());
+                    report.addError(tgex);
                     tgex.printStackTrace();
                 }
             } else {
@@ -914,15 +944,6 @@ public class TargetGenerator implements Comparable<TargetGenerator> {
         report = new TargetGenerationReport();
     }
 
-    public static void resetFactories() {
-        TargetFactory.getInstance().reset();
-        IncludeDocumentFactory.getInstance().reset();
-        PageInfoFactory.getInstance().reset();
-        SharedLeafFactory.getInstance().reset();
-        AuxDependencyFactory.getInstance().reset();
-        TargetDependencyRelation.getInstance().reset();
-    }
-
     //--
 
     private static String getAttribute(Element node, String name) throws XMLException {
@@ -944,15 +965,6 @@ public class TargetGenerator implements Comparable<TargetGenerator> {
         }
         return attr.getValue();
     }
-
-    public int compareTo(TargetGenerator cmp) {
-        return cmp.getName().compareTo(this.getName());
-    }
-
-    public FileResource getConfigPath() {
-        return this.config_path;
-    }
-    
       
     public static String createRenderKey(String href, String part, String module, String search) {
         if(href == null || href.equals("")) throw new IllegalArgumentException("Argument 'href' must not be empty");

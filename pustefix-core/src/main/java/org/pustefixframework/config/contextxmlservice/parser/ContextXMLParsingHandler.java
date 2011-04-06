@@ -52,7 +52,6 @@ import de.schlund.pfixcore.workflow.ContextImpl;
 import de.schlund.pfixcore.workflow.ContextResourceManagerImpl;
 import de.schlund.pfixcore.workflow.PageMap;
 import de.schlund.pfixcore.workflow.State;
-import de.schlund.pfixcore.workflow.app.ResdocFinalizer;
 import de.schlund.pfixcore.workflow.context.ServerContextImpl;
 
 /**
@@ -165,10 +164,6 @@ public class ContextXMLParsingHandler implements ParsingHandler {
             
                     public boolean requiresToken() {
                         return false;
-                    }
-                    
-                    public Class<? extends ResdocFinalizer> getFinalizer() {
-                        return null;
                     }
                     
                 };

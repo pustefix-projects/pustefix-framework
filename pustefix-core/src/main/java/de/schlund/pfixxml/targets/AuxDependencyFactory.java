@@ -33,13 +33,17 @@ import de.schlund.pfixxml.resources.Resource;
  */
 
 public class AuxDependencyFactory {
-    private static AuxDependencyFactory instance     = new AuxDependencyFactory();
+
     private TreeMap<String, AuxDependencyInclude> includeparts = new TreeMap<String, AuxDependencyInclude>();
     private TreeMap<String, AuxDependencyImage> images = new TreeMap<String, AuxDependencyImage>();
     private TreeMap<String, AuxDependencyFile> files = new TreeMap<String, AuxDependencyFile>();
     private TreeMap<String, AuxDependencyTarget> targets = new TreeMap<String, AuxDependencyTarget>();
     
-    private AuxDependencyFactory() {}
+    private TargetDependencyRelation relation;
+    
+    public AuxDependencyFactory(TargetDependencyRelation relation) {
+        this.relation = relation;
+    }
     
     private AuxDependency root = new AbstractAuxDependency() {
         
@@ -59,10 +63,6 @@ public class AuxDependencyFactory {
         
     };
     
-    public static AuxDependencyFactory getInstance() {
-        return instance;
-    }
-    
     public synchronized AuxDependency getAuxDependencyRoot() {
         return root;
     }
@@ -71,7 +71,7 @@ public class AuxDependencyFactory {
         String key = DependencyType.TEXT.getTag() + "@" + path.toString() + "@" + part + "@" + theme;
         AuxDependencyInclude ret = includeparts.get(key);
         if (ret == null) {
-            ret = new AuxDependencyInclude(path, part, theme);
+            ret = new AuxDependencyInclude(path, part, theme, relation);
             includeparts.put(key, ret);
         }
         return ret;
@@ -81,7 +81,7 @@ public class AuxDependencyFactory {
         String key = path.toString();
         AuxDependencyImage ret = (AuxDependencyImage) images.get(key);
         if (ret == null) {
-            ret = new AuxDependencyImage(path);
+            ret = new AuxDependencyImage(path, relation);
             images.put(key, ret);
         }
         return ret;
@@ -91,18 +91,17 @@ public class AuxDependencyFactory {
         String key = path.toString();
         AuxDependencyFile ret = (AuxDependencyFile) files.get(key);
         if (ret == null) {
-            ret = new AuxDependencyFile(path);
+            ret = new AuxDependencyFile(path, relation);
             files.put(key, ret);
         }
         return ret;
     }
     
     public synchronized AuxDependencyTarget getAuxDependencyTarget(TargetGenerator tgen, String targetkey) {
-        String key = tgen.getConfigPath().toString() + ":" + targetkey;
-        AuxDependencyTarget ret = (AuxDependencyTarget) targets.get(key);
+        AuxDependencyTarget ret = (AuxDependencyTarget) targets.get(targetkey);
         if (ret == null) {
             ret = new AuxDependencyTarget(tgen, targetkey);
-            targets.put(key, ret);
+            targets.put(targetkey, ret);
         }
         return ret;
     }

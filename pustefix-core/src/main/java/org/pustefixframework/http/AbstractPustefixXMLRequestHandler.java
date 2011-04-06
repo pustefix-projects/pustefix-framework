@@ -55,8 +55,6 @@ import org.w3c.dom.Document;
 
 import de.schlund.pfixcore.exception.PustefixApplicationException;
 import de.schlund.pfixcore.exception.PustefixCoreException;
-import de.schlund.pfixcore.workflow.NavigationFactory;
-import de.schlund.pfixcore.workflow.NavigationInitializationException;
 import de.schlund.pfixxml.PfixServletRequest;
 import de.schlund.pfixxml.RenderContext;
 import de.schlund.pfixxml.RenderingException;
@@ -67,7 +65,6 @@ import de.schlund.pfixxml.Variant;
 import de.schlund.pfixxml.config.EnvironmentProperties;
 import de.schlund.pfixxml.serverutil.SessionHelper;
 import de.schlund.pfixxml.targets.PageInfo;
-import de.schlund.pfixxml.targets.PageInfoFactory;
 import de.schlund.pfixxml.targets.PageTargetTree;
 import de.schlund.pfixxml.targets.Target;
 import de.schlund.pfixxml.targets.TargetGenerationException;
@@ -203,7 +200,6 @@ public abstract class AbstractPustefixXMLRequestHandler extends AbstractPustefix
         if (LOGGER.isInfoEnabled()) {
             StringBuffer sb = new StringBuffer(255);
             sb.append("\n").append("AbstractXMLServlet properties after initValues(): \n");
-            sb.append("                targetconf = ").append(generator.getConfigPath()).append("\n");
             sb.append("               servletname = ").append(servletname).append("\n");
             sb.append("           editModeAllowed = ").append(editmodeAllowed).append("\n");
             sb.append("            xmlOnlyAllowed = ").append(xmlOnlyAllowed).append("\n");
@@ -744,7 +740,7 @@ public abstract class AbstractPustefixXMLRequestHandler extends AbstractPustefix
         }
         
         ext.insertBefore(ext.createProcessingInstruction("xml-stylesheet", "type=\"text/xsl\" media=\"all\" href=\"file: //"
-                                                         + generator.getName() + "/" + stylesheet + "\""),
+                                                         + stylesheet + "\""),
                          ext.getDocumentElement()); 
         for (Iterator<String> i = paramhash.keySet().iterator(); i.hasNext();) {
             String key = i.next();
@@ -789,7 +785,7 @@ public abstract class AbstractPustefixXMLRequestHandler extends AbstractPustefix
         }
     }
 
-    private TreeMap<String, Object> constructParameters(SPDocument spdoc, Properties gen_params, HttpSession session) throws NavigationInitializationException {
+    private TreeMap<String, Object> constructParameters(SPDocument spdoc, Properties gen_params, HttpSession session) {
         TreeMap<String, Object> paramhash = new TreeMap<String, Object>();
         HashMap<String, Object> params = spdoc.getProperties();
         // These are properties which have been set in the process method
@@ -816,7 +812,7 @@ public abstract class AbstractPustefixXMLRequestHandler extends AbstractPustefix
         }
         paramhash.put(TargetGenerator.XSLPARAM_TG, generator);
         paramhash.put(TargetGenerator.XSLPARAM_TKEY, VALUE_NONE);
-        paramhash.put(TargetGenerator.XSLPARAM_NAVITREE, NavigationFactory.getInstance().getNavigation(generator.getConfigPath(), generator.getXsltVersion()).getNavigationXMLElement());
+        paramhash.put(TargetGenerator.XSLPARAM_NAVITREE, generator.getNavigation().getNavigationXMLElement());
         paramhash.put(XSLPARAM_EDITOR_INCLUDE_PARTS_EDITABLE_BY_DEFAULT, Boolean.toString(includePartsEditableByDefault));
 
         String session_to_link_from_external = getSessionAdmin().getExternalSessionId(session);
@@ -842,7 +838,7 @@ public abstract class AbstractPustefixXMLRequestHandler extends AbstractPustefix
                 for (int i = 0; i < variants.length; i++) {
                     variant_id = variants[i];
                     LOGGER.info("   ** Trying variant '" + variant_id + "' **");
-                    pinfo   = PageInfoFactory.getInstance().getPage(generator, pagename, variant_id);
+                    pinfo   = generator.getPageInfoFactory().getPage(pagename, variant_id);
                     target  = pagetree.getTargetForPageInfo(pinfo);
                     if (target != null) {
                         return target.getTargetKey();
@@ -851,7 +847,7 @@ public abstract class AbstractPustefixXMLRequestHandler extends AbstractPustefix
             }
             if (target == null) {
                 LOGGER.info("   ** Trying root variant **");
-                pinfo = PageInfoFactory.getInstance().getPage(generator, pagename, null);
+                pinfo = generator.getPageInfoFactory().getPage(pagename, null);
                 target = pagetree.getTargetForPageInfo(pinfo);
             }
             if (target == null) {

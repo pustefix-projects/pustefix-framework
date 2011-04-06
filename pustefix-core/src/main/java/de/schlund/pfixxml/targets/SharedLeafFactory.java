@@ -35,14 +35,7 @@ import de.schlund.pfixxml.util.XsltVersion;
 
 public class SharedLeafFactory {
 
-    private static SharedLeafFactory instance     = new SharedLeafFactory();
     private TreeMap<String, SharedLeaf> sharedleaves = new TreeMap<String, SharedLeaf>();
-    
-    private SharedLeafFactory() {}
-    
-    public static SharedLeafFactory getInstance() {
-        return instance;
-    }
 
     public synchronized SharedLeaf getSharedLeaf(XsltVersion xsltVersion,Resource path) {
         SharedLeaf ret = (SharedLeaf) sharedleaves.get(xsltVersion+":"+path);

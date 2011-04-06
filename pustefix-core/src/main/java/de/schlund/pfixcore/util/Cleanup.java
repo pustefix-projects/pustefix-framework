@@ -33,6 +33,7 @@ import de.schlund.pfixxml.IncludeDocument;
 import de.schlund.pfixxml.IncludeDocumentFactory;
 import de.schlund.pfixxml.config.GlobalConfigurator;
 import de.schlund.pfixxml.resources.ResourceUtil;
+import de.schlund.pfixxml.targets.SPCacheFactory;
 import de.schlund.pfixxml.util.XPath;
 import de.schlund.pfixxml.util.Xml;
 
@@ -47,6 +48,7 @@ import de.schlund.pfixxml.util.Xml;
  */
 
 public class Cleanup{
+    
     private final static String CLEANUP = "Cleanup.xml";
     private final static DocumentBuilderFactory dbfac = DocumentBuilderFactory.newInstance();
     static {
@@ -64,6 +66,8 @@ public class Cleanup{
     }
 
     private void clean() throws Exception {
+        SPCacheFactory cacheFactory = new SPCacheFactory();
+        IncludeDocumentFactory incFactory = new IncludeDocumentFactory(cacheFactory);
         Document input = Xml.parseMutable(new File(CLEANUP));
         Element  root  = input.getDocumentElement();
         NodeList nl    = root.getChildNodes();
@@ -79,8 +83,7 @@ public class Cleanup{
                     
                     Document doc = (Document) changed.get(path);
                     if (doc == null && (type.equals("part") || type.equals("theme"))) {
-                        IncludeDocument incdoc = IncludeDocumentFactory.getInstance().
-                            getIncludeDocument(null, ResourceUtil.getFileResourceFromDocroot(path), true);
+                        IncludeDocument incdoc = incFactory.getIncludeDocument(null, ResourceUtil.getFileResourceFromDocroot(path), true);
                         doc                    = incdoc.getDocument();
                         System.out.println(doc.hashCode());
                         doc.getDocumentElement().removeAttribute("incpath");

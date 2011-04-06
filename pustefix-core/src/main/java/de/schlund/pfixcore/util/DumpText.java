@@ -38,7 +38,6 @@ import de.schlund.pfixxml.resources.ResourceUtil;
 import de.schlund.pfixxml.targets.AuxDependency;
 import de.schlund.pfixxml.targets.AuxDependencyInclude;
 import de.schlund.pfixxml.targets.DependencyType;
-import de.schlund.pfixxml.targets.TargetDependencyRelation;
 import de.schlund.pfixxml.targets.TargetGenerator;
 import de.schlund.pfixxml.util.XPath;
 import de.schlund.pfixxml.util.Xml;
@@ -103,14 +102,14 @@ public class DumpText implements IDumpText {
         root.appendChild(list.createTextNode("\n"));
         
         TargetGenerator gen  = new TargetGenerator(ResourceUtil.getFileResourceFromDocroot(depend));
-        TreeSet<AuxDependency> incs = TargetDependencyRelation.getInstance().getProjectDependenciesForType(gen, DependencyType.TEXT);
+        TreeSet<AuxDependency> incs = gen.getTargetDependencyRelation().getProjectDependenciesForType(DependencyType.TEXT);
         for (Iterator<AuxDependency> i = incs.iterator(); i.hasNext();) {
             AuxDependencyInclude aux  = (AuxDependencyInclude) i.next();
             if (includePartOK(aux)) {
                 Resource file = aux.getPath();
                 if (file.exists()) {
                     System.out.print(".");
-                    handleInclude(root, aux);
+                    handleInclude(root, aux, gen);
                 }
             }
         }
@@ -157,13 +156,13 @@ public class DumpText implements IDumpText {
         return aux.getTheme();
     }
     
-    private void handleInclude(Element root, AuxDependencyInclude aux) throws Exception {
+    private void handleInclude(Element root, AuxDependencyInclude aux, TargetGenerator generator) throws Exception {
         Resource path = aux.getPath();
         String part          = aux.getPart();
         String theme         = aux.getTheme();
         Document doc         = root.getOwnerDocument();
 
-        IncludeDocumentFactory incfac = IncludeDocumentFactory.getInstance();
+        IncludeDocumentFactory incfac = new IncludeDocumentFactory(generator.getCacheFactory());
         Document incdoc  = incfac.getIncludeDocument(null, path, true).getDocument();
         Node     extpart = XPath.selectNode(incdoc, "/include_parts/part[@name = '" + part + "']");
         

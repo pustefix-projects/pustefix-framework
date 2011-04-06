@@ -36,9 +36,12 @@ public class AuxDependencyFile extends AbstractAuxDependency {
     
     protected int hashCode;
     
-    public AuxDependencyFile(Resource path) {
+    private TargetDependencyRelation relation;
+    
+    public AuxDependencyFile(Resource path, TargetDependencyRelation relation) {
         this.type = DependencyType.FILE;
         this.path = path;
+        this.relation = relation;
         this.hashCode = (type.getTag() + ":" + path.toString()).hashCode();
     }
     
@@ -55,8 +58,7 @@ public class AuxDependencyFile extends AbstractAuxDependency {
         if("dynamic".equals(path.getOriginatingURI().getScheme())) {
             Resource res = ResourceUtil.getResource(path.getOriginatingURI());
             if(!res.toURI().equals(path.toURI())) {
-                TreeSet<Target> targets = TargetDependencyRelation.getInstance()
-                .getAffectedTargets(this);
+                TreeSet<Target> targets = relation.getAffectedTargets(this);
                 for (Iterator<Target> i = targets.iterator(); i.hasNext();) {
                     VirtualTarget target = (VirtualTarget) i.next();
                     target.setForceUpdate();
@@ -67,8 +69,7 @@ public class AuxDependencyFile extends AbstractAuxDependency {
             if (last_lastModTime == 0) {
                 // We change from the file being checked once to not exist to "it exists now".
                 // so we need to make sure that all targets using it will be rebuild.
-                TreeSet<Target> targets = TargetDependencyRelation.getInstance()
-                        .getAffectedTargets(this);
+                TreeSet<Target> targets = relation.getAffectedTargets(this);
                 for (Iterator<Target> i = targets.iterator(); i.hasNext();) {
                     VirtualTarget target = (VirtualTarget) i.next();
                     target.setForceUpdate();
@@ -80,8 +81,7 @@ public class AuxDependencyFile extends AbstractAuxDependency {
             if (last_lastModTime > 0) {
                 // The file existed when last check has been made,
                 // so make sure each target using it is being rebuild
-                TreeSet<Target> targets = TargetDependencyRelation.getInstance()
-                        .getAffectedTargets(this);
+                TreeSet<Target> targets = relation.getAffectedTargets(this);
                 for (Iterator<Target> i = targets.iterator(); i.hasNext();) {
                     VirtualTarget target = (VirtualTarget) i.next();
                     target.setForceUpdate();

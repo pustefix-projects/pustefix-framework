@@ -30,8 +30,8 @@ import de.schlund.pfixxml.resources.Resource;
  */
 public class AuxDependencyImage extends AuxDependencyFile {
 
-    public AuxDependencyImage(Resource path) {
-        super(path);
+    public AuxDependencyImage(Resource path, TargetDependencyRelation relation) {
+        super(path, relation);
         this.type = DependencyType.IMAGE;
     }
 

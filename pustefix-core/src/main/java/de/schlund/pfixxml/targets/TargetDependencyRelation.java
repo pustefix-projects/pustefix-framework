@@ -30,7 +30,7 @@ import de.schlund.pfixxml.util.RefCountingCollection;
 /**
  * TargetDependencyRelation This is a helper singleton class that holds all the "interesting"
  * relations between targets and AuxDependencies. These relations are build up during the generation
- * of a target via the addRelation(parent, child, target) method, and reset before gneration of the
+ * of a target via the addRelation(parent, child, target) method, and reset before generation of the
  * target via the resetRelation(target) method.
  *
  * The relations currently handled are:
@@ -53,36 +53,25 @@ import de.schlund.pfixxml.util.RefCountingCollection;
  */
 
 public class TargetDependencyRelation {
-    private static final Logger                   LOG      = Logger.getLogger(TargetDependencyRelation.class);
-    private static final TargetDependencyRelation instance = new TargetDependencyRelation();
+    
+    private static final Logger LOG = Logger.getLogger(TargetDependencyRelation.class);
     
     private HashMap<AuxDependency, TreeSet<Target>> allauxs; 
     private HashMap<Target, TreeSet<AuxDependency>> alltargets;
-    private HashMap<AuxDependency, RefCountingCollection<TargetGenerator>> auxtotgen; 
-    private HashMap<TargetGenerator, RefCountingCollection<AuxDependency>> tgentoaux;
+    private RefCountingCollection<AuxDependency> auxDepRefCount;
     private HashMap<Target, HashMap<AuxDependency, HashSet<AuxDependency>>> targettoparentchild;
     private HashMap<AuxDependency, RefCountingCollection<AuxDependency>> auxtochildaux;
-//     private HashMap<Target, HashMap<AuxDependency, HashSet<AuxDependency>>> targettochildparent;
-//     private HashMap<AuxDependency, RefCountingCollection<AuxDependency>> auxtoparentaux;
     
-    private TargetDependencyRelation() {
+    public TargetDependencyRelation() {
         reset();
     }
 
     public void reset() {
         allauxs = new HashMap<AuxDependency, TreeSet<Target>>();
         alltargets = new HashMap<Target, TreeSet<AuxDependency>>();
-        auxtotgen = new HashMap<AuxDependency, RefCountingCollection<TargetGenerator>>();
-        tgentoaux = new HashMap<TargetGenerator, RefCountingCollection<AuxDependency>>();
+        auxDepRefCount = new RefCountingCollection<AuxDependency>();
         targettoparentchild = new HashMap<Target, HashMap<AuxDependency, HashSet<AuxDependency>>>();
         auxtochildaux = new HashMap<AuxDependency, RefCountingCollection<AuxDependency>>();
-//        targettochildparent = new HashMap<Target, HashMap<AuxDependency, HashSet<AuxDependency>>>();
-//        auxtoparentaux = new HashMap<AuxDependency, RefCountingCollection<AuxDependency>>();
-    }
-    
-    
-    public static final TargetDependencyRelation getInstance() {
-        return instance;
     }
 
     public synchronized TreeSet<AuxDependency> getAllDependencies() {
@@ -93,13 +82,8 @@ public class TargetDependencyRelation {
         }
     }
 
-    public synchronized TreeSet<AuxDependency> getProjectDependencies(TargetGenerator tgen) {
-        RefCountingCollection<AuxDependency> auxsForTgen = tgentoaux.get(tgen);
-        if (auxsForTgen == null) {
-            return null;
-        } else {
-            return new TreeSet<AuxDependency>(auxsForTgen);
-        }
+    public synchronized TreeSet<AuxDependency> getProjectDependencies() {
+        return new TreeSet<AuxDependency>(auxDepRefCount);
     }
 
     public synchronized TreeSet<AuxDependency> getAllDependenciesForType(DependencyType type) {
@@ -117,20 +101,15 @@ public class TargetDependencyRelation {
         }
     }
 
-    public synchronized TreeSet<AuxDependency> getProjectDependenciesForType(TargetGenerator tgen, DependencyType type) {
-        RefCountingCollection<AuxDependency> auxsForTgen = tgentoaux.get(tgen);
-        if (auxsForTgen == null) {
-            return null;
-        } else {
-            TreeSet<AuxDependency> tmp = new TreeSet<AuxDependency>();
-            for (Iterator<AuxDependency> i = auxsForTgen.iterator(); i.hasNext(); ) {
-                AuxDependency aux = i.next();
-                if (aux.getType().equals(type)) {
-                    tmp.add(aux);
-                }
+    public synchronized TreeSet<AuxDependency> getProjectDependenciesForType(DependencyType type) {
+        TreeSet<AuxDependency> tmp = new TreeSet<AuxDependency>();
+        for (Iterator<AuxDependency> i = auxDepRefCount.iterator(); i.hasNext(); ) {
+            AuxDependency aux = i.next();
+            if (aux.getType().equals(type)) {
+                tmp.add(aux);
             }
-            return tmp;
         }
+        return tmp;
     }
 
     public synchronized TreeSet<AuxDependency> getDependenciesForTarget(Target target) {
@@ -148,15 +127,6 @@ public class TargetDependencyRelation {
             return null;
         } else {
             return new TreeSet<Target>(targetsForAux);
-        }
-    }
-
-    public synchronized TreeSet<TargetGenerator> getAffectedTargetGenerators(AuxDependency aux) {
-        RefCountingCollection<TargetGenerator> tgensForAux = auxtotgen.get(aux);
-        if (tgensForAux == null) {
-            return null;
-        } else {
-            return new TreeSet<TargetGenerator>(tgensForAux);
         }
     }
 
@@ -200,67 +170,20 @@ public class TargetDependencyRelation {
         }
     }
 
-//     public synchronized HashMap<AuxDependency, HashSet<AuxDependency>> getChildParentMapForTarget(Target target) {
-//         HashMap<AuxDependency, HashSet<AuxDependency>> childparentForTarget = targettochildparent.get(target);
-//         if (childparentForTarget == null) {
-//             return null;
-//         } else {
-//             HashMap<AuxDependency, HashSet<AuxDependency>> retval = new HashMap<AuxDependency, HashSet<AuxDependency>>();
-//             for (Iterator<AuxDependency> i = childparentForTarget.keySet().iterator(); i.hasNext();) {
-//                 AuxDependency child = i.next();
-//                 if (childparentForTarget.get(child) != null) {
-//                     HashSet<AuxDependency> parents = (HashSet<AuxDependency>) childparentForTarget.get(child).clone();
-//                     retval.put(child, parents);
-//                 }
-//             }
-//             return retval;
-//         }
-//     }
-        
-//     public synchronized TreeSet<AuxDependency> getParentsOverallForAuxDependency(AuxDependency child) {
-//         RefCountingCollection<AuxDependency> parents = auxtoparentaux.get(child);
-//         if (parents == null) {
-//             return null;
-//         } else {
-//             return new TreeSet<AuxDependency>(parents);
-//         }
-//     }
-
-//     public synchronized TreeSet<AuxDependency> getParentsForTargetForAuxDependency(Target target, AuxDependency child) {
-//         HashMap<AuxDependency, HashSet<AuxDependency>> childparentForTarget = targettochildparent.get(target);
-//         if (childparentForTarget == null) {
-//             return null;
-//         } else {
-//             HashSet<AuxDependency> parents = childparentForTarget.get(child);
-//             if (parents == null) {
-//                 return null;
-//             } else {
-//                 return new TreeSet<AuxDependency>(parents);
-//             }
-//         }
-//     }
-
     public synchronized void addRelation(AuxDependency parent, AuxDependency aux, Target target) {
 
-        if (parent != AuxDependencyManager.root && !checkLoopFree(parent, aux, target)) {
+        if (parent != target.getTargetGenerator().getAuxDependencyFactory().getAuxDependencyRoot() && !checkLoopFree(parent, aux, target)) {
             throw new RuntimeException("*** FATAL *** Adding " + aux + " to Parent " + parent
-                                       + " for target " + target.getFullName() + " would result in a LOOP!");
+                                       + " for target " + target.getTargetKey() + " would result in a LOOP!");
         }
 
-        LOG.debug("+++ Adding relations " + target.getFullName() + " <-> " + aux.toString() + " / " + parent.toString());
+        LOG.debug("+++ Adding relations " + target.getTargetKey() + " <-> " + aux.toString() + " / " + parent.toString());
 
-        TargetGenerator tgen = target.getTargetGenerator();
         if (allauxs.get(aux) == null) {
             allauxs.put(aux, new TreeSet<Target>());
         }
         if (alltargets.get(target) == null) {
             alltargets.put(target, new TreeSet<AuxDependency>());
-        }
-        if (auxtotgen.get(aux) == null) {
-            auxtotgen.put(aux, new RefCountingCollection<TargetGenerator>());
-        }
-        if (tgentoaux.get(tgen) == null) {
-            tgentoaux.put(tgen, new RefCountingCollection<AuxDependency>());
         }
         if (targettoparentchild.get(target) == null) {
             targettoparentchild.put(target, new HashMap<AuxDependency, HashSet<AuxDependency>>());
@@ -268,27 +191,15 @@ public class TargetDependencyRelation {
         if (auxtochildaux.get(parent) == null) {
             auxtochildaux.put(parent, new RefCountingCollection<AuxDependency>());
         }
-//         if (targettochildparent.get(target) == null) {
-//             targettochildparent.put(target, new HashMap<AuxDependency, HashSet<AuxDependency>>());
-//         }
-//         if (auxtoparentaux.get(aux) == null) {
-//             auxtoparentaux.put(aux, new RefCountingCollection<AuxDependency>());
-//         }
-
 
         TreeSet<Target>                        targetsForAux       = allauxs.get(aux);
         TreeSet<AuxDependency>                 auxsForTarget       = alltargets.get(target);
-        RefCountingCollection<TargetGenerator> tgensForAux         = auxtotgen.get(aux);
-        RefCountingCollection<AuxDependency>   auxsForTgen         = tgentoaux.get(tgen);
         HashMap<AuxDependency, HashSet<AuxDependency>> parentchildForTarget = targettoparentchild.get(target);
         RefCountingCollection<AuxDependency>   auxsForParent       = auxtochildaux.get(parent);
-//         HashMap<AuxDependency, HashSet<AuxDependency>> childparentForTarget = targettochildparent.get(target);
-//         RefCountingCollection<AuxDependency>   auxsForChild        = auxtoparentaux.get(aux);
-        
+     
         if (targetsForAux.add(target)) { // Make sure to ignore multiple target<->aux relations
             auxsForTarget.add(aux);
-            tgensForAux.add(tgen);
-            auxsForTgen.add(aux);
+            auxDepRefCount.add(aux);
         }
         
         HashSet<AuxDependency> children = parentchildForTarget.get(parent);
@@ -296,25 +207,17 @@ public class TargetDependencyRelation {
             children = new HashSet<AuxDependency>();
             parentchildForTarget.put(parent, children);
         }
-//         HashSet<AuxDependency> parents = childparentForTarget.get(aux);
-//         if (parents == null) {
-//             parents = new HashSet<AuxDependency>();
-//             childparentForTarget.put(aux, parents);
-//         }
         
         if (children.add(aux)) { // Make sure to ignore multiple parent<->child relations
                                  // Note: we must allow here multiple entries for the same
                                  // child per target, but not per parent!
             auxsForParent.add(aux);
-//             parents.add(parent);
-//             auxsForChild.add(parent);
+
         }
     }
 
     public synchronized void resetRelation(Target target) {
-        LOG.debug("--- Removing all relations for " + target.getFullName());
-
-        TargetGenerator tgen = target.getTargetGenerator();
+        LOG.debug("--- Removing all relations for " + target.getTargetKey());
 
         TreeSet<AuxDependency> auxsForTarget = alltargets.get(target);
 
@@ -323,33 +226,23 @@ public class TargetDependencyRelation {
             return;
         }
         if (auxsForTarget.isEmpty()) {
-            LOG.error("*** Known target " + target.getFullName() + " has empty relation set! ***");  
+            LOG.error("*** Known target " + target.getTargetKey() + " has empty relation set! ***");  
             return;
         }
-
-        RefCountingCollection<AuxDependency>   auxsForTgen   = tgentoaux.get(tgen);
 
         for (Iterator<AuxDependency> i = auxsForTarget.iterator(); i.hasNext();) {
             AuxDependency aux = i.next();
             if (aux.getType().isDynamic()) {
                 TreeSet<Target>                        targetsForAux = allauxs.get(aux);
-                RefCountingCollection<TargetGenerator> tgensForAux   = auxtotgen.get(aux);
                 
                 targetsForAux.remove(target);
                 if (targetsForAux.isEmpty()) {
                     allauxs.remove(aux);
                 }
-                tgensForAux.remove(tgen);
-                if (tgensForAux.isEmpty()) {
-                    auxtotgen.remove(aux);
-                }
                 
-                auxsForTgen.remove(aux);
+                auxDepRefCount.remove(aux);
                 i.remove();
             }
-        }
-        if (auxsForTgen.isEmpty()) {
-            tgentoaux.remove(tgen);
         }
         if (auxsForTarget.isEmpty()) {
             alltargets.remove(target);
@@ -381,29 +274,6 @@ public class TargetDependencyRelation {
             targettoparentchild.remove(target);
         }
 
-//         HashMap<AuxDependency, HashSet<AuxDependency>> childparentForTarget = targettochildparent.get(target);
-//         for (Iterator<AuxDependency> i = childparentForTarget.keySet().iterator(); i.hasNext(); ) {
-//             AuxDependency                        child = i.next();
-//             if (!child.getType().isDynamic()) { // YES! child.getType() here, not parent.getType() in the inner loop is correct!
-//                 continue;
-//             }
-//             HashSet<AuxDependency>               parents    = childparentForTarget.get(child);
-//             RefCountingCollection<AuxDependency> allparents = auxtoparentaux.get(child);
-//             for (Iterator<AuxDependency> j = parents.iterator(); j.hasNext();) {
-//                 AuxDependency parent = j.next();
-//                 allparents.remove(parent);
-//                 j.remove();
-//             }
-//             if (parents.isEmpty()) {
-//                 i.remove();
-//             }
-//             if (allparents.isEmpty()) {
-//                 auxtoparentaux.remove(child);
-//             }
-//         }
-//         if (childparentForTarget.isEmpty()) {
-//             targettochildparent.remove(target);
-//         }
     }
 
     public synchronized void resetAllRelations(Collection<Target> targets) {

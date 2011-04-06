@@ -167,10 +167,10 @@ public abstract class VirtualTarget extends TargetImpl {
     @Override
     public void storeValue(Object obj) {
         SPCache<Object,Object> cache = null;
-        if(getFullName().contains("$")) {
-            cache = SPCacheFactory.getInstance().getRenderCache();
+        if(getTargetKey().contains("$")) {
+            cache = generator.getCacheFactory().getRenderCache();
         } else {
-            cache = SPCacheFactory.getInstance().getCache();
+            cache = generator.getCacheFactory().getCache();
         }
         cache.setValue(this, obj);
     }
@@ -178,13 +178,11 @@ public abstract class VirtualTarget extends TargetImpl {
     @Override
     public String toString() {
         if (getXMLSource() != null && getXSLSource() != null) {
-            return "[TARGET: " + getType() + " " + getTargetKey() + "@"
-                    + getTargetGenerator().getName() + "[" + themes.getId()
+            return "[TARGET: " + getType() + " " + getTargetKey() + "[" + themes.getId()
                     + "]" + " <" + getXMLSource().getTargetKey() + "> <"
                     + getXSLSource().getTargetKey() + ">]";
         } else {
-            return "[TARGET: " + getType() + " " + getTargetKey() + "@"
-                    + getTargetGenerator().getName() + "[" + themes.getId()
+            return "[TARGET: " + getType() + " " + getTargetKey() + "[" + themes.getId()
                     + "]]";
         }
     }
@@ -205,10 +203,10 @@ public abstract class VirtualTarget extends TargetImpl {
     @Override
     protected Object getValueFromSPCache() {
         SPCache<Object,Object> cache = null;
-        if(getFullName().contains("$")) {
-            cache = SPCacheFactory.getInstance().getRenderCache();
+        if(getTargetKey().contains("$")) {
+            cache = generator.getCacheFactory().getRenderCache();
         } else {
-            cache = SPCacheFactory.getInstance().getCache();
+            cache = generator.getCacheFactory().getCache();
         }
         return cache.getValue(this);
     }

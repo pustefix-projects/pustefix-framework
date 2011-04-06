@@ -52,11 +52,12 @@ public class XMLGeneratorInfoParsingHandler extends CustomizationAwareParsingHan
             
         	cacheBeanBuilder = BeanDefinitionBuilder.genericBeanDefinition(SPCacheFactory.class);
         	cacheBeanBuilder.setScope("singleton");
-        	cacheBeanBuilder.setFactoryMethod("getInstance");
         	cacheBeanBuilder.addPropertyValue("targetCacheCapacity", 30);
         	cacheBeanBuilder.addPropertyValue("targetCacheClass", "de.schlund.pfixxml.targets.LRUCache");
         	cacheBeanBuilder.addPropertyValue("includeCacheCapacity", 30);
         	cacheBeanBuilder.addPropertyValue("includeCacheClass", "de.schlund.pfixxml.targets.LRUCache");
+        	cacheBeanBuilder.addPropertyValue("renderCacheCapacity", 150);
+            cacheBeanBuilder.addPropertyValue("renderCacheClass", "de.schlund.pfixxml.targets.LRUCache");
         	cacheBeanBuilder.addPropertyReference("cacheStatistic", CacheStatistic.class.getName());
         	cacheBeanBuilder.setInitMethodName("init");
         	BeanDefinitionHolder beanHolder = new BeanDefinitionHolder(cacheBeanBuilder.getBeanDefinition(), SPCacheFactory.class.getName());
@@ -92,6 +93,7 @@ public class XMLGeneratorInfoParsingHandler extends CustomizationAwareParsingHan
             BeanDefinitionBuilder beanBuilder = BeanDefinitionBuilder.genericBeanDefinition(TargetGeneratorFactoryBean.class);
             beanBuilder.setScope("singleton");
             beanBuilder.addPropertyValue("configFile", uri);
+            beanBuilder.addPropertyReference("cacheFactory", SPCacheFactory.class.getName());
             BeanDefinition beanDefinition = beanBuilder.getBeanDefinition();
             String beanName = beanNameGenerator.generateBeanName(beanDefinition, beanRegistry);
             beanRegistry.registerBeanDefinition(beanName, beanDefinition);
@@ -132,7 +134,18 @@ public class XMLGeneratorInfoParsingHandler extends CustomizationAwareParsingHan
         	if(capacity.length() > 0) {
         		cacheBeanBuilder.addPropertyValue("targetCacheCapacity", Integer.parseInt(capacity));
         	}
-        	
+        
+        } else if(root.getLocalName().equals("render-cache")) {
+            
+            String className = root.getAttribute("class").trim();
+            if(className.length() > 0) {
+                cacheBeanBuilder.addPropertyValue("renderCacheClass", className);
+            }
+            String capacity = root.getAttribute("capacity").trim();
+            if(capacity.length() > 0) {
+                cacheBeanBuilder.addPropertyValue("renderCacheCapacity", Integer.parseInt(capacity));
+            }
+            
         } else if(root.getLocalName().equals("cache-statistic")) {
         	
         	String queueSize = root.getAttribute("queuesize").trim();

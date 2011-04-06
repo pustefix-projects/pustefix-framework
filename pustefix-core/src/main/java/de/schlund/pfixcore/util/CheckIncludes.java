@@ -19,7 +19,6 @@ package de.schlund.pfixcore.util;
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileReader;
-import java.util.HashMap;
 import java.util.Iterator;
 import java.util.TreeSet;
 
@@ -32,12 +31,10 @@ import de.schlund.pfixxml.config.GlobalConfigurator;
 import de.schlund.pfixxml.resources.DocrootResource;
 import de.schlund.pfixxml.resources.ResourceUtil;
 import de.schlund.pfixxml.targets.AuxDependency;
-import de.schlund.pfixxml.targets.AuxDependencyFactory;
 import de.schlund.pfixxml.targets.AuxDependencyFile;
 import de.schlund.pfixxml.targets.AuxDependencyImage;
 import de.schlund.pfixxml.targets.AuxDependencyInclude;
 import de.schlund.pfixxml.targets.DependencyType;
-import de.schlund.pfixxml.targets.TargetDependencyRelation;
 import de.schlund.pfixxml.targets.TargetGenerator;
 import de.schlund.pfixxml.util.Xml;
 
@@ -52,53 +49,40 @@ import de.schlund.pfixxml.util.Xml;
  */
 
 public class CheckIncludes {
-    // private static final String XPATH = "/include_parts/part/theme";
     
-    private HashMap<String, TargetGenerator> generators = new HashMap<String, TargetGenerator>();
+    private TargetGenerator generator;
     private TreeSet<DocrootResource> includefilenames = new TreeSet<DocrootResource>();
     private TreeSet<DocrootResource> imagefilenames = new TreeSet<DocrootResource>();
     private TreeSet<AuxDependency> unavail = new TreeSet<AuxDependency>();
     private TreeSet<AuxDependency> includes;
-    private String  pwd;
-    private String  outfile;
-
-    static {
-//        dbfac.setNamespaceAware(true);
-    }
+    private String outfile;
     
-    public CheckIncludes(String pwd, String outfile, File allprj, File allincs, File allimgs) throws Exception {
-        this.pwd     = pwd;
+    public CheckIncludes(String outfile, File confFile, File allincs, File allimgs) throws Exception {
+        
         this.outfile = outfile;
         String         line;
         BufferedReader input;
         
         input = new BufferedReader(new FileReader(allincs));
         while ((line = input.readLine()) != null) {
-            // line = new File(pwd + line).getCanonicalPath();
             includefilenames.add(ResourceUtil.getFileResourceFromDocroot(line));
         }
         input.close();
 
         input = new BufferedReader(new FileReader(allimgs));
         while ((line = input.readLine()) != null) {
-            // line = new File(pwd + line).getCanonicalPath();
             imagefilenames.add(ResourceUtil.getFileResourceFromDocroot(line));
         }
         input.close();
         
-        input = new BufferedReader(new FileReader(allprj));
-        while ((line = input.readLine()) != null) {
-            // line = pwd + line;
-            TargetGenerator gen = new TargetGenerator(ResourceUtil.getFileResourceFromDocroot(line));
-            generators.put(pwd + line, gen);
-        }
-        input.close();
-
-        includes = AuxDependencyFactory.getInstance().getAllAuxDependencies();
+        generator = new TargetGenerator(ResourceUtil.getFileResource(confFile.toURI()));
+       
+        includes = generator.getAuxDependencyFactory().getAllAuxDependencies();
         for (Iterator<AuxDependency> i = includes.iterator(); i.hasNext();) {
             AuxDependency aux = i.next();
             unavail.add(aux);
         }
+
     }
 
     public void doCheck() throws Exception {
@@ -126,7 +110,7 @@ public class CheckIncludes {
     
     public static void main(String[] args) throws Exception {
         String output    = args[0];
-        String allprjarg = args[1];
+        String confFile = args[1];
         String allincarg = args[2];
         String allimgarg = args[3];
 
@@ -135,48 +119,43 @@ public class CheckIncludes {
         Logging.configure("generator_quiet.xml");
         GlobalConfigurator.setDocroot(dir);
         
-        CheckIncludes instance = new CheckIncludes(dir, output, new File(allprjarg), new File(allincarg), new File(allimgarg));
+        CheckIncludes instance = new CheckIncludes(output, new File(confFile), new File(allincarg), new File(allimgarg));
         instance.doCheck();
 
     }
 
     private void checkForUnavailableIncludes(Document result, Element res_root) throws Exception {
-        for (Iterator<String> i = generators.keySet().iterator(); i.hasNext();) {
-            String depend = i.next();
-            TargetGenerator gen = generators.get(depend);
-            TreeSet<AuxDependency> deps = TargetDependencyRelation.getInstance().getProjectDependencies(gen);
-            if (deps == null) {
-                return;
-            }
+        
+        TreeSet<AuxDependency> deps = generator.getTargetDependencyRelation().getProjectDependencies();
+        if (deps == null) {
+            return;
+        }
 
-            for (Iterator<AuxDependency> j = deps.iterator(); j.hasNext();) {
-                AuxDependency aux = j.next();
-                if (!unavail.contains(aux) || aux.getType().equals(DependencyType.FILE) || aux.getType().equals(DependencyType.TARGET)) {
-                    j.remove();
-                }
+        for (Iterator<AuxDependency> j = deps.iterator(); j.hasNext();) {
+            AuxDependency aux = j.next();
+            if (!unavail.contains(aux) || aux.getType().equals(DependencyType.FILE) || aux.getType().equals(DependencyType.TARGET)) {
+                j.remove();
             }
+        }
             
-            if (!deps.isEmpty()) {
-                Element prj_elem = result.createElement("project");
-                String  name     = depend.substring(pwd.length());
-                prj_elem.setAttribute("name", name);
-                res_root.appendChild(prj_elem);
+        if (!deps.isEmpty()) {
+            Element prj_elem = result.createElement("project");
+            res_root.appendChild(prj_elem);
                 
-                for (Iterator<AuxDependency> j = deps.iterator(); j.hasNext(); ) {
-                    AuxDependency aux = j.next();
-                    Element elem = result.createElement("MISSING");
-                    prj_elem.appendChild(elem);
-                    elem.setAttribute("type", aux.getType().toString());
-                    String path = ((AuxDependencyFile) aux).getPath().toURI().toString();
-                    if (aux.getType().equals(DependencyType.TEXT)) {
-                        AuxDependencyInclude a = (AuxDependencyInclude) aux;
-                        elem.setAttribute("path", path);
-                        elem.setAttribute("part", a.getPart());
-                        elem.setAttribute("theme", a.getTheme());
-                    } else if (aux.getType().equals(DependencyType.IMAGE)) {
-                        AuxDependencyImage a = (AuxDependencyImage) aux;
-                        elem.setAttribute("path", a.getPath().toURI().toString());
-                    }
+            for (Iterator<AuxDependency> j = deps.iterator(); j.hasNext(); ) {
+                AuxDependency aux = j.next();
+                Element elem = result.createElement("MISSING");
+                prj_elem.appendChild(elem);
+                elem.setAttribute("type", aux.getType().toString());
+                String path = ((AuxDependencyFile) aux).getPath().toURI().toString();
+                if (aux.getType().equals(DependencyType.TEXT)) {
+                    AuxDependencyInclude a = (AuxDependencyInclude) aux;
+                    elem.setAttribute("path", path);
+                    elem.setAttribute("part", a.getPart());
+                    elem.setAttribute("theme", a.getTheme());
+                } else if (aux.getType().equals(DependencyType.IMAGE)) {
+                    AuxDependencyImage a = (AuxDependencyImage) aux;
+                    elem.setAttribute("path", a.getPath().toURI().toString());
                 }
             }
         }
@@ -191,7 +170,7 @@ public class CheckIncludes {
             
             res_root.appendChild(res_image);
             
-            AuxDependency aux =  AuxDependencyFactory.getInstance().getAuxDependencyImage(img);
+            AuxDependency aux =  generator.getAuxDependencyFactory().getAuxDependencyImage(img);
             if (!includes.contains(aux)) {
                 res_image.setAttribute("UNUSED", "true");
                 continue;
@@ -262,8 +241,7 @@ public class CheckIncludes {
                             res_part.appendChild(res_theme);
                             res_theme.setAttribute("name", theme);
                             
-                            AuxDependency aux =
-                                AuxDependencyFactory.getInstance().getAuxDependencyInclude(path, part, theme);
+                            AuxDependency aux = generator.getAuxDependencyFactory().getAuxDependencyInclude(path, part, theme);
                             if (!includes.contains(aux)) {
                                 res_theme.setAttribute("UNUSED", "true");
                                 continue;

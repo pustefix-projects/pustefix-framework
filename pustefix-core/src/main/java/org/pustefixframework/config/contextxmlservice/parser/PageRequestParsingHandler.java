@@ -215,7 +215,6 @@ public class PageRequestParsingHandler implements ParsingHandler {
                 Map<String, Object> contextResources = new ManagedMap(stateConfig.getContextResources().size());
                 contextResources.putAll(stateConfig.getContextResources());
                 beanBuilder.addPropertyValue("contextResources", contextResources);
-                beanBuilder.addPropertyValue("finalizer", stateConfig.getFinalizer());
                 beanBuilder.addPropertyValue("requiresToken", stateConfig.requiresToken());
                 beanBuilder.addPropertyValue("IWrapperPolicy", stateConfig.getIWrapperPolicy());
                 beanBuilder.addPropertyValue("IWrappers", wrapperMap);

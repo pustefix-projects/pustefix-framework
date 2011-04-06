@@ -48,15 +48,20 @@ import de.schlund.pfixxml.util.Xml;
  */
 
 public class AuxDependencyManager {
+    
     private final static Logger   LOG    = Logger.getLogger(AuxDependencyManager.class);
     private final static String   DEPAUX = "depaux";
     private TargetImpl   target;
     
-    public final static AuxDependency root = 
-        AuxDependencyFactory.getInstance().getAuxDependencyRoot();
+    private AuxDependencyFactory auxFactory;
+    private AuxDependency root;
+    private TargetDependencyRelation relation;
     
-    public AuxDependencyManager(Target target) {
+    public AuxDependencyManager(Target target, AuxDependencyFactory auxFactory, TargetDependencyRelation relation) {
         this.target = (TargetImpl) target;
+        this.auxFactory = auxFactory;
+        this.relation = relation;
+        root = auxFactory.getAuxDependencyRoot();
     }
         
     private FileResource getAuxFile() {
@@ -112,8 +117,7 @@ public class AuxDependencyManager {
 
         if (parent_path != null && parent_part != null && parent_theme != null) {
             LOG.debug("*** Found another AuxDependency as Parent...");
-            parent = AuxDependencyFactory.getInstance()
-                    .getAuxDependencyInclude(parent_path, parent_part,
+            parent = auxFactory.getAuxDependencyInclude(parent_path, parent_part,
                             parent_theme);
         } else if (parent_path == null && parent_part == null
                 && parent_theme == null) {
@@ -138,14 +142,14 @@ public class AuxDependencyManager {
         
         if (part != null && part.equals("")) part = null;
         if (theme != null && theme.equals("")) theme = null;
-        LOG.info("Adding Dependency of type 'text' to Target '" + target.getFullName() + "':");
+        LOG.info("Adding Dependency of type 'text' to Target '" + target.getTargetKey() + "':");
         LOG.info("*** [" + path.toURI().toString() + "][" + part + "][" + theme + "][" +
                  ((parent_path == null)? "null" : parent_path.toURI().toString()) + "][" + parent_part + "][" + parent_theme + "]");
 
-        child = AuxDependencyFactory.getInstance().getAuxDependencyInclude(path, part, theme);
+        child = auxFactory.getAuxDependencyInclude(path, part, theme);
         parent = getParentDependency(parent_path, parent_part, parent_theme);
         
-        TargetDependencyRelation.getInstance().addRelation(parent, child, target);
+        relation.addRelation(parent, child, target);
     }
     
     public synchronized void addDependencyImage(Resource path, Resource parent_path, String parent_part, String parent_theme) {
@@ -156,14 +160,14 @@ public class AuxDependencyManager {
         AuxDependency child  = null;
         AuxDependency parent = null;
 
-        LOG.info("Adding Dependency of type 'text' to Target '" + target.getFullName() + "':");
+        LOG.info("Adding Dependency of type 'text' to Target '" + target.getTargetKey() + "':");
         LOG.info("*** [" + path.toURI().toString() + "][" +
                  ((parent_path == null)? "null" : parent_path.toURI().toString()) + "][" + parent_part + "][" + parent_theme + "]");
 
-        child = AuxDependencyFactory.getInstance().getAuxDependencyImage(path);
+        child = auxFactory.getAuxDependencyImage(path);
         parent = getParentDependency(parent_path, parent_part, parent_theme);
         
-        TargetDependencyRelation.getInstance().addRelation(parent, child, target);
+        relation.addRelation(parent, child, target);
     }
     
     public synchronized void addDependencyFile(Resource path) {
@@ -173,12 +177,12 @@ public class AuxDependencyManager {
         
         AuxDependency child  = null;
 
-        LOG.info("Adding Dependency of type 'text' to Target '" + target.getFullName() + "':");
+        LOG.info("Adding Dependency of type 'text' to Target '" + target.getTargetKey() + "':");
         LOG.info("*** [" + path.toURI().toString() + "]");
 
-        child = AuxDependencyFactory.getInstance().getAuxDependencyFile(path);
+        child = auxFactory.getAuxDependencyFile(path);
         
-        TargetDependencyRelation.getInstance().addRelation(root, child, target);
+        relation.addRelation(root, child, target);
     }
     
     public synchronized void addDependencyTarget(String targetkey) {
@@ -188,16 +192,16 @@ public class AuxDependencyManager {
         
         AuxDependency child  = null;
 
-        LOG.info("Adding Dependency of type 'text' to Target '" + target.getFullName() + "':");
+        LOG.info("Adding Dependency of type 'text' to Target '" + target.getTargetKey() + "':");
         LOG.info("*** [" + target.getTargetKey() + "]");
 
-        child = AuxDependencyFactory.getInstance().getAuxDependencyTarget(target.getTargetGenerator(), targetkey);
+        child = auxFactory.getAuxDependencyTarget(target.getTargetGenerator(), targetkey);
         
-        TargetDependencyRelation.getInstance().addRelation(root, child, target);
+        relation.addRelation(root, child, target);
     }
 
     public synchronized void reset() {
-        TargetDependencyRelation.getInstance().resetRelation(target);
+        relation.resetRelation(target);
     }
 
     /**
@@ -208,7 +212,7 @@ public class AuxDependencyManager {
      * @return Timestamp of latest change in any dependency
      */
     public long getMaxTimestamp() {
-        Set<AuxDependency> allaux = TargetDependencyRelation.getInstance().getDependenciesForTarget(target);
+        Set<AuxDependency> allaux = relation.getDependenciesForTarget(target);
         long               max    = 0;
         
         if (allaux != null) {
@@ -235,7 +239,7 @@ public class AuxDependencyManager {
         }
 
         HashMap<AuxDependency, HashSet<AuxDependency>> parentchild = 
-            TargetDependencyRelation.getInstance().getParentChildMapForTarget(target);
+            relation.getParentChildMapForTarget(target);
         
         Document auxdoc   = Xml.createDocument();
         Element  rootelem = auxdoc.createElement("aux");
@@ -305,7 +309,7 @@ public class AuxDependencyManager {
 
     public TreeSet<AuxDependency> getChildren() {
         HashMap<AuxDependency, HashSet<AuxDependency>> parentchild = 
-            TargetDependencyRelation.getInstance().getParentChildMapForTarget(target);
+            relation.getParentChildMapForTarget(target);
 
         TreeSet<AuxDependency> retval = new TreeSet<AuxDependency>();
         

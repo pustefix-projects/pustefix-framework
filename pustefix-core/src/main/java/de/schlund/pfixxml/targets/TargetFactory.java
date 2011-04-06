@@ -34,16 +34,10 @@ import org.apache.log4j.Logger;
  */
 
 public class TargetFactory {
-    private final static Logger  LOG      = Logger.getLogger(TargetFactory.class); 
-    private static TargetFactory instance = new TargetFactory();
-
-    private TreeMap<String, TargetRW> targetmap = new TreeMap<String, TargetRW>();
     
-    private TargetFactory (){}
-
-    public static TargetFactory getInstance() {
-        return instance;
-    }
+    private final static Logger  LOG      = Logger.getLogger(TargetFactory.class); 
+    
+    private TreeMap<String, TargetRW> targetmap = new TreeMap<String, TargetRW>();
 
     public boolean exists(TargetType type, TargetGenerator gen, String targetkey) {
         String key = createKey(type, gen, targetkey);
@@ -65,18 +59,18 @@ public class TargetFactory {
     }
 
     private String createKey(TargetType type, TargetGenerator gen, String targetkey) {
-        return(type.getTag() + "@" + gen.getName() + "@" + targetkey);
+        return (type.getTag() + "@" + targetkey);
     }
     
     private TargetRW createTargetForType(TargetType type, TargetGenerator gen, String targetkey, Themes themes) {
         TargetRW target;
-        LOG.debug("===> Creating target '" + targetkey + "' " + type + " [" + gen.getName() + "]");
+        LOG.debug("===> Creating target '" + targetkey + "' " + type);
         try {
             Class<? extends TargetRW>       theclass    = type.getTargetClass();
             Constructor<? extends TargetRW> constructor = theclass.getConstructor(new Class[]{type.getClass(), gen.getClass(), targetkey.getClass(), Themes.class});
             target = constructor.newInstance(new Object[]{type, gen, targetkey, themes});
         } catch (Exception e) {
-            throw new RuntimeException("error creating target '" + targetkey + "' " + type + " [" + gen.getName() + "]: " + e.toString(), e);
+            throw new RuntimeException("error creating target '" + targetkey + "' " + type + ": " + e.toString(), e);
         }
         return target;
     }

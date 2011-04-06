@@ -46,7 +46,6 @@ import de.schlund.pfixxml.XMLException;
 
 public class DefaultIWrapperState extends StateImpl implements IWrapperState, RequestTokenAwareState {
 
-    private final static String DEF_FINALIZER     = "de.schlund.pfixcore.workflow.app.ResdocSimpleFinalizer";
     private final static String IHDL_CONT_MANAGER = "de.schlund.pfixcore.workflow.app.IHandlerContainerManager";
 
     /**
@@ -83,7 +82,6 @@ public class DefaultIWrapperState extends StateImpl implements IWrapperState, Re
     public ResultDocument getDocument(Context context, PfixServletRequest preq) throws Exception {
         CAT.debug("[[[[[ " + context.getCurrentPageRequest().getName() + " ]]]]]");
         
-        ResdocFinalizer rfinal = getResdocFinalizer(context);
         ResultDocument  resdoc = new ResultDocument();
       
         IWrapperContainer wrp_container =  getIHandlerContainer(context).createIWrapperContainerInstance(context, preq, resdoc);
@@ -107,7 +105,6 @@ public class DefaultIWrapperState extends StateImpl implements IWrapperState, Re
                         context.addPageMessage(CoreStatusCodes.FORM_TOKEN_INVALID, null, null);
                         if (errorPage.equals("")) {
                             wrp_container.retrieveCurrentStatus(false);
-                            rfinal.onWorkError(wrp_container);
                             context.prohibitContinue();
                         } else {
                             context.setJumpToPage(errorPage);
@@ -122,7 +119,6 @@ public class DefaultIWrapperState extends StateImpl implements IWrapperState, Re
                 if (stateConf != null && stateConf.requiresToken()) {
                     context.addPageMessage(CoreStatusCodes.FORM_TOKEN_MISSING, null, null);
                     wrp_container.retrieveCurrentStatus(false);
-                    rfinal.onWorkError(wrp_container);
                     context.prohibitContinue();
                     valid = false;
                 }
@@ -133,14 +129,11 @@ public class DefaultIWrapperState extends StateImpl implements IWrapperState, Re
 
                 if (wrp_container.errorHappened()) {
                     CAT.debug("    => Can't continue, as errors happened during load/work.");
-                    rfinal.onWorkError(wrp_container);
                     context.prohibitContinue();
                 } else {
                     CAT.debug("    => No error happened during work... end of submit reached successfully.");
                     CAT.debug("    => retrieving current status.");
                     wrp_container.retrieveCurrentStatus(false);
-
-                    rfinal.onSuccess(wrp_container);
                 }
             }
         } else if (isDirectTrigger(context, preq) || isPageFlowRunning(context)) {
@@ -154,7 +147,6 @@ public class DefaultIWrapperState extends StateImpl implements IWrapperState, Re
                     CAT.debug("    => REASON: WorkFlow");
                 }
             }
-            rfinal.onRetrieveStatus(wrp_container);
             context.prohibitContinue();
         } else {
             throw new XMLException("This should not happen: No submit trigger, no direct trigger, no final page and no workflow???");
@@ -190,25 +182,6 @@ public class DefaultIWrapperState extends StateImpl implements IWrapperState, Re
         // each context (server) has its own IHandlerContainerManager
         IHandlerContainerManager ihcm = (IHandlerContainerManager) PropertyObjectManager.getInstance().getConfigurableObject(context.getContextConfig(), IHDL_CONT_MANAGER);
         return ihcm.getIHandlerContainer(context, this.getConfig());
-    }
-
-    
-    // Remember, a ResdocFinalizer is a flyweight!!!
-    protected ResdocFinalizer getResdocFinalizer(Context context) throws XMLException {
-        StateConfig config = getConfig();
-        Class<? extends ResdocFinalizer> clazz = config.getFinalizer();
-        String classname = DEF_FINALIZER;
-        if (clazz != null) {
-            classname = clazz.getName();
-        }
-
-        ResdocFinalizer fin = ResdocFinalizerFactory.getInstance().getResdocFinalizer(classname);
-
-        if (fin == null) {
-            throw new RuntimeException("No finalizer found: classname = " + classname);
-        }
-
-        return fin;
     }
 
     public Map<String, ? extends IWrapperConfig> getIWrapperConfigMap() {

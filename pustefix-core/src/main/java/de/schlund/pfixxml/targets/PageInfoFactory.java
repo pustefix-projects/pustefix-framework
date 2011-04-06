@@ -32,21 +32,14 @@ import java.util.TreeMap;
  */
 
 public class PageInfoFactory {
-    private static PageInfoFactory instance = new PageInfoFactory(); 
+
     private TreeMap<String, PageInfo> pagemap = new TreeMap<String, PageInfo>();
-    
-    private PageInfoFactory (){}
 
-    public static PageInfoFactory getInstance() {
-        return instance;
-    }
-
-    public PageInfo getPage(TargetGenerator gen, String name, String variant) {
-        // System.out.println(name + " :: " + variant);
-        String   key = gen.getName() + "@" + name + "::" + variant;
+    public PageInfo getPage(String name, String variant) {
+        String   key = name + "::" + variant;
         PageInfo ret = (PageInfo) pagemap.get(key);
         if (ret == null) {
-            ret = new PageInfo(gen, name, variant);
+            ret = new PageInfo(name, variant);
             pagemap.put(key, ret);
         }
         return ret;

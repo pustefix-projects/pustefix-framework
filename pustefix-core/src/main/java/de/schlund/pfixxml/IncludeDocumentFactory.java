@@ -47,14 +47,12 @@ import de.schlund.pfixxml.util.XsltVersion;
  */
 public class IncludeDocumentFactory {
 
-    // private static Logger                 LOG      = Logger.getLogger(IncludeDocumentFactory.class);
-    private static IncludeDocumentFactory instance = new IncludeDocumentFactory();
-    private SPCache<String, IncludeDocument> cache = SPCacheFactory.getInstance().getDocumentCache();
+    private SPCacheFactory cacheFactory;
+    private SPCache<String, IncludeDocument> cache;
        
-    private IncludeDocumentFactory() {}
-
-    public static IncludeDocumentFactory getInstance() {
-        return instance;
+    public IncludeDocumentFactory(SPCacheFactory cacheFactory) {
+        this.cacheFactory = cacheFactory;
+        cache = cacheFactory.getDocumentCache();
     }
     
     // FIXME! Don't do the whole method synchronized!!
@@ -88,8 +86,8 @@ public class IncludeDocumentFactory {
     }
 
     public void reset() {
-        SPCacheFactory.getInstance().reset();
-        cache = SPCacheFactory.getInstance().getDocumentCache();
+        cacheFactory.reset();
+        cache = cacheFactory.getDocumentCache();
     }
     
 }

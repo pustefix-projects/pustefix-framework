@@ -106,10 +106,10 @@ public abstract class LeafTarget extends TargetImpl {
     public void storeValue(Object obj) {
         synchronized (sharedleaf) {
             SPCache<Object,Object> cache = null;
-            if(getFullName().contains("$")) {
-                cache = SPCacheFactory.getInstance().getRenderCache();
+            if(getTargetKey().contains("$")) {
+                cache = generator.getCacheFactory().getRenderCache();
             } else {
-                cache = SPCacheFactory.getInstance().getCache();
+                cache = generator.getCacheFactory().getCache();
             }
             cache.setValue(sharedleaf, obj);
         }
@@ -117,8 +117,7 @@ public abstract class LeafTarget extends TargetImpl {
 
     @Override
     public String toString() {
-        return "[TARGET: " + getType() + " " + getTargetKey() + "@"
-                + getTargetGenerator().getName() + "]";
+        return "[TARGET: " + getType() + " " + getTargetKey() + "]";
     }
 
     @Override
@@ -132,10 +131,10 @@ public abstract class LeafTarget extends TargetImpl {
     protected Object getValueFromSPCache() {
         synchronized (sharedleaf) {
             SPCache<Object,Object> cache = null;
-            if(getFullName().contains("$")) {
-                cache = SPCacheFactory.getInstance().getRenderCache();
+            if(getTargetKey().contains("$")) {
+                cache = generator.getCacheFactory().getRenderCache();
             } else {
-                cache = SPCacheFactory.getInstance().getCache();
+                cache = generator.getCacheFactory().getCache();
             }
             return cache.getValue(sharedleaf);
         }

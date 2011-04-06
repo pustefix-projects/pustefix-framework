@@ -18,30 +18,20 @@
 package de.schlund.pfixxml.targets;
 
 import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.Iterator;
 
 public class TargetGenerationReport {
-    private final HashMap<String, ArrayList<Exception>> hash;
-    private boolean hasError;
+    
+    private ArrayList<Exception> errors = new ArrayList<Exception>();
     
     public TargetGenerationReport() {
-        this.hash = new HashMap<String, ArrayList<Exception>>();
     }
     
-    public void addError(Exception e, String project) {
-        if (hash.get(project) == null) {
-            ArrayList<Exception> list = new ArrayList<Exception>();
-            list.add(e);
-            hash.put(project, list);
-            hasError = true;
-        } else {
-            hash.get(project).add(e);
-        }
+    public void addError(Exception e) {
+        errors.add(e);
     }
     
     public boolean hasError() {
-        return hasError;
+        return !errors.isEmpty();
     }
  
     @Override
@@ -49,30 +39,24 @@ public class TargetGenerationReport {
         StringBuffer buf = new StringBuffer(255);
         String prod_break = "'============================================================================================'\n";
         String ex_break = "|----------------------------------------------------------------------------------\n";
-        if (hash.isEmpty()) {
+        if (errors.isEmpty()) {
             StringBuffer sb = new StringBuffer();
             sb.append(prod_break);
             sb.append("| No exceptions\n");
             sb.append(prod_break);
             return sb.toString();
         }
-        Iterator<String> iter = hash.keySet().iterator();
-        while (iter.hasNext()) {
-            String key = iter.next();
-            buf.append(prod_break);
-            buf.append("| Project: ").append(key).append("\n");
-            ArrayList<Exception> exs = hash.get(key);
-            buf.append("| Exceptions: ").append("\n");
-            for (int i = 0; i < exs.size(); i++) {
-                TargetGenerationException tgex = (TargetGenerationException) exs
-                        .get(i);
+        buf.append(prod_break);
+        buf.append("| Exceptions: ").append("\n");
+        for (int i = 0; i < errors.size(); i++) {
+            TargetGenerationException tgex = (TargetGenerationException) errors.get(i);
                 String str = tgex.toStringRepresentation();
                 buf.append(str);
-                if (exs.size() - 1 > i)
+                if (errors.size() - 1 > i)
                     buf.append(ex_break);
             }
             buf.append(prod_break);
-        }
+        
         return buf.toString();
     }
 }

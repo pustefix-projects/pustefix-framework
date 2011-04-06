@@ -502,12 +502,6 @@
           </xs:complexType>
         </xs:element>
 
-        <xs:element name="finalizer" minOccurs="0">
-          <xs:complexType>
-            <xs:attribute name="class" use="required"/>
-          </xs:complexType>
-        </xs:element>
-
         <xs:element name="input"  minOccurs="0">
           <xs:complexType>
             <xs:choice>

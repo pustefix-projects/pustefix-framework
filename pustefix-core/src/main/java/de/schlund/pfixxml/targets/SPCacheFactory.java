@@ -46,15 +46,14 @@ import de.schlund.pfixxml.targets.cachestat.CacheStatistic;
 public class SPCacheFactory {
     
     private final static Logger LOG = Logger.getLogger(SPCacheFactory.class);
-    private static SPCacheFactory instance= new SPCacheFactory();
-
+    
     private SPCache<Object, Object> targetCache;
     private SPCache<String, IncludeDocument> documentCache;
     private SPCache<Object, Object> renderCache;
 
     private int targetCacheCapacity = 30;
     private int includeCacheCapacity = 30;
-    private int renderCacheCapacity = 30;
+    private int renderCacheCapacity = 150;
     
     private String targetCacheClass = LRUCache.class.getName();
     private String includeCacheClass = LRUCache.class.getName();
@@ -62,13 +61,13 @@ public class SPCacheFactory {
     
     private CacheStatistic cacheStatistic;
     
-    private SPCacheFactory() {
+    public SPCacheFactory() {
     }
-
+    
     /**
      * Implemented from FactoryInit.
      */
-    public void init() {
+    public SPCacheFactory init() {
         targetCache = getCache(targetCacheClass, targetCacheCapacity, "target");
         documentCache = getCache(includeCacheClass, includeCacheCapacity, "include");
         renderCache = getCache(renderCacheClass, renderCacheCapacity, "render");
@@ -78,6 +77,7 @@ public class SPCacheFactory {
         	LOG.info("  DocumentCache : Class="+documentCache.getClass().getName()+" Capacity=" + documentCache.getCapacity() + " Size="+documentCache.getSize());
         	LOG.info("  RenderCache   : Class="+renderCache.getClass().getName()+" Capacity=" + renderCache.getCapacity() + " Size="+renderCache.getSize());
         }
+        return this;
     }
 
     @SuppressWarnings({"unchecked","rawtypes"})
@@ -95,13 +95,6 @@ public class SPCacheFactory {
             retval = cacheStatistic.monitor(retval, id);
         }
         return retval;
-    }
-
-    /**
-     * The getInstance method of a singleton.
-     */
-    public static SPCacheFactory getInstance() {
-        return instance;
     }
 
     /**

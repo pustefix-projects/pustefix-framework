@@ -83,7 +83,7 @@ public class ImageThemedSrc {
             Resource res;
             LOG.debug("  -> Register image src '" + src + "'");
             if(dynamic) {
-                String uri =  "dynamic:/"+src+"?project="+targetGen.getName();
+                String uri =  "dynamic:/"+src;
                 if(module != null) uri += "&module="+module;
                 res = ResourceUtil.getResource(uri);
                 URI resUri = res.toURI();
@@ -118,7 +118,7 @@ public class ImageThemedSrc {
                     themeParam += themes[i];
                     if(i<themes.length-1) themeParam += ",";
                 }
-                String uri =  "dynamic:/" + themed_path +"/THEME/" + themed_img +"?project="+targetGen.getName();
+                String uri =  "dynamic:/" + themed_path +"/THEME/" + themed_img;
                 uri += themeParam;
                 if(module != null) uri += "&module="+module;
                 Resource res = ResourceUtil.getResource(uri);

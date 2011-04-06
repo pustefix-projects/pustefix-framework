@@ -29,7 +29,6 @@ import org.pustefixframework.config.contextxmlservice.ProcessActionStateConfig;
 import org.pustefixframework.config.contextxmlservice.StateConfig;
 
 import de.schlund.pfixcore.workflow.ConfigurableState;
-import de.schlund.pfixcore.workflow.app.ResdocFinalizer;
 
 /**
  * Stores configuration for a PageRequest
@@ -43,7 +42,6 @@ public class StateConfigImpl implements Cloneable, StateConfig {
     private String defaultStaticStateParentBeanName = null;
     private Class<? extends ConfigurableState> defaultIWrapperStateClass = null;
     private String defaultIWrapperStateParentBeanName = null;
-    private Class<? extends ResdocFinalizer> finalizer = null;
     private Map<String, IWrapperConfig> iwrappers = new LinkedHashMap<String, IWrapperConfig>();
     private Map<String, Object> resources = new LinkedHashMap<String, Object>();
     private Properties props = new Properties();
@@ -116,14 +114,6 @@ public class StateConfigImpl implements Cloneable, StateConfig {
     
     public StateConfig.Policy getIWrapperPolicy() {
         return this.policy;
-    }
-    
-    public void setFinalizer(Class<? extends ResdocFinalizer> clazz) {
-        this.finalizer = clazz;
-    }
-    
-    public Class<? extends ResdocFinalizer> getFinalizer() {
-        return this.finalizer;
     }
     
     public void addIWrapper(IWrapperConfigImpl config) {

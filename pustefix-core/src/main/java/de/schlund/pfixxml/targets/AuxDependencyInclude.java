@@ -31,8 +31,8 @@ public class AuxDependencyInclude extends AuxDependencyFile {
 
     private String theme;
 
-    public AuxDependencyInclude(Resource path, String part, String theme) {
-        super(path);
+    public AuxDependencyInclude(Resource path, String part, String theme, TargetDependencyRelation relation) {
+        super(path, relation);
         this.type = DependencyType.TEXT;
         this.part = part;
         this.theme = theme;

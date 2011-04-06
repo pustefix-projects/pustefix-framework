@@ -39,7 +39,6 @@ public interface Target extends Comparable<Target> {
     TreeSet<PageInfo> getPageInfos();
     long            getModTime();
     String          toString();
-    String          getFullName();
     /**
      * Get the value of the target. Depending on the 
      * circumstances this will trigger a recursive 

@@ -22,7 +22,6 @@ import java.util.Map;
 import java.util.Properties;
 
 import de.schlund.pfixcore.workflow.ConfigurableState;
-import de.schlund.pfixcore.workflow.app.ResdocFinalizer;
 
 public interface StateConfig {
 
@@ -51,13 +50,6 @@ public interface StateConfig {
      * @return policy for isActive() check
      */
     StateConfig.Policy getIWrapperPolicy();
-
-    /**
-     * Returns the class of the finalizer for the page (use with caution).
-     * 
-     * @return finalizer class or <code>null</code> if there is no finalizer
-     */
-    Class<? extends ResdocFinalizer> getFinalizer();
 
     /**
      * Returns the list of IWrappers for this page. IWrappers are used
