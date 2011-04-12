@@ -25,6 +25,8 @@
   <standardpage name="Home" xml="xml/frame.xml"/>
   <standardpage name="Settings" xml="xml/frame.xml"/>
   <standardpage name="Play" xml="xml/frame.xml"/>
-  <standardpage name="Highscore" xml="xml/frame.xml"/>
+  <standardpage name="Highscore" xml="xml/frame.xml">
+    <include stylesheet="xsl/runtime.xsl"/>
+  </standardpage>
 
 </make>

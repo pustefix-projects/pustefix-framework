@@ -26,22 +26,18 @@ public class PlayHandler implements IHandler {
     public void handleSubmittedData(Context context, IWrapper wrapper) throws Exception {
 
         Play play = (Play)wrapper;
-        if(play.getReset()) {
-            contextPlay.reset();
-        } else {
-            if(!contextPlay.isCompleted()) {
-                char ch = play.getLetter().charAt(0);
-                contextPlay.guess(ch);
-                if(contextPlay.isCompletedFaulty()) {
-                    context.addPageMessage(StatusCodes.FAILURE, new String[] {contextPlay.getWord()}, null);
-                    context.prohibitContinue();
-                } else if(contextPlay.isCompletedSuccessful()) {
-                    boolean scored = highScore.addScore(new Score(contextPlay.getTime(), contextPlay.getMisses(),
-                            dictionary.getDifficultyLevel(contextPlay.getWord()), contextUser.getName()));
-                    if(scored) context.addPageMessage(StatusCodes.SUCCESS_HIGH, null, null);
-                    else context.addPageMessage(StatusCodes.SUCCESS, null , null);
-                    context.prohibitContinue();
-                }
+        if(!contextPlay.isCompleted()) {
+            char ch = play.getLetter().charAt(0);
+            contextPlay.guess(ch);
+            if(contextPlay.isCompletedFaulty()) {
+                context.addPageMessage(StatusCodes.FAILURE, new String[] {contextPlay.getWord()}, null);
+                context.prohibitContinue();
+            } else if(contextPlay.isCompletedSuccessful()) {
+                int rank = highScore.addScore(new Score(contextPlay.getTime(), contextPlay.getMisses(),
+                        dictionary.getDifficultyLevel(contextPlay.getWord()), contextUser.getName()));
+                if(rank > -1) context.addPageMessage(StatusCodes.SUCCESS_HIGH, null, null);
+                else context.addPageMessage(StatusCodes.SUCCESS, null , null);
+                context.prohibitContinue();
             }
         }
     }

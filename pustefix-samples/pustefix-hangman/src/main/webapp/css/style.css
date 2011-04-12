@@ -11,25 +11,25 @@ body {
 #header {
   height: 68px;
   margin: 15px;
+  padding-bottom: 20px;
 }
 
 #navigation {
   margin: 10px;
   padding: 10px;
+  font-size: 120%;
 }
 
 div#content {
 	padding: 10px;
 	margin: 20px;
-   
+	margin-top: 10px;
 }
 
-#footer {
-  position: absolute;
-  top: 20px;
-  right: 200px;
+div#footer {
   font-size: 60%;
   color: #ccc;
+  padding-left: 15px;
 }
 
 span.error {
@@ -70,30 +70,6 @@ span.core_button_active {
   font-weight: bold;	
 }
 
-table.data {
-  border-spacing: 0px;
-  border: 1px solid #fff;
-}
-
-table.data th {
-  background: #ccc;
-  padding: 10px;
-  padding-right: 20px;
-}
-
-table.data td {
-  padding: 10px;
-  padding-right: 20px;
-}
-
-tr.odd {
-  background: #ddd;
-}
-
-tr.even {
-  background: #eee;
-}
-
 table.form {
   border-spacing: 0px;
 }
@@ -117,15 +93,57 @@ input.radio {
   margin-right: 7px;
 }
 
+div.PfxMessage {
+  color: #000;
+  font-size: 120%;
+  margin-left: 10px;
+  padding: 2px;
+}
+
+div.letters {
+  margin-bottom: 2px;
+}
+
+input.letter {
+  font-family: monospace;
+  padding: 4px;
+  margin: 1px;
+}
+
+div#playword {
+  font-family: monospace;
+  padding-left: 4px;
+  padding-bottom: 22pt; 
+  letter-spacing: 0.3em;
+  font-size: 26pt;	
+}
+
 div.setting {
   font-weight: bold;
   margin-bottom: 10px;
   margin-top: 10px;
 }
 
-div.PfxMessage {
-  color: #000;
-  font-size: 120%;
-  margin-left: 10px;
-  padding: 2px;
+table.data {
+  border-spacing: 1px;
+  border: 0px solid #fff;
+}
+
+table.data th {
+  background: #aaa;
+  padding: 5px;
+  padding-right: 20px;
+}
+
+table.data td {
+  padding: 5px;
+  padding-right: 20px;
+}
+
+tr.odd {
+  background: #ddd;
+}
+
+tr.even {
+  background: #eee;
 }

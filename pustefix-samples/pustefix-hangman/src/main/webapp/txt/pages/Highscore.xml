@@ -1,13 +1,15 @@
 <?xml version="1.0" encoding="utf-8"?>
-<include_parts xmlns:ixsl="http://www.w3.org/1999/XSL/Transform" xmlns:pfx="http://www.schlund.de/pustefix/core">
+<include_parts xmlns:ixsl="http://www.w3.org/1999/XSL/Transform" 
+               xmlns:pfx="http://www.schlund.de/pustefix/core">
+
   <part name="content">
     <theme name="default">
       <table class="data">
         <tr>
-          <th>Player</th>
-          <th>Difficulty level</th>
-          <th align="right">Misses</th>
-          <th align="right">Time (in s)</th>
+          <th align="left"><pfx:include href="txt/common.xml" part="player"/></th>
+          <th align="left"><pfx:include href="txt/common.xml" part="level"/></th>
+          <th align="right"><pfx:include href="txt/common.xml" part="misses"/></th>
+          <th align="right"><pfx:include href="txt/common.xml" part="time"/></th>
         </tr>
         <ixsl:for-each select="/formresult/highscore/scores/score">
           <tr>
@@ -18,11 +20,23 @@
               </ixsl:choose>
             </ixsl:attribute>
             <td><ixsl:value-of select="@player"/></td>
-            <td><ixsl:value-of select="@level"/></td>
+            <td>
+              <pfx:include level="runtime" href="txt/common.xml">
+                <pfx:part>
+                  <ixsl:call-template name="toLowerCase">
+                    <ixsl:with-param name="text" select="@level"/>
+                  </ixsl:call-template>
+                </pfx:part>
+              </pfx:include>
+            </td>
             <td align="right"><ixsl:value-of select="@tries"/></td>
             <td align="right"><ixsl:value-of select="format-number(@time div 1000, '#')"/></td>
           </tr>
         </ixsl:for-each>
+        <ixsl:call-template name="highscoreloop">
+          <ixsl:with-param name="start" select="count(/formresult/highscore/scores/score) + 1"/>
+          <ixsl:with-param name="stop">10</ixsl:with-param>
+        </ixsl:call-template>
       </table>
     </theme>
   </part>

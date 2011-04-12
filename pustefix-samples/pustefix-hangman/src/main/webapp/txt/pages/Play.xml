@@ -1,25 +1,39 @@
 <?xml version="1.0" encoding="utf-8"?>
 <include_parts xmlns:ixsl="http://www.w3.org/1999/XSL/Transform" xmlns:pfx="http://www.schlund.de/pustefix/core">
+
   <part name="content">
     <theme name="default">
-    
-      <img src="{$__contextpath}/img/Hangman-{/formresult/play/@misses}.png"/>
-      <div style="padding: 23pt; letter-spacing: 0.3em;font-size:25pt">
-      
-      <ixsl:value-of select="/formresult/play/@displayWord"/>
+      <img id="playimg" src="{$__contextpath}/img/Hangman-{/formresult/play/@misses}.png"/>
+      <div id="playword">
+        <ixsl:value-of select="/formresult/play/@displayWord"/>
       </div>
       <ixsl:if test="/formresult/play/@completed='false'">
       	<buttons/>
       </ixsl:if>
       <show-messages/>
-      <br/><br/>
-      <pfx:button page="Play" mode="force"><pfx:argument name="play.reset">true</pfx:argument>New game</pfx:button>
+      <br/>
+      <pfx:button page="NewPlay"><pfx:include part="new"/></pfx:button>
     </theme>
   </part>
   
   <part name="title">
     <theme name="default">Play</theme>
     <theme name="de">Spiel</theme>
+  </part>
+  
+  <part name="new">
+    <theme name="default">Start a new game</theme>
+    <theme name="de">Beginne ein neues Spiel</theme>
+  </part>
+
+  <part name="head">
+    <theme name="default">
+      <link href="{$__contextpath}/css/play.css" media="all" rel="stylesheet" type="text/css"/>
+      <script type="text/javascript" src="{$__contextpath}/modules/pustefix-core/script/httpRequest.js"></script>
+      <script type="text/javascript" src="{$__contextpath}/modules/pustefix-webservices-jsonws/script/webservice_json.js"></script>
+      <pfx:wsscript name="Play"/>
+      <script type="text/javascript" src="{$__contextpath}/script/play.js"></script>
+    </theme>
   </part>
   
 </include_parts>

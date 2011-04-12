@@ -43,6 +43,10 @@
       <resource node="play" bean-ref="contextPlay"/>
     </output>
   </pagerequest>
+  
+  <pagerequest name="NewPlay">
+    <state class="sample.games.hangman.state.NewPlayState"/>
+  </pagerequest>
 
   <pagerequest name="Highscore">
     <output>

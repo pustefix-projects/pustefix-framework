@@ -1,6 +1,10 @@
 package sample.games.hangman;
 
-public class Score implements Comparable<Score> {
+import java.io.Serializable;
+
+public class Score implements Comparable<Score>, Serializable {
+
+    private static final long serialVersionUID = 6905507767971493704L;
 
     private long time;
     private int tries;

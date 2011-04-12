@@ -26,33 +26,9 @@
       <param name="ConversionPattern" value="%d{ISO8601}|%m\n"/>
     </layout>
   </appender>
-
-  <appender name="LOGGER_TARGET_UPDATER" class="org.apache.log4j.RollingFileAppender">
-    <param name="File"><cus:docroot/>log/pustefix-target-updater.log</param>
-    <param name="MaxFileSize" value="10MB"/>
-    <layout class="org.apache.log4j.PatternLayout">
-      <param name="ConversionPattern" value="%d{ISO8601} %m\n"/>
-    </layout>
-  </appender>
-
-  <appender name="LOGGER_SERIALIZER" class="org.apache.log4j.RollingFileAppender">
-    <param name="File"><cus:docroot/>log/pustefix-serializer.log</param>
-    <param name="MaxFileSize" value="10MB"/>
-    <layout class="org.apache.log4j.PatternLayout">
-      <param name="ConversionPattern" value="%d{ISO8601} %m\n"/>
-    </layout>
-  </appender>
-
-  <appender name="LOGGER_DEREF" class="org.apache.log4j.RollingFileAppender">
-    <param name="File"><cus:docroot/>log/pustefix-deref.log</param>
-    <param name="MaxFileSize" value="10MB"/>
-    <layout class="org.apache.log4j.PatternLayout">
-      <param name="ConversionPattern" value="%d{ISO8601}|%m\n"/>
-    </layout>
-  </appender>
-
-  <appender name="LOGGER_APPLOADER" class="org.apache.log4j.RollingFileAppender">
-    <param name="File"><cus:docroot/>log/pustefix-apploader.log</param>
+  
+  <appender name="LOGGER_WEBSERVICE" class="org.apache.log4j.RollingFileAppender">
+    <param name="File"><cus:docroot/>log/pustefix-webservice.log</param>
     <param name="MaxFileSize" value="10MB"/>
     <layout class="org.apache.log4j.PatternLayout">
       <param name="ConversionPattern" value="%d{ISO8601} %m\n"/>
@@ -152,15 +128,15 @@
     <appender-ref ref="LOGGER_GENERAL"/>
   </category>
   
-  <category name="de.schlund.pfixxml.loader" additivity="false">
-    <priority value="INFO"/>
-    <appender-ref ref="LOGGER_APPLOADER"/>
-  </category>
-  
   <category name="de.schlund.pfixxml.DependencyTracker" additivity="false">
     <priority value="WARN"/>
     <appender-ref ref="LOGGER_GENERAL"/>
   </category>
+  
+  <category name="org.pustefixframework.webservices" additivity="false">
+    <appender-ref ref="LOGGER_WEBSERVICE"/>
+  </category>
+  
   
   <!-- special categories for additional logfiles -->
   
@@ -172,16 +148,6 @@
   <category name="LOGGER_TRAIL" additivity="false">
     <priority value="WARN"/>
     <appender-ref ref="LOGGER_TRAIL"/>
-  </category>
-
-  <category name="LOGGER_SERIALIZER" additivity="false">
-    <priority value="DEBUG"/>
-    <appender-ref ref="LOGGER_SERIALIZER"/>
-  </category>
-
-  <category name="LOGGER_DEREF" additivity="false">
-    <priority value="WARN"/>
-    <appender-ref ref="LOGGER_DEREF"/>
   </category>
 
   <!-- default category -->

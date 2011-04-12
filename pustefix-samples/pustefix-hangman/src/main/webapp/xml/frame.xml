@@ -3,38 +3,27 @@
   <!-- put the frame markup your pages have in common here -->
   <html>
     <head>
-      <title><pfx:include href="txt/common.xml" part="title"/></title>
+      <title><pfx:include href="txt/common.xml" part="title"/> - <ixsl:value-of select="$page"/></title>
       <link href="{$__contextpath}/css/style.css" media="all" rel="stylesheet" type="text/css"/>
+      <pfx:maincontent prefix="" part="head" noerror="true"/>
     </head>
     <body>
-      
-     <div id="container">
-     
-      
-      <div id="header">
-        <!-- <pfx:include href="txt/common.xml" part="title"/> -->
-        <pfx:image themed-path="img" themed-img="logo.png" align="middle"/>
-        <span id="footer"><pfx:include href="txt/common.xml" part="powered_by"/></span>
-      </div>
-      
-     <div id="navigation">
-        <navibutton page="Home"/>
-        <navibutton page="Settings"/>
-        <navibutton page="Play"/>
-        <navibutton page="Highscore"/>
-      </div>
-      
-      <div id="content">
-        <pfx:maincontent prefix=""/>
-        <pfx:editconsole/>
-      </div>
-      
-      
-      
-    
-    
-    </div>  
-    
+      <div id="container">
+        <div id="header">
+          <pfx:image themed-path="img" themed-img="logo.png"/>
+          <div id="footer"><pfx:include href="txt/common.xml" part="powered_by"/></div>
+        </div>
+        <div id="navigation" style="clear:left">
+          <navibutton page="Home"/>
+          <navibutton page="Settings"/>
+          <navibutton page="Play"/>
+          <navibutton page="Highscore"/>
+        </div>
+        <div id="content">
+          <pfx:maincontent prefix=""/>
+          <pfx:editconsole webserviceconsole="true"/>
+        </div>
+      </div>  
     </body>
   </html>
 </pfx:document>
