@@ -188,7 +188,7 @@ public class PustefixContextXMLRequestHandlerParsingHandler extends Customizatio
         beanBuilder.addPropertyValue("context", new RuntimeBeanReference(ContextImpl.class.getName()));
         beanBuilder.addPropertyValue("configuration", config);
         beanBuilder.addPropertyValue("sessionAdmin", new RuntimeBeanReference(SessionAdmin.class.getName()));
-        if(editorInfo != null) {
+        if(editorInfo != null && editorInfo.getLocation() != null) {
             beanBuilder.addPropertyValue("editorLocation", editorInfo.getLocation());
         }
         beanBuilder.addPropertyValue("checkModtime", info.getCheckModtime());

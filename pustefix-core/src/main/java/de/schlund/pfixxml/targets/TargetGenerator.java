@@ -90,7 +90,7 @@ public class TargetGenerator {
 
     private static final Logger LOG = Logger.getLogger(TargetGenerator.class);
 
-    private static TargetGenerationReport report = new TargetGenerationReport();
+    private TargetGenerationReport report = new TargetGenerationReport();
 
     private PageTargetTree pagetree = new PageTargetTree();
 
@@ -148,9 +148,10 @@ public class TargetGenerator {
         sharedLeafFactory = new SharedLeafFactory();
         pageInfoFactory = new PageInfoFactory();
         //TODO: factory init on reload
-        Meminfo.print("TG: Before loading " + confile.toString());
+        Meminfo meminfo = new Meminfo();
+        meminfo.print("TG: Before loading " + confile.toString());
         loadConfig(confile);
-        Meminfo.print("TG: after loading targets for " + confile.toString());
+        meminfo.print("TG: after loading targets for " + confile.toString());
     }
         
     public TargetGenerator(FileResource confile) throws IOException, SAXException, XMLException {
@@ -804,6 +805,7 @@ public class TargetGenerator {
             }
             GlobalConfigurator.setDocroot(docroot.getPath());
 
+            StringBuilder report = new StringBuilder();
             for (int i = 1; i < args.length; i++) {
                 try {
                     FileResource file = ResourceUtil.getFileResourceFromDocroot(args[i]);
@@ -813,6 +815,7 @@ public class TargetGenerator {
                         System.out.println("---------- Doing " + args[i] + "...");
                         gen.generateAll();
                         System.out.println("---------- ...done [" + args[i] + "]");
+                        report.append(gen.getReportAsString());
                     } else {
                         LOG.error("Couldn't read configfile '" + args[i] + "'");
                         throw (new XMLException("Oops!"));
@@ -932,15 +935,15 @@ public class TargetGenerator {
     /**
      * @return report containing sensilbe information after {@link #generateAll()}, not null
      */
-    public static String getReportAsString() {
+    public String getReportAsString() {
         return report.toString();
     }
 
-    public static boolean errorsReported() {
+    public boolean errorsReported() {
         return report.hasError();
     }
     
-    public static void resetGenerationReport() {
+    public void resetGenerationReport() {
         report = new TargetGenerationReport();
     }
 

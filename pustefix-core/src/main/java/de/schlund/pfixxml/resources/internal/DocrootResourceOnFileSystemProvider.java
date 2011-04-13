@@ -35,7 +35,7 @@ import de.schlund.pfixxml.resources.Resource;
  */
 public class DocrootResourceOnFileSystemProvider extends DocrootResourceProvider {
 
-    private static Logger LOG = Logger.getLogger(DocrootResourceOnFileSystemProvider.class);
+    private final static Logger LOG = Logger.getLogger(DocrootResourceOnFileSystemProvider.class);
 
     private String docroot;
 

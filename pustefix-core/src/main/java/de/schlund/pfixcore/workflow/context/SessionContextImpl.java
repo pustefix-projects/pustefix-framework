@@ -56,7 +56,7 @@ import de.schlund.pfixxml.Variant;
  */
 public class SessionContextImpl {
 
-    private static Logger LOG = Logger.getLogger(SessionContextImpl.class);
+    private final static Logger LOG = Logger.getLogger(SessionContextImpl.class);
     
     private HttpSession                session;
     private Variant                    variant      = null;

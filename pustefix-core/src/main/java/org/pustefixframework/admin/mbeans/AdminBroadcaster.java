@@ -22,7 +22,7 @@ public class AdminBroadcaster extends NotificationBroadcasterSupport implements 
 
     public final static String JMX_NAME = Admin.JMX_NAME + ",subtype=Broadcaster";
     
-    public static String NOTIFICATION_TYPE_RELOAD = "RELOAD";
+    public final static String NOTIFICATION_TYPE_RELOAD = "RELOAD";
     
     private AtomicLong seqNo = new AtomicLong();
     

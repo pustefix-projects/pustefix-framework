@@ -15,7 +15,7 @@ import org.pustefixframework.util.javascript.internal.CompressorLocator;
  */
 public class CompressorCallback {
 
-    private static Logger LOG = Logger.getLogger(CompressorCallback.class);
+    private final static Logger LOG = Logger.getLogger(CompressorCallback.class);
     
     public static String compressJavascript(String javascript) {
         Compressor compressor = CompressorLocator.getCompressor();

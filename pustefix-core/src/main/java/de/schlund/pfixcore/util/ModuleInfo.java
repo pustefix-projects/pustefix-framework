@@ -31,9 +31,9 @@ import de.schlund.pfixcore.exception.PustefixRuntimeException;
 
 public class ModuleInfo {
     
-	private static Logger LOG = Logger.getLogger(ModuleInfo.class);
+	private final static Logger LOG = Logger.getLogger(ModuleInfo.class);
 	
-    private static String MODULE_DESCRIPTOR_LOCATION = "META-INF/pustefix-module.xml";
+    private final static String MODULE_DESCRIPTOR_LOCATION = "META-INF/pustefix-module.xml";
     
     private static ModuleInfo instance = new ModuleInfo();
     

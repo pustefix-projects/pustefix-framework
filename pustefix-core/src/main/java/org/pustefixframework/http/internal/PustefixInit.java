@@ -86,14 +86,14 @@ public class PustefixInit {
 
     private final static Logger LOG = Logger.getLogger(PustefixInit.class);
     
-    private static String log4jconfig = "/WEB-INF/pfixlog.xml";
+    private final static String log4jconfig = "/WEB-INF/pfixlog.xml";
 
-    private static long log4jmtime = -1;
-    private static boolean warMode = false;
+    private long log4jmtime = -1;
+    private boolean warMode = false;
     
-    private static boolean initDone;
+    private boolean initDone;
     
-    public static void tryReloadLog4j() {
+    public void tryReloadLog4j() {
         if (log4jconfig != null) {
             FileResource l4jfile = ResourceUtil.getFileResourceFromDocroot(log4jconfig);
             long tmpmtime = l4jfile.lastModified();
@@ -118,7 +118,7 @@ public class PustefixInit {
         }
     }
     
-    public static void init(ServletContext servletContext) throws PustefixCoreException {
+    public void init(ServletContext servletContext) throws PustefixCoreException {
         
         //avoid re-initializations, e.g. when ApplicationContext is refreshed
         if(initDone) return;
@@ -175,7 +175,7 @@ public class PustefixInit {
 
     }
 
-    private static void configureLogging(Properties properties, ServletContext servletContext) throws PustefixCoreException {
+    private void configureLogging(Properties properties, ServletContext servletContext) throws PustefixCoreException {
         
     	FileResource l4jfile = ResourceUtil.getFileResourceFromDocroot(log4jconfig);
     	
@@ -198,7 +198,7 @@ public class PustefixInit {
         
     }
 
-    private static void configureLog4j(FileResource configFile) throws SAXException, FileNotFoundException, IOException {
+    private void configureLog4j(FileResource configFile) throws SAXException, FileNotFoundException, IOException {
         log4jmtime = configFile.lastModified();
         XMLReader xreader = XMLReaderFactory.createXMLReader();
         TransformerFactory tf = TransformerFactory.newInstance();

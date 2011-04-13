@@ -22,8 +22,8 @@ import javax.servlet.http.HttpServletRequest;
  */
 public class BotDetector {
 
-    private static String CONFIG = "META-INF/org/pustefixframework/http/bot-user-agents.txt";
-    private static Pattern pattern = getBotPattern();
+    private final static String CONFIG = "META-INF/org/pustefixframework/http/bot-user-agents.txt";
+    private final static Pattern pattern = getBotPattern();
     
     public static boolean isBot(HttpServletRequest request) {
         String userAgent = request.getHeader("User-Agent");

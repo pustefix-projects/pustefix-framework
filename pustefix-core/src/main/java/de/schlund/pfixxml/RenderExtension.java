@@ -17,7 +17,7 @@ import de.schlund.pfixxml.util.Xslt;
 
 public class RenderExtension {
     
-    private static Logger LOG = Logger.getLogger(RenderExtension.class);
+    private final static Logger LOG = Logger.getLogger(RenderExtension.class);
     
     public static void render(TargetGenerator targetGenerator, String href, 
             String part, String module, String search, Node node, RequestContextImpl requestContext, 

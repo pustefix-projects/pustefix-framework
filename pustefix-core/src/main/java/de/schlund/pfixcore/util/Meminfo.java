@@ -22,14 +22,11 @@ import org.apache.log4j.Logger;
 
 public final class Meminfo {
 
-    //~ Instance/static variables ..................................................................
-
-    private static long last_used = -1L;
     private final static Logger LOG = Logger.getLogger(Meminfo.class);
-
-    //~ Methods ....................................................................................
-
-    public final static synchronized void print(String info) {
+    
+    private long last_used = -1L;
+    
+    public void print(String info) {
         if (!LOG.isDebugEnabled()) {
             return;
         }

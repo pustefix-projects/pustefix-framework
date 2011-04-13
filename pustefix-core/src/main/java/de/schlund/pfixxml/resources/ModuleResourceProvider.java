@@ -37,9 +37,9 @@ import de.schlund.pfixxml.config.EnvironmentProperties;
  */
 public class ModuleResourceProvider implements ResourceProvider {
 
-    private static Logger LOG = Logger.getLogger(ModuleResourceProvider.class);
+    private final static Logger LOG = Logger.getLogger(ModuleResourceProvider.class);
     
-    private static String MODULE_SCHEME = "module";
+    private final static String MODULE_SCHEME = "module";
     
     private String[] supportedSchemes = {MODULE_SCHEME};
     

@@ -29,6 +29,7 @@ import de.schlund.pfixxml.targets.VirtualTarget;
 import de.schlund.pfixxml.util.XsltContext;
 
 public class DependencyTracker {
+    
     private final static Logger LOG = Logger.getLogger(DependencyTracker.class);
     
     /** xslt extension */

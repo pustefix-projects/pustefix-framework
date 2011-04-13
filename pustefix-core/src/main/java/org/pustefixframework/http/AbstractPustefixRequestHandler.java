@@ -73,8 +73,8 @@ public abstract class AbstractPustefixRequestHandler implements SessionTrackingS
     private static final String SESSION_ATTR_REQUEST_COUNT = "__PFX_REQUEST_COUNT__";
     private static final String SESSION_ATTR_ORIGINAL_TIMEOUT = "__PFX_SESSION_ORIGINAL_TIMEOUT__";
     
-    public static Logger                       LOGGER_VISIT                  = Logger.getLogger("LOGGER_VISIT");
-    private static Logger                       LOG                           = Logger.getLogger(AbstractPustefixRequestHandler.class);
+    public static final Logger LOGGER_VISIT = Logger.getLogger("LOGGER_VISIT");
+    private static final Logger LOG = Logger.getLogger(AbstractPustefixRequestHandler.class);
     private String                       servletEncoding;
     private ServletContext servletContext;
     protected String handlerURI;

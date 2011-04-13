@@ -29,13 +29,14 @@ public class CookieSessionTrackingStrategy implements SessionTrackingStrategy {
     private Logger LOG = Logger.getLogger(CookieSessionTrackingStrategy.class);
     
     private static final String CHECK_FOR_RUNNING_SSL_SESSION = "__CHECK_FOR_RUNNING_SSL_SESSION__";
-    private static int INC_ID = 0;
     private static final String PARAM_FORCELOCAL = "__forcelocal";
     private static final String STORED_REQUEST = "__STORED_PFIXSERVLETREQUEST__";
-    private static String TIMESTAMP_ID = "";
-    private static final String          INITIAL_SESSION_CHECK         = "__INITIAL_SESSION_CHECK__";
+    private static final String INITIAL_SESSION_CHECK = "__INITIAL_SESSION_CHECK__";
     private static final String COOKIE_SESSION_RESET = "__PFIX_RST_";
     public static final String VISIT_ID = "__VISIT_ID__";
+    
+    private int INC_ID = 0;
+    private String TIMESTAMP_ID = "";
     
     private SessionTrackingStrategyContext context;
     

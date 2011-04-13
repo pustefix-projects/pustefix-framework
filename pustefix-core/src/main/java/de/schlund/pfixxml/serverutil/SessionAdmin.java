@@ -46,15 +46,15 @@ import org.springframework.beans.factory.InitializingBean;
 
 public class SessionAdmin implements HttpSessionBindingListener, SessionAdminMBean, InitializingBean, DisposableBean {
     
-    public  static String       LISTENER       = "__SESSION_LISTENER__"; 
-    public  static String       PARENT_SESS_ID = "__PARENT_SESSION_ID__";
-    public  static final String SESSION_IS_SECURE             = "__SESSION_IS_SECURE__";
-    private static final Logger LOG            = Logger.getLogger(SessionAdmin.class);
+    public final static String LISTENER = "__SESSION_LISTENER__"; 
+    public final static String PARENT_SESS_ID = "__PARENT_SESSION_ID__";
+    public final static String SESSION_IS_SECURE = "__SESSION_IS_SECURE__";
+    private final static Logger LOG = Logger.getLogger(SessionAdmin.class);
     /** Maps session to it's id. */
-    private        HashMap<HttpSession, String> sessionid = new HashMap<HttpSession, String>();
-    private        HashMap<String, SessionInfoStruct> sessioninfo = new HashMap<String, SessionInfoStruct>();
-    private        HashMap<String,HttpSession>      parentinfo     = new HashMap<String,HttpSession>();
-    private        HashMap<String,String>      parentinfo_rev = new HashMap<String,String>();
+    private HashMap<HttpSession, String> sessionid = new HashMap<HttpSession, String>();
+    private HashMap<String, SessionInfoStruct> sessioninfo = new HashMap<String, SessionInfoStruct>();
+    private HashMap<String,HttpSession> parentinfo = new HashMap<String,HttpSession>();
+    private HashMap<String,String> parentinfo_rev = new HashMap<String,String>();
     private String projectName;
     
     

@@ -36,8 +36,8 @@ public class DynamicResourceProvider implements ResourceProvider {
     
     private Logger LOG = Logger.getLogger(DynamicResourceProvider.class);
     
-    private static String DYNAMIC_SCHEME = "dynamic";
-    private static String[] supportedSchemes = {DYNAMIC_SCHEME};
+    private final static String DYNAMIC_SCHEME = "dynamic";
+    private final static String[] supportedSchemes = {DYNAMIC_SCHEME};
     
     private IncludePartsInfoFactory incInfo = new IncludePartsInfoFactory();
     

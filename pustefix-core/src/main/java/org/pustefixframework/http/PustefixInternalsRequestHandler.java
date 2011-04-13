@@ -86,9 +86,9 @@ import de.schlund.pfixxml.util.XsltVersion;
  */
 public class PustefixInternalsRequestHandler implements UriProvidingHttpRequestHandler, ServletContextAware, InitializingBean, DisposableBean {
     
-    private static Logger LOG = Logger.getLogger(PustefixInternalsRequestHandler.class);
+    private final static Logger LOG = Logger.getLogger(PustefixInternalsRequestHandler.class);
     
-    private static final String STYLESHEET = "module://pustefix-core/xsl/pfxinternals.xsl";
+    private final static String STYLESHEET = "module://pustefix-core/xsl/pfxinternals.xsl";
       
     private String handlerURI ="/pfxinternals";
     private ServletContext servletContext;

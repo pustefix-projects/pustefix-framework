@@ -31,8 +31,8 @@ package de.schlund.pfixxml.resources;
  */
 public abstract class DocrootResourceProvider implements ResourceProvider {
     
-    private static String DOCROOT_SCHEME = "docroot";
-    private static String[] supportedSchemes = {DOCROOT_SCHEME};
+    private final static String DOCROOT_SCHEME = "docroot";
+    private final static String[] supportedSchemes = {DOCROOT_SCHEME};
     
     public String[] getSupportedSchemes() {
         return supportedSchemes;

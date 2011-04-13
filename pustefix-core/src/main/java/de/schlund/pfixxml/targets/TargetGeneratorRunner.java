@@ -59,11 +59,12 @@ public class TargetGeneratorRunner {
             TargetGenerator gen = new TargetGenerator(confFile, cacheDir);
             gen.setIsGetModTimeMaybeUpdateSkipped(false);
             gen.generateAll();
-            output.write(TargetGenerator.getReportAsString());
+            output.write(gen.getReportAsString());
+            return !gen.errorsReported();
         } catch(Exception x) {
             throw new Exception("Generating targets failed", x);
         }
-        return !TargetGenerator.errorsReported();
+        
     }
     
     private static void setupDynamicIncludes(File projectConfig) throws Exception {

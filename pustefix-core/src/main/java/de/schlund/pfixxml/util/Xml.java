@@ -65,8 +65,8 @@ public class Xml {
     
     static final Logger               CAT     = Logger.getLogger(Xml.class);
     
-    private static String DEFAULT_XMLREADER = "com.sun.org.apache.xerces.internal.parsers.SAXParser";
-    private static String DEFAULT_DOCUMENTBUILDERFACTORY = "com.sun.org.apache.xerces.internal.jaxp.DocumentBuilderFactoryImpl";
+    private static final String DEFAULT_XMLREADER = "com.sun.org.apache.xerces.internal.parsers.SAXParser";
+    private static final String DEFAULT_DOCUMENTBUILDERFACTORY = "com.sun.org.apache.xerces.internal.jaxp.DocumentBuilderFactoryImpl";
     
     private static final DocumentBuilderFactory factory = createDocumentBuilderFactory();
    

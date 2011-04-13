@@ -26,7 +26,7 @@ import org.pustefixframework.util.javascript.CompressorException;
  */
 public class YUICompressorAdapter implements Compressor {
     
-    private static Logger LOG = Logger.getLogger(YUICompressorAdapter.class);
+    private final static Logger LOG = Logger.getLogger(YUICompressorAdapter.class);
     
     private final static String COMPRESSOR_CLASS = "com.yahoo.platform.yui.compressor.JavaScriptCompressor";
     private final static String REPORTER_CLASS = "org.mozilla.javascript.ErrorReporter";

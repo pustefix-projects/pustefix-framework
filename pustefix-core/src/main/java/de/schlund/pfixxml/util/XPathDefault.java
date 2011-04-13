@@ -35,7 +35,7 @@ import org.w3c.dom.NodeList;
  */
 public class XPathDefault implements XPathSupport {
 
-    private static String DEFAULT_XPATHFACTORY = "com.sun.org.apache.xpath.internal.jaxp.XPathFactoryImpl";
+    private final static String DEFAULT_XPATHFACTORY = "com.sun.org.apache.xpath.internal.jaxp.XPathFactoryImpl";
     
     XPathFactory xpathFactory;
     

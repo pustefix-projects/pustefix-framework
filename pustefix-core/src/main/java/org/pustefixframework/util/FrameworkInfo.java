@@ -9,11 +9,12 @@ import org.apache.log4j.Logger;
 
 public class FrameworkInfo {
 
-    private static Logger LOG = Logger.getLogger(FrameworkInfo.class);
+    private final static Logger LOG = Logger.getLogger(FrameworkInfo.class);
     
-    private static String version;
+    private final static String version = detectVersion();
     
-    static {
+    private static String detectVersion() {
+        String detected = null;
         try {
             URL url = FrameworkInfo.class.getProtectionDomain().getCodeSource().getLocation();
             if(url != null) {
@@ -22,14 +23,15 @@ public class FrameworkInfo {
                     if(!file.isDirectory()) {
                         JarFile jarFile = new JarFile(file);
                         Manifest manifest = jarFile.getManifest();
-                        version = manifest.getMainAttributes().getValue("Specification-Version");
+                        detected = manifest.getMainAttributes().getValue("Specification-Version");
                     }
                 }
             }
         } catch(Exception x) {
             LOG.error("Can't get Pustefix framework version", x);
         }
-        if(version == null) version = "n/a";
+        if(detected == null) detected = "n/a";
+        return detected;
     }
     
     public static String getVersion() {

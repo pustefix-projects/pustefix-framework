@@ -20,9 +20,9 @@ public class BotSessionTrackingStrategy implements SessionTrackingStrategy {
     
     private Logger LOG = Logger.getLogger(CookieSessionTrackingStrategy.class);
     
-    private static int INC_ID = 0;
+    private int INC_ID = 0;
     private static final String STORED_REQUEST = "__STORED_PFIXSERVLETREQUEST__";
-    private static String TIMESTAMP_ID = "";
+    private String TIMESTAMP_ID = "";
 
     public static final String VISIT_ID = "__VISIT_ID__";
     

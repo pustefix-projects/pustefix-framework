@@ -15,7 +15,7 @@ import de.schlund.pfixxml.resources.Resource;
 
 public class IncludePartsInfoParser {
 
-    private static Logger LOG = Logger.getLogger(IncludePartsInfoParser.class);
+    private final static Logger LOG = Logger.getLogger(IncludePartsInfoParser.class);
     
     public static IncludePartsInfo parse(Resource resource) {
         Set<String> parts = null;

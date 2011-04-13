@@ -33,7 +33,6 @@ public class URLRewriteSessionTrackingStrategy implements SessionTrackingStrateg
     private static final String CHECK_FOR_RUNNING_SSL_SESSION = "__CHECK_FOR_RUNNING_SSL_SESSION__";
     private static final String COOKIE_VALUE_SEPARATOR = "_";
     private static final String COOKIE_VALUE_SEPARATOR_OLD = ":";
-    private static int INC_ID = 0;
     private static final int MAX_PARALLEL_SEC_SESSIONS = 10;
     private static final String PARAM_FORCELOCAL = "__forcelocal";
     private static final String RAND_SESS_COOKIE_VALUE = "__RAND_SESS_COOKIE_VALUE__";
@@ -43,9 +42,10 @@ public class URLRewriteSessionTrackingStrategy implements SessionTrackingStrateg
     private static final String SESSION_COOKIES_MARKER = "__COOKIES_USED_DURING_SESSION__";
     private static final String STORED_REQUEST = "__STORED_PFIXSERVLETREQUEST__";
     private static final String TEST_COOKIE = "__PFIX_TST_";
-    private static String TIMESTAMP_ID = "";
     public static final String VISIT_ID = "__VISIT_ID__";
     
+    private int INC_ID = 0;
+    private String TIMESTAMP_ID = "";
     private SessionTrackingStrategyContext context;
     
     public void init(SessionTrackingStrategyContext context) {

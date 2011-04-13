@@ -30,11 +30,12 @@ import org.apache.log4j.Logger;
  */
 
 public class FlowStepActionFactory {
-    private final static Logger                LOG      = Logger.getLogger(FlowStepActionFactory.class);
-    private static FlowStepActionFactory instance = new FlowStepActionFactory();
-    private static String                JUMPTO   = "jumpto";
-    private static String                SETFLOW  = "setflow";
-    private static String                STOP     = "stop";
+    
+    private final static Logger LOG = Logger.getLogger(FlowStepActionFactory.class);
+    private final static FlowStepActionFactory instance = new FlowStepActionFactory();
+    private final static String JUMPTO = "jumpto";
+    private final static String SETFLOW = "setflow";
+    private final static String STOP = "stop";
     
     private FlowStepActionFactory() {}
         
