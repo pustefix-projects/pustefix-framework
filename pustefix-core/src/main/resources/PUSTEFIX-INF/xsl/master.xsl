@@ -261,19 +261,37 @@
                 </ixsl:when>
               </ixsl:choose>
             </ixsl:if>
-            <ixsl:if test="not(contains($fullname, '.'))">
-              <ixsl:choose>
-                <ixsl:when test="not(pfx:getIWrapperInfo($targetpage,$fullname))">
-                  <div style="position: absolute; color: #000000; background-color: #eeaaaa; border: solid 1px #aa8888; font-family: sans-serif; font-size:9px; font-weight: normal;" 
-                  onclick="if (event.stopPropagation) event.stopPropagation(); else if (typeof event.cancelBubble != 'undefined') event.cancelBubble = true; this.style.display='none';return false;">
-                    Warning: Unknown wrapper <b><ixsl:value-of select="$fullname"/></b> on page <b><ixsl:value-of select="$targetpage"/></b>
-                  </div>
-                </ixsl:when>
-              </ixsl:choose>
-            </ixsl:if>
           </xsl:when>
        </xsl:choose>
-    </ixsl:template>    
+    </ixsl:template>
+
+  <ixsl:template name="__formwarn_command">
+    <xsl:choose>
+      <xsl:when test="$prohibitEdit = 'no'">
+        <ixsl:param name="fullname" />
+        <ixsl:param name="targetpage" />
+
+        <ixsl:if test="not(contains($fullname, '.'))">
+          <ixsl:choose>
+            <ixsl:when test="not(pfx:getIWrapperInfo($targetpage,$fullname))">
+              <div
+                style="position: absolute; color: #000000; background-color: #eeaaaa; border: solid 1px #aa8888; font-family: sans-serif; font-size:9px; font-weight: normal;"
+                onclick="if (event.stopPropagation) event.stopPropagation(); else if (typeof event.cancelBubble != 'undefined') event.cancelBubble = true; this.style.display='none';return false;">
+                Warning: Unknown wrapper
+                <b>
+                  <ixsl:value-of select="$fullname" />
+                </b>
+                on page
+                <b>
+                  <ixsl:value-of select="$targetpage" />
+                </b>
+              </div>
+            </ixsl:when>
+          </ixsl:choose>
+        </ixsl:if>
+      </xsl:when>
+    </xsl:choose>
+  </ixsl:template>
 
       <ixsl:template match="/">
         <xsl:choose>
