@@ -35,12 +35,25 @@ public class EditorInfoParsingHandler extends CustomizationAwareParsingHandler {
     
     @Override
     protected void handleNodeIfActive(HandlerContext context) throws ParserException {
-        if(context.getRunOrder() == RunOrder.START) {
-            EditorInfo info = new EditorInfo();
-            context.getObjectTreeElement().addObject(info);
-        } else {
-            EditorInfo info = ParsingUtils.getSingleObject(EditorInfo.class, context);
-            overrideByEnvironment(info);
+        if(context.getNode().getLocalName().equals("editor")) {
+            if(context.getRunOrder() == RunOrder.START) {
+                EditorInfo info = new EditorInfo();
+                context.getObjectTreeElement().addObject(info);
+            } else {
+                EditorInfo info = ParsingUtils.getSingleObject(EditorInfo.class, context);
+                overrideByEnvironment(info);
+            }
+        } else if(context.getNode().getLocalName().equals("application")) {
+            if(context.getRunOrder() == RunOrder.START) {
+                EditorInfo info = ParsingUtils.getSingleSubObjectFromRoot(EditorInfo.class, context, false);
+                if(info == null) {
+                    info = new EditorInfo();
+                    overrideByEnvironment(info);
+                    if(info.isEnabled()) {
+                        context.getObjectTreeElement().addObject(info);
+                    }
+                }
+            }
         }
     }
     
