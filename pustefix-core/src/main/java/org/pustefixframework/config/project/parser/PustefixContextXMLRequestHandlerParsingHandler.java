@@ -179,7 +179,7 @@ public class PustefixContextXMLRequestHandlerParsingHandler extends Customizatio
         if(beanReg.isBeanNameInUse(TestRecording.class.getName())) {
             beanBuilder.addPropertyValue("testRecording", new RuntimeBeanReference(TestRecording.class.getName()));
         }
-        if(editorInfo != null) {
+        if(editorInfo != null && editorInfo.getLocation() != null) {
             beanBuilder.addPropertyValue("editorLocation", editorInfo.getLocation());
         }
         beanBuilder.addPropertyValue("checkModtime", info.getCheckModtime());
