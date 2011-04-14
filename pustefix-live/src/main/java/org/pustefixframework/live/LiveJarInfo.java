@@ -55,10 +55,12 @@ public class LiveJarInfo {
 
     private static Logger LOG = Logger.getLogger(LiveJarInfo.class);
     
-    public static final String[] DEFAULT_DOCROOT_LIVE_EXCLUSIONS = { File.separator + "WEB-INF" + File.separator + "web.xml",
-            File.separator + ".cache" + File.separator, File.separator + "core" + File.separator,
-            File.separator + "modules" + File.separator, File.separator + "wsscript" + File.separator,
-            File.separator + "wsdl" + File.separator, File.separator + ".editorbackup" + File.separator, 
+    public static final String[] DEFAULT_DOCROOT_LIVE_EXCLUSIONS = { 
+            File.separator + "WEB-INF" + File.separator + "web.xml",
+            File.separator + ".cache", 
+            File.separator + "wsscript",
+            File.separator + "wsdl", 
+            File.separator + ".editorbackup", 
             File.separator + "htdocs" + File.separator + "sitemap.xml"};
 
     public static String PROP_LIVEROOT = "pustefix.liveroot";
@@ -294,6 +296,16 @@ public class LiveJarInfo {
         checkFileModified();
         return warEntries != null && warEntries.size() > 0;
     }
+    
+    public static boolean isDefaultDocrootLiveExclusion(String path) {
+        for (String s : DEFAULT_DOCROOT_LIVE_EXCLUSIONS) {
+            if(path.startsWith(s) && 
+                    (path.equals(s) || path.substring(s.length()).startsWith(File.separator))) {
+                return true;
+            }
+        }
+        return false;
+    }
 
     /**
      * Gets the live docroot.
@@ -308,14 +320,7 @@ public class LiveJarInfo {
         checkFileModified();
 
         // TODO: excludes and includes, depending on path, per directory
-        for (String s : DEFAULT_DOCROOT_LIVE_EXCLUSIONS) {
-            if (path.startsWith(s)) {
-                if (LOG.isDebugEnabled()) {
-                    LOG.debug("  --> excluded");
-                }
-                return null;
-            }
-        }
+        if(isDefaultDocrootLiveExclusion(path)) return null;
 
         File location = rootToLocation.get(docroot);
         if (location != null || rootsWithNoLocation.contains(docroot)) {

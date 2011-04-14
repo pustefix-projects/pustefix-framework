@@ -291,7 +291,6 @@ public class TargetGenerator {
     }
 
     private boolean needsReload() {
-        System.out.println("CHECK");
         for (Resource file : configFileDependencies) {
             if (file.lastModified() > config_mtime) {
                 return true;

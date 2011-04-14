@@ -20,11 +20,8 @@ package org.pustefixframework.live;
 import java.io.File;
 import java.net.URL;
 
-import org.apache.log4j.Logger;
-
 public class LiveResolver {
 
-    private static Logger LOG = Logger.getLogger(LiveResolver.class);
     private final static String SRC_MAIN_WEBAPP = "src" + File.separator + "main" + File.separator + "webapp";
     
     private static LiveResolver instance = new LiveResolver();
@@ -102,23 +99,12 @@ public class LiveResolver {
      * @throws Exception
      */
     public URL resolveLiveModuleRoot(URL url, String path) throws Exception {
-        if (LOG.isDebugEnabled()) {
-            LOG.debug("Resolving live module root from live.xml for " + url + ":" + path);
-        }
-
         if (path.startsWith("/")) {
             path = path.substring(1);
         }
         File moduleRoot = getLiveJarInfo().getLiveModuleRoot(url, path);
         if (moduleRoot != null) {
-            if (LOG.isDebugEnabled()) {
-                LOG.debug("  --> " + moduleRoot);
-            }
             return moduleRoot.toURI().toURL();
-        }
-
-        if (LOG.isDebugEnabled()) {
-            LOG.debug("  --> not found");
         }
         return null;
     }
@@ -134,67 +120,31 @@ public class LiveResolver {
      *             the exception
      */
     public URL resolveLiveDocroot(String docroot, String path) throws Exception {
-
     	if (getLiveJarInfo().hasWarEntries() && !docroot.endsWith(SRC_MAIN_WEBAPP)) {
             // live.xml defines live folders for web applications, use this information
-            if (LOG.isDebugEnabled()) {
-                LOG.debug("Resolving live docroot from live.xml for " + docroot + ":" + path);
-            }
             File liveDocroot = getLiveJarInfo().getLiveDocroot(docroot, path);
             if (liveDocroot != null) {
-                if (LOG.isDebugEnabled()) {
-                    LOG.debug("  --> " + liveDocroot);
-                }
                 return liveDocroot.toURI().toURL();
             }
         } else if (docroot.endsWith(SRC_MAIN_WEBAPP)) {
             // Support for running webapps from source with 'mvn tomcat:run'
             // Set the target artifact directory as alternative docroot if docroot is source location
-            if (LOG.isDebugEnabled()) {
-                LOG.debug("Resolving fallback docroot for " + docroot + ":" + path);
-            }
             File dir = guessFallbackDocroot(docroot);
             if (dir != null) {
                 String fallbackDocroot = dir.getAbsolutePath();
                 if (fallbackDocroot != null
-                        && (path.startsWith(File.separator + "core" + File.separator) 
-                        		|| path.startsWith(File.separator + "modules" + File.separator) 
-                        		|| path.startsWith(File.separator + ".cache" + File.separator)
-                                || path.startsWith(File.separator + "wsscript" + File.separator) 
-                                || path.startsWith(File.separator + "wsdl" + File.separator))) {
-                    if (LOG.isDebugEnabled()) {
-                        LOG.debug("  --> " + dir);
-                    }
+                    && LiveJarInfo.isDefaultDocrootLiveExclusion(path)) {
                     return dir.toURI().toURL();
                 }
             }
         } else {
             // Support for running webapps from source with 'mvn tomcat:run-war'
             // Set the source artifact directory as alternative docroot if docroot is target location
-            if (LOG.isDebugEnabled()) {
-                LOG.debug("Resolving live docroot from source folder for " + docroot + ":" + path);
-            }
             File liveDocroot = guessLiveDocroot(docroot);
             if (liveDocroot != null) {
-
-                for (String s : LiveJarInfo.DEFAULT_DOCROOT_LIVE_EXCLUSIONS) {
-                    if (path.startsWith(s)) {
-                        if (LOG.isDebugEnabled()) {
-                            LOG.debug("  --> excluded");
-                        }
-                        return null;
-                    }
-                }
-
-                if (LOG.isDebugEnabled()) {
-                    LOG.debug("  --> " + liveDocroot);
-                }
+                if(LiveJarInfo.isDefaultDocrootLiveExclusion(path)) return null;
                 return liveDocroot.toURI().toURL();
             }
-        }
-
-        if (LOG.isDebugEnabled()) {
-            LOG.debug("  --> not found");
         }
         return null;
     }

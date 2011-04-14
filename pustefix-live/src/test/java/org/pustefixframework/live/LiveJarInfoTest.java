@@ -43,7 +43,7 @@ public class LiveJarInfoTest {
     public void setUp() throws Exception {
         Helper.cleanUp();
     }
-
+    
     @Test
     public void testInitNoLiveNoFallback() throws Exception {
         LiveJarInfo liveJarInfo = new LiveJarInfo();
@@ -182,6 +182,18 @@ public class LiveJarInfoTest {
         assertNotNull(loadedWarEntry.getDirectories());
         assertEquals(1, loadedWarEntry.getDirectories().size());
         assertTrue(loadedWarEntry.getDirectories().contains(new File(dir, "war")));
+    }
+    
+    @Test
+    public void testExclusions() {
+        assertTrue(LiveJarInfo.isDefaultDocrootLiveExclusion("/.cache"));
+        assertTrue(LiveJarInfo.isDefaultDocrootLiveExclusion("/.cache/"));
+        assertTrue(LiveJarInfo.isDefaultDocrootLiveExclusion("/.cache/foo"));
+        assertFalse(LiveJarInfo.isDefaultDocrootLiveExclusion("/.cache-x"));
+        assertFalse(LiveJarInfo.isDefaultDocrootLiveExclusion("/WEB-INF"));
+        assertFalse(LiveJarInfo.isDefaultDocrootLiveExclusion("/WEB-INF/"));
+        assertTrue(LiveJarInfo.isDefaultDocrootLiveExclusion("/WEB-INF/web.xml"));
+        assertFalse(LiveJarInfo.isDefaultDocrootLiveExclusion("/WEB-INF/web.xmlx"));
     }
 
 }
