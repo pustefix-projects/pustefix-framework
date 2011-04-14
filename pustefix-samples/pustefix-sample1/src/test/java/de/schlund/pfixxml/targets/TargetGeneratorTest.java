@@ -45,9 +45,8 @@ public class TargetGeneratorTest extends TestCase {
 
         TargetGenerator gen;
 
-        gen = create("<make project='foo' lang='bar'/>");
+        gen = create("<make project='foo' lang='bar'><navigation/></make>");
         assertEquals(0, gen.getAllTargets().size());
-        assertEquals("foo", gen.getName());
         assertEquals("bar", gen.getLanguage());
         assertNotNull(gen.getDisccachedir().toURI().getPath());
     }

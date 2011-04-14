@@ -28,7 +28,6 @@ import de.schlund.pfixxml.resources.ResourceUtil;
 import de.schlund.pfixxml.targets.Target;
 import de.schlund.pfixxml.targets.TargetGenerationException;
 import de.schlund.pfixxml.targets.TargetGenerator;
-import de.schlund.pfixxml.targets.TargetGeneratorFactory;
 
 /**
  * Helper class for the TargetGenerator benchmark utility.  
@@ -105,7 +104,7 @@ public class TargetGeneratorBenchmarkFactory {
         Thread threads[] = new Thread[numthreads];
         tgenGroup = new ThreadGroup(Thread.currentThread().getThreadGroup(), "tgen-threads");
         tgenGroup.setDaemon(true);
-        TargetGenerator tgen = TargetGeneratorFactory.getInstance().createGenerator(ResourceUtil.getFileResourceFromDocroot(dependxml));
+        TargetGenerator tgen = new TargetGenerator(ResourceUtil.getFileResourceFromDocroot(dependxml));
         for (int i=0; i < numthreads; i++) {
             threads[i] = new Thread(tgenGroup, new BenchmarkRunner(i, tgen, requestsperthread));
         }

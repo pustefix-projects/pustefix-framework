@@ -43,7 +43,6 @@ import de.schlund.pfixcore.editor2.core.spring.ProjectFactoryService;
 import de.schlund.pfixcore.editor2.core.spring.ThemeFactoryService;
 import de.schlund.pfixxml.resources.ResourceUtil;
 import de.schlund.pfixxml.targets.AuxDependency;
-import de.schlund.pfixxml.targets.AuxDependencyFactory;
 
 /**
  * Implementation of IncludePart using a DOM tree
@@ -86,7 +85,7 @@ public class IncludePartImpl extends CommonIncludePartImpl {
 
     public IncludePartThemeVariant createThemeVariant(Theme theme) throws EditorIOException, EditorParsingException, EditorSecurityException, DOMException {
         // Make sure that returned instance is in auxdep map
-        AuxDependency aux = AuxDependencyFactory.getInstance().getAuxDependencyInclude(
+        AuxDependency aux = ((ProjectImpl)projectfactory.getProject()).getTargetGenerator().getAuxDependencyFactory().getAuxDependencyInclude(
                 ResourceUtil.getResource(this.getIncludeFile().getPath()),
                 this.getName(), theme.getName());
         

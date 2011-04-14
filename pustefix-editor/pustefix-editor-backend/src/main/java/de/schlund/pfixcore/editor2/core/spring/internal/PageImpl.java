@@ -35,7 +35,6 @@ import org.pustefixframework.editor.common.dom.Variant;
 import de.schlund.pfixcore.editor2.core.spring.PustefixTargetUpdateService;
 import de.schlund.pfixcore.editor2.core.spring.TargetFactoryService;
 import de.schlund.pfixcore.editor2.core.spring.ThemeFactoryService;
-import de.schlund.pfixxml.targets.PageInfoFactory;
 import de.schlund.pfixxml.targets.TargetGenerationException;
 
 /**
@@ -189,9 +188,8 @@ public class PageImpl extends AbstractPage implements MutablePage {
     private de.schlund.pfixxml.targets.Target getPfixTarget() {
         return project.getTargetGenerator().getPageTargetTree()
                 .getTargetForPageInfo(
-                        PageInfoFactory.getInstance()
+                        project.getTargetGenerator().getPageInfoFactory()
                                 .getPage(
-                                        project.getTargetGenerator(),
                                         this.getName(),
                                         (variant == null) ? null : this.variant
                                                 .getName()));

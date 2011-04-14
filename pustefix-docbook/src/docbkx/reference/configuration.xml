@@ -1095,24 +1095,6 @@
           </para>
         </note>
         <programlisting language="xml"><![CDATA[
-      <finalizer class="AClassName"/>
-        ]]></programlisting>
-        The whole node is optional. It may only be given for a 
-        <classname>State</classname> that is either 
-        <classname>de.schlund.pfixcore.workflow.app.DefaultIWrapperState</classname> 
-        or a descendent of it.
-        The <tag class="attribute">class</tag> attribute is mandatory 
-        and denotes a class implementing 
-        <classname>de.schlund.pfixcore.workflow.app.ResdocFinalizer</classname>.
-        <caution>
-          <para>
-            The use of finalizers is not suggested most of the time! 
-            They can completely change the result document and the logic 
-            when to trigger the next step in the current page flow. Use 
-            them at your own risk. Or better: Don't use them at all.
-          </para>
-        </caution>
-        <programlisting language="xml"><![CDATA[
       <input policy="ANY|ALL|NONE">
         ]]></programlisting>
         The whole node is optional. It may only be given for a 

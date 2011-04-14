@@ -121,19 +121,6 @@ public class RemoteSearchServiceImpl implements RemoteSearchService {
         private String partname;
         private String productname;
 
-        /**
-         * @param filename
-         * @param partname
-         * @param productname
-         * @param score
-         */
-        public Hit(String filename, String partname, String productname, double score) {
-            this.filename = filename;
-            this.partname = partname;
-            this.productname = productname;
-            this.score = score;
-        }
-
         public Hit(Document lucenedoc, double score) {
             String[] token = splitPath(lucenedoc.get(PreDoc.PATH));
             this.filename = token[0];
@@ -146,32 +133,16 @@ public class RemoteSearchServiceImpl implements RemoteSearchService {
             return filename;
         }
 
-        public void setFilename(String filename) {
-            this.filename = filename;
-        }
-
         public String getPartname() {
             return partname;
-        }
-
-        public void setPartname(String partname) {
-            this.partname = partname;
         }
 
         public String getProductname() {
             return productname;
         }
 
-        public void setProductname(String productname) {
-            this.productname = productname;
-        }
-
         public double getScore() {
             return score;
-        }
-
-        public void setScore(double score) {
-            this.score = score;
         }
 
         public String getPath() {

@@ -179,6 +179,10 @@ public class TargetGenerator {
     public String getLanguage() {
         return language;
     }
+    
+    public FileResource getConfigPath() {
+        return config_path;
+    }
 
     public FileResource getDisccachedir() {
         return cacheDir;
@@ -529,7 +533,7 @@ public class TargetGenerator {
         try {
             navigation = new Navigation(config_path, getXsltVersion());
         } catch (Exception e) {
-            throw new XMLException("Error reading page navigation.");
+            throw new XMLException("Error reading page navigation.", e);
         }
         
         LOG.info("\n=====> Preliminaries took " + (System.currentTimeMillis() - start) + "ms. Now looping over " + allstructs.keySet().size() + " targets");

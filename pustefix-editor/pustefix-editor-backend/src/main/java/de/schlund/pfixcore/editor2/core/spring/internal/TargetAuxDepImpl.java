@@ -53,7 +53,6 @@ import de.schlund.pfixcore.editor2.core.spring.ProjectFactoryService;
 import de.schlund.pfixcore.editor2.core.spring.VariantFactoryService;
 import de.schlund.pfixxml.targets.AuxDependencyFile;
 import de.schlund.pfixxml.targets.PageInfo;
-import de.schlund.pfixxml.targets.TargetDependencyRelation;
 
 /**
  * Implementation of Target using the AuxDependency informationen provided by
@@ -204,7 +203,7 @@ public class TargetAuxDepImpl extends AbstractTarget {
     public Collection<Page> getAffectedPages() {
         HashSet<PageInfo> pageinfos = new HashSet<PageInfo>();
         HashSet<Page> pages = new HashSet<Page>();
-        Set<de.schlund.pfixxml.targets.Target> afftargets = TargetDependencyRelation.getInstance()
+        Set<de.schlund.pfixxml.targets.Target> afftargets = ((ProjectImpl)projectfactory.getProject()).getTargetGenerator().getTargetDependencyRelation()
                 .getAffectedTargets(auxdep);
         if (afftargets == null) {
             return pages;

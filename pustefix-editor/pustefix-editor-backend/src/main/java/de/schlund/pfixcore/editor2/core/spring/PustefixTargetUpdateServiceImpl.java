@@ -134,7 +134,7 @@ public class PustefixTargetUpdateServiceImpl extends Thread implements
             return;
         }
         synchronized (this.lock) {
-            LOG.debug("  + HighPrio target " + target.getFullName());
+            LOG.debug("  + HighPrio target " + target.getTargetKey());
             this.highPriorityQueue.add(target);
             this.lock.notifyAll();
         }
@@ -182,7 +182,7 @@ public class PustefixTargetUpdateServiceImpl extends Thread implements
                 try {
                     target.getValue();
                 } catch (TargetGenerationException e) {
-                    LOG.warn("*** Exception generating HP " + target.getFullName() + ": " + e.getMessage());
+                    LOG.warn("*** Exception generating HP " + target.getTargetKey() + ": " + e.getMessage());
                 }
                 highCopy.remove(0);
                 synchronized (this.lock) {
@@ -205,7 +205,7 @@ public class PustefixTargetUpdateServiceImpl extends Thread implements
                             needsUpdate = target.needsUpdate();
                         } catch (Exception e) {
                             // Remove target from queue without generating it
-                            LOG.warn("*** Exception checking LP " + target.getFullName() + ": " + e.getMessage());
+                            LOG.warn("*** Exception checking LP " + target.getTargetKey() + ": " + e.getMessage());
                             lowCopy.remove(0);
                             synchronized (this.lock) {
                                 this.lowPriorityQueue.remove(0);
@@ -217,7 +217,7 @@ public class PustefixTargetUpdateServiceImpl extends Thread implements
                                 target.getValue();
                             }
                         } catch (TargetGenerationException e) {
-                            LOG.warn("*** Exception generating LP " + target.getFullName() + ": " + e.getMessage());
+                            LOG.warn("*** Exception generating LP " + target.getTargetKey() + ": " + e.getMessage());
                         }
                         lowCopy.remove(0);
                         synchronized (this.lock) {

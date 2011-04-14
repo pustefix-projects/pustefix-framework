@@ -21,6 +21,8 @@ package org.pustefixframework.editor.common.dom;
 import java.util.Collection;
 import java.util.Map;
 
+import de.schlund.pfixxml.targets.TargetGenerator;
+
 /**
  * Represents a Pustefix project. A project is the top-level organization unit
  * of Pustefix. All pages belonging to a project build a functional unit, having

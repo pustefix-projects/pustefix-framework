@@ -173,7 +173,6 @@
       <resource node="togglepic" class="de.schlund.pfixcore.example.ContextTogglePic" />
     </output>
     <!-- The next properties can be set additonally for DefaultIWrapperState and descendants (default is shown) -->
-    <!-- <finalizer class="de.schlund.pfixcore.workflow.app.ResdocSimpleFinalizer"/> -->
   </pagerequest>
 
   <pagerequest name="phantom">

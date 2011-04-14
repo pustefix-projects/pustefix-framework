@@ -89,8 +89,6 @@ public class PustefixInit {
     private final static String log4jconfig = "/WEB-INF/pfixlog.xml";
 
     private long log4jmtime = -1;
-    private boolean warMode = false;
-    
     private boolean initDone;
     
     public void tryReloadLog4j() {
@@ -118,7 +116,11 @@ public class PustefixInit {
         }
     }
     
-    public void init(ServletContext servletContext) throws PustefixCoreException {
+    public PustefixInit(ServletContext servletContext) throws PustefixCoreException {
+        this(servletContext, null);
+    }
+    
+    public PustefixInit(ServletContext servletContext, String docrootstr) throws PustefixCoreException {
         
         //avoid re-initializations, e.g. when ApplicationContext is refreshed
         if(initDone) return;
@@ -131,29 +133,15 @@ public class PustefixInit {
     	    JarFileCache.setCacheDir(cacheDir);
     	}
     	
-    	// old webapps specify docroot -- true webapps don't
-    	String docrootstr = servletContext.getInitParameter("pustefix.docroot");
-    	if (docrootstr == null || docrootstr.equals("")) {
-    		docrootstr = servletContext.getRealPath("/");
-    		if (docrootstr == null) {
-    			warMode = true;
-    		}
-    	}
-    
-    	// Setup global configuration before doing anything else
-    	if (docrootstr != null) {
-    		if (!docrootstr.equals(GlobalConfig.getDocroot())) {
-    			GlobalConfigurator.setDocroot(docrootstr);
-    		}
-    	}
-    	if (warMode) {
-    		GlobalConfigurator.setServletContext(servletContext);
-    	}
-            
-    	if (docrootstr != null) {
-    		// this is for stuff that can't use the PathFactory. Should not be used
-    		// when possible...
-    		properties.setProperty("pustefix.docroot", docrootstr);
+    	if(docrootstr == null) {
+    	    docrootstr = servletContext.getRealPath("/");
+    	    if (docrootstr == null) {
+    	        GlobalConfigurator.setServletContext(servletContext);
+    	    } else {
+    	        if (!docrootstr.equals(GlobalConfig.getDocroot())) {
+    	            GlobalConfigurator.setDocroot(docrootstr);
+    	        }
+    	    }
     	}
     
     	// override environment properties by according context init parameters

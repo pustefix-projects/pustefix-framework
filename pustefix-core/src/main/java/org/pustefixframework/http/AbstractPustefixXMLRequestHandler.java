@@ -50,7 +50,6 @@ import javax.xml.transform.stream.StreamResult;
 import org.apache.log4j.Logger;
 import org.pustefixframework.config.contextxmlservice.AbstractXMLServletConfig;
 import org.pustefixframework.config.contextxmlservice.ServletManagerConfig;
-import org.pustefixframework.http.internal.PustefixInit;
 import org.w3c.dom.Document;
 
 import de.schlund.pfixcore.exception.PustefixApplicationException;
@@ -251,8 +250,6 @@ public abstract class AbstractPustefixXMLRequestHandler extends AbstractPustefix
      */
     @Override
     protected void process(PfixServletRequest preq, HttpServletResponse res) throws Exception {
-        
-        PustefixInit.tryReloadLog4j();
         
         Properties  params     = new Properties();
         HttpSession session    = preq.getSession(false);

@@ -37,8 +37,10 @@ import org.w3c.dom.Node;
 
 import de.schlund.pfixcore.editor2.core.spring.ProjectFactoryService;
 import de.schlund.pfixcore.editor2.core.spring.TargetFactoryService;
+import de.schlund.pfixcore.editor2.core.spring.internal.ProjectImpl;
 import de.schlund.pfixcore.editor2.core.spring.internal.TargetAuxDepImpl;
 import de.schlund.pfixxml.resources.ResourceUtil;
+import de.schlund.pfixxml.targets.AuxDependencyFactory;
 import de.schlund.pfixxml.targets.AuxDependencyFile;
 
 
@@ -58,7 +60,9 @@ public class RemoteTargetServiceImpl implements RemoteTargetService {
     public TargetTO getTarget(String name, boolean auxDepTarget) {
         Target target;
         if (auxDepTarget) {
-            target = targetFactoryService.getLeafTargetFromPustefixAuxDependency(new AuxDependencyFile(ResourceUtil.getResource(name)));
+            AuxDependencyFactory auxFactory = ((ProjectImpl)projectFactoryService.getProject()).getTargetGenerator().getAuxDependencyFactory();
+            AuxDependencyFile auxFile = auxFactory.getAuxDependencyFile(ResourceUtil.getResource(name));
+            target = targetFactoryService.getLeafTargetFromPustefixAuxDependency(auxFile);
         } else {
             target = projectFactoryService.getProject().getTarget(name);
         }

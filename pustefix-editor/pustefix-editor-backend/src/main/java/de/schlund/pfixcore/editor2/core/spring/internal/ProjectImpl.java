@@ -48,18 +48,15 @@ import de.schlund.pfixcore.editor2.core.spring.TargetFactoryService;
 import de.schlund.pfixcore.editor2.core.spring.ThemeFactoryService;
 import de.schlund.pfixcore.editor2.core.spring.VariantFactoryService;
 import de.schlund.pfixcore.workflow.Navigation;
-import de.schlund.pfixcore.workflow.NavigationFactory;
 import de.schlund.pfixcore.workflow.Navigation.NavigationElement;
 import de.schlund.pfixxml.event.ConfigurationChangeEvent;
 import de.schlund.pfixxml.event.ConfigurationChangeListener;
 import de.schlund.pfixxml.resources.ResourceUtil;
 import de.schlund.pfixxml.targets.AuxDependency;
-import de.schlund.pfixxml.targets.AuxDependencyFactory;
 import de.schlund.pfixxml.targets.AuxDependencyImage;
 import de.schlund.pfixxml.targets.DependencyType;
 import de.schlund.pfixxml.targets.PageInfo;
 import de.schlund.pfixxml.targets.PageTargetTree;
-import de.schlund.pfixxml.targets.TargetDependencyRelation;
 import de.schlund.pfixxml.targets.TargetGenerator;
 import de.schlund.pfixxml.targets.Themes;
 
@@ -70,6 +67,7 @@ import de.schlund.pfixxml.targets.Themes;
  * @author Sebastian Marsching <sebastian.marsching@1und1.de>
  */
 public class ProjectImpl extends AbstractProject {
+    
     private String projectName;
 
     private String projectComment;
@@ -396,7 +394,7 @@ public class ProjectImpl extends AbstractProject {
 
     private Navigation getNavigation() {
         try {
-            return NavigationFactory.getInstance().getNavigation(tgen.getConfigPath(), tgen.getXsltVersion());
+            return tgen.getNavigation();
         } catch (Exception e) {
             throw new RuntimeException(
                     "Could not get navigation object for prokec \""
@@ -406,8 +404,8 @@ public class ProjectImpl extends AbstractProject {
 
     public Collection<IncludePartThemeVariant> getAllIncludeParts() {
         HashSet<IncludePartThemeVariant> includes = new HashSet<IncludePartThemeVariant>();
-        TreeSet<AuxDependency> deps = TargetDependencyRelation.getInstance()
-                .getProjectDependenciesForType(this.tgen, DependencyType.TEXT);
+        TreeSet<AuxDependency> deps = tgen.getTargetDependencyRelation()
+                .getProjectDependenciesForType(DependencyType.TEXT);
         if (deps == null) {
             return includes;
         }
@@ -426,8 +424,8 @@ public class ProjectImpl extends AbstractProject {
 
     public Collection<Image> getAllImages() {
         HashSet<Image> images = new HashSet<Image>();
-        TreeSet<AuxDependency> deps = TargetDependencyRelation.getInstance()
-                .getProjectDependenciesForType(this.tgen, DependencyType.IMAGE);
+        TreeSet<AuxDependency> deps = tgen.getTargetDependencyRelation()
+                .getProjectDependenciesForType(DependencyType.IMAGE);
         if (deps == null) {
             return images;
         }
@@ -440,13 +438,12 @@ public class ProjectImpl extends AbstractProject {
 
     public IncludePartThemeVariant findIncludePartThemeVariant(String file,
             String part, String theme) {
-        AuxDependency auxdep = AuxDependencyFactory
-                .getInstance()
+        AuxDependency auxdep = tgen.getAuxDependencyFactory()
                 .getAuxDependencyInclude(
                         ResourceUtil.getResource(file), part, theme);
 
-        TreeSet<AuxDependency> deps = TargetDependencyRelation.getInstance()
-                .getProjectDependencies(tgen);
+        TreeSet<AuxDependency> deps = tgen.getTargetDependencyRelation()
+                .getProjectDependencies();
         if (deps == null) {
             return null;
         }
@@ -466,17 +463,10 @@ public class ProjectImpl extends AbstractProject {
     }
 
     public boolean hasIncludePart(String file, String part, String theme) {
-        AuxDependency aux = AuxDependencyFactory
-                .getInstance()
+        AuxDependency aux = tgen.getAuxDependencyFactory()
                 .getAuxDependencyInclude(
                         ResourceUtil.getResource(file), part, theme);
-        TreeSet<TargetGenerator> generators = TargetDependencyRelation.getInstance()
-                .getAffectedTargetGenerators(aux);
-        if (generators == null) {
-            return false;
-        }
-
-        return generators.contains(this.tgen);
+        return aux != null;
     }
 
     public IncludeFile getDynIncludeFile(String path) {

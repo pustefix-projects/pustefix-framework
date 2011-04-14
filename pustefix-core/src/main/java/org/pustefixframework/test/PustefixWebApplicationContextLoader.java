@@ -65,11 +65,10 @@ public class PustefixWebApplicationContextLoader implements ContextLoader {
         //Mock ServletContext
         MockServletContext servletContext = new MockServletContext();
         if(docroot==null) docroot = GlobalConfig.guessDocroot();
-        servletContext.addInitParameter("pustefix.docroot", docroot.getAbsolutePath());
         
-        //Initialize factories
+        PustefixInit pustefixInit;
         try {
-            PustefixInit.init(servletContext);
+            pustefixInit = new PustefixInit(servletContext, docroot.getAbsolutePath());
         } catch(PustefixCoreException x) {
             throw new RuntimeException("Pustfix initialization error", x);
         }
@@ -87,7 +86,7 @@ public class PustefixWebApplicationContextLoader implements ContextLoader {
         }
         
         //Set up PustefixWebApplicationContext
-        PustefixWebApplicationContext appContext = new PustefixWebApplicationContext();
+        PustefixWebApplicationContext appContext = new PustefixWebApplicationContext(pustefixInit);
         appContext.setServletContext(servletContext);
         servletContext.setAttribute(WebApplicationContext.ROOT_WEB_APPLICATION_CONTEXT_ATTRIBUTE, appContext);
         appContext.setConfigLocations(locations);

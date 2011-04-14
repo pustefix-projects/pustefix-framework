@@ -65,7 +65,6 @@ import de.schlund.pfixxml.targets.AuxDependencyManager;
 import de.schlund.pfixxml.targets.AuxDependencyTarget;
 import de.schlund.pfixxml.targets.DependencyType;
 import de.schlund.pfixxml.targets.PageInfo;
-import de.schlund.pfixxml.targets.TargetDependencyRelation;
 import de.schlund.pfixxml.targets.TargetGenerationException;
 import de.schlund.pfixxml.targets.TargetImpl;
 import de.schlund.pfixxml.targets.VirtualTarget;
@@ -265,7 +264,7 @@ public class TargetPfixImpl extends AbstractTarget {
         ArrayList<IncludePartThemeVariant> deps = new ArrayList<IncludePartThemeVariant>();
         if (this.pfixTarget instanceof VirtualTarget) {
             if (recursive) {
-                Set<AuxDependency> alldeps = TargetDependencyRelation.getInstance()
+                Set<AuxDependency> alldeps = pfixTarget.getTargetGenerator().getTargetDependencyRelation()
                         .getDependenciesForTarget(this.pfixTarget);
                 if (alldeps != null) {
                     for (Iterator<AuxDependency> i = alldeps.iterator(); i.hasNext();) {
@@ -328,7 +327,7 @@ public class TargetPfixImpl extends AbstractTarget {
         ArrayList<Image> deps = new ArrayList<Image>();
         if (this.pfixTarget instanceof VirtualTarget) {
             if (recursive) {
-                Set<AuxDependency> alldeps = TargetDependencyRelation.getInstance()
+                Set<AuxDependency> alldeps = pfixTarget.getTargetGenerator().getTargetDependencyRelation()
                         .getDependenciesForTarget(this.pfixTarget);
                 if (alldeps != null) {
                     for (Iterator<AuxDependency> i = alldeps.iterator(); i.hasNext();) {

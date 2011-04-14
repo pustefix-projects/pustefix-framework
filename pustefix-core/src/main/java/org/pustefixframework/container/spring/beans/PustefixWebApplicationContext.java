@@ -53,14 +53,27 @@ public class PustefixWebApplicationContext extends AbstractRefreshableWebApplica
 	
     private Logger LOG = Logger.getLogger(PustefixWebApplicationContext.class);
     
+    private PustefixInit pustefixInit;
+    
+    public PustefixWebApplicationContext() {
+        super();
+    }
+    
+    public PustefixWebApplicationContext(PustefixInit pustefixInit) {
+        super();
+        this.pustefixInit = pustefixInit;
+    }
+    
     @Override
     protected void loadBeanDefinitions(DefaultListableBeanFactory beanFactory) throws IOException, BeansException {
     	
-    	try {
-        	PustefixInit.init(getServletContext());
-    	} catch(PustefixCoreException x) {
-    		throw new PustefixRuntimeException("Pustefix initialization failed", x);
-    	}
+        if(pustefixInit == null) {
+            try {
+                pustefixInit = new PustefixInit(getServletContext());
+            } catch(PustefixCoreException x) {
+                throw new PustefixRuntimeException("Pustefix initialization failed", x);
+            }
+        }
     	
     	if(LOG.isInfoEnabled()) {
             Properties props = EnvironmentProperties.getProperties();

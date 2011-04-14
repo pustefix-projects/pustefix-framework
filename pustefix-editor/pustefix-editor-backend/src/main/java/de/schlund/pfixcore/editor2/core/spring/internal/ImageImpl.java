@@ -39,10 +39,8 @@ import de.schlund.pfixcore.editor2.core.spring.ProjectFactoryService;
 import de.schlund.pfixcore.editor2.core.spring.VariantFactoryService;
 import de.schlund.pfixxml.resources.ResourceUtil;
 import de.schlund.pfixxml.targets.AuxDependency;
-import de.schlund.pfixxml.targets.AuxDependencyFactory;
 import de.schlund.pfixxml.targets.PageInfo;
 import de.schlund.pfixxml.targets.Target;
-import de.schlund.pfixxml.targets.TargetDependencyRelation;
 
 public class ImageImpl extends AbstractImage {
 
@@ -71,7 +69,7 @@ public class ImageImpl extends AbstractImage {
         this.filesystem = filesystem;
         this.backup = backup;
         this.path = path;
-        this.auxdep = AuxDependencyFactory.getInstance().getAuxDependencyImage(ResourceUtil.getResource(path));
+        this.auxdep = ((ProjectImpl)projectfactory.getProject()).getTargetGenerator().getAuxDependencyFactory().getAuxDependencyImage(ResourceUtil.getResource(path));
     }
 
     public String getPath() {
@@ -81,7 +79,7 @@ public class ImageImpl extends AbstractImage {
     public Collection<Page> getAffectedPages() {
         HashSet<PageInfo> pageinfos = new HashSet<PageInfo>();
         HashSet<Page> pages = new HashSet<Page>();
-        Set<Target> afftargets = TargetDependencyRelation.getInstance()
+        Set<Target> afftargets = ((ProjectImpl)projectfactory.getProject()).getTargetGenerator().getTargetDependencyRelation()
                 .getAffectedTargets(this.auxdep);
         if (afftargets == null) {
             return pages;
