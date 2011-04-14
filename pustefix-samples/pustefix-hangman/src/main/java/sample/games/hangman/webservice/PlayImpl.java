@@ -8,10 +8,10 @@ public class PlayImpl implements Play {
 
     private ContextPlay contextPlay;
     
-    public ContextPlay guess(String ch) {
+    public ContextPlay guess(char ch) {
 
         if(!contextPlay.isCompleted()) {
-            contextPlay.guess(ch.charAt(0));
+            contextPlay.guess(ch);
         }
         return contextPlay;
     }

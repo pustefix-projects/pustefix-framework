@@ -4,6 +4,6 @@ import sample.games.hangman.context.ContextPlay;
 
 public interface Play {
 
-    public ContextPlay guess(String ch);
+    public ContextPlay guess(char ch);
     
 }

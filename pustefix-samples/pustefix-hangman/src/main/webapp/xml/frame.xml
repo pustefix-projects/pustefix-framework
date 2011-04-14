@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
-<pfx:document xmlns:pfx="http://www.schlund.de/pustefix/core" xmlns:ixsl="http://www.w3.org/1999/XSL/Transform">
-  <!-- put the frame markup your pages have in common here -->
+<pfx:document xmlns:pfx="http://www.schlund.de/pustefix/core" 
+              xmlns:ixsl="http://www.w3.org/1999/XSL/Transform">
   <html>
     <head>
       <title><pfx:include href="txt/common.xml" part="title"/> - <ixsl:value-of select="$page"/></title>
@@ -23,7 +23,7 @@
           <pfx:maincontent prefix=""/>
           <pfx:editconsole webserviceconsole="true"/>
         </div>
-      </div>  
+      </div>
     </body>
   </html>
 </pfx:document>
