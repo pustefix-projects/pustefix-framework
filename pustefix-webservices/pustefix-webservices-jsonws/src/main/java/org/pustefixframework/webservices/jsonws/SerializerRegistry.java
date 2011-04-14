@@ -31,6 +31,7 @@ import org.pustefixframework.webservices.jsonws.serializers.ArraySerializer;
 import org.pustefixframework.webservices.jsonws.serializers.BeanSerializer;
 import org.pustefixframework.webservices.jsonws.serializers.BooleanSerializer;
 import org.pustefixframework.webservices.jsonws.serializers.CalendarSerializer;
+import org.pustefixframework.webservices.jsonws.serializers.CharacterSerializer;
 import org.pustefixframework.webservices.jsonws.serializers.EnumSerializer;
 import org.pustefixframework.webservices.jsonws.serializers.ListSerializer;
 import org.pustefixframework.webservices.jsonws.serializers.MapSerializer;
@@ -74,6 +75,8 @@ public class SerializerRegistry {
         serializers.put(Calendar.class,ser);
         serializers.put(GregorianCalendar.class,ser);
         serializers.put(Date.class,ser);
+        
+        serializers.put(Character.class, new CharacterSerializer());
       
     }
     

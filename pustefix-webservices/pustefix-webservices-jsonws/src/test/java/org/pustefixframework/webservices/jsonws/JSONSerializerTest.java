@@ -57,6 +57,7 @@ public class JSONSerializerTest {
         TestBean bean=new TestBean();
         bean.setText("test");
         bean.setValue(7);
+        bean.setLetter('A');
         List<String> strList=new ArrayList<String>();
         strList.add("foo");
         strList.add("bar");
