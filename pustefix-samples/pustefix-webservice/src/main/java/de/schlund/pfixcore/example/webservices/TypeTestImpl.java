@@ -49,6 +49,14 @@ public class TypeTestImpl implements TypeTest {
         return val;
     }
     
+    public char echoChar(char val) {
+        return val;
+    }
+    
+    public Character echoCharacter(Character val) {
+        return val;
+    }
+    
     public short echoShort(short val) {
         return val;
     }
