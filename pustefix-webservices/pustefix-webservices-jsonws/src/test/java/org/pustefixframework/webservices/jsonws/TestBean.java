@@ -25,8 +25,10 @@ import java.util.Map;
  * @author mleidig@schlund.de
  */
 public class TestBean {
+    
     private int value;
     private String text;
+    private char letter;
     private List<String> strList;
     private List<List<Integer>> intList;
     private Map<String,String> strMap;
@@ -47,6 +49,14 @@ public class TestBean {
     
     public void setText(String text) {
         this.text=text;
+    }
+    
+    public char getLetter() {
+        return letter;
+    }
+    
+    public void setLetter(char letter) {
+        this.letter = letter;
     }
     
     public List<String> getStrList() {

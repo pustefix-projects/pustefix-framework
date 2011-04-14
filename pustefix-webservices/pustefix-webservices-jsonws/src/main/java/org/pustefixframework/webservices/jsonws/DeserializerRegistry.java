@@ -30,6 +30,7 @@ import org.pustefixframework.webservices.jsonws.deserializers.ArrayDeserializer;
 import org.pustefixframework.webservices.jsonws.deserializers.BeanDeserializer;
 import org.pustefixframework.webservices.jsonws.deserializers.BooleanDeserializer;
 import org.pustefixframework.webservices.jsonws.deserializers.CalendarDeserializer;
+import org.pustefixframework.webservices.jsonws.deserializers.CharacterDeserializer;
 import org.pustefixframework.webservices.jsonws.deserializers.EnumDeserializer;
 import org.pustefixframework.webservices.jsonws.deserializers.NumberDeserializer;
 import org.pustefixframework.webservices.jsonws.deserializers.StringDeserializer;
@@ -74,7 +75,10 @@ public class DeserializerRegistry {
         deser=new CalendarDeserializer();
         deserializers.put(Calendar.class,deser);
         deserializers.put(Date.class,deser);
-        
+        deser=new CharacterDeserializer();
+        deserializers.put(char.class,deser);
+        deserializers.put(Character.class,deser);
+       
     }
     
     public Deserializer getDeserializer(Class<?> clazz) {
