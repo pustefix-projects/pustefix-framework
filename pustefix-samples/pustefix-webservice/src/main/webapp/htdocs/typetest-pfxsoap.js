@@ -119,7 +119,37 @@ function serviceCall() {
         var t2=(new Date()).getTime();
         consolePrint("echoByteObj",(t2-t1),ex);
     }
+
+    if(!soapEnabled()) {
+    
+    //echoChar
+    var t1=(new Date()).getTime();
+    try {
+        var charVal='\"';
+        var resVal=ws.echoChar(charVal);
+        var t2=(new Date()).getTime();
+        if(resVal!=charVal) throw "Wrong result";
+        consolePrint("echoChar",(t2-t1));
+    } catch(ex) {
+        var t2=(new Date()).getTime();
+        consolePrint("echoChar",(t2-t1),ex);
+    }
         
+    //echoCharacter
+    var t1=(new Date()).getTime();
+    try {
+        var charVal='\'';
+        var resVal=ws.echoCharacter(charVal);
+        var t2=(new Date()).getTime();
+        if(resVal!=charVal) throw "Wrong result";
+        consolePrint("echoCharacter",(t2-t1));
+    } catch(ex) {
+        var t2=(new Date()).getTime();
+        consolePrint("echoCharacter",(t2-t1),ex);
+    }
+    
+    }
+    
     //echoShort
     var t1=(new Date()).getTime();
     try {
