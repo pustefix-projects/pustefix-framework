@@ -6,6 +6,7 @@
   <artifactId>pustefixframework</artifactId>
   <version>0.16.8-SNAPSHOT</version>
   <packaging>pom</packaging>
+
   <name>Pustefix Framework</name>
   <url>http://pustefix-framework.org</url>
   <description>Pustefix Web Application Framework</description>
