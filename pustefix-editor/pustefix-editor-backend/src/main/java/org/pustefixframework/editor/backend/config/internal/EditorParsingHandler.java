@@ -50,6 +50,7 @@ public class EditorParsingHandler extends CustomizationAwareParsingHandler {
         } catch (NoSuchElementException e) {
             // No editor configuration in this configuration file
             editorConfig = new EditorConfig(); 
+            editorConfig.setEnabled(false);
         }
         overrideByEnvironment(editorConfig);
         if (!editorConfig.isEnabled()) {
