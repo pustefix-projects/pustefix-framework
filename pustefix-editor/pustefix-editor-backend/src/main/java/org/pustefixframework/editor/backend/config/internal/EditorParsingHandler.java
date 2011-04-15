@@ -49,7 +49,7 @@ public class EditorParsingHandler extends CustomizationAwareParsingHandler {
             editorConfig = context.getObjectTreeElement().getObjectsOfTypeFromSubTree(EditorConfig.class).iterator().next();
         } catch (NoSuchElementException e) {
             // No editor configuration in this configuration file
-            return;
+            editorConfig = new EditorConfig();
         }
         overrideByEnvironment(editorConfig);
         if (!editorConfig.isEnabled()) {
