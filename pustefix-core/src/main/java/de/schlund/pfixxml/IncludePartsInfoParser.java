@@ -1,9 +1,9 @@
 package de.schlund.pfixxml;
 
+import java.io.IOException;
 import java.util.HashSet;
 import java.util.Set;
 
-import org.apache.log4j.Logger;
 import org.xml.sax.Attributes;
 import org.xml.sax.InputSource;
 import org.xml.sax.SAXException;
@@ -14,26 +14,35 @@ import org.xml.sax.helpers.XMLReaderFactory;
 import de.schlund.pfixxml.resources.Resource;
 
 public class IncludePartsInfoParser {
-
-    private final static Logger LOG = Logger.getLogger(IncludePartsInfoParser.class);
+ 
+    public static IncludePartsInfo parse(Resource resource) throws IncludePartsInfoParsingException {
+        InputSource in = new InputSource();
+        try {
+            in.setByteStream(resource.getInputStream());
+            in.setSystemId(resource.toURI().toASCIIString());
+            IncludePartsInfo info = parse(resource);
+            info.setLastMod(resource.lastModified());
+            return info;
+        } catch(IOException x) {
+            throw new IncludePartsInfoParsingException(resource.toURI().toString(), x);
+        }
+    }
     
-    public static IncludePartsInfo parse(Resource resource) {
+    public static IncludePartsInfo parse(InputSource source) throws IncludePartsInfoParsingException {
         Set<String> parts = null;
         try {
             XMLReader xr = XMLReaderFactory.createXMLReader();
             Handler handler = new Handler();
             xr.setContentHandler(handler);
             xr.setErrorHandler(handler);
-            InputSource in = new InputSource();
-            in.setByteStream(resource.getInputStream());
-            in.setSystemId(resource.toURI().toASCIIString());
-            xr.parse(in);
+            xr.parse(source);
             parts = handler.getParts();
-        } catch(Exception x) {
-            LOG.warn("Error reading include parts: " + resource.toURI().toString(), x);
+        } catch(IOException x) {
+            throw new IncludePartsInfoParsingException(source.getSystemId(), x);
+        } catch(SAXException x) {
+            throw new IncludePartsInfoParsingException(source.getSystemId(), x);
         }
         IncludePartsInfo info = new IncludePartsInfo();
-        info.setLastMod(resource.lastModified());
         info.setParts(parts);
         return info;
     }

@@ -17,7 +17,7 @@ public class IncludePartsInfoFactory {
         if(mode != null && !mode.equals("prod")) reloadable = true;
     }
     
-    public boolean containsPart(Resource resource, String part) {
+    public boolean containsPart(Resource resource, String part) throws IncludePartsInfoParsingException {
         String uri = resource.toURI().toString();
         IncludePartsInfo info = urisToInfo.get(uri);
         if(info == null || (reloadable && (info.getLastMod() < resource.lastModified()))) {

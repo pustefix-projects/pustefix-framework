@@ -25,6 +25,7 @@ import org.apache.log4j.Logger;
 
 import de.schlund.pfixcore.util.ModuleInfo;
 import de.schlund.pfixxml.IncludePartsInfoFactory;
+import de.schlund.pfixxml.IncludePartsInfoParsingException;
 import de.schlund.pfixxml.util.URIParameters;
 
 /**
@@ -212,8 +213,12 @@ public class DynamicResourceProvider implements ResourceProvider {
     }
  
     private boolean containsPart(Resource res, String part) throws ResourceProviderException {
-        boolean ret = incInfo.containsPart(res, part);
-        return ret;
+        try {
+            return incInfo.containsPart(res, part);
+        } catch(IncludePartsInfoParsingException x) {
+            LOG.warn("Checking existence of part '" + part + "' in resource '" + res.toURI().toString() + "' failed.", x);
+            return false;
+        }
     }
     
 }

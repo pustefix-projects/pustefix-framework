@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="UTF-8"?><include_parts xmlns:ixsl="http://www.w3.org/1999/XSL/Transform" xmlns:pfx="http://www.schlund.de/pustefix/core">
+  <part name="aaa">
+    <theme name="default">
+      xyz
+    </theme>
+  </part>
+  <part name="bbb" render="true"">
+  </part>
+  <!--
+  <part name="ccc">
+    <theme name="default">
+      xyz
+    </theme>
+  </part>
+  -->
+  <part name="ddd">
+    <theme name="default"/>
+  </part>
+</include_parts>
