@@ -11,8 +11,26 @@
       <ixsl:if test="/formresult/play/@completed='false'">
       	<buttons/>
       </ixsl:if>
-      <show-messages/>
-      <br/>
+      <div class="message">
+        <ixsl:choose>
+          <ixsl:when test="/formresult/play/@completedFaulty='true'">
+            <pfx:include part="failure"/>
+          </ixsl:when>
+          <ixsl:when test="/formresult/play/@completedSuccessful='true'">
+            <ixsl:choose>
+              <ixsl:when test="/formresult/score/@topScore='true'">
+                <pfx:include part="successhigh"/>
+              </ixsl:when>
+              <ixsl:otherwise>
+                <pfx:include part="success"/>
+              </ixsl:otherwise>
+            </ixsl:choose>
+          </ixsl:when>
+          <ixsl:otherwise>
+            <pfx:include part="choose"/>
+          </ixsl:otherwise>
+        </ixsl:choose>
+      </div>
       <pfx:button page="NewPlay"><pfx:include part="new"/></pfx:button>
     </theme>
   </part>
@@ -34,6 +52,42 @@
       <script type="text/javascript" src="{$__contextpath}/modules/pustefix-webservices-jsonws/script/webservice_json.js"></script>
       <pfx:wsscript name="Play"/>
       <script type="text/javascript" src="{$__contextpath}/script/play.js"></script>
+    </theme>
+  </part>
+  
+  <part name="choose">
+    <theme name="default">
+      Please choose a letter.
+    </theme>
+    <theme name="de">
+      Bitte wähle einen Buchstaben aus.
+    </theme>
+  </part>
+  
+  <part name="failure">
+    <theme name="default">
+      You have lost. The searched word was <b><ixsl:value-of select="/formresult/play/@word"/></b>.
+    </theme>
+    <theme name="de">
+      Du hast verloren. Das gesuchte Wort war <b><ixsl:value-of select="/formresult/play/@word"/></b>.
+    </theme>
+  </part>
+  
+  <part name="success">
+    <theme name="default">
+      You have won!
+    </theme>
+    <theme name="de">
+      Du hast gewonnen!
+    </theme>
+  </part>
+  
+  <part name="successhigh">
+    <theme name="default">
+      You have won and made it into the <pfx:button page="Highscore">highscore</pfx:button>!!!
+    </theme>
+    <theme name="de">
+      Du hast gewonnen und es in die <pfx:button page="Highscore">Rangliste geschafft</pfx:button>!!!
     </theme>
   </part>
   

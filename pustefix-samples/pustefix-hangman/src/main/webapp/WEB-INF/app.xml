@@ -10,6 +10,7 @@
   <context defaultpage="Home">
     <resource bean-name="contextUser" class="sample.games.hangman.context.ContextUser"/>
     <resource bean-name="contextPlay" class="sample.games.hangman.context.ContextPlay"/>
+    <resource bean-name="contextScore" class="sample.games.hangman.context.ContextScore"/>
     <resource bean-name="contextSettings" class="sample.games.hangman.context.ContextSettings"/>
   </context>
 
@@ -41,6 +42,7 @@
     </input>
     <output>
       <resource node="play" bean-ref="contextPlay"/>
+      <resource node="score" bean-ref="contextScore"/>
     </output>
   </pagerequest>
   
@@ -51,6 +53,7 @@
   <pagerequest name="Highscore">
     <output>
       <resource node="highscore" bean-ref="highscore"/>
+      <resource node="score" bean-ref="contextScore"/>
     </output>
   </pagerequest>
 

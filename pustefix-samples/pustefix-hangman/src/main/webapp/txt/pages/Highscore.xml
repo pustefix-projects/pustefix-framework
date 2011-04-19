@@ -18,6 +18,7 @@
                 <ixsl:when test="position() mod 2 = 1">odd</ixsl:when>
                 <ixsl:otherwise>even</ixsl:otherwise>
               </ixsl:choose>
+              <ixsl:if test="/formresult/score/lastScore/@id = @id"> selrow</ixsl:if>
             </ixsl:attribute>
             <td><ixsl:value-of select="@player"/></td>
             <td>
@@ -29,7 +30,7 @@
                 </pfx:part>
               </pfx:include>
             </td>
-            <td align="right"><ixsl:value-of select="@tries"/></td>
+            <td align="right"><ixsl:value-of select="@misses"/></td>
             <td align="right"><ixsl:value-of select="format-number(@time div 1000, '#')"/></td>
           </tr>
         </ixsl:for-each>

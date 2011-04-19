@@ -31,24 +31,43 @@ public class HighScore implements ServletContextAware, Serializable, Initializin
         deserialize();
     }
     
-    public synchronized int addScore(Score score) {
+    public synchronized boolean addScore(Score score) {
         scores.add(score);
+        score.setId(generateId());
         if(scores.size() > MAX_SIZE) scores.remove(scores.last());
-        int ind = -1;
         for(Score s: scores) {
-            ind++;
-            if(score == s) {
+            if(s == score) {
                 serialize();
-                return ind;
+                return true;
             }
         }
-        return -1;
+        return false;
     }
     
     public synchronized Score[] getScores() {
         return scores.toArray(new Score[scores.size()]);
     }
+    
+    public synchronized boolean contains(Score score) {
+        return scores.contains(score);
+    }
 
+    private long generateId() {
+        long id = System.currentTimeMillis();
+        boolean used;
+        do {
+            used = false;
+            for(Score s: scores) {
+                if(s.getId() == id) {
+                    used = true;
+                    id++;
+                    break;
+                }
+            }
+        } while(used);
+        return id;
+    }
+    
     private void serialize() {
         try {
             File tmpDir = (File)servletContext.getAttribute("javax.servlet.context.tempdir");

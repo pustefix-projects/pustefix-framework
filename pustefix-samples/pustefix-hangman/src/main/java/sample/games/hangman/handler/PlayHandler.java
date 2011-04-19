@@ -6,8 +6,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import sample.games.hangman.Dictionary;
 import sample.games.hangman.HighScore;
 import sample.games.hangman.Score;
-import sample.games.hangman.StatusCodes;
 import sample.games.hangman.context.ContextPlay;
+import sample.games.hangman.context.ContextScore;
 import sample.games.hangman.context.ContextSettings;
 import sample.games.hangman.context.ContextUser;
 import sample.games.hangman.wrapper.Play;
@@ -22,28 +22,25 @@ public class PlayHandler implements IHandler {
     private ContextSettings contextSettings;
     private Dictionary dictionary;
     private HighScore highScore;
+    private ContextScore contextScore;
     
     public void handleSubmittedData(Context context, IWrapper wrapper) throws Exception {
 
         Play play = (Play)wrapper;
-        if(!contextPlay.isCompleted()) {
-            char ch = play.getLetter().charAt(0);
-            contextPlay.guess(ch);
-            if(contextPlay.isCompletedFaulty()) {
-                context.addPageMessage(StatusCodes.FAILURE, new String[] {contextPlay.getWord()}, null);
-                context.prohibitContinue();
-            } else if(contextPlay.isCompletedSuccessful()) {
-                int rank = highScore.addScore(new Score(contextPlay.getTime(), contextPlay.getMisses(),
-                        dictionary.getDifficultyLevel(contextPlay.getWord()), contextUser.getName()));
-                if(rank > -1) context.addPageMessage(StatusCodes.SUCCESS_HIGH, null, null);
-                else context.addPageMessage(StatusCodes.SUCCESS, null , null);
-                context.prohibitContinue();
-            }
+        char ch = play.getLetter().charAt(0);
+        contextPlay.guess(ch);
+
+        if(contextPlay.isCompletedSuccessful()) {
+            Score score = new Score(contextPlay.getTime(), contextPlay.getMisses(), 
+                                        contextPlay.getLevel(), contextUser.getName());
+            boolean topScore = highScore.addScore(score);
+            contextScore.setLastScore(score);
+            contextScore.setTopScore(topScore);
         }
     }
 
     public boolean isActive(Context context) throws Exception {
-        return contextUser.getName() != null && contextSettings.getDifficultyLevel() != null;
+        return true;
     }
 
     public boolean needsData(Context context) throws Exception {
@@ -51,14 +48,16 @@ public class PlayHandler implements IHandler {
     }
 
     public boolean prerequisitesMet(Context context) throws Exception {
-        return true;
+        return contextUser.getName() != null && contextSettings.getDifficultyLevel() != null;
     }
 
     public void retrieveCurrentStatus(Context context, IWrapper wrapper) throws Exception {
         if(contextPlay.getWord() == null) {
             String word = dictionary.getRandomWord(contextSettings.getLocale(), contextSettings.getDifficultyLevel());
             contextPlay.setWord(word);
+            contextPlay.setLevel(contextSettings.getDifficultyLevel());
             contextPlay.start();
+            contextScore.reset();
         }
     }
 
@@ -85,6 +84,11 @@ public class PlayHandler implements IHandler {
     @Autowired
     public void setHighScore(HighScore highScore) {
         this.highScore = highScore;
+    }
+    
+    @Autowired
+    public void setContextScore(ContextScore contextScore) {
+        this.contextScore = contextScore;
     }
     
 }

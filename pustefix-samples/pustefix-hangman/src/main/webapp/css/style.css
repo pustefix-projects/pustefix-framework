@@ -39,6 +39,9 @@ span.error {
   padding: 2px;
 }
 
+div.message {
+	padding-bottom: 15px;
+}
 
 div.field_caption {
   font-weight: bold;
@@ -146,4 +149,9 @@ tr.odd {
 
 tr.even {
   background: #eee;
+}
+
+tr.selrow {
+  background: #444;
+  color: #fff;
 }
