@@ -1,9 +1,12 @@
 package sample.games.hangman.context;
 
+import sample.games.hangman.DifficultyLevel;
+
 
 public class ContextPlay {
    
 	private String word;
+	private DifficultyLevel level;
 	private String displayWord;
 	private int misses;
 	private long startTime;
@@ -11,6 +14,7 @@ public class ContextPlay {
 	
 	public void reset() {
 	    word = null;
+	    level = null;
 	    displayWord = null;
 	    misses = 0;
 	    startTime = 0;
@@ -20,9 +24,18 @@ public class ContextPlay {
 	public String getWord() {
 		return word;
 	}
+	
 	public void setWord(String word) {
 		this.word = word;
 		setDisplayWord(word.replaceAll("." , "_"));
+	}
+	
+	public DifficultyLevel getLevel() {
+	    return level;
+	}
+	
+	public void setLevel(DifficultyLevel level) {
+	    this.level = level;
 	}
 	
 	public void setDisplayWord(String displayWord) {
@@ -46,7 +59,9 @@ public class ContextPlay {
         }
         setDisplayWord(sb.toString());
         if(!ok) misses++;
-        if(isCompletedSuccessful()) end();
+        if(isCompletedSuccessful()) {
+            end();
+        }
 	}
 	
 	public int getMisses() {
@@ -77,5 +92,5 @@ public class ContextPlay {
 	    if(startTime == 0) return 0;
 	    return (endTime == 0 ? System.currentTimeMillis() : endTime) - startTime;
 	}
-	    
+	
 }

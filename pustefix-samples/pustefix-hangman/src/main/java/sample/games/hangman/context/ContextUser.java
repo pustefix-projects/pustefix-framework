@@ -1,6 +1,7 @@
 package sample.games.hangman.context;
 
 
+
 public class ContextUser {
 
 	private String name;
@@ -8,9 +9,9 @@ public class ContextUser {
 	public String getName() {
 		return name;
 	}
-    
+	
 	public void setName(String name) {
 		this.name = name;
 	}
-
+	
 }
