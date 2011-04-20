@@ -42,55 +42,55 @@ public class DynamicResourceProvider implements ResourceProvider {
     private Map<String, List<String>> commonOverrideDirs = new HashMap<String, List<String>>();
     
     public DynamicResourceProvider() {
-    	readCommonOverrideConfig();
+        readCommonOverrideConfig();
     }
     
     private void readCommonOverrideConfig() {
-    	URL docrootURL = GlobalConfig.getDocrootAsURL();
-    	URL propURL;
-		try {
-			propURL = new URL(docrootURL, "projects/common/conf/common-override.conf");
-		} catch (MalformedURLException x) {
-			String msg = "Illegal URL for common override configuration";
-			LOG.error(msg + ": " + x.getMessage(), x);
-			throw new RuntimeException(msg, x);
-		}
-    	InputStream in = null;
-		try {
-			in = propURL.openStream();
-		} catch (FileNotFoundException x) {
-			//ignore because configuration file is optional
-		} catch (IOException x) {
-			String msg = "Can't read common override configuration";
-			LOG.error(msg + ": " + x.getMessage(), x);
-			throw new RuntimeException(msg, x);
-		}
-    	if(in != null) {
-    		Properties props = new Properties();
-    		try {
-    			props.load(in);
-    		} catch (IOException x) {
-    			String msg = "Can't read common override configuration";
-    			LOG.error(msg + ": " + x.getMessage(), x);
-    			throw new RuntimeException(msg, x);
-    		}
-    		LOG.info("Read common override configuration");
-    		Enumeration<?> e = props.propertyNames();
-    		while(e.hasMoreElements()) {
-    			String project = (String)e.nextElement();
-    			String value = props.getProperty(project);
-    			String[] dirs = value.split("\\s*,\\s*");
-    			List<String> dirList = new ArrayList<String>();
-    			for(String dir:dirs) {
-    				if(dir.startsWith("/")) dir = dir.substring(1);
-    				if(dir.endsWith("/")) dir = dir.substring(0, dir.length()-1);
-    				dirList.add(dir);
-    				if(LOG.isInfoEnabled())
-    					LOG.info("Add common override directory '" + dir +"' for project '" + project + "'");
-    			}
-    			commonOverrideDirs.put(project, dirList);
-    		}
-    	}
+        URL docrootURL = GlobalConfig.getDocrootAsURL();
+        URL propURL;
+        try {
+            propURL = new URL(docrootURL, "projects/common/conf/common-override.conf");
+        } catch (MalformedURLException x) {
+            String msg = "Illegal URL for common override configuration";
+            LOG.error(msg + ": " + x.getMessage(), x);
+            throw new RuntimeException(msg, x);
+        }
+        InputStream in = null;
+        try {
+            in = propURL.openStream();
+        } catch (FileNotFoundException x) {
+            //ignore because configuration file is optional
+        } catch (IOException x) {
+            String msg = "Can't read common override configuration";
+            LOG.error(msg + ": " + x.getMessage(), x);
+            throw new RuntimeException(msg, x);
+        }
+        if(in != null) {
+            Properties props = new Properties();
+            try {
+                props.load(in);
+            } catch (IOException x) {
+                String msg = "Can't read common override configuration";
+                LOG.error(msg + ": " + x.getMessage(), x);
+                throw new RuntimeException(msg, x);
+            }
+            LOG.info("Read common override configuration");
+            Enumeration<?> e = props.propertyNames();
+            while(e.hasMoreElements()) {
+                String project = (String)e.nextElement();
+                String value = props.getProperty(project);
+                String[] dirs = value.split("\\s*,\\s*");
+                List<String> dirList = new ArrayList<String>();
+                for(String dir:dirs) {
+                    if(dir.startsWith("/")) dir = dir.substring(1);
+                    if(dir.endsWith("/")) dir = dir.substring(0, dir.length()-1);
+                    dirList.add(dir);
+                    if(LOG.isInfoEnabled())
+                        LOG.info("Add common override directory '" + dir +"' for project '" + project + "'");
+                }
+                commonOverrideDirs.put(project, dirList);
+            }
+        }
     
     }
     
@@ -141,24 +141,37 @@ public class DynamicResourceProvider implements ResourceProvider {
         //search in common override directories
         List<String> overrideDirs = commonOverrideDirs.get(project);
         if(overrideDirs != null) {
-        	for(String overrideDir:overrideDirs) {
-		        for(String theme:themes) {
-		            try {
-		                String uriPath = uri.getPath();
-		                uriPath = uriPath.replace("THEME", theme);
-		                URI  prjUri = new URI("pfixroot:/"+overrideDir+uriPath);
-		                if(LOG.isDebugEnabled()) LOG.debug("trying "+prjUri.toString());
-		                Resource resource = ResourceUtil.getFileResource(prjUri);
-		                resource.setOriginatingURI(uri);
-		                if(resource.exists()) {
-		                    if(part == null) return resource;
-		                    if(containsPart(resource, part)) return resource;
-		                }
-		            } catch(URISyntaxException x) {
-		                throw new ResourceProviderException("Error while searching common override resource: " + uri, x);
-		            }
-		        }
-        	}
+            for(String overrideDir:overrideDirs) {
+                for(String theme:themes) {
+                    try {
+                        if(overrideDir.startsWith("module://")) {
+                            String uriPath = uri.getPath();
+                            uriPath = uriPath.replace("THEME", theme);
+                            URI modUri = new URI(overrideDir + uriPath);
+                            if(LOG.isDebugEnabled()) LOG.debug("trying "+modUri.toString());
+                            Resource resource = ResourceUtil.getResource(modUri);
+                            if(resource.exists()) {
+                                resource.setOriginatingURI(uri);
+                                if(part==null) return resource;
+                                if(containsPart(resource, part)) return resource;
+                            }
+                        } else {
+                            String uriPath = uri.getPath();
+                            uriPath = uriPath.replace("THEME", theme);
+                            URI  prjUri = new URI("pfixroot:/"+overrideDir+uriPath);
+                            if(LOG.isDebugEnabled()) LOG.debug("trying "+prjUri.toString());
+                            Resource resource = ResourceUtil.getFileResource(prjUri);
+                            resource.setOriginatingURI(uri);
+                            if(resource.exists()) {
+                                if(part == null) return resource;
+                                if(containsPart(resource, part)) return resource;
+                            }
+                        }
+                    } catch(URISyntaxException x) {
+                        throw new ResourceProviderException("Error while searching common override resource: " + uri, x);
+                    }
+                }
+            }
         }
         
         //search in common
