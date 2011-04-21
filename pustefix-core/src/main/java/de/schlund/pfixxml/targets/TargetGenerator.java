@@ -54,6 +54,7 @@ import org.xml.sax.helpers.XMLReaderFactory;
 import de.schlund.pfixcore.util.Meminfo;
 import de.schlund.pfixcore.workflow.Navigation;
 import de.schlund.pfixxml.IncludeDocumentFactory;
+import de.schlund.pfixxml.IncludePartsInfoFactory;
 import de.schlund.pfixxml.XMLException;
 import de.schlund.pfixxml.config.CustomizationHandler;
 import de.schlund.pfixxml.config.EnvironmentProperties;
@@ -130,6 +131,7 @@ public class TargetGenerator {
     private TargetFactory targetFactory;
     private SharedLeafFactory sharedLeafFactory;
     private PageInfoFactory pageInfoFactory;
+    private IncludePartsInfoFactory includePartsInfo;
 
     //--
 
@@ -147,6 +149,7 @@ public class TargetGenerator {
         targetFactory = new TargetFactory();
         sharedLeafFactory = new SharedLeafFactory();
         pageInfoFactory = new PageInfoFactory();
+        includePartsInfo = new IncludePartsInfoFactory();
         //TODO: factory init on reload
         Meminfo meminfo = new Meminfo();
         meminfo.print("TG: Before loading " + confile.toString());
@@ -654,6 +657,11 @@ public class TargetGenerator {
         if(comps.length>2) module = comps[2];
         String search = "";
         if(comps.length>3) search = comps[3];
+        
+        String uri = "";
+        if(module.equals(""))
+        includePartsInfo.getIncludePartsInfo(resource);
+        
         
         Themes themes = global_themes;
                 

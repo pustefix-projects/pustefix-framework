@@ -18,13 +18,19 @@ public class IncludePartsInfoFactory {
     }
     
     public boolean containsPart(Resource resource, String part) throws IncludePartsInfoParsingException {
+        IncludePartsInfo info = getIncludePartsInfo(resource);
+        if(info != null) return info.getParts().contains(part);
+        return false;
+    }
+    
+    public IncludePartsInfo getIncludePartsInfo(Resource resource) throws IncludePartsInfoParsingException {
         String uri = resource.toURI().toString();
         IncludePartsInfo info = urisToInfo.get(uri);
         if(info == null || (reloadable && (info.getLastMod() < resource.lastModified()))) {
             info = IncludePartsInfoParser.parse(resource);
             urisToInfo.put(uri, info);
         }
-        return info.getParts().contains(part);
+        return info;
     }
     
 }

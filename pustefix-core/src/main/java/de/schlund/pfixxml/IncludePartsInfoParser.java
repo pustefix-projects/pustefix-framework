@@ -20,7 +20,7 @@ public class IncludePartsInfoParser {
         try {
             in.setByteStream(resource.getInputStream());
             in.setSystemId(resource.toURI().toASCIIString());
-            IncludePartsInfo info = parse(resource);
+            IncludePartsInfo info = parse(in);
             info.setLastMod(resource.lastModified());
             return info;
         } catch(IOException x) {
@@ -29,21 +29,21 @@ public class IncludePartsInfoParser {
     }
     
     public static IncludePartsInfo parse(InputSource source) throws IncludePartsInfoParsingException {
-        Set<String> parts = null;
+        Handler handler;
         try {
             XMLReader xr = XMLReaderFactory.createXMLReader();
-            Handler handler = new Handler();
+            handler = new Handler();
             xr.setContentHandler(handler);
             xr.setErrorHandler(handler);
             xr.parse(source);
-            parts = handler.getParts();
         } catch(IOException x) {
             throw new IncludePartsInfoParsingException(source.getSystemId(), x);
         } catch(SAXException x) {
             throw new IncludePartsInfoParsingException(source.getSystemId(), x);
         }
         IncludePartsInfo info = new IncludePartsInfo();
-        info.setParts(parts);
+        info.setParts(handler.getParts());
+        info.setRenderParts(handler.getRenderParts());
         return info;
     }
     
@@ -52,9 +52,14 @@ public class IncludePartsInfoParser {
         private int level;
         private boolean isIncludeParts;
         private Set<String> parts = new HashSet<String>();
+        private Set<String> renderParts = new HashSet<String>();
         
         public Set<String> getParts() {
             return parts;
+        }
+        
+        public Set<String> getRenderParts() {
+            return renderParts;
         }
         
         @Override
@@ -70,6 +75,13 @@ public class IncludePartsInfoParser {
                     if(part != null) {
                         part = part.trim();
                         parts.add(part);
+                        String render = attributes.getValue("render");
+                        if(render != null) {
+                            render = render.trim();
+                            if(render.equalsIgnoreCase("true")) {
+                                renderParts.add(part);
+                            }
+                        }
                     }
                 }
             }
