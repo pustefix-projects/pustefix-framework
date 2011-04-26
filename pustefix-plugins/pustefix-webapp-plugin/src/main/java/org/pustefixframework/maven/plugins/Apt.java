@@ -45,14 +45,14 @@ public class Apt {
     
     public Apt(File basedir, File preprocessDir, Log log) {
         this.basedir = basedir;
-        this.srcDir = new File(basedir, "src/main/java");
-        this.destDir = new File(basedir, "target/classes");
+        this.srcDir = new File(basedir, "src" + File.separator + "main" + File.separator + "java");
+        this.destDir = new File(basedir, "target" + File.separator + "classes");
         this.preprocessDir = preprocessDir;
         this.log = log;
     }
 
     public int execute(String classpath) throws MojoExecutionException {
-        File lastRunFile = new File(basedir, "target/.lastaptrun");
+        File lastRunFile = new File(basedir, "target" + File.separator + ".lastaptrun");
         long lastRun = lastRunFile.lastModified();
         List<File> modified = getModifiedFiles(lastRun);
         if (modified.size() > 0) {
@@ -121,7 +121,6 @@ public class Apt {
             builder.directory(basedir);
             builder.redirectErrorStream(true);
             Process process = builder.start();
-            int ret = process.waitFor();
             InputStream in = process.getInputStream();
             StringBuilder sb = new StringBuilder();
             if(in != null) {
@@ -135,6 +134,11 @@ public class Apt {
                     in.close();
                 }
             }
+            // Input Stream handling is necessary before calling process.waitFor() to prevent,
+            // that this process will go on forever in windows:
+            // http://www.javaworld.com/javaworld/jw-12-2000/jw-1229-traps.html?
+            int ret = process.waitFor();
+
             if(ret == 0) {
                 log.debug(sb.toString());
             } else {
@@ -148,4 +152,6 @@ public class Apt {
         }
         filelist.delete();
     }
+    
+    
 }

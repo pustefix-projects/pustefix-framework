@@ -86,13 +86,13 @@ public class PustefixStatuscodeMojo extends AbstractMojo {
         
         //automatically detect docroot and module if not already set
         if(docRoot == null) {
-            File webappDir = new File(project.getBasedir(), "src/main/webapp");
+            File webappDir = new File(project.getBasedir(), "src" + File.separator + "main" + File.separator + "webapp");
             if(webappDir.exists()) {
                 docRoot = webappDir;
             } else {
                 if(module == null) module = getModuleName();
                 if(module != null) {
-                    docRoot = new File(project.getBasedir(), "src/main/resources/PUSTEFIX-INF");
+                    docRoot = new File(project.getBasedir(), "src" + File.separator + "main" + File.separator + "resources" + File.separator + "PUSTEFIX-INF");
                 }
             }
         }
@@ -133,7 +133,7 @@ public class PustefixStatuscodeMojo extends AbstractMojo {
     
     private String getModuleName() throws MojoExecutionException {
         String name = null;
-        File descriptor = new File(project.getBasedir(), "src/main/resources/META-INF/pustefix-module.xml");
+        File descriptor = new File(project.getBasedir(), "src" + File.separator + "main" + File.separator + "resources" + File.separator + "META-INF" + File.separator + "pustefix-module.xml");
         if(descriptor.exists()) {
             try {
                 DocumentBuilderFactory dbf = DocumentBuilderFactory.newInstance(); 

@@ -21,6 +21,6 @@ import org.apache.log4j.xml.DOMConfigurator;
 
 public class Logging {
     public static void configure(String file) {
-        DOMConfigurator.configure(Logging.class.getResource("pustefix/logging/" + file));
+        DOMConfigurator.configure(Logging.class.getResource("pustefix/logging/"+ file));
     }   
 }

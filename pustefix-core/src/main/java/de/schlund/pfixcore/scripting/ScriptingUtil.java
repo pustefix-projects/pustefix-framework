@@ -141,7 +141,7 @@ public class ScriptingUtil {
             FileResource file = ResourceUtil.getFileResourceFromDocroot(relativePath);
             script = copy(file.getInputStream());
             
-            fileCache.put(relativePath, new Tupel<Long, String>(new Long(file.lastModified()), script));
+            fileCache.put(relativePath, new Tupel<Long, String>(Long.valueOf(file.lastModified()), script));
             
         }
         

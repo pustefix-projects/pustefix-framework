@@ -35,6 +35,7 @@ import org.xml.sax.SAXParseException;
 import org.xml.sax.helpers.DefaultHandler;
 
 import de.schlund.pfixcore.exception.PustefixRuntimeException;
+import de.schlund.pfixcore.util.FileUriTransformer;
 import de.schlund.pfixxml.resources.FileResource;
 import de.schlund.pfixxml.resources.ResourceUtil;
 
@@ -180,7 +181,10 @@ public class CustomizationHandler extends DefaultHandler {
         this.namespaceContent = namespaceContent;
         this.targetHandler = targetHandler;
         Properties props = new Properties(environmentProps);
+        // Beware of org.apache.log4j.helpers.OptionConverter.convertSpecialChars(String s),
+        // it deletes all \\ !!! So it's impossible to use a windows path here. 
         String docroot = GlobalConfig.getDocroot() + "/";
+        docroot = FileUriTransformer.getUriWithoutWindowsDriveSpecifier(docroot);
         if (docroot != null) {
             props.setProperty("docroot", docroot);
         }

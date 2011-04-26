@@ -64,10 +64,10 @@ public class ToBoolean extends SimpleCheck implements IWrapperParamCaster {
         for (int i = 0; i < param.length; i++) {
             String tmp = param[i].getValue();
             if (tmp.equals("true") || tmp.equals("1") || tmp.equals("yes")) {
-                val = new Boolean(true);
+                val = Boolean.valueOf(true);
                 out.add(val);
             } else if (tmp.equals("false") || tmp.equals("0") || tmp.equals("no")) {
-                val = new Boolean(false);
+                val = Boolean.valueOf(false);
                 out.add(val);
             } else {
                 val = null;

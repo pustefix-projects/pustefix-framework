@@ -41,18 +41,22 @@ public class JarFileURLConnectionTest extends TestCase {
         JarURLConnection con = (JarURLConnection)url.openConnection();
         JarURLConnection conFile = new JarFileURLConnection(url);
         Assert.assertEquals(con.getLastModified(), con.getLastModified());
-        ZipException error = null;
+        boolean error = false;
         try {
             con.getJarFile();
         } catch(ZipException x) {
-            error = x;
+            error = true;
+        } catch(FileNotFoundException x) {
+        	error = true;
         }
         assertNotNull(error);
-        error = null;
+        error = false;
         try {
             conFile.getJarFile();
         } catch(ZipException x) {
-            error = x;
+            error = true;
+        } catch(FileNotFoundException x) {
+        	error = true;
         }
         assertNotNull(error);
     }

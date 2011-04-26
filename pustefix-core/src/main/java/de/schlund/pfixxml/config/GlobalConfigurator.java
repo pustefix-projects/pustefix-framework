@@ -40,10 +40,12 @@ public class GlobalConfigurator {
      *             trailing slash.
      */
     public static void setDocroot(String path) {
-        if (!path.startsWith("/")) {
+    	//A absolute Linux path always starts with a "/", 
+    	//a absolute windows path has always a ":" as second char.
+        if (!path.startsWith("/") && path.charAt(1) != ':') {
             throw new IllegalArgumentException("Path has to be absolute");
         }
-        if (path.endsWith("/")) {
+        if (path.endsWith("/") || path.endsWith("\\")) {
             path = path.substring(0, path.length() - 1);
         }
         GlobalConfig.setDocroot(path);

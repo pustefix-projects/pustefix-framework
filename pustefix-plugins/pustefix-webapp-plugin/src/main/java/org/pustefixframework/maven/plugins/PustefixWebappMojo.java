@@ -51,7 +51,7 @@ public class PustefixWebappMojo extends AbstractMojo {
     /**
      * Docroot of the application
      * 
-     * @parameter default-value="${project.build.directory}/${project.artifactId}-${project.version}"
+     * @parameter default-value="${project.build.directory}${file.separator}${project.artifactId}-${project.version}"
      */
     private String docroot;
     
@@ -83,7 +83,7 @@ public class PustefixWebappMojo extends AbstractMojo {
      */
     public void execute() throws MojoExecutionException {
         File basedir;
-
+        
         // allow plugin declaration in parent pom
         if ("pom".equals(project.getPackaging())) {
             return;
@@ -108,7 +108,7 @@ public class PustefixWebappMojo extends AbstractMojo {
         result = new StringBuilder();
         for (String path : pathStrings(pluginClasspath)) {
             if (result.length() > 0) {
-                result.append(':');
+                result.append(File.pathSeparatorChar);
             } 
             result.append(path);
         }

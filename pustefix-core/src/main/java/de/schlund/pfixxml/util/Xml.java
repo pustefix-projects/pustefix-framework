@@ -56,6 +56,7 @@ import org.xml.sax.SAXParseException;
 import org.xml.sax.XMLReader;
 import org.xml.sax.helpers.XMLReaderFactory;
 
+import de.schlund.pfixcore.util.FileUriTransformer;
 import de.schlund.pfixxml.SPDocument;
 import de.schlund.pfixxml.resources.FileResource;
 import de.schlund.pfixxml.resources.ModuleResource;
@@ -170,8 +171,7 @@ public class Xml {
     }
 
     private static String toUri(File file) {
-        // TODO: file.toURI returns single-slash.uri ...
-        return "file://" + file.getAbsolutePath();
+        return FileUriTransformer.getFileUriWithoutWindowsDriveSpecifier(file);
     }
 
     public static Document parse(XsltVersion xsltVersion, Source input) throws TransformerException {
@@ -337,10 +337,15 @@ public class Xml {
         dest.write('\n');
 
         dest.close();
-        if (!tmpfile.renameTo(finalfile)) {
+
+        // tmpfile.renameTo(finalfile) fails on windows, because of the different
+        // file locking handling on windows.
+        try {
+			FileUtils.copyFile(tmpfile, finalfile);
+		} catch (IOException e) {
             throw new RuntimeException("Could not rename temporary file '" +
                     tmpfile + "' to file '" + finalfile + "'!");
-        }
+		}
     }
     
     public static void serialize(Node node, OutputStream dest, boolean pp, boolean decl) throws IOException {
