@@ -78,15 +78,7 @@ public class Xslt {
             throw new RuntimeException(e);
         }
     }
-    
-    /**
-     * @deprecated Use {@link #loadTemplates(FileResource)} instead
-     */
-    @Deprecated
-    public static Templates loadTemplates(Path path) throws TransformerConfigurationException {
-        return loadTemplates(XsltVersion.XSLT1, new InputSource("file://" + path.resolve().getAbsolutePath()), null);
-    }
-    
+   
     public static Templates loadTemplates(XsltVersion xsltVersion, Resource path) throws TransformerConfigurationException {
         return loadTemplates(xsltVersion, path, null);
     }
