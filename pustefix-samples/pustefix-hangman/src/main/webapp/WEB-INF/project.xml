@@ -2,24 +2,25 @@
 <project-config xmlns="http://www.pustefix-framework.org/2008/namespace/project-config"
                 xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
                 xsi:schemaLocation="http://www.pustefix-framework.org/2008/namespace/project-config 
-                                    http://www.pustefix-framework.org/2008/namespace/project-config.xsd">
+                                    http://www.pustefix-framework.org/2008/namespace/project-config-0_16.xsd">
 
   <project>
     <name>hangman</name>
-    <description>Pustefix Basic Application</description>
+    <description>Pustefix Hangman Sample Application</description>
   </project>
 
+  <!-- 
   <editor>
     <enabled>true</enabled>
     <location>http://cms.${fqdn}/</location>
     <secret>foobar</secret>
   </editor>
+  -->
 
   <xml-generator>
     <config-file>docroot:/WEB-INF/depend.xml</config-file>
     <choose>
       <when test="$mode='prod'">
-        <!-- Set this to false if you want to skip the check for changed stylesheets on every request -->
         <check-modtime>false</check-modtime>
       </when>
     </choose>
@@ -41,9 +42,14 @@
       </choose>
     </context-xml-service>
 
+    <webservice-service>
+      <config-file>docroot:/WEB-INF/webservice.xml</config-file>
+    </webservice-service>
+
     <static>
       <path>css</path>
       <path>img</path>
+      <path>script</path>
     </static>
     
     <choose>
@@ -56,11 +62,5 @@
     </choose>
 
   </application>
-  
-  <!-- 
-  <properties>
-  
-  </properties>
-  -->
-  
+
 </project-config>

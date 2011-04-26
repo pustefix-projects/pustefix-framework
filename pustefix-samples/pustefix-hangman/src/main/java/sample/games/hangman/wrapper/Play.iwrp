@@ -10,10 +10,5 @@
       <cparam name="regexp" value="/[A-Z]/"/>
     </precheck>
   </param>
-  
-  <param name="reset" type="java.lang.Boolean">
-    <default><value>false</value></default> 
-    <caster class="de.schlund.pfixcore.generator.casters.ToBoolean"/>
-  </param>
 
 </interface>

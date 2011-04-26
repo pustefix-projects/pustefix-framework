@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
-<include_parts xmlns:ixsl="http://www.w3.org/1999/XSL/Transform" xmlns:pfx="http://www.schlund.de/pustefix/core">
+<include_parts xmlns:ixsl="http://www.w3.org/1999/XSL/Transform" 
+               xmlns:pfx="http://www.schlund.de/pustefix/core">
   
   <part name="title">
     <theme name="default">Hangman</theme>
@@ -9,10 +10,46 @@
   <part name="powered_by">
     <theme name="default">
       Powered by Pustefix Framework <ixsl:value-of select="pfx:getFrameworkVersion()"/>
+      
     </theme>
     <theme name="de">
       Erstellt mit Pustefix Framework <ixsl:value-of select="pfx:getFrameworkVersion()"/>
     </theme>
+  </part>
+  
+  <part name="player">
+    <theme name="default">Player</theme>
+    <theme name="de">Spieler</theme>
+  </part>
+  
+  <part name="level">
+    <theme name="default">Difficulty level</theme>
+    <theme name="de">Schwierigkeitsgrad</theme>
+  </part>
+  
+  <part name="misses">
+    <theme name="default">Misses</theme>
+    <theme name="de">Fehlversuche</theme>
+  </part>
+  
+  <part name="time">
+    <theme name="default">Time (in s)</theme>
+    <theme name="de">Dauer (in s)</theme>
+  </part>
+  
+  <part name="beginner">
+    <theme name="default">Beginner</theme>
+    <theme name="de">Anfänger</theme>
+  </part>
+  
+  <part name="advanced">
+    <theme name="default">Advanced</theme>
+    <theme name="de">Fortgeschrittener</theme>
+  </part>
+  
+  <part name="expert">
+    <theme name="default">Expert</theme>
+    <theme name="de">Experte</theme>
   </part>
   
 </include_parts>

@@ -12,6 +12,10 @@
     <match>/p:project-config</match>
   </handler>
   
+  <handler class="org.pustefixframework.config.project.parser.EditorInfoParsingHandler">
+    <match>/p:project-config/p:application</match>
+  </handler>
+  
   <!-- Adds handler mapping bean -->
   <handler class="org.pustefixframework.config.project.parser.PustefixHandlerMappingParsingHandler">
     <match>/p:project-config/p:application</match>
@@ -80,7 +84,7 @@
   </handler>
   
   <!-- Saves editor info -->
-  <handler class="org.pustefixframework.config.project.parser.EditorInfoParsingHandler">
+  <handler class="org.pustefixframework.config.project.parser.EditorInfoParsingHandler" run-order="both">
     <match>/p:project-config/p:editor</match>
   </handler>
   

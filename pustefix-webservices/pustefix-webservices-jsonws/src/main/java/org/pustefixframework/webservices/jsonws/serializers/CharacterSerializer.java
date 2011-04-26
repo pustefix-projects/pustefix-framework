@@ -16,21 +16,30 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  */
 
-package org.pustefixframework.config.project;
+package org.pustefixframework.webservices.jsonws.serializers;
+
+import java.io.IOException;
+import java.io.Writer;
+
+import org.pustefixframework.webservices.json.ParserUtils;
+import org.pustefixframework.webservices.jsonws.SerializationContext;
+import org.pustefixframework.webservices.jsonws.SerializationException;
+import org.pustefixframework.webservices.jsonws.Serializer;
+
 
 /**
- * Stores URL of editor frontend  
- * 
- * @author Sebastian Marsching <sebastian.marsching@1und1.de>
+ * @author mleidig@schlund.de
  */
-public class EditorLocation {
-    private String location;
+public class CharacterSerializer extends Serializer {
     
-    public EditorLocation(String location) {
-        this.location = location;
+    @Override
+    public Object serialize(SerializationContext ctx,Object obj) throws SerializationException {
+        return obj;
     }
     
-    public String getLocation() {
-        return this.location;
+    @Override
+    public void serialize(SerializationContext ctx,Object obj,Writer writer) throws SerializationException,IOException {
+        writer.write(ParserUtils.jsonEscape(String.valueOf(obj)));
     }
+
 }

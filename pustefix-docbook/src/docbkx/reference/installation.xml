@@ -80,12 +80,10 @@
     <title>Generating a new project from a Maven archetype</title>
     <para>
       Pustefix provides an archetype for creating a basic application. Just call <literal>mvn archetype:generate</literal>
-      and select the archetype <literal>pustefix-archetype-basic</literal>. You only have to specifiy the
-      <literal>archetypeCatalog</literal> parameter if you didn't globally setup the Pustefix Maven repository like 
-      described in the last section.
+      and select the archetype <literal>pustefix-archetype-basic</literal>.
     </para>
     <screen>
-      $ mvn archetype:generate -DarchetypeCatalog=http://pustefix-framework.org/repository/maven/archetype-catalog.xml</screen>
+      $ mvn archetype:generate</screen>
     <para>
       After choosing the <literal>pustefix-archetype-basic</literal> Maven will ask you for your project's <literal>groupId</literal>, 
       <literal>artifactId</literal>, <literal>version</literal> and <literal>package</literal>.
@@ -93,12 +91,12 @@
       and located within the current working directory.
     </para>
     <screen>
-      $ cd myproject
-      $ mvn tomcat:run</screen>
+      $ cd myapp
+      $ mvn tomcat:run-war</screen>
     <para>
       The generated project is a standard Maven project with <literal>war</literal> packaging type, i.e. you can immediately build and
       run your application, e.g. using Tomcat by calling <literal>mvn tomcat:run</literal> or <literal>mvn tomcat:run-war</literal> and
-      opening <literal>http://localhost:8080/myproject</literal> in your browser.
+      opening <literal>http://localhost:8080/myapp</literal> in your browser.
     </para>
   </section>
   <section xml:id="gettingstarted.ide">

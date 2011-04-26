@@ -18,19 +18,56 @@
 
 package org.pustefixframework.config.project.parser;
 
+import java.util.Properties;
+
 import org.pustefixframework.config.customization.CustomizationAwareParsingHandler;
+import org.pustefixframework.config.generic.ParsingUtils;
 import org.pustefixframework.config.project.EditorInfo;
 
+import com.marsching.flexiparse.configuration.RunOrder;
 import com.marsching.flexiparse.parser.HandlerContext;
 import com.marsching.flexiparse.parser.exception.ParserException;
+
+import de.schlund.pfixxml.config.EnvironmentProperties;
 
 
 public class EditorInfoParsingHandler extends CustomizationAwareParsingHandler {
     
     @Override
     protected void handleNodeIfActive(HandlerContext context) throws ParserException {
-        EditorInfo info = new EditorInfo();
-        context.getObjectTreeElement().addObject(info);
+        if(context.getNode().getLocalName().equals("editor")) {
+            if(context.getRunOrder() == RunOrder.START) {
+                EditorInfo info = new EditorInfo();
+                context.getObjectTreeElement().addObject(info);
+            } else {
+                EditorInfo info = ParsingUtils.getSingleObject(EditorInfo.class, context);
+                overrideByEnvironment(info);
+            }
+        } else if(context.getNode().getLocalName().equals("application")) {
+            if(context.getRunOrder() == RunOrder.START) {
+                EditorInfo info = ParsingUtils.getSingleSubObjectFromRoot(EditorInfo.class, context, false);
+                if(info == null) {
+                    info = new EditorInfo();
+                    overrideByEnvironment(info);
+                    if(info.isEnabled()) {
+                        context.getObjectTreeElement().addObject(info);
+                    }
+                }
+            }
+        }
+    }
+    
+    private void overrideByEnvironment(EditorInfo editorInfo) {
+        Properties envProps = EnvironmentProperties.getProperties();
+        String val = envProps.getProperty("editor.enabled");
+        if(val != null) {
+            boolean enabled = Boolean.parseBoolean(val);
+            editorInfo.setEnabled(enabled);
+        }
+        val = envProps.getProperty("editor.location");
+        if(val != null) {
+            editorInfo.setLocation(val);
+        }
     }
     
 }
