@@ -1,27 +1,18 @@
 package de.schlund.pfixxml;
 
-import java.util.Set;
+import java.util.Map;
 
 public class IncludePartsInfo {
     
-    private Set<String> parts;
-    private Set<String> renderParts;
+    private Map<String, IncludePartInfo> parts;
     private long lastMod;
     
-    public void setParts(Set<String> parts) {
+    public void setParts(Map<String, IncludePartInfo> parts) {
         this.parts = parts;
     }
     
-    public void setRenderParts(Set<String> renderParts) {
-        this.renderParts = renderParts;
-    }
-    
-    public Set<String> getParts() {
+    public Map<String, IncludePartInfo> getParts() {
         return parts;
-    }
-    
-    public Set<String> getRenderParts() {
-        return renderParts;
     }
     
     public void setLastMod(long lastMod) {

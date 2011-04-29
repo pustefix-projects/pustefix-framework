@@ -167,7 +167,7 @@ public abstract class VirtualTarget extends TargetImpl {
     @Override
     public void storeValue(Object obj) {
         SPCache<Object,Object> cache = null;
-        if(getTargetKey().contains("$")) {
+        if(TargetGenerator.isRenderKey(getTargetKey())) {
             cache = generator.getCacheFactory().getRenderCache();
         } else {
             cache = generator.getCacheFactory().getCache();
@@ -203,7 +203,7 @@ public abstract class VirtualTarget extends TargetImpl {
     @Override
     protected Object getValueFromSPCache() {
         SPCache<Object,Object> cache = null;
-        if(getTargetKey().contains("$")) {
+        if(TargetGenerator.isRenderKey(getTargetKey())) {
             cache = generator.getCacheFactory().getRenderCache();
         } else {
             cache = generator.getCacheFactory().getCache();

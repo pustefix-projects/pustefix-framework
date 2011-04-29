@@ -215,9 +215,9 @@ public class DynamicResourceProvider implements ResourceProvider {
     private boolean containsPart(Resource res, String part) throws ResourceProviderException {
         try {
             return incInfo.containsPart(res, part);
-        } catch(IncludePartsInfoParsingException x) {
-            LOG.warn("Checking existence of part '" + part + "' in resource '" + res.toURI().toString() + "' failed.", x);
-            return false;
+        } catch (IncludePartsInfoParsingException e) {
+            throw new ResourceProviderException("Error while trying to check existence of include " +
+                    "part '" + part + "' in " + "resource '" + res.toURI() + "'.", e);
         }
     }
     

@@ -1,6 +1,8 @@
 package de.schlund.pfixxml;
 
 import java.io.StringWriter;
+import java.net.URI;
+import java.net.URISyntaxException;
 
 import javax.xml.transform.Result;
 import javax.xml.transform.Templates;
@@ -13,6 +15,7 @@ import de.schlund.pfixcore.workflow.context.RequestContextImpl;
 import de.schlund.pfixxml.targets.Target;
 import de.schlund.pfixxml.targets.TargetGenerator;
 import de.schlund.pfixxml.util.Xslt;
+import de.schlund.pfixxml.util.XsltContext;
 
 
 public class RenderExtension {
@@ -23,15 +26,20 @@ public class RenderExtension {
             String part, String module, String search, Node node, RequestContextImpl requestContext, 
             RenderContext renderContext) throws Exception {
 
-        String renderKey = TargetGenerator.createRenderKey(href, part, module, search);
+        if(href.startsWith("/")) href = href.substring(1);
+        
+        String cacheKey = href + "#" + part + "#" + module + "#" + search;
             
         long t1 = System.currentTimeMillis();
             
-        Templates style = renderContext.getTemplates(renderKey);
+        Templates style = renderContext.getTemplates(cacheKey);
         if(style == null) {
-            Target target = targetGenerator.getTarget(renderKey);
+            Target target = targetGenerator.getRenderTarget(href, part, module, search, requestContext.getVariant());
+            long f1 = System.currentTimeMillis();
             style = (Templates)target.getValue();
-            renderContext.setTemplates(renderKey, style);
+            long f2 = System.currentTimeMillis();
+            System.out.println("FFFFFFFFFFFFFF: "+(f2-f1));
+            renderContext.setTemplates(cacheKey, style);
         }
             
         long t2 = System.currentTimeMillis();
@@ -45,7 +53,7 @@ public class RenderExtension {
         renderContext.profile(t2 - t1, t3 - t2);
         if(LOG.isDebugEnabled()) {
             StringBuilder sb = new StringBuilder();
-            sb.append(renderKey).append("|").append(t2 - t1)
+            sb.append(cacheKey).append("|").append(t2 - t1)
                 .append("|").append(t3 - t2);
             LOG.debug(sb.toString());
         }
@@ -56,4 +64,8 @@ public class RenderExtension {
 
     }
 	
+    public static final String getSystemId(XsltContext context) {
+        return context.getSystemId();
+    }
+    
 }

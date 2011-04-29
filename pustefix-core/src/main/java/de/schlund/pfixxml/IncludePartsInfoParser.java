@@ -1,7 +1,9 @@
 package de.schlund.pfixxml;
 
 import java.io.IOException;
+import java.util.HashMap;
 import java.util.HashSet;
+import java.util.Map;
 import java.util.Set;
 
 import org.xml.sax.Attributes;
@@ -43,7 +45,6 @@ public class IncludePartsInfoParser {
         }
         IncludePartsInfo info = new IncludePartsInfo();
         info.setParts(handler.getParts());
-        info.setRenderParts(handler.getRenderParts());
         return info;
     }
     
@@ -51,15 +52,10 @@ public class IncludePartsInfoParser {
         
         private int level;
         private boolean isIncludeParts;
-        private Set<String> parts = new HashSet<String>();
-        private Set<String> renderParts = new HashSet<String>();
+        private Map<String, IncludePartInfo> includePartInfos = new HashMap<String, IncludePartInfo>();
         
-        public Set<String> getParts() {
-            return parts;
-        }
-        
-        public Set<String> getRenderParts() {
-            return renderParts;
+        public Map<String, IncludePartInfo> getParts() {
+            return includePartInfos;
         }
         
         @Override
@@ -71,17 +67,26 @@ public class IncludePartsInfoParser {
                 }
             } else if(level == 2 && isIncludeParts) {
                 if(localName.equals("part")) {
-                    String part = attributes.getValue("name");
-                    if(part != null) {
-                        part = part.trim();
-                        parts.add(part);
-                        String render = attributes.getValue("render");
-                        if(render != null) {
-                            render = render.trim();
-                            if(render.equalsIgnoreCase("true")) {
-                                renderParts.add(part);
-                            }
+                    String partName = attributes.getValue("name");
+                    if(partName != null) {
+                        partName = partName.trim();
+                        boolean render = false;
+                        String val = attributes.getValue("render");
+                        if(val != null) {
+                            render = Boolean.parseBoolean(val);
                         }
+                        String[] variants = null;
+                        val = attributes.getValue("render-variants");
+                        if(val != null) {
+                            val = val.trim();
+                            variants = val.split("\\s+");
+                        }
+                        Set<String> variantSet = new HashSet<String>();
+                        if(variants != null) {
+                            for(String variant: variants) variantSet.add(variant);
+                        }
+                        IncludePartInfo info = new IncludePartInfo(partName, render, variantSet);
+                        includePartInfos.put(partName, info);
                     }
                 }
             }

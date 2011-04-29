@@ -1,15 +1,43 @@
 <?xml version="1.0" encoding="UTF-8"?><include_parts xmlns:ixsl="http://www.w3.org/1999/XSL/Transform" xmlns:pfx="http://www.schlund.de/pustefix/core">
   
-  <part name="appname">
+  <part name="appname" render="true">
     <theme name="default">
       Sample1
     </theme>
   </part>
+  
+  <part name="header" render="true">
+    <theme name="default">
+      <table class="header">
+        <tr>
+          <td class="logo">
+            <pfx:image src="img/logo.png"/>
+          </td>
+          <td class="name">
+            <div class="desc">Pustefix playground webapp</div>
+            <div class="name"><pfx:include part="appname"/></div>
+          </td>
+          <td class="navi"><pfx:include href="txt/navigation.xml" part="top"/></td>
+          <td class="rev">Powered by Pustefix Framework <ixsl:value-of select="pfx:getFrameworkVersion()"/></td>
+        </tr>
+      </table>
+    </theme>
+  </part>
 
-  <part name="content">
+  <part name="content" render="true">
     <theme name="default">
       <h1>XSL Component</h1>
       PAGE: <ixsl:value-of select="$page"/>
+      <pfx:render part="foo"/>
+    </theme>
+  </part>
+  
+  <part name="foo" render="true" render-variants="foo">
+    <theme name="default">
+      FFFFFFFOOOOOOOOOOOOOOOO
+    </theme>
+    <theme name="foo">
+      fffffffffffffffffffffooooooooooooooooooooooooooo
     </theme>
   </part>
 

@@ -21,20 +21,18 @@ import de.schlund.pfixxml.resources.ResourceUtil;
 
 public class IncludeFileFinder {
     
-    public static void find() throws Exception {
-        
-        IncludePartsInfoFactory incFactory = new IncludePartsInfoFactory();
+    public static void find(IncludeFileVisitor visitor) throws Exception {
         
         //Find render includes in webapp
         if(GlobalConfig.getDocroot() != null) {
             File docroot = new File(GlobalConfig.getDocroot());
             File folder = new File(docroot, "txt");
-            if(folder.exists()) find(folder, incFactory);
+            if(folder.exists()) find(folder, visitor);
             folder = new File(docroot, "xml");
-            if(folder.exists()) find(folder, incFactory);
+            if(folder.exists()) find(folder, visitor);
         } else if(GlobalConfig.getServletContext() != null) {
-            find("/txt/", GlobalConfig.getServletContext(), incFactory);
-            find("/xml/", GlobalConfig.getServletContext(), incFactory);
+            find("/txt/", GlobalConfig.getServletContext(), visitor);
+            find("/xml/", GlobalConfig.getServletContext(), visitor);
         }
         
         //Find render includes in modules
@@ -55,11 +53,7 @@ public class IncludeFileFinder {
                         if(!entry.isDirectory()) {
                             String uri = "module://" + desc.getName() + "/" + entry.getName().substring(13);
                             Resource res = ResourceUtil.getResource(uri);
-                            IncludePartsInfo info = incFactory.getIncludePartsInfo(res);
-                            Set<String> renderParts = info.getRenderParts();
-                            for(String renderPart: renderParts) {
-                                System.out.println("RENDER: " + res.toString() + " " +renderPart);
-                            }
+                            visitor.visit(res);
                         }
                     }
                 }
@@ -68,37 +62,30 @@ public class IncludeFileFinder {
         
     }
     
-    private static void find(File dir, IncludePartsInfoFactory incFactory) throws IncludePartsInfoParsingException {
+    private static void find(File dir, IncludeFileVisitor visitor) throws IncludePartsInfoParsingException {
         File[] files = dir.listFiles();
         for(File file: files) {
             if(!file.isHidden()) {
                 if(file.isDirectory() && !file.getName().equals("CVS")) {
-                    find(file, incFactory);
+                    find(file, visitor);
                 } else if(file.isFile() && file.getName().endsWith(".xml")) {
                     Resource res = ResourceUtil.getResource(file.toURI());
-                    IncludePartsInfo info = incFactory.getIncludePartsInfo(res);
-                    Set<String> renderParts = info.getRenderParts();
-                    for(String renderPart: renderParts) {
-                        System.out.println("RENDER: " + res.toString() + " " + renderPart);
-                    }
+                    visitor.visit(res);
                 }
             }
         }
     }
     
-    private static void find(String dirPath, ServletContext servletContext, IncludePartsInfoFactory incFactory) throws IncludePartsInfoParsingException {
+    private static void find(String dirPath, ServletContext servletContext, IncludeFileVisitor visitor) throws IncludePartsInfoParsingException {
+        @SuppressWarnings("unchecked")
         Set<String> paths = servletContext.getResourcePaths(dirPath);
         if(paths != null) {
             for(String path: paths) {
                 if(path.endsWith("/")) {
-                    find(path, servletContext, incFactory);
+                    find(path, servletContext, visitor);
                 } else if(path.endsWith(".xml")) {
                     Resource res = ResourceUtil.getResource(path);
-                    IncludePartsInfo info = incFactory.getIncludePartsInfo(res);
-                    Set<String> renderParts = info.getRenderParts();
-                    for(String renderPart: renderParts) {
-                        System.out.println("RENDER: " + res.toString() + " " + renderPart);
-                    }
+                    visitor.visit(res);
                 }
             }
         }

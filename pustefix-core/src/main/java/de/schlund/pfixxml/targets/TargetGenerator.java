@@ -21,6 +21,9 @@ package de.schlund.pfixxml.targets;
 import java.io.File;
 import java.io.IOException;
 import java.io.StringReader;
+import java.net.URI;
+import java.net.URISyntaxException;
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
@@ -51,13 +54,21 @@ import org.xml.sax.XMLReader;
 import org.xml.sax.helpers.DefaultHandler;
 import org.xml.sax.helpers.XMLReaderFactory;
 
+import de.schlund.pfixcore.exception.PustefixRuntimeException;
 import de.schlund.pfixcore.util.Meminfo;
 import de.schlund.pfixcore.workflow.Navigation;
 import de.schlund.pfixxml.IncludeDocumentFactory;
+import de.schlund.pfixxml.IncludeFileFinder;
+import de.schlund.pfixxml.IncludeFileVisitor;
+import de.schlund.pfixxml.IncludePartInfo;
+import de.schlund.pfixxml.IncludePartsInfo;
 import de.schlund.pfixxml.IncludePartsInfoFactory;
+import de.schlund.pfixxml.IncludePartsInfoParsingException;
+import de.schlund.pfixxml.Variant;
 import de.schlund.pfixxml.XMLException;
 import de.schlund.pfixxml.config.CustomizationHandler;
 import de.schlund.pfixxml.config.EnvironmentProperties;
+import de.schlund.pfixxml.config.GlobalConfig;
 import de.schlund.pfixxml.config.GlobalConfigurator;
 import de.schlund.pfixxml.config.includes.FileIncludeEvent;
 import de.schlund.pfixxml.config.includes.FileIncludeEventListener;
@@ -66,6 +77,7 @@ import de.schlund.pfixxml.event.ConfigurationChangeEvent;
 import de.schlund.pfixxml.event.ConfigurationChangeListener;
 import de.schlund.pfixxml.resources.DocrootResource;
 import de.schlund.pfixxml.resources.FileResource;
+import de.schlund.pfixxml.resources.ModuleResource;
 import de.schlund.pfixxml.resources.Resource;
 import de.schlund.pfixxml.resources.ResourceUtil;
 import de.schlund.pfixxml.util.SimpleResolver;
@@ -79,7 +91,7 @@ import de.schlund.pfixxml.util.XsltVersion;
  *
  */
 
-public class TargetGenerator {
+public class TargetGenerator implements IncludeFileVisitor {
 
     public static final String XSLPARAM_TG = "__target_gen";
 
@@ -88,7 +100,9 @@ public class TargetGenerator {
     public static final String XSLPARAM_NAVITREE = "__navitree";
 
     public static final String CACHEDIR = ".cache";
-
+    
+    private static final char RENDER_KEY_SEPARATOR = '#';
+    
     private static final Logger LOG = Logger.getLogger(TargetGenerator.class);
 
     private TargetGenerationReport report = new TargetGenerationReport();
@@ -132,11 +146,13 @@ public class TargetGenerator {
     private SharedLeafFactory sharedLeafFactory;
     private PageInfoFactory pageInfoFactory;
     private IncludePartsInfoFactory includePartsInfo;
+    private boolean parseIncludes;
 
     //--
 
-    public TargetGenerator(final FileResource confile, final FileResource cacheDir) throws IOException, SAXException, XMLException {
+    public TargetGenerator(final FileResource confile, final FileResource cacheDir, final boolean parseIncludes) throws IOException, SAXException, XMLException {
         this(confile, cacheDir, new SPCacheFactory().init());
+        this.parseIncludes = parseIncludes;
     }
     
     public TargetGenerator(final FileResource confile, final FileResource cacheDir, final SPCacheFactory cacheFactory) throws IOException, SAXException, XMLException {
@@ -234,12 +250,48 @@ public class TargetGenerator {
     public Target getTarget(String key) {
         synchronized (alltargets) {
             Target target = (Target) alltargets.get(key);
-            if(target == null && key.contains("$")) {
-                Target renderTarget = createTargetForRender(key);
-                return renderTarget;
-            }
             return target;
         }
+    }
+    
+    public Target getRenderTarget(String href, String part, String module, String search, Variant variant) throws IncludePartsInfoParsingException {
+        String uri;
+        if("dynamic".equals(search)) {
+            uri = "dynamic:/" + href + "?part=" + part;
+            if(module != null && !module.equals("")) {
+                uri += "&module=" + module;
+            }
+        } else {
+            if(module != null && !module.equals("")) {
+                uri = "module://" + module + "/" + href;
+            } else {
+                uri = "docroot:/" + href;
+            }
+        }
+        Resource res = ResourceUtil.getResource(uri);
+        IncludePartsInfo info = includePartsInfo.getIncludePartsInfo(res);
+        IncludePartInfo partInfo = info.getParts().get(part);
+        if(partInfo != null) {
+            if(partInfo.isRender()) {
+                String selectedVariant = null;
+                if(variant != null) {
+                    String[] variants = variant.getVariantFallbackArray();
+                    for (int i = 0; i < variants.length; i++) {
+                        if(partInfo.getRenderVariants().contains(variants[i])) {
+                            selectedVariant = variants[i];
+                            break;
+                        }
+                    }
+                }
+                if("dynamic".equals(search)) {
+                    if(res instanceof ModuleResource) {
+                        module = res.toURI().getAuthority();
+                    }
+                }
+                if(module == null || module.equals("")) module = "WEBAPP";
+                return createTargetForRender(href, part, module, selectedVariant);
+            } else throw new RuntimeException("Part '" + part + "' in '" + res.toURI() + "' is not marked as render part");
+        } else throw new RuntimeException("Render part '" + part + "' in '" + res.toURI() + "' not found.");
     }
 
     public Target createXMLLeafTarget(String key) {
@@ -549,8 +601,58 @@ public class TargetGenerator {
         pagetree.initTargets();
         LOG.info("\n=====> Init of Pagetree took " + (System.currentTimeMillis() - start) + "ms. Ready...");
     
+        start = System.currentTimeMillis();
+        if(parseIncludes) {
+            try {
+                IncludeFileFinder.find(this);
+            } catch (Exception e) {
+                throw new XMLException("Parsing of include files failed", e);
+            }
+        }
+        LOG.info("\n=====> Include parsing took " + (System.currentTimeMillis() - start) + "ms. Ready...");
+        
     }
 
+    public void visit(Resource resource) {
+        IncludePartsInfo info;
+        try {
+            info = includePartsInfo.getIncludePartsInfo(resource);
+        } catch (IncludePartsInfoParsingException e) {
+            throw new PustefixRuntimeException("Error while trying to parse include parts " +
+                    "in " + "resource '" + resource.toURI() + "'.", e);
+        }
+        if(info != null) {
+            for(IncludePartInfo partInfo: info.getParts().values()) {
+                if(partInfo.isRender()) {
+                    URI uri = resource.toURI();
+                    String href = null;
+                    String module = null;
+                    if("file".equals(uri.getScheme())) {
+                        try {
+                            URI docUri = GlobalConfig.getDocrootAsURL().toURI();
+                            URI relUri = docUri.relativize(uri);
+                            href = relUri.getPath();
+                        } catch (URISyntaxException e) {
+                            LOG.error("Error getting docroot relative path for render include '" + uri.toString() + "@" + partInfo.getName(), e);
+                            return;
+                        }
+                    } else if("module".equals(uri.getScheme())){
+                        href = uri.getPath();
+                        module = uri.getAuthority();
+                    } else {
+                        href = uri.getPath();
+                    }
+                    if(href.startsWith("/")) href = href.substring(1);
+                    String part = partInfo.getName();
+                    createTargetForRender(href, part, module, null);
+                    for(String variant: partInfo.getRenderVariants()) {
+                        createTargetForRender(href, part, module, variant);
+                    }
+                }
+            }
+        }
+    }
+    
     private TargetRW createTargetFromTargetStruct(TargetStruct struct, HashMap<String, TargetStruct> allstructs, HashSet<String> depxmls, HashSet<String> depxsls) throws XMLException {
 
         String key = struct.getName();
@@ -648,46 +750,47 @@ public class TargetGenerator {
 
     // *******************************************************************************************
     
-    private TargetRW createTargetForRender(String renderKey) {
-        
-        String[] comps = splitRenderKey(renderKey);
-        String href = comps[0];
-        String part = comps[1];
-        String module = "WEBAPP";
-        if(comps.length>2) module = comps[2];
-        String search = "";
-        if(comps.length>3) search = comps[3];
-        
-        String uri = "";
-        if(module.equals(""))
-        includePartsInfo.getIncludePartsInfo(resource);
-        
+    private Target createTargetForRender(String href, String part, String module, String variantId) {
         
         Themes themes = global_themes;
-                
-        if(getTargetRW(name) != null) throw new RuntimeException("Target already exists"); 
-                       
-        XMLVirtualTarget xmlTarget = (XMLVirtualTarget)createTarget(TargetType.XML_VIRTUAL, renderKey + ".xml", themes);
-        Target xmlSource = createTarget(TargetType.XML_LEAF, "module://pustefix-core/xml/render.xml", null);
-        Target xslSource = createTarget(TargetType.XSL_VIRTUAL, "metatags.xsl", null);
-        xmlTarget.setXMLSource(xmlSource);
-        xmlTarget.setXSLSource(xslSource);
-        xmlTarget.addParam(XSLPARAM_TG, this);
-        xmlTarget.addParam(XSLPARAM_TKEY, renderKey + ".xml");
-        xmlTarget.addParam("render_href", href);
-        xmlTarget.addParam("render_part", part);
-        xmlTarget.addParam("render_module", module);
-        xmlTarget.addParam("render_search", search);
-                
-        XSLVirtualTarget xslTarget = (XSLVirtualTarget)createTarget(TargetType.XSL_VIRTUAL, renderKey + ".xsl", themes);
-        xmlSource = xmlTarget;
-        xslSource = createTarget(TargetType.XSL_VIRTUAL, "master.xsl", null);
-        xslTarget.setXMLSource(xmlSource);
-        xslTarget.setXSLSource(xslSource);
-        xslTarget.addParam(XSLPARAM_TG, this);
-        xslTarget.addParam(XSLPARAM_TKEY, renderKey + ".xsl");
-                
-        return xslTarget;
+        if(variantId != null) {
+            String[] varThemes = variantId.split(":");
+            String[] globThemes = themes.getThemesArr();
+            ArrayList<String> allThemes = new ArrayList<String>();
+            for(String varTheme: varThemes) allThemes.add(0, varTheme);
+            for(String globTheme: globThemes) allThemes.add(globTheme);
+            String[] themeArr = new String[allThemes.size()];
+            allThemes.toArray(themeArr);
+            themes = new Themes(themeArr);
+        }
+        
+        String renderKey = createRenderKey(href, part, module, variantId);
+        Target target = alltargets.get(renderKey);
+        if(target == null) {
+            
+            XMLVirtualTarget xmlTarget = (XMLVirtualTarget)createTarget(TargetType.XML_VIRTUAL, renderKey + ".xml", themes);
+            Target xmlSource = createTarget(TargetType.XML_LEAF, "module://pustefix-core/xml/render.xml", null);
+            Target xslSource = createTarget(TargetType.XSL_VIRTUAL, "metatags.xsl", null);
+            xmlTarget.setXMLSource(xmlSource);
+            xmlTarget.setXSLSource(xslSource);
+            xmlTarget.addParam(XSLPARAM_TG, this);
+            xmlTarget.addParam(XSLPARAM_TKEY, renderKey + ".xml");
+            xmlTarget.addParam("render_href", href);
+            xmlTarget.addParam("render_part", part);
+            xmlTarget.addParam("render_module", module);
+                    
+            XSLVirtualTarget xslTarget = (XSLVirtualTarget)createTarget(TargetType.XSL_VIRTUAL, renderKey + ".xsl", themes);
+            xmlSource = xmlTarget;
+            xslSource = createTarget(TargetType.XSL_VIRTUAL, "master.xsl", null);
+            xslTarget.setXMLSource(xmlSource);
+            xslTarget.setXSLSource(xslSource);
+            xslTarget.addParam(XSLPARAM_TG, this);
+            xslTarget.addParam(XSLPARAM_TKEY, renderKey + ".xsl");
+         
+            alltargets.put(renderKey, xslTarget);
+            target = xslTarget;
+        }
+        return target;
     }
     
     private TargetRW getTargetRW(String key) {
@@ -980,18 +1083,23 @@ public class TargetGenerator {
         return attr.getValue();
     }
       
-    public static String createRenderKey(String href, String part, String module, String search) {
+    public static boolean isRenderKey(String key) {
+        return key.indexOf(RENDER_KEY_SEPARATOR) > -1;
+    }
+    
+    private static String createRenderKey(String href, String part, String module, String variant) {
         if(href == null || href.equals("")) throw new IllegalArgumentException("Argument 'href' must not be empty");
         if(part == null || part.equals("")) throw new IllegalArgumentException("Argument 'part' must not be empty");
         if(module == null) module = "";
-        if(search == null) search = "";
-        String targetKey = encode(href) + "$" + encode(part) + "$" + encode(module) + "$" + encode(search);
+        if(variant == null) variant = "";
+        String targetKey = encode(href) + RENDER_KEY_SEPARATOR + encode(part) + 
+                            RENDER_KEY_SEPARATOR + encode(module) + RENDER_KEY_SEPARATOR + encode(variant);
         return targetKey;
     }
         
     public static String encode(String str) {
         str = str.replace("%", "%" + Integer.toHexString('%'));
-        str = str.replace("$", "%" + Integer.toHexString('$'));
+        str = str.replace("" + RENDER_KEY_SEPARATOR, "%" + Integer.toHexString(RENDER_KEY_SEPARATOR));
         str = str.replace("+", "%" + Integer.toHexString('+'));
         str = str.replace("/", "+");
         return str;
@@ -1000,13 +1108,13 @@ public class TargetGenerator {
     public static String decode(String str) {
         str = str.replace("+", "/");
         str = str.replace("%" + Integer.toHexString('+'), "+");
-        str = str.replace("%" + Integer.toHexString('$'), "$");
+        str = str.replace("%" + Integer.toHexString(RENDER_KEY_SEPARATOR), "" + RENDER_KEY_SEPARATOR);
         str = str.replace("%" + Integer.toHexString('%'), "%");
         return str;
     }
         
     private static String[] splitRenderKey(String renderKey) {
-        String[] comps = renderKey.split("\\$");
+        String[] comps = renderKey.split("" + RENDER_KEY_SEPARATOR);
         for(int i=0; i<comps.length; i++) {
             comps[i] = decode(comps[i]);
         }

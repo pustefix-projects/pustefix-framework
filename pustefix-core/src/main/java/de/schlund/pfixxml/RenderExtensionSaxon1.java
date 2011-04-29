@@ -7,6 +7,8 @@ import com.icl.saxon.Context;
 import de.schlund.pfixcore.workflow.context.RequestContextImpl;
 import de.schlund.pfixxml.targets.TargetGenerator;
 import de.schlund.pfixxml.util.ExtensionFunctionUtils;
+import de.schlund.pfixxml.util.XsltContext;
+import de.schlund.pfixxml.util.xsltimpl.XsltContextSaxon1;
 
 public class RenderExtensionSaxon1 {
     
@@ -39,6 +41,11 @@ public class RenderExtensionSaxon1 {
             ExtensionFunctionUtils.setExtensionFunctionError(x);
             throw x;
         }
+    }
+    
+    public static final String getSystemId(Context context) {
+        XsltContext xsltContext=new XsltContextSaxon1(context);
+        return RenderExtension.getSystemId(xsltContext);
     }
     
 }

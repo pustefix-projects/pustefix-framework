@@ -6,9 +6,8 @@
       <link href="{$__contextpath}/style.css" media="all" rel="stylesheet" type="text/css"/>
     </head>
     <body>
-      <div style="border-bottom: 1px solid black;">
-        <pfx:include href="txt/navigation.xml" part="top"/>
-      </div>
+      <pfx:render href="txt/common.xml" part="header"/>
+      <hr/>
       <br/>
       <pfx:maincontent part="content" path="txt/pages" prefix="main_"/>
       <pfx:editconsole/>

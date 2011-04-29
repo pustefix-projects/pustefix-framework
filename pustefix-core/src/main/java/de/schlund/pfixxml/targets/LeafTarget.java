@@ -106,7 +106,7 @@ public abstract class LeafTarget extends TargetImpl {
     public void storeValue(Object obj) {
         synchronized (sharedleaf) {
             SPCache<Object,Object> cache = null;
-            if(getTargetKey().contains("$")) {
+            if(TargetGenerator.isRenderKey(getTargetKey())) {
                 cache = generator.getCacheFactory().getRenderCache();
             } else {
                 cache = generator.getCacheFactory().getCache();
@@ -131,7 +131,7 @@ public abstract class LeafTarget extends TargetImpl {
     protected Object getValueFromSPCache() {
         synchronized (sharedleaf) {
             SPCache<Object,Object> cache = null;
-            if(getTargetKey().contains("$")) {
+            if(TargetGenerator.isRenderKey(getTargetKey())) {
                 cache = generator.getCacheFactory().getRenderCache();
             } else {
                 cache = generator.getCacheFactory().getCache();

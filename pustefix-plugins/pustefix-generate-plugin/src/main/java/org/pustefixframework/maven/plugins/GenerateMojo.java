@@ -88,7 +88,7 @@ public class GenerateMojo extends AbstractMojo {
             throw new MojoExecutionException("Can't find project WAR directory in target folder");
         }
 
-        File cache = new File(warDir, ".cache/" + getProjectName());
+        File cache = new File(warDir, ".cache");
 
         URLClassLoader loader = getProjectRuntimeClassLoader();
         ClassLoader contextLoader = Thread.currentThread().getContextClassLoader();

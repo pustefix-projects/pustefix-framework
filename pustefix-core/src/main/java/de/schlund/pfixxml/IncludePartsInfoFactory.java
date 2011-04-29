@@ -3,10 +3,14 @@ package de.schlund.pfixxml;
 import java.util.HashMap;
 import java.util.Map;
 
+import org.apache.log4j.Logger;
+
 import de.schlund.pfixxml.config.EnvironmentProperties;
 import de.schlund.pfixxml.resources.Resource;
 
 public class IncludePartsInfoFactory {
+    
+    private final static Logger LOG = Logger.getLogger(IncludePartsInfoFactory.class);
     
     private Map<String, IncludePartsInfo> urisToInfo;
     private boolean reloadable;
@@ -19,7 +23,9 @@ public class IncludePartsInfoFactory {
     
     public boolean containsPart(Resource resource, String part) throws IncludePartsInfoParsingException {
         IncludePartsInfo info = getIncludePartsInfo(resource);
-        if(info != null) return info.getParts().contains(part);
+        if(info != null) {
+            return info.getParts().containsKey(part);
+        }
         return false;
     }
     

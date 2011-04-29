@@ -4,32 +4,7 @@
     <theme name="default">
       <center>
 
-<div>
-  <pfx:button page="encoding">encoding1</pfx:button>      
-  <pfx:button page="encoding" mode="force">encoding2</pfx:button>
-</div>
-<div>
-  <pfx:button page="home">home1</pfx:button>
-  <pfx:button page="home" mode="force">home2</pfx:button>
-</div>
-<div>
-  <pfx:button page="order" accesskey="Q">order1</pfx:button>
-  <pfx:button page="order" mode="force" accesskey="Q">order2</pfx:button>
-</div>
-<div>
-  <pfx:button>home3</pfx:button>
-  <pfx:button mode="force">home4</pfx:button>
-</div>
-
-<pfx:render href="txt/common.xml" part="content"/>
-<pfx:render href="txt/common.xml" part="content"/>
-<pfx:render href="txt/common.xml" part="content"/>
-<pfx:render href="txt/common.xml" part="content"/>
-<pfx:render href="txt/common.xml" part="content"/>
-
-
-
-Test of deref-server for forms: 
+      Test of deref-server for forms: 
       <pfx:externalform href="http://www.gimp.org">
         <input type="text" name="FOO"/>
         <input type="submit"/>
@@ -57,6 +32,15 @@ Test of deref-server for forms:
             <tr>
               <td>
                 Date of birth: <pfx:xinp name="info.Date" type="text" size="10"/>
+              </td>
+            </tr>
+            <tr>
+              <td>
+                <ixsl:if test="/formresult/adultinfo/@adult">
+                  <pfx:render>
+                    <pfx:part><ixsl:value-of select="/formresult/adultinfo/@adult"/></pfx:part>
+                  </pfx:render>
+                </ixsl:if>
               </td>
             </tr>
           </table>
@@ -315,4 +299,17 @@ Test of deref-server for forms:
       [FOO]
     </theme>
   </part>
+  
+  <part name="false" render="true">
+    <theme name="default">
+      No adult
+    </theme>
+  </part>
+  
+  <part name="true" render="true">
+    <theme name="default">
+      Adult
+    </theme>
+  </part>
+  
 </include_parts>

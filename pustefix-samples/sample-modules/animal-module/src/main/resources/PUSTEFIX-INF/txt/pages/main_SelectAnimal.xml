@@ -3,7 +3,7 @@
   xmlns:pfx="http://www.schlund.de/pustefix/core"
 >
 
-  <part name="content">
+  <part name="content" render="true">
     <theme name="default">
         <h2>Select your favorite animal:</h2>
         <pfx:forminput>
@@ -24,7 +24,21 @@
          
           
         </pfx:forminput>
+        QQQQQQQQ<pfx:render part="foo"/>
     </theme>
   </part>
+
+  <part name="foo" render="true">
+    <theme name="default">
+      fooo
+    </theme>
+  </part>
+
+  <part name="bar">
+    <theme name="default">
+      baaar
+    </theme>
+  </part>
+
 
 </include_parts>

@@ -26,3 +26,11 @@ select.PfxError         { background-color: #ffcccc; font-weight: normal }
 
 .info tr td             { padding: 2px; border: 1px solid black; }
 .info tr td:first-child { background-color: #33cc99; }
+
+table.header { width: 100%; }
+table.header td.logo { vertical-align: middle; width: 100px; }
+table.header td.name { vertical-align: middle; font-size: 50px; font-style: italic; }
+table.header td.name div.desc { font-size: 15px; }
+table.header td.name div.name { font-size: 25px; }
+table.header td.navi { vertical-align: middle; font-size: 140%; padding-left: 30px; }
+table.header td.rev { text-align: right; color: #aaa; }
