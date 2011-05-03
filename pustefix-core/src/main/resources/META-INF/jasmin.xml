@@ -16,4 +16,13 @@
       <path>PUSTEFIX-INF/script/xmlRequest.js</path>
     </resource>
   </module>
+  <module>
+    <name>pfx-render</name>
+    <resource>
+      <type>js</type>
+      <base>classpath</base>
+      <path>PUSTEFIX-INF/script/render.js</path>
+    </resource>
+    <dependencie>pfx-httprequest</dependencie>
+  </module>
 </library>

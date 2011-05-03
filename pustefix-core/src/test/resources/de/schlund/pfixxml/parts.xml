@@ -4,7 +4,7 @@
       xyz
     </theme>
   </part>
-  <part name="bbb" render="true"">
+  <part name="bbb" render="true">
   </part>
   <!--
   <part name="ccc">

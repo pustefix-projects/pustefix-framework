@@ -28,10 +28,12 @@ public class DefaultAdditionalTrailInfoImpl implements AdditionalTrailInfo {
         Object pptime    = preq.getRequest().getAttribute(AbstractPustefixXMLRequestHandler.PREPROCTIME);
         Object doctime   = preq.getRequest().getAttribute(AbstractPustefixXMLRequestHandler.GETDOMTIME);
         Object trafotime = preq.getRequest().getAttribute(AbstractPustefixXMLRequestHandler.TRAFOTIME);
+        Object rextime  = preq.getRequest().getAttribute(AbstractPustefixXMLRequestHandler.RENDEREXTTIME);
         
         LinkedHashMap<String,Object> retval = new LinkedHashMap<String,Object>();
         retval.put("GET_DOM", ""+doctime);
         retval.put("HDL_DOC", ""+trafotime);
+        retval.put("REX_DOC", ""+rextime);
         retval.put("PRE_PROC", ""+pptime);
         return retval;
     }

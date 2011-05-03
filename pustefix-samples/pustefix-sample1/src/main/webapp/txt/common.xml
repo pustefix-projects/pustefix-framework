@@ -24,22 +24,13 @@
     </theme>
   </part>
 
-  <part name="content" render="true">
+  <part name="rextest" render="true">
     <theme name="default">
-      <h1>XSL Component</h1>
-      PAGE: <ixsl:value-of select="$page"/>
-      <pfx:render part="foo"/>
+      <div style="padding: 10px; color: #{substring(/formresult/@serial,8,6)}">
+      Serial id of current result tree for page <i><ixsl:value-of select="$page"/></i>: 
+      <b><ixsl:value-of select="/formresult/@serial"/></b>
+      </div>
     </theme>
   </part>
-  
-  <part name="foo" render="true" render-variants="foo">
-    <theme name="default">
-      FFFFFFFOOOOOOOOOOOOOOOO
-    </theme>
-    <theme name="foo">
-      fffffffffffffffffffffooooooooooooooooooooooooooo
-    </theme>
-  </part>
-
 
 </include_parts>

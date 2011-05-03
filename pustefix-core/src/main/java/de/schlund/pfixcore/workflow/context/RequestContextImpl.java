@@ -35,6 +35,7 @@ import org.apache.log4j.Logger;
 import org.pustefixframework.config.contextxmlservice.PageRequestConfig;
 import org.pustefixframework.config.contextxmlservice.ProcessActionPageRequestConfig;
 import org.pustefixframework.http.AbstractPustefixRequestHandler;
+import org.pustefixframework.http.AbstractPustefixXMLRequestHandler;
 import org.pustefixframework.http.PustefixContextXMLRequestHandler;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
@@ -481,8 +482,18 @@ public class RequestContextImpl implements Cloneable, AuthorizationInterceptor {
             }
         }
 
-        SPDocument spdoc = documentFromFlow(startwithflow, stopnextforcurrentrequest);
-
+        SPDocument spdoc = null;
+        if(currentpservreq.getRequestParam(AbstractPustefixXMLRequestHandler.PARAM_RENDER_HREF) != null) {
+            if(checkIsAccessible(currentpagerequest)) {
+                spdoc = documentFromCurrentStep().getSPDocument();
+            } else {
+                throw new PustefixCoreException("Can't get result document for render part because page '" + 
+                        currentpagerequest.getName() + "' isn't accessible.");
+            }
+        } else {
+            spdoc = documentFromFlow(startwithflow, stopnextforcurrentrequest);
+        }
+        
         processIC(parentcontext.getContextConfig().getEndInterceptors());
 
         if (spdoc != null) {

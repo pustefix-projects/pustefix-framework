@@ -92,6 +92,7 @@ public class UniversalExceptionProcessor implements ExceptionProcessor {
         }
         
         res.setContentType("text/html");
+        res.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
         
         try {
             Xslt.transform(doc, stvalue, null, new StreamResult(res.getOutputStream()));

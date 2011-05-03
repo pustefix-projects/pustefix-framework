@@ -1,8 +1,6 @@
 package de.schlund.pfixxml;
 
 import java.io.StringWriter;
-import java.net.URI;
-import java.net.URISyntaxException;
 
 import javax.xml.transform.Result;
 import javax.xml.transform.Templates;
@@ -35,10 +33,7 @@ public class RenderExtension {
         Templates style = renderContext.getTemplates(cacheKey);
         if(style == null) {
             Target target = targetGenerator.getRenderTarget(href, part, module, search, requestContext.getVariant());
-            long f1 = System.currentTimeMillis();
             style = (Templates)target.getValue();
-            long f2 = System.currentTimeMillis();
-            System.out.println("FFFFFFFFFFFFFF: "+(f2-f1));
             renderContext.setTemplates(cacheKey, style);
         }
             
