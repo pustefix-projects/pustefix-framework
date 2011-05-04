@@ -1129,6 +1129,7 @@ service.serviceMethod(arg0, arg1, ... , requestid); //asynchronous with requesti
         Additional Java types supported by JSON services:
       </para>
       <itemizedlist>
+        <listitem><simpara>Primitive and object wrapper type for characters (char and java.lang.Character)</simpara></listitem>
         <listitem><simpara>Arbitrary Lists (Java -> JSON), parameterized Lists with type parameter of instantiable type (JSON -> Java)</simpara></listitem>
         <listitem><simpara>Arbitrary Maps with keys of type java.lang.String (Java -> JSON), parameterized Maps with key type parameter of type java.lang.String and value type parameter of instantiable type (JSON -> Java)</simpara></listitem>
       </itemizedlist>

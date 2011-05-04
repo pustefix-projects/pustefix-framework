@@ -697,6 +697,71 @@
         </table>
       </para>
     </section>
+
+    <section xml:id="xslt.renderextensions">
+      <title>Dynamically including parts at rendering time</title>
+      <para>
+       Include parts can be also rendered standalone and included at runtime/rendering time on the last transformation level.
+       Thus you can include parts dynamically, e.g. you can include a part based on information from the result tree, which
+       isn't available on the former transformation levels. This can also help to keep your stylesheets small, but it also has
+       some drawbacks: standalone rendering of a part costs more time than doing a regular include and the XML source context
+       node is not defined (at least if a part isn't rendered within a main transformation, but standalone, e.g. triggered by an AJAX call).
+      </para>    
+      <para>
+         Render includes are done using the <literal>&lt;pfx:render&gt;</literal> tag. Its syntax is similar to <literal>&lt;pfx:include&gt;</literal>.
+         But referenced parts additionally have to be marked as render parts using the <literal>render</literal> attribute.
+         You can optionally specify in which variants a render part should be available. All this is necessary
+         to know which parts can be invoked dynamically when pre-generating all pages for production environments. 
+      </para>
+      <programlisting language="xml"><![CDATA[<include_parts>
+  <part name="Foo" render="true" render-variants="foo foo:bar:baz">
+    <theme name="default">
+      ...
+    </theme>
+  </part>
+</include_parts>]]></programlisting>
+      <para>
+        A part is referenced with at least a <literal>part</literal> attribute. The <literal>path</literal> to the include file can be omitted
+        if you're referencing a part within the same file. Using <literal>module</literal> and/or <literal>search</literal> you can reference
+        parts from modules or do dynamic lookups. 
+      </para>
+      <programlisting language="xml"><![CDATA[<pfx:render href="txt/common.xml" part="Foo"/>]]></programlisting>
+      <para>
+        <table rules="all" frame="box">
+          <caption>Attributes of the pfx:render tag</caption>
+          <thead>
+            <tr>
+              <th>Attribute name</th>
+              <th>Mandatory?</th>
+              <th>Description</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td>href</td>
+              <td>optional</td>
+              <td>If not set, it defaults to the current include part file.</td>
+            </tr>
+            <tr>
+              <td>part</td>
+              <td>mandatory</td>
+              <td>The name of the part to include</td>
+            </tr>
+            <tr>
+              <td>search</td>
+              <td>optional</td>
+              <td>Not set by default. Set this to <literal>dynamic</literal> if a matching part should be dynamically searched. See <xref linkend="advanced.dyninclude"/>.</td>
+            </tr>
+            <tr>
+              <td>module</td>
+              <td>optional</td>
+              <td>Not set by default. Set this to the name of the module from which the part should be loaded. See <xref linkend="advanced.dyninclude"/>.</td>
+            </tr>
+          </tbody>
+        </table>
+      </para>
+    </section>
+
   </section>
 
   <section xml:id="xslt.forms">

@@ -3,53 +3,32 @@
   xmlns:xi="http://www.w3.org/2001/XInclude" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
   xsi:schemaLocation="http://docbook.org/ns/docbook http://www.docbook.org/xml/5.0CR7/xsd/docbook.xsd"
 >
-  <title>What's new in Pustefix 0.16.x</title>    
+  <title>What's new in Pustefix 0.17.x</title>    
   
   <para>This section lists the new features and enhancements of the current Pustefix release line. 
         If you're interested in new features which already became available with the prior Pustefix release line,
         you can take a look at <xref linkend="newsarchive"/>.</para>
 
-  <section xml:id="news.0_16_0">
-    <title>What's new in Pustefix 0.16.0</title>
+  <section xml:id="news.0_17_0">
+    <title>What's new in Pustefix 0.17.0</title>
   
-    <para>Pustefix 0.16.0 focuses on SEO. It brings more user and search engine friendly URLs. The main features are:</para>
-
-    <itemizedlist>
-      <listitem>
-        <para>
-          New session tracking strategies:
-          <itemizedlist>
-            <listitem>Cookie-based session tracking</listitem>
-            <listitem>Specialized session tracking strategy for search engine bots</listitem>
-          </itemizedlist>
-        </para>
-      </listitem>
-      <listitem>
-        <para>
-          URL cleanup
-          <itemizedlist>
-            <listitem>Page URLs without /xml prefix</listitem>
-            <listitem>Use __frame parameter only on demand</listitem>
-            <listitem>Sessionless URLs</listitem>
-            <listitem>Home page under / (without redirect)</listitem>
-          </itemizedlist> 
-        </para>
-      </listitem>
-    </itemizedlist>
-
-    <para>If you're migrating an existing appliation to Pustefix 0.16.0, you should have a look at <xref linkend="upgrade"/>.</para>
-  
-  </section>
-
-  <section xml:id="news.0_16_5">
-    <title>What's new in Pustefix 0.16.5</title>
-  
-    <para>Pustefix 0.16.5 brings some CMS improvements. The CMS editor now supports editing of resources coming from modules
-          (if they're loaded via the live mechanism). Modules are readonly by default, but can be made editable by adding
-          <literal>&lt;content-editable&gt;true&lt;/content-editable&gt;</literal> to the module descriptor 
-          (see <xref linkend="modulessupport.types.new"/>). 
+    <para>Pustefix 0.17.0 focuses on XSLT rendering improvements. It brings the so-called render extensions, a mechanism which allows
+          to call an extension function to produce additional output and write it to the result of the main transformation (on the last
+          transformation level).
+    </para>
+    <para>The default render extension implementation, the so-called render include mechanism, supports the standalone rendering/outputting of 
+        include parts.
+        Thus you're able to include parts at runtime, e.g. based on the data from the result tree. In contrast to the traditional runtime
+        includes, which are restricted to simple content and a subset of tags available on the last transformation level, the render includes support     
+        arbitrary content because the metatags and master XSLT transformations are also applied (see <xref linkend="xslt.renderextensions"/>).
+    </para>
+    <para>
+        Render include parts not just can be rendered within a regular main transformation, but can be also rendered standalone, i.e. you can 
+        request a rendered part via AJAX to dynamically update your page. 
     </para>
 
-  </section>
+    <para>If you're migrating an existing appliation to Pustefix 0.17.0, you should have a look at <xref linkend="upgrade"/>.</para>
   
+  </section>
+
 </chapter>

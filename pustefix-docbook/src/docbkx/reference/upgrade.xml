@@ -3,7 +3,17 @@
   xmlns:xi="http://www.w3.org/2001/XInclude" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
   xsi:schemaLocation="http://docbook.org/ns/docbook http://www.docbook.org/xml/5.0CR7/xsd/docbook.xsd"
 >
-  <title>Upgrading to a newer Pustefix version</title>    
+  <title>Upgrading to a newer Pustefix version</title>
+
+  <section xml:id="upgrade.0_16_to_0_17">
+    <title>Upgrading from Pustefix 0.16 to 0.17</title>
+    <para>
+      Pustefix 0.17 should be fully backwards compatible with 0.16. But the new render include mechanism required massive refactoring of
+      the core XSL templates to make them independent of the page parameter on the master and metatags transformation levels. So you should
+      invest some time into QA and especially check if buttons and links work as expected.
+    </para>
+  </section>
+    
   <section xml:id="upgrade.0_15_to_0_16">
     <title>Upgrading from Pustefix 0.15 to 0.16</title>
   
