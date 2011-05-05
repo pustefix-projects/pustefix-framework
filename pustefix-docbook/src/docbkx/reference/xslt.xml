@@ -760,6 +760,22 @@
           </tbody>
         </table>
       </para>
+      <para>
+        Render include parts not just can be rendered as part of another page within the main transformation, but they can be also  
+        rendered standalone. Therefor Pustefix provides a Javascript API which lets you easily request a part via AJAX. 
+      </para>
+      <programlisting language="xml"><![CDATA[<script type="text/javascript" src="{$__contextpath}/modules/pustefix-core/script/httpRequest.js"></script>
+<script type="text/javascript" src="{$__contextpath}/modules/pustefix-core/script/render.js"></script>
+
+<script type="text/javascript">
+   function callback(result) {
+      document.getElementById("result").innerHTML = result;
+   }
+   function test() {
+      //pfx.render(href, part, module, search, callback, context, requestId)
+      pfx.render("txt/common.xml", "Foo", "", "", callback, null, "1");
+   }
+</script>]]></programlisting>
     </section>
 
   </section>
