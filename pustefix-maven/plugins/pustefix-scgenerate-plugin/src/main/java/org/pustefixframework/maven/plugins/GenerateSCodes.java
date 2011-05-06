@@ -274,6 +274,7 @@ public class GenerateSCodes {
                 if(!relPath.startsWith("core")) throw new RuntimeException("Illegal core file name: "+relPath);
                 modulePath = "core-override/"+relPath.substring(5);
             } else {
+                if(relPath.startsWith("PUSTEFIX-INF/")) relPath = relPath.substring(13);
                 modulePath = "modules-override/"+module+"/"+relPath;
             }
             return modulePath;
