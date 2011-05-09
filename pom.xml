@@ -4,7 +4,7 @@
 
   <groupId>org.pustefixframework</groupId>
   <artifactId>pustefixframework</artifactId>
-  <version>0.17.1-SNAPSHOT</version>
+  <version>0.18.0-SNAPSHOT</version>
   <packaging>pom</packaging>
   <name>Pustefix Framework</name>
   <url>http://pustefix-framework.org</url>
@@ -29,9 +29,9 @@
   </issueManagement>
 
   <scm>
-    <connection>scm:svn:https://pustefix.svn.sourceforge.net/svnroot/pustefix/branches/release-0.17.x</connection>
-    <developerConnection>scm:svn:https://pustefix.svn.sourceforge.net/svnroot/pustefix/branches/release-0.17.x</developerConnection>
-    <url>http://dev.pustefix-framework.org/browser/branches/release-0.17.x</url>
+    <connection>scm:svn:https://pustefix.svn.sourceforge.net/svnroot/pustefix/branches/release-0.18.x</connection>
+    <developerConnection>scm:svn:https://pustefix.svn.sourceforge.net/svnroot/pustefix/branches/release-0.18.x</developerConnection>
+    <url>http://dev.pustefix-framework.org/browser/branches/release-0.18.x</url>
   </scm>
 
   <properties>
@@ -214,7 +214,7 @@
     </snapshotRepository>
     <site>
       <id>pustefix</id>
-      <url>scpexe://pustefix@pustefix-hp.schlund.de/home/pustefix/www/pustefix-docs/0.17.x</url>
+      <url>scpexe://pustefix@pustefix-hp.schlund.de/home/pustefix/www/pustefix-docs/0.18.x</url>
     </site>
   </distributionManagement>
   

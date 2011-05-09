@@ -73,6 +73,8 @@
   </xsl:template>
 
   <xsl:template match="standardpage">
+    <xsl:param name="variant" select="@variant"/>
+    <xsl:param name="rec">true</xsl:param>
     <xsl:if test="not(@name)">
       <xsl:message terminate="yes">*** standardpage needs to have a "name" attribute given! ***</xsl:message>
     </xsl:if>
@@ -93,19 +95,19 @@
     </xsl:variable>
     <xsl:variable name="thename">
       <xsl:choose>
-        <xsl:when test="@variant"><xsl:value-of select="@name"/>::<xsl:value-of select="@variant"/></xsl:when>
+        <xsl:when test="$variant"><xsl:value-of select="@name"/>::<xsl:value-of select="$variant"/></xsl:when>
         <xsl:otherwise><xsl:value-of select="@name"/></xsl:otherwise>
       </xsl:choose>
     </xsl:variable>
     <target name="{$thename}.xsl" type="xsl" page="{@name}">
-      <xsl:if test="@variant">
-        <xsl:attribute name="variant"><xsl:value-of select="@variant"/></xsl:attribute>
+      <xsl:if test="$variant">
+        <xsl:attribute name="variant"><xsl:value-of select="$variant"/></xsl:attribute>
       </xsl:if>
       <xsl:if test="@defining-module">
         <xsl:attribute name="defining-module"><xsl:value-of select="@defining-module"/></xsl:attribute>
       </xsl:if>
       <xsl:call-template name="render_themes">
-        <xsl:with-param name="variant" select="@variant"/>
+        <xsl:with-param name="variant" select="$variant"/>
         <xsl:with-param name="local_themes" select="@themes"/>
       </xsl:call-template>
       <depxml name="{$thename}.xml"/>
@@ -141,7 +143,7 @@
 
     <target name="{$thename}.xml" type="xml">
       <xsl:call-template name="render_themes">
-        <xsl:with-param name="variant" select="@variant"/>
+        <xsl:with-param name="variant" select="$variant"/>
         <xsl:with-param name="local_themes" select="@themes"/>
       </xsl:call-template>
       <xsl:if test="@defining-module">
@@ -167,6 +169,24 @@
         <param name="prohibitEdit" value="{$prohibitEdit}"/>
       </xsl:if>
     </target>
+    <xsl:variable name="node" select="."/>
+    <xsl:if test="$rec='true'">
+      <xsl:for-each select="/make/standardpage-variant">
+        <xsl:apply-templates select="$node">
+          <xsl:with-param name="variant">
+            <xsl:choose>
+              <xsl:when test="$node/@variant">
+                <xsl:value-of select="concat($node/@variant, ':', .)"/>
+              </xsl:when>
+              <xsl:otherwise>
+                <xsl:value-of select="."/>
+              </xsl:otherwise>
+            </xsl:choose>
+          </xsl:with-param>
+          <xsl:with-param name="rec">false</xsl:with-param>
+        </xsl:apply-templates>
+      </xsl:for-each>
+    </xsl:if>
   </xsl:template>
 
   <xsl:template name="render_themes">

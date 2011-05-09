@@ -363,6 +363,11 @@ public class PustefixContextXMLRequestHandler extends AbstractPustefixXMLRequest
         Set<PageInfo> pageInfos = generator.getPageTargetTree().getPageInfos();
         for(PageInfo pageInfo: pageInfos) {
             uris.add("/" + pageInfo.getName());
+            //TODO: get alias names and regsiter
+            String[] aliases = generator.getPageAliases(pageInfo.getName());
+            for(String alias: aliases) {
+                uris.add(alias);
+            }
         }
         
         String[] uriArr = uris.toArray(new String[uris.size()]);

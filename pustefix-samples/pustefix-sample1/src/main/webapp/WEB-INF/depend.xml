@@ -6,6 +6,9 @@
 
   <navigation>
     <page name="home" accesskey="H">
+      <alias lang="de">Start</alias>
+      <alias lang="en">Home</alias>
+      <!-- <config-include file="conf/fragments.xml" section="alias_home" module="*"/> -->
       <page name="order" accesskey="O"/>
       <page name="phantom" accesskey="O" />
       <page name="overview" accesskey="S"/>
@@ -74,10 +77,15 @@
   <config-include file="WEB-INF/fragments.xml" section="targets"/>
   <config-include file="conf/fragments.xml" section="targets" module="animal-module"/>
 
-  <standardpage master="var1" metatags="var1" name="home"     xml="xml/one_frame_navi.xml"/>
+  <standardpage-variant>de</standardpage-variant>
+  <standardpage-variant>en</standardpage-variant>
+  <!-- <config-include file="conf/fragments.xml" section="standardpage-variants" module="*"/> -->
+
+  <standardpage master="var1" metatags="var1" name="home" xml="xml/one_frame_navi.xml"/>
   <standardpage name="home"     xml="xml/one_frame_navi.xml" variant="foo"/>
   <standardpage name="home"     xml="xml/one_frame_navi.xml" variant="foo:bar:baz"/>
   <standardpage name="home"     xml="xml/one_frame_navi.xml" variant="baz"/>
+  
   <standardpage name="order"    xml="xml/one_frame_navi.xml"/>
   <standardpage name="overview" xml="xml/one_frame_navi.xml"/>
   <standardpage name="scripting" xml="xml/one_frame_navi.xml"/>

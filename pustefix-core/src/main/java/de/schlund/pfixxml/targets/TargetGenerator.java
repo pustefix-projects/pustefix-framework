@@ -239,6 +239,11 @@ public class TargetGenerator implements IncludeFileVisitor {
         return pageInfoFactory;
     }
     
+    public String[] getPageAliases(String pageName) {
+        //TODO: replace dummy implementation
+        return new String[] {"X" + pageName};
+    }
+    
     //-- targets
 
     public TreeMap<String, Target> getAllTargets() {
