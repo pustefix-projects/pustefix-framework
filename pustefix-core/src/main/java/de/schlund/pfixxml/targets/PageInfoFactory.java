@@ -41,7 +41,7 @@ public class PageInfoFactory {
         return instance;
     }
 
-    public PageInfo getPage(TargetGenerator gen, String name, String variant) {
+    public synchronized PageInfo getPage(TargetGenerator gen, String name, String variant) {
         // System.out.println(name + " :: " + variant);
         String   key = gen.getName() + "@" + name + "::" + variant;
         PageInfo ret = (PageInfo) pagemap.get(key);
