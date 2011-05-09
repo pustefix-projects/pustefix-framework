@@ -35,7 +35,7 @@ public class PageInfoFactory {
 
     private TreeMap<String, PageInfo> pagemap = new TreeMap<String, PageInfo>();
 
-    public PageInfo getPage(String name, String variant) {
+    public synchronized PageInfo getPage(String name, String variant) {
         String   key = name + "::" + variant;
         PageInfo ret = (PageInfo) pagemap.get(key);
         if (ret == null) {
