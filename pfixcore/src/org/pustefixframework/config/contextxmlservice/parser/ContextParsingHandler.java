@@ -51,7 +51,7 @@ public class ContextParsingHandler implements ParsingHandler {
         if(defaultPage.length()>0) ctxConfig.setDefaultPage(defaultPage);
         
         String syncStr = element.getAttribute("synchronized");
-        if (syncStr != null) {
+        if (syncStr.length() > 0) {
             ctxConfig.setSynchronized(Boolean.parseBoolean(syncStr));
         } else {
             ctxConfig.setSynchronized(true);

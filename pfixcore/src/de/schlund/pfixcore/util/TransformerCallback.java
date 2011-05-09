@@ -82,6 +82,8 @@ public class TransformerCallback {
                 AccessibilityChecker check = (AccessibilityChecker) context;
                 boolean retval;
                 if (context.getContextConfig().isSynchronized()) {
+                    //it's the underlying context object here, not the
+                    //context proxy, so it's ok to synchronize on it here
                     synchronized (context) {
                         retval = check.isPageAccessible(pagename);
                     }
