@@ -5,7 +5,7 @@
 <project-config xmlns="http://www.pustefix-framework.org/2008/namespace/project-config"
                 xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
                 xsi:schemaLocation="http://www.pustefix-framework.org/2008/namespace/project-config 
-                                    http://www.pustefix-framework.org/2008/namespace/project-config.xsd">
+                                    http://www.pustefix-framework.org/2008/namespace/project-config-0_16.xsd">
 
   <project>
     <name>${artifactId}</name>
@@ -31,10 +31,8 @@
   <application>
 
     <docroot-path>docroot:/htdocs</docroot-path>
-    <default-path>/xml/app</default-path>
 
     <context-xml-service>
-      <path>/xml/app</path>
       <config-file>docroot:/WEB-INF/app.xml</config-file>
       <choose>
         <when test="${symbol_dollar}mode='prod'">
