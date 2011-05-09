@@ -11,8 +11,8 @@
   </namespaces>
 
   <navigation>
-    <page handler="/xml/app" name="Home"/>
-    <page handler="/xml/app" name="Bye"/>
+    <page name="Home"/>
+    <page name="Bye"/>
   </navigation>
 
   <standardmaster>
