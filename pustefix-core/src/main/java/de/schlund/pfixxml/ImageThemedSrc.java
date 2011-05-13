@@ -84,7 +84,7 @@ public class ImageThemedSrc {
             LOG.debug("  -> Register image src '" + src + "'");
             if(dynamic) {
                 String uri =  "dynamic:/"+src;
-                if(module != null) uri += "&module="+module;
+                if(module != null) uri += "?module="+module;
                 res = ResourceUtil.getResource(uri);
                 URI resUri = res.toURI();
                 if("module".equals(resUri.getScheme())) {
@@ -113,7 +113,7 @@ public class ImageThemedSrc {
             String testsrc = null;
             
             if(dynamic) {
-                String themeParam = "&themes=";
+                String themeParam = "?themes=";
                 for (int i = 0; i < themes.length; i++) {
                     themeParam += themes[i];
                     if(i<themes.length-1) themeParam += ",";
