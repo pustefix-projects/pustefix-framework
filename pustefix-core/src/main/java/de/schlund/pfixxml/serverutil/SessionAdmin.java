@@ -236,7 +236,8 @@ public class SessionAdmin implements HttpSessionBindingListener, SessionAdminMBe
     
     public void invalidateSessions() throws IOException {
         synchronized(sessioninfo) {
-            Iterator<SessionInfoStruct> infos = sessioninfo.values().iterator();
+            List<SessionInfoStruct> sessionSnapshot = new ArrayList<SessionInfoStruct>(sessioninfo.values());
+            Iterator<SessionInfoStruct> infos = sessionSnapshot.iterator();
             while(infos.hasNext()) {
                 infos.next().getSession().invalidate();
             }
