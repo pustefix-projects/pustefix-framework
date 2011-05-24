@@ -94,7 +94,7 @@
       <xsl:apply-templates select="$common/p:global-config/p:http-server/p:tomcat/p:maxprocessors/node()"/>
     </xsl:variable>
 
-    <Connector enableLookups="false" acceptCount="100" maxThreads="150" minSpareThreads="25" maxSpareThreads="75" useBodyEncodingForURI="true" protocol="AJP/1.3">		
+    <Connector enableLookups="false" connectionTimeout="30000" acceptCount="100" maxThreads="150" minSpareThreads="25" maxSpareThreads="75" useBodyEncodingForURI="true" protocol="AJP/1.3">		
       <xsl:attribute name="port">
         <xsl:choose>
           <xsl:when test="string($jkport) = ''">
