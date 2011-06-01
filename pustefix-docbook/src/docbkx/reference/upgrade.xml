@@ -21,7 +21,7 @@
       <title>web.xml</title>
       <para>
         With Pustefix 0.16 URLs referencing pages no longer contain the <literal>/xml/xyz</literal> path prefix. Thus the according servlet
-        mappings in <literal>src/main/webapp/WEB-INF/web.xml</literal> become obsolete. You can remove all <literal>&lt;servlet-mapping/&gt;</literal>
+        mappings in <literal>src/main/webapp/WEB-INF/web.xml</literal> became obsolete. You can remove all <literal>&lt;servlet-mapping/&gt;</literal>
         elements containing an <literal>&lt;url-pattern&gt;</literal> starting with <literal>/xml</literal>.
       </para>
     </section>
@@ -51,7 +51,7 @@
       </para>
       <para>
         If you're referencing a XML schema, you can change the schema location to
-        <literal>http://www.pustefix-framework.org/2008/namespace/project-config-0_16.xsd</literal> to get and updated version.
+        <literal>http://www.pustefix-framework.org/2008/namespace/project-config-0_16.xsd</literal> to get an updated version.
       </para>
     </section>
 
@@ -103,7 +103,7 @@
       </para>
       <para>
       	Because URL rewriting of the session id now by default is only done if the client disabled cookies, you will have to adapt code, which
-        manually creates session-aware links. You should only include the session id, if necessary. Therefor Pustefix introduced two new 
+        manually creates session-aware links. You should only include the session id, if necessary. Therefore Pustefix introduced two new 
         XSL parameters: <literal>__sessionId</literal>, which is always set to the current session id, and <literal>__sessionIdPath</literal>, which
         is set to the path extension for the session on demand , e.g. <literal>;jsessionid=xyz</literal>. The <literal>__sessionIdPath</literal> parameter
         will be empty if the session id came from a cookie. Thus you can easily create session-aware URLs by just adding the value to your URL
@@ -119,7 +119,7 @@
       <title>AJAX webservices</title>
       <para>
         The JSON and SOAP Javascript libraries were moved from the Pustefix core module to the Pustefix webservice modules.
-        If you're application uses these libraries, you will have to adapt the according <literal>script</literal> tags, replacing
+        If your application uses these libraries, you will have to adapt the according <literal>script</literal> tags, replacing
         <literal>pustefix-core</literal> by <literal>pustefix-webservices-jaxws</literal> or <literal>pustefix-webservices-jsonws</literal>,
         e.g.
 <programlisting language="xml"><![CDATA[<script type="text/javascript" src="{$__contextpath}/modules/pustefix-core/script/webservice.js"></script>
