@@ -86,6 +86,11 @@ public class XMLGeneratorInfoParsingHandler extends CustomizationAwareParsingHan
             XMLGeneratorInfo info = ParsingUtils.getSingleTopObject(XMLGeneratorInfo.class, context);
             
             String uri = root.getTextContent().trim();
+            ProjectInfo projectInfo = ParsingUtils.getSingleTopObject(ProjectInfo.class, context);
+            if(projectInfo.getDefiningModule() != null && !uri.matches("^\\w+:.*")) {
+                if(uri.startsWith("/")) uri = uri.substring(1);
+                uri = "module://" + projectInfo.getDefiningModule() + "/" + uri;
+            }
             
             BeanDefinitionRegistry beanRegistry = ParsingUtils.getSingleTopObject(BeanDefinitionRegistry.class, context);
             DefaultBeanNameGenerator beanNameGenerator = new DefaultBeanNameGenerator();

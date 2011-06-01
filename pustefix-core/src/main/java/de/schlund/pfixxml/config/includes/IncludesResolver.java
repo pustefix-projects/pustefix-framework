@@ -192,9 +192,7 @@ public class IncludesResolver {
                     for (int i=0; i < includeNodes.getLength(); i++) {
                         Node node = includeNodes.item(i);
                         Node newNode = doc.importNode(node, true);
-                        if(module != null) {
-                        	newNode.setUserData("module", module, null);
-                        }
+                        setModuleUserData(newNode, module);
                         elem.getParentNode().insertBefore(newNode, elem);
                     }
                     elem.getParentNode().removeChild(elem);
@@ -211,6 +209,22 @@ public class IncludesResolver {
         }
     }
 
+    private void setModuleUserData(Node root, String module) {
+        if(root.getNodeType() == Node.ELEMENT_NODE) {
+            Element element = (Element)root;
+            if(element.getUserData("module") == null) {
+                element.setUserData("module", module, null);
+                NodeList nodes = element.getChildNodes();
+                for(int i=0; i<nodes.getLength(); i++) {
+                    Node node = nodes.item(i);
+                    if(node.getNodeType() == Node.ELEMENT_NODE) {
+                        setModuleUserData((Element)node, module == null ? "webapp" : module);
+                    }
+                }
+            }
+        }
+    }
+    
     private boolean checkSectionType(String section) {
         if (section.equals("targets") || section.equals("navigation") || section.equals("pageflows") || 
             section.equals("pagerequests") || section.equals("properties") || section.equals("interceptors") || 

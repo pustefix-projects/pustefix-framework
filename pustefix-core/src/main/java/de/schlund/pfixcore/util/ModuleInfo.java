@@ -28,6 +28,7 @@ import java.util.TreeMap;
 import org.apache.log4j.Logger;
 
 import de.schlund.pfixcore.exception.PustefixRuntimeException;
+import de.schlund.pfixxml.resources.ModuleFilter;
 
 public class ModuleInfo {
     
@@ -94,19 +95,18 @@ public class ModuleInfo {
         return moduleDescMap.keySet();
     }
     
-    public List<String> getOverridingModules(String moduleName, String resourcePath) {
+    public List<String> getOverridingModules(String moduleName, ModuleFilter filter, String resourcePath) {
         List<String> modules = new ArrayList<String>();
-        
-        getOverridingModules(moduleName, resourcePath, modules);
+        getOverridingModules(moduleName, filter, resourcePath, modules);
         return modules;
     }
     
-    private void getOverridingModules(String moduleName, String resourcePath, List<String> modules) {
+    private void getOverridingModules(String moduleName, ModuleFilter filter, String resourcePath, List<String> modules) {
         for(ModuleDescriptor moduleDesc:moduleDescMap.values()) {
-            if(moduleDesc.overridesResource(moduleName, resourcePath)) {
+            if((filter == null || filter.accept(moduleDesc)) && moduleDesc.overridesResource(moduleName, resourcePath)) {
                 if(!modules.contains(moduleDesc.getName())) {
                     modules.add(0, moduleDesc.getName());
-                    getOverridingModules(moduleDesc.getName(), resourcePath, modules);
+                    getOverridingModules(moduleDesc.getName(), filter, resourcePath, modules);
                 }
             }
         }

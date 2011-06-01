@@ -25,6 +25,7 @@ import javax.servlet.ServletContext;
 import org.springframework.web.context.ServletContextAware;
 
 import de.schlund.pfixxml.resources.FileResource;
+import de.schlund.pfixxml.resources.Resource;
 import de.schlund.pfixxml.resources.ResourceUtil;
 import de.schlund.pfixxml.util.FileUtils;
 
@@ -39,7 +40,7 @@ import de.schlund.pfixxml.util.FileUtils;
 public class TargetGeneratorFactoryBean implements ServletContextAware {
     
     private ServletContext servletContext;
-    private FileResource configFile;
+    private Resource configFile;
     private SPCacheFactory cacheFactory;
     
     /**
@@ -74,7 +75,7 @@ public class TargetGeneratorFactoryBean implements ServletContextAware {
      * @param path URI of configuration file
      */
     public void setConfigFile(String path) {
-        configFile = ResourceUtil.getFileResource(path);
+        configFile = ResourceUtil.getResource(path);
     }
  
     public void setServletContext(ServletContext servletContext) {

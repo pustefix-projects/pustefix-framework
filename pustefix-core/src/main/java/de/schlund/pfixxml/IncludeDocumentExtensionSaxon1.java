@@ -21,6 +21,7 @@ package de.schlund.pfixxml;
 import com.icl.saxon.Context;
 
 import de.schlund.pfixxml.targets.TargetGenerator;
+import de.schlund.pfixxml.util.ExtensionFunctionUtils;
 import de.schlund.pfixxml.util.XsltContext;
 import de.schlund.pfixxml.util.xsltimpl.XsltContextSaxon1;
 
@@ -31,9 +32,14 @@ public class IncludeDocumentExtensionSaxon1 {
     
     public static Object get(Context context,String path_str,String part,TargetGenerator targetgen,String targetkey,
             String parent_part_in,String parent_theme_in,String computed_inc,String module,String search) throws Exception {    
-        XsltContext xsltContext=new XsltContextSaxon1(context);
-        return IncludeDocumentExtension.get(xsltContext,path_str,part,targetgen,targetkey,
-                parent_part_in,parent_theme_in,computed_inc,module,search);
+        try {
+            XsltContext xsltContext=new XsltContextSaxon1(context);
+            return IncludeDocumentExtension.get(xsltContext,path_str,part,targetgen,targetkey,
+                    parent_part_in,parent_theme_in,computed_inc,module,search);
+        } catch(Exception x) {
+            ExtensionFunctionUtils.setExtensionFunctionError(x);
+            throw x;
+        }
     }
     
     public static String getSystemId(Context context) {

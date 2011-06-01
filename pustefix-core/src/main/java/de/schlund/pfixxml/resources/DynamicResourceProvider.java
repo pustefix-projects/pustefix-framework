@@ -70,6 +70,7 @@ public class DynamicResourceProvider implements ResourceProvider {
             themes = params.getParameter("themes").split(",");
         }
         if(themes==null) themes = new String[] {""};
+        String filter = params.getParameter("filter");
         
         Resource infoRes = null;
         
@@ -141,7 +142,9 @@ public class DynamicResourceProvider implements ResourceProvider {
         if(module != null) {
 
             //search in overriding modules
-            List<String> overMods = moduleInfo.getOverridingModules(module, path);
+            ModuleFilter moduleFilter = null;
+            if(filter != null) moduleFilter = new ModuleFilter(filter);
+            List<String> overMods = moduleInfo.getOverridingModules(module, moduleFilter, path);
             if(overMods.size()>1) {
                 LOG.warn("Multiple modules found which override resource '"+path+"' from module '"+module+"'.");
             }

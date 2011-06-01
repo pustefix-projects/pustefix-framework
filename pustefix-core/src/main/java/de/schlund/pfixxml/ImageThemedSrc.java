@@ -18,6 +18,7 @@
 
 package de.schlund.pfixxml;
 import java.net.URI;
+import java.net.URLEncoder;
 
 import org.apache.log4j.Logger;
 
@@ -44,6 +45,8 @@ public class ImageThemedSrc {
     public static String getSrc(XsltContext context, String src, String themed_path, String themed_img,
                                 String parent_part_in, String parent_product_in,
                                 TargetGenerator targetGen, String targetKey, String module, String search) throws Exception {
+        System.out.println("TTTTTTTTTTTTTTTTTTT: "+targetKey);
+        String filter = FilterHelper.getFilter(targetKey);
         
         boolean dynamic = false;
         if(search != null && !search.trim().equals("")) {
@@ -84,7 +87,10 @@ public class ImageThemedSrc {
             LOG.debug("  -> Register image src '" + src + "'");
             if(dynamic) {
                 String uri =  "dynamic:/"+src;
-                if(module != null) uri += "?module="+module;
+                if(module != null) {
+                    uri += "?module="+module;
+                    if(filter!=null) uri += "&filter=" + URLEncoder.encode(filter, "UTF-8");
+                }
                 res = ResourceUtil.getResource(uri);
                 URI resUri = res.toURI();
                 if("module".equals(resUri.getScheme())) {
@@ -120,7 +126,10 @@ public class ImageThemedSrc {
                 }
                 String uri =  "dynamic:/" + themed_path +"/THEME/" + themed_img;
                 uri += themeParam;
-                if(module != null) uri += "&module="+module;
+                if(module != null) {
+                    uri += "&module="+module;
+                    if(filter!=null) uri += "&filter=" + URLEncoder.encode(filter, "UTF-8");
+                }
                 Resource res = ResourceUtil.getResource(uri);
                 URI resUri = res.toURI();
                 if("module".equals(resUri.getScheme()) && res.exists()) {

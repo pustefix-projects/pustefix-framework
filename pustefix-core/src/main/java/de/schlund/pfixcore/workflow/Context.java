@@ -70,7 +70,10 @@ public interface Context extends PageFlowContext {
 
     void setVariant(Variant variant);
     void setVariantForThisRequestOnly(Variant variant);
-
+    
+    void setPageSelector(String name, String value);
+    void setPageSelectorForThisRequestOnly(String name, String value);
+    
     void setLanguage(String lang);
     String getLanguage();
 

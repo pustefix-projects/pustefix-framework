@@ -47,7 +47,6 @@ import de.schlund.pfixxml.config.CustomizationHandler;
 import de.schlund.pfixxml.config.includes.FileIncludeEvent;
 import de.schlund.pfixxml.config.includes.FileIncludeEventListener;
 import de.schlund.pfixxml.config.includes.IncludesResolver;
-import de.schlund.pfixxml.resources.FileResource;
 import de.schlund.pfixxml.resources.Resource;
 import de.schlund.pfixxml.util.TransformerHandlerAdapter;
 import de.schlund.pfixxml.util.XPath;
@@ -55,6 +54,7 @@ import de.schlund.pfixxml.util.Xml;
 import de.schlund.pfixxml.util.XsltVersion;
 
 public class Navigation {
+    
     private NavigationElement                   pageroot = new NavigationElement("__NONE__");
     private Map<String, NavigationElement> pagetonavi;
     
@@ -63,7 +63,7 @@ public class Navigation {
     
     private Element navigationXMLElement = null;
     
-    public Navigation(FileResource navifile,XsltVersion xsltVersion) throws IOException, SAXException, TransformerException, TransformerConfigurationException {
+    public Navigation(Resource navifile,XsltVersion xsltVersion) throws IOException, SAXException, TransformerException, TransformerConfigurationException {
         loadTime = System.currentTimeMillis();
         Document navitree = Xml.parseMutable(navifile);
         

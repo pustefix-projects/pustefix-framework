@@ -291,7 +291,8 @@ public class Xslt {
                 return new StreamSource(href);
             }
 
-            if (uri.getScheme() != null && !uri.getScheme().equals("docroot") && !uri.getScheme().equals("module")) {
+            if (uri.getScheme() != null && !uri.getScheme().equals("docroot") 
+                    && !uri.getScheme().equals("module") && !uri.getScheme().equals("dynamic")) {
                 // we don't handle uris with an explicit scheme
                 return new StreamSource(href);
             }
@@ -301,7 +302,7 @@ public class Xslt {
                     path = path.substring(1);
                 }
             }
-            if("module".equals(uri.getScheme())) {
+            if("module".equals(uri.getScheme()) || "dynamic".equals(uri.getScheme())) {
                 path = uri.toString();
             }
             

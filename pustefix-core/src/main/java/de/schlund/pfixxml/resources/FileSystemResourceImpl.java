@@ -39,6 +39,7 @@ import java.util.ArrayList;
  * @author Sebastian Marsching <sebastian.marsching@1und1.de>
  */
 class FileSystemResourceImpl implements FileSystemResource {
+    
     URI uri;
     URI origUri;
     File file;
@@ -219,4 +220,45 @@ class FileSystemResourceImpl implements FileSystemResource {
     public String getPathOnFileSystem() {
         return toURI().getPath();
     }
+
+    //Spring Resource compatibility methods
+    
+    public boolean isReadable() {
+        return true;
+    }
+
+    public boolean isOpen() {
+        return false;
+    }
+
+    public URL getURL() throws IOException {
+        return toURL();
+    }
+
+    public URI getURI() throws IOException {
+        return toURI();
+    }
+
+    public File getFile() throws IOException {
+        return file;
+    }
+    
+    public String getFilename() {
+        return getName();
+    }
+
+    public long contentLength() throws IOException {
+        return length();
+    }
+
+    public String getDescription() {
+        return toURI().toASCIIString();
+    } 
+    
+    public org.springframework.core.io.Resource createRelative(
+            String relativePath) throws IOException {
+        // TODO implement
+        throw new RuntimeException("Method not yet implemented");
+    }
+    
 }

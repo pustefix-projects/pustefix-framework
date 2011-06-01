@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<include_parts xmlns:ixsl="http://www.w3.org/1999/XSL/Transform" xmlns:pfx="http://www.schlund.de/pustefix/core"><!--
+This file contains merged statusmessages from 'module://pustefix-i18n-de/PUSTEFIX-INF/dyntxt/statusmessages.xml'.
+You can modify this file to change the messages for exisiting statuscodes.
+Adding new statuscodes has to be done within the originating module.
+-->
+  <part name="GENERAL_ERRROR">
+    <theme name="default">Error!</theme>
+  </part>
+</include_parts>

@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="utf-8"?>
+<pfx:document xmlns:pfx="http://www.schlund.de/pustefix/core" xmlns:ixsl="http://www.w3.org/1999/XSL/Transform">
+  <!-- put the frame markup your pages have in common here -->
+  <html>
+    <head>
+      <title>Pustefix i18n sample application</title>
+      <link href="{$__contextpath}/modules/pustefix-i18n-core/css/style.css" media="all" rel="stylesheet" type="text/css"/>
+    </head>
+    <body>
+      <div class="header">
+        <div class="logo"><pfx:image class="logo" src="img/logo.png"/></div>
+        <div class="title"><pfx:include href="txt/common.xml" part="title" search="dynamic"/></div>
+        <div class="country"><pfx:image src="img/flag-48x48.png" search="dynamic"/></div>
+        <div style="clear:both"></div>
+      </div>
+      <div class="content">
+        <pfx:include href="txt/common.xml" part="header" search="dynamic"/>
+        <pfx:maincontent prefix=""/>
+      </div>
+      <hr/>
+      <div>
+      <a href="http://zap.ue.schlund.de:8080/">DE</a><br/>
+      <a href="http://us.zap.ue.schlund.de:8080/">US</a><br/>
+      <a href="http://ca.zap.ue.schlund.de:8080/">CA</a>
+      </div>
+      <pfx:editconsole/>
+    </body>
+  </html>
+</pfx:document>

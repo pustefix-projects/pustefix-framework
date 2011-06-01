@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="utf-8"?>
+<include_parts xmlns:ixsl="http://www.w3.org/1999/XSL/Transform" xmlns:pfx="http://www.schlund.de/pustefix/core">
+  
+  <part name="header">
+    <theme name="default">
+    
+      <pfx:image src="img/globe.png" search="dynamic"/> 
+
+      <pfx:image src="img/flag-48x48.png" search="dynamic"/>
+
+    </theme>
+  </part>
+  
+</include_parts>

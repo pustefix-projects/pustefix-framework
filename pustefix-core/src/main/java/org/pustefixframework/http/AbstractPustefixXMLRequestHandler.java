@@ -55,6 +55,7 @@ import org.w3c.dom.Document;
 import de.schlund.pfixcore.exception.PustefixApplicationException;
 import de.schlund.pfixcore.exception.PustefixCoreException;
 import de.schlund.pfixcore.exception.PustefixRuntimeException;
+import de.schlund.pfixcore.workflow.Context;
 import de.schlund.pfixxml.IncludePartsInfoParsingException;
 import de.schlund.pfixxml.PfixServletRequest;
 import de.schlund.pfixxml.RenderContext;
@@ -870,6 +871,8 @@ public abstract class AbstractPustefixXMLRequestHandler extends AbstractPustefix
                 String[] variants = variant.getVariantFallbackArray();
                 for (int i = 0; i < variants.length; i++) {
                     variant_id = variants[i];
+                    //TODO
+                    //if(spdoc.getBaseVariant() != null) variant_id += ":" + spdoc.getBaseVariant();
                     LOGGER.info("   ** Trying variant '" + variant_id + "' **");
                     pinfo   = generator.getPageInfoFactory().getPage(pagename, variant_id);
                     target  = pagetree.getTargetForPageInfo(pinfo);
@@ -880,6 +883,7 @@ public abstract class AbstractPustefixXMLRequestHandler extends AbstractPustefix
             }
             if (target == null) {
                 LOGGER.info("   ** Trying root variant **");
+                //TODO
                 pinfo = generator.getPageInfoFactory().getPage(pagename, null);
                 target = pagetree.getTargetForPageInfo(pinfo);
             }

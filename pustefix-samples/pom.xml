@@ -25,5 +25,6 @@
     <module>pustefix-webservice</module>
     <module>sample-modules</module>
     <module>moduletest</module>
+    <module>pustefix-i18n</module>
   </modules>  
 </project>

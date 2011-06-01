@@ -37,6 +37,7 @@ import com.marsching.flexiparse.parser.Parser;
 import com.marsching.flexiparse.parser.exception.ParserException;
 
 import de.schlund.pfixxml.config.EnvironmentProperties;
+import de.schlund.pfixxml.resources.ModuleResource;
 
 public class PustefixProjectBeanDefinitionReader extends AbstractBeanDefinitionReader {
     
@@ -52,7 +53,11 @@ public class PustefixProjectBeanDefinitionReader extends AbstractBeanDefinitionR
         CustomizationInfo info = new PropertiesBasedCustomizationInfo(envProperties);
         try {
             Parser projectConfigParser = new ClasspathConfiguredParser("META-INF/org/pustefixframework/config/project/parser/project-config.xml");
-            ProjectInfo projectInfo = new ProjectInfo(resource.getURL());
+            String definingModule = null;
+            if(resource instanceof ModuleResource) {
+                definingModule = resource.getURI().getAuthority();
+            }
+            ProjectInfo projectInfo = new ProjectInfo(definingModule);
             projectConfigTree = projectConfigParser.parse(resource.getInputStream(), info, getRegistry(), projectInfo);
         } catch (ParserException e) {
             throw new BeanDefinitionStoreException("Error while parsing " + resource + ": " + e.getMessage(), e);

@@ -21,7 +21,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.net.URI;
 
-public interface Resource extends Comparable<Resource> {
+public interface Resource extends Comparable<Resource>, org.springframework.core.io.Resource {
 
     /**
      * Tests whether this resource exists.

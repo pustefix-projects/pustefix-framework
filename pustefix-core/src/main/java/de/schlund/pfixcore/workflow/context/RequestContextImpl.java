@@ -20,6 +20,7 @@ package de.schlund.pfixcore.workflow.context;
 
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.LinkedHashSet;
@@ -90,6 +91,7 @@ public class RequestContextImpl implements Cloneable, AuthorizationInterceptor {
     private PageMap             pagemap;
 
     private Variant             variant             = null;
+    private Map<String, String> pageSelectors       = new HashMap<String, String>();
     private String              language            = null;
 
     private PageRequest         currentpagerequest  = null;
@@ -252,11 +254,22 @@ public class RequestContextImpl implements Cloneable, AuthorizationInterceptor {
         return variant;
     }
 
+    public Map<String, String> getPageSelectors() {
+        return pageSelectors;
+    }
+    
     public void setVariantForThisRequestOnly(Variant variant) {
         if (currentpservreq == null) {
             throw new IllegalStateException("This feature is only available during request handling");
         }
         this.variant = variant;
+    }
+    
+    public void setPageSelectorForThisRequestOnly(String name, String value) {
+        if (currentpservreq == null) {
+            throw new IllegalStateException("This feature is only available during request handling");
+        }
+        pageSelectors.put(name, value);
     }
 
     public boolean stateMustSupplyFullDocument() {
@@ -518,7 +531,8 @@ public class RequestContextImpl implements Cloneable, AuthorizationInterceptor {
                 if (currentpageflow != null)
                     spdoc.getDocument().getDocumentElement().setAttribute("used-pf", currentpageflow.getName());
             }
-
+            spdoc.setPageSelectors(getPageSelectors());
+            
             if (spdoc.getResponseError() == 0 && parentcontext.getContextConfig().getPageRequestConfig(spdoc.getPagename()) != null) {
                 parentcontext.addVisitedPage(spdoc.getPagename());
             }

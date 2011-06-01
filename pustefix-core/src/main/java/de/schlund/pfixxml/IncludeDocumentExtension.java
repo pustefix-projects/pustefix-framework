@@ -20,6 +20,7 @@ package de.schlund.pfixxml;
 
 import java.net.URI;
 import java.net.URISyntaxException;
+import java.net.URLEncoder;
 import java.text.MessageFormat;
 import java.util.List;
 import java.util.regex.Matcher;
@@ -129,11 +130,15 @@ public final class IncludeDocumentExtension {
                 else throw new XMLException("Unsupported include search argument: " + search);
             }
             if(dynamic) {
+                String filter = FilterHelper.getFilter(targetkey);
                 uriStr = "dynamic:/" + path_str + "?part=" + part + "&parent=" + parent_uri_str;
                 if(!"WEBAPP".equalsIgnoreCase(module)) {
-                    if(module != null) uriStr += "&module="+module;
-                    else if("module".equals(parentURI.getScheme())) {
+                    if(module != null) {
+                        uriStr += "&module="+module;
+                        if(filter != null)  uriStr += "&filter=" + URLEncoder.encode(filter, "UTF-8");
+                    } else if("module".equals(parentURI.getScheme())) {
                         uriStr += "&module="+parentURI.getAuthority();
+                        if(filter != null)  uriStr += "&filter=" + URLEncoder.encode(filter, "UTF-8");
                     }
                 }
             } else {

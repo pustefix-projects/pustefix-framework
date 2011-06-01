@@ -1,0 +1,108 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+  
+  <modelVersion>4.0.0</modelVersion>
+  
+  <parent>
+    <groupId>org.pustefixframework.samples</groupId>
+    <artifactId>pustefix-i18n</artifactId>
+    <version>0.18.0-SNAPSHOT</version>
+  </parent>
+
+  <groupId>org.pustefixframework.samples</groupId>
+  <artifactId>pustefix-i18n-webapp</artifactId>
+  <version>0.18.0-SNAPSHOT</version>
+  <packaging>war</packaging>
+
+  <name>Pustefix i18n sample webapp</name>
+
+  <properties>
+    <pustefix.version>0.18.0-SNAPSHOT</pustefix.version>
+    <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+  </properties>
+
+  <dependencies>
+    <dependency>
+      <groupId>org.pustefixframework</groupId>
+      <artifactId>pustefix-core</artifactId>
+      <version>${pustefix.version}</version>
+    </dependency>
+    <dependency>
+      <groupId>org.pustefixframework.samples</groupId>
+      <artifactId>pustefix-i18n-core</artifactId>
+      <version>0.18.0-SNAPSHOT</version>
+    </dependency>
+    <dependency>
+      <groupId>org.pustefixframework.samples</groupId>
+      <artifactId>pustefix-i18n-en</artifactId>
+      <version>0.18.0-SNAPSHOT</version>
+    </dependency>
+    <dependency>
+      <groupId>org.pustefixframework.samples</groupId>
+      <artifactId>pustefix-i18n-ca</artifactId>
+      <version>0.18.0-SNAPSHOT</version>
+    </dependency>
+    <dependency>
+      <groupId>org.pustefixframework.samples</groupId>
+      <artifactId>pustefix-i18n-us</artifactId>
+      <version>0.18.0-SNAPSHOT</version>
+    </dependency>
+    <dependency>
+      <groupId>org.pustefixframework.samples</groupId>
+      <artifactId>pustefix-i18n-de</artifactId>
+      <version>0.18.0-SNAPSHOT</version>
+    </dependency>
+  </dependencies>
+ 
+  <build>
+    <plugins> 
+      <plugin>
+        <groupId>org.codehaus.mojo</groupId>
+        <artifactId>tomcat-maven-plugin</artifactId>
+        <version>1.1</version>
+        <configuration>
+          <path>/</path>
+          <uriEncoding>UTF-8</uriEncoding>
+        </configuration>
+      </plugin>
+      <plugin>
+        <groupId>org.pustefixframework.maven.plugins</groupId>
+        <artifactId>pustefix-webapp-plugin</artifactId>
+        <version>${pustefix.version}</version>
+        <executions>
+          <execution>
+            <goals>
+              <goal>generate</goal>
+              <goal>merge-statusmessages</goal>
+            </goals>
+          </execution>
+        </executions>
+      </plugin>
+      <plugin>
+        <groupId>org.pustefixframework.maven.plugins</groupId>
+        <artifactId>pustefix-statuscode-plugin</artifactId>
+        <version>${pustefix.version}</version>
+        <executions>
+          <execution>
+            <goals>
+              <goal>generate</goal>
+            </goals>
+          </execution>
+        </executions>
+      </plugin>
+      <plugin>
+        <groupId>org.pustefixframework.maven.plugins</groupId>
+        <artifactId>pustefix-iwrapper-plugin</artifactId>
+        <version>${pustefix.version}</version>
+        <executions>
+          <execution>
+            <goals>
+              <goal>generate</goal>
+            </goals>
+          </execution>
+        </executions>
+      </plugin>
+    </plugins>
+  </build>
+
+</project>

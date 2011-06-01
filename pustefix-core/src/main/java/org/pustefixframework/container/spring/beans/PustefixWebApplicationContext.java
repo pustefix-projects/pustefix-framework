@@ -48,6 +48,7 @@ import org.xml.sax.SAXException;
 import de.schlund.pfixcore.exception.PustefixCoreException;
 import de.schlund.pfixcore.exception.PustefixRuntimeException;
 import de.schlund.pfixxml.config.EnvironmentProperties;
+import de.schlund.pfixxml.resources.ResourceUtil;
 
 public class PustefixWebApplicationContext extends AbstractRefreshableWebApplicationContext {
 	
@@ -169,6 +170,15 @@ public class PustefixWebApplicationContext extends AbstractRefreshableWebApplica
         DefaultBeanNameGenerator beanNameGenerator = new DefaultBeanNameGenerator();
         String name = beanNameGenerator.generateBeanName(definition, registry);
         registry.registerBeanDefinition(name, definition);
+    }
+    
+    @Override
+    public Resource getResource(String location) {
+        if(location.startsWith("module:") || location.startsWith("dynamic:")) {
+            return ResourceUtil.getResource(location);
+        } else {
+            return super.getResource(location);
+        }
     }
     
 }

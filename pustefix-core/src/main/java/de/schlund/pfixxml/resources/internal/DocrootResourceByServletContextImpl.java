@@ -18,6 +18,7 @@
 
 package de.schlund.pfixxml.resources.internal;
 
+import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
@@ -41,6 +42,7 @@ import de.schlund.pfixxml.resources.DocrootResource;
  * @author Sebastian Marsching <sebastian.marsching@1und1.de>
  */
 class DocrootResourceByServletContextImpl extends AbstractDocrootResourceImpl {
+    
     private ServletContext servletContext;
     
     DocrootResourceByServletContextImpl(URI uri, URI originatingUri, ServletContext servletContext) {
@@ -167,6 +169,12 @@ class DocrootResourceByServletContextImpl extends AbstractDocrootResourceImpl {
     @Override
     public OutputStream getOutputStream(boolean append) throws FileNotFoundException {
         throw new FileNotFoundException("Cannot write to file in WAR archive");
+    }
+    
+    //Spring Resource compatibility methods
+    
+    public File getFile() throws IOException {
+        throw new IOException("Resource isn't available on the file system: " + toURI());
     }
 
 }

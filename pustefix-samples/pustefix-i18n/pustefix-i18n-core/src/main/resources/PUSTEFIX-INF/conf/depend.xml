@@ -1,0 +1,79 @@
+<?xml version="1.0" encoding="utf-8"?>
+<make lang="en_GB" project="firstapp">
+
+  <!-- prefix to namespace url mappings to be used in pages xml -->
+  <namespaces>
+    <namespace-declaration prefix="pfx" url="http://www.schlund.de/pustefix/core"/>
+    <namespace-declaration prefix="ixsl" url="http://www.w3.org/1999/XSL/Transform"/>
+  </namespaces>
+
+  <path-prefixes>
+    <path-prefix lang="en">en</path-prefix>
+    <path-prefix lang="fr">fr</path-prefix>
+  </path-prefixes>
+
+  <navigation>
+    <page name="Home">
+      <alias lang="de">Start</alias>
+      <alias lang="en">home</alias>
+      <alias lang="fr">depart</alias>
+    </page>
+    <page name="Bye">
+      <alias lang="de">Tschuess</alias>
+      <alias lang="en">goodbye</alias>
+      <alias lang="fr">salut</alias>
+      <alias lang="en" country="US"></alias>
+    </page>
+    <page name="Overview">
+      <alias lang="de">Uebersicht</alias>
+      <alias lang="en">overview</alias>
+      <alias lang="fr">apercu</alias>
+    </page>
+    <page name="LandingPage">
+      <alias lang="de">
+        <alias branch="living">Wohnen</alias>
+        <alias branch="garden">Garten</alias>
+        <alias branch="kitchen">Kueche</alias>
+      </alias>
+      <alias lang="en">
+        <alias branch="living">living</alias>
+        <alias branch="garden">garden</alias>
+        <alias branch="kitchen">kitchen</alias>
+      </alias>
+      <alias lang="fr">
+        <alias branch="living">habiter</alias>
+        <alias branch="garden">jardin</alias>
+        <alias branch="kitchen">cuisine</alias>
+      </alias>
+    </page>
+  </navigation>
+
+  <standardmaster>
+    <include stylesheet="xsl/skin.xsl"/>
+  </standardmaster>
+
+  <standardmetatags>
+  	<include stylesheet="xsl/metatags.xsl"/>
+  </standardmetatags>
+
+  <standardpage-variant-selectors>
+    <attribute name="lang"/>
+    <attribute name="country"/>
+    <attribute name="branch"/>
+  </standardpage-variant-selectors>
+
+  <standardpage-variant lang="en" country="US">en_US</standardpage-variant>
+  <standardpage-variant lang="en" country="CA">en_CA</standardpage-variant>
+  <standardpage-variant lang="fr" country="CA">fr_CA</standardpage-variant>
+  <standardpage-variant lang="de" country="DE">de_DE</standardpage-variant>
+
+  <standardpage name="Home" xml="xml/frame.xml"/>
+  <standardpage name="Bye" xml="xml/frame.xml"/>
+
+  <standardpage name="LandingPage" xml="xml/frame.xml">
+    <standardpage-variant branch="cooking">cooking</standardpage-variant>
+    <standardpage-variant branch="garden">garden</standardpage-variant>
+    <standardpage-variant branch="living">living</standardpage-variant>
+  </standardpage>
+
+</make>

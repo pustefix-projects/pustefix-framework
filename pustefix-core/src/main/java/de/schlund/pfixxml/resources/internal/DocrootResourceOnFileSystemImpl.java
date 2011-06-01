@@ -40,6 +40,7 @@ import de.schlund.pfixxml.resources.DocrootResource;
  * @author Sebastian Marsching <sebastian.marsching@1und1.de>
  */
 class DocrootResourceOnFileSystemImpl extends AbstractDocrootResourceImpl {
+    
     private File file;
     
     DocrootResourceOnFileSystemImpl(URI uri, URI origUri, String docroot) {
@@ -141,4 +142,10 @@ class DocrootResourceOnFileSystemImpl extends AbstractDocrootResourceImpl {
         return new FileOutputStream(file, append);
     }
 
+    //Spring Resource compatibility methods
+    
+    public File getFile() throws IOException {
+        return file;
+    }
+    
 }

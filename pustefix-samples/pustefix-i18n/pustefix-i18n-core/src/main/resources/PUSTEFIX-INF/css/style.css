@@ -1,0 +1,47 @@
+/* put your application's common CSS styles here */
+
+body {
+  margin: 10px;
+  background: #ccc url(/modules/pustefix-i18n-core/img/background.png) 0 0 repeat-x;
+  color: #000;
+  font-family: 'Lucida Grande', 'Lucida Sans Unicode', Verdana, sans-serif;
+  margin: 0;
+  padding: 0;
+}
+
+div.header {
+}
+
+div.header div.title {
+  float: left;
+  padding-left: 40px;
+  padding-top: 20px;
+  font-size: 40px;
+  color: #fff;
+ 
+  font-weight: 100;
+}
+
+div.header div.logo {
+  float: left;
+}
+
+div.header div.country {
+  float: left;
+  padding-left: 40px;
+  padding-top: 22px;
+  
+}
+
+div.content {
+  padding: 10px;	
+}
+
+
+
+
+
+span.error {
+  color: red;
+  padding-left: 10px;
+}

@@ -19,7 +19,6 @@
 package org.pustefixframework.config.project.parser;
 
 import java.io.IOException;
-import java.net.MalformedURLException;
 import java.util.Collection;
 import java.util.Properties;
 
@@ -34,6 +33,7 @@ import org.pustefixframework.config.customization.CustomizationInfo;
 import org.pustefixframework.config.customization.PropertiesBasedCustomizationInfo;
 import org.pustefixframework.config.generic.ParsingUtils;
 import org.pustefixframework.config.project.EditorInfo;
+import org.pustefixframework.config.project.ProjectInfo;
 import org.pustefixframework.config.project.SessionTimeoutInfo;
 import org.pustefixframework.config.project.SessionTrackingStrategyInfo;
 import org.pustefixframework.config.project.XMLGeneratorInfo;
@@ -47,8 +47,6 @@ import org.springframework.beans.factory.config.BeanDefinitionHolder;
 import org.springframework.beans.factory.config.RuntimeBeanReference;
 import org.springframework.beans.factory.support.BeanDefinitionBuilder;
 import org.springframework.beans.factory.support.BeanDefinitionRegistry;
-import org.springframework.core.io.Resource;
-import org.springframework.core.io.UrlResource;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.xml.sax.SAXException;
@@ -65,7 +63,6 @@ import de.schlund.pfixxml.SessionCleaner;
 import de.schlund.pfixxml.config.EnvironmentProperties;
 import de.schlund.pfixxml.config.includes.IncludesResolver;
 import de.schlund.pfixxml.exceptionprocessor.ExceptionProcessingConfiguration;
-import de.schlund.pfixxml.resources.FileResource;
 import de.schlund.pfixxml.resources.ResourceUtil;
 import de.schlund.pfixxml.serverutil.SessionAdmin;
 import de.schlund.pfixxml.targets.cachestat.CacheStatistic;
@@ -85,6 +82,11 @@ public class PustefixContextXMLRequestHandlerParsingHandler extends Customizatio
             throw new ParserException("Could not find expected <config-file> element");
         }
         String configurationFile = configurationFileElement.getTextContent().trim();
+        ProjectInfo projectInfo = ParsingUtils.getSingleTopObject(ProjectInfo.class, context);
+        if(projectInfo.getDefiningModule() != null && !configurationFile.matches("^\\w+:.*")) {
+            if(configurationFile.startsWith("/")) configurationFile = configurationFile.substring(1);
+            configurationFile = "module://" + projectInfo.getDefiningModule() + "/" + configurationFile;
+        }
         
         boolean renderExternal = false;
         Element renderExtElement = (Element) serviceElement.getElementsByTagNameNS(Constants.NS_PROJECT, "render-external").item(0);
@@ -132,12 +134,9 @@ public class PustefixContextXMLRequestHandlerParsingHandler extends Customizatio
         
        
        
-        FileResource fileRes = ResourceUtil.getFileResource(configurationFile);
-        Resource res = null;
-        try {
-            res = new UrlResource(fileRes.toURL());
-        } catch(MalformedURLException x) {
-            throw new ParserException("Illegal resource URL",x);
+        de.schlund.pfixxml.resources.Resource res = ResourceUtil.getResource(configurationFile);
+        if(!res.exists()) {
+            throw new ParserException("Context configuration file can't be found: " + res);
         }
 
         Collection<BeanDefinitionRegistry> beanRegs = context.getObjectTreeElement().getObjectsOfTypeFromTopTree(BeanDefinitionRegistry.class);
@@ -154,7 +153,7 @@ public class PustefixContextXMLRequestHandlerParsingHandler extends Customizatio
             dbf.setNamespaceAware(true);
             dbf.setXIncludeAware(true);
             DocumentBuilder db = dbf.newDocumentBuilder();
-            Document doc = db.parse(ResourceUtil.getFileResource(configurationFile).getInputStream()); 
+            Document doc = db.parse(res.getInputStream()); 
             IncludesResolver resolver = new IncludesResolver("http://www.pustefix-framework.org/2008/namespace/context-xml-service-config", "config-include");
             resolver.resolveIncludes(doc);
             

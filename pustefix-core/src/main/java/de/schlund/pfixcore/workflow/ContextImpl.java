@@ -194,6 +194,15 @@ public class ContextImpl implements AccessibilityChecker, ExtendedContext, Token
     public void setVariantForThisRequestOnly(Variant variant) {
         getRequestContextForCurrentThreadWithError().setVariantForThisRequestOnly(variant);
     }
+    
+    public void setPageSelector(String name, String value) {
+        getRequestContextForCurrentThreadWithError().setPageSelectorForThisRequestOnly(name, value);
+        sessioncontext.setPageSelector(name, value);
+    }
+
+    public void setPageSelectorForThisRequestOnly(String name, String value) {
+        getRequestContextForCurrentThreadWithError().setPageSelectorForThisRequestOnly(name, value);
+    }
 
     public boolean stateMustSupplyFullDocument() {
         return getRequestContextForCurrentThreadWithError().stateMustSupplyFullDocument();

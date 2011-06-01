@@ -59,6 +59,7 @@ public class MockContext implements Context {
 
     private ContextResourceManager resourceManager;
     private Variant variant;
+    private Map<String, String> pageSelectors = new HashMap<String, String>();
     private String lang;
     private String visitId;
     private Properties properties;
@@ -308,6 +309,14 @@ public class MockContext implements Context {
 
     public void setVariantForThisRequestOnly(Variant variant) {
         this.variant = variant;
+    }
+
+    public void setPageSelector(String name, String value) {
+        pageSelectors.put(name, value);
+    }
+
+    public void setPageSelectorForThisRequestOnly(String name, String value) {
+        pageSelectors.put(name, value);
     }
     
 }

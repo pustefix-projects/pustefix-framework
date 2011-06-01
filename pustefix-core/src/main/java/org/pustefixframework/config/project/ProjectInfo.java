@@ -17,7 +17,6 @@
  */
 package org.pustefixframework.config.project;
 
-import java.net.URL;
 
 /**
  * 
@@ -26,18 +25,13 @@ import java.net.URL;
  */
 public class ProjectInfo {
     
-    private URL projectConfigURL;
-    private String projectName;
-    
-    public ProjectInfo(URL projectConfigURL) {
-        this.projectConfigURL = projectConfigURL;
-        projectName = extractProjectName(projectConfigURL);
-    }
-    
-    public URL getProjectConfigURL() {
-        return projectConfigURL;
-    }
+    private String projectName = "noname";
+    private String definingModule;
   
+    public ProjectInfo(String definingModule) {
+        this.definingModule = definingModule;
+    }
+    
     public String getProjectName() {
         return projectName;
     }
@@ -45,23 +39,9 @@ public class ProjectInfo {
     public void setProjectName(String projectName) {
         this.projectName = projectName;
     }
-
-    private String extractProjectName(URL url) {
-        String s = url.toString();
-        int i = s.lastIndexOf('/');
-        if (i>0) {
-            s = s.substring(0, i);
-            i = s.lastIndexOf('/');
-            if (i>0) {
-                s = s.substring(0, i);
-                i = s.lastIndexOf('/');
-                if (i>0) {
-                    s = s.substring(i+1);
-                    return s;
-                }
-            }
-        }
-        throw new IllegalArgumentException("Can't extract project name from config URL: "+url);
+    
+    public String getDefiningModule() {
+        return definingModule;
     }
     
 }

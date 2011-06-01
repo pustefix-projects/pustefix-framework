@@ -195,4 +195,41 @@ public abstract class AbstractDocrootResourceImpl implements DocrootResource {
         }
         return path;
     }
+    
+    //Spring Resource compatibility methods
+    
+    public boolean isReadable() {
+        return true;
+    }
+    
+    public boolean isOpen() {
+        return false;
+    }
+    
+    public URL getURL() throws IOException {
+        return toURI().toURL();
+    }
+    
+    public URI getURI() throws IOException {
+        return toURI();
+    }
+    
+    public String getFilename() {
+        return getName();
+    }
+    
+    public long contentLength() throws IOException {
+        return length();
+    }
+    
+    public String getDescription() {
+        return toURI().toASCIIString();
+    }
+    
+    public org.springframework.core.io.Resource createRelative(
+            String relativePath) throws IOException {
+        // TODO implement
+        throw new RuntimeException("Method not yet implemented");
+    }
+    
 }

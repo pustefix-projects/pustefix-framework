@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="utf-8"?>
+<module-descriptor xmlns="http://www.pustefix-framework.org/2008/namespace/module-descriptor"
+                   xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+                   xsi:schemaLocation="http://www.pustefix-framework.org/2008/namespace/module-descriptor
+                                       http://www.pustefix-framework.org/2008/namespace/module-descriptor.xsd">
+
+  <module-name>pustefix-i18n-ca</module-name>
+  
+  <static>
+    <path>css</path>
+    <path>img</path>
+  </static>
+
+  <override-modules>
+    <filter-attribute name="country" value="CA"/>
+    <module name="pustefix-i18n-en">
+      <resource path="txt/common.xml"/>
+      <resource path="img/*"/>
+    </module>
+    <module name="pustefix-i18n-fr">
+      <resource path="txt/common.xml"/>
+      <resource path="img/*"/>
+    </module>
+  </override-modules>
+  
+</module-descriptor>

@@ -23,6 +23,7 @@ import net.sf.saxon.expr.XPathContext;
 import org.w3c.dom.Node;
 
 import de.schlund.pfixxml.targets.TargetGenerator;
+import de.schlund.pfixxml.util.ExtensionFunctionUtils;
 import de.schlund.pfixxml.util.XsltContext;
 import de.schlund.pfixxml.util.xsltimpl.XsltContextSaxon2;
 
@@ -33,9 +34,14 @@ public class IncludeDocumentExtensionSaxon2 {
 
     public static Node get(XPathContext context,String path_str,String part,TargetGenerator targetgen,String targetkey,
             String parent_part_in,String parent_theme_in,String computed_inc,String module,String search) throws Exception {    
-        XsltContext xsltContext=new XsltContextSaxon2(context);
-        return (Node)IncludeDocumentExtension.get(xsltContext,path_str,part,targetgen,targetkey,
-                parent_part_in,parent_theme_in,computed_inc,module,search);
+        try {
+            XsltContext xsltContext=new XsltContextSaxon2(context);
+            return (Node)IncludeDocumentExtension.get(xsltContext,path_str,part,targetgen,targetkey,
+                    parent_part_in,parent_theme_in,computed_inc,module,search);
+        } catch(Exception x) {
+            ExtensionFunctionUtils.setExtensionFunctionError(x);
+            throw x;
+        }
     }
     
     public static String getSystemId(XPathContext context) {

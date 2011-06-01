@@ -132,7 +132,7 @@ public class TargetGenerator implements IncludeFileVisitor {
 
     private Set<ConfigurationChangeListener> configurationListeners = Collections.synchronizedSet(new HashSet<ConfigurationChangeListener>());
 
-    private FileResource config_path;
+    private Resource config_path;
     
     private Navigation navigation;
     
@@ -150,12 +150,12 @@ public class TargetGenerator implements IncludeFileVisitor {
 
     //--
 
-    public TargetGenerator(final FileResource confile, final FileResource cacheDir, final boolean parseIncludes) throws IOException, SAXException, XMLException {
+    public TargetGenerator(final Resource confile, final FileResource cacheDir, final boolean parseIncludes) throws IOException, SAXException, XMLException {
         this(confile, cacheDir, new SPCacheFactory().init());
         this.parseIncludes = parseIncludes;
     }
     
-    public TargetGenerator(final FileResource confile, final FileResource cacheDir, final SPCacheFactory cacheFactory) throws IOException, SAXException, XMLException {
+    public TargetGenerator(final Resource confile, final FileResource cacheDir, final SPCacheFactory cacheFactory) throws IOException, SAXException, XMLException {
         this.config_path = confile;
         this.cacheDir = cacheDir;
         this.cacheFactory = cacheFactory;
@@ -173,11 +173,11 @@ public class TargetGenerator implements IncludeFileVisitor {
         meminfo.print("TG: after loading targets for " + confile.toString());
     }
         
-    public TargetGenerator(FileResource confile) throws IOException, SAXException, XMLException {
+    public TargetGenerator(Resource confile) throws IOException, SAXException, XMLException {
         this(confile, null, new SPCacheFactory().init());
     }
     
-    public TargetGenerator(FileResource confile, SPCacheFactory cacheFactory) throws IOException, SAXException, XMLException {
+    public TargetGenerator(Resource confile, SPCacheFactory cacheFactory) throws IOException, SAXException, XMLException {
         this(confile, null, cacheFactory);
     }
     
@@ -199,7 +199,7 @@ public class TargetGenerator implements IncludeFileVisitor {
         return language;
     }
     
-    public FileResource getConfigPath() {
+    public Resource getConfigPath() {
         return config_path;
     }
 
@@ -374,7 +374,7 @@ public class TargetGenerator implements IncludeFileVisitor {
         }
     }
 
-    private void loadConfig(FileResource configFile) throws XMLException, IOException, SAXException {
+    private void loadConfig(Resource configFile) throws XMLException, IOException, SAXException {
         config_mtime = System.currentTimeMillis();
         String path = configFile.toURI().toString();
         LOG.info("\n***** CAUTION! ***** loading config " + path + "...");
@@ -399,11 +399,36 @@ public class TargetGenerator implements IncludeFileVisitor {
         iresolver.registerListener(listener);
         iresolver.resolveIncludes(confDoc);
         
+        String configFileModule = null;
+        URI configFileURI = configFile.toURI();
+        if("module".equals(configFileURI.getScheme())) {
+            configFileModule = configFileURI.getAuthority();
+        }
+        
         NodeList pageNodes = confDoc.getElementsByTagName("standardpage");
         for(int i = 0; i < pageNodes.getLength(); i++) {
             Element pageElem = (Element)pageNodes.item(i);
             String module = (String)pageElem.getUserData("module");
-            if(module != null) pageElem.setAttribute("defining-module", module);
+            if("webapp".equals("module")) module = null;
+            if(module == null) module = configFileModule;
+            if(module != null) {
+                pageElem.setAttribute("defining-module", module);
+                String moduleAttr = pageElem.getAttribute("module");
+                if(moduleAttr.length() == 0) pageElem.setAttribute("module", module);
+            }
+        }
+        NodeList includeNodes = confDoc.getElementsByTagName("include");
+        for(int i = 0; i < includeNodes.getLength(); i++) {
+            Element includeElem = (Element)includeNodes.item(i);
+            if(!(includeElem.getAttribute("stylesheet").startsWith("module://")
+                    || includeElem.getAttribute("module").length() > 0)) {
+                String module = (String)includeElem.getUserData("module");
+                if("webapp".equals("module")) module = null;
+                if(module == null) module = configFileModule;
+                if(module != null) {
+                    includeElem.setAttribute("module", module);
+                }
+            }
         }
         
         fullXml = Xml.serialize(confDoc, false, true);

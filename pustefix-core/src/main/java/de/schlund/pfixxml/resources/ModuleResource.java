@@ -17,6 +17,7 @@
  */
 package de.schlund.pfixxml.resources;
 
+import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
@@ -78,7 +79,7 @@ public class ModuleResource implements Resource {
 
     public InputStream getInputStream() throws IOException {
         
-        if(url == null) throw new IOException("Resource doesn't exist");
+        if(url == null) throw new IOException("Resource doesn't exist: " + uri);
         JarURLConnection con = getConnection();
         return con.getInputStream();
     }
@@ -142,4 +143,46 @@ public class ModuleResource implements Resource {
     	return uri.toString();
     }
     
+    //Spring Resource compatibility methods
+
+    public boolean isReadable() {
+        return true;
+    }
+
+    public boolean isOpen() {
+        return false;
+    }
+
+    public URL getURL() throws IOException {
+        return toURI().toURL();
+    }
+
+    public URI getURI() throws IOException {
+        return toURI();
+    }
+
+    public String getFilename() {
+        String path = uri.getPath();
+        int ind = path.lastIndexOf('/');
+        return ind > -1 ? path.substring(ind + 1) : path;
+    }
+    
+    public long contentLength() throws IOException {
+        return length();
+    }
+    
+    public File getFile() throws IOException {
+        throw new IOException("Resource isn't available on the file system: " + toURI());
+    }
+
+    public String getDescription() {
+        return toURI().toASCIIString();
+    }
+    
+    public org.springframework.core.io.Resource createRelative(
+            String relativePath) throws IOException {
+        // TODO implement
+        throw new RuntimeException("Method not yet implemented");
+    }
+
 }
