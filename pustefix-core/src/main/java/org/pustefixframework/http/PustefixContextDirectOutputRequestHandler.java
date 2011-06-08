@@ -180,13 +180,7 @@ public class PustefixContextDirectOutputRequestHandler extends AbstractPustefixR
              Properties props   = config.getPageRequest(page.getName()).getProperties();
              boolean    allowed = state.isAccessible(crm, props, preq);
              if (allowed) {
-                 try {
-                     state.handleRequest(crm, props, preq, res);
-                 } catch (Exception exep) {
-                     if (!exep.getClass().getName().equals("org.apache.catalina.connector.ClientAbortException")) {
-                         throw exep;
-                     }
-                 }
+                 state.handleRequest(crm, props, preq, res);
              } else {
                  throw new RuntimeException("*** Called DirectOutputState " + state.getClass().getName() +
                                             " for page " + page.getName() + " without being accessible ***");  
