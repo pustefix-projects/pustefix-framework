@@ -458,7 +458,7 @@ public abstract class AbstractPustefixXMLRequestHandler extends AbstractPustefix
     }
    
     protected void handleDocument(PfixServletRequest preq, HttpServletResponse res,
-                                  SPDocument spdoc, Properties params, boolean doreuse) throws PustefixCoreException {
+                                  SPDocument spdoc, Properties params, boolean doreuse) throws IOException, PustefixCoreException {
         long currtime = System.currentTimeMillis();
         
         // Check the document for supplied headers...
@@ -581,9 +581,10 @@ public abstract class AbstractPustefixXMLRequestHandler extends AbstractPustefix
             LOGGER.info(">>> Complete handleDocument(...) took " + handletime + "ms" + 
                     " (needed xslt: " + modified_or_no_etag + ")");
         }
-        try {
-            if (modified_or_no_etag && 
-                    (spdoc.getResponseContentType() == null || spdoc.getResponseContentType().startsWith("text/html"))) {
+     
+        if (modified_or_no_etag && 
+                (spdoc.getResponseContentType() == null || spdoc.getResponseContentType().startsWith("text/html"))) {
+            try {
                 OutputStream       out          = res.getOutputStream();
                 OutputStreamWriter writer       = new OutputStreamWriter(out, res.getCharacterEncoding());
                 writer.write("\n<!--");
@@ -594,34 +595,30 @@ public abstract class AbstractPustefixXMLRequestHandler extends AbstractPustefix
                     }
                 }
                 writer.write(" -->");
-                writer.flush();
-                if(getRendering(preq) == RENDERMODE.RENDER_NORMAL) {
-                    hookAfterDelivery(preq, spdoc, output);
-                }
+            } catch (Exception e) {
+                LOGGER.warn("Error adding info data to page", e);
             }
-        } catch (Exception e) {
-            LOGGER.warn("Error adding info data to page", e);
+            res.flushBuffer();
+            if(getRendering(preq) == RENDERMODE.RENDER_NORMAL) {
+                hookAfterDelivery(preq, spdoc, output);
+            }
         }
+
     }
 
-    private void sendError(SPDocument spdoc, HttpServletResponse res) throws PustefixCoreException {
-    	 int    err;
+    private void sendError(SPDocument spdoc, HttpServletResponse res) throws IOException {
          String errtxt;
-         try {
-        	 err = spdoc.getResponseError();
-        	 setCookies(spdoc,res);
-        	 if ((errtxt = spdoc.getResponseErrorText()) != null) {
-        		 res.sendError(err, errtxt);
-        	 } else {
-        		 res.sendError(err);
-        	 }
-         } catch (IOException e) {
-             throw new PustefixCoreException("IOException while trying to send an error code", e);
+         int err = spdoc.getResponseError();
+         setCookies(spdoc,res);
+         if ((errtxt = spdoc.getResponseErrorText()) != null) {
+             res.sendError(err, errtxt);
+         } else {
+             res.sendError(err);
          }
     }
     
     private boolean doHandleDocument(SPDocument spdoc, String stylesheet, TreeMap<String, Object> paramhash, 
-            PfixServletRequest preq, HttpServletResponse res, HttpSession session, ByteArrayOutputStream output) throws PustefixCoreException {
+            PfixServletRequest preq, HttpServletResponse res, HttpSession session, ByteArrayOutputStream output) throws IOException, PustefixCoreException {
         
         boolean modified_or_no_etag = true;
         String etag_incoming = preq.getRequest().getHeader("If-None-Match");
@@ -652,11 +649,7 @@ public abstract class AbstractPustefixXMLRequestHandler extends AbstractPustefix
             LOGGER.info("*** Reusing UI: " + spdoc.getPagename());
             modified_or_no_etag = false;
         } else {
-            try {
-                output.writeTo(res.getOutputStream());
-            } catch (IOException e) {
-                throw new PustefixCoreException(e);
-            }
+            output.writeTo(res.getOutputStream());
         }
         
         return modified_or_no_etag;
