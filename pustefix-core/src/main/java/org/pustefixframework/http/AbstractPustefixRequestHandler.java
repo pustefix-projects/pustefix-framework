@@ -214,17 +214,23 @@ public abstract class AbstractPustefixRequestHandler implements SessionTrackingS
             res.setContentType(DEF_CONTENT_TYPE);
             process(preq, res);
         } catch (Throwable e) {
-            LOG.error("Exception in process", e);
-            ExceptionConfig exconf = exceptionProcessingConfig.getExceptionConfigForThrowable(e.getClass());
-            if(exconf != null && exconf.getProcessor()!= null) { 
-                if ( preq.getLastException() == null ) {  
-                    ExceptionProcessor eproc = exconf.getProcessor();
-                    eproc.processException(e, exconf, preq,
-                                       getServletContext(),
-                                       req, res, this.getServletManagerConfig().getProperties());
-                }
-            } 
-            if(!res.isCommitted()) throw new ServletException("Exception in process.",e);
+            if((e instanceof IOException) &&
+                    (e.getClass().getSimpleName().equals("ClientAbortException") || 
+                            e.getClass().getName().equals("org.mortbay.jetty.EofException"))) {
+                LOG.warn("Client aborted request.");
+            } else {
+                LOG.error("Exception in process", e);
+                ExceptionConfig exconf = exceptionProcessingConfig.getExceptionConfigForThrowable(e.getClass());
+                if(exconf != null && exconf.getProcessor()!= null) { 
+                    if ( preq.getLastException() == null ) {  
+                        ExceptionProcessor eproc = exconf.getProcessor();
+                        eproc.processException(e, exconf, preq,
+                                           getServletContext(),
+                                           req, res, this.getServletManagerConfig().getProperties());
+                    }
+                } 
+                if(!res.isCommitted()) throw new ServletException("Exception in process.",e);
+            }
         }
     }
 
