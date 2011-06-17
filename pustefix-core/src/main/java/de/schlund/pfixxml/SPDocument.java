@@ -46,7 +46,7 @@ public class SPDocument {
     // private boolean   nostore        = false;
     private String    pagename       = null;
     private Variant   variant        = null;
-    private Map<String, String> pageSelectors;
+    private AppVariant appVariant;
     private String    xslkey         = null;
     private long      timestamp      = System.currentTimeMillis();
     private int       error          = 0;
@@ -77,12 +77,12 @@ public class SPDocument {
         return variant;
     }
     
-    public void setPageSelectors(Map<String, String> pageSelectors) {
-        this.pageSelectors = pageSelectors;
+    public void setAppVariant(AppVariant appVariant) {
+        this.appVariant = appVariant;
     }
 
-    public Map<String, String> getPageSelectors() {
-        return pageSelectors;
+    public AppVariant getAppVariant() {
+        return appVariant;
     }
 
 //    public void setNostore(boolean nostore) {

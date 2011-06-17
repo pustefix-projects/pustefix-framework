@@ -129,7 +129,7 @@ public class PustefixContextDirectOutputRequestHandler extends AbstractPustefixR
          }
          
          // Make sure the context is initialized and deinitialized this thread
-         context.prepareForRequest();
+         context.prepareForRequest(preq.getRequest());
          try {
              if (config.isSynchronized()) {
                  Advised proxy = (Advised)context;

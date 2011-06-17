@@ -38,6 +38,7 @@ import de.schlund.pfixcore.workflow.PageRequest;
 import de.schlund.pfixcore.workflow.PageRequestStatus;
 import de.schlund.pfixcore.workflow.SessionStatusListener;
 import de.schlund.pfixcore.workflow.context.PageFlow;
+import de.schlund.pfixxml.AppVariant;
 import de.schlund.pfixxml.PfixServletRequest;
 import de.schlund.pfixxml.Variant;
 import de.schlund.util.statuscodes.StatusCode;
@@ -59,7 +60,7 @@ public class MockContext implements Context {
 
     private ContextResourceManager resourceManager;
     private Variant variant;
-    private Map<String, String> pageSelectors = new HashMap<String, String>();
+    private AppVariant appVariant;
     private String lang;
     private String visitId;
     private Properties properties;
@@ -311,12 +312,12 @@ public class MockContext implements Context {
         this.variant = variant;
     }
 
-    public void setPageSelector(String name, String value) {
-        pageSelectors.put(name, value);
+    public AppVariant getAppVariant() {
+        return appVariant;
     }
-
-    public void setPageSelectorForThisRequestOnly(String name, String value) {
-        pageSelectors.put(name, value);
+    
+    public void setAppVariant(AppVariant appVariant) {
+        this.appVariant = appVariant;
     }
     
 }

@@ -20,5 +20,18 @@ public class DOMUtils {
         }
         return elems;
     }
+    
+    public static List<Element> getChildElementsByTagNameNS(Element parent, String namespaceURI, String localName) {
+        List<Element> elems = new ArrayList<Element>();
+        NodeList nodes = parent.getChildNodes();
+        for(int i=0; i<nodes.getLength(); i++) {
+            Node node = nodes.item(i);
+            if(node.getNodeType() == Node.ELEMENT_NODE && 
+                    node.getNamespaceURI().equals(namespaceURI) && node.getLocalName().equals(localName)) {
+                elems.add((Element)node);
+            }
+        }
+        return elems;
+    }
 
 }

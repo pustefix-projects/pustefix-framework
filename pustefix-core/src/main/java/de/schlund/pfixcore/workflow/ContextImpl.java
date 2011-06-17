@@ -22,6 +22,7 @@ import java.util.List;
 import java.util.Properties;
 
 import javax.servlet.http.Cookie;
+import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSessionBindingEvent;
 import javax.servlet.http.HttpSessionBindingListener;
 
@@ -31,12 +32,14 @@ import org.pustefixframework.config.contextxmlservice.PageRequestConfig;
 import de.schlund.pfixcore.auth.Authentication;
 import de.schlund.pfixcore.exception.PustefixApplicationException;
 import de.schlund.pfixcore.exception.PustefixCoreException;
+import de.schlund.pfixcore.exception.PustefixRuntimeException;
 import de.schlund.pfixcore.util.TokenManager;
 import de.schlund.pfixcore.workflow.context.AccessibilityChecker;
 import de.schlund.pfixcore.workflow.context.PageFlow;
 import de.schlund.pfixcore.workflow.context.RequestContextImpl;
 import de.schlund.pfixcore.workflow.context.ServerContextImpl;
 import de.schlund.pfixcore.workflow.context.SessionContextImpl;
+import de.schlund.pfixxml.AppVariant;
 import de.schlund.pfixxml.PfixServletRequest;
 import de.schlund.pfixxml.SPDocument;
 import de.schlund.pfixxml.Variant;
@@ -182,6 +185,7 @@ public class ContextImpl implements AccessibilityChecker, ExtendedContext, Token
     }
 
     public void setLanguage(String lang) {
+        //TODO: check appvariant
         getRequestContextForCurrentThreadWithError().setLanguage(lang);
         sessioncontext.setLanguage(lang);
     }
@@ -195,15 +199,14 @@ public class ContextImpl implements AccessibilityChecker, ExtendedContext, Token
         getRequestContextForCurrentThreadWithError().setVariantForThisRequestOnly(variant);
     }
     
-    public void setPageSelector(String name, String value) {
-        getRequestContextForCurrentThreadWithError().setPageSelectorForThisRequestOnly(name, value);
-        sessioncontext.setPageSelector(name, value);
+    public void setAppVariant(AppVariant appVariant) {
+        sessioncontext.setAppVariant(appVariant);
     }
-
-    public void setPageSelectorForThisRequestOnly(String name, String value) {
-        getRequestContextForCurrentThreadWithError().setPageSelectorForThisRequestOnly(name, value);
+    
+    public AppVariant getAppVariant() {
+        return sessioncontext.getAppVariant();
     }
-
+    
     public boolean stateMustSupplyFullDocument() {
         return getRequestContextForCurrentThreadWithError().stateMustSupplyFullDocument();
     }
@@ -234,9 +237,21 @@ public class ContextImpl implements AccessibilityChecker, ExtendedContext, Token
         this.servercontext = servercontext;
     }
 
-    public void prepareForRequest() {
+    public void prepareForRequest(HttpServletRequest req) {
         // This allows to use OLDER servercontexts during requests
         requestcontextstore.set(new RequestContextImpl(servercontext, this));
+        AppVariant matchingAppVariant = servercontext.getAppVariantInfo().getMatchingAppVariant(req);
+        AppVariant currentAppVariant = getAppVariant();
+        if(currentAppVariant == null) {
+            if(matchingAppVariant != null) {
+                setAppVariant(matchingAppVariant);
+            }
+        } else {
+            if(!currentAppVariant.equals(matchingAppVariant)) {
+                //TODO: handle this case
+                throw new PustefixRuntimeException("Illegal app-variant switch");
+            }
+        }
     }
     
     public void setPfixServletRequest(PfixServletRequest pfixReq) {

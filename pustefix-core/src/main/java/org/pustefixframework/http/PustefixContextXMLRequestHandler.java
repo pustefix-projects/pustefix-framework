@@ -144,7 +144,7 @@ public class PustefixContextXMLRequestHandler extends AbstractPustefixXMLRequest
         ExtendedContext context = getContext(preq);
         // Prepare context for current thread
         // Cleanup is performed in finally block
-        ((ContextImpl) context).prepareForRequest();
+        ((ContextImpl) context).prepareForRequest(preq.getRequest());
         
         try {
             SPDocument spdoc;

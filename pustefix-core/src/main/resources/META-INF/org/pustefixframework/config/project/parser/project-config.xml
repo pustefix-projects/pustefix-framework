@@ -4,8 +4,16 @@
   xmlns:p="http://www.pustefix-framework.org/2008/namespace/project-config"
 >
   
+  <handler class="org.pustefixframework.config.project.parser.ProjectParsingHandler" run-order="both">
+    <match>/p:project-config</match>
+  </handler>
+  
   <handler class="org.pustefixframework.config.project.parser.ProjectInfoParsingHandler">
     <match>/p:project-config/p:project</match>
+  </handler>
+  
+  <handler class="org.pustefixframework.config.project.parser.AppVariantParsingHandler">
+    <match>/p:project-config/p:app-variant</match>
   </handler>
   
   <handler class="org.pustefixframework.config.project.parser.SessionInfoParsingHandler">

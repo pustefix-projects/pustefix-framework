@@ -18,7 +18,6 @@
 package de.schlund.pfixcore.workflow.context;
 
 import java.util.Collections;
-import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.LinkedHashMap;
@@ -46,6 +45,7 @@ import de.schlund.pfixcore.workflow.ContextResourceManager;
 import de.schlund.pfixcore.workflow.ContextResourceManagerImpl;
 import de.schlund.pfixcore.workflow.SessionStatusEvent;
 import de.schlund.pfixcore.workflow.SessionStatusListener;
+import de.schlund.pfixxml.AppVariant;
 import de.schlund.pfixxml.Variant;
 
 /**
@@ -61,7 +61,7 @@ public class SessionContextImpl {
     
     private HttpSession                session;
     private Variant                    variant      = null;
-    private Map<String, String>        pageSelectors = new HashMap<String, String>();
+    private AppVariant                 appVariant;
     private String                     visitId      = null;
     private ContextResourceManager     crm;
     private SessionEndNotificator      sessionEndNotificator;
@@ -162,12 +162,12 @@ public class SessionContextImpl {
         this.variant = variant;
     }
     
-    public Map<String, String> getPageSelectors() {
-        return pageSelectors;
+    public AppVariant getAppVariant() {
+        return appVariant;
     }
     
-    public void setPageSelector(String name, String value) {
-        pageSelectors.put(name, value);
+    public void setAppVariant(AppVariant appVariant) {
+        this.appVariant = appVariant;
     }
 
     public String getVisitId() {

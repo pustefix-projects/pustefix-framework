@@ -44,6 +44,6 @@ public interface PageAliasMapping {
      * @param pageSelectors - Page selector key/value pairs
      * @return - Returns all page alias names matching the given page selectors
      */
-    public Set<String> getAliases(Map<String, String> pageSelectors);
+    //public Set<String> getAliases(Map<String, String> pageSelectors);
 
 }

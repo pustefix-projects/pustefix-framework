@@ -27,6 +27,7 @@ import org.pustefixframework.config.contextxmlservice.ContextConfig;
 import de.schlund.pfixcore.auth.Authentication;
 import de.schlund.pfixcore.exception.PustefixApplicationException;
 import de.schlund.pfixcore.workflow.context.PageFlow;
+import de.schlund.pfixxml.AppVariant;
 import de.schlund.pfixxml.Variant;
 import de.schlund.util.statuscodes.StatusCode;
 
@@ -35,6 +36,7 @@ import de.schlund.util.statuscodes.StatusCode;
  * @author Sebastian Marsching <sebastian.marsching@1und1.de>
  */
 public interface Context extends PageFlowContext {
+    
     Properties getProperties();
     Properties getPropertiesForCurrentPageRequest();
     Properties getPropertiesForContextResource(Object res);
@@ -70,9 +72,6 @@ public interface Context extends PageFlowContext {
 
     void setVariant(Variant variant);
     void setVariantForThisRequestOnly(Variant variant);
-    
-    void setPageSelector(String name, String value);
-    void setPageSelectorForThisRequestOnly(String name, String value);
     
     void setLanguage(String lang);
     String getLanguage();
