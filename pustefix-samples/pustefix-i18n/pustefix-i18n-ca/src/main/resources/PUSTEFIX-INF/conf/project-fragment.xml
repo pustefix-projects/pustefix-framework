@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<fr:config-fragments xmlns:fr="http://www.pustefix-framework.org/2008/namespace/config-fragments"
+                     xmlns="http://www.pustefix-framework.org/2008/namespace/project-config">
+
+  <fr:app-variants>
+    <app-variant name="CA_market">
+      <host>(ca\..*)|(.*\.ca)</host>
+      <lang default="true">en_CA</lang>
+      <lang>fr_CA</lang>
+    </app-variant>
+  </fr:app-variants>
+  
+</fr:config-fragments>

@@ -11,12 +11,6 @@
     <resource bean-name="contextUser" class="org.pustefixframework.samples.i18n.context.User"/>
   </context>
 
-  <interceptors>
-    <start>
-      <interceptor class="org.pustefixframework.samples.i18n.MarketLanguageInterceptor" />
-    </start>
-  </interceptors>
-
   <pageflow name="MainFlow" final="Home">
     <flowstep name="Home"/>
     <flowstep name="Bye"/>

@@ -14,6 +14,25 @@
     <location>http://cms.${fqdn}/</location>
     <secret>foobar</secret>
   </editor>
+  
+  <config-include file="conf/project-fragment.xml" section="app-variants" module="*"/>
+
+  <!--  
+  <app-variant name="CA_market">
+    <host>(ca\..*)|(.*\.ca)</host>
+    <lang default="true">en_CA</lang>
+    <lang>fr_CA</lang>
+  </app-variant>
+    
+  <app-variant name="US_market">
+    <host>(us\..*)|(.*\.us)</host>
+    <lang>en_US</lang>
+  </app-variant>
+    
+  <app-variant name="DE_market">
+    <host>(de\..*)|(.*\.de)</host>
+    <lang>de_DE</lang>
+  </app-variant>
 
   <xml-generator>
     <config-file>conf/depend.xml</config-file>

@@ -9,6 +9,24 @@
     <description>Pustefix i18n sample webapp</description>
   </project>
 
+  <xi:include xmlns:xi="http://www.w3.org/2001/XInclude" href="foo.xml"/>
+
+  <app-variant name="CA_market">
+    <host>(ca\..*)|(.*\.ca)</host>
+    <lang default="true">en_CA</lang>
+    <lang>fr_CA</lang>
+  </app-variant>
+    
+  <app-variant name="US_market">
+    <host>(us\..*)|(.*\.us)</host>
+    <lang>en_US</lang>
+  </app-variant>
+    
+  <app-variant name="DE_market">
+    <host>(de\..*)|(.*\.de)</host>
+    <lang>de_DE</lang>
+  </app-variant>
+
   <editor>
     <enabled>true</enabled>
     <location>http://cms.${fqdn}/</location>

@@ -1,16 +1,11 @@
 <?xml version="1.0" encoding="utf-8"?>
-<make lang="en_GB" project="firstapp">
+<make lang="en" project="firstapp">
 
   <!-- prefix to namespace url mappings to be used in pages xml -->
   <namespaces>
     <namespace-declaration prefix="pfx" url="http://www.schlund.de/pustefix/core"/>
     <namespace-declaration prefix="ixsl" url="http://www.w3.org/1999/XSL/Transform"/>
   </namespaces>
-
-  <path-prefixes>
-    <path-prefix lang="en">en</path-prefix>
-    <path-prefix lang="fr">fr</path-prefix>
-  </path-prefixes>
 
   <navigation>
     <page name="Home">
@@ -31,19 +26,19 @@
     </page>
     <page name="LandingPage">
       <alias lang="de">
-        <alias branch="living">Wohnen</alias>
-        <alias branch="garden">Garten</alias>
-        <alias branch="kitchen">Kueche</alias>
+        <alias variant="living">Wohnen</alias>
+        <alias variant="garden">Garten</alias>
+        <alias variant="kitchen">Kueche</alias>
       </alias>
       <alias lang="en">
-        <alias branch="living">living</alias>
-        <alias branch="garden">garden</alias>
-        <alias branch="kitchen">kitchen</alias>
+        <alias variant="living">living</alias>
+        <alias variant="garden">garden</alias>
+        <alias variant="kitchen">kitchen</alias>
       </alias>
       <alias lang="fr">
-        <alias branch="living">habiter</alias>
-        <alias branch="garden">jardin</alias>
-        <alias branch="kitchen">cuisine</alias>
+        <alias variant="living">habiter</alias>
+        <alias variant="garden">jardin</alias>
+        <alias variant="kitchen">cuisine</alias>
       </alias>
     </page>
   </navigation>
@@ -55,13 +50,11 @@
   <standardmetatags>
   	<include stylesheet="xsl/metatags.xsl"/>
   </standardmetatags>
-
-  <standardpage-variant-selectors>
-    <attribute name="lang"/>
-    <attribute name="country"/>
-    <attribute name="branch"/>
-  </standardpage-variant-selectors>
-
+<!--   <standardpage-variant>en_US</standardpage-variant>
+  <standardpage-variant>en_CA</standardpage-variant>
+  <standardpage-variant>fr_CA</standardpage-variant>
+  <standardpage-variant>de_DE</standardpage-variant>
+-->
   <standardpage-variant lang="en" country="US">en_US</standardpage-variant>
   <standardpage-variant lang="en" country="CA">en_CA</standardpage-variant>
   <standardpage-variant lang="fr" country="CA">fr_CA</standardpage-variant>
@@ -71,9 +64,9 @@
   <standardpage name="Bye" xml="xml/frame.xml"/>
 
   <standardpage name="LandingPage" xml="xml/frame.xml">
-    <standardpage-variant branch="cooking">cooking</standardpage-variant>
-    <standardpage-variant branch="garden">garden</standardpage-variant>
-    <standardpage-variant branch="living">living</standardpage-variant>
+    <standardpage-variant>cooking</standardpage-variant>
+    <standardpage-variant>garden</standardpage-variant>
+    <standardpage-variant>living</standardpage-variant>
   </standardpage>
 
 </make>

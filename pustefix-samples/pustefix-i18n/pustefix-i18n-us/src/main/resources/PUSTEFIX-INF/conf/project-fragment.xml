@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<fr:config-fragments xmlns:fr="http://www.pustefix-framework.org/2008/namespace/config-fragments"
+                     xmlns="http://www.pustefix-framework.org/2008/namespace/project-config">
+
+  <fr:app-variants>
+    <app-variant name="US_market">
+      <host>(us\..*)|(.*\.us)</host>
+      <lang>en_US</lang>
+    </app-variant>
+  </fr:app-variants>
+
+</fr:config-fragments>
