@@ -21,7 +21,20 @@
     </xsl:if>
   </xsl:template>
 
-  <xsl:template match="global"/>
+  <xsl:template match="global">
+    <render-params>
+      <xsl:if test="include">
+        <param name="stylesheets_to_include">
+          <xsl:attribute name="value">
+            <xsl:for-each select="include">
+              <xsl:if test="@module">module://<xsl:value-of select="@module"/>/</xsl:if><xsl:value-of select="@stylesheet"/><xsl:text> </xsl:text>
+            </xsl:for-each>
+          </xsl:attribute>
+        </param>
+      </xsl:if>
+      <xsl:apply-templates select="param[not(@name = 'page')]"/>>
+    </render-params>
+  </xsl:template>
 
   <xsl:template match="standardmaster">
     <xsl:param name="project"><xsl:value-of select="/make/@project"/></xsl:param>

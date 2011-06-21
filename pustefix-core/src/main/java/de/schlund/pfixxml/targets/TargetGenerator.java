@@ -29,6 +29,8 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
+import java.util.List;
+import java.util.Map;
 import java.util.Set;
 import java.util.TreeMap;
 
@@ -43,6 +45,7 @@ import javax.xml.transform.sax.TransformerHandler;
 
 import org.apache.log4j.Logger;
 import org.apache.log4j.xml.DOMConfigurator;
+import org.pustefixframework.util.xml.DOMUtils;
 import org.w3c.dom.Attr;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
@@ -148,6 +151,8 @@ public class TargetGenerator implements IncludeFileVisitor {
     private IncludePartsInfoFactory includePartsInfo;
     private boolean parseIncludes;
 
+    private Map<String, String> renderParams;
+    
     //--
 
     public TargetGenerator(final FileResource confile, final FileResource cacheDir, final boolean parseIncludes) throws IOException, SAXException, XMLException {
@@ -400,7 +405,7 @@ public class TargetGenerator implements IncludeFileVisitor {
             String module = (String)pageElem.getUserData("module");
             if(module != null) pageElem.setAttribute("defining-module", module);
         }
-        
+
         fullXml = Xml.serialize(confDoc, false, true);
 
         XMLReader xreader = XMLReaderFactory.createXMLReader();
@@ -450,6 +455,17 @@ public class TargetGenerator implements IncludeFileVisitor {
             throw new RuntimeException("Could not get instance of SAXTransformerFactory!");
         }
 
+        renderParams = new HashMap<String, String>();
+        List<Element> renderParamsElems = DOMUtils.getChildElementsByTagName(config.getDocumentElement(), "render-params");
+        if(!renderParamsElems.isEmpty()) {
+            List<Element> paramElems = DOMUtils.getChildElementsByTagName(renderParamsElems.get(0), "param");
+            for(Element paramElem: paramElems) {
+                String name = paramElem.getAttribute("name").trim();
+                String value = paramElem.getAttribute("value").trim();
+                renderParams.put(name, value);
+            }
+        }
+        
         Element root = (Element) config.getElementsByTagName("make").item(0);
         
         String versionStr=root.getAttribute("xsltversion");
@@ -786,6 +802,11 @@ public class TargetGenerator implements IncludeFileVisitor {
             xslTarget.setXSLSource(xslSource);
             xslTarget.addParam(XSLPARAM_TG, this);
             xslTarget.addParam(XSLPARAM_TKEY, renderKey + ".xsl");
+            Iterator<String> it = renderParams.keySet().iterator();
+            while(it.hasNext()) {
+                String name = it.next();
+                xslTarget.addParam(name, renderParams.get(name));
+            }
          
             alltargets.put(renderKey, xslTarget);
             target = xslTarget;
