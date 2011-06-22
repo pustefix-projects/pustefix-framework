@@ -12,7 +12,7 @@
   </static>
 
   <override-modules>
-    <filter-attribute name="country" value="CA"/>
+    <filter-attribute name="app" value="CA_market"/>
     <module name="pustefix-i18n-en">
       <resource path="txt/common.xml"/>
       <resource path="img/*"/>

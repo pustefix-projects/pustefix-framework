@@ -22,6 +22,10 @@ import java.io.IOException;
 import java.util.Collection;
 import java.util.Properties;
 
+import javax.xml.parsers.DocumentBuilder;
+import javax.xml.parsers.DocumentBuilderFactory;
+import javax.xml.parsers.ParserConfigurationException;
+
 import org.pustefixframework.config.customization.CustomizationInfo;
 import org.pustefixframework.config.customization.PropertiesBasedCustomizationInfo;
 import org.pustefixframework.config.project.ProjectInfo;
@@ -29,7 +33,10 @@ import org.springframework.beans.factory.BeanDefinitionStoreException;
 import org.springframework.beans.factory.config.BeanDefinitionHolder;
 import org.springframework.beans.factory.support.AbstractBeanDefinitionReader;
 import org.springframework.beans.factory.support.BeanDefinitionRegistry;
+import org.springframework.context.ApplicationContextException;
 import org.springframework.core.io.Resource;
+import org.w3c.dom.Document;
+import org.xml.sax.SAXException;
 
 import com.marsching.flexiparse.objecttree.ObjectTreeElement;
 import com.marsching.flexiparse.parser.ClasspathConfiguredParser;
@@ -37,6 +44,7 @@ import com.marsching.flexiparse.parser.Parser;
 import com.marsching.flexiparse.parser.exception.ParserException;
 
 import de.schlund.pfixxml.config.EnvironmentProperties;
+import de.schlund.pfixxml.config.includes.IncludesResolver;
 import de.schlund.pfixxml.resources.ModuleResource;
 
 public class PustefixProjectBeanDefinitionReader extends AbstractBeanDefinitionReader {
@@ -58,10 +66,24 @@ public class PustefixProjectBeanDefinitionReader extends AbstractBeanDefinitionR
                 definingModule = resource.getURI().getAuthority();
             }
             ProjectInfo projectInfo = new ProjectInfo(definingModule);
-            projectConfigTree = projectConfigParser.parse(resource.getInputStream(), info, getRegistry(), projectInfo);
+            
+            //Resolve config-includes
+            DocumentBuilderFactory dbf = DocumentBuilderFactory.newInstance();
+            dbf.setNamespaceAware(true);
+            dbf.setXIncludeAware(true);
+            DocumentBuilder db = dbf.newDocumentBuilder();
+            Document doc = db.parse(resource.getInputStream()); 
+            IncludesResolver resolver = new IncludesResolver("http://www.pustefix-framework.org/2008/namespace/project-config", "config-include");
+            resolver.resolveIncludes(doc);
+            
+            projectConfigTree = projectConfigParser.parse(doc, info, getRegistry(), projectInfo);
         } catch (ParserException e) {
             throw new BeanDefinitionStoreException("Error while parsing " + resource + ": " + e.getMessage(), e);
         } catch (IOException e) {
+            throw new BeanDefinitionStoreException("Error while parsing " + resource + ": " + e.getMessage(), e);
+        } catch (ParserConfigurationException e) {
+            throw new BeanDefinitionStoreException("Error while parsing " + resource + ": " + e.getMessage(), e);
+        } catch (SAXException e) {
             throw new BeanDefinitionStoreException("Error while parsing " + resource + ": " + e.getMessage(), e);
         }
         Collection<? extends BeanDefinitionHolder> beanDefinitions = projectConfigTree.getObjectsOfTypeFromSubTree(BeanDefinitionHolder.class);

@@ -88,6 +88,8 @@
   <xsl:template match="standardpage">
     <xsl:param name="variant" select="@variant"/>
     <xsl:param name="rec">true</xsl:param>
+    <xsl:param name="app"/>
+    <xsl:param name="lang"/>
     <xsl:if test="not(@name)">
       <xsl:message terminate="yes">*** standardpage needs to have a "name" attribute given! ***</xsl:message>
     </xsl:if>
@@ -152,6 +154,8 @@
       <xsl:if test="not($prohibitEdit = 'no')">
         <param name="prohibitEdit" value="{$prohibitEdit}"/>
       </xsl:if>
+      <xsl:if test="not($app='')"><param name="app" value="{$app}"/></xsl:if>
+      <xsl:if test="not($lang='')"><param name="lang" value="{$lang}"/></xsl:if>
     </target>
 
     <target name="{$thename}.xml" type="xml">
@@ -181,6 +185,8 @@
       <xsl:if test="not($prohibitEdit = 'no')">
         <param name="prohibitEdit" value="{$prohibitEdit}"/>
       </xsl:if>
+      <xsl:if test="not($app='')"><param name="app" value="{$app}"/></xsl:if>
+      <xsl:if test="not($lang='')"><param name="lang" value="{$lang}"/></xsl:if>
     </target>
     <xsl:variable name="node" select="."/>
     <xsl:if test="$rec='true'">
@@ -197,6 +203,8 @@
             </xsl:choose>
           </xsl:with-param>
           <xsl:with-param name="rec">false</xsl:with-param>
+          <xsl:with-param name="app" select="@app"/>
+          <xsl:with-param name="lang" select="@lang"/>
         </xsl:apply-templates>
       </xsl:for-each>
     </xsl:if>

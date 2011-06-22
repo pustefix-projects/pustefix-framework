@@ -183,7 +183,9 @@ public class IncludesResolver {
                     NodeList includeNodes;
                     try {
                         javax.xml.xpath.XPath xpathProc = XPathFactory.newInstance().newXPath();
+                        System.out.println("ELEM: "+elem.getLocalName() + " " + elem.getAttribute("file") + " " +elem.getParentNode() + elem.hashCode());
                         xpathProc.setNamespaceContext(new DOMBasedNamespaceContext(elem));
+                        System.out.println("ELEM2: "+elem.getLocalName() + " " + elem.getAttribute("file") + " " +elem.getParentNode() + elem.hashCode());
                         includeNodes = (NodeList) xpathProc.evaluate(xpath, includeDocument, XPathConstants.NODESET);
                     } catch (XPathExpressionException e) {
                         throw new SAXException("XPath Expression invalid: " + xpath);
@@ -195,7 +197,6 @@ public class IncludesResolver {
                         setModuleUserData(newNode, module);
                         elem.getParentNode().insertBefore(newNode, elem);
                     }
-                    elem.getParentNode().removeChild(elem);
                     
                     // Trigger event
                     FileIncludeEvent ev = new FileIncludeEvent(this, includeFile);
@@ -206,6 +207,7 @@ public class IncludesResolver {
                     throw new SAXException("Included config fragment file '" + includeFile.toString() +"' doesn't exist.");
                 }
             }
+            elem.getParentNode().removeChild(elem);
         }
     }
 
@@ -229,7 +231,8 @@ public class IncludesResolver {
         if (section.equals("targets") || section.equals("navigation") || section.equals("pageflows") || 
             section.equals("pagerequests") || section.equals("properties") || section.equals("interceptors") || 
             section.equals("scriptedflows") || section.equals("roles") || section.equals("authconstraints") || 
-            section.equals("conditions") || section.equals("resources") || section.equals("directoutputpagerequests")) {
+            section.equals("conditions") || section.equals("resources") || section.equals("directoutputpagerequests") ||
+            section.equals("app-variants")) {
             return true;
         } else {
             return false;

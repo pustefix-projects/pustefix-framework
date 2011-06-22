@@ -128,9 +128,9 @@ public class PustefixContextDirectOutputRequestHandler extends AbstractPustefixR
              return;
          }
          
-         // Make sure the context is initialized and deinitialized this thread
-         context.prepareForRequest(preq.getRequest());
          try {
+             // Make sure the context is initialized and deinitialized this thread
+             context.prepareForRequest(preq.getRequest());
              if (config.isSynchronized()) {
                  Advised proxy = (Advised)context;
                  Object contextObject = proxy.getTargetSource().getTarget();

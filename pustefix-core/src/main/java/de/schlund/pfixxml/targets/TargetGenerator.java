@@ -85,6 +85,7 @@ import de.schlund.pfixxml.resources.Resource;
 import de.schlund.pfixxml.resources.ResourceUtil;
 import de.schlund.pfixxml.util.SimpleResolver;
 import de.schlund.pfixxml.util.TransformerHandlerAdapter;
+import de.schlund.pfixxml.util.XMLUtils;
 import de.schlund.pfixxml.util.Xml;
 import de.schlund.pfixxml.util.XsltVersion;
 
@@ -495,7 +496,12 @@ public class TargetGenerator implements IncludeFileVisitor {
                 renderParams.put(name, value);
             }
         }
-        
+        try {
+            XMLUtils.serialize(config);
+        } catch (Exception e1) {
+            // TODO Auto-generated catch block
+            e1.printStackTrace();
+        }
         Element root = (Element) config.getElementsByTagName("make").item(0);
         
         String versionStr=root.getAttribute("xsltversion");

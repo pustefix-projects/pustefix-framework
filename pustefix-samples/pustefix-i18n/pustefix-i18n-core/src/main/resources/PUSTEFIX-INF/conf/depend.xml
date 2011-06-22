@@ -50,15 +50,11 @@
   <standardmetatags>
   	<include stylesheet="xsl/metatags.xsl"/>
   </standardmetatags>
-<!--   <standardpage-variant>en_US</standardpage-variant>
-  <standardpage-variant>en_CA</standardpage-variant>
-  <standardpage-variant>fr_CA</standardpage-variant>
-  <standardpage-variant>de_DE</standardpage-variant>
--->
-  <standardpage-variant lang="en" country="US">en_US</standardpage-variant>
-  <standardpage-variant lang="en" country="CA">en_CA</standardpage-variant>
-  <standardpage-variant lang="fr" country="CA">fr_CA</standardpage-variant>
-  <standardpage-variant lang="de" country="DE">de_DE</standardpage-variant>
+  
+  <standardpage-variant app="US_market" lang="en_US">US_market-en_US</standardpage-variant>
+  <standardpage-variant app="CA_market" lang="en_CA">CA_market-en_CA</standardpage-variant>
+  <standardpage-variant app="CA_market" lang="fr_CA">CA_market-fr_CA</standardpage-variant>
+  <standardpage-variant app="DE_market" lang="de_DE">DE_market-de_DE</standardpage-variant>
 
   <standardpage name="Home" xml="xml/frame.xml"/>
   <standardpage name="Bye" xml="xml/frame.xml"/>

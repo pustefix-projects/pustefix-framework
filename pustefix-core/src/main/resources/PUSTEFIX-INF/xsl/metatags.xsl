@@ -22,6 +22,7 @@
   -->
   <xsl:param name="__contextpath">$__contextpath</xsl:param>
   
+  <xsl:param name="app"/>
   <xsl:param name="lang"><cus:lang/></xsl:param>
   <xsl:variable name="product"><cus:product/></xsl:variable>
   

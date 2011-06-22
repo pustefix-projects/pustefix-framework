@@ -249,7 +249,7 @@
         <xsl:variable name="incnodes"
                       select="include:get(string($realpath), string($part),
                               $__target_gen, string($__target_key),
-                              string($parent_part), string($parent_theme), $computed_inc, $module_name, $search)"/>
+                              string($parent_part), string($parent_theme), $computed_inc, $module_name, $search, $app, $lang)"/>
         <xsl:variable name="__resolveduri"><xsl:value-of select="include:getResolvedURI()"/></xsl:variable>
         <!-- Start image of edited region -->
         <xsl:choose>
@@ -412,10 +412,10 @@
       <xsl:when test="$search='dynamic'">
         <xsl:choose>
           <xsl:when test="$__target_key='__NONE__'">
-            <span class="{$classes}" title="{pfx:getDynIncInfo($part,$theme,$path,$resolved_module,$requested_module)}"/>
+            <span class="{$classes}" title="{pfx:getDynIncInfo($part,$theme,$path,$resolved_module,$requested_module,$app,$lang)}"/>
           </xsl:when>
           <xsl:otherwise>
-            <span class="{$classes}" title="{{pfx:getDynIncInfo('{$part}','{$theme}','{$path}','{$resolved_module}','{$requested_module}')}}"/>
+            <span class="{$classes}" title="{{pfx:getDynIncInfo('{$part}','{$theme}','{$path}','{$resolved_module}','{$requested_module}','{$app}','{$lang}')}}"/>
           </xsl:otherwise>
         </xsl:choose>
       </xsl:when>
@@ -488,7 +488,7 @@
         <xsl:variable name="parent_theme"><xsl:value-of select="ancestor::theme[position() = 1]/@name"/></xsl:variable>
         <xsl:value-of select="image:getSrc(string($src),string($themed-path),string($themed-img),
                               string($parent_part),string($parent_theme),
-                              $__target_gen,string($__target_key),string($module_name),string($search))"/>          
+                              $__target_gen,string($__target_key),string($module_name),string($search),$app,$lang)"/>          
       </xsl:when>
       <xsl:otherwise>
         <xsl:message terminate="no">
@@ -662,7 +662,9 @@
     <xsl:param name="path"/>
     <xsl:param name="resolved_module"/>
     <xsl:param name="requested_module"/>
-    <func:result select="include:getDynIncInfo($part, $theme, $path, $resolved_module, $requested_module)"/>
+    <xsl:param name="app"/>
+    <xsl:param name="lang"/>
+    <func:result select="include:getDynIncInfo($part, $theme, $path, $resolved_module, $requested_module, $app, $lang)"/>
   </func:function>
  
 </xsl:stylesheet>

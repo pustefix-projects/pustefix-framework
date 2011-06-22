@@ -31,11 +31,12 @@ import de.schlund.pfixxml.util.xsltimpl.XsltContextSaxon1;
 public class IncludeDocumentExtensionSaxon1 {
     
     public static Object get(Context context,String path_str,String part,TargetGenerator targetgen,String targetkey,
-            String parent_part_in,String parent_theme_in,String computed_inc,String module,String search) throws Exception {    
+            String parent_part_in,String parent_theme_in,String computed_inc,String module,String search, 
+            String appVariant, String language) throws Exception {    
         try {
             XsltContext xsltContext=new XsltContextSaxon1(context);
             return IncludeDocumentExtension.get(xsltContext,path_str,part,targetgen,targetkey,
-                    parent_part_in,parent_theme_in,computed_inc,module,search);
+                    parent_part_in,parent_theme_in,computed_inc,module,search, appVariant, language);
         } catch(Exception x) {
             ExtensionFunctionUtils.setExtensionFunctionError(x);
             throw x;
@@ -61,8 +62,8 @@ public class IncludeDocumentExtensionSaxon1 {
         return IncludeDocumentExtension.getResolvedURI();
     }
     
-    public static String getDynIncInfo(String part, String theme, String path, String resolvedModule, String requestedModule) {
-        return IncludeDocumentExtension.getDynIncInfo(part, theme, path, resolvedModule, requestedModule);
+    public static String getDynIncInfo(String part, String theme, String path, String resolvedModule, String requestedModule, String appVariant, String language) {
+        return IncludeDocumentExtension.getDynIncInfo(part, theme, path, resolvedModule, requestedModule, appVariant, language);
     }
 
 }

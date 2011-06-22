@@ -94,7 +94,7 @@ public final class IncludeDocumentExtension {
     public static final Object get(XsltContext context, String path_str, String part,
                                    TargetGenerator targetgen, String targetkey,
                                    String parent_part_in, String parent_theme_in, String computed_inc,
-                                   String module, String search) throws Exception {
+                                   String module, String search, String appVariant, String language) throws Exception {
        
         if(path_str.startsWith("docroot:")) path_str = path_str.substring(9);
         
@@ -130,7 +130,7 @@ public final class IncludeDocumentExtension {
                 else throw new XMLException("Unsupported include search argument: " + search);
             }
             if(dynamic) {
-                String filter = FilterHelper.getFilter(targetkey);
+                String filter = FilterHelper.getFilter(appVariant, language);
                 uriStr = "dynamic:/" + path_str + "?part=" + part + "&parent=" + parent_uri_str;
                 if(!"WEBAPP".equalsIgnoreCase(module)) {
                     if(module != null) {
@@ -331,13 +331,19 @@ public final class IncludeDocumentExtension {
         return resolvedUri.get();
     }
     
-    public static String getDynIncInfo(String part, String theme, String path, String resolvedModule, String requestedModule) {
+    public static String getDynIncInfo(String part, String theme, String path, String resolvedModule, String requestedModule, String appVariant, String language) {
         try {
             StringBuilder sb = new StringBuilder();
             sb.append(part).append("|").append(theme).append("|").append(path).append("|").append(resolvedModule);
             sb.append("|").append(requestedModule).append("|");
             if(!path.startsWith("/")) path = "/" + path;
-            URI uri = new URI("dynamic://" + requestedModule + path + "?part=" + part);
+            String filter = FilterHelper.getFilter(appVariant, language);
+            if(filter != null) {
+                filter = "&filter=" + URLEncoder.encode(filter, "UTF-8");
+            } else {
+                filter = "";
+            }
+            URI uri = new URI("dynamic://" + requestedModule + path + "?part=" + part + filter);
             DynamicResourceInfo info = new DynamicResourceInfo();
             dynamicResourceProvider.getResource(uri, info);
             sb.append(info.toString());

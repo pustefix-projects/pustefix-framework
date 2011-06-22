@@ -141,12 +141,13 @@ public class PustefixContextXMLRequestHandler extends AbstractPustefixXMLRequest
 
     @Override
     public SPDocument getDom(PfixServletRequest preq) throws PustefixApplicationException, PustefixCoreException {
-        ExtendedContext context = getContext(preq);
-        // Prepare context for current thread
-        // Cleanup is performed in finally block
-        ((ContextImpl) context).prepareForRequest(preq.getRequest());
         
+        ExtendedContext context = getContext(preq);
         try {
+            // Prepare context for current thread
+            // Cleanup is performed in finally block
+            ((ContextImpl) context).prepareForRequest(preq.getRequest());
+            
             SPDocument spdoc;
 
             ScriptedFlowInfo info = getScriptedFlowInfo(preq);
