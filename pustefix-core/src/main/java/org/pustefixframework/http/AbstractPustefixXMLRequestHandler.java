@@ -55,7 +55,6 @@ import org.w3c.dom.Document;
 import de.schlund.pfixcore.exception.PustefixApplicationException;
 import de.schlund.pfixcore.exception.PustefixCoreException;
 import de.schlund.pfixcore.exception.PustefixRuntimeException;
-import de.schlund.pfixcore.workflow.Context;
 import de.schlund.pfixxml.IncludePartsInfoParsingException;
 import de.schlund.pfixxml.PfixServletRequest;
 import de.schlund.pfixxml.RenderContext;

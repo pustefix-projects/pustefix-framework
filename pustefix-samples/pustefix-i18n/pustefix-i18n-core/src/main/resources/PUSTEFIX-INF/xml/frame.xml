@@ -15,7 +15,7 @@
       </div>
       <div class="content">
         <pfx:include href="txt/common.xml" part="header" search="dynamic"/>
-        <pfx:maincontent prefix=""/>
+        <pfx:maincontent prefix="" module="PAGEDEF"/>
       </div>
       <hr/>
       <div>

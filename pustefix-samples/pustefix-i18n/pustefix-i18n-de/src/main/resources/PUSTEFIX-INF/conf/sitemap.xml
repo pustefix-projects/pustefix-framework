@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="utf-8"?>
+<sitemap lang="de">
+  <page name="Home">
+    <alias>Start</alias>
+  </page>
+  <page name="Bye">
+    <alias>Tschuess"</alias>
+  </page>
+  <page name="LandingPage">
+    <alias variant="living">Wohnen</alias>
+    <alias variant="garden">Garten</alias>
+    <alias variant="kitchen">Kueche</alias>
+  </page>
+</sitemap>

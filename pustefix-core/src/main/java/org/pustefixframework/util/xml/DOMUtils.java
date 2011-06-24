@@ -3,7 +3,9 @@ package org.pustefixframework.util.xml;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.w3c.dom.Attr;
 import org.w3c.dom.Element;
+import org.w3c.dom.NamedNodeMap;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 
@@ -32,6 +34,20 @@ public class DOMUtils {
             }
         }
         return elems;
+    }
+    
+    public static Element cloneAndRename(Element element, String newName) {
+        Element newElem = element.getOwnerDocument().createElement(newName);
+        NamedNodeMap attrs = element.getAttributes();
+        for(int i=0; i<attrs.getLength(); i++) {
+            newElem.setAttribute(attrs.item(i).getNodeName(), attrs.item(i).getNodeValue());
+        }
+        NodeList nodes = element.getChildNodes();
+        for(int i=0; i<nodes.getLength(); i++) {
+            Node cloned = newElem.getOwnerDocument().importNode(nodes.item(i), true);
+            newElem.appendChild(cloned);
+        }
+        return newElem;
     }
 
 }

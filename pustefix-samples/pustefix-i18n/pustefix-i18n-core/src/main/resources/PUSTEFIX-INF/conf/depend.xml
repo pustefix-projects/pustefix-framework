@@ -7,42 +7,6 @@
     <namespace-declaration prefix="ixsl" url="http://www.w3.org/1999/XSL/Transform"/>
   </namespaces>
 
-  <navigation>
-    <page name="Home">
-      <alias lang="de">Start</alias>
-      <alias lang="en">home</alias>
-      <alias lang="fr">depart</alias>
-    </page>
-    <page name="Bye">
-      <alias lang="de">Tschuess</alias>
-      <alias lang="en">goodbye</alias>
-      <alias lang="fr">salut</alias>
-      <alias lang="en" country="US"></alias>
-    </page>
-    <page name="Overview">
-      <alias lang="de">Uebersicht</alias>
-      <alias lang="en">overview</alias>
-      <alias lang="fr">apercu</alias>
-    </page>
-    <page name="LandingPage">
-      <alias lang="de">
-        <alias variant="living">Wohnen</alias>
-        <alias variant="garden">Garten</alias>
-        <alias variant="kitchen">Kueche</alias>
-      </alias>
-      <alias lang="en">
-        <alias variant="living">living</alias>
-        <alias variant="garden">garden</alias>
-        <alias variant="kitchen">kitchen</alias>
-      </alias>
-      <alias lang="fr">
-        <alias variant="living">habiter</alias>
-        <alias variant="garden">jardin</alias>
-        <alias variant="kitchen">cuisine</alias>
-      </alias>
-    </page>
-  </navigation>
-
   <standardmaster>
     <include stylesheet="xsl/skin.xsl"/>
   </standardmaster>
@@ -56,8 +20,7 @@
   <standardpage-variant app="CA_market" lang="fr_CA">CA_market-fr_CA</standardpage-variant>
   <standardpage-variant app="DE_market" lang="de_DE">DE_market-de_DE</standardpage-variant>
 
-  <standardpage name="Home" xml="xml/frame.xml"/>
-  <standardpage name="Bye" xml="xml/frame.xml"/>
+  <auto-standardpage lookup-path="txt/pages" lookup-module="" xml="xml/frame.xml"/>
 
   <standardpage name="LandingPage" xml="xml/frame.xml">
     <standardpage-variant>cooking</standardpage-variant>

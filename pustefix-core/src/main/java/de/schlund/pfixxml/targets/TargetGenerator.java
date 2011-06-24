@@ -61,8 +61,6 @@ import de.schlund.pfixcore.exception.PustefixRuntimeException;
 import de.schlund.pfixcore.util.Meminfo;
 import de.schlund.pfixcore.workflow.Navigation;
 import de.schlund.pfixxml.IncludeDocumentFactory;
-import de.schlund.pfixxml.IncludeFileFinder;
-import de.schlund.pfixxml.IncludeFileVisitor;
 import de.schlund.pfixxml.IncludePartInfo;
 import de.schlund.pfixxml.IncludePartsInfo;
 import de.schlund.pfixxml.IncludePartsInfoFactory;
@@ -82,10 +80,11 @@ import de.schlund.pfixxml.resources.DocrootResource;
 import de.schlund.pfixxml.resources.FileResource;
 import de.schlund.pfixxml.resources.ModuleResource;
 import de.schlund.pfixxml.resources.Resource;
+import de.schlund.pfixxml.resources.ResourceFinder;
 import de.schlund.pfixxml.resources.ResourceUtil;
+import de.schlund.pfixxml.resources.ResourceVisitor;
 import de.schlund.pfixxml.util.SimpleResolver;
 import de.schlund.pfixxml.util.TransformerHandlerAdapter;
-import de.schlund.pfixxml.util.XMLUtils;
 import de.schlund.pfixxml.util.Xml;
 import de.schlund.pfixxml.util.XsltVersion;
 
@@ -95,7 +94,7 @@ import de.schlund.pfixxml.util.XsltVersion;
  *
  */
 
-public class TargetGenerator implements IncludeFileVisitor {
+public class TargetGenerator implements ResourceVisitor {
 
     public static final String XSLPARAM_TG = "__target_gen";
 
@@ -150,7 +149,7 @@ public class TargetGenerator implements IncludeFileVisitor {
     private SharedLeafFactory sharedLeafFactory;
     private PageInfoFactory pageInfoFactory;
     private IncludePartsInfoFactory includePartsInfo;
-    private boolean parseIncludes;
+    private boolean parseIncludes = true;
 
     private Map<String, String> renderParams;
     
@@ -384,13 +383,13 @@ public class TargetGenerator implements IncludeFileVisitor {
         config_mtime = System.currentTimeMillis();
         String path = configFile.toURI().toString();
         LOG.info("\n***** CAUTION! ***** loading config " + path + "...");
-
+        
         Document config;
 
         // String containing the XML code with resolved includes
         String fullXml = null;
 
-        Document confDoc = Xml.parseMutable(configFile);
+        final Document confDoc = Xml.parseMutable(configFile);
         IncludesResolver iresolver = new IncludesResolver(null, "config-include");
         // Make sure list of dependencies only contains the file itself
         configFileDependencies.clear();
@@ -411,7 +410,50 @@ public class TargetGenerator implements IncludeFileVisitor {
             configFileModule = configFileURI.getAuthority();
         }
         
+        final Set<String> definedStandardPages = new HashSet<String>();
         NodeList pageNodes = confDoc.getElementsByTagName("standardpage");
+        for(int i = 0; i < pageNodes.getLength(); i++) {
+            Element pageElem = (Element)pageNodes.item(i);
+            definedStandardPages.add(pageElem.getAttribute("name").trim());
+        }
+        
+        //Add autodetected standardpages
+        NodeList templateNodes = confDoc.getElementsByTagName("auto-standardpage");
+        for(int i = 0; i < templateNodes.getLength(); i++) {
+            final Element templateNode = (Element)templateNodes.item(i);
+            String lookupPath = templateNode.getAttribute("lookup-path").trim();
+            if(lookupPath.equals("")) lookupPath = "txt/pages";
+            String lookupModule = templateNode.getAttribute("lookup-module").trim();
+            if(lookupModule.equals("")) lookupModule = null;
+            ResourceVisitor pageVisitor = new ResourceVisitor() {
+                public void visit(Resource resource) {
+                    URI uri = resource.toURI();
+                    String path = uri.getPath();
+                    int ind = path.lastIndexOf('/');
+                    if(ind > -1) {
+                        path = path.substring(ind + 1);
+                        path = path.substring(0, path.length() - 4);
+                        ind = path.indexOf('_');
+                        if(ind > -1) path = path.substring(ind + 1);
+                    }
+                    if(!definedStandardPages.contains(path)) {
+                        Element pageElem = DOMUtils.cloneAndRename(templateNode, "standardpage");
+                        if("module".equals(uri.getScheme())) {
+                            pageElem.setUserData("module", uri.getAuthority(), null);
+                        }
+                        pageElem.setAttribute("name", path);
+                        confDoc.getDocumentElement().appendChild(pageElem);
+                        definedStandardPages.add(path);
+                    }
+                }
+            };
+            try {
+                ResourceFinder.find(new String[] {".xml"}, new String[] {lookupPath}, lookupModule, pageVisitor);
+            } catch (Exception x) {
+                throw new XMLException("Error while looking up page resources", x);
+            }   
+        }
+        
         for(int i = 0; i < pageNodes.getLength(); i++) {
             Element pageElem = (Element)pageNodes.item(i);
             String module = (String)pageElem.getUserData("module");
@@ -496,12 +538,7 @@ public class TargetGenerator implements IncludeFileVisitor {
                 renderParams.put(name, value);
             }
         }
-        try {
-            XMLUtils.serialize(config);
-        } catch (Exception e1) {
-            // TODO Auto-generated catch block
-            e1.printStackTrace();
-        }
+
         Element root = (Element) config.getElementsByTagName("make").item(0);
         
         String versionStr=root.getAttribute("xsltversion");
@@ -656,7 +693,7 @@ public class TargetGenerator implements IncludeFileVisitor {
         start = System.currentTimeMillis();
         if(parseIncludes) {
             try {
-                IncludeFileFinder.find(this);
+                ResourceFinder.find(new String[] {".xml"}, new String[] {"txt", "xml"}, null, this);
             } catch (Exception e) {
                 throw new XMLException("Parsing of include files failed", e);
             }

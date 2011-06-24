@@ -63,7 +63,7 @@ public class Navigation {
     
     private Element navigationXMLElement = null;
     
-    public Navigation(Resource navifile,XsltVersion xsltVersion) throws IOException, SAXException, TransformerException, TransformerConfigurationException {
+    public Navigation(Resource navifile, XsltVersion xsltVersion) throws IOException, SAXException, TransformerException, TransformerConfigurationException {
         loadTime = System.currentTimeMillis();
         Document navitree = Xml.parseMutable(navifile);
         
