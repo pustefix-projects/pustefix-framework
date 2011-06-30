@@ -4,7 +4,7 @@
                    xsi:schemaLocation="http://www.pustefix-framework.org/2008/namespace/module-descriptor
                                        http://www.pustefix-framework.org/2008/namespace/module-descriptor.xsd">
 
-  <module-name>pustefix-i18n-fr</module-name>
+  <module-name>pustefix-i18n-lang-fr</module-name>
 
   <override-modules>
     <filter-attribute name="lang" value="fr"/>

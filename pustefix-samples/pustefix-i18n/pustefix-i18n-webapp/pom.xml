@@ -34,22 +34,22 @@
     </dependency>
     <dependency>
       <groupId>org.pustefixframework.samples</groupId>
-      <artifactId>pustefix-i18n-en</artifactId>
+      <artifactId>pustefix-i18n-lang-en</artifactId>
       <version>0.18.0-SNAPSHOT</version>
     </dependency>
     <dependency>
       <groupId>org.pustefixframework.samples</groupId>
-      <artifactId>pustefix-i18n-ca</artifactId>
+      <artifactId>pustefix-i18n-tenant-ca</artifactId>
       <version>0.18.0-SNAPSHOT</version>
     </dependency>
     <dependency>
       <groupId>org.pustefixframework.samples</groupId>
-      <artifactId>pustefix-i18n-us</artifactId>
+      <artifactId>pustefix-i18n-tenant-us</artifactId>
       <version>0.18.0-SNAPSHOT</version>
     </dependency>
     <dependency>
       <groupId>org.pustefixframework.samples</groupId>
-      <artifactId>pustefix-i18n-de</artifactId>
+      <artifactId>pustefix-i18n-tenant-de</artifactId>
       <version>0.18.0-SNAPSHOT</version>
     </dependency>
   </dependencies>

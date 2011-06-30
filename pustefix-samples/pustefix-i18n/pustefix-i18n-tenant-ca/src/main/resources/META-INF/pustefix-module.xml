@@ -4,7 +4,7 @@
                    xsi:schemaLocation="http://www.pustefix-framework.org/2008/namespace/module-descriptor
                                        http://www.pustefix-framework.org/2008/namespace/module-descriptor.xsd">
 
-  <module-name>pustefix-i18n-ca</module-name>
+  <module-name>pustefix-i18n-tenant-ca</module-name>
   
   <static>
     <path>css</path>
