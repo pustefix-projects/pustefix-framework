@@ -8,10 +8,10 @@
   </parent>
 
   <groupId>org.pustefixframework.samples</groupId>
-  <artifactId>pustefix-i18n-lang-en</artifactId>
+  <artifactId>pustefix-i18n-tenant-de</artifactId>
   <version>0.18.0-SNAPSHOT</version>
   <packaging>jar</packaging>
-  <name>Pustefix i18n sample language module en</name>
+  <name>Pustefix i18n sample tenant module DE</name>
 
   <properties>
     <pustefix.version>0.18.0-SNAPSHOT</pustefix.version>
@@ -38,7 +38,7 @@
         <artifactId>pustefix-statuscode-plugin</artifactId>
         <version>${pustefix.version}</version>
         <configuration>
-          <module>pustefix-i18n-en</module>
+          <module>pustefix-i18n-de</module>
           <includes>
             <include>dyntxt/statuscodeinfo.xml</include>
           </includes>

@@ -19,11 +19,12 @@
   <modules>
     <module>pustefix-i18n-webapp</module>
     <module>pustefix-i18n-core</module>
-    <module>pustefix-i18n-de</module>
-    <module>pustefix-i18n-en</module>
-    <module>pustefix-i18n-us</module>
-    <module>pustefix-i18n-ca</module>
-    <module>pustefix-i18n-fr</module>
+    <module>pustefix-i18n-lang-de</module>
+    <module>pustefix-i18n-lang-en</module>
+    <module>pustefix-i18n-lang-fr</module>
+    <module>pustefix-i18n-tenant-ca</module>
+    <module>pustefix-i18n-tenant-de</module>
+    <module>pustefix-i18n-tenant-us</module>
   </modules>
 
   <build>

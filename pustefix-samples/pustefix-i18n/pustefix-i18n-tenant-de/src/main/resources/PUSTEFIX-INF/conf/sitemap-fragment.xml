@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<fr:config-fragments xmlns:fr="http://www.pustefix-framework.org/2008/namespace/config-fragments">
+
+  <fr:sitemap>
+    <page name="Hey">
+      <alias lang="de">Start</alias>
+    </page>
+    <page name="Ho">
+      <alias lang="de">Tschuess</alias>
+    </page>
+  </fr:sitemap>
+    
+</fr:config-fragments>

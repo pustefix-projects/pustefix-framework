@@ -8,7 +8,7 @@
   </parent>
 
   <groupId>org.pustefixframework.samples</groupId>
-  <artifactId>pustefix-i18n-de</artifactId>
+  <artifactId>pustefix-i18n-lang-de</artifactId>
   <version>0.18.0-SNAPSHOT</version>
   <packaging>jar</packaging>
   <name>Pustefix i18n sample language module de</name>

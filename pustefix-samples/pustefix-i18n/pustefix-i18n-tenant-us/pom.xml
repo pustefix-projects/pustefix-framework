@@ -8,10 +8,10 @@
   </parent>
 
   <groupId>org.pustefixframework.samples</groupId>
-  <artifactId>pustefix-i18n-us</artifactId>
+  <artifactId>pustefix-i18n-tenant-us</artifactId>
   <version>0.18.0-SNAPSHOT</version>
   <packaging>jar</packaging>
-  <name>Pustefix module</name>
+  <name>Pustefix i18n sample tenant module US</name>
 
   <properties>
     <pustefix.version>0.18.0-SNAPSHOT</pustefix.version>
