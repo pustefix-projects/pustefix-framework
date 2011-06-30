@@ -76,7 +76,6 @@ public class ContextConfigImpl implements ContextConfig {
     private ArrayList<ContextInterceptor> startinterceptors = new ArrayList<ContextInterceptor>();
     private ArrayList<ContextInterceptor> endinterceptors = new ArrayList<ContextInterceptor>();
     private ArrayList<ContextInterceptor> postRenderInterceptors = new ArrayList<ContextInterceptor>();
-    private String navigationFile = null;
     private Properties props = new Properties();
     private boolean synchronize = true;
     private Map<String,AuthConstraint> authConstraints = new HashMap<String,AuthConstraint>();
@@ -110,7 +109,6 @@ public class ContextConfigImpl implements ContextConfig {
         this.defaultStateClass = ref.defaultStateClass;
         this.endInterceptorBeans = ref.endInterceptorBeans;
         this.endinterceptors = ref.endinterceptors;
-        this.navigationFile = ref.navigationFile;
         this.pageflows = ref.pageflows;
         this.pagerequests = ref.pagerequests;
         this.postRenderInterceptorBeans = ref.postRenderInterceptorBeans;
@@ -368,14 +366,6 @@ public class ContextConfigImpl implements ContextConfig {
             result.setAttribute("ref", condId);
         }
         return result;
-    }
-    
-    public void setNavigationFile(String filename) {
-        this.navigationFile  = filename;
-    }
-    
-    public String getNavigationFile() {
-        return this.navigationFile;
     }
 
     public void setProperties(Properties properties) {

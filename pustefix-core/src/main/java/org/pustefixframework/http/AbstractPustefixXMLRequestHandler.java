@@ -159,7 +159,6 @@ public abstract class AbstractPustefixXMLRequestHandler extends AbstractPustefix
     private boolean      renderExternal            = false;
     private boolean      editmodeAllowed            = false;
     private boolean      includePartsEditableByDefault = true;
-    private boolean      checkModtime               = true;
     private boolean xmlOnlyAllowed = false;
     
     private final static Logger LOGGER_TRAIL = Logger.getLogger("LOGGER_TRAIL");
@@ -201,8 +200,6 @@ public abstract class AbstractPustefixXMLRequestHandler extends AbstractPustefix
             throw new ServletException("TargetGenerator is not set");
         }
         
-        generator.setIsGetModTimeMaybeUpdateSkipped(!checkModtime);
-        
         if (LOGGER.isInfoEnabled()) {
             StringBuffer sb = new StringBuffer(255);
             sb.append("\n").append("AbstractXMLServlet properties after initValues(): \n");
@@ -211,7 +208,6 @@ public abstract class AbstractPustefixXMLRequestHandler extends AbstractPustefix
             sb.append("            xmlOnlyAllowed = ").append(xmlOnlyAllowed).append("\n");
             sb.append("             maxStoredDoms = ").append(maxStoredDoms).append("\n");
             sb.append("                   timeout = ").append(sessionCleaner.getTimeout()).append("\n");
-            sb.append("              checkModtime = ").append(checkModtime).append("\n");
             sb.append("           render_external = ").append(renderExternal).append("\n");
             LOGGER.info(sb.toString());
         }
@@ -819,7 +815,7 @@ public abstract class AbstractPustefixXMLRequestHandler extends AbstractPustefix
         }
         paramhash.put(TargetGenerator.XSLPARAM_TG, generator);
         paramhash.put(TargetGenerator.XSLPARAM_TKEY, VALUE_NONE);
-        paramhash.put(TargetGenerator.XSLPARAM_NAVITREE, generator.getNavigation().getNavigationXMLElement());
+        paramhash.put(TargetGenerator.XSLPARAM_NAVITREE, generator.getNavigation().getSiteMapXMLElement());
         paramhash.put(XSLPARAM_EDITOR_INCLUDE_PARTS_EDITABLE_BY_DEFAULT, Boolean.toString(includePartsEditableByDefault));
 
         String session_to_link_from_external = getSessionAdmin().getExternalSessionId(session);
@@ -1031,10 +1027,6 @@ public abstract class AbstractPustefixXMLRequestHandler extends AbstractPustefix
             editorLocation = editorLocation.substring(0, editorLocation.length() - 1);
         }
         this.editorLocation = editorLocation;
-    }
-    
-    public void setCheckModtime(boolean checkModtime) {
-        this.checkModtime = checkModtime;
     }
     
     public void setSessionCleaner(SessionCleaner sessionCleaner) {

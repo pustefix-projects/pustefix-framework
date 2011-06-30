@@ -131,14 +131,6 @@ public interface ContextConfig {
     List<? extends ContextInterceptor> getPostRenderInterceptors();
 
     /**
-     * Returns the path to the file containing the navigation tree. The path
-     * is specified relative to the Pustefix docroot.
-     * 
-     * @return path to navigation structure XML file
-     */
-    String getNavigationFile();
-
-    /**
      * Returns configuration properties for the context instance.
      * 
      * @return properties specifying additional configuration options for

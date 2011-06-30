@@ -1,11 +1,14 @@
-<?xml version="1.0" encoding="utf-8"?>
+<?xml version="1.0" encoding="UTF-8"?>
 <sitemap>
   <page name="Home"/>
   <page name="Bye"/>
   <page name="LandingPage">
-    <alias variant="living">living</alias>
-    <alias variant="garden">garden</alias>
-    <alias variant="kitchen">kitchen</alias>
+    <alt key="living" name="Living"/>
+    <alt key="garden" name="Garden"/>
+    <alt key="kitchen" name="Kitchen"/>
   </page>
-  <config-include file="conf/sitemap-fragment.xml" section="aliases" module="*"/>
+  <page name="x">
+    <page name="y"/>
+  </page>
+  <config-include file="conf/sitemap-fragment.xml" section="sitemap" module="*"/>
 </sitemap>

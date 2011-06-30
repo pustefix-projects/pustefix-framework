@@ -36,7 +36,6 @@ import org.pustefixframework.config.project.EditorInfo;
 import org.pustefixframework.config.project.ProjectInfo;
 import org.pustefixframework.config.project.SessionTimeoutInfo;
 import org.pustefixframework.config.project.SessionTrackingStrategyInfo;
-import org.pustefixframework.config.project.XMLGeneratorInfo;
 import org.pustefixframework.http.AdditionalTrailInfo;
 import org.pustefixframework.http.DefaultAdditionalTrailInfoImpl;
 import org.pustefixframework.http.PustefixContextXMLRequestHandler;
@@ -65,6 +64,7 @@ import de.schlund.pfixxml.config.includes.IncludesResolver;
 import de.schlund.pfixxml.exceptionprocessor.ExceptionProcessingConfiguration;
 import de.schlund.pfixxml.resources.ResourceUtil;
 import de.schlund.pfixxml.serverutil.SessionAdmin;
+import de.schlund.pfixxml.targets.TargetGenerator;
 import de.schlund.pfixxml.targets.cachestat.CacheStatistic;
 
 public class PustefixContextXMLRequestHandlerParsingHandler extends CustomizationAwareParsingHandler {
@@ -125,15 +125,7 @@ public class PustefixContextXMLRequestHandlerParsingHandler extends Customizatio
         if (maxElement != null) {
             maxStoredDoms = Integer.parseInt(maxElement.getTextContent().trim());
         }
-        
-        Collection<XMLGeneratorInfo> infoCollection = context.getObjectTreeElement().getRoot().getObjectsOfTypeFromSubTree(XMLGeneratorInfo.class);
-        if (infoCollection.size() != 1) {
-            throw new ParserException("Found " + infoCollection.size() + " instances of XMLGeneratorInfo but expected exactly one");
-        }
-        XMLGeneratorInfo info = infoCollection.iterator().next();
-        
-       
-       
+
         de.schlund.pfixxml.resources.Resource res = ResourceUtil.getResource(configurationFile);
         if(!res.exists()) {
             throw new ParserException("Context configuration file can't be found: " + res);
@@ -157,7 +149,7 @@ public class PustefixContextXMLRequestHandlerParsingHandler extends Customizatio
             IncludesResolver resolver = new IncludesResolver("http://www.pustefix-framework.org/2008/namespace/context-xml-service-config", "config-include");
             resolver.resolveIncludes(doc);
             
-            final ObjectTreeElement contextXmlConfigTree = contextXmlConfigParser.parse(doc, cusInfo, beanReg, info);
+            final ObjectTreeElement contextXmlConfigTree = contextXmlConfigParser.parse(doc, cusInfo, beanReg);
             SubObjectTree subTree = new SubObjectTree() {
               public ObjectTreeElement getRoot() {
                     return contextXmlConfigTree;
@@ -182,7 +174,7 @@ public class PustefixContextXMLRequestHandlerParsingHandler extends Customizatio
         BeanDefinitionBuilder beanBuilder = BeanDefinitionBuilder.genericBeanDefinition(PustefixContextXMLRequestHandler.class);
         beanBuilder.setScope("singleton");
         beanBuilder.setInitMethodName("init");
-        beanBuilder.addPropertyValue("targetGenerator", new RuntimeBeanReference(info.getTargetGeneratorBeanName()));
+        beanBuilder.addPropertyValue("targetGenerator", new RuntimeBeanReference(TargetGenerator.class.getName()));
         if(path != null && !path.equals("") && !path.equals("/")) beanBuilder.addPropertyValue("handlerURI", path + "/**");
         beanBuilder.addPropertyValue("context", new RuntimeBeanReference(ContextImpl.class.getName()));
         beanBuilder.addPropertyValue("configuration", config);
@@ -190,7 +182,6 @@ public class PustefixContextXMLRequestHandlerParsingHandler extends Customizatio
         if(editorInfo != null && editorInfo.getLocation() != null) {
             beanBuilder.addPropertyValue("editorLocation", editorInfo.getLocation());
         }
-        beanBuilder.addPropertyValue("checkModtime", info.getCheckModtime());
         beanBuilder.addPropertyValue("sessionCleaner", new RuntimeBeanReference(SessionCleaner.class.getName()));
         beanBuilder.addPropertyValue("renderExternal", renderExternal);
         if(additionalTrailInfoRef!=null) 

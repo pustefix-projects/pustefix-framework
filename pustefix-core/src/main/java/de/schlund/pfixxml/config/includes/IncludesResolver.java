@@ -228,7 +228,7 @@ public class IncludesResolver {
     }
     
     private boolean checkSectionType(String section) {
-        if (section.equals("targets") || section.equals("navigation") || section.equals("pageflows") || 
+        if (section.equals("targets") || section.equals("sitemap") || section.equals("pageflows") || 
             section.equals("pagerequests") || section.equals("properties") || section.equals("interceptors") || 
             section.equals("scriptedflows") || section.equals("roles") || section.equals("authconstraints") || 
             section.equals("conditions") || section.equals("resources") || section.equals("directoutputpagerequests") ||

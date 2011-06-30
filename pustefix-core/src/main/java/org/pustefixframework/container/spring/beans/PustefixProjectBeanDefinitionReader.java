@@ -33,7 +33,6 @@ import org.springframework.beans.factory.BeanDefinitionStoreException;
 import org.springframework.beans.factory.config.BeanDefinitionHolder;
 import org.springframework.beans.factory.support.AbstractBeanDefinitionReader;
 import org.springframework.beans.factory.support.BeanDefinitionRegistry;
-import org.springframework.context.ApplicationContextException;
 import org.springframework.core.io.Resource;
 import org.w3c.dom.Document;
 import org.xml.sax.SAXException;
@@ -56,7 +55,6 @@ public class PustefixProjectBeanDefinitionReader extends AbstractBeanDefinitionR
     public int loadBeanDefinitions(Resource resource) throws BeanDefinitionStoreException {
         // TODO Use BeanFactory's class loader
         ObjectTreeElement projectConfigTree;
-        // FIXME Use new implementation of build-time properties
         Properties envProperties = EnvironmentProperties.getProperties();
         CustomizationInfo info = new PropertiesBasedCustomizationInfo(envProperties);
         try {

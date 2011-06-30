@@ -21,27 +21,27 @@ package org.pustefixframework.config.project.parser;
 import org.pustefixframework.config.customization.CustomizationAwareParsingHandler;
 import org.pustefixframework.config.generic.ParsingUtils;
 import org.pustefixframework.config.project.ProjectInfo;
-import org.pustefixframework.config.project.XMLGeneratorInfo;
 import org.springframework.beans.factory.config.BeanDefinition;
 import org.springframework.beans.factory.config.BeanDefinitionHolder;
 import org.springframework.beans.factory.support.BeanDefinitionBuilder;
 import org.springframework.beans.factory.support.BeanDefinitionRegistry;
-import org.springframework.beans.factory.support.DefaultBeanNameGenerator;
 import org.w3c.dom.Element;
 
 import com.marsching.flexiparse.parser.HandlerContext;
 import com.marsching.flexiparse.parser.exception.ParserException;
 
 import de.schlund.pfixxml.config.EnvironmentProperties;
+import de.schlund.pfixxml.resources.Resource;
+import de.schlund.pfixxml.resources.ResourceUtil;
 import de.schlund.pfixxml.targets.SPCacheFactory;
 import de.schlund.pfixxml.targets.TargetGenerator;
-import de.schlund.pfixxml.targets.TargetGeneratorFactoryBean;
 import de.schlund.pfixxml.targets.cachestat.CacheStatistic;
 
 public class XMLGeneratorInfoParsingHandler extends CustomizationAwareParsingHandler {
 
 	private BeanDefinitionBuilder cacheBeanBuilder;
 	private BeanDefinitionBuilder statsBeanBuilder;
+	private BeanDefinitionBuilder targetBeanBuilder;
 	
     @Override
     public void handleNodeIfActive(HandlerContext context) throws ParserException {
@@ -78,45 +78,29 @@ public class XMLGeneratorInfoParsingHandler extends CustomizationAwareParsingHan
         	beanHolder = new BeanDefinitionHolder(statsBeanBuilder.getBeanDefinition(), CacheStatistic.class.getName());
         	context.getObjectTreeElement().addObject(beanHolder);
         	
-            XMLGeneratorInfo info = new XMLGeneratorInfo();
-            context.getObjectTreeElement().addObject(info);
-        
+        	targetBeanBuilder = BeanDefinitionBuilder.genericBeanDefinition(TargetGenerator.class);
+        	
         } else if(root.getLocalName().equals("config-file")) {
         
-            XMLGeneratorInfo info = ParsingUtils.getSingleTopObject(XMLGeneratorInfo.class, context);
-            
             String uri = root.getTextContent().trim();
             ProjectInfo projectInfo = ParsingUtils.getSingleTopObject(ProjectInfo.class, context);
             if(projectInfo.getDefiningModule() != null && !uri.matches("^\\w+:.*")) {
                 if(uri.startsWith("/")) uri = uri.substring(1);
                 uri = "module://" + projectInfo.getDefiningModule() + "/" + uri;
             }
+            Resource res = ResourceUtil.getResource(uri);
             
+            targetBeanBuilder.addConstructorArgValue(res);
+            targetBeanBuilder.addConstructorArgReference(SPCacheFactory.class.getName());
+            BeanDefinition beanDefinition = targetBeanBuilder.getBeanDefinition();
+            String beanName = TargetGenerator.class.getName();
             BeanDefinitionRegistry beanRegistry = ParsingUtils.getSingleTopObject(BeanDefinitionRegistry.class, context);
-            DefaultBeanNameGenerator beanNameGenerator = new DefaultBeanNameGenerator();
-        
-            BeanDefinitionBuilder beanBuilder = BeanDefinitionBuilder.genericBeanDefinition(TargetGeneratorFactoryBean.class);
-            beanBuilder.setScope("singleton");
-            beanBuilder.addPropertyValue("configFile", uri);
-            beanBuilder.addPropertyReference("cacheFactory", SPCacheFactory.class.getName());
-            BeanDefinition beanDefinition = beanBuilder.getBeanDefinition();
-            String beanName = beanNameGenerator.generateBeanName(beanDefinition, beanRegistry);
             beanRegistry.registerBeanDefinition(beanName, beanDefinition);
-            beanBuilder = BeanDefinitionBuilder.genericBeanDefinition(TargetGenerator.class);
-            beanDefinition = beanBuilder.getBeanDefinition();
-            beanDefinition.setFactoryBeanName(beanName);
-            beanDefinition.setFactoryMethodName("getObject");
-            beanName = beanNameGenerator.generateBeanName(beanDefinition, beanRegistry);
-            beanRegistry.registerBeanDefinition(beanName, beanDefinition);
-        
-            info.setConfigurationFile(uri);
-            info.setTargetGeneratorBeanName(beanName);
             
         } else if(root.getLocalName().equals("check-modtime")) {
             
-            XMLGeneratorInfo info = ParsingUtils.getSingleTopObject(XMLGeneratorInfo.class, context);
             boolean checkModtime = Boolean.parseBoolean(root.getTextContent().trim());
-            info.setCheckModtime(checkModtime);
+            targetBeanBuilder.addPropertyValue("isGetModTimeMaybeUpdateSkipped", !checkModtime);
         
         } else if(root.getLocalName().equals("include-cache")) {
         	

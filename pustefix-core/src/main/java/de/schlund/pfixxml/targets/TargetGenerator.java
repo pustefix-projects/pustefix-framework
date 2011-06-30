@@ -34,6 +34,7 @@ import java.util.Map;
 import java.util.Set;
 import java.util.TreeMap;
 
+import javax.servlet.ServletContext;
 import javax.xml.transform.Transformer;
 import javax.xml.transform.TransformerConfigurationException;
 import javax.xml.transform.TransformerException;
@@ -46,6 +47,7 @@ import javax.xml.transform.sax.TransformerHandler;
 import org.apache.log4j.Logger;
 import org.apache.log4j.xml.DOMConfigurator;
 import org.pustefixframework.util.xml.DOMUtils;
+import org.springframework.web.context.ServletContextAware;
 import org.w3c.dom.Attr;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
@@ -59,7 +61,7 @@ import org.xml.sax.helpers.XMLReaderFactory;
 
 import de.schlund.pfixcore.exception.PustefixRuntimeException;
 import de.schlund.pfixcore.util.Meminfo;
-import de.schlund.pfixcore.workflow.Navigation;
+import de.schlund.pfixcore.workflow.SiteMap;
 import de.schlund.pfixxml.IncludeDocumentFactory;
 import de.schlund.pfixxml.IncludePartInfo;
 import de.schlund.pfixxml.IncludePartsInfo;
@@ -83,6 +85,7 @@ import de.schlund.pfixxml.resources.Resource;
 import de.schlund.pfixxml.resources.ResourceFinder;
 import de.schlund.pfixxml.resources.ResourceUtil;
 import de.schlund.pfixxml.resources.ResourceVisitor;
+import de.schlund.pfixxml.util.FileUtils;
 import de.schlund.pfixxml.util.SimpleResolver;
 import de.schlund.pfixxml.util.TransformerHandlerAdapter;
 import de.schlund.pfixxml.util.Xml;
@@ -94,7 +97,7 @@ import de.schlund.pfixxml.util.XsltVersion;
  *
  */
 
-public class TargetGenerator implements ResourceVisitor {
+public class TargetGenerator implements ResourceVisitor, ServletContextAware {
 
     public static final String XSLPARAM_TG = "__target_gen";
 
@@ -137,7 +140,7 @@ public class TargetGenerator implements ResourceVisitor {
 
     private Resource config_path;
     
-    private Navigation navigation;
+    private SiteMap siteMap;
     
     private FileResource cacheDir;
     
@@ -152,6 +155,7 @@ public class TargetGenerator implements ResourceVisitor {
     private boolean parseIncludes = true;
 
     private Map<String, String> renderParams;
+    private ServletContext servletContext;
     
     //--
 
@@ -188,6 +192,10 @@ public class TargetGenerator implements ResourceVisitor {
     
     //-- attributes
     
+    public void setServletContext(ServletContext servletContext) {
+        this.servletContext = servletContext;
+    }
+    
     public XsltVersion getXsltVersion() {
         return xsltVersion;
     }
@@ -216,8 +224,8 @@ public class TargetGenerator implements ResourceVisitor {
         return pagetree;
     }
     
-    public Navigation getNavigation() {
-        return navigation;
+    public SiteMap getNavigation() {
+        return siteMap;
     }
 
     public SPCacheFactory getCacheFactory() {
@@ -599,6 +607,15 @@ public class TargetGenerator implements ResourceVisitor {
             } else if (!cacheDir.canWrite()) {
                 // When running in WAR mode this is okay
                 LOG.warn("Directory " + cacheDir + " is not writable!");
+                if(servletContext.getRealPath("/") == null) {
+                    File tmpDir = (File)servletContext.getAttribute("javax.servlet.context.tempdir");
+                    File dir = new File(tmpDir, "pustefix-xsl-cache");
+                    if(dir.exists()) {
+                        FileUtils.delete(dir);
+                        dir.mkdir();
+                    }
+                    cacheDir = ResourceUtil.getFileResource(dir.toURI());
+                }
             }
         }
 
@@ -674,7 +691,7 @@ public class TargetGenerator implements ResourceVisitor {
         }
         
         try {
-            navigation = new Navigation(config_path, getXsltVersion());
+            siteMap = new SiteMap(config_path, getXsltVersion());
         } catch (Exception e) {
             throw new XMLException("Error reading page navigation.", e);
         }
@@ -816,7 +833,7 @@ public class TargetGenerator implements ResourceVisitor {
             virtual.addParam(XSLPARAM_TG, this);
             virtual.addParam(XSLPARAM_TKEY, key);
             try {
-                virtual.addParam(XSLPARAM_NAVITREE, navigation.getNavigationXMLElement());
+                virtual.addParam(XSLPARAM_NAVITREE, siteMap.getSiteMapXMLElement());
             } catch (Exception e) {
                 throw new XMLException("Cannot get navigation tree", e);
             }
