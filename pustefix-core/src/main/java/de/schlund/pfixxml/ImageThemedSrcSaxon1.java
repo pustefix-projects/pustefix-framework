@@ -32,11 +32,11 @@ public class ImageThemedSrcSaxon1 {
 
     public static String getSrc(Context context,String src,String themed_path,String themed_img,
             String parent_part_in,String parent_product_in,TargetGenerator targetGen,String targetKey,
-            String module,String search, String appVariant, String language) throws Exception {
+            String module,String search, String tenant, String language) throws Exception {
         try {
             XsltContext xsltContext=new XsltContextSaxon1(context);
             return ImageThemedSrc.getSrc(xsltContext,src,themed_path,themed_img,parent_part_in,
-                    parent_product_in,targetGen,targetKey,module,search, appVariant, language);
+                    parent_product_in,targetGen,targetKey,module,search, tenant, language);
         } catch(Exception x) {
             ExtensionFunctionUtils.setExtensionFunctionError(x);
             throw x;

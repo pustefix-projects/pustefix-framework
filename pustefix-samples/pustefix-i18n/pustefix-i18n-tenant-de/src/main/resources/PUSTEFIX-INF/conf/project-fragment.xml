@@ -3,18 +3,17 @@
                      xmlns="http://www.pustefix-framework.org/2008/namespace/project-config">
 
   <fr:tenants>
-    <tenant name="CA_market">
+    <tenant name="DE_market">
       <choose>
         <when test="$mode='prod'">
-          <host>.*\.ca$</host>
+          <host>.*\.de$</host>
         </when>
         <otherwise>
-          <host>^ca\..*</host>
+          <host>^de\..*</host>
         </otherwise>
       </choose>
-      <lang default="true">en_CA</lang>
-      <lang>fr_CA</lang>
+      <lang>de_DE</lang>
     </tenant>
   </fr:tenants>
-  
+
 </fr:config-fragments>

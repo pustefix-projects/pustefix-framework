@@ -12,8 +12,12 @@
     <match>/p:project-config/p:project</match>
   </handler>
   
-  <handler class="org.pustefixframework.config.project.parser.AppVariantParsingHandler">
-    <match>/p:project-config/p:app-variant</match>
+  <handler class="org.pustefixframework.config.project.parser.TenantParsingHandler">
+    <match>/p:project-config/p:tenant</match>
+  </handler>
+  
+  <handler class="org.pustefixframework.config.project.parser.TenantHostParsingHandler">
+    <match>/p:project-config/p:tenant//p:host</match>
   </handler>
   
   <handler class="org.pustefixframework.config.project.parser.SessionInfoParsingHandler">
@@ -123,6 +127,7 @@
   <handler id="org.pustefixframework.config.customization.WhenParsingHandler" class="org.pustefixframework.config.customization.CustomizationWhenParsingHandler">
     <match>/p:project-config/p:choose/p:when</match>
     <match>/p:project-config/p:application/p:choose/p:when</match>
+    <match>/p:project-config/p:tenant/p:choose/p:when</match>
     <match>/p:project-config/p:xml-generator/p:choose/p:when</match>
     <match>/p:project-config//p:context-xml-service/p:choose/p:when[p:session-cleaner-timeout]</match>
     <match>/p:project-config/p:editor/p:choose/p:when</match>
@@ -133,6 +138,7 @@
   <handler id="org.pustefixframework.config.customization.OtherwiseParsingHandler" class="org.pustefixframework.config.customization.CustomizationOtherwiseParsingHandler">
     <match>/p:project-config/p:choose/p:otherwise</match>
     <match>/p:project-config/p:application/p:choose/p:otherwise</match>
+    <match>/p:project-config/p:tenant/p:choose/p:otherwise</match>
     <match>/p:project-config/p:xml-generator/p:choose/p:otherwise</match>
     <match>/p:project-config//p:context-xml-service/p:choose/p:otherwise[p:session-cleaner-timeout]</match>
     <match>/p:project-config/p:editor/p:choose/p:otherwise</match>

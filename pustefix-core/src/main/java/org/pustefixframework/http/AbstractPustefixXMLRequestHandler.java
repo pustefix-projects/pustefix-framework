@@ -861,7 +861,7 @@ public abstract class AbstractPustefixXMLRequestHandler extends AbstractPustefix
                     variant_id = variants[i];
                     //TODO
                     //if(spdoc.getBaseVariant() != null) variant_id += ":" + spdoc.getBaseVariant();
-                    if(spdoc.getAppVariant() != null) variant_id += ":" + spdoc.getAppVariant().getName() + "-" + spdoc.getAppVariant().getDefaultLanguage();
+                    if(spdoc.getTenant() != null) variant_id += ":" + spdoc.getTenant().getName() + "-" + spdoc.getTenant().getDefaultLanguage();
                     LOGGER.info("   ** Trying variant '" + variant_id + "' **");
                     pinfo   = generator.getPageInfoFactory().getPage(pagename, variant_id);
                     target  = pagetree.getTargetForPageInfo(pinfo);
@@ -873,9 +873,9 @@ public abstract class AbstractPustefixXMLRequestHandler extends AbstractPustefix
             if (target == null) {
                 LOGGER.info("   ** Trying root variant **");
                 //TODO
-                String appVar = null;
-                if(spdoc.getAppVariant() != null) appVar = spdoc.getAppVariant().getName() + "-" + spdoc.getAppVariant().getDefaultLanguage();
-                pinfo = generator.getPageInfoFactory().getPage(pagename, appVar);
+                String tenant = null;
+                if(spdoc.getTenant() != null) tenant = spdoc.getTenant().getName() + "-" + spdoc.getTenant().getDefaultLanguage();
+                pinfo = generator.getPageInfoFactory().getPage(pagename, tenant);
                 target = pagetree.getTargetForPageInfo(pinfo);
             }
             if (target == null) {

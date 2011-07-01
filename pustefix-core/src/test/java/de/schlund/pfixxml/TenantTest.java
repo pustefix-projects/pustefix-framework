@@ -4,12 +4,12 @@ import junit.framework.TestCase;
 
 import org.springframework.mock.web.MockHttpServletRequest;
 
-import de.schlund.pfixxml.AppVariant;
+import de.schlund.pfixxml.Tenant;
 
-public class AppVariantTest extends TestCase {
+public class TenantTest extends TestCase {
 
     public void testRegexps() {
-        AppVariant variant = new AppVariant("test");
+        Tenant variant = new Tenant("test");
         variant.setHostPattern("pustefixframework.org");
         MockHttpServletRequest req = new MockHttpServletRequest();
         req.setServerName("pustefixframework.org");

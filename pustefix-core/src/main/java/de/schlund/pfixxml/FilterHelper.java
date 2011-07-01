@@ -2,7 +2,7 @@ package de.schlund.pfixxml;
 
 public class FilterHelper {
     
-    public static String getFilter(String appVariant, String language) {
+    public static String getFilter(String tenant, String language) {
         StringBuilder sb = new StringBuilder();
         int condNo = 0;
         if(language != null && language.length() > 0) {
@@ -15,8 +15,8 @@ public class FilterHelper {
                 condNo++;
             }
         }
-        if(appVariant != null && appVariant.length() > 0) {
-            sb.append("(app=" + appVariant + ")");
+        if(tenant != null && tenant.length() > 0) {
+            sb.append("(tenant=" + tenant + ")");
             condNo++;
         }
         if(condNo > 0) {

@@ -20,9 +20,7 @@ package de.schlund.pfixcore.util;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.Enumeration;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 import java.util.Set;
 import java.util.SortedMap;
 import java.util.TreeMap;
@@ -43,8 +41,7 @@ public class ModuleInfo {
     private SortedMap<String,ModuleDescriptor> moduleDescMap = new TreeMap<String,ModuleDescriptor>();
     
     private List<String> commonDefaultSearchModules = new ArrayList<String>();
-    private Map<String, List<String>> appVariantToDefaultSearchModules = new HashMap<String, List<String>>();
-    
+
     public static ModuleInfo getInstance() {
         return instance;
     }
@@ -88,6 +85,7 @@ public class ModuleInfo {
                     moduleDesc.getURL() + " - " + moduleDescMap.get(moduleDesc.getName()).getURL() + ")");
         }
         moduleDescMap.put(moduleDesc.getName(), moduleDesc);
+        if(moduleDesc.isDefaultSearchable()) addDefaultSearchModule(moduleDesc.getName());
     }
     
     public ModuleDescriptor getModuleDescriptor(String moduleName) {
@@ -106,8 +104,7 @@ public class ModuleInfo {
     
     private void getOverridingModules(String moduleName, ModuleFilter filter, String resourcePath, List<String> modules) {
         for(ModuleDescriptor moduleDesc:moduleDescMap.values()) {
-            System.out.println("FILTER: "+filter);
-            if((filter == null || filter.accept(moduleDesc)) && moduleDesc.overridesResource(moduleName, resourcePath)) {
+            if((filter == null || filter.accept(moduleDesc.getModuleOverrideFilterAttributes())) && moduleDesc.overridesResource(moduleName, resourcePath)) {
                 if(!modules.contains(moduleDesc.getName())) {
                     modules.add(0, moduleDesc.getName());
                     getOverridingModules(moduleDesc.getName(), filter, resourcePath, modules);
@@ -117,35 +114,22 @@ public class ModuleInfo {
     }
     
     public void addDefaultSearchModule(String moduleName) {
+        System.out.println("ADD DEFAULT SEARCH: "+moduleName);
         if(!moduleDescMap.containsKey(moduleName)) 
             throw new RuntimeException("Default-search module '" + moduleName + "' doesn't exist.");
         commonDefaultSearchModules.add(moduleName);
-        for(String appVariant: appVariantToDefaultSearchModules.keySet()) {
-            List<String> defaultSearchModules = appVariantToDefaultSearchModules.get(appVariant);
-            defaultSearchModules.add(moduleName);
+    }
+    
+    public List<String> getDefaultSearchModules(ModuleFilter filter) {
+        List<String> modules = new ArrayList<String>();
+        for(String module: commonDefaultSearchModules) {
+            ModuleDescriptor moduleDesc = getModuleDescriptor(module);
+            if(filter == null || filter.accept(moduleDesc.getDefaultSearchFilterAttributes())) {
+                modules.add(module);
+                System.out.println("CHECK DEFAULT SEARCH: "+module);
+            }
         }
-    }
-    
-    public void addDefaultSearchModule(String appVariant, String moduleName) {
-        if(!moduleDescMap.containsKey(moduleName)) 
-            throw new RuntimeException("Default-search module '" + moduleName + "' doesn't exist.");
-        List<String> defaultSearchModules = appVariantToDefaultSearchModules.get(appVariant);
-        if(defaultSearchModules == null) {
-            defaultSearchModules = new ArrayList<String>();
-            appVariantToDefaultSearchModules.put(appVariant, defaultSearchModules);
-            defaultSearchModules.add(moduleName);
-            defaultSearchModules.addAll(commonDefaultSearchModules);
-        } else {
-            defaultSearchModules.add(moduleName);
-        }
-    }
-    
-    public List<String> getDefaultSearchModules() {
-        return commonDefaultSearchModules;
-    }
-    
-    public List<String> getDefaultSearchModules(String appVariant) {
-        return appVariantToDefaultSearchModules.get(appVariant);
+        return modules;
     }
     
     @Override

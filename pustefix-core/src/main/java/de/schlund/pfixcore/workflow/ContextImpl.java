@@ -39,7 +39,7 @@ import de.schlund.pfixcore.workflow.context.PageFlow;
 import de.schlund.pfixcore.workflow.context.RequestContextImpl;
 import de.schlund.pfixcore.workflow.context.ServerContextImpl;
 import de.schlund.pfixcore.workflow.context.SessionContextImpl;
-import de.schlund.pfixxml.AppVariant;
+import de.schlund.pfixxml.Tenant;
 import de.schlund.pfixxml.PfixServletRequest;
 import de.schlund.pfixxml.SPDocument;
 import de.schlund.pfixxml.Variant;
@@ -185,7 +185,7 @@ public class ContextImpl implements AccessibilityChecker, ExtendedContext, Token
     }
 
     public void setLanguage(String lang) {
-        //TODO: check appvariant
+        //TODO: check tenant
         getRequestContextForCurrentThreadWithError().setLanguage(lang);
         sessioncontext.setLanguage(lang);
     }
@@ -199,12 +199,12 @@ public class ContextImpl implements AccessibilityChecker, ExtendedContext, Token
         getRequestContextForCurrentThreadWithError().setVariantForThisRequestOnly(variant);
     }
     
-    public void setAppVariant(AppVariant appVariant) {
-        sessioncontext.setAppVariant(appVariant);
+    public void setTenant(Tenant tenant) {
+        sessioncontext.setTenant(tenant);
     }
     
-    public AppVariant getAppVariant() {
-        return sessioncontext.getAppVariant();
+    public Tenant getTenant() {
+        return sessioncontext.getTenant();
     }
     
     public boolean stateMustSupplyFullDocument() {
@@ -240,16 +240,17 @@ public class ContextImpl implements AccessibilityChecker, ExtendedContext, Token
     public void prepareForRequest(HttpServletRequest req) {
         // This allows to use OLDER servercontexts during requests
         requestcontextstore.set(new RequestContextImpl(servercontext, this));
-        AppVariant matchingAppVariant = servercontext.getAppVariantInfo().getMatchingAppVariant(req);
-        AppVariant currentAppVariant = getAppVariant();
-        if(currentAppVariant == null) {
-            if(matchingAppVariant != null) {
-                setAppVariant(matchingAppVariant);
+        Tenant matchingTenant = servercontext.getTenantInfo().getMatchingTenant(req);
+        Tenant currentTenant = getTenant();
+        if(currentTenant == null) {
+            if(matchingTenant != null) {
+                System.out.println("SET " + matchingTenant.getName());
+                setTenant(matchingTenant);
             }
         } else {
-            if(!currentAppVariant.equals(matchingAppVariant)) {
+            if(!currentTenant.equals(matchingTenant)) {
                 //TODO: handle this case
-                throw new PustefixRuntimeException("Illegal app-variant switch");
+                throw new PustefixRuntimeException("Illegal tenant switch");
             }
         }
     }

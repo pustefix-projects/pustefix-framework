@@ -45,9 +45,9 @@ public class ImageThemedSrc {
     public static String getSrc(XsltContext context, String src, String themed_path, String themed_img,
                                 String parent_part_in, String parent_product_in,
                                 TargetGenerator targetGen, String targetKey, String module, String search,
-                                String appVariant, String language) throws Exception {
+                                String tenant, String language) throws Exception {
         
-        String filter = FilterHelper.getFilter(appVariant, language);
+        String filter = FilterHelper.getFilter(tenant, language);
         
         boolean dynamic = false;
         if(search != null && !search.trim().equals("")) {

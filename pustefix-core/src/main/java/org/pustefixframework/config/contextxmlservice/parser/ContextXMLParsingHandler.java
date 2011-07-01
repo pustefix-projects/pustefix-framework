@@ -54,8 +54,8 @@ import de.schlund.pfixcore.workflow.ContextResourceManagerImpl;
 import de.schlund.pfixcore.workflow.PageMap;
 import de.schlund.pfixcore.workflow.State;
 import de.schlund.pfixcore.workflow.context.ServerContextImpl;
-import de.schlund.pfixxml.AppVariant;
-import de.schlund.pfixxml.AppVariantInfo;
+import de.schlund.pfixxml.Tenant;
+import de.schlund.pfixxml.TenantInfo;
 
 /**
  * 
@@ -193,7 +193,7 @@ public class ContextXMLParsingHandler implements ParsingHandler {
             beanBuilder.setInitMethodName("init");
             beanBuilder.addPropertyReference("config", contextConfigBeanName);
             beanBuilder.addPropertyReference("pageMap", pageMapBeanName);
-            beanBuilder.addPropertyValue("appVariantInfo", new RuntimeBeanReference(AppVariantInfo.class.getName()));
+            beanBuilder.addPropertyValue("tenantInfo", new RuntimeBeanReference(TenantInfo.class.getName()));
             beanDefinition = beanBuilder.getBeanDefinition();
             beanHolder = new BeanDefinitionHolder(beanDefinition, ServerContextImpl.class.getName() );
             context.getObjectTreeElement().addObject(beanHolder);

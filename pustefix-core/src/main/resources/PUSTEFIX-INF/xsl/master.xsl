@@ -65,7 +65,7 @@
   <!-- <xsl:param name="exclude_custom_ns_prefixes"/> -->
   
   <!-- Needed for includes to work. Remember to include this in the resulting stylesheet, too! -->
-  <xsl:param name="app"/>
+  <xsl:param name="tenant"/>
   <xsl:param name="lang"><cus:lang/></xsl:param>
   <xsl:param name="product"><cus:product/></xsl:param>
 
@@ -165,7 +165,7 @@
       <ixsl:param name="__lf"/>
       <ixsl:param name="pageflow"/>
       
-      <ixsl:param name="app"><xsl:value-of select="$app"/></ixsl:param>
+      <ixsl:param name="tenant"><xsl:value-of select="$tenant"/></ixsl:param>
       <ixsl:param name="lang"><xsl:value-of select="$lang"/></ixsl:param>
       <ixsl:param name="page"><xsl:value-of select="$page"/></ixsl:param>
       <ixsl:variable name="product"><xsl:value-of select="$product"/></ixsl:variable>

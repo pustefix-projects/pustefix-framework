@@ -46,7 +46,7 @@ public class SPDocument {
     // private boolean   nostore        = false;
     private String    pagename       = null;
     private Variant   variant        = null;
-    private AppVariant appVariant;
+    private Tenant tenant;
     private String    xslkey         = null;
     private long      timestamp      = System.currentTimeMillis();
     private int       error          = 0;
@@ -77,12 +77,12 @@ public class SPDocument {
         return variant;
     }
     
-    public void setAppVariant(AppVariant appVariant) {
-        this.appVariant = appVariant;
+    public void setTenant(Tenant tenant) {
+        this.tenant = tenant;
     }
 
-    public AppVariant getAppVariant() {
-        return appVariant;
+    public Tenant getTenant() {
+        return tenant;
     }
 
 //    public void setNostore(boolean nostore) {

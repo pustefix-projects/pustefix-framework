@@ -45,7 +45,7 @@ import de.schlund.pfixcore.workflow.ContextResourceManager;
 import de.schlund.pfixcore.workflow.ContextResourceManagerImpl;
 import de.schlund.pfixcore.workflow.SessionStatusEvent;
 import de.schlund.pfixcore.workflow.SessionStatusListener;
-import de.schlund.pfixxml.AppVariant;
+import de.schlund.pfixxml.Tenant;
 import de.schlund.pfixxml.Variant;
 
 /**
@@ -61,7 +61,7 @@ public class SessionContextImpl {
     
     private HttpSession                session;
     private Variant                    variant      = null;
-    private AppVariant                 appVariant;
+    private Tenant                     tenant;
     private String                     visitId      = null;
     private ContextResourceManager     crm;
     private SessionEndNotificator      sessionEndNotificator;
@@ -162,12 +162,12 @@ public class SessionContextImpl {
         this.variant = variant;
     }
     
-    public AppVariant getAppVariant() {
-        return appVariant;
+    public Tenant getTenant() {
+        return tenant;
     }
     
-    public void setAppVariant(AppVariant appVariant) {
-        this.appVariant = appVariant;
+    public void setTenant(Tenant tenant) {
+        this.tenant = tenant;
     }
 
     public String getVisitId() {

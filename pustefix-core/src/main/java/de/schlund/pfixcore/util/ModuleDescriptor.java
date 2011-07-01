@@ -54,7 +54,9 @@ public class ModuleDescriptor {
     private boolean contentEditable;
     private Map<String,Set<String>> moduleToResourcePaths = new HashMap<String,Set<String>>();
     private Map<String,Set<String>> moduleToResourcePathPatterns = new HashMap<String,Set<String>>();
-    private Dictionary<String,String> filterAttributes = new Hashtable<String,String>();
+    private Dictionary<String,String> moduleOverrideFilterAttributes = new Hashtable<String,String>();
+    private Dictionary<String,String> defaultSearchFilterAttributes = new Hashtable<String,String>();
+    private boolean defaultSearchable;
     private List<String> staticPaths = new ArrayList<String>();
     
     private AntPathMatcher antPathMatcher = new AntPathMatcher();
@@ -118,12 +120,28 @@ public class ModuleDescriptor {
         return false;
     }
     
-    public void addFilterAttribute(String name, String value) {
-        filterAttributes.put(name, value);
+    public void addModuleOverrideFilterAttribute(String name, String value) {
+        moduleOverrideFilterAttributes.put(name, value);
+    }
+    
+    public void addDefaultSearchFilterAttribute(String name, String value) {
+        defaultSearchFilterAttributes.put(name, value);
+    }
+    
+    public void setDefaultSearchable(boolean defaultSearchable) {
+        this.defaultSearchable = defaultSearchable;
+    }
+    
+    public boolean isDefaultSearchable() {
+        return defaultSearchable;
     }
              
-    public Dictionary<String,String> getFilterAttributes() {
-        return filterAttributes;
+    public Dictionary<String,String> getModuleOverrideFilterAttributes() {
+        return moduleOverrideFilterAttributes;
+    }
+    
+    public Dictionary<String,String> getDefaultSearchFilterAttributes() {
+        return defaultSearchFilterAttributes;
     }
 
     public void addStaticPath(String staticPath) {
@@ -163,6 +181,18 @@ public class ModuleDescriptor {
                 boolean editable = Boolean.valueOf(editElem.getTextContent());
                 moduleInfo.setContentEditable(editable);
             }
+            Element searchElem = getSingleChildElement(root, "default-search", false);
+            if(searchElem != null) {
+                moduleInfo.setDefaultSearchable(true);
+                List<Element> filterAttrElems = getChildElements(searchElem, "filter-attribute");
+                for(Element filterAttrElem: filterAttrElems) {
+                    String filterAttrName = filterAttrElem.getAttribute("name");
+                    if(filterAttrName.equals("")) throw new Exception("Element 'filter-attribute' requires 'name' attribute!");
+                    String filterAttrValue = filterAttrElem.getAttribute("value");
+                    if(filterAttrValue.equals("")) throw new Exception("Element 'filter-attribute' requires 'value' attribute!");
+                    moduleInfo.addDefaultSearchFilterAttribute(filterAttrName, filterAttrValue);
+                }
+            }
             Element overElem = getSingleChildElement(root, "override-modules", false);
             if(overElem != null) {
                 List<Element> filterAttrElems = getChildElements(overElem, "filter-attribute");
@@ -171,7 +201,7 @@ public class ModuleDescriptor {
                     if(filterAttrName.equals("")) throw new Exception("Element 'filter-attribute' requires 'name' attribute!");
                     String filterAttrValue = filterAttrElem.getAttribute("value");
                     if(filterAttrValue.equals("")) throw new Exception("Element 'filter-attribute' requires 'value' attribute!");
-                    moduleInfo.addFilterAttribute(filterAttrName, filterAttrValue);
+                    moduleInfo.addModuleOverrideFilterAttribute(filterAttrName, filterAttrValue);
                 }
                 List<Element> modElems = getChildElements(overElem, "module");
                 for(Element modElem:modElems) {

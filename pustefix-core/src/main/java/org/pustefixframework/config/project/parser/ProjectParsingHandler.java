@@ -32,8 +32,8 @@ import com.marsching.flexiparse.configuration.RunOrder;
 import com.marsching.flexiparse.parser.HandlerContext;
 import com.marsching.flexiparse.parser.exception.ParserException;
 
-import de.schlund.pfixxml.AppVariant;
-import de.schlund.pfixxml.AppVariantInfo;
+import de.schlund.pfixxml.Tenant;
+import de.schlund.pfixxml.TenantInfo;
 
 /**
  * 
@@ -49,17 +49,16 @@ public class ProjectParsingHandler extends CustomizationAwareParsingHandler {
             
         } else {
             
-            List<AppVariant> appVariants = new ArrayList<AppVariant>();
-            Collection<AppVariant> appVarCollection = context.getObjectTreeElement().getObjectsOfTypeFromSubTree(AppVariant.class);
-            System.out.println("AAAAAAAAAAAAAACCCCCCCCCCCC: "+appVarCollection.size());
-            appVariants.addAll(appVarCollection);
+            List<Tenant> tenants = new ArrayList<Tenant>();
+            Collection<Tenant> tenantCollection = context.getObjectTreeElement().getObjectsOfTypeFromSubTree(Tenant.class);
+            tenants.addAll(tenantCollection);
         
-            BeanDefinitionBuilder beanBuilder = BeanDefinitionBuilder.genericBeanDefinition(AppVariantInfo.class);
+            BeanDefinitionBuilder beanBuilder = BeanDefinitionBuilder.genericBeanDefinition(TenantInfo.class);
             beanBuilder.setScope("singleton");
-            beanBuilder.addPropertyValue("appVariants", appVariants);
+            beanBuilder.addPropertyValue("tenants", tenants);
             BeanDefinition beanDefinition = beanBuilder.getBeanDefinition();
             BeanDefinitionRegistry beanRegistry = ParsingUtils.getSingleTopObject(BeanDefinitionRegistry.class, context);
-            beanRegistry.registerBeanDefinition(AppVariantInfo.class.getName(), beanDefinition);
+            beanRegistry.registerBeanDefinition(TenantInfo.class.getName(), beanDefinition);
             
         }  
       

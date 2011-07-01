@@ -15,7 +15,7 @@
     <secret>foobar</secret>
   </editor>
   
-  <config-include file="conf/project-fragment.xml" section="app-variants" module="*"/>
+  <config-include file="conf/project-fragment.xml" section="tenants" module="*"/>
 
   <xml-generator>
     <config-file>conf/depend.xml</config-file>

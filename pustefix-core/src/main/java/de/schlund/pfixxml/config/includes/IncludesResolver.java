@@ -232,7 +232,7 @@ public class IncludesResolver {
             section.equals("pagerequests") || section.equals("properties") || section.equals("interceptors") || 
             section.equals("scriptedflows") || section.equals("roles") || section.equals("authconstraints") || 
             section.equals("conditions") || section.equals("resources") || section.equals("directoutputpagerequests") ||
-            section.equals("app-variants")) {
+            section.equals("tenants")) {
             return true;
         } else {
             return false;

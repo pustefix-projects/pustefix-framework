@@ -94,10 +94,10 @@ public final class IncludeDocumentExtension {
     public static final Object get(XsltContext context, String path_str, String part,
                                    TargetGenerator targetgen, String targetkey,
                                    String parent_part_in, String parent_theme_in, String computed_inc,
-                                   String module, String search, String appVariant, String language) throws Exception {
+                                   String module, String search, String tenant, String language) throws Exception {
        
         if(path_str.startsWith("docroot:")) path_str = path_str.substring(9);
-        
+        System.out.println("TTTTTTTTTTTTTTT: "+tenant);
         if(module != null) {
             module = module.trim();
             if(module.equals("")) module = null;
@@ -130,7 +130,7 @@ public final class IncludeDocumentExtension {
                 else throw new XMLException("Unsupported include search argument: " + search);
             }
             if(dynamic) {
-                String filter = FilterHelper.getFilter(appVariant, language);
+                String filter = FilterHelper.getFilter(tenant, language);
                 uriStr = "dynamic:/" + path_str + "?part=" + part + "&parent=" + parent_uri_str;
                 if(!"WEBAPP".equalsIgnoreCase(module)) {
                     if(module != null) {
@@ -331,13 +331,13 @@ public final class IncludeDocumentExtension {
         return resolvedUri.get();
     }
     
-    public static String getDynIncInfo(String part, String theme, String path, String resolvedModule, String requestedModule, String appVariant, String language) {
+    public static String getDynIncInfo(String part, String theme, String path, String resolvedModule, String requestedModule, String tenant, String language) {
         try {
             StringBuilder sb = new StringBuilder();
             sb.append(part).append("|").append(theme).append("|").append(path).append("|").append(resolvedModule);
             sb.append("|").append(requestedModule).append("|");
             if(!path.startsWith("/")) path = "/" + path;
-            String filter = FilterHelper.getFilter(appVariant, language);
+            String filter = FilterHelper.getFilter(tenant, language);
             if(filter != null) {
                 filter = "&filter=" + URLEncoder.encode(filter, "UTF-8");
             } else {

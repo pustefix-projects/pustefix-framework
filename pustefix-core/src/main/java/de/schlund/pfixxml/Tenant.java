@@ -9,14 +9,14 @@ import javax.servlet.http.HttpServletRequest;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 
-public class AppVariant {
+public class Tenant {
 
     private String name;
     private String defaultLanguage;
     private List<String> supportedLanguages = new ArrayList<String>();
     private Pattern hostPattern;
     
-    public AppVariant(String name) {
+    public Tenant(String name) {
         this.name = name;
     }
     
@@ -54,12 +54,13 @@ public class AppVariant {
                 return false;
             }
         }
+        System.out.println("HOST_MATCH: "+ req.getServerName() + " "+hostPattern);
         return true;
     }
     
     public void toXML(Element root) {
         Document doc = root.getOwnerDocument();
-        Element varElem = doc.createElement("app-variant");
+        Element varElem = doc.createElement("tenant");
         varElem.setAttribute("name", getName());
         for(String lang : supportedLanguages) {
             Element elem = doc.createElement("lang");
@@ -73,8 +74,8 @@ public class AppVariant {
     
     @Override
     public boolean equals(Object obj) {
-        if(obj instanceof AppVariant) {
-            return ((AppVariant)obj).getName().equals(name);
+        if(obj instanceof Tenant) {
+            return ((Tenant)obj).getName().equals(name);
         }
         return false;
     }

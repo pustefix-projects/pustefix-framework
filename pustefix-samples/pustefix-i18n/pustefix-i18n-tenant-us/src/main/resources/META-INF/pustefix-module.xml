@@ -11,13 +11,8 @@
     <path>img</path>
   </static>
 
-  <override-modules>
-    <filter-attribute name="app" value="US_market"/>
-    <module name="pustefix-i18n-en">
-      <resource path="txt/common.xml"/>
-      <resource path="img/*"/>
-    </module>
-  </override-modules>
-  
+  <default-search priority="1">
+    <filter-attribute name="tenant" value="US_market"/>
+  </default-search>
   
 </module-descriptor>

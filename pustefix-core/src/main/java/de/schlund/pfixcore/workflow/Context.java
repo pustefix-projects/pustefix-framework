@@ -27,7 +27,7 @@ import org.pustefixframework.config.contextxmlservice.ContextConfig;
 import de.schlund.pfixcore.auth.Authentication;
 import de.schlund.pfixcore.exception.PustefixApplicationException;
 import de.schlund.pfixcore.workflow.context.PageFlow;
-import de.schlund.pfixxml.AppVariant;
+import de.schlund.pfixxml.Tenant;
 import de.schlund.pfixxml.Variant;
 import de.schlund.util.statuscodes.StatusCode;
 

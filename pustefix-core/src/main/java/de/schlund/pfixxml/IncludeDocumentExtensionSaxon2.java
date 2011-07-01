@@ -34,11 +34,11 @@ public class IncludeDocumentExtensionSaxon2 {
 
     public static Node get(XPathContext context,String path_str,String part,TargetGenerator targetgen,String targetkey,
             String parent_part_in,String parent_theme_in,String computed_inc,String module,String search,
-            String appVariant, String language) throws Exception {    
+            String tenant, String language) throws Exception {    
         try {
             XsltContext xsltContext=new XsltContextSaxon2(context);
             return (Node)IncludeDocumentExtension.get(xsltContext,path_str,part,targetgen,targetkey,
-                    parent_part_in,parent_theme_in,computed_inc,module,search, appVariant, language);
+                    parent_part_in,parent_theme_in,computed_inc,module,search, tenant, language);
         } catch(Exception x) {
             ExtensionFunctionUtils.setExtensionFunctionError(x);
             throw x;
@@ -64,8 +64,8 @@ public class IncludeDocumentExtensionSaxon2 {
         return IncludeDocumentExtension.getResolvedURI();
     }
     
-    public static String getDynIncInfo(String part, String theme, String path, String resolvedModule, String requestedModule, String appVariant, String language) {
-        return IncludeDocumentExtension.getDynIncInfo(part, theme, path, resolvedModule, requestedModule, appVariant, language);
+    public static String getDynIncInfo(String part, String theme, String path, String resolvedModule, String requestedModule, String tenant, String language) {
+        return IncludeDocumentExtension.getDynIncInfo(part, theme, path, resolvedModule, requestedModule, tenant, language);
     }
     
 }

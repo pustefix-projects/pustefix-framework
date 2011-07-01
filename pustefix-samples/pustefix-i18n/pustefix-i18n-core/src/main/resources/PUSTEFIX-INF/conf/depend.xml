@@ -15,10 +15,10 @@
   	<include stylesheet="xsl/metatags.xsl"/>
   </standardmetatags>
   
-  <standardpage-variant app="US_market" lang="en_US">US_market-en_US</standardpage-variant>
-  <standardpage-variant app="CA_market" lang="en_CA">CA_market-en_CA</standardpage-variant>
-  <standardpage-variant app="CA_market" lang="fr_CA">CA_market-fr_CA</standardpage-variant>
-  <standardpage-variant app="DE_market" lang="de_DE">DE_market-de_DE</standardpage-variant>
+  <standardpage-variant tenant="US_market" lang="en_US">US_market-en_US</standardpage-variant>
+  <standardpage-variant tenant="CA_market" lang="en_CA">CA_market-en_CA</standardpage-variant>
+  <standardpage-variant tenant="CA_market" lang="fr_CA">CA_market-fr_CA</standardpage-variant>
+  <standardpage-variant tenant="DE_market" lang="de_DE">DE_market-de_DE</standardpage-variant>
 
   <auto-standardpage lookup-path="txt/pages" lookup-module="" xml="xml/frame.xml"/>
 
