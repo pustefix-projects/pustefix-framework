@@ -86,19 +86,19 @@
     <match>/c:context-xml-service-config/c:pagerequest/c:authconstraint//c:authconstraint</match>
     <match>/c:context-xml-service-config/c:pagerequest/c:authconstraint//c:hasrole</match>
     <match>/c:context-xml-service-config/c:pagerequest/c:authconstraint//c:navigateTo</match>
-    <match>/c:context-xml-service-config/c:pagerequest/*[self::default or self::variant]/c:authconstraint//c:and</match>
-    <match>/c:context-xml-service-config/c:pagerequest/*[self::default or self::variant]/c:authconstraint//c:or</match>
-    <match>/c:context-xml-service-config/c:pagerequest/*[self::default or self::variant]/c:authconstraint//c:not</match>
-    <match>/c:context-xml-service-config/c:pagerequest/*[self::default or self::variant]/c:authconstraint//c:condition</match>
-    <match>/c:context-xml-service-config/c:pagerequest/*[self::default or self::variant]/c:authconstraint//c:authconstraint</match>
-    <match>/c:context-xml-service-config/c:pagerequest/*[self::default or self::variant]/c:authconstraint//c:hasrole</match>
-    <match>/c:context-xml-service-config/c:pagerequest/*[self::default or self::variant]/c:authconstraint//c:navigateTo</match>
+    <match>/c:context-xml-service-config/c:pagerequest/*[self::c:default or self::c:variant]/c:authconstraint//c:and</match>
+    <match>/c:context-xml-service-config/c:pagerequest/*[self::c:default or self::c:variant]/c:authconstraint//c:or</match>
+    <match>/c:context-xml-service-config/c:pagerequest/*[self::c:default or self::c:variant]/c:authconstraint//c:not</match>
+    <match>/c:context-xml-service-config/c:pagerequest/*[self::c:default or self::c:variant]/c:authconstraint//c:condition</match>
+    <match>/c:context-xml-service-config/c:pagerequest/*[self::c:default or self::c:variant]/c:authconstraint//c:authconstraint</match>
+    <match>/c:context-xml-service-config/c:pagerequest/*[self::c:default or self::c:variant]/c:authconstraint//c:hasrole</match>
+    <match>/c:context-xml-service-config/c:pagerequest/*[self::c:default or self::c:variant]/c:authconstraint//c:navigateTo</match>
   </handler>
  
   <handler class="org.pustefixframework.config.contextxmlservice.parser.AuthConstraintParsingHandler">
     <match>/c:context-xml-service-config/c:authconstraint</match>
     <match>/c:context-xml-service-config/c:pagerequest/c:authconstraint</match>
-    <match>/c:context-xml-service-config/c:pagerequest/*[self::default or self::variant]/c:authconstraint</match>
+    <match>/c:context-xml-service-config/c:pagerequest/*[self::c:default or self::c:variant]/c:authconstraint</match>
   </handler>
     
   <!--  pageflows -->
