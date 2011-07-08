@@ -7,9 +7,9 @@
   xsi:schemaLocation="http://www.pustefix-framework.org/2008/namespace/config-fragments
                       http://www.pustefix-framework.org/2008/namespace/config-fragments.xsd">
 
-  <fr:navigation>
-    <page name="IncludeConfPage" handler="/xml/main" />
-  </fr:navigation>
+  <fr:sitemap>
+    <page name="IncludeConfPage"/>
+  </fr:sitemap>
   <fr:targets>
     <standardpage name="IncludeConfPage" xml="xml/one_frame_navi.xml" />
   </fr:targets>

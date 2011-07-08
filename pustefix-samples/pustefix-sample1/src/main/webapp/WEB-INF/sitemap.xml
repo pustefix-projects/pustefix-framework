@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<sitemap>
+    <page name="home" accesskey="H">
+      <page name="order" accesskey="O"/>
+      <page name="phantom" accesskey="O" />
+      <page name="overview" accesskey="S"/>
+    </page>
+    <page name="scripting"/>
+    <page name="scriptingstate"/>
+    <page name="encoding"/>
+    <page name="upload"/>
+    <page name="test"/>
+    <page name="tokenerror"/>
+    <page name="iwrapperinfo"/>
+    <page name="frames"/>
+    
+    <page name="install"/>
+    
+    <page name="geninc"/>
+    <page name="invalidate"/>
+
+    <page name="A"/>
+    <page name="B"/>
+    <page name="C"/>
+
+    <page name="testchecks"/>
+    
+    <page name="moduletest"/>
+
+    <config-include file="WEB-INF/fragments.xml" section="sitemap"/>
+    <config-include file="conf/fragments.xml" section="sitemap" module="animal-module"/>
+
+</sitemap>

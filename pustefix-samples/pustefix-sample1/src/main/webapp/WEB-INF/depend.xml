@@ -4,42 +4,6 @@
       project="sample1"
       lang="en_GB">
 
-  <navigation>
-    <page name="home" accesskey="H">
-      <alias lang="de">Start</alias>
-      <alias lang="en">Home</alias>
-      <!-- <config-include file="conf/fragments.xml" section="alias_home" module="*"/> -->
-      <page name="order" accesskey="O"/>
-      <page name="phantom" accesskey="O" />
-      <page name="overview" accesskey="S"/>
-    </page>
-    <page name="scripting"/>
-    <page name="scriptingstate"/>
-    <page name="encoding"/>
-    <page name="upload"/>
-    <page name="test"/>
-    <page name="tokenerror"/>
-    <page name="iwrapperinfo"/>
-    <page name="frames"/>
-    
-    <page name="install"/>
-    
-    <page name="geninc"/>
-    <page name="invalidate"/>
-
-    <page name="A"/>
-    <page name="B"/>
-    <page name="C"/>
-
-    <page name="testchecks"/>
-    
-    <page name="moduletest"/>
-
-    <config-include file="WEB-INF/fragments.xml" section="navigation"/>
-    <config-include file="conf/fragments.xml" section="navigation" module="animal-module"/>
-
-  </navigation>
-
   <!-- prefix to namespace url mappings to be used in pages xml -->
   <namespaces>
     <namespace-declaration prefix="pfx" url="http://www.schlund.de/pustefix/core"/>

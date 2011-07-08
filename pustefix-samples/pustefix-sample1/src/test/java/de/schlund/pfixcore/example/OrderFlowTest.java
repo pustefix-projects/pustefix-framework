@@ -82,7 +82,7 @@ public class OrderFlowTest extends AbstractJUnit38SpringContextTests implements 
         req.setSession(session);
         RequestContextHolder.setRequestAttributes(new ServletRequestAttributes(req));
         PfixServletRequest pfxReq = new PfixServletRequestImpl(req,new Properties());
-        ((ContextImpl)pustefixContext).prepareForRequest();
+        ((ContextImpl)pustefixContext).prepareForRequest(req);
         //((ContextImpl)pustefixContext).setCurrentPageRequest(new PageRequest("dummy"));
         ((ContextImpl)pustefixContext).setPfixServletRequest(pfxReq);
         //session.setAttribute(SessionHelper.SESSION_ID_URL, SessionHelper.getURLSessionId(req));
