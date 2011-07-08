@@ -79,6 +79,8 @@ public class SiteMap {
         if(uriStr.endsWith("depend.xml")) uriStr = uriStr.substring(0, uriStr.length() -10) + "sitemap.xml";
         siteMapFile = ResourceUtil.getResource(uriStr);
         
+        if(siteMapFile.exists()) {
+        
         loadTime = System.currentTimeMillis();
         Document navitree = Xml.parseMutable(siteMapFile);
         
@@ -152,6 +154,8 @@ public class SiteMap {
             if(res.exists()) {
                 readSiteMapAliases(Xml.parseMutable(res));
             }
+        }
+        
         }
         
     }

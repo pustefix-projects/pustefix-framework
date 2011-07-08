@@ -8,6 +8,7 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import de.schlund.pfixxml.TenantInfo;
 import de.schlund.pfixxml.serverutil.SessionAdmin;
 
 public class SessionHandlingTestServlet extends HttpServlet {
@@ -35,6 +36,7 @@ public class SessionHandlingTestServlet extends HttpServlet {
         }
         handler.setSessionTrackingStrategy(strategy);
         handler.setServletContext(getServletContext());
+        handler.setTenantInfo(new TenantInfo());
         try {
             handler.init();
         } catch(ServletException x) {

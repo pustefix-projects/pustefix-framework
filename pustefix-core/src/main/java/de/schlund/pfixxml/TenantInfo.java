@@ -1,12 +1,13 @@
 package de.schlund.pfixxml;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import javax.servlet.http.HttpServletRequest;
 
 public class TenantInfo {
     
-    private List<Tenant> tenants;
+    private List<Tenant> tenants = new ArrayList<Tenant>();
     
     public Tenant getMatchingTenant(HttpServletRequest req) {
         for(Tenant tenant: tenants) {
