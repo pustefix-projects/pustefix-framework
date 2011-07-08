@@ -482,7 +482,7 @@
         <title>Assigning the wrapper to the page</title>
         <para>
           Now that you have implemented the HTML page and the wrapper you have to connect the HTML form with
-          the wrapper. This is done using the <filename>app.conf.xml</filename> servlet configuration. If a page
+          the wrapper. This is done using the <filename>app.xml</filename> servlet configuration. If a page
           contains business logic that must be executed, you have to add a <literal>&lt;pagerequest/&gt;</literal>
           tag to the servlet configuration.
         </para>
@@ -836,7 +836,7 @@ public class ContextUserImpl implements ContextUser {
       </para>
       <para>
         To make this context resource available in your application, you have to register it in the servlet configuration
-        file <filename>app.conf.xml</filename>: 
+        file <filename>app.xml</filename>: 
       </para>
       <programlisting language="xml"><![CDATA[<?xml version="1.0" encoding="utf-8"?>
 <context-xml-service-config xmlns="http://www.pustefix-framework.org/2008/namespace/context-xml-service-config" 
@@ -1076,7 +1076,7 @@ public class ContextUserImpl implements ContextUser {
 }]]></programlisting>
     <para>
       Now that the context resource is able to render its state to the XML document, you have to tell Pustefix, on which pages, the context
-      resource should be rendered. Again, this is done in the servlet configuration file <filename>app.conf.xml</filename>. This time, you will
+      resource should be rendered. Again, this is done in the servlet configuration file <filename>app.xml</filename>. This time, you will
       have to add an <literal>&lt;output/&gt;</literal> tag to the page and nest <literal>&lt;resource/&gt;</literal> tags for each
       context resource, that should be rendered on this page.
     </para>

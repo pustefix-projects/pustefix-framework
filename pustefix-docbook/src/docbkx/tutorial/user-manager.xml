@@ -42,7 +42,7 @@
     </listitem>
     <listitem>
       <para>
-        If the entered data is coorect, move to an overview page, which displays a list of user data and allows 
+        If the entered data is correct, move to an Overview page, which displays a list of user data and allows 
         the user to delete, edit or add new users. 
       </para>
     </listitem>
@@ -73,20 +73,24 @@
       </thead>
       <tbody>
         <tr>
-          <td>Project name</td>
+          <td>groupId</td>
+          <td>org.pustefixframework.tutorial</td>
+        </tr>
+        <tr>
+          <td>artifactId</td>
           <td>usermanagement</td>
         </tr>
         <tr>
-          <td>Project language</td>
-          <td>Use the default value</td>
+          <td>version</td>
+          <td>default</td>
         </tr>
         <tr>
-          <td>Project comment</td>
-          <td>User management tutorial</td>
+          <td>package</td>
+          <td>org.pustefixframework.tutorial.usermanagement</td>
         </tr>
         <tr>
-          <td>Servlet name</td>
-          <td>user</td>
+          <td>pustefixVersion</td>
+          <td>the latest 0.16.x version</td>
         </tr>
       </tbody>
     </informaltable>
@@ -104,19 +108,19 @@ import java.net.URL;
 import java.util.Date;
 
 public class User {
-    private Integer id;
+    private int id;
     private String name;
     private String email;
     private Date birthday;
-    private Boolean admin;
+    private boolean admin;
     private URL homepage;
     private String gender;
 
-    public Integer getId() {
+    public int getId() {
         return id;
     }
 
-    public void setId(Integer id) {
+    public void setId(int id) {
         this.id = id;
     }
 
@@ -144,11 +148,11 @@ public class User {
         this.birthday = birthday;
     }
 
-    public Boolean getAdmin() {
+    public boolean getAdmin() {
         return admin;
     }
 
-    public void setAdmin(Boolean admin) {
+    public void setAdmin(boolean admin) {
         this.admin = admin;
     }
 
@@ -218,7 +222,7 @@ public class UserHandler implements IHandler {
         statuscode you have to setup this first.
       </para>
       <para>  
-        Create the file <filename>projects/common/dyntxt/statuscodeinfo.xml</filename> with the following content.
+        Create the file <filename>src/main/webapp/dyntxt/statuscodeinfo.xml</filename> with the following content.
       </para>
       <programlisting language="xml"><![CDATA[<?xml version="1.0" encoding="UTF-8"?>
 <statuscodeinfo xmlns="http://www.pustefix-framework.org/2008/namespace/statuscodeinfo" 
@@ -236,7 +240,7 @@ public class UserHandler implements IHandler {
         <filename>statusmessages.xml</filename> in the same directory
       </para>
       <para>
-        You need to create the file <filename>projects/common/dyntxt/statusmessages.xml</filename> and add an statuscode
+        You need to create the file <filename>src/main/webapp/dyntxt/statusmessages.xml</filename> and add an statuscode
         for an invalid url.
       </para>
       <programlisting language="xml"><![CDATA[<?xml version="1.0" encoding="UTF-8"?>
@@ -247,6 +251,9 @@ public class UserHandler implements IHandler {
     </theme>
   </part>
 </include_parts>]]></programlisting>
+	<para>
+	  In order to be able to use the Status Code in the following code, you have to create the associated sources using the <command>mvn generate-sources</command> command.
+	</para>
     </section>
 
     <section xml:id="um.caster.tourl">
@@ -264,7 +271,7 @@ import java.net.URL;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.pustefixframework.tutorial.StatusCodeLib;
+import org.pustefixframework.tutorial.usermanagement.StatusCodes;
 
 import de.schlund.pfixcore.generator.IWrapperParamCaster;
 import de.schlund.pfixcore.generator.SimpleCheck;
@@ -340,17 +347,17 @@ import org.pustefixframework.tutorial.caster.ToURL;</programlisting>
       <programlisting language="java">@Transient
 public int getId() {
     ...</programlisting>
-      <programlisting language="java">@Param(name="name", mandatory=true)
+      <programlisting language="java">@Param(name="name")
 public String getName() {
     ...</programlisting>
-      <programlisting language="java">@Param(name="email", mandatory=true)
+      <programlisting language="java">@Param(name="email")
 public String getEmail() {
     ...</programlisting>
       <para>
         The <literal>@DateSerializer("format")</literal> annotation tells the wrapper that it should use the given serializer
         class to serialize this property.
       </para>
-      <programlisting language="java">@Param(name="birthday", mandatory=true)
+      <programlisting language="java">@Param(name="birthday")
 @DateSerializer("yyyy/MM/dd")
 public Date getBirthday() {
     ...</programlisting>
@@ -365,22 +372,21 @@ public boolean getAdmin() {
 @Caster(type=ToURL.class)
 public URL getHomepage() {
     ...</programlisting>
-      <programlisting language="java">@Param(name="gender", mandatory=true)
+      <programlisting language="java">@Param(name="gender")
 public String getGender() {
     ...</programlisting>
     </section>
   </section>
 
   <section xml:id="um.generation">
-    <title>Generate wrapper and StatusCodeLib</title>
+    <title>Generate wrapper</title>
     <para>
-      Type <command>ant generate-src</command> to generate the wrapper and the StatusCodeLib class.
+      Type <command>mvn generate-sources</command> to generate the wrapper.
     </para>
     <para>
-      After <literal>ant</literal> finishes successful you will find the new classes 
-      <literal>org.pustefixframework.tutorial.usermanagement.UserWrapper</literal> and
-      <literal>org.pustefixframework.tutorial.StatusCodeLib</literal> in the <filename>gensrc</filename> directory of your
-      installation.
+      You have to add all subfolders of <filename>target/generated-sources</filename> to your Java Buildpath of your project (in Eclipse, go to Project Properties - Java BuildPath - Tab "Source" - "Add Folder..." and check all subfolders of <filename>target/generated-sources</filename>).
+      You can find the new class <literal>org.pustefixframework.tutorial.usermanagement.UserWrapper</literal>
+      in the <filename>target/generated-sources/apt</filename> directory of your project.
     </para>
   </section>
 
@@ -455,14 +461,14 @@ userList.addUser(user);</programlisting>
     <title>Create the pages</title>
     <para>
       Here you create two pages: One page for the user data input and one page to list the user data. To keep this
-      application clean get rid of the sample pages by removing the sample page <filename>main_home1.xml</filename> 
-      in the directory <filename>projects/usermanagement/txt/pages</filename>
+      application clean get rid of the sample pages by removing the sample pages
+      in the directory <filename>src/main/webapp/txt/pages</filename>.
     </para>
     <section xml:id="um.pages.userform">
       <title>Create a page for user data input</title>
       <para>
-        Create a new file <filename>main_userform.xml</filename> in the directory 
-        <filename>projects/usermanagement/txt/pages</filename>. This page will contain the HTML form to submit the user data.
+        Create a new file <filename>Userform.xml</filename> in the directory 
+        <filename>src/main/webapp/txt/pages</filename>. This page will contain the HTML form to submit the user data.
       </para>
       <programlisting language="xml"><![CDATA[<?xml version="1.0" encoding="utf-8"?>
 <include_parts xmlns:ixsl="http://www.w3.org/1999/XSL/Transform" xmlns:pfx="http://www.schlund.de/pustefix/core">
@@ -515,8 +521,8 @@ userList.addUser(user);</programlisting>
     <section xml:id="um.pages.overview">
       <title>Create page for listing users</title>
       <para>
-        Create a new file <filename>main_overview.xml</filename> in the directory 
-        <filename>projects/usermanagement/txt/pages</filename>. This page shows all users which were stored in the
+        Create a new file <filename>Overview.xml</filename> in the directory 
+        <filename>src/main/webapp/txt/pages</filename>. This page shows all users which were stored in the
         session context. Later this page will provide links to <literal>delete</literal> and <literal>edit</literal> users.
       </para>
       <programlisting language="xml"><![CDATA[<?xml version="1.0" encoding="utf-8"?>
@@ -536,7 +542,7 @@ userList.addUser(user);</programlisting>
         <br/><br/>        
       </ixsl:for-each>
 
-      <pfx:button page="userform" >add</pfx:button>
+      <pfx:button page="Userform">add</pfx:button>
     </theme>
   </part>
 </include_parts>]]></programlisting>
@@ -547,25 +553,25 @@ userList.addUser(user);</programlisting>
       <section xml:id="um.pages.configuration.servlet">
         <title>user.conf.xml</title>
         <para>
-          Add two new <literal>pagerequest</literal> elements to the <filename>user.conf.xml</filename> 
+          Add two new <literal>pagerequest</literal> elements to the <filename>app.xml</filename> 
           configuration file below the <literal>context</literal> element.
         </para>
-        <programlisting language="xml"><![CDATA[<pagerequest name="userform">
+        <programlisting language="xml"><![CDATA[<pagerequest name="Userform">
   <input>
     <wrapper prefix="user" class="org.pustefixframework.tutorial.usermanagement.UserWrapper" />
   </input>
 </pagerequest>]]></programlisting>
 
-        <programlisting language="xml"><![CDATA[<pagerequest name="overview">
+        <programlisting language="xml"><![CDATA[<pagerequest name="Overview">
   <output>
     <resource node="users" class="org.pustefixframework.tutorial.usermanagement.UserList" />
   </output>
 </pagerequest>]]></programlisting>
         <para>
-          Set the <literal>overview</literal> page as <literal>defaultpage</literal> by adding the 
+          Set the <literal>Overview</literal> page as <literal>defaultpage</literal> by adding the 
           attribute to the context element as described in <xref linkend="wrapper-handler.entrypage"/>.
         </para>
-        <programlisting language="xml"><![CDATA[<context defaultpage="overview">]]></programlisting>
+        <programlisting language="xml"><![CDATA[<context defaultpage="Overview">]]></programlisting>
       </section>
 
       <section xml:id="um.pages.configuration.depend">
@@ -576,11 +582,11 @@ userList.addUser(user);</programlisting>
         <para>
           Add the following page element within the navigation element.
         </para>
-        <programlisting language="xml"><![CDATA[<page handler="/xml/user" name="userform"/>
-<page handler="/xml/user" name="overview"/>]]></programlisting>
+        <programlisting language="xml"><![CDATA[<page handler="/xml/app" name="Userform"/>
+<page handler="/xml/app" name="Overview"/>]]></programlisting>
         <para>and this after the standardmetatags element:</para>
-        <programlisting language="xml"><![CDATA[<standardpage name="userform" xml="usermanagement/xml/frame.xml"/>
-<standardpage name="overview" xml="usermanagement/xml/frame.xml"/>]]></programlisting>
+        <programlisting language="xml"><![CDATA[<standardpage name="Userform" xml="xml/frame.xml"/>
+<standardpage name="Overview" xml="xml/frame.xml"/>]]></programlisting>
       </section>
     </section>
   </section>
@@ -591,23 +597,22 @@ userList.addUser(user);</programlisting>
       Place a new <literal>pageflow</literal> element between <literal>context</literal> and 
       <filename>pagerequest</filename> elements in the servlet configuration file <filename>user.conf.xml</filename>.
     </para>
-    <programlisting language="xml"><![CDATA[<pageflow name="userFlow" final="overview">
-  <flowstep name="userform"/>
-  <flowstep name="overview"/>
+    <programlisting language="xml"><![CDATA[<pageflow name="userFlow" final="Overview">
+  <flowstep name="Userform"/>
+  <flowstep name="Overview"/>
 </pageflow>]]></programlisting>
   </section>
   
   <section xml:id="um.tryout">
     <title>Try to add your own user</title>
     <para>
-      Type <command>ant clean all</command>. When <literal>ant</literal> is finished you can start 
-      <literal>Tomcat</literal> by typing <command>./startTomcat.sh</command>
+      Type <command>mvn tomcat:run</command> to start the web-application.
     </para>
     <para>
-      Now you can point your browser to http://usermanagement.yourhost.yourdomain:8080
+      Now you can point your browser to http://localhost:8080/usermanagement/
     </para>
     
-    <para>If everything works fine you should see this</para>
+    <para>If everything works fine you should see this:</para>
     <para/>
     <mediaobject>
       <imageobject>
@@ -631,7 +636,7 @@ userList.addUser(user);</programlisting>
   <section xml:id="um.sampleusers">
     <title>Add sample users</title>
     <para>
-      If you tried out your application you've seen that the overview page is empty unless you add new users.
+      If you tried out your application you've seen that the Overview page is empty unless you add new users.
       You can add some sample users by calling the <methodname>addUser</methodname> method of 
       <classname>UserList</classname> directly.
     </para>
@@ -640,7 +645,7 @@ userList.addUser(user);</programlisting>
       <para>
         To add sample users more easily add an constructor to set the mandatory data at once.
       </para>
-      <programlisting language="java">public User(String name, String email, Date birthday, Boolean admin, URL homepage, String gender) {
+      <programlisting language="java">public User(String name, String email, Date birthday, boolean admin, URL homepage, String gender) {
   this.name = name;
   this.email = email;
   this.birthday = birthday;
@@ -686,7 +691,7 @@ public void createSampleUsers() throws Exception {
   </section>
   
   <section xml:id="um.deleteuser">
-    <title>New feature: Delete an user</title>
+    <title>New feature: Delete a user</title>
     <para>
       To remove an existing user from the <classname>UserList</classname> you need to create a new bean which stores
       the selected user id, a new handler and a delete method in the <classname>UserList</classname> class. 
@@ -759,7 +764,7 @@ public class DeleteUser {</programlisting>
       <section xml:id="um.deleteuser.annotations.getter">
         <title>Annotate the getter</title>
         <programlisting language="java">import de.schlund.pfixcore.generator.annotation.Param;</programlisting>
-        <programlisting language="java">@Param(name="id", mandatory=true)
+        <programlisting language="java">@Param(name="id")
 public int getId() {</programlisting>
       </section>
     </section>
@@ -767,23 +772,18 @@ public int getId() {</programlisting>
     <section xml:id="um.deleteuser.generate">
       <title>Generate the wrapper class</title>
       <para>
-        Type <command>ant generate-src</command> to generate the wrapper class.
+        Type <command>mvn generate-sources</command> to generate the wrapper class.
       </para>
     </section>
 
     <section xml:id="um.deleteuser.method">
       <title>Add a delete user method</title>
       <para>
-        Add a new method <methodname>deleteUser(Integer id)</methodname> to remove an existing user from 
+        Add a new method <methodname>deleteUser(int id)</methodname> to remove an existing user from 
         <classname>UserList</classname>.
       </para>
-      <programlisting language="java">public void deleteUser(Integer id) {
-    User userToDelete = null;
-    for (User user: users) {
-        if (user.getId() == id) {
-            userToDelete = user; 
-        }
-    }
+      <programlisting language="java">public void deleteUser(int id) {
+    User userToDelete = getUser(id);
     if (userToDelete != null) {
         users.remove(userToDelete);
     }
@@ -793,7 +793,7 @@ public int getId() {</programlisting>
     <section xml:id="um.deleteuser.handlesubmitteddata">
       <title>Delete a user</title>
       <para>
-        To delete an user implement the method <methodname>handleSubmittedData</methodname> of
+        To delete a user implement the method <methodname>handleSubmittedData</methodname> of
         <classname>DeleteUserHandler</classname>. First create a new <classname>DeleteUser</classname> bean with
         <literal>IWrapperToBean.createBean(Iwrapper wrapper, Class&lt;T&gt;</literal> and get your
         <classname>UserList</classname> instance from <literal>session context</literal>. Then call the 
@@ -811,7 +811,7 @@ public int getId() {</programlisting>
       <title>Add a delete button</title>
       <para>
         You need a button to trigger to deletion of a user. Simply add the following code inside the for-each 
-        loop after the admin text in the <filename>main_overview.xml</filename> file
+        loop after the admin text in the <filename>Overview.xml</filename> file
       </para>
       <programlisting language="xml"><![CDATA[<pfx:button>delete
   <pfx:command name="SELWRP">delete</pfx:command>
@@ -822,7 +822,7 @@ public int getId() {</programlisting>
     <section xml:id="um.deleteuser.configuration">
       <title>Adjust the servlet configuration</title>
       <para>
-        Add the input element to the existing <literal>pagerequest</literal> of the overview page.
+        Add the input element to the existing <literal>pagerequest</literal> of the Overview page.
       </para>
       <programlisting language="xml"><![CDATA[<input>
   <wrapper prefix="delete" class="org.pustefixframework.tutorial.usermanagement.DeleteUserWrapper" />
@@ -832,7 +832,7 @@ public int getId() {</programlisting>
   
 
   <section xml:id="um.edituser">
-    <title>New feature: Edit an user</title>
+    <title>New feature: Edit a user</title>
     <para>
       The last feature in this tutorial is to edit an existing user
     </para> 
@@ -840,19 +840,28 @@ public int getId() {</programlisting>
       <title>Create a new bean</title>
       <para>
         Create another bean <classname>org.pustefixframework.tutorial.usermanagement.EditUser</classname>. This bean 
-        stores the id of the selected user.
+        stores the id of the selected user and if the user is currently being edited.
       </para>
       <programlisting language="java">package org.pustefixframework.tutorial.usermanagement;
 
 
 public class EditUser {
-    private Integer id;
+    private int id;
+    private boolean editing = false;
 
-    public Integer getId() {
+    public boolean isEditing() {
+        return editing;
+    }
+
+    public void setEditing(boolean editing) {
+        this.editing = editing;
+    }
+
+    public int getId() {
         return id;
     }
 
-    public void setId(Integer id) {
+    public void setId(int id) {
         this.id = id;
     }
 }</programlisting>
@@ -905,34 +914,37 @@ public class EditUserHandler implements IHandler {
 public class EditUser {</programlisting>
       </section>
       
-      <section xml:id="um.edituser.annotations.getter">
-        <title>Annotate the getter</title>
+      <section xml:id="um.edituser.annotations.getter.id">
+        <title>Annotate the getter for id</title>
         <programlisting language="java">import de.schlund.pfixcore.generator.annotation.Param;</programlisting>
         <programlisting language="java">@Param(name="id", mandatory=true)
 public int getId() {</programlisting>
       </section>
+
+      <section xml:id="um.edituser.annotations.getter.editing">
+        <title>Make the getter for editing transient</title>
+        <programlisting language="java">import de.schlund.pfixcore.generator.annotation.Transient;</programlisting>
+        <programlisting language="java">@Transient
+public boolean isEditing() {</programlisting>
+      </section>
+    
     </section>
     
     <section xml:id="um.edituser.generate">
       <title>Generate the wrapper class</title>
       <para>
-        Type <command>ant generate-src</command> to generate the wrapper.
+        Type <command>mvn generate-sources</command> to generate the wrapper.
       </para>
     </section>
     
     <section xml:id="um.edituser.method">
       <title>Add a method to replace a user of our UserList class</title>
       <para>
-        To edit an user you need to implement the method to replace an existing user. 
+        To edit a user you need to implement the method to replace an existing user. 
         We add the following code to the <classname>UserList</classname> class.
       </para>
       <programlisting language="java">public void replaceUser(User user) {
-    User userToReplace = null;
-    for (User existingUser : users) {
-        if (existingUser.getId().equals(user.getId())) {
-            userToReplace = existingUser;
-        }
-    }
+    User userToReplace = getUser(user.getId());
     if (userToReplace != null) {
         users.remove(userToReplace);
         users.add(user);
@@ -941,9 +953,9 @@ public int getId() {</programlisting>
     </section>
     
     <section xml:id="um.edituser.handlesubmitteddata">
-      <title>Edit an user</title>
+      <title>Edit a user</title>
       <para>
-        To edit an user implement the method <methodname>handleSubmittedData</methodname> of 
+        To edit a user implement the method <methodname>handleSubmittedData</methodname> of 
         <classname>EditUserHandler</classname>. First create a new <classname>EditUser</classname> bean with
         <literal>IWrapperToBean.createBean(Iwrapper wrapper, Class&lt;T&gt;</literal> and get your
         <classname>EditUser</classname> instance from <literal>session context</literal>. Then call the 
@@ -954,16 +966,17 @@ public int getId() {</programlisting>
     EditUser editUser = IWrapperToBean.createBean(wrapper, EditUser.class);
     EditUser editUserContext = context.getContextResourceManager().getResource(EditUser.class);
     editUserContext.setId(editUser.getId());
+    editUserContext.setEditing(true);
 }</programlisting>
     </section>
     
     <section xml:id="um.edituser.button">
       <title>Add an edit button</title>
       <para>
-        We need a button to edit an user. We add the following code below the delete button in the 
-        <filename>main_overview.xml</filename> file.
+        We need a button to edit a user. We add the following code below the delete button in the 
+        <filename>Overview.xml</filename> file.
       </para>
-      <programlisting language="xml"><![CDATA[<pfx:button jumptopage="userform">edit
+      <programlisting language="xml"><![CDATA[<pfx:button jumptopage="Userform">edit
   <pfx:command name="SELWRP">edit</pfx:command>
   <pfx:argument name="edit.id"><ixsl:value-of select="./@id"/></pfx:argument>
 </pfx:button>]]></programlisting>
@@ -977,7 +990,7 @@ public int getId() {</programlisting>
       <programlisting language="xml"><![CDATA[<resource class="org.pustefixframework.tutorial.usermanagement.EditUser" />]]></programlisting>
       <para>
         Add the following <literal>interface</literal> element into the <literal>input</literal> element of the 
-        <literal>pagerequest</literal> of the overview page.
+        <literal>pagerequest</literal> of the Overview page.
       </para>
       <programlisting language="xml"><![CDATA[<wrapper prefix="edit" class="org.pustefixframework.tutorial.usermanagement.EditUserWrapper" />]]></programlisting>
     </section>
@@ -985,13 +998,13 @@ public int getId() {</programlisting>
     <section xml:id="um.edituser.userhandler">
       <title>Add user to form</title>
       <para>
-        To add the user data to the existing form of the <literal>userform</literal> page you need to implement the 
+        To add the user data to the existing form of the <literal>Userform</literal> page you need to implement the 
         retrieveCurrentStatus method  of your <classname>UserHandler</classname> class.
       </para>
       <programlisting language="java">import de.schlund.pfixcore.generator.iwrpgen.BeanToIWrapper;</programlisting>
       <programlisting language="java">public void retrieveCurrentStatus(Context context, IWrapper wrapper) throws Exception {
     EditUser editUser = context.getContextResourceManager().getResource(EditUser.class);
-    if (editUser.getId() != null) {
+    if (editUser.isEditing()) {
         UserList userList = context.getContextResourceManager().getResource(UserList.class);
         User user = userList.getUser(editUser.getId());
         BeanToIWrapper.populateIWrapper(user, wrapper);
@@ -1008,11 +1021,11 @@ public int getId() {</programlisting>
     UserList userList = context.getContextResourceManager().getResource(UserList.class);
     EditUser editUser = context.getContextResourceManager().getResource(EditUser.class);
     User user = IWrapperToBean.createBean(wrapper, User.class);
-    if (editUser.getId() != null) {
+    if (editUser.isEditing()) {
         // replace existing user
         user.setId(editUser.getId());
         userList.replaceUser(user);
-        editUser.setId(null);            
+        editUser.setEditing(false);          
     } else {
         // add new user
         userList.addUser(user);    
