@@ -77,8 +77,9 @@ public class PfixServletRequestImpl implements PfixServletRequest {
     private int                   serverport;
     private HttpServletRequest    request;
     private long                  starttime        = 0;
-
-
+    private PageAliasResolver     pageAliasResolver;
+    private String                internalPageName;
+    
     /* (non-Javadoc)
      * @see de.schlund.pfixxml.PfixServletRequest#getCreationTimeStamp()
      */
@@ -107,6 +108,11 @@ public class PfixServletRequestImpl implements PfixServletRequest {
         request     = req;
         session     = req.getSession(false);
 
+    }
+    
+    public PfixServletRequestImpl(HttpServletRequest req, Properties properties, PageAliasResolver pageAliasResolver) {
+        this(req, properties);
+        this.pageAliasResolver = pageAliasResolver;
     }
 
     //~ Methods ....................................................................................
@@ -469,7 +475,7 @@ public class PfixServletRequestImpl implements PfixServletRequest {
     /* (non-Javadoc)
      * @see de.schlund.pfixxml.PfixServletRequest#getPageName()
      */
-    public String getPageName() {
+    public String getRequestedPageName() {
         String       pagename = "";
         String       pathinfo = getPathInfo();
         RequestParam name     = getRequestParam(PAGEPARAM);
@@ -490,6 +496,16 @@ public class PfixServletRequestImpl implements PfixServletRequest {
         } else {
             return null;
         }
+    }
+    
+    public String getPageName() {
+        if(internalPageName == null) {
+            String pageName = getRequestedPageName();
+            if(pageName != null) {
+                internalPageName = pageAliasResolver.getPageName(pageName, request);
+            }
+        }
+        return internalPageName;
     }
     
 } // PfixServletRequest

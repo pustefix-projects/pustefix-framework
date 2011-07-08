@@ -518,7 +518,11 @@ public class RequestContextImpl implements Cloneable, AuthorizationInterceptor {
                 if (currentpageflow != null)
                     spdoc.getDocument().getDocumentElement().setAttribute("used-pf", currentpageflow.getName());
             }
-            spdoc.setTenant(parentcontext.getTenant());
+            if(parentcontext.getTenant() != null) {
+                spdoc.setTenant(parentcontext.getTenant());
+                spdoc.setLanguage(getLanguage());
+                parentcontext.getTenant().toXML(spdoc.getDocument().getDocumentElement());
+            }
             
             if (spdoc.getResponseError() == 0 && parentcontext.getContextConfig().getPageRequestConfig(spdoc.getPagename()) != null) {
                 parentcontext.addVisitedPage(spdoc.getPagename());

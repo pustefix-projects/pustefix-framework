@@ -30,6 +30,7 @@ import org.w3c.dom.Element;
 import com.marsching.flexiparse.parser.HandlerContext;
 import com.marsching.flexiparse.parser.exception.ParserException;
 
+import de.schlund.pfixcore.workflow.SiteMap;
 import de.schlund.pfixxml.config.EnvironmentProperties;
 import de.schlund.pfixxml.resources.Resource;
 import de.schlund.pfixxml.resources.ResourceUtil;
@@ -42,6 +43,7 @@ public class XMLGeneratorInfoParsingHandler extends CustomizationAwareParsingHan
 	private BeanDefinitionBuilder cacheBeanBuilder;
 	private BeanDefinitionBuilder statsBeanBuilder;
 	private BeanDefinitionBuilder targetBeanBuilder;
+	private BeanDefinitionBuilder siteBeanBuilder;
 	
     @Override
     public void handleNodeIfActive(HandlerContext context) throws ParserException {
@@ -79,6 +81,7 @@ public class XMLGeneratorInfoParsingHandler extends CustomizationAwareParsingHan
         	context.getObjectTreeElement().addObject(beanHolder);
         	
         	targetBeanBuilder = BeanDefinitionBuilder.genericBeanDefinition(TargetGenerator.class);
+        	siteBeanBuilder = BeanDefinitionBuilder.genericBeanDefinition(SiteMap.class);
         	
         } else if(root.getLocalName().equals("config-file")) {
         
@@ -92,9 +95,15 @@ public class XMLGeneratorInfoParsingHandler extends CustomizationAwareParsingHan
             
             targetBeanBuilder.addConstructorArgValue(res);
             targetBeanBuilder.addConstructorArgReference(SPCacheFactory.class.getName());
+            targetBeanBuilder.addConstructorArgReference(SiteMap.class.getName());
             BeanDefinition beanDefinition = targetBeanBuilder.getBeanDefinition();
             String beanName = TargetGenerator.class.getName();
             BeanDefinitionRegistry beanRegistry = ParsingUtils.getSingleTopObject(BeanDefinitionRegistry.class, context);
+            beanRegistry.registerBeanDefinition(beanName, beanDefinition);
+            
+            siteBeanBuilder.addConstructorArgValue(res);
+            beanDefinition = siteBeanBuilder.getBeanDefinition();
+            beanName = SiteMap.class.getName();
             beanRegistry.registerBeanDefinition(beanName, beanDefinition);
             
         } else if(root.getLocalName().equals("check-modtime")) {

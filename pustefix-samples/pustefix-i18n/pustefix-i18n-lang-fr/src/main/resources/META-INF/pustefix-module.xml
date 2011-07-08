@@ -6,9 +6,14 @@
 
   <module-name>pustefix-i18n-lang-fr</module-name>
 
+  <static>
+    <path>img</path>
+  </static>
+
   <override-modules>
     <filter-attribute name="lang" value="fr"/>
     <module name="pustefix-i18n-core">
+      <resource path="dyntxt/statusmessages.xml"/>
       <resource path="txt/common.xml"/>
       <resource path="img/*"/>
     </module>

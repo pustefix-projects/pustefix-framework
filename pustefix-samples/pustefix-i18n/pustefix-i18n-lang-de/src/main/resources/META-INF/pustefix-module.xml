@@ -7,13 +7,13 @@
   <module-name>pustefix-i18n-lang-de</module-name>
   
   <static>
-    <path>css</path>
     <path>img</path>
   </static>
   
   <override-modules>
     <filter-attribute name="lang" value="de"/>
     <module name="pustefix-i18n-core">
+      <resource path="dyntxt/statusmessages.xml"/>
       <resource path="txt/common.xml"/>
       <resource path="img/*"/>
     </module>

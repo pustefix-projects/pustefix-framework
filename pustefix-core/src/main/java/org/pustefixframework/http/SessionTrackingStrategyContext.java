@@ -8,10 +8,11 @@ import javax.servlet.http.HttpServletResponse;
 
 import org.pustefixframework.config.contextxmlservice.ServletManagerConfig;
 
+import de.schlund.pfixxml.PageAliasResolver;
 import de.schlund.pfixxml.PfixServletRequest;
 import de.schlund.pfixxml.serverutil.SessionAdmin;
 
-public interface SessionTrackingStrategyContext {
+public interface SessionTrackingStrategyContext extends PageAliasResolver {
 
     public boolean wantsCheckSessionIdValid();
     public boolean needsSession();

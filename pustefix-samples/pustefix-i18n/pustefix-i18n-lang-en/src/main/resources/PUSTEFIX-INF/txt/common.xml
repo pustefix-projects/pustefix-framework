@@ -7,4 +7,36 @@
     </theme>
   </part>
   
+  <part name="langname">
+    <theme name="default">
+      English
+    </theme>
+  </part>
+  
+  <part name="langsel">
+    <theme name="default">
+      Choose language
+    </theme>
+  </part>
+  
+  <part name="greeting">
+    <theme name="default">
+      Welcome to <pfx:include part="country" search="dynamic"/>!!!
+    </theme>
+  </part>
+  
+  <part name="namequery">
+    <theme name="default">
+      Please enter your name
+    </theme>
+  </part>
+  
+  <part name="submit">
+    <theme name="default">Submit</theme>
+  </part>
+  
+  <part name="terms">
+    <theme name="default">Accept terms and conditions</theme>
+  </part>
+  
 </include_parts>

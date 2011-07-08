@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<sitemap-aliases lang="fr">
+  <alias page="Home">Depart</alias>
+  <alias page="Overview">Apercu</alias>
+  <alias page="Info">Information</alias>
+  <alias page="Living">Habiter</alias>
+  <alias page="Garden">Jardin</alias>
+  <alias page="Kitchen">Cuisine</alias>
+</sitemap-aliases>

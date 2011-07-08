@@ -93,13 +93,11 @@ public abstract class AbstractPustefixXMLRequestHandler extends AbstractPustefix
 
     public static final String DEF_PROP_TMPDIR = "java.io.tmpdir";
     private static final String FONTIFY_SSHEET        = "module://pustefix-core/xsl/xmlfontify.xsl";
-    public  static final String SESS_LANG             = "__SELECTED_LANGUAGE__";
     public  static final String PARAM_XMLONLY         = "__xmlonly";
     public  static final String PARAM_XMLONLY_FONTIFY = "1"; // -> RENDER_FONFIFY
     public  static final String PARAM_XMLONLY_XMLONLY = "2"; // -> RENDER_XMLONLY
     public  static final String PARAM_ANCHOR          = "__anchor";
     private static final String PARAM_EDITMODE        = "__editmode";
-    private static final String PARAM_LANG            = "__language";
     private static final String PARAM_FRAME           = "__frame";
     private static final String PARAM_REUSE           = "__reuse"; // internally used
     public static final String PARAM_RENDER_HREF = "__render_href";
@@ -324,12 +322,7 @@ public abstract class AbstractPustefixXMLRequestHandler extends AbstractPustefix
                     spdoc.resetRedirectURL();
                 }
             }
-           
-            if ((value = preq.getRequestParam(PARAM_LANG)) != null) {
-                if (value.getValue() != null) {
-                    session.setAttribute(SESS_LANG, value.getValue());
-                }
-            }
+
             // Now look for the parameter __editmode, and store it in the
             // session if it's there. Get the parameter from the session, and hand it over to the
             // Stylesheet params.
@@ -389,8 +382,8 @@ public abstract class AbstractPustefixXMLRequestHandler extends AbstractPustefix
         }
         preq.getRequest().setAttribute(GETDOMTIME, spdoc.getCreationTime());
         params.put(XSLPARAM_REUSE, "" + spdoc.getTimestamp());
-        if (session != null && session.getAttribute(SESS_LANG) != null) {
-            params.put(XSLPARAM_LANG, session.getAttribute(SESS_LANG));
+        if (spdoc.getLanguage() != null) {
+            params.put(XSLPARAM_LANG, spdoc.getLanguage());
         }
         
         handleDocument(preq, res, spdoc, params, doreuse);
@@ -815,7 +808,7 @@ public abstract class AbstractPustefixXMLRequestHandler extends AbstractPustefix
         }
         paramhash.put(TargetGenerator.XSLPARAM_TG, generator);
         paramhash.put(TargetGenerator.XSLPARAM_TKEY, VALUE_NONE);
-        paramhash.put(TargetGenerator.XSLPARAM_NAVITREE, generator.getNavigation().getSiteMapXMLElement());
+        paramhash.put(TargetGenerator.XSLPARAM_NAVITREE, generator.getNavigation().getSiteMapXMLElement(generator.getXsltVersion()));
         paramhash.put(XSLPARAM_EDITOR_INCLUDE_PARTS_EDITABLE_BY_DEFAULT, Boolean.toString(includePartsEditableByDefault));
 
         String session_to_link_from_external = getSessionAdmin().getExternalSessionId(session);
@@ -861,7 +854,7 @@ public abstract class AbstractPustefixXMLRequestHandler extends AbstractPustefix
                     variant_id = variants[i];
                     //TODO
                     //if(spdoc.getBaseVariant() != null) variant_id += ":" + spdoc.getBaseVariant();
-                    if(spdoc.getTenant() != null) variant_id += ":" + spdoc.getTenant().getName() + "-" + spdoc.getTenant().getDefaultLanguage();
+                    if(spdoc.getTenant() != null) variant_id += ":" + spdoc.getTenant().getName() + "-" + spdoc.getLanguage();
                     LOGGER.info("   ** Trying variant '" + variant_id + "' **");
                     pinfo   = generator.getPageInfoFactory().getPage(pagename, variant_id);
                     target  = pagetree.getTargetForPageInfo(pinfo);
@@ -874,7 +867,7 @@ public abstract class AbstractPustefixXMLRequestHandler extends AbstractPustefix
                 LOGGER.info("   ** Trying root variant **");
                 //TODO
                 String tenant = null;
-                if(spdoc.getTenant() != null) tenant = spdoc.getTenant().getName() + "-" + spdoc.getTenant().getDefaultLanguage();
+                if(spdoc.getTenant() != null) tenant = spdoc.getTenant().getName() + "-" + spdoc.getLanguage();
                 pinfo = generator.getPageInfoFactory().getPage(pagename, tenant);
                 target = pagetree.getTargetForPageInfo(pinfo);
             }

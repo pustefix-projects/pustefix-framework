@@ -38,6 +38,7 @@ import org.pustefixframework.config.contextxmlservice.PageRequestConfig;
 import org.pustefixframework.config.contextxmlservice.ProcessActionPageRequestConfig;
 import org.pustefixframework.http.BotDetector;
 import org.pustefixframework.util.FrameworkInfo;
+import org.pustefixframework.util.LocaleUtils;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.Node;
@@ -57,6 +58,7 @@ import de.schlund.pfixcore.workflow.State;
 import de.schlund.pfixcore.workflow.context.AccessibilityChecker;
 import de.schlund.pfixcore.workflow.context.RequestContextImpl;
 import de.schlund.pfixxml.ResultDocument;
+import de.schlund.pfixxml.Tenant;
 import de.schlund.pfixxml.targets.TargetGenerator;
 import de.schlund.pfixxml.util.ExtensionFunctionUtils;
 import de.schlund.pfixxml.util.Xml;
@@ -405,11 +407,33 @@ public class TransformerCallback {
         }
     }
     
-    public static String omitPage(RequestContextImpl requestContext, String pageName) throws Exception {
+    public static String omitPage(RequestContextImpl requestContext, TargetGenerator gen, String pageName, String lang) throws Exception {
         try {
             ContextImpl context = requestContext.getParentContext();
+            String langPrefix = "";
+            Tenant tenant = context.getTenant();
+            if(tenant != null && !lang.equals(tenant.getDefaultLanguage())) {
+                langPrefix = LocaleUtils.getLanguagePart(lang);
+            }
             String defaultPage = context.getContextConfig().getDefaultPage(context.getVariant());
-            return defaultPage.equals(pageName)?"":pageName;
+            if(defaultPage.equals(pageName)) {
+                return langPrefix;
+            } else {
+                String alias = gen.getNavigation().getAlias(pageName, lang);
+                if(langPrefix.length() > 0) {
+                    alias = langPrefix + "/" + alias;
+                }
+                return alias;
+            }
+        } catch (Exception x) {
+            ExtensionFunctionUtils.setExtensionFunctionError(x);
+            throw x;
+        }
+    }
+    
+    public static String getPageAlias(TargetGenerator gen, String pageName, String lang) throws Exception {
+        try {
+            return gen.getNavigation().getAlias(pageName, lang);
         } catch (Exception x) {
             ExtensionFunctionUtils.setExtensionFunctionError(x);
             throw x;

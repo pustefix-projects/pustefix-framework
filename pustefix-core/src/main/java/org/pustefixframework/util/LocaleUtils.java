@@ -17,9 +17,16 @@ public class LocaleUtils {
         }
     }
     
+    public static String getLanguagePart(String localeString) {
+        String[] parts = localeString.split("[-_]");
+        return parts[0].toLowerCase();
+    }
+    
     public static void main(String[] args) {
         System.out.println(getLocale("en-us"));
         System.out.println(getLocale("en_US"));
+        System.out.println(getLanguagePart("en_US"));
+        System.out.println(getLanguagePart("en"));
     }
     
 }

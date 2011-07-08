@@ -114,7 +114,6 @@ public class ModuleInfo {
     }
     
     public void addDefaultSearchModule(String moduleName) {
-        System.out.println("ADD DEFAULT SEARCH: "+moduleName);
         if(!moduleDescMap.containsKey(moduleName)) 
             throw new RuntimeException("Default-search module '" + moduleName + "' doesn't exist.");
         commonDefaultSearchModules.add(moduleName);
@@ -126,7 +125,6 @@ public class ModuleInfo {
             ModuleDescriptor moduleDesc = getModuleDescriptor(module);
             if(filter == null || filter.accept(moduleDesc.getDefaultSearchFilterAttributes())) {
                 modules.add(module);
-                System.out.println("CHECK DEFAULT SEARCH: "+module);
             }
         }
         return modules;

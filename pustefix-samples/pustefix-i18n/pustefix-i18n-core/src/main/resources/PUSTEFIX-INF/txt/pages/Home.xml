@@ -3,18 +3,30 @@
   
   <part name="content">
     <theme name="default">
+    
+      <div class="leftcol">
+      <pfx:image src="img/globe.png" search="dynamic"/> 
+      </div>
 
-      <h3>Welcome to the wonderful world of Pustefix!!!</h3>
-
-      <test/>
-      
+      <div class="rightcol">
+        <h3>
+        <pfx:include href="txt/common.xml" part="greeting" search="dynamic"/>
+      </h3>
+      <div class="form">
       <pfx:forminput>
-        Please enter your name:
+        <pfx:include href="txt/common.xml" part="namequery" search="dynamic"/>:
+        <br/>
         <pfx:xinp type="text" name="registration.name" size="20"/>
-        <pfx:xinp type="submit" value="Submit"/>
+        <pfx:xinp type="submit">
+          <pfx:value><pfx:include href="txt/common.xml" part="submit" search="dynamic"/></pfx:value>
+        </pfx:xinp>
+        <br/>
         <show-error field="registration.name"/>
       </pfx:forminput>
-
+      </div>
+      <br/>
+      </div>
+      
     </theme>
   </part>
   

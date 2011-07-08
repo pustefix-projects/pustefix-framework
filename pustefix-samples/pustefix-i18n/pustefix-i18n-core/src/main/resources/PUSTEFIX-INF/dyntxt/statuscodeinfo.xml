@@ -4,7 +4,7 @@
                 xsi:schemaLocation="http://www.pustefix-framework.org/2008/namespace/statuscodeinfo 
                                     http://www.pustefix-framework.org/2008/namespace/statuscodeinfo.xsd">
 
-  <statuscodes class="org.pustefixframework.samples.i18n.core.StatusCodes">
+  <statuscodes class="org.pustefixframework.samples.i18n.StatusCodes">
     <file>statusmessages.xml</file>
   </statuscodes>
   

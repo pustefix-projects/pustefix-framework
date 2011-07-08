@@ -45,7 +45,6 @@ import com.marsching.flexiparse.parser.exception.ParserException;
 import de.schlund.pfixxml.config.EnvironmentProperties;
 import de.schlund.pfixxml.config.includes.IncludesResolver;
 import de.schlund.pfixxml.resources.ModuleResource;
-import de.schlund.pfixxml.util.XMLUtils;
 
 public class PustefixProjectBeanDefinitionReader extends AbstractBeanDefinitionReader {
     
@@ -74,12 +73,6 @@ public class PustefixProjectBeanDefinitionReader extends AbstractBeanDefinitionR
             Document doc = db.parse(resource.getInputStream()); 
             IncludesResolver resolver = new IncludesResolver("http://www.pustefix-framework.org/2008/namespace/project-config", "config-include");
             resolver.resolveIncludes(doc);
-            try {
-                XMLUtils.serialize(doc);
-            } catch (Exception e) {
-                // TODO Auto-generated catch block
-                e.printStackTrace();
-            }
             projectConfigTree = projectConfigParser.parse(doc, info, getRegistry(), projectInfo);
         } catch (ParserException e) {
             throw new BeanDefinitionStoreException("Error while parsing " + resource + ": " + e.getMessage(), e);

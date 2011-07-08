@@ -46,7 +46,7 @@ public class Tenant {
     public void setHostPattern(String hostPattern) {
         this.hostPattern = Pattern.compile(hostPattern);
     }
-    
+
     public boolean matches(HttpServletRequest req) {
         if(hostPattern != null) {
             String host = req.getServerName();
@@ -54,22 +54,22 @@ public class Tenant {
                 return false;
             }
         }
-        System.out.println("HOST_MATCH: "+ req.getServerName() + " "+hostPattern);
         return true;
     }
     
     public void toXML(Element root) {
         Document doc = root.getOwnerDocument();
-        Element varElem = doc.createElement("tenant");
-        varElem.setAttribute("name", getName());
+        Element tenantElem = doc.createElement("tenant");
+        tenantElem.setAttribute("name", getName());
         for(String lang : supportedLanguages) {
             Element elem = doc.createElement("lang");
             if(lang.equals(getDefaultLanguage())) {
                 elem.setAttribute("default", "true");
             }
             elem.setTextContent(lang);
-            varElem.appendChild(elem);
+            tenantElem.appendChild(elem);
         }
+        root.appendChild(tenantElem);
     }
     
     @Override

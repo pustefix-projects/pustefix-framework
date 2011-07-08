@@ -287,6 +287,7 @@
       <xsl:choose>
         <xsl:when test="ancestor-or-self::wrapperstatus[1] and generate-id(ancestor-or-self::wrapperstatus[1]) = generate-id(/formresult/wrapperstatus)">true</xsl:when>
         <xsl:when test="ancestor-or-self::pageflow[1] and generate-id(ancestor-or-self::pageflow[1]) = generate-id(/formresult/pageflow)">true</xsl:when>
+        <xsl:when test="ancestor-or-self::tenant[1] and generate-id(ancestor-or-self::tenant[1]) = generate-id(/formresult/tenant)">true</xsl:when>
         <xsl:when test="ancestor-or-self::formhiddenvals[1] and generate-id(ancestor-or-self::formhiddenvals[1]) = generate-id(/formresult/formhiddenvals)">true</xsl:when>
         <xsl:when test="generate-id(current()) = generate-id(/formresult/formerrors)">true</xsl:when>
         <xsl:when test="ancestor-or-self::formvalues[1] and generate-id(ancestor-or-self::formvalues[1]) = generate-id(/formresult/formvalues)">true</xsl:when>

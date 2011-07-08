@@ -5,8 +5,9 @@
        xmlns:pfx="http://www.schlund.de/pustefix/core" 
        version="1.0">
 
-  <!-- insert templates for the first stage of the transformation here -->
-
+  <xsl:variable name="envprops" select="java:getProperties()" xmlns:java="de.schlund.pfixxml.config.EnvironmentProperties"/>
+  <xsl:variable name="fqdn" select="java:getProperty($envprops,'fqdn')" xmlns:java="java.util.Properties"/>
+  
   <!-- example template showing how to attach error message to form field -->
   <xsl:template match="show-error">
     <pfx:checkfield name="{@field}">
@@ -14,10 +15,6 @@
         <span class="error"><pfx:scode/></span>
       </pfx:error>
     </pfx:checkfield>
-  </xsl:template>
-  
-  <xsl:template match="test">
-     XXXXXXXXXXXXXXXXXXXXXXXXXXXXX
   </xsl:template>
   
 </xsl:stylesheet>

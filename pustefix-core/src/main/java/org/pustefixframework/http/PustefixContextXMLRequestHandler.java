@@ -34,6 +34,7 @@ import org.apache.log4j.Logger;
 import org.pustefixframework.config.contextxmlservice.AbstractXMLServletConfig;
 import org.pustefixframework.config.contextxmlservice.ContextXMLServletConfig;
 import org.pustefixframework.config.contextxmlservice.PageRequestConfig;
+import org.pustefixframework.util.LocaleUtils;
 
 import de.schlund.pfixcore.exception.PustefixApplicationException;
 import de.schlund.pfixcore.exception.PustefixCoreException;
@@ -47,12 +48,14 @@ import de.schlund.pfixcore.scriptedflow.vm.VirtualHttpServletRequest;
 import de.schlund.pfixcore.workflow.ContextImpl;
 import de.schlund.pfixcore.workflow.ContextInterceptor;
 import de.schlund.pfixcore.workflow.ExtendedContext;
+import de.schlund.pfixcore.workflow.SiteMap;
 import de.schlund.pfixcore.workflow.context.RequestContextImpl;
 import de.schlund.pfixxml.PfixServletRequest;
 import de.schlund.pfixxml.PfixServletRequestImpl;
 import de.schlund.pfixxml.RenderOutputListener;
 import de.schlund.pfixxml.RequestParam;
 import de.schlund.pfixxml.SPDocument;
+import de.schlund.pfixxml.Tenant;
 import de.schlund.pfixxml.targets.PageInfo;
 
 /**
@@ -129,7 +132,11 @@ public class PustefixContextXMLRequestHandler extends AbstractPustefixXMLRequest
             // name) can create a lot of unwanted sessions or disturb
             // the client side session handling (problems in IE)
             if(path.startsWith("/")) path = path.substring(1);
-            if(path.contains("/")) return HttpServletResponse.SC_NOT_FOUND;
+            int ind = path.indexOf("/");
+            if(ind > -1) {
+                ind = path.indexOf("/", ind + 1);
+                if(ind > -1) return HttpServletResponse.SC_NOT_FOUND;
+            }
         }
         return 0;
     }
@@ -226,6 +233,7 @@ public class PustefixContextXMLRequestHandler extends AbstractPustefixXMLRequest
             if (spdoc != null && !spdoc.isRedirect() && 
                     ( (preq.getPageName() == null && !context.getContextConfig().getDefaultPage(context.getVariant()).equals(spdoc.getPagename()))
                       || (preq.getPageName() != null && !preq.getPageName().equals(spdoc.getPagename())) )) {
+                
                 // Make sure all requests that don't encode an explicite pagename
                 // (this normally is only the case for the first request)
                 // OR pages that have the "wrong" pagename in their request 
@@ -360,14 +368,32 @@ public class PustefixContextXMLRequestHandler extends AbstractPustefixXMLRequest
             uris.add("/" + page.getPageName());
         }
         
+        SiteMap siteMap = generator.getNavigation();
+        
         //add page mappings for standardpages
         Set<PageInfo> pageInfos = generator.getPageTargetTree().getPageInfos();
         for(PageInfo pageInfo: pageInfos) {
             uris.add("/" + pageInfo.getName());
             //TODO: get alias names and regsiter
-            String[] aliases = generator.getPageAliases(pageInfo.getName());
-            for(String alias: aliases) {
-                uris.add(alias);
+            for(Tenant tenant: tenantInfo.getTenants()) {
+                for(String supportedLanguage: tenant.getSupportedLanguages()) {
+                    String langPart = LocaleUtils.getLanguagePart(supportedLanguage);
+                    String pathPrefix = "";
+                    if(!supportedLanguage.equals(tenant.getDefaultLanguage())) {
+                        pathPrefix = langPart + "/";
+                    }
+                    String alias = siteMap.getAlias(pageInfo.getName(), supportedLanguage);
+                    uris.add("/" + pathPrefix + alias);
+                }
+            }
+        }
+        
+        //add lang default page mappings
+        for(Tenant tenant: tenantInfo.getTenants()) {
+            for(String supportedLanguage: tenant.getSupportedLanguages()) {
+                if(!supportedLanguage.equals(tenant.getDefaultLanguage())) {
+                    uris.add("/" + LocaleUtils.getLanguagePart(supportedLanguage));
+                }
             }
         }
         

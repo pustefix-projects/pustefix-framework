@@ -47,6 +47,7 @@ public class SPDocument {
     private String    pagename       = null;
     private Variant   variant        = null;
     private Tenant tenant;
+    private String language;
     private String    xslkey         = null;
     private long      timestamp      = System.currentTimeMillis();
     private int       error          = 0;
@@ -75,6 +76,14 @@ public class SPDocument {
 
     public Variant getVariant() {
         return variant;
+    }
+    
+    public void setLanguage(String language) {
+        this.language = language;
+    }
+    
+    public String getLanguage() {
+        return language;
     }
     
     public void setTenant(Tenant tenant) {

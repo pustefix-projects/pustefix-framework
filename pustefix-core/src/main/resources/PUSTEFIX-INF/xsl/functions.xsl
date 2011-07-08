@@ -121,7 +121,14 @@
   
   <func:function name="pfx:__omitPage">
     <xsl:param name="pageName"/>
-    <func:result select="callback:omitPage($__context__,$pageName)"/>
+    <xsl:param name="language"><xsl:value-of select="$lang"/></xsl:param>
+    <func:result select="callback:omitPage($__context__,$__target_gen,$pageName,$language)"/>
+  </func:function>
+  
+  <func:function name="pfx:getPageAlias">
+    <xsl:param name="pageName"/>
+    <xsl:param name="language"><xsl:value-of select="$lang"/></xsl:param>
+    <func:result select="callback:getPageAlias($__target_gen,$pageName,$language)"/>
   </func:function>
   
 </xsl:stylesheet>

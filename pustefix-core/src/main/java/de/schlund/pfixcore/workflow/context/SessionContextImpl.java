@@ -62,6 +62,7 @@ public class SessionContextImpl {
     private HttpSession                session;
     private Variant                    variant      = null;
     private Tenant                     tenant;
+    private String                     language;
     private String                     visitId      = null;
     private ContextResourceManager     crm;
     private SessionEndNotificator      sessionEndNotificator;
@@ -142,16 +143,11 @@ public class SessionContextImpl {
     }
     
     public void setLanguage(String langcode) {
-        session.setAttribute(AbstractPustefixXMLRequestHandler.SESS_LANG, langcode);
+        this.language = langcode;
     }
 
     public String getLanguage() {
-        try {
-            return (String) session.getAttribute(AbstractPustefixXMLRequestHandler.SESS_LANG);
-        } catch (IllegalStateException e) {
-            // May be thrown if session has been invalidated
-            return null;
-        }
+        return language;
     }
 
     public Variant getVariant() {

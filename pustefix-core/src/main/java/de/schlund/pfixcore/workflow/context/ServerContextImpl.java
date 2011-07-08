@@ -24,7 +24,6 @@ import org.pustefixframework.config.contextxmlservice.ContextConfig;
 
 import de.schlund.pfixcore.workflow.PageMap;
 import de.schlund.pfixcore.workflow.VariantManager;
-import de.schlund.pfixxml.TenantInfo;
 import de.schlund.pfixxml.Variant;
 
 /**
@@ -41,7 +40,6 @@ public class ServerContextImpl {
     private PageFlowManager pageflowmanager;
     private VariantManager variantmanager;
     private PageMap pagemap;
-    private TenantInfo tenantInfo;
     
     public void init() throws Exception {
         if (config == null || pagemap == null) {
@@ -90,14 +88,6 @@ public class ServerContextImpl {
         } else {
             return pagename;
         }
-    }
-    
-    public void setTenantInfo(TenantInfo tenantInfo) {
-        this.tenantInfo = tenantInfo;
-    }
-    
-    public TenantInfo getTenantInfo() {
-        return tenantInfo;
     }
     
 }

@@ -43,7 +43,6 @@ public class TenantHostParsingHandler extends CustomizationAwareParsingHandler {
         String host = elem.getTextContent().trim();
         if(host.length() == 0) throw new ParserException("Element '/project/tenant/host' must not be empty!");
         try {
-            System.out.println("HHHHHHHHHHHHHHHHHHHH: " + host);
             tenant.setHostPattern(host);
         } catch(PatternSyntaxException x) {
             throw new ParserException("Element '/project/tenant/host' has invalid value: " + host, x);

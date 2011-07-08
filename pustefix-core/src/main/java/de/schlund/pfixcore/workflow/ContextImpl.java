@@ -28,6 +28,7 @@ import javax.servlet.http.HttpSessionBindingListener;
 
 import org.pustefixframework.config.contextxmlservice.ContextConfig;
 import org.pustefixframework.config.contextxmlservice.PageRequestConfig;
+import org.pustefixframework.http.AbstractPustefixRequestHandler;
 
 import de.schlund.pfixcore.auth.Authentication;
 import de.schlund.pfixcore.exception.PustefixApplicationException;
@@ -39,9 +40,9 @@ import de.schlund.pfixcore.workflow.context.PageFlow;
 import de.schlund.pfixcore.workflow.context.RequestContextImpl;
 import de.schlund.pfixcore.workflow.context.ServerContextImpl;
 import de.schlund.pfixcore.workflow.context.SessionContextImpl;
-import de.schlund.pfixxml.Tenant;
 import de.schlund.pfixxml.PfixServletRequest;
 import de.schlund.pfixxml.SPDocument;
+import de.schlund.pfixxml.Tenant;
 import de.schlund.pfixxml.Variant;
 import de.schlund.util.statuscodes.StatusCode;
 
@@ -185,9 +186,26 @@ public class ContextImpl implements AccessibilityChecker, ExtendedContext, Token
     }
 
     public void setLanguage(String lang) {
-        //TODO: check tenant
-        getRequestContextForCurrentThreadWithError().setLanguage(lang);
-        sessioncontext.setLanguage(lang);
+        String matchingLang = null;
+        if(getTenant() == null) {
+            matchingLang = lang;
+        } else {
+            List<String> supportedLangs = getTenant().getSupportedLanguages();
+            if(supportedLangs.contains(lang)) {
+                matchingLang = lang;
+            } else if(!(lang.contains("_") || lang.contains("-"))) {
+                lang = lang + "_";
+                for(String supportedLang: supportedLangs) {
+                    if(supportedLang.startsWith(lang)) {
+                        matchingLang = supportedLang;
+                    }
+                }
+            }
+        }
+        if(matchingLang != null) {
+            getRequestContextForCurrentThreadWithError().setLanguage(matchingLang);
+            sessioncontext.setLanguage(matchingLang);
+        }
     }
 
     public void setVariant(Variant variant) {
@@ -206,7 +224,7 @@ public class ContextImpl implements AccessibilityChecker, ExtendedContext, Token
     public Tenant getTenant() {
         return sessioncontext.getTenant();
     }
-    
+        
     public boolean stateMustSupplyFullDocument() {
         return getRequestContextForCurrentThreadWithError().stateMustSupplyFullDocument();
     }
@@ -240,18 +258,22 @@ public class ContextImpl implements AccessibilityChecker, ExtendedContext, Token
     public void prepareForRequest(HttpServletRequest req) {
         // This allows to use OLDER servercontexts during requests
         requestcontextstore.set(new RequestContextImpl(servercontext, this));
-        Tenant matchingTenant = servercontext.getTenantInfo().getMatchingTenant(req);
-        Tenant currentTenant = getTenant();
-        if(currentTenant == null) {
-            if(matchingTenant != null) {
-                System.out.println("SET " + matchingTenant.getName());
+        Tenant matchingTenant = (Tenant)req.getAttribute(AbstractPustefixRequestHandler.REQUEST_ATTR_TENANT);
+        if(matchingTenant != null) {
+            Tenant currentTenant = getTenant();
+            if(currentTenant == null) {
                 setTenant(matchingTenant);
+                setLanguage(matchingTenant.getDefaultLanguage());
+            } else {
+                if(!currentTenant.equals(matchingTenant)) {
+                    //TODO: handle this case
+                    throw new PustefixRuntimeException("Illegal tenant switch");
+                }
             }
-        } else {
-            if(!currentTenant.equals(matchingTenant)) {
-                //TODO: handle this case
-                throw new PustefixRuntimeException("Illegal tenant switch");
-            }
+        }
+        String langParam = req.getParameter("__language");
+        if(langParam != null && langParam.length() > 0) {
+            setLanguage(langParam);
         }
     }
     

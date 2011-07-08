@@ -2,46 +2,134 @@
 
 body {
   margin: 10px;
-  background: #ccc url(/modules/pustefix-i18n-core/img/background.png) 0 0 repeat-x;
+  background: #fff url(/modules/pustefix-i18n-core/img/background.png) 0 0 repeat-x;
   color: #000;
   font-family: 'Lucida Grande', 'Lucida Sans Unicode', Verdana, sans-serif;
   margin: 0;
   padding: 0;
+  height:100%;
 }
 
 div.header {
+	clear: both;
 }
 
 div.header div.title {
   float: left;
-  padding-left: 40px;
+  padding-left: 60px;
   padding-top: 20px;
-  font-size: 40px;
+  font-size: 36px;
   color: #fff;
- 
   font-weight: 100;
 }
 
 div.header div.logo {
   float: left;
+  padding-left: 10px;
 }
 
 div.header div.country {
   float: left;
-  padding-left: 40px;
-  padding-top: 22px;
+  padding-left: 15px;
+  padding-top: 18px;
   
 }
 
-div.content {
-  padding: 10px;	
+div.header div.language {
+	float: left;
+	font-size: 80%;
+	padding-top: 10px;
+	padding-left: 60px;
+	color: #fff;	
 }
 
+div.content {
+  clear:both;
+  overflow: hidden;
+  padding: 20px;
+  padding-bottom: 20px;
+}
 
+div.leftcol {
+	float: left;
+}
 
+div.rightcol {
+	float: left;
+	color: #fff;
+	padding-left: 40px;
+}
 
+div.form {
+	padding-top: 10px;
+}
+
+div.form input {
+	margin-top: 10px;
+	margin-right: 5px;
+	margin-bottom: 10px;
+}
+
+div#navi {
+  padding-bottom: 20px;	
+  color: white;
+}
+
+div#navi a {
+	color: white;
+	padding-right: 10px;
+}
+
+div#navi span {
+	color: white;
+	padding-right: 10px;
+}
+
+div#terms {
+	color:white;
+}
+div#terms input {
+	margin-right: 10px;
+}
+div#terms span {
+	margin-right: 10px;
+}
 
 span.error {
-  color: red;
-  padding-left: 10px;
+  background: red;
+  color: white;
+  padding: 3px;
+  margin-top: 4px;
 }
+
+h3 {
+	color: #fff;
+}
+
+div#footer {
+	margin-top: 40px;
+	border-top: 1px solid #ccc;
+}
+
+div#footer img {
+	padding: 3px;
+}
+
+div.language a {
+	color: #fff;
+}
+
+div.langsel a {
+	text-decoration: none;
+}
+
+img.langflag {
+	vertical-align: middle;
+}
+
+div.activelang {                       
+   opacity: 0.4;
+   filter: alpha(opacity=40);
+   zoom: 1;
+}
+

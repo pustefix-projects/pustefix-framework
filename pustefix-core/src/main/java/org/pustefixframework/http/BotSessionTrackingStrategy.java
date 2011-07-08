@@ -40,7 +40,7 @@ public class BotSessionTrackingStrategy implements SessionTrackingStrategy {
             return;
         }
         
-        PfixServletRequest preq = new PfixServletRequestImpl(req, context.getServletManagerConfig().getProperties());
+        PfixServletRequest preq = new PfixServletRequestImpl(req, context.getServletManagerConfig().getProperties(), context);
         
         if(!req.isSecure() && context.needsSSL(preq)) {
             String redirect_uri = SessionHelper.getClearedURL("https", AbstractPustefixRequestHandler.getServerName(req), req, context.getServletManagerConfig().getProperties());

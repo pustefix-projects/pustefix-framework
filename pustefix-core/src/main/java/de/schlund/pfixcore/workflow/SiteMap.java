@@ -18,6 +18,7 @@
 
 package de.schlund.pfixcore.workflow;
 
+import java.io.IOException;
 import java.io.StringReader;
 import java.net.URI;
 import java.util.ArrayList;
@@ -28,6 +29,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+import javax.xml.transform.TransformerConfigurationException;
 import javax.xml.transform.TransformerFactory;
 import javax.xml.transform.dom.DOMResult;
 import javax.xml.transform.sax.SAXTransformerFactory;
@@ -37,11 +39,13 @@ import org.pustefixframework.util.xml.DOMUtils;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.xml.sax.InputSource;
+import org.xml.sax.SAXException;
 import org.xml.sax.XMLReader;
 import org.xml.sax.helpers.DefaultHandler;
 import org.xml.sax.helpers.XMLReaderFactory;
 
 import de.schlund.pfixcore.util.ModuleInfo;
+import de.schlund.pfixxml.XMLException;
 import de.schlund.pfixxml.config.CustomizationHandler;
 import de.schlund.pfixxml.config.includes.FileIncludeEvent;
 import de.schlund.pfixxml.config.includes.FileIncludeEventListener;
@@ -49,7 +53,6 @@ import de.schlund.pfixxml.config.includes.IncludesResolver;
 import de.schlund.pfixxml.resources.Resource;
 import de.schlund.pfixxml.resources.ResourceUtil;
 import de.schlund.pfixxml.util.TransformerHandlerAdapter;
-import de.schlund.pfixxml.util.XMLUtils;
 import de.schlund.pfixxml.util.Xml;
 import de.schlund.pfixxml.util.XsltVersion;
 
@@ -61,13 +64,15 @@ public class SiteMap {
     private Set<String> topLevelPages = new HashSet<String>();
     
     
+    private Document siteMapDoc;
     private Element siteMapXMLElement = null;
     
     
     private List<Page> pageList;
     private Map<String, Map<String, String>> aliasMaps;
+    private Map<String, Map<String, String>> pageMaps;
     
-    public SiteMap(Resource siteMapFile, XsltVersion xsltVersion) throws Exception {
+    public SiteMap(Resource siteMapFile) throws IOException, SAXException, XMLException {
        
         URI uri = siteMapFile.toURI();
         String uriStr = uri.toString();
@@ -94,7 +99,12 @@ public class SiteMap {
         TransformerFactory tf = TransformerFactory.newInstance();
         if (tf.getFeature(SAXTransformerFactory.FEATURE)) {
             SAXTransformerFactory stf = (SAXTransformerFactory) tf;
-            TransformerHandler th = stf.newTransformerHandler();
+            TransformerHandler th;
+            try {
+                th = stf.newTransformerHandler();
+            } catch (TransformerConfigurationException e) {
+               throw new XMLException("Error reading sitemap", e);
+            }
             DOMResult dr = new DOMResult();
             th.setResult(dr);
             DefaultHandler dh = new TransformerHandlerAdapter(th);
@@ -118,15 +128,16 @@ public class SiteMap {
         }
         
         
+        siteMapDoc = navitree;
         
-        // We need a Saxon node here
-        siteMapXMLElement = Xml.parse(xsltVersion, navitree).getDocumentElement();
+       
         
-        readSiteMap(siteMapXMLElement);
+        readSiteMap(siteMapDoc.getDocumentElement());
         
        
         
         aliasMaps = new HashMap<String, Map<String, String>>();
+        pageMaps = new HashMap<String, Map<String, String>>();
         
         Resource res = ResourceUtil.getResource("/WEB-INF/sitemap-aliases.xml");
         if(res.exists()) {
@@ -142,10 +153,6 @@ public class SiteMap {
                 readSiteMapAliases(Xml.parseMutable(res));
             }
         }
-        
-        
-        
-        XMLUtils.serialize(getDocument("de"));
         
     }
    
@@ -180,11 +187,14 @@ public class SiteMap {
         String lang = root.getAttribute("lang").trim();
         Map<String, String> pageToAlias = new HashMap<String, String>();
         aliasMaps.put(lang, pageToAlias);
+        Map<String, String> aliasToPage = new HashMap<String, String>();
+        pageMaps.put(lang, aliasToPage);
         List<Element> aliasElems = DOMUtils.getChildElementsByTagName(root, "alias");
         for(Element aliasElem: aliasElems) {
             String page = aliasElem.getAttribute("page").trim();
             String alias = aliasElem.getTextContent().trim();
             pageToAlias.put(page, alias);
+            aliasToPage.put(alias, page);
         }
     }
     
@@ -212,7 +222,7 @@ public class SiteMap {
         }
     }
     
-    private String getAlias(String name, String lang) {
+    public String getAlias(String name, String lang) {
         if(lang != null) {
             String alias = null;
             Map<String, String> aliases = aliasMaps.get(lang);
@@ -236,7 +246,37 @@ public class SiteMap {
         return name;
     }
     
-    public Element getSiteMapXMLElement() {
+    public String getPageName(String alias, String lang) {
+        String page = null;
+        if(lang != null) {
+            Map<String, String> pages = pageMaps.get(lang);
+            if(pages != null) {
+                page = pages.get(alias);
+            }
+            if(page == null) {
+                int ind = lang.indexOf('_');
+                if(ind > -1) {
+                    lang = lang.substring(0, ind);
+                    pages = pageMaps.get(lang);
+                    if(pages != null) {
+                        page = pages.get(alias);
+                    }
+                }
+            }
+            if(page == null) {
+                if(pageList.contains(alias)) {
+                    page = alias;
+                }
+            }
+        }
+        return page;
+    }
+    
+    public Element getSiteMapXMLElement(XsltVersion xsltVersion) {
+        if(siteMapXMLElement == null) {
+            // We need a Saxon node here
+            siteMapXMLElement = Xml.parse(xsltVersion, siteMapDoc).getDocumentElement();
+        }
         return siteMapXMLElement;
     }
     

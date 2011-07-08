@@ -147,11 +147,26 @@ public class ResultDocument {
 
     public static Element createIncludeFromStatusCode(Document thedoc, Properties props, StatusCode code, String[] args) {
         //TODO: support statuscodes from arbitrary resources
-        String incfile = code.getStatusCodeURI().toASCIIString();
+        String incfile = null;
+        String module = null;
+        boolean dynamic = false;
+        if("dynamic".equals(code.getStatusCodeURI().getScheme())) {
+            incfile = code.getStatusCodeURI().getPath();
+            module = code.getStatusCodeURI().getAuthority();
+            dynamic = true;
+        } else {
+            incfile = code.getStatusCodeURI().toASCIIString();
+        }
         String part    = code.getStatusCodeId();
         Element include = thedoc.createElementNS(ResultDocument.PFIXCORE_NS, "pfx:include");
         include.setAttribute("href", incfile);
         include.setAttribute("part", part);
+        if(module != null) {
+            include.setAttribute("module", module);
+        }
+        if(dynamic) {
+            include.setAttribute("search", "dynamic");
+        }
         if (args != null) {
             for (int i = 0; i < args.length; i++) {
                 Element arg   = thedoc.createElementNS(ResultDocument.PFIXCORE_NS, "pfx:arg");

@@ -11,17 +11,23 @@
         <div class="logo"><pfx:image class="logo" src="img/logo.png"/></div>
         <div class="title"><pfx:include href="txt/common.xml" part="title" search="dynamic"/></div>
         <div class="country"><pfx:image src="img/flag-48x48.png" search="dynamic"/></div>
-        <div style="clear:both"></div>
+        <div class="language"><pfx:include href="txt/common.xml" part="langchoice"/></div>      
       </div>
       <div class="content">
-        <pfx:include href="txt/common.xml" part="header" search="dynamic"/>
+        <pfx:include href="txt/common.xml" part="navi"/>
         <pfx:maincontent prefix="" module="PAGEDEF"/>
       </div>
-      <hr/>
-      <div>
-      <a href="http://de.zap.ue.schlund.de:8080/">DE</a><br/>
-      <a href="http://us.zap.ue.schlund.de:8080/">US</a><br/>
-      <a href="http://ca.zap.ue.schlund.de:8080/">CA</a>
+  
+      <div id="footer">
+        <a href="http://ca.{$fqdn}:8080/">
+          <pfx:image src="img/flag-24x24.png" module="pustefix-i18n-tenant-ca"/>
+        </a>
+        <a href="http://de.{$fqdn}:8080/">
+          <pfx:image src="img/flag-24x24.png" module="pustefix-i18n-tenant-de"/>
+        </a>
+        <a href="http://us.{$fqdn}:8080/">
+          <pfx:image src="img/flag-24x24.png" module="pustefix-i18n-tenant-us"/>
+        </a> 
       </div>
       <pfx:editconsole/>
     </body>

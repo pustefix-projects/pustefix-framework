@@ -183,9 +183,7 @@ public class IncludesResolver {
                     NodeList includeNodes;
                     try {
                         javax.xml.xpath.XPath xpathProc = XPathFactory.newInstance().newXPath();
-                        System.out.println("ELEM: "+elem.getLocalName() + " " + elem.getAttribute("file") + " " +elem.getParentNode() + elem.hashCode());
                         xpathProc.setNamespaceContext(new DOMBasedNamespaceContext(elem));
-                        System.out.println("ELEM2: "+elem.getLocalName() + " " + elem.getAttribute("file") + " " +elem.getParentNode() + elem.hashCode());
                         includeNodes = (NodeList) xpathProc.evaluate(xpath, includeDocument, XPathConstants.NODESET);
                     } catch (XPathExpressionException e) {
                         throw new SAXException("XPath Expression invalid: " + xpath);

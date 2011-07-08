@@ -97,7 +97,6 @@ public final class IncludeDocumentExtension {
                                    String module, String search, String tenant, String language) throws Exception {
        
         if(path_str.startsWith("docroot:")) path_str = path_str.substring(9);
-        System.out.println("TTTTTTTTTTTTTTT: "+tenant);
         if(module != null) {
             module = module.trim();
             if(module.equals("")) module = null;

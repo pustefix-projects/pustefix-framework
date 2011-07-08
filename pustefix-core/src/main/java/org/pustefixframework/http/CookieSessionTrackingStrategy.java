@@ -152,7 +152,7 @@ public class CookieSessionTrackingStrategy implements SessionTrackingStrategy {
         }
         if (preq == null) {
             LOG.debug("*** Creating PfixServletRequest object.");
-            preq = new PfixServletRequestImpl(req, context.getServletManagerConfig().getProperties());
+            preq = new PfixServletRequestImpl(req, context.getServletManagerConfig().getProperties(), context);
         }
 
         //TODO: call it later

@@ -160,14 +160,15 @@ public class TargetGenerator implements ResourceVisitor, ServletContextAware {
     //--
 
     public TargetGenerator(final Resource confile, final FileResource cacheDir, final boolean parseIncludes) throws IOException, SAXException, XMLException {
-        this(confile, cacheDir, new SPCacheFactory().init());
+        this(confile, cacheDir, new SPCacheFactory().init(), new SiteMap(confile));
         this.parseIncludes = parseIncludes;
     }
     
-    public TargetGenerator(final Resource confile, final FileResource cacheDir, final SPCacheFactory cacheFactory) throws IOException, SAXException, XMLException {
+    public TargetGenerator(final Resource confile, final FileResource cacheDir, final SPCacheFactory cacheFactory, final SiteMap siteMap) throws IOException, SAXException, XMLException {
         this.config_path = confile;
         this.cacheDir = cacheDir;
         this.cacheFactory = cacheFactory;
+        this.siteMap = siteMap;
         includeDocumentFactory = new IncludeDocumentFactory(cacheFactory);
         targetDependencyRelation = new TargetDependencyRelation();
         auxDependencyFactory = new AuxDependencyFactory(targetDependencyRelation);
@@ -183,11 +184,15 @@ public class TargetGenerator implements ResourceVisitor, ServletContextAware {
     }
         
     public TargetGenerator(Resource confile) throws IOException, SAXException, XMLException {
-        this(confile, null, new SPCacheFactory().init());
+        this(confile, null, new SPCacheFactory().init(), new SiteMap(confile));
     }
     
     public TargetGenerator(Resource confile, SPCacheFactory cacheFactory) throws IOException, SAXException, XMLException {
-        this(confile, null, cacheFactory);
+        this(confile, null, cacheFactory, new SiteMap(confile));
+    }
+    
+    public TargetGenerator(Resource confile, SPCacheFactory cacheFactory, SiteMap siteMap) throws IOException, SAXException, XMLException {
+        this(confile, null, cacheFactory, siteMap);
     }
     
     //-- attributes
@@ -250,11 +255,6 @@ public class TargetGenerator implements ResourceVisitor, ServletContextAware {
     
     public PageInfoFactory getPageInfoFactory() {
         return pageInfoFactory;
-    }
-    
-    public String[] getPageAliases(String pageName) {
-        //TODO: replace dummy implementation
-        return new String[] {"X" + pageName};
     }
     
     //-- targets
@@ -690,12 +690,6 @@ public class TargetGenerator implements ResourceVisitor, ServletContextAware {
             allstructs.put(nameattr, struct);
         }
         
-        try {
-            siteMap = new SiteMap(config_path, getXsltVersion());
-        } catch (Exception e) {
-            throw new XMLException("Error reading page navigation.", e);
-        }
-        
         LOG.info("\n=====> Preliminaries took " + (System.currentTimeMillis() - start) + "ms. Now looping over " + allstructs.keySet().size() + " targets");
         start = System.currentTimeMillis();
         for (Iterator<String> i = allstructs.keySet().iterator(); i.hasNext();) {
@@ -833,7 +827,7 @@ public class TargetGenerator implements ResourceVisitor, ServletContextAware {
             virtual.addParam(XSLPARAM_TG, this);
             virtual.addParam(XSLPARAM_TKEY, key);
             try {
-                virtual.addParam(XSLPARAM_NAVITREE, siteMap.getSiteMapXMLElement());
+                virtual.addParam(XSLPARAM_NAVITREE, siteMap.getSiteMapXMLElement(getXsltVersion()));
             } catch (Exception e) {
                 throw new XMLException("Cannot get navigation tree", e);
             }

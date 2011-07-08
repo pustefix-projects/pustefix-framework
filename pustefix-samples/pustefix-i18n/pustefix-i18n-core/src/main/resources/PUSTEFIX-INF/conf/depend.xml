@@ -7,6 +7,10 @@
     <namespace-declaration prefix="ixsl" url="http://www.w3.org/1999/XSL/Transform"/>
   </namespaces>
 
+  <global>
+    <include stylesheet="xsl/runtime.xsl"/>
+  </global>
+
   <standardmaster>
     <include stylesheet="xsl/skin.xsl"/>
   </standardmaster>
@@ -22,7 +26,7 @@
 
   <auto-standardpage lookup-path="txt/pages" lookup-module="" xml="xml/frame.xml"/>
 
-  <standardpage name="LandingPage" xml="xml/frame.xml">
+  <standardpage name="Info" xml="xml/frame.xml">
     <standardpage-variant>cooking</standardpage-variant>
     <standardpage-variant>garden</standardpage-variant>
     <standardpage-variant>living</standardpage-variant>

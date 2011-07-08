@@ -1,14 +1,11 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <sitemap>
   <page name="Home"/>
-  <page name="Bye"/>
-  <page name="LandingPage">
+  <page name="Overview"/>
+  <page name="Info">
     <alt key="living" name="Living"/>
     <alt key="garden" name="Garden"/>
     <alt key="kitchen" name="Kitchen"/>
   </page>
-  <page name="x">
-    <page name="y"/>
-  </page>
-  <config-include file="conf/sitemap-fragment.xml" section="sitemap" module="*"/>
+  <!-- <config-include file="conf/sitemap-fragment.xml" section="sitemap" module="*"/> -->
 </sitemap>

@@ -39,10 +39,14 @@ import org.apache.log4j.Logger;
 import org.pustefixframework.config.contextxmlservice.ServletManagerConfig;
 import org.pustefixframework.config.project.SessionTimeoutInfo;
 import org.pustefixframework.container.spring.http.UriProvidingHttpRequestHandler;
+import org.pustefixframework.util.LocaleUtils;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.web.context.ServletContextAware;
 
+import de.schlund.pfixcore.workflow.SiteMap;
 import de.schlund.pfixxml.PfixServletRequest;
+import de.schlund.pfixxml.Tenant;
+import de.schlund.pfixxml.TenantInfo;
 import de.schlund.pfixxml.exceptionprocessor.ExceptionConfig;
 import de.schlund.pfixxml.exceptionprocessor.ExceptionProcessingConfiguration;
 import de.schlund.pfixxml.exceptionprocessor.ExceptionProcessor;
@@ -73,6 +77,8 @@ public abstract class AbstractPustefixRequestHandler implements SessionTrackingS
     private static final String SESSION_ATTR_REQUEST_COUNT = "__PFX_REQUEST_COUNT__";
     private static final String SESSION_ATTR_ORIGINAL_TIMEOUT = "__PFX_SESSION_ORIGINAL_TIMEOUT__";
     
+    public static final String REQUEST_ATTR_TENANT ="__PFX_TENANT__";
+    
     public static final Logger LOGGER_VISIT = Logger.getLogger("LOGGER_VISIT");
     private static final Logger LOG = Logger.getLogger(AbstractPustefixRequestHandler.class);
     private String                       servletEncoding;
@@ -83,6 +89,8 @@ public abstract class AbstractPustefixRequestHandler implements SessionTrackingS
     protected SessionTrackingStrategy sessionTrackingStrategy;
     private BotSessionTrackingStrategy botSessionTrackingStrategy;
     private SessionTimeoutInfo sessionTimeoutInfo;
+    protected TenantInfo tenantInfo;
+    private SiteMap siteMap;
     
     public abstract ServletManagerConfig getServletManagerConfig();
 
@@ -117,7 +125,7 @@ public abstract class AbstractPustefixRequestHandler implements SessionTrackingS
     }
 
     public void handleRequest(HttpServletRequest req, HttpServletResponse res) throws ServletException, IOException {
-         
+
         req.setCharacterEncoding(servletEncoding);
         res.setCharacterEncoding(servletEncoding);
         if (LOG.isDebugEnabled()) {
@@ -153,6 +161,14 @@ public abstract class AbstractPustefixRequestHandler implements SessionTrackingS
             res.addHeader("P3P", p3pHeader);
         }
         
+        if(!tenantInfo.getTenants().isEmpty()) {
+            Tenant matchingTenant = tenantInfo.getMatchingTenant(req);
+            if(matchingTenant == null) {
+                matchingTenant = tenantInfo.getTenants().get(0);
+            }
+            req.setAttribute(REQUEST_ATTR_TENANT, matchingTenant);
+        }
+            
         if(BotDetector.isBot(req)) {
             botSessionTrackingStrategy.handleRequest(req, res);
         } else {
@@ -333,6 +349,24 @@ public abstract class AbstractPustefixRequestHandler implements SessionTrackingS
         res.setHeader("Location", reloc_url);
     }
     
+    public String getPageName(String pageAlias, HttpServletRequest request) {
+        String internalPage = null;
+        int ind = pageAlias.indexOf('/');
+        if(ind > -1) {
+            String langPart = pageAlias.substring(0, ind);
+            String pagePart = pageAlias.substring(ind + 1);
+            //TODO: check tenant / set language
+            internalPage = siteMap.getPageName(pagePart, langPart);
+        } else {
+            Tenant tenant = (Tenant)request.getAttribute(REQUEST_ATTR_TENANT);
+            if(tenant != null) {
+                String lang = tenant.getDefaultLanguage();
+                internalPage = siteMap.getPageName(pageAlias, lang);
+            }
+        }
+        return internalPage;
+    }
+    
     public void setServletEncoding(String encoding) {
         this.servletEncoding = encoding;
     }
@@ -367,6 +401,14 @@ public abstract class AbstractPustefixRequestHandler implements SessionTrackingS
     
     public void setExceptionProcessingConfiguration(ExceptionProcessingConfiguration exceptionProcessingConfig) {
         this.exceptionProcessingConfig = exceptionProcessingConfig;
+    }
+    
+    public void setTenantInfo(TenantInfo tenantInfo) {
+        this.tenantInfo = tenantInfo;
+    }
+    
+    public void setSiteMap(SiteMap siteMap) {
+        this.siteMap = siteMap;
     }
     
 }

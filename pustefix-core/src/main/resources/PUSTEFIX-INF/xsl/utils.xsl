@@ -321,6 +321,10 @@
                     </ixsl:otherwise>
                   </ixsl:choose>
                 </span>
+                <ixsl:if test="$tenant">
+                  <br/>
+                  <span title="Tenant">T: <ixsl:value-of select="$tenant"/></span>
+                </ixsl:if>
               </div>
             </div>
             <script type="text/javascript">

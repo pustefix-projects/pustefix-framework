@@ -53,7 +53,6 @@ public class TenantParsingHandler extends CustomizationAwareParsingHandler {
             tenant.addSupportedLanguage(lang);
         }
         
-        System.out.println("ADD TENANT "+tenant.getName());
         context.getObjectTreeElement().addObject(tenant);
     }
 

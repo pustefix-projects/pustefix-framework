@@ -20,5 +20,9 @@ public class TenantInfo {
     public void setTenants(List<Tenant> tenants) {
         this.tenants = tenants;
     }
+    
+    public List<Tenant> getTenants() {
+        return tenants;
+    }
 
 }

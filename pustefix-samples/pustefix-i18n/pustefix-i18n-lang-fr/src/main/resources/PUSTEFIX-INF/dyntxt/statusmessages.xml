@@ -1,8 +1,10 @@
 <?xml version="1.0" encoding="ISO-8859-1"?>
 <include_parts xmlns:ixsl="http://www.w3.org/1999/XSL/Transform" xmlns:pfx="http://www.schlund.de/pustefix/core">
 
-  <part name="GENERAL_ERRROR">
-    <theme name="default">Error!</theme>
+  <part name="INVALID_NAME">
+    <theme name="default">
+      Le nom n'est pas valide, minimum de 3 caractères demandé.
+    </theme>
   </part>
   
 </include_parts>

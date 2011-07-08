@@ -109,7 +109,6 @@ public class DynamicResourceProvider implements ResourceProvider {
         
         ModuleFilter moduleFilter = null;
         if(filter != null) moduleFilter = new ModuleFilter(filter);
-        System.out.println("FILTER: "+moduleFilter);
         
         //search in defaultSearchModules
         List<String> defaultSearchModules = moduleInfo.getDefaultSearchModules(moduleFilter);
