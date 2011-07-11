@@ -39,7 +39,6 @@ import org.apache.log4j.Logger;
 import org.pustefixframework.config.contextxmlservice.ServletManagerConfig;
 import org.pustefixframework.config.project.SessionTimeoutInfo;
 import org.pustefixframework.container.spring.http.UriProvidingHttpRequestHandler;
-import org.pustefixframework.util.LocaleUtils;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.web.context.ServletContextAware;
 
@@ -90,7 +89,7 @@ public abstract class AbstractPustefixRequestHandler implements SessionTrackingS
     private BotSessionTrackingStrategy botSessionTrackingStrategy;
     private SessionTimeoutInfo sessionTimeoutInfo;
     protected TenantInfo tenantInfo;
-    private SiteMap siteMap;
+    protected SiteMap siteMap;
     
     public abstract ServletManagerConfig getServletManagerConfig();
 

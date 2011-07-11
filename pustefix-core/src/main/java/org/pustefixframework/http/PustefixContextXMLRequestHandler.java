@@ -246,8 +246,17 @@ public class PustefixContextXMLRequestHandler extends AbstractPustefixXMLRequest
                 if(session.getAttribute(AbstractPustefixRequestHandler.SESSION_ATTR_COOKIE_SESSION) == null) {
                     sessionIdPath = ";jsessionid=" + session.getId();
                 }
+                String langPrefix = "";
+                Tenant tenant = spdoc.getTenant();
+                if(tenant != null && !spdoc.getLanguage().equals(tenant.getDefaultLanguage())) {
+                    langPrefix = LocaleUtils.getLanguagePart(spdoc.getLanguage());
+                }
+                String alias = siteMap.getAlias(spdoc.getPagename(), spdoc.getLanguage());
+                if(langPrefix.length() > 0) {
+                    alias = langPrefix + "/" + alias;
+                }
                 String redirectURL = scheme + "://" + getServerName(preq.getRequest()) 
-                    + ":" + port + preq.getContextPath() + preq.getServletPath() + "/" + spdoc.getPagename() 
+                    + ":" + port + preq.getContextPath() + preq.getServletPath() + "/" + alias 
                     + sessionIdPath + "?__reuse=" + spdoc.getTimestamp();
                 RequestParam rp = preq.getRequestParam("__frame");
                 if (rp != null && rp.getValue() != null && !rp.getValue().equals("")) {

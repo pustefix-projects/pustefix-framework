@@ -218,14 +218,14 @@ public class GenerateSCodes {
         writer.write("    public static final URI[] __URI;\n\n");
         writer.write("    static {\n");
         writer.write("        try {\n");
-        writer.write("            __URI = new URI[] {\n");
+        writer.write("            __URI = StatusCodeHelper.update(new URI[] {\n");
         Iterator<URI> it = uris.iterator();
         while(it.hasNext()) {
             writer.write("                new URI(\""+it.next().toASCIIString()+"\")");
             if(it.hasNext()) writer.write(",");
             writer.write("\n");
         }
-        writer.write("            };\n");
+        writer.write("            });\n");
         writer.write("        } catch (URISyntaxException e) {\n");
         writer.write("            throw new RuntimeException(\"Illegal URI\", e);\n");
         writer.write("        }\n");
@@ -269,6 +269,7 @@ public class GenerateSCodes {
         if(!pkgName.equals("de.schlund.util.statuscodes")) {
             writer.write("import de.schlund.util.statuscodes.StatusCode;\n");
             writer.write("import de.schlund.util.statuscodes.StatusCodeException;\n");
+            writer.write("import de.schlund.util.statuscodes.StatusCodeHelper;\n");
         }
         writer.write("import java.lang.reflect.Field;\n");
         writer.write("import java.net.URI;\n");
