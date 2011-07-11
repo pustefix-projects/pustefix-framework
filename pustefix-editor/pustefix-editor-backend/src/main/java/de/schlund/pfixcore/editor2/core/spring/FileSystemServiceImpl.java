@@ -43,7 +43,7 @@ import org.xml.sax.helpers.DefaultHandler;
 import org.xml.sax.helpers.XMLReaderFactory;
 
 import de.schlund.pfixxml.config.CustomizationHandler;
-import de.schlund.pfixxml.resources.FileResource;
+import de.schlund.pfixxml.resources.Resource;
 import de.schlund.pfixxml.util.TransformerHandlerAdapter;
 import de.schlund.pfixxml.util.Xml;
 
@@ -82,7 +82,7 @@ public class FileSystemServiceImpl implements FileSystemService {
         return Xml.parseMutable(file);
     }
     
-    public Document readCustomizedXMLDocumentFromFile(FileResource file, String namespace) throws FileNotFoundException, SAXException, IOException {
+    public Document readCustomizedXMLDocumentFromFile(Resource file, String namespace) throws FileNotFoundException, SAXException, IOException {
         DOMResult result = new DOMResult();
         try {
             customize(new InputSource(file.getInputStream()), result, namespace);

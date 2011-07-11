@@ -23,6 +23,7 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.LinkedHashSet;
+import java.util.List;
 import java.util.Map;
 import java.util.TreeSet;
 
@@ -37,6 +38,9 @@ import org.pustefixframework.editor.common.dom.ThemeList;
 import org.pustefixframework.editor.common.dom.Variant;
 import org.pustefixframework.editor.common.exception.EditorInitializationException;
 import org.pustefixframework.editor.common.exception.EditorParsingException;
+import org.pustefixframework.util.xml.DOMUtils;
+import org.springframework.util.xml.DomUtils;
+import org.w3c.dom.Element;
 
 import de.schlund.pfixcore.editor2.core.spring.ConfigurationService;
 import de.schlund.pfixcore.editor2.core.spring.DynIncludeFactoryService;
@@ -47,8 +51,7 @@ import de.schlund.pfixcore.editor2.core.spring.PustefixTargetUpdateService;
 import de.schlund.pfixcore.editor2.core.spring.TargetFactoryService;
 import de.schlund.pfixcore.editor2.core.spring.ThemeFactoryService;
 import de.schlund.pfixcore.editor2.core.spring.VariantFactoryService;
-import de.schlund.pfixcore.workflow.Navigation;
-import de.schlund.pfixcore.workflow.Navigation.NavigationElement;
+import de.schlund.pfixcore.workflow.SiteMap;
 import de.schlund.pfixxml.event.ConfigurationChangeEvent;
 import de.schlund.pfixxml.event.ConfigurationChangeListener;
 import de.schlund.pfixxml.resources.ResourceUtil;
@@ -59,6 +62,7 @@ import de.schlund.pfixxml.targets.PageInfo;
 import de.schlund.pfixxml.targets.PageTargetTree;
 import de.schlund.pfixxml.targets.TargetGenerator;
 import de.schlund.pfixxml.targets.Themes;
+import de.schlund.pfixxml.util.XsltVersion;
 
 /**
  * Implementation of Project using a XML file to read project information during
@@ -156,15 +160,15 @@ public class ProjectImpl extends AbstractProject {
     }
 
     private synchronized void reloadConfig() {
-        Navigation navi = this.getNavigation();
+        SiteMap navi = this.getNavigation();
         TargetGenerator gen = this.getTargetGenerator();
 
         // Create hierarchical tree of pages
         PageTargetTree ptree = gen.getPageTargetTree();
         HashSet<Page> pages = new HashSet<Page>();
-        NavigationElement[] navElements = navi.getNavigationElements();
-        for (int i = 0; i < navElements.length; i++) {
-            pages.addAll(this.recurseNavigationElement(navElements[i], null,
+        List<Element>  navElements = DOMUtils.getChildElementsByTagName(navi.getSiteMapXMLElement(XsltVersion.XSLT1), "page");
+        for (Element navElement : navElements) {
+            pages.addAll(this.recurseNavigationElement(navElement, null,
                     ptree));
         }
         
@@ -249,12 +253,12 @@ public class ProjectImpl extends AbstractProject {
      * @return Collection containing page objects for all variants of the page
      *         specified by the NavigationElement
      */
-    private Collection<Page> recurseNavigationElement(NavigationElement nav,
+    private Collection<Page> recurseNavigationElement(Element nav,
             Page parent, PageTargetTree ptree) {
         HashSet<MutablePage> pages = new HashSet<MutablePage>();
         Page defaultPage = null;
 
-        String pageName = nav.getName();
+        String pageName = nav.getAttribute("name");
         Collection<PageInfo> pinfos = ptree.getPageInfoForPageName(pageName);
         if (pinfos == null) {
             String msg = "Could not load PageInfo from PageTree for page "
@@ -298,11 +302,11 @@ public class ProjectImpl extends AbstractProject {
         
         HashSet<Page> subpages = new HashSet<Page>();
 
-        if (nav.hasChildren()) {
-            NavigationElement[] elements = nav.getChildren();
-            for (int i = 0; i < elements.length; i++) {
+        List<Element> childPages = DomUtils.getChildElementsByTagName(nav, "page");
+        if (!childPages.isEmpty()) {
+            for (Element childPage: childPages) {
                 Collection<Page> subpageElements = this
-                        .recurseNavigationElement(elements[i], defaultPage,
+                        .recurseNavigationElement(childPage, defaultPage,
                                 ptree);
                 subpages.addAll(subpageElements);
             }
@@ -392,7 +396,7 @@ public class ProjectImpl extends AbstractProject {
         return this.tgen;
     }
 
-    private Navigation getNavigation() {
+    private SiteMap getNavigation() {
         try {
             return tgen.getNavigation();
         } catch (Exception e) {

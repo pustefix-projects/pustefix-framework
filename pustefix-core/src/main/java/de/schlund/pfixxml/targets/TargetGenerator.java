@@ -160,15 +160,19 @@ public class TargetGenerator implements ResourceVisitor, ServletContextAware {
     //--
 
     public TargetGenerator(final Resource confile, final FileResource cacheDir, final boolean parseIncludes) throws IOException, SAXException, XMLException {
-        this(confile, cacheDir, new SPCacheFactory().init(), new SiteMap(confile));
-        this.parseIncludes = parseIncludes;
+        this(confile, cacheDir, new SPCacheFactory().init(), new SiteMap(confile), parseIncludes);   
     }
     
     public TargetGenerator(final Resource confile, final FileResource cacheDir, final SPCacheFactory cacheFactory, final SiteMap siteMap) throws IOException, SAXException, XMLException {
+        this(confile, cacheDir, cacheFactory, siteMap, true);
+    }
+        
+    public TargetGenerator(final Resource confile, final FileResource cacheDir, final SPCacheFactory cacheFactory, final SiteMap siteMap, final boolean parseIncludes) throws IOException, SAXException, XMLException {
         this.config_path = confile;
         this.cacheDir = cacheDir;
         this.cacheFactory = cacheFactory;
         this.siteMap = siteMap;
+        this.parseIncludes = parseIncludes;
         includeDocumentFactory = new IncludeDocumentFactory(cacheFactory);
         targetDependencyRelation = new TargetDependencyRelation();
         auxDependencyFactory = new AuxDependencyFactory(targetDependencyRelation);
@@ -1216,14 +1220,6 @@ public class TargetGenerator implements ResourceVisitor, ServletContextAware {
         str = str.replace("%" + Integer.toHexString(RENDER_KEY_SEPARATOR), "" + RENDER_KEY_SEPARATOR);
         str = str.replace("%" + Integer.toHexString('%'), "%");
         return str;
-    }
-        
-    private static String[] splitRenderKey(String renderKey) {
-        String[] comps = renderKey.split("" + RENDER_KEY_SEPARATOR);
-        for(int i=0; i<comps.length; i++) {
-            comps[i] = decode(comps[i]);
-        }
-        return comps;
     }
 
 }

@@ -45,8 +45,12 @@ public class TargetGeneratorTest extends TestCase {
 
         TargetGenerator gen;
 
-        gen = create("<make project='foo' lang='bar'><navigation/></make>");
+        gen = create("<make project='foo' lang='bar'></make>");
+        for(String t:gen.getAllTargets().keySet()) {
+            System.out.println(t);
+        }
         assertEquals(0, gen.getAllTargets().size());
+        
         assertEquals("bar", gen.getLanguage());
         assertNotNull(gen.getDisccachedir().toURI().getPath());
     }
@@ -100,7 +104,7 @@ public class TargetGeneratorTest extends TestCase {
         file = File.createTempFile("depend", ".xml", new File("target"));
         file.deleteOnExit();
         Xml.serialize(doc, file, true, true);
-        gen = new TargetGenerator(ResourceUtil.getFileResource(file.toURI()));
+        gen = new TargetGenerator(ResourceUtil.getFileResource(file.toURI()), null, false);
         return gen;
     }
 

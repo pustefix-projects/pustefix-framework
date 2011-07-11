@@ -183,7 +183,7 @@ public class ServiceRuntime {
                     // Prepare context for current thread.
                     // Cleanup is performed in finally block.
                     context.setServerContext(serverContext);
-                    context.prepareForRequest();                                                                                                                                  
+                    context.prepareForRequest(req);                                                                                                                                  
                 } catch(Exception x) {
                     throw new ServiceException("Preparing context failed",x);
                 }

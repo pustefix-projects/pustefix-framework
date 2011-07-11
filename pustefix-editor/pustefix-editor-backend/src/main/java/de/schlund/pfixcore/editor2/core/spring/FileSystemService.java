@@ -28,7 +28,7 @@ import org.pustefixframework.editor.common.exception.EditorIOException;
 import org.w3c.dom.Document;
 import org.xml.sax.SAXException;
 
-import de.schlund.pfixxml.resources.FileResource;
+import de.schlund.pfixxml.resources.Resource;
 
 
 /**
@@ -79,7 +79,7 @@ public interface FileSystemService {
      * @throws ParserConfigurationException
      * @throws FileNotFoundException
      */
-    public Document readCustomizedXMLDocumentFromFile(FileResource file, String namespace)
+    public Document readCustomizedXMLDocumentFromFile(Resource file, String namespace)
             throws FileNotFoundException, SAXException, IOException;
 
     /**
