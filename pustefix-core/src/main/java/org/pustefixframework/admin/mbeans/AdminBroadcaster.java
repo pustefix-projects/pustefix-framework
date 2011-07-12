@@ -27,13 +27,16 @@ public class AdminBroadcaster extends NotificationBroadcasterSupport implements 
     private AtomicLong seqNo = new AtomicLong();
     
     public AdminBroadcaster() {
-        super(new ThreadPoolExecutor(2, 2, 10, TimeUnit.SECONDS, new ArrayBlockingQueue<Runnable>(3)));
+        super(new ThreadPoolExecutor(0, 2, 0, TimeUnit.SECONDS, new ArrayBlockingQueue<Runnable>(3)));
     }
     
     public void reload(String workDir) {
+        ClassLoader current = Thread.currentThread().getContextClassLoader();
+        Thread.currentThread().setContextClassLoader(null);
         Notification notification = new Notification(NOTIFICATION_TYPE_RELOAD, this, seqNo.incrementAndGet());
         notification.setUserData(workDir);
         sendNotification(notification);
+        Thread.currentThread().setContextClassLoader(current);
     }
     
 }
