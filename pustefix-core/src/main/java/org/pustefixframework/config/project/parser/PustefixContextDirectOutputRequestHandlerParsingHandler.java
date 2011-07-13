@@ -55,6 +55,7 @@ import com.marsching.flexiparse.parser.exception.ParserException;
 
 import de.schlund.pfixcore.workflow.ContextImpl;
 import de.schlund.pfixxml.config.includes.IncludesResolver;
+import de.schlund.pfixxml.exceptionprocessor.ExceptionProcessingConfiguration;
 import de.schlund.pfixxml.resources.ResourceUtil;
 import de.schlund.pfixxml.serverutil.SessionAdmin;
 
@@ -139,6 +140,7 @@ public class PustefixContextDirectOutputRequestHandlerParsingHandler extends Cus
         beanBuilder.addPropertyValue("stateMap", new RuntimeBeanReference(mapBeanName));
         beanBuilder.addPropertyValue("configuration", config);
         beanBuilder.addPropertyValue("sessionAdmin", new RuntimeBeanReference(SessionAdmin.class.getName()));
+        beanBuilder.addPropertyValue("exceptionProcessingConfiguration", new RuntimeBeanReference(ExceptionProcessingConfiguration.class.getName()));
         beanDefinition = beanBuilder.getBeanDefinition();
         registry.registerBeanDefinition(nameGenerator.generateBeanName(beanDefinition, registry), beanDefinition);
     }
