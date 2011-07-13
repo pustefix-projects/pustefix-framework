@@ -4,12 +4,12 @@
   <parent>
     <groupId>org.pustefixframework</groupId>
     <artifactId>pustefix-samples</artifactId>
-    <version>0.17.2-SNAPSHOT</version>
+    <version>0.17.2</version>
   </parent>
 
   <groupId>org.pustefixframework</groupId>
   <artifactId>pustefix-numberguess</artifactId>
-  <version>0.17.2-SNAPSHOT</version>
+  <version>0.17.2</version>
   <packaging>war</packaging>
 
   <name>Pustefix Number Guess Sample Application</name>
@@ -18,7 +18,7 @@
     <dependency>
       <groupId>org.pustefixframework</groupId>
       <artifactId>pustefix-core</artifactId>
-      <version>0.17.2-SNAPSHOT</version>
+      <version>0.17.2</version>
     </dependency>
   </dependencies>
  
@@ -27,7 +27,7 @@
       <plugin>
         <groupId>org.pustefixframework.maven.plugins</groupId>
         <artifactId>pustefix-webapp-plugin</artifactId>
-        <version>0.17.2-SNAPSHOT</version>
+        <version>0.17.2</version>
         <executions>
           <execution>
             <goals>
@@ -40,7 +40,7 @@
       <plugin>
         <groupId>org.pustefixframework.maven.plugins</groupId>
         <artifactId>pustefix-statuscode-plugin</artifactId>
-        <version>0.17.2-SNAPSHOT</version>
+        <version>0.17.2</version>
         <executions>
           <execution>
             <goals>
@@ -52,7 +52,7 @@
       <plugin>
         <groupId>org.pustefixframework.maven.plugins</groupId>
         <artifactId>pustefix-iwrapper-plugin</artifactId>
-        <version>0.17.2-SNAPSHOT</version>
+        <version>0.17.2</version>
         <executions>
           <execution>
             <goals>
