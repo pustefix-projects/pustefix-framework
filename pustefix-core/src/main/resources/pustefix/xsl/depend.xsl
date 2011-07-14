@@ -90,6 +90,7 @@
     <xsl:param name="rec">true</xsl:param>
     <xsl:param name="tenant"/>
     <xsl:param name="lang"/>
+    <xsl:param name="pageAlternative"/>
     <xsl:if test="not(@name)">
       <xsl:message terminate="yes">*** standardpage needs to have a "name" attribute given! ***</xsl:message>
     </xsl:if>
@@ -156,6 +157,7 @@
       </xsl:if>
       <xsl:if test="not($tenant='')"><param name="tenant" value="{$tenant}"/></xsl:if>
       <xsl:if test="not($lang='')"><param name="lang" value="{$lang}"/></xsl:if>
+      <xsl:if test="not($pageAlternative='')"><param name="pageAlternative" value="{$pageAlternative}"/></xsl:if>
     </target>
 
     <target name="{$thename}.xml" type="xml">
@@ -187,6 +189,7 @@
       </xsl:if>
       <xsl:if test="not($tenant='')"><param name="tenant" value="{$tenant}"/></xsl:if>
       <xsl:if test="not($lang='')"><param name="lang" value="{$lang}"/></xsl:if>
+      <xsl:if test="not($pageAlternative='')"><param name="pageAlternative" value="{$pageAlternative}"/></xsl:if>
     </target>
     <xsl:variable name="node" select="."/>
     <xsl:if test="$rec='true'">
@@ -206,6 +209,25 @@
           <xsl:with-param name="tenant" select="@tenant"/>
           <xsl:with-param name="lang" select="@lang"/>
         </xsl:apply-templates>
+        <xsl:variable name="varnode" select="."/>
+        <xsl:for-each select="$node/standardpage-variant">
+          <xsl:apply-templates select="$node">
+            <xsl:with-param name="variant">
+              <xsl:choose>
+                <xsl:when test="$node/@variant">
+                  <xsl:value-of select="concat($node/@variant, ':', ., ':', $varnode/text())"/>
+                </xsl:when>
+                <xsl:otherwise>
+                  <xsl:value-of select="concat(., ':', $varnode/text())"/>
+                </xsl:otherwise>
+              </xsl:choose>
+            </xsl:with-param>
+            <xsl:with-param name="rec">false</xsl:with-param>
+            <xsl:with-param name="tenant" select="$varnode/@tenant"/>
+            <xsl:with-param name="lang" select="$varnode/@lang"/>
+            <xsl:with-param name="pageAlternative" select="."/>
+          </xsl:apply-templates>
+        </xsl:for-each>
       </xsl:for-each>
     </xsl:if>
   </xsl:template>

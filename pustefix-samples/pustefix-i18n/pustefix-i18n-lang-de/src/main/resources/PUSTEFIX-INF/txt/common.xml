@@ -39,4 +39,8 @@
     <theme name="default">Allgemeine Geschäftsbedingungen bestätigen</theme>
   </part>
 
+  <part name="infocats">
+    <theme name="default">Kategorien</theme>
+  </part>
+
 </include_parts>

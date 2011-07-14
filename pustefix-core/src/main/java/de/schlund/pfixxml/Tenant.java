@@ -1,11 +1,14 @@
 package de.schlund.pfixxml;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.regex.Pattern;
 
 import javax.servlet.http.HttpServletRequest;
 
+import org.pustefixframework.util.LocaleUtils;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 
@@ -14,6 +17,7 @@ public class Tenant {
     private String name;
     private String defaultLanguage;
     private List<String> supportedLanguages = new ArrayList<String>();
+    private Map<String, String> languageCodeToLanguage = new HashMap<String, String>();
     private Pattern hostPattern;
     
     public Tenant(String name) {
@@ -39,8 +43,13 @@ public class Tenant {
         return supportedLanguages;
     }
     
+    public String getSupportedLanguageByCode(String languageCode) {
+        return languageCodeToLanguage.get(languageCode);
+    }
+    
     public void addSupportedLanguage(String language) {
         supportedLanguages.add(language);
+        languageCodeToLanguage.put(LocaleUtils.getLanguagePart(language), language);
     }
     
     public void setHostPattern(String hostPattern) {

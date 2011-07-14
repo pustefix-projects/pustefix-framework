@@ -2,9 +2,10 @@
 <include_parts xmlns:ixsl="http://www.w3.org/1999/XSL/Transform" xmlns:pfx="http://www.schlund.de/pustefix/core">
   <part name="content">
     <theme name="default">
-    
-      <h3><pfx:include href="txt/common.xml" part="terms"/></h3>
-    
+      <div class="info">
+      <pfx:include href="txt/common.xml" part="info" search="dynamic"/>
+      </div>
     </theme>
   </part>
+ 
 </include_parts>

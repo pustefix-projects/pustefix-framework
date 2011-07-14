@@ -7,4 +7,27 @@
     </theme>
   </part>
 
+  <part name="info">
+    <theme name="default">
+      <pfx:image src="img/cities/Berlin.jpg"/>
+      <pfx:image src="img/mountains/Zugspitze.jpg"/>
+      <pfx:image src="img/nationalparks/BayerischerWald.jpg"/>
+    </theme>
+    <theme name="cities">
+      <pfx:image src="img/cities/Berlin.jpg"/>
+      <pfx:image src="img/cities/Frankfurt.jpg"/>
+      <pfx:image src="img/cities/Muenchen.jpg"/>
+    </theme>
+    <theme name="mountains">
+      <pfx:image src="img/mountains/Zugspitze.jpg"/>
+      <pfx:image src="img/mountains/Brocken.jpg"/>
+      <pfx:image src="img/mountains/Feldberg.jpg"/>
+    </theme>
+    <theme name="nationalparks">
+      <pfx:image src="img/nationalparks/BayerischerWald.jpg"/>
+      <pfx:image src="img/nationalparks/NeuwerkerWatt.jpg"/>
+      <pfx:image src="img/nationalparks/Wimbachgries.jpg"/>
+    </theme>
+  </part>
+
 </include_parts>

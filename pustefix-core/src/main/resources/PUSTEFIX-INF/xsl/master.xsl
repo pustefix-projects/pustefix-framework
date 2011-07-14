@@ -67,6 +67,7 @@
   <!-- Needed for includes to work. Remember to include this in the resulting stylesheet, too! -->
   <xsl:param name="tenant"/>
   <xsl:param name="lang"><cus:lang/></xsl:param>
+  <xsl:param name="pageAlternative"/>
   <xsl:param name="product"><cus:product/></xsl:param>
 
   <xsl:param name="page"/>
@@ -167,6 +168,7 @@
       
       <ixsl:param name="tenant"><xsl:value-of select="$tenant"/></ixsl:param>
       <ixsl:param name="lang"><xsl:value-of select="$lang"/></ixsl:param>
+      <ixsl:param name="pageAlternative"><xsl:value-of select="$pageAlternative"/></ixsl:param>
       <ixsl:param name="page"><xsl:value-of select="$page"/></ixsl:param>
       <ixsl:variable name="product"><xsl:value-of select="$product"/></ixsl:variable>
       <ixsl:variable name="__root" select="/"/>

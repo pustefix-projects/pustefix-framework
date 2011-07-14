@@ -39,6 +39,7 @@ import org.apache.log4j.Logger;
 import org.pustefixframework.config.contextxmlservice.ServletManagerConfig;
 import org.pustefixframework.config.project.SessionTimeoutInfo;
 import org.pustefixframework.container.spring.http.UriProvidingHttpRequestHandler;
+import org.pustefixframework.util.LocaleUtils;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.web.context.ServletContextAware;
 
@@ -76,7 +77,8 @@ public abstract class AbstractPustefixRequestHandler implements SessionTrackingS
     private static final String SESSION_ATTR_REQUEST_COUNT = "__PFX_REQUEST_COUNT__";
     private static final String SESSION_ATTR_ORIGINAL_TIMEOUT = "__PFX_SESSION_ORIGINAL_TIMEOUT__";
     
-    public static final String REQUEST_ATTR_TENANT ="__PFX_TENANT__";
+    public static final String REQUEST_ATTR_TENANT = "__PFX_TENANT__";
+    public static final String REQUEST_ATTR_LANGUAGE = "__PFX_LANGUAGE__";
     
     public static final Logger LOGGER_VISIT = Logger.getLogger("LOGGER_VISIT");
     private static final Logger LOG = Logger.getLogger(AbstractPustefixRequestHandler.class);
@@ -166,6 +168,24 @@ public abstract class AbstractPustefixRequestHandler implements SessionTrackingS
                 matchingTenant = tenantInfo.getTenants().get(0);
             }
             req.setAttribute(REQUEST_ATTR_TENANT, matchingTenant);
+            String matchingLanguage = matchingTenant.getDefaultLanguage();
+            String pathPrefix = req.getPathInfo();
+            int ind = pathPrefix.indexOf('/');
+            if(ind == 0) pathPrefix = pathPrefix.substring(1);
+            ind = pathPrefix.indexOf('/');
+            if(ind > -1) pathPrefix = pathPrefix.substring(0, ind);
+            if(!pathPrefix.equals("")) {
+                if(tenantInfo.isLanguagePrefix(pathPrefix)) {
+                    String language = matchingTenant.getSupportedLanguageByCode(pathPrefix);
+                    if(language != null && !language.equals(matchingTenant.getDefaultLanguage())) {
+                        matchingLanguage = language;
+                    } else {
+                        res.sendError(HttpServletResponse.SC_NOT_FOUND);
+                        return;
+                    }
+                }
+            }
+            req.setAttribute(REQUEST_ATTR_LANGUAGE, matchingLanguage);
         }
             
         if(BotDetector.isBot(req)) {
@@ -354,13 +374,14 @@ public abstract class AbstractPustefixRequestHandler implements SessionTrackingS
         if(ind > -1) {
             String langPart = pageAlias.substring(0, ind);
             String pagePart = pageAlias.substring(ind + 1);
-            //TODO: check tenant / set language
             internalPage = siteMap.getPageName(pagePart, langPart);
         } else {
             Tenant tenant = (Tenant)request.getAttribute(REQUEST_ATTR_TENANT);
             if(tenant != null) {
-                String lang = tenant.getDefaultLanguage();
-                internalPage = siteMap.getPageName(pageAlias, lang);
+                String lang = (String)request.getAttribute(REQUEST_ATTR_LANGUAGE);
+                if(tenant.getSupportedLanguageByCode(pageAlias) == null) {
+                    internalPage = siteMap.getPageName(pageAlias, lang);
+                }
             }
         }
         return internalPage;

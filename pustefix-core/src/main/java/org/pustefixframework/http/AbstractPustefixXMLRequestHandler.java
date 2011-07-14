@@ -852,8 +852,7 @@ public abstract class AbstractPustefixXMLRequestHandler extends AbstractPustefix
                 String[] variants = variant.getVariantFallbackArray();
                 for (int i = 0; i < variants.length; i++) {
                     variant_id = variants[i];
-                    //TODO
-                    //if(spdoc.getBaseVariant() != null) variant_id += ":" + spdoc.getBaseVariant();
+                    if(spdoc.getPageAlternative() != null) variant_id += ":" + spdoc.getPageAlternative();
                     if(spdoc.getTenant() != null) variant_id += ":" + spdoc.getTenant().getName() + "-" + spdoc.getLanguage();
                     LOGGER.info("   ** Trying variant '" + variant_id + "' **");
                     pinfo   = generator.getPageInfoFactory().getPage(pagename, variant_id);
@@ -865,10 +864,16 @@ public abstract class AbstractPustefixXMLRequestHandler extends AbstractPustefix
             }
             if (target == null) {
                 LOGGER.info("   ** Trying root variant **");
-                //TODO
-                String tenant = null;
-                if(spdoc.getTenant() != null) tenant = spdoc.getTenant().getName() + "-" + spdoc.getLanguage();
-                pinfo = generator.getPageInfoFactory().getPage(pagename, tenant);
+                String variantId = null;
+                if(spdoc.getPageAlternative() != null) variantId = spdoc.getPageAlternative();
+                if(spdoc.getTenant() != null) {
+                    if(variantId == null) {
+                        variantId = spdoc.getTenant().getName() + "-" + spdoc.getLanguage();
+                    } else {
+                        variantId += ":" + spdoc.getTenant().getName() + "-" + spdoc.getLanguage();
+                    }
+                }
+                pinfo = generator.getPageInfoFactory().getPage(pagename, variantId);
                 target = pagetree.getTargetForPageInfo(pinfo);
             }
             if (target == null) {

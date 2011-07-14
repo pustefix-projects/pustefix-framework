@@ -62,6 +62,7 @@ public class MockContext implements Context {
     private Variant variant;
     private Tenant tenant;
     private String lang;
+    private String pageAlternativeKey;
     private String visitId;
     private Properties properties;
     private Properties currentPageProperties;
@@ -318,6 +319,10 @@ public class MockContext implements Context {
     
     public void setTenant(Tenant tenant) {
         this.tenant = tenant;
+    }
+    
+    public void setPageAlternative(String key) {
+        pageAlternativeKey = key;
     }
     
 }

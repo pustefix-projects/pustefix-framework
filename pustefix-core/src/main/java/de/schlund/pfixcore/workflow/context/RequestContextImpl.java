@@ -91,6 +91,7 @@ public class RequestContextImpl implements Cloneable, AuthorizationInterceptor {
 
     private Variant             variant             = null;
     private String              language            = null;
+    private String              pageAlternativeKey;
 
     private PageRequest         currentpagerequest  = null;
     private PageFlow            currentpageflow     = null;
@@ -247,7 +248,11 @@ public class RequestContextImpl implements Cloneable, AuthorizationInterceptor {
     public void setLanguage(String lang) {
         language = lang;
     }
-
+    
+    public void setPageAlternative(String key) {
+        pageAlternativeKey = key;
+    }
+    
     public Variant getVariant() {
         return variant;
     }
@@ -368,7 +373,7 @@ public class RequestContextImpl implements Cloneable, AuthorizationInterceptor {
                 currentpagerequest = createPageRequest(defaultPage);
             } else throw new RuntimeException("No defaultpage found!");
         }
-
+System.out.println("CURRENT1: "+currentpagerequest.getName());
         RequestParam reqParam = currentpservreq.getRequestParam(PARAM_ROLEAUTH);
         roleAuth = (reqParam != null && reqParam.isTrue());
         if (roleAuth) {
@@ -481,7 +486,6 @@ public class RequestContextImpl implements Cloneable, AuthorizationInterceptor {
                 LOG.debug("     ...got no matching pageflow for page [" + currentpagerequest.getName() + "]");
             }
         }
-
         SPDocument spdoc = null;
         if(currentpservreq.getRequestParam(AbstractPustefixXMLRequestHandler.PARAM_RENDER_HREF) != null) {
             if(checkIsAccessible(currentpagerequest)) {
@@ -495,7 +499,7 @@ public class RequestContextImpl implements Cloneable, AuthorizationInterceptor {
         }
         
         processIC(parentcontext.getContextConfig().getEndInterceptors());
-
+        
         if (spdoc != null) {
             if (spdoc.getPagename() == null) {
                 spdoc.setPagename(currentpagerequest.getRootName());
@@ -522,6 +526,9 @@ public class RequestContextImpl implements Cloneable, AuthorizationInterceptor {
                 spdoc.setTenant(parentcontext.getTenant());
                 spdoc.setLanguage(getLanguage());
                 parentcontext.getTenant().toXML(spdoc.getDocument().getDocumentElement());
+            }
+            if(pageAlternativeKey != null) {
+                spdoc.setPageAlternative(pageAlternativeKey);
             }
             
             if (spdoc.getResponseError() == 0 && parentcontext.getContextConfig().getPageRequestConfig(spdoc.getPagename()) != null) {

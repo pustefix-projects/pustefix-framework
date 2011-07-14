@@ -267,13 +267,12 @@ public class SiteMap {
                     }
                 }
             }
-            if(page == null) {
-                if(pageList.contains(alias)) {
-                    page = alias;
-                }
-            }
         }
-        return page;
+        if(page != null) {
+            return page;
+        } else {
+            return alias;
+        }
     }
     
     public Element getSiteMapXMLElement(XsltVersion xsltVersion) {

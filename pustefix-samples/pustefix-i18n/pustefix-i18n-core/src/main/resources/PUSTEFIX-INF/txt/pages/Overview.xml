@@ -12,6 +12,25 @@
         </pfx:forminput>
      </div>
       
+     <div class="categories">
+      
+     <div><pfx:include href="txt/common.xml" part="infocats" search="dynamic"/>:</div>
+      
+     <pfx:button page="Info">
+       <pfx:argument name="category">cities</pfx:argument>
+       <pfx:image src="img/cities/thumb.jpg" search="dynamic"/>
+     </pfx:button>
+     <pfx:button page="Info">
+       <pfx:argument name="category">mountains</pfx:argument>
+       <pfx:image src="img/mountains/thumb.jpg" search="dynamic"/>
+     </pfx:button>
+     <pfx:button page="Info">
+       <pfx:argument name="category">nationalparks</pfx:argument>
+       <pfx:image src="img/nationalparks/thumb.jpg" search="dynamic"/>
+     </pfx:button>
+      
+     </div>
+      
     </theme>
   </part>
 </include_parts>

@@ -233,7 +233,7 @@ public class PustefixContextXMLRequestHandler extends AbstractPustefixXMLRequest
             if (spdoc != null && !spdoc.isRedirect() && 
                     ( (preq.getPageName() == null && !context.getContextConfig().getDefaultPage(context.getVariant()).equals(spdoc.getPagename()))
                       || (preq.getPageName() != null && !preq.getPageName().equals(spdoc.getPagename())) )) {
-                
+                System.out.println("REDIRECT " + preq.getPageName() + " " + spdoc.getPagename());
                 // Make sure all requests that don't encode an explicite pagename
                 // (this normally is only the case for the first request)
                 // OR pages that have the "wrong" pagename in their request 

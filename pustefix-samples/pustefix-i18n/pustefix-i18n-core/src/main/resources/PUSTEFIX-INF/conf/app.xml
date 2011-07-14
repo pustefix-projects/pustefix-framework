@@ -15,6 +15,12 @@
     <resource bean-name="contextTermsInfo" class="org.pustefixframework.samples.i18n.context.TermsInfo"/>
   </context>
 
+  <interceptors>
+    <start>
+      <interceptor class="org.pustefixframework.samples.i18n.interceptor.PageAlternativeInterceptor"/>
+    </start>
+  </interceptors>
+
   <pageflow name="MainFlow" final="Home">
     <flowstep name="Home"/>
     <flowstep name="Overview"/>

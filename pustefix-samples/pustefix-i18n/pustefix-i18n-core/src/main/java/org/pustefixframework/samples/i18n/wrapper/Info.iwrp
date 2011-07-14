@@ -5,6 +5,8 @@
   
   <ihandler class="org.pustefixframework.samples.i18n.handler.InfoHandler"/>
 
-  <param name="accepted" type="java.lang.Boolean" occurrence="mandatory"/>
+  <param name="accepted" type="java.lang.Boolean" occurrence="mandatory">
+    <default><value>false</value></default>
+  </param>
 
 </interface>

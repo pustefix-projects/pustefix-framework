@@ -27,6 +27,9 @@ public class LocaleUtils {
         System.out.println(getLocale("en_US"));
         System.out.println(getLanguagePart("en_US"));
         System.out.println(getLanguagePart("en"));
+        Locale locale = new Locale("en", "DE");
+        System.out.println("*" + locale.getCountry());
+        System.out.println("#"+ locale.getLanguage());
     }
     
 }

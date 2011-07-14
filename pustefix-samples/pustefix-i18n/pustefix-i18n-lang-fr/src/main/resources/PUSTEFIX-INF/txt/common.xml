@@ -39,4 +39,8 @@
     <theme name="default">Confirmer les conditions générales</theme>
   </part>
   
+  <part name="infocats">
+    <theme name="default">Catégories</theme>
+  </part>
+  
 </include_parts>

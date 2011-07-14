@@ -75,6 +75,8 @@ public interface Context extends PageFlowContext {
     
     void setLanguage(String lang);
     String getLanguage();
+    
+    void setPageAlternative(String key);
 
     void addCookie(Cookie cookie);
     Cookie[] getRequestCookies();

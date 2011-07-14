@@ -208,6 +208,10 @@ public class ContextImpl implements AccessibilityChecker, ExtendedContext, Token
         }
     }
 
+    public void setPageAlternative(String key) {
+        getRequestContextForCurrentThreadWithError().setPageAlternative(key);
+    }
+    
     public void setVariant(Variant variant) {
         getRequestContextForCurrentThreadWithError().setVariantForThisRequestOnly(variant);
         sessioncontext.setVariant(variant);
@@ -270,6 +274,10 @@ public class ContextImpl implements AccessibilityChecker, ExtendedContext, Token
                     throw new PustefixRuntimeException("Illegal tenant switch");
                 }
             }
+        }
+        String matchingLanguage = (String)req.getAttribute(AbstractPustefixRequestHandler.REQUEST_ATTR_LANGUAGE);
+        if(matchingLanguage != null) {
+            setLanguage(matchingLanguage);
         }
         String langParam = req.getParameter("__language");
         if(langParam != null && langParam.length() > 0) {

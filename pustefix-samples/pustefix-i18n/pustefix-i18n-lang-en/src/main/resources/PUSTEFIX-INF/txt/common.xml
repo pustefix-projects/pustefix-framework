@@ -39,4 +39,8 @@
     <theme name="default">Accept terms and conditions</theme>
   </part>
   
+  <part name="infocats">
+    <theme name="default">Categories</theme>
+  </part>
+  
 </include_parts>

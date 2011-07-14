@@ -47,6 +47,7 @@ public class SPDocument {
     private String    pagename       = null;
     private Variant   variant        = null;
     private Tenant tenant;
+    private String pageAlternativeKey;
     private String language;
     private String    xslkey         = null;
     private long      timestamp      = System.currentTimeMillis();
@@ -92,6 +93,14 @@ public class SPDocument {
 
     public Tenant getTenant() {
         return tenant;
+    }
+    
+    public void setPageAlternative(String key) {
+        pageAlternativeKey = key;
+    }
+    
+    public String getPageAlternative() {
+        return pageAlternativeKey;
     }
 
 //    public void setNostore(boolean nostore) {

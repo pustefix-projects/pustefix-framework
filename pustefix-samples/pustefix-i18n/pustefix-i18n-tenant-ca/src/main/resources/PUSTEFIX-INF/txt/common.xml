@@ -7,4 +7,27 @@
     </theme>
   </part>
   
+  <part name="info">
+    <theme name="default">
+      <pfx:image src="img/cities/Montreal.jpg"/>
+      <pfx:image src="img/mountains/MountLogan.jpg"/>
+      <pfx:image src="img/nationalparks/SpiritIsland.jpg"/>
+    </theme>
+    <theme name="cities">
+      <pfx:image src="img/cities/Montreal.jpg"/>
+      <pfx:image src="img/cities/Toronto.jpg"/>
+      <pfx:image src="img/cities/Vancouver.jpg"/>
+    </theme>
+    <theme name="mountains">
+      <pfx:image src="img/mountains/MountLogan.jpg"/>
+      <pfx:image src="img/mountains/MountRobson.jpg"/>
+      <pfx:image src="img/mountains/MountWaddington.jpg"/>
+    </theme>
+    <theme name="nationalparks">
+      <pfx:image src="img/nationalparks/SpiritIsland.jpg"/>
+      <pfx:image src="img/nationalparks/FundyNationalPark.jpg"/>
+      <pfx:image src="img/nationalparks/KluaneIcefield.jpg"/>
+    </theme>
+  </part>
+  
 </include_parts>

@@ -27,9 +27,9 @@
   <auto-standardpage lookup-path="txt/pages" lookup-module="" xml="xml/frame.xml"/>
 
   <standardpage name="Info" xml="xml/frame.xml">
-    <standardpage-variant>cooking</standardpage-variant>
-    <standardpage-variant>garden</standardpage-variant>
-    <standardpage-variant>living</standardpage-variant>
+    <standardpage-variant>cities</standardpage-variant>
+    <standardpage-variant>nationalparks</standardpage-variant>
+    <standardpage-variant>mountains</standardpage-variant>
   </standardpage>
 
 </make>

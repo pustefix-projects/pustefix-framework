@@ -60,6 +60,11 @@ div.rightcol {
 	padding-left: 40px;
 }
 
+div.rightcol h3 {
+	padding-top: 0px;
+    margin-top: 0px;
+}
+
 div.form {
 	padding-top: 10px;
 }
@@ -71,7 +76,8 @@ div.form input {
 }
 
 div#navi {
-  padding-bottom: 20px;	
+  padding-top: 10px;
+  padding-bottom: 40px;	
   color: white;
 }
 
@@ -86,6 +92,7 @@ div#navi span {
 }
 
 div#terms {
+	padding-top: 10px;
 	color:white;
 }
 div#terms input {
@@ -133,3 +140,32 @@ div.activelang {
    zoom: 1;
 }
 
+div.categories {
+	padding-top: 10px;
+}
+
+div.categories a {
+	padding-right: 10px;
+}
+
+div.categories span {
+    padding-right: 10px;
+    opacity: 0.4;
+   filter: alpha(opacity=40);
+   zoom: 1;
+}
+
+div.categories div {
+	color: white;
+	padding-bottom: 5px;
+}
+
+div.info {
+	
+}
+
+div.info img {
+	padding: 1px;
+	border: 0px;
+	background: white;
+}

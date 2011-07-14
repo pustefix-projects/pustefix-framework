@@ -6,5 +6,28 @@
       the United States of America
     </theme>
   </part>
+  
+  <part name="info">
+    <theme name="default">
+      <pfx:image src="img/cities/NewYork.jpg"/>
+      <pfx:image src="img/mountains/MountWhitney.jpg"/>
+      <pfx:image src="img/nationalparks/Zion.jpg"/>
+    </theme>
+    <theme name="cities">
+      <pfx:image src="img/cities/NewYork.jpg"/>
+      <pfx:image src="img/cities/Washington.jpg"/>
+      <pfx:image src="img/cities/LosAngeles.jpg"/>
+    </theme>
+    <theme name="mountains">
+      <pfx:image src="img/mountains/MountRainier.jpg"/>
+      <pfx:image src="img/mountains/MountWhitney.jpg"/>
+      <pfx:image src="img/mountains/RockyMountains.jpg"/>
+    </theme>
+    <theme name="nationalparks">
+      <pfx:image src="img/nationalparks/GrandCanyon.jpg"/>
+      <pfx:image src="img/nationalparks/Yellowstone.jpg"/>
+      <pfx:image src="img/nationalparks/Zion.jpg"/>
+    </theme>
+  </part>
 
 </include_parts>

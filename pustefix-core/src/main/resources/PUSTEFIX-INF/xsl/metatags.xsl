@@ -24,6 +24,7 @@
   
   <xsl:param name="tenant"/>
   <xsl:param name="lang"><cus:lang/></xsl:param>
+  <xsl:param name="pageAlternative"/>
   <xsl:variable name="product"><cus:product/></xsl:variable>
   
 </xsl:stylesheet>
