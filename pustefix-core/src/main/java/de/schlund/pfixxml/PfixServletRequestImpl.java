@@ -505,7 +505,6 @@ public class PfixServletRequestImpl implements PfixServletRequest {
                 internalPageName = pageAliasResolver.getPageName(pageName, request);
             }
         }
-        System.out.println("INTERRNAL: "+internalPageName);
         return internalPageName;
     }
     

@@ -3,7 +3,7 @@
   <alias page="Home">Start</alias>
   <alias page="Overview">Uebersicht</alias>
   <alias page="Info">Information</alias>
-  <alias page="Living">Wohnen</alias>
-  <alias page="Garden">Garten</alias>
-  <alias page="Kitchen">Kueche</alias>
+  <alias page="Cities">Staedte</alias>
+  <alias page="NationalParks">Nationalparks</alias>
+  <alias page="Mountains">Berge</alias>
 </sitemap-aliases>

@@ -551,13 +551,6 @@ public class TargetGenerator implements ResourceVisitor, ServletContextAware {
                 renderParams.put(name, value);
             }
         }
-
-        try {
-            XMLUtils.serialize(config);
-        } catch (Exception e1) {
-            // TODO Auto-generated catch block
-            e1.printStackTrace();
-        }
         
         Element root = (Element) config.getElementsByTagName("make").item(0);
         

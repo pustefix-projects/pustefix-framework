@@ -11,10 +11,10 @@
       	  <div class="langsel">
       	    <ixsl:choose>
       	      <ixsl:when test="text() = $lang">
+      	        <ixsl:attribute name="class">langsel activelang</ixsl:attribute>
       	        <pfx:include href="txt/common.xml" part="langdesc"/>
       	      </ixsl:when>
       	      <ixsl:otherwise>
-      	        <ixsl:attribute name="class">langsel activelang</ixsl:attribute>
       	        <a href="/{pfx:__omitPage($page,text())}{$__sessionIdPath}">
       	          <pfx:include href="txt/common.xml" part="langdesc"/>
       	        </a>

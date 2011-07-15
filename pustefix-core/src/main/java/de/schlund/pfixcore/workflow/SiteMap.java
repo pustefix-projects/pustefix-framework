@@ -25,6 +25,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -60,15 +61,13 @@ public class SiteMap {
     
     private Set<Resource> fileDependencies = new HashSet<Resource>();
     private long loadTime = 0;
-
-    private Set<String> topLevelPages = new HashSet<String>();
-    
     
     private Document siteMapDoc;
     private Element siteMapXMLElement = null;
     
     
     private List<Page> pageList;
+    private Map<String, Page> pageNameToPage;
     private Map<String, Map<String, String>> aliasMaps;
     private Map<String, Map<String, String>> pageMaps;
     
@@ -163,10 +162,12 @@ public class SiteMap {
     
     private void readSiteMap(Element siteMapElem) {
         pageList = new ArrayList<Page>();
+        pageNameToPage = new HashMap<String, Page>();
         List<Element> pageElems = DOMUtils.getChildElementsByTagName(siteMapElem, "page");
         for(Element pageElem: pageElems) {
             Page page = readPage(pageElem);
             pageList.add(page);
+            pageNameToPage.put(page.name, page);
         }
     }
     
@@ -177,7 +178,7 @@ public class SiteMap {
         for(Element childAlt: childAlts) {
             String altKey = childAlt.getAttribute("key");
             String altName = childAlt.getAttribute("name");
-            page.pageAlts.add(new PageAlt(altKey, altName));
+            page.pageAlts.put(altKey, altName);
         }
         List<Element> childPages = DOMUtils.getChildElementsByTagName(pageElem, "page");
         for(Element childPage: childPages) {
@@ -219,9 +220,9 @@ public class SiteMap {
         for(Page child: page.pages) {
             addPage(child, elem, lang);
         }
-        for(PageAlt child: page.pageAlts) {
+        for(String pageAltKey: page.pageAlts.keySet()) {
             Element altElem = (Element)elem.cloneNode(true);
-            altElem.setAttribute("name", getAlias(child.name, lang));
+            altElem.setAttribute("name", getAlias(page.pageAlts.get(pageAltKey), lang));
             parent.appendChild(altElem);
         }
     }
@@ -248,6 +249,23 @@ public class SiteMap {
             }
         }
         return name;
+    }
+    
+    public String getAlias(String name, String lang, String pageAlternativeKey) {
+        String pageName = name;
+        String altPageName = getPageAlternative(name, pageAlternativeKey);
+        if(altPageName != null) {
+            pageName = altPageName;
+        }
+        return getAlias(pageName, lang);
+    }
+    
+    private String getPageAlternative(String pageName, String pageAlternativeKey) {
+        Page page = pageNameToPage.get(pageName);
+        if(page != null) {
+            return page.pageAlts.get(pageAlternativeKey);
+        }
+        return null;
     }
     
     public String getPageName(String alias, String lang) {
@@ -288,21 +306,9 @@ public class SiteMap {
         
         String name;
         List<Page> pages = new ArrayList<Page>();
-        List<PageAlt> pageAlts = new ArrayList<PageAlt>();
+        Map<String, String> pageAlts = new LinkedHashMap<String, String>();
     
         Page(String name) {
-            this.name = name;
-        }
-        
-    }
-    
-    class PageAlt {
-        
-        String key;
-        String name;
-        
-        PageAlt(String key, String name) {
-            this.key = key;
             this.name = name;
         }
         

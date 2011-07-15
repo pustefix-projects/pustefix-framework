@@ -373,7 +373,6 @@ public class RequestContextImpl implements Cloneable, AuthorizationInterceptor {
                 currentpagerequest = createPageRequest(defaultPage);
             } else throw new RuntimeException("No defaultpage found!");
         }
-System.out.println("CURRENT1: "+currentpagerequest.getName());
         RequestParam reqParam = currentpservreq.getRequestParam(PARAM_ROLEAUTH);
         roleAuth = (reqParam != null && reqParam.isTrue());
         if (roleAuth) {
