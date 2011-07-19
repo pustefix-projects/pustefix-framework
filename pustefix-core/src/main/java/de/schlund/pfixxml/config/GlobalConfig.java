@@ -28,6 +28,8 @@ import de.schlund.pfixxml.resources.ResourceProviderRegistry;
 import de.schlund.pfixxml.resources.internal.DocrootResourceByServletContextProvider;
 import de.schlund.pfixxml.resources.internal.DocrootResourceOnFileSystemProvider;
 
+import org.apache.log4j.Logger;
+
 /**
  * Provides access to global (shared between all application within an environment)
  * Pustefix settings. Settings can be changed through 
@@ -37,6 +39,7 @@ import de.schlund.pfixxml.resources.internal.DocrootResourceOnFileSystemProvider
  */
 public class GlobalConfig {
     
+    private static Logger LOG = Logger.getLogger(GlobalConfig.class);
     private static String docroot = null;
     private static URL docrootURL = null;
     private static ServletContext servletContext = null;
@@ -60,7 +63,7 @@ public class GlobalConfig {
     static void setDocroot(String path) {
         if (docroot != null || servletContext != null) {
             if(path.equals(docroot)) return;
-            throw new IllegalStateException("Docroot or servlet context may only be set once!");
+            LOG.warn("Docroot or servlet context should only be set once!");
         }
         docroot = path;
         ResourceProviderRegistry.register(new DocrootResourceOnFileSystemProvider(docroot));

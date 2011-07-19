@@ -142,7 +142,9 @@ public class PustefixInit {
     	            GlobalConfigurator.setDocroot(docrootstr);
     	        }
     	    }
-    	}
+    	} else {
+            GlobalConfigurator.setDocroot(docrootstr);
+        }
     
     	// override environment properties by according context init parameters
     	Enumeration<?> names = servletContext.getInitParameterNames();

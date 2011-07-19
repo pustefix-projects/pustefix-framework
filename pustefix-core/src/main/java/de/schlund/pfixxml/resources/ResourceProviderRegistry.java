@@ -20,6 +20,8 @@ package de.schlund.pfixxml.resources;
 import java.util.HashMap;
 import java.util.Map;
 
+import org.apache.log4j.Logger;
+
 /**
  * 
  * @author mleidig@schlund.de
@@ -27,6 +29,7 @@ import java.util.Map;
  */
 public class ResourceProviderRegistry {
     
+    private static Logger LOG = Logger.getLogger(ResourceProviderRegistry.class);
     private static Map<String, ResourceProvider> resourceProviders = new HashMap<String, ResourceProvider>();
     
     static {
@@ -48,7 +51,7 @@ public class ResourceProviderRegistry {
         String[] schemes = resourceProvider.getSupportedSchemes();
         for(String scheme : schemes) {
             if(resourceProviders.containsKey(scheme)) 
-                throw new RuntimeException("ResourceProvider for scheme '" + scheme + "' is already registered.");
+                LOG.warn("ResourceProvider for scheme '" + scheme + "' is already registered.");
             resourceProviders.put(scheme, resourceProvider);
         }
     }
