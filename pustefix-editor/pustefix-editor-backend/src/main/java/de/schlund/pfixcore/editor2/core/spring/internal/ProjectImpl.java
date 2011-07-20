@@ -166,7 +166,7 @@ public class ProjectImpl extends AbstractProject {
         // Create hierarchical tree of pages
         PageTargetTree ptree = gen.getPageTargetTree();
         HashSet<Page> pages = new HashSet<Page>();
-        List<Element>  navElements = DOMUtils.getChildElementsByTagName(navi.getSiteMapXMLElement(XsltVersion.XSLT1), "page");
+        List<Element>  navElements = DOMUtils.getChildElementsByTagName(navi.getSiteMapXMLElement(XsltVersion.XSLT1, null), "page");
         for (Element navElement : navElements) {
             pages.addAll(this.recurseNavigationElement(navElement, null,
                     ptree));

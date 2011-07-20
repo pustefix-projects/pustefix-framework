@@ -32,8 +32,6 @@ import org.springframework.test.context.junit38.AbstractJUnit38SpringContextTest
 import org.springframework.web.context.request.RequestContextHolder;
 import org.springframework.web.context.request.ServletRequestAttributes;
 
-import de.schlund.pfixxml.serverutil.SessionHelper;
-
 @ContextConfiguration(loader=PustefixWebApplicationContextLoader.class,locations={
     "docroot:/WEB-INF/project.xml", "docroot:/WEB-INF/spring.xml"})
 public class HomePageTest extends AbstractJUnit38SpringContextTests {
@@ -46,7 +44,7 @@ public class HomePageTest extends AbstractJUnit38SpringContextTests {
     
     public void testPageRequest() throws Exception {
         MockHttpServletRequest req = new MockHttpServletRequest();
-        req.setPathInfo("/home");
+        req.setPathInfo("/");
         req.setMethod("GET");
         MockHttpServletResponse res = new MockHttpServletResponse();
         MockHttpSession session = new MockHttpSession(servletContext);
@@ -55,7 +53,6 @@ public class HomePageTest extends AbstractJUnit38SpringContextTests {
         session.setAttribute(AbstractPustefixRequestHandler.VISIT_ID, "foo");
         
         requestHandler.handleRequest(req, res);
-        System.out.println(res.getStatus());
         Assert.assertTrue(res.getContentAsString(), res.getContentAsString().contains("<title>Pustefix Sample</title>"));
     }
 

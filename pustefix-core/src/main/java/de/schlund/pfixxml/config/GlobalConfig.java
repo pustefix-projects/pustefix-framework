@@ -24,6 +24,8 @@ import java.net.URL;
 
 import javax.servlet.ServletContext;
 
+import org.apache.log4j.Logger;
+
 import de.schlund.pfixxml.resources.ResourceProviderRegistry;
 import de.schlund.pfixxml.resources.internal.DocrootResourceByServletContextProvider;
 import de.schlund.pfixxml.resources.internal.DocrootResourceOnFileSystemProvider;
@@ -36,6 +38,8 @@ import de.schlund.pfixxml.resources.internal.DocrootResourceOnFileSystemProvider
  * @author Sebastian Marsching <sebastian.marsching@1und1.de>
  */
 public class GlobalConfig {
+    
+    private static Logger LOG = Logger.getLogger(GlobalConfig.class);
     
     private static String docroot = null;
     private static URL docrootURL = null;
@@ -60,7 +64,7 @@ public class GlobalConfig {
     static void setDocroot(String path) {
         if (docroot != null || servletContext != null) {
             if(path.equals(docroot)) return;
-            throw new IllegalStateException("Docroot or servlet context may only be set once!");
+            LOG.warn("Docroot or servlet context may only be set once!");
         }
         docroot = path;
         ResourceProviderRegistry.register(new DocrootResourceOnFileSystemProvider(docroot));
