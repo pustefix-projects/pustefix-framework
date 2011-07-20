@@ -28,6 +28,7 @@ import javax.servlet.http.HttpSessionBindingListener;
 
 import org.pustefixframework.config.contextxmlservice.ContextConfig;
 import org.pustefixframework.config.contextxmlservice.PageRequestConfig;
+import org.pustefixframework.config.project.ProjectInfo;
 import org.pustefixframework.http.AbstractPustefixRequestHandler;
 
 import de.schlund.pfixcore.auth.Authentication;
@@ -96,6 +97,10 @@ public class ContextImpl implements AccessibilityChecker, ExtendedContext, Token
         return getServerContext().getContextConfig();
     }
 
+    public ProjectInfo getProjectInfo() {
+        return getServerContext().getProjectInfo();
+    }
+    
     public ContextResourceManager getContextResourceManager() {
         return sessioncontext.getContextResourceManager();
     }
@@ -278,6 +283,10 @@ public class ContextImpl implements AccessibilityChecker, ExtendedContext, Token
         String matchingLanguage = (String)req.getAttribute(AbstractPustefixRequestHandler.REQUEST_ATTR_LANGUAGE);
         if(matchingLanguage != null) {
             setLanguage(matchingLanguage);
+        }
+        String pageAltKey = (String)req.getAttribute(AbstractPustefixRequestHandler.REQUEST_ATTR_PAGE_ALTERNATIVE);
+        if(pageAltKey != null) {
+            setPageAlternative(pageAltKey);
         }
         String langParam = req.getParameter("__language");
         if(langParam != null && langParam.length() > 0) {

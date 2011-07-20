@@ -207,10 +207,17 @@
       <name>Sonatype Nexus Staging Repository</name>
       <url>https://oss.sonatype.org/service/local/staging/deploy/maven2/</url>
     </repository>
+<!--
     <snapshotRepository>
       <id>sonatype-nexus-snapshots</id>
       <name>Sonatype Nexus Snapshots Repository</name>
       <url>https://oss.sonatype.org/content/repositories/snapshots/</url>
+    </snapshotRepository>
+-->
+    <snapshotRepository>
+      <id>1und1-snapshots</id>
+      <name>1und1-snapshots</name>
+      <url>http://mavenrepo.united.domain:8081/nexus/content/repositories/1und1-snapshots</url>
     </snapshotRepository>
     <site>
       <id>pustefix</id>

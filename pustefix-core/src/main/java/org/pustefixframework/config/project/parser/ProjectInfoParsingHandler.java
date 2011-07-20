@@ -18,10 +18,13 @@
 
 package org.pustefixframework.config.project.parser;
 
+import java.util.List;
+
 import org.pustefixframework.config.Constants;
 import org.pustefixframework.config.customization.CustomizationAwareParsingHandler;
 import org.pustefixframework.config.generic.ParsingUtils;
 import org.pustefixframework.config.project.ProjectInfo;
+import org.pustefixframework.util.xml.DOMUtils;
 import org.w3c.dom.Element;
 import org.w3c.dom.NodeList;
 
@@ -47,6 +50,17 @@ public class ProjectInfoParsingHandler extends CustomizationAwareParsingHandler 
             if(!name.equals("")) projectInfo.setProjectName(name);
         }
       
+        List<Element> langElems = DOMUtils.getChildElementsByTagNameNS((Element)context.getNode(), Constants.NS_PROJECT, "lang");
+        for(Element langElem: langElems) {
+            String lang = langElem.getTextContent().trim();
+            if(lang.length() > 0) {
+                projectInfo.addSupportedLanguage(lang);
+                if(langElem.getAttribute("default").equalsIgnoreCase("true")) {
+                    projectInfo.setDefaultLanguage(lang);
+                }
+            }
+        }
+        
     }
 
 }

@@ -32,7 +32,7 @@ table.header td.logo { vertical-align: middle; width: 100px; }
 table.header td.name { vertical-align: middle; font-size: 50px; font-style: italic; }
 table.header td.name div.desc { font-size: 15px; }
 table.header td.name div.name { font-size: 25px; }
-table.header td.navi { vertical-align: middle; font-size: 140%; padding-left: 30px; }
+table.header td.navi { vertical-align: middle; font-size: 140%; padding-left: 80px; }
 table.header td.rev { text-align: right; color: #aaa; }
 
 div.test { border: 1px solid black; padding: 20px; margin: 10px; }

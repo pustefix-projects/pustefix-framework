@@ -7,7 +7,6 @@
     version="1.0">
   
   <global-config>
-    <defaultstate class="org.pustefixframework.samples.i18n.state.InfoState"/>
   </global-config>
 
   <context defaultpage="Home">
@@ -41,6 +40,10 @@
       <resource node="user" bean-ref="contextUser"/>
       <resource node="terms" bean-ref="contextTermsInfo"/>
     </output>
+  </pagerequest>
+
+  <pagerequest name="Info">
+    <state class="org.pustefixframework.samples.i18n.state.InfoState"/>
   </pagerequest>
 
 </context-xml-service-config>

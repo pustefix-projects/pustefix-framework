@@ -14,11 +14,33 @@
             <pfx:image src="img/logo.png"/>
           </td>
           <td class="name">
-            <div class="desc">Pustefix playground webapp</div>
+            <div class="desc">
+              <pfx:langselect>
+                <pfx:lang name="en_*">Pustefix playground webapp</pfx:lang>
+                <pfx:lang name="de_*">Pustefix Spielwiese</pfx:lang>
+              </pfx:langselect>
+            </div>
             <div class="name"><pfx:include part="appname"/></div>
           </td>
           <td class="navi"><pfx:include href="txt/navigation.xml" part="top"/></td>
-          <td class="rev">Powered by Pustefix Framework <ixsl:value-of select="pfx:getFrameworkVersion()"/></td>
+           <td class="langchoice">
+      	     <pfx:langselect>
+      	       <pfx:lang name="en_*">
+      	         <span>English</span><br/>
+      	         <a href="/{pfx:__omitPage($page,text())}{$__sessionIdPath}?__language=de_DE">Deutsch</a>
+      	       </pfx:lang>
+      	       <pfx:lang name="de_*">
+      	         <a href="/{pfx:__omitPage($page,text())}{$__sessionIdPath}?__language=en_UK">English</a><br/>
+      	         <span>Deutsch</span>
+      	       </pfx:lang>
+      	     </pfx:langselect>
+          </td>	
+          <td class="rev">
+            <pfx:langselect>
+              <pfx:lang name="en_*">Powered by Pustefix Framework</pfx:lang>
+              <pfx:lang name="de_*">Erstellt mit dem Pustefix Framework</pfx:lang>
+            </pfx:langselect>
+            <ixsl:text> </ixsl:text><ixsl:value-of select="pfx:getFrameworkVersion()"/></td>
         </tr>
       </table>
     </theme>

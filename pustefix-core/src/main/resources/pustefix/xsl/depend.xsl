@@ -193,15 +193,15 @@
     </target>
     <xsl:variable name="node" select="."/>
     <xsl:if test="$rec='true'">
-      <xsl:for-each select="/make/standardpage-variant">
+      <xsl:for-each select="/make/standardpage-alternative">
         <xsl:apply-templates select="$node">
           <xsl:with-param name="variant">
             <xsl:choose>
               <xsl:when test="$node/@variant">
-                <xsl:value-of select="concat($node/@variant, ':', .)"/>
+                <xsl:value-of select="concat($node/@variant, ':', @tenant, '-', @lang)"/>
               </xsl:when>
               <xsl:otherwise>
-                <xsl:value-of select="."/>
+                <xsl:value-of select="concat(@tenant, '-', @lang)"/>
               </xsl:otherwise>
             </xsl:choose>
           </xsl:with-param>
@@ -210,15 +210,15 @@
           <xsl:with-param name="lang" select="@lang"/>
         </xsl:apply-templates>
         <xsl:variable name="varnode" select="."/>
-        <xsl:for-each select="$node/standardpage-variant">
+        <xsl:for-each select="$node/standardpage-alternative">
           <xsl:apply-templates select="$node">
             <xsl:with-param name="variant">
               <xsl:choose>
                 <xsl:when test="$node/@variant">
-                  <xsl:value-of select="concat($node/@variant, ':', ., ':', $varnode/text())"/>
+                  <xsl:value-of select="concat($node/@variant, ':', ., ':', $varnode/@tenant, '-', $varnode/@lang)"/>
                 </xsl:when>
                 <xsl:otherwise>
-                  <xsl:value-of select="concat(., ':', $varnode/text())"/>
+                  <xsl:value-of select="concat(., ':', $varnode/@tenant, '-', $varnode/@lang)"/>
                 </xsl:otherwise>
               </xsl:choose>
             </xsl:with-param>

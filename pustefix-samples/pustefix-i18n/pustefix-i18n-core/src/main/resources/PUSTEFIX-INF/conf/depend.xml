@@ -19,17 +19,17 @@
   	<include stylesheet="xsl/metatags.xsl"/>
   </standardmetatags>
   
-  <standardpage-variant tenant="US_market" lang="en_US">US_market-en_US</standardpage-variant>
-  <standardpage-variant tenant="CA_market" lang="en_CA">CA_market-en_CA</standardpage-variant>
-  <standardpage-variant tenant="CA_market" lang="fr_CA">CA_market-fr_CA</standardpage-variant>
-  <standardpage-variant tenant="DE_market" lang="de_DE">DE_market-de_DE</standardpage-variant>
+  <standardpage-alternative tenant="US_market" lang="en_US"/>
+  <standardpage-alternative tenant="CA_market" lang="en_CA"/>
+  <standardpage-alternative tenant="CA_market" lang="fr_CA"/>
+  <standardpage-alternative tenant="DE_market" lang="de_DE"/>
 
   <auto-standardpage lookup-path="txt/pages" lookup-module="" xml="xml/frame.xml"/>
 
   <standardpage name="Info" xml="xml/frame.xml">
-    <standardpage-variant>cities</standardpage-variant>
-    <standardpage-variant>nationalparks</standardpage-variant>
-    <standardpage-variant>mountains</standardpage-variant>
+    <standardpage-alternative>cities</standardpage-alternative>
+    <standardpage-alternative>nationalparks</standardpage-alternative>
+    <standardpage-alternative>mountains</standardpage-alternative>
   </standardpage>
 
 </make>

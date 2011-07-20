@@ -36,6 +36,7 @@ import org.apache.log4j.Logger;
 import org.pustefixframework.config.contextxmlservice.IWrapperConfig;
 import org.pustefixframework.config.contextxmlservice.PageRequestConfig;
 import org.pustefixframework.config.contextxmlservice.ProcessActionPageRequestConfig;
+import org.pustefixframework.config.project.ProjectInfo;
 import org.pustefixframework.http.BotDetector;
 import org.pustefixframework.util.FrameworkInfo;
 import org.pustefixframework.util.LocaleUtils;
@@ -412,7 +413,9 @@ public class TransformerCallback {
             ContextImpl context = requestContext.getParentContext();
             String langPrefix = "";
             Tenant tenant = context.getTenant();
-            if(tenant != null && !lang.equals(tenant.getDefaultLanguage())) {
+            ProjectInfo projectInfo = context.getProjectInfo();
+            if((tenant != null && !lang.equals(tenant.getDefaultLanguage())) ||
+                    (tenant == null && projectInfo.getSupportedLanguages().size() > 1 && !lang.equals(projectInfo.getDefaultLanguage()))) {
                 langPrefix = LocaleUtils.getLanguagePart(lang);
             }
             String defaultPage = context.getContextConfig().getDefaultPage(context.getVariant());

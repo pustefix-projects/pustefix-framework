@@ -6,10 +6,10 @@
   xsi:schemaLocation="http://www.pustefix-framework.org/2008/namespace/config-fragments
                       http://www.pustefix-framework.org/2008/namespace/config-fragments.xsd">
 
-  <fr:navigation>
+  <fr:sitemap>
     <page name="SelectAnimal" handler="/xml/main"/>
     <page name="DisplayAnimal" handler="/xml/main"/>
-  </fr:navigation>
+  </fr:sitemap>
   
   <fr:targets>
     <standardpage name="SelectAnimal" xml="xml/frame.xml" module="common-module"/>

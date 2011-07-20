@@ -32,6 +32,7 @@ import org.pustefixframework.config.contextxmlservice.StateConfig;
 import org.pustefixframework.config.contextxmlservice.parser.internal.ContextConfigImpl;
 import org.pustefixframework.config.contextxmlservice.parser.internal.ContextXMLServletConfigImpl;
 import org.pustefixframework.config.generic.ParsingUtils;
+import org.pustefixframework.config.project.ProjectInfo;
 import org.springframework.aop.scope.ScopedProxyUtils;
 import org.springframework.beans.factory.config.BeanDefinition;
 import org.springframework.beans.factory.config.BeanDefinitionHolder;
@@ -53,7 +54,6 @@ import de.schlund.pfixcore.workflow.ContextResourceManagerImpl;
 import de.schlund.pfixcore.workflow.PageMap;
 import de.schlund.pfixcore.workflow.State;
 import de.schlund.pfixcore.workflow.context.ServerContextImpl;
-import de.schlund.pfixxml.TenantInfo;
 
 /**
  * 
@@ -191,6 +191,8 @@ public class ContextXMLParsingHandler implements ParsingHandler {
             beanBuilder.setInitMethodName("init");
             beanBuilder.addPropertyReference("config", contextConfigBeanName);
             beanBuilder.addPropertyReference("pageMap", pageMapBeanName);
+            ProjectInfo projectInfo = ParsingUtils.getSingleTopObject(ProjectInfo.class, context);
+            beanBuilder.addPropertyValue("projectInfo", projectInfo);
             beanDefinition = beanBuilder.getBeanDefinition();
             beanHolder = new BeanDefinitionHolder(beanDefinition, ServerContextImpl.class.getName() );
             context.getObjectTreeElement().addObject(beanHolder);

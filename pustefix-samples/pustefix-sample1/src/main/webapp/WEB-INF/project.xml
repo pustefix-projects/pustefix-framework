@@ -7,6 +7,8 @@
   <project>
     <name>sample1</name>
     <description>Sample1 Application</description>
+    <lang default="true">en_UK</lang>
+    <lang>de_DE</lang>
   </project>
   
   <editor>

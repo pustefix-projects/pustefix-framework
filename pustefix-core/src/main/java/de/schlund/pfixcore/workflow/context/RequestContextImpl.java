@@ -523,8 +523,10 @@ public class RequestContextImpl implements Cloneable, AuthorizationInterceptor {
             }
             if(parentcontext.getTenant() != null) {
                 spdoc.setTenant(parentcontext.getTenant());
-                spdoc.setLanguage(getLanguage());
                 parentcontext.getTenant().toXML(spdoc.getDocument().getDocumentElement());
+            }
+            if(language != null) {
+                spdoc.setLanguage(language);
             }
             if(pageAlternativeKey != null) {
                 spdoc.setPageAlternative(pageAlternativeKey);

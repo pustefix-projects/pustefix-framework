@@ -8,6 +8,8 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import org.pustefixframework.config.project.ProjectInfo;
+
 import de.schlund.pfixxml.TenantInfo;
 import de.schlund.pfixxml.serverutil.SessionAdmin;
 
@@ -37,6 +39,7 @@ public class SessionHandlingTestServlet extends HttpServlet {
         handler.setSessionTrackingStrategy(strategy);
         handler.setServletContext(getServletContext());
         handler.setTenantInfo(new TenantInfo());
+        handler.setProjectInfo(new ProjectInfo(null));
         try {
             handler.init();
         } catch(ServletException x) {

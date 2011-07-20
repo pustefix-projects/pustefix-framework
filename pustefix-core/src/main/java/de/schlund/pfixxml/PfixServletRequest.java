@@ -225,4 +225,6 @@ public interface PfixServletRequest {
      */
     public String getPageName();
 
+    public String getRequestedPageName();
+    
 }

@@ -42,6 +42,7 @@
         <table cellpadding="4" cellspacing="0" style="padding-left:20px;">
         <tr>
         <td style="border-bottom: 1px solid black;">Page name</td>
+        <td style="border-bottom: 1px solid black;">Alias</td>
         <td style="border-bottom: 1px solid black;">Visited?</td>
         <td style="border-bottom: 1px solid black;">Accessible?</td>
         <td style="border-bottom: 1px solid black;">Authorized?</td></tr>
@@ -112,6 +113,9 @@
     <tr>
       <td>  
         <xsl:value-of select="$ind"/><xsl:value-of select="@name"/>
+      </td>
+      <td>
+        <xsl:value-of select="@alias"/>
       </td>
       <td align="center" style="font-family: sans;"><xsl:copy-of select="$visited"/></td>
       <td align="center"><xsl:copy-of select="$visible"/></td>

@@ -19,6 +19,7 @@
 package org.pustefixframework.http;
 
 import java.io.ByteArrayOutputStream;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 import java.util.SortedSet;
@@ -230,55 +231,53 @@ public class PustefixContextXMLRequestHandler extends AbstractPustefixXMLRequest
                 spdoc = context.handleRequest(preq);
             }
             
-            String expectedPageName = null;
-            if (spdoc != null && !spdoc.isRedirect()) {
-                if(spdoc.getPageAlternative() != null) {
-                    
-                    String alt = siteMap.getAlias(spdoc.getPagename(), spdoc.getLanguage(), spdoc.getPageAlternative());
-                    System.out.println(">>>>>>>>>> PAGE ALTERNATIVE: " + spdoc.getPageAlternative() + " "+ alt);
-                }
-            }
-            
-            if (spdoc != null && !spdoc.isRedirect() && 
-                    ( (preq.getPageName() == null && !context.getContextConfig().getDefaultPage(context.getVariant()).equals(spdoc.getPagename()))
-                      || (preq.getPageName() != null && !preq.getPageName().equals(spdoc.getPagename())) )) {
-                System.out.println("REDIRECT " + preq.getPageName() + " " + spdoc.getPagename());
-                // Make sure all requests that don't encode an explicite pagename
-                // (this normally is only the case for the first request)
-                // OR pages that have the "wrong" pagename in their request 
-                // (this applies to pages selected by stepping ahead in the page flow)
-                // are redirected to the page selected by the business logic below
-                String scheme = preq.getScheme();
-                String port = String.valueOf(preq.getServerPort());
-                String sessionIdPath = "";
-                HttpSession session = preq.getSession(false);
-                if(session.getAttribute(AbstractPustefixRequestHandler.SESSION_ATTR_COOKIE_SESSION) == null) {
-                    sessionIdPath = ";jsessionid=" + session.getId();
-                }
-                String langPrefix = "";
+            if(spdoc != null && !spdoc.isRedirect()) {
+                String expectedPageName = null;
+                String langPrefix = null;
                 Tenant tenant = spdoc.getTenant();
-                if(tenant != null && !spdoc.getLanguage().equals(tenant.getDefaultLanguage())) {
+                if((tenant != null && !spdoc.getLanguage().equals(tenant.getDefaultLanguage())) ||
+                        tenant == null && projectInfo.getSupportedLanguages().size() > 1 && !spdoc.getLanguage().equals(projectInfo.getDefaultLanguage())) {
                     langPrefix = LocaleUtils.getLanguagePart(spdoc.getLanguage());
                 }
-                String alias = siteMap.getAlias(spdoc.getPagename(), spdoc.getLanguage());
-                if(langPrefix.length() > 0) {
-                    alias = langPrefix + "/" + alias;
+                if(context.getContextConfig().getDefaultPage(context.getVariant()).equals(spdoc.getPagename())) {
+                    expectedPageName = langPrefix;
+                } else {
+                    String alias = siteMap.getAlias(spdoc.getPagename(), spdoc.getLanguage(), spdoc.getPageAlternative());
+                    if(langPrefix != null) {
+                        alias = langPrefix + "/" + alias;
+                    }
+                    expectedPageName = alias;
                 }
-                String redirectURL = scheme + "://" + getServerName(preq.getRequest()) 
-                    + ":" + port + preq.getContextPath() + preq.getServletPath() + "/" + alias 
-                    + sessionIdPath + "?__reuse=" + spdoc.getTimestamp();
-                RequestParam rp = preq.getRequestParam("__frame");
-                if (rp != null && rp.getValue() != null && !rp.getValue().equals("")) {
-                    redirectURL += "&__frame=" + rp.getValue();
+                String requestedPageName = preq.getRequestedPageName();
+                if( ( expectedPageName != null  && !expectedPageName.equals(requestedPageName)) ||
+                    ( expectedPageName == null && requestedPageName != null)) { 
+                    // Make sure all requests that don't encode an explicite pagename
+                    // (this normally is only the case for the first request)
+                    // OR pages that have the "wrong" pagename in their request 
+                    // (this applies to pages selected by stepping ahead in the page flow)
+                    // are redirected to the page selected by the business logic below
+                    String scheme = preq.getScheme();
+                    String port = String.valueOf(preq.getServerPort());
+                    String sessionIdPath = "";
+                    HttpSession session = preq.getSession(false);
+                    if(session.getAttribute(AbstractPustefixRequestHandler.SESSION_ATTR_COOKIE_SESSION) == null) {
+                        sessionIdPath = ";jsessionid=" + session.getId();
+                    }
+                    String redirectURL = scheme + "://" + getServerName(preq.getRequest()) 
+                        + ":" + port + preq.getContextPath() + preq.getServletPath() + "/" 
+                        + (expectedPageName == null ? "" : expectedPageName)
+                        + sessionIdPath + "?__reuse=" + spdoc.getTimestamp();
+                    RequestParam rp = preq.getRequestParam("__frame");
+                    if (rp != null && rp.getValue() != null && !rp.getValue().equals("")) {
+                        redirectURL += "&__frame=" + rp.getValue();
+                    }
+                    rp = preq.getRequestParam("__lf");
+                    if (rp != null) {
+                    	redirectURL += "&__lf=" + rp.getValue();
+                    }
+                    spdoc.setRedirect(redirectURL);
                 }
-                rp = preq.getRequestParam("__lf");
-                if (rp != null) {
-                	redirectURL += "&__lf=" + rp.getValue();
-                }
-                spdoc.setRedirect(redirectURL);
-
             }
-            
             return spdoc;
         } finally {
             ((ContextImpl) context).cleanupAfterRequest();
@@ -389,27 +388,62 @@ public class PustefixContextXMLRequestHandler extends AbstractPustefixXMLRequest
         SiteMap siteMap = generator.getNavigation();
         
         //add page mappings for standardpages
+        Set<String> processedPages = new HashSet<String>();
         Set<PageInfo> pageInfos = generator.getPageTargetTree().getPageInfos();
         for(PageInfo pageInfo: pageInfos) {
             uris.add("/" + pageInfo.getName());
-            //TODO: get alias names and regsiter
-            for(Tenant tenant: tenantInfo.getTenants()) {
-                for(String supportedLanguage: tenant.getSupportedLanguages()) {
-                    String langPart = LocaleUtils.getLanguagePart(supportedLanguage);
-                    String pathPrefix = "";
-                    if(!supportedLanguage.equals(tenant.getDefaultLanguage())) {
-                        pathPrefix = langPart + "/";
+            if(!processedPages.contains(pageInfo.getName())) {
+                processedPages.add(pageInfo.getName());
+                if(!tenantInfo.getTenants().isEmpty()) {
+                    for(Tenant tenant: tenantInfo.getTenants()) {
+                        for(String supportedLanguage: tenant.getSupportedLanguages()) {
+                            String langPart = LocaleUtils.getLanguagePart(supportedLanguage);
+                            String pathPrefix = "";
+                            if(!supportedLanguage.equals(tenant.getDefaultLanguage())) {
+                                pathPrefix = langPart + "/";
+                            }
+                            String alias = siteMap.getAlias(pageInfo.getName(), supportedLanguage);
+                            uris.add("/" + pathPrefix + alias);
+                            List<String> pageAltAliases = siteMap.getPageAlternativeAliases(pageInfo.getName(), supportedLanguage);
+                            if(pageAltAliases != null) {
+                                for(String pageAltAlias: pageAltAliases) {
+                                    uris.add("/" + pathPrefix + pageAltAlias);
+                                }
+                            }
+                        }
                     }
-                    String alias = siteMap.getAlias(pageInfo.getName(), supportedLanguage);
-                    uris.add("/" + pathPrefix + alias);
+                } else if(projectInfo.getSupportedLanguages().size() > 1) {
+                    for(String supportedLanguage: projectInfo.getSupportedLanguages()) {
+                        String langPart = LocaleUtils.getLanguagePart(supportedLanguage);
+                        String pathPrefix = "";
+                        if(!supportedLanguage.equals(projectInfo.getDefaultLanguage())) {
+                            pathPrefix = langPart + "/";
+                        }
+                        String alias = siteMap.getAlias(pageInfo.getName(), supportedLanguage);
+                        uris.add("/" + pathPrefix + alias);
+                        List<String> pageAltAliases = siteMap.getPageAlternativeAliases(pageInfo.getName(), supportedLanguage);
+                        if(pageAltAliases != null) {
+                            for(String pageAltAlias: pageAltAliases) {
+                                uris.add("/" + pathPrefix + pageAltAlias);
+                            }
+                        }
+                    }
                 }
             }
         }
         
         //add lang default page mappings
-        for(Tenant tenant: tenantInfo.getTenants()) {
-            for(String supportedLanguage: tenant.getSupportedLanguages()) {
-                if(!supportedLanguage.equals(tenant.getDefaultLanguage())) {
+        if(!tenantInfo.getTenants().isEmpty()) {
+            for(Tenant tenant: tenantInfo.getTenants()) {
+                for(String supportedLanguage: tenant.getSupportedLanguages()) {
+                    if(!supportedLanguage.equals(tenant.getDefaultLanguage())) {
+                        uris.add("/" + LocaleUtils.getLanguagePart(supportedLanguage));
+                    }
+                }
+            }
+        } else if(projectInfo.getSupportedLanguages().size() > 1) {
+            for(String supportedLanguage: projectInfo.getSupportedLanguages()) {
+                if(!supportedLanguage.equals(projectInfo.getDefaultLanguage())) {
                     uris.add("/" + LocaleUtils.getLanguagePart(supportedLanguage));
                 }
             }

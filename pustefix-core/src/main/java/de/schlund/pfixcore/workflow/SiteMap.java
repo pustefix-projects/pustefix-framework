@@ -60,16 +60,16 @@ import de.schlund.pfixxml.util.XsltVersion;
 public class SiteMap {
     
     private Set<Resource> fileDependencies = new HashSet<Resource>();
-    private long loadTime = 0;
     
     private Document siteMapDoc;
-    private Element siteMapXMLElement = null;
-    
+    private Map<String, Document> langToDoc = new HashMap<String, Document>();
     
     private List<Page> pageList;
     private Map<String, Page> pageNameToPage;
     private Map<String, Map<String, String>> aliasMaps;
     private Map<String, Map<String, String>> pageMaps;
+    private Map<String, Page> pageAlternativeToPage;
+    private Map<String, Page> pageAliasToPage;
     
     public SiteMap(Resource siteMapFile) throws IOException, SAXException, XMLException {
        
@@ -80,7 +80,6 @@ public class SiteMap {
         
         if(siteMapFile.exists()) {
         
-        loadTime = System.currentTimeMillis();
         Document navitree = Xml.parseMutable(siteMapFile);
         
         IncludesResolver iresolver = new IncludesResolver(null, "config-include");
@@ -163,22 +162,31 @@ public class SiteMap {
     private void readSiteMap(Element siteMapElem) {
         pageList = new ArrayList<Page>();
         pageNameToPage = new HashMap<String, Page>();
+        pageAlternativeToPage = new HashMap<String, Page>();
+        pageAliasToPage = new HashMap<String, Page>();
         List<Element> pageElems = DOMUtils.getChildElementsByTagName(siteMapElem, "page");
         for(Element pageElem: pageElems) {
             Page page = readPage(pageElem);
             pageList.add(page);
-            pageNameToPage.put(page.name, page);
         }
     }
     
     private Page readPage(Element pageElem) {
         String name = pageElem.getAttribute("name").trim();
         Page page = new Page(name);
+        pageNameToPage.put(page.name, page);
+        String alias = pageElem.getAttribute("alias").trim();
+        if(alias.length() > 0) {
+            page.alias = alias;
+            pageAliasToPage.put(alias, page);
+        }
         List<Element> childAlts = DOMUtils.getChildElementsByTagName(pageElem, "alt");
         for(Element childAlt: childAlts) {
             String altKey = childAlt.getAttribute("key");
             String altName = childAlt.getAttribute("name");
-            page.pageAlts.put(altKey, altName);
+            page.pageAltKeyToName.put(altKey, altName);
+            page.pageNameToAltKey.put(altName, altKey);
+            pageAlternativeToPage.put(altName, page);
         }
         List<Element> childPages = DOMUtils.getChildElementsByTagName(pageElem, "page");
         for(Element childPage: childPages) {
@@ -215,21 +223,23 @@ public class SiteMap {
     
     private void addPage(Page page, Element parent, String lang) {
         Element elem = parent.getOwnerDocument().createElement("page");
-        elem.setAttribute("name", getAlias(page.name, lang));
+        elem.setAttribute("name", page.name);
+        String alias = getAlias(page.name, lang);
+        if(!page.name.equals(alias)) elem.setAttribute("alias", alias);
         parent.appendChild(elem);
+        for(String pageAltKey: page.pageAltKeyToName.keySet()) {
+            Element altElem = parent.getOwnerDocument().createElement("alt");
+            altElem.setAttribute("name", getAlias(page.pageAltKeyToName.get(pageAltKey), lang));
+            elem.appendChild(altElem);
+        }
         for(Page child: page.pages) {
             addPage(child, elem, lang);
-        }
-        for(String pageAltKey: page.pageAlts.keySet()) {
-            Element altElem = (Element)elem.cloneNode(true);
-            altElem.setAttribute("name", getAlias(page.pageAlts.get(pageAltKey), lang));
-            parent.appendChild(altElem);
         }
     }
     
     public String getAlias(String name, String lang) {
+        String alias = null;
         if(lang != null) {
-            String alias = null;
             Map<String, String> aliases = aliasMaps.get(lang);
             if(aliases != null) {
                 alias = aliases.get(name);
@@ -244,32 +254,56 @@ public class SiteMap {
                     }
                 }
             }
-            if(alias != null) {
-                name = alias;
+        }
+        if(alias == null) {
+            Page page = pageNameToPage.get(name);
+            if(page != null && page.alias != null) {
+                alias = page.alias;
             }
         }
-        return name;
+        if(alias != null) {
+            return alias;
+        } else {
+            return name;
+        }
     }
     
     public String getAlias(String name, String lang, String pageAlternativeKey) {
-        String pageName = name;
-        String altPageName = getPageAlternative(name, pageAlternativeKey);
-        if(altPageName != null) {
-            pageName = altPageName;
+        if(pageAlternativeKey == null) {
+            return getAlias(name, lang);
+        } else {
+            String pageName = name;
+            String altPageName = getPageAlternative(name, pageAlternativeKey);
+            if(altPageName != null) {
+                pageName = altPageName;
+            }
+            return getAlias(pageName, lang);
         }
-        return getAlias(pageName, lang);
     }
     
     private String getPageAlternative(String pageName, String pageAlternativeKey) {
         Page page = pageNameToPage.get(pageName);
         if(page != null) {
-            return page.pageAlts.get(pageAlternativeKey);
+            return page.pageAltKeyToName.get(pageAlternativeKey);
         }
         return null;
     }
     
-    public String getPageName(String alias, String lang) {
+    public List<String> getPageAlternativeAliases(String name, String lang) {
+        Page page = pageNameToPage.get(name);
+        if(page != null && page.pageAltKeyToName.size() > 0) {
+            List<String> aliases = new ArrayList<String>();
+            for(String pageAltKey: page.pageAltKeyToName.keySet()) {
+                aliases.add(getAlias(name, lang, pageAltKey));
+            }
+            return aliases;
+        }
+        return null;
+    }
+    
+    public PageLookupResult getPageName(String alias, String lang) {
         String page = null;
+        String aliasKey = null;
         if(lang != null) {
             Map<String, String> pages = pageMaps.get(lang);
             if(pages != null) {
@@ -286,32 +320,66 @@ public class SiteMap {
                 }
             }
         }
-        if(page != null) {
-            return page;
-        } else {
-            return alias;
+        if(page == null) {
+            Page p = pageAliasToPage.get(alias);
+            if(p != null) page = p.name;
+            if (page == null) page = alias;
         }
+        Page pageAlt = pageAlternativeToPage.get(page);
+        if(pageAlt != null) {
+            aliasKey = pageAlt.pageNameToAltKey.get(page);
+            page = pageAlt.name;
+        }
+        return new PageLookupResult(page, aliasKey);
     }
     
-    public Element getSiteMapXMLElement(XsltVersion xsltVersion) {
-        if(siteMapXMLElement == null) {
-            // We need a Saxon node here
-            siteMapXMLElement = Xml.parse(xsltVersion, siteMapDoc).getDocumentElement();
+    public Element getSiteMapXMLElement(XsltVersion xsltVersion, String language) {
+        Document doc = null;
+        synchronized(langToDoc) {
+            doc = langToDoc.get(language + "@" + xsltVersion);
         }
-        return siteMapXMLElement;
+        if(doc == null) {
+            doc = Xml.parse(xsltVersion, getDocument(language));
+            synchronized(langToDoc) {
+                langToDoc.put(language + "@" + xsltVersion, doc);
+            }
+        }
+        return doc.getDocumentElement();
     }
     
     
     class Page {
         
         String name;
+        String alias;
         List<Page> pages = new ArrayList<Page>();
-        Map<String, String> pageAlts = new LinkedHashMap<String, String>();
-    
+        Map<String, String> pageAltKeyToName = new LinkedHashMap<String, String>();
+        Map<String, String> pageNameToAltKey = new HashMap<String, String>();
+        
         Page(String name) {
             this.name = name;
         }
         
+    }
+    
+    public class PageLookupResult {
+        
+        PageLookupResult(String pageName, String pageAlternativeKey) {
+            this.pageName = pageName;
+            this.pageAlternativeKey = pageAlternativeKey;
+        }
+        
+        String pageName;
+        String pageAlternativeKey;
+        
+        public String getPageName() {
+            return pageName;
+        }
+        
+        public String getPageAlternativeKey() {
+            return pageAlternativeKey;
+        }
+    
     }
 
 }

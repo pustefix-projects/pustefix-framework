@@ -808,7 +808,7 @@ public abstract class AbstractPustefixXMLRequestHandler extends AbstractPustefix
         }
         paramhash.put(TargetGenerator.XSLPARAM_TG, generator);
         paramhash.put(TargetGenerator.XSLPARAM_TKEY, VALUE_NONE);
-        paramhash.put(TargetGenerator.XSLPARAM_NAVITREE, generator.getNavigation().getSiteMapXMLElement(generator.getXsltVersion()));
+        paramhash.put(TargetGenerator.XSLPARAM_NAVITREE, generator.getNavigation().getSiteMapXMLElement(generator.getXsltVersion(), spdoc.getLanguage()));
         paramhash.put(XSLPARAM_EDITOR_INCLUDE_PARTS_EDITABLE_BY_DEFAULT, Boolean.toString(includePartsEditableByDefault));
 
         String session_to_link_from_external = getSessionAdmin().getExternalSessionId(session);
