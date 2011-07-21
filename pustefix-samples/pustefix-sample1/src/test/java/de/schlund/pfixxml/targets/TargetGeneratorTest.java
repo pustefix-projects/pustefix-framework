@@ -105,6 +105,7 @@ public class TargetGeneratorTest extends TestCase {
         file.deleteOnExit();
         Xml.serialize(doc, file, true, true);
         gen = new TargetGenerator(ResourceUtil.getFileResource(file.toURI()), null, false);
+        gen.afterPropertiesSet();
         return gen;
     }
 
@@ -116,6 +117,7 @@ public class TargetGeneratorTest extends TestCase {
             FileResource res = ResourceUtil.getFileResource(new File(GlobalConfig.guessDocroot(), "WEB-INF/depend.xml").toURI());
             TargetGenerator generator = new TargetGenerator(res);
             generator.setIsGetModTimeMaybeUpdateSkipped(true);
+            generator.afterPropertiesSet();
             TreeSet<Target> topTargets = generator.getPageTargetTree().getToplevelTargets();
             final Target[] targets = new Target[topTargets.size()];
             Iterator<Target> it = topTargets.iterator();
