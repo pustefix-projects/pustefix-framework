@@ -398,7 +398,7 @@ public class ProjectImpl extends AbstractProject {
 
     private SiteMap getNavigation() {
         try {
-            return tgen.getNavigation();
+            return tgen.getSiteMap();
         } catch (Exception e) {
             throw new RuntimeException(
                     "Could not get navigation object for prokec \""

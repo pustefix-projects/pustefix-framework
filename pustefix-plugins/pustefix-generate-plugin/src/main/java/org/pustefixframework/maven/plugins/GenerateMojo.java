@@ -87,7 +87,7 @@ public class GenerateMojo extends AbstractMojo {
         if (warDir == null) {
             throw new MojoExecutionException("Can't find project WAR directory in target folder");
         }
-
+        
         File cache = new File(warDir, ".cache");
 
         URLClassLoader loader = getProjectRuntimeClassLoader();
@@ -95,13 +95,13 @@ public class GenerateMojo extends AbstractMojo {
         try {
             Class<?> generator = Class.forName("de.schlund.pfixxml.targets.TargetGeneratorRunner", true, loader);
             Method meth =
-                    generator.getMethod("run", File.class, File.class, File.class, File.class, String.class,
+                    generator.getMethod("run", File.class, File.class, String.class,
                             Writer.class, String.class);
             Object instance = generator.newInstance();
             StringWriter output = new StringWriter();
             Thread.currentThread().setContextClassLoader(loader);
             boolean ok =
-                    (Boolean) meth.invoke(instance, docroot, config, projectConfig, cache, "prod", output, loglevel);
+                    (Boolean) meth.invoke(instance, docroot, cache, "prod", output, loglevel);
             getLog().info(output.toString());
             if (!ok)
                 throw new MojoExecutionException("Target generation errors occurred.");

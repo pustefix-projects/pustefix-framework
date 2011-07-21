@@ -215,8 +215,10 @@ public class SiteMap {
         Document doc = Xml.createDocument();
         Element root = doc.createElement("sitemap");
         doc.appendChild(root);
-        for(Page page: pageList) {
-            addPage(page, root, lang);
+        if(pageList != null) {
+            for(Page page: pageList) {
+                addPage(page, root, lang);
+            }
         }
         return doc;
     }
@@ -240,25 +242,29 @@ public class SiteMap {
     public String getAlias(String name, String lang) {
         String alias = null;
         if(lang != null) {
-            Map<String, String> aliases = aliasMaps.get(lang);
-            if(aliases != null) {
-                alias = aliases.get(name);
-            }
-            if(alias == null) {
-                int ind = lang.indexOf('_');
-                if(ind > -1) {
-                    lang = lang.substring(0, ind);
-                    aliases = aliasMaps.get(lang);
-                    if(aliases != null) {
-                        alias = aliases.get(name);
+            if(aliasMaps != null) {
+                Map<String, String> aliases = aliasMaps.get(lang);
+                if(aliases != null) {
+                    alias = aliases.get(name);
+                }
+                if(alias == null) {
+                    int ind = lang.indexOf('_');
+                    if(ind > -1) {
+                        lang = lang.substring(0, ind);
+                        aliases = aliasMaps.get(lang);
+                        if(aliases != null) {
+                            alias = aliases.get(name);
+                        }
                     }
                 }
             }
         }
         if(alias == null) {
-            Page page = pageNameToPage.get(name);
-            if(page != null && page.alias != null) {
-                alias = page.alias;
+            if(pageNameToPage != null) {
+                Page page = pageNameToPage.get(name);
+                if(page != null && page.alias != null) {
+                    alias = page.alias;
+                }
             }
         }
         if(alias != null) {
@@ -321,14 +327,18 @@ public class SiteMap {
             }
         }
         if(page == null) {
-            Page p = pageAliasToPage.get(alias);
-            if(p != null) page = p.name;
+            if(pageAliasToPage != null) {
+                Page p = pageAliasToPage.get(alias);
+                if(p != null) page = p.name;
+            }
             if (page == null) page = alias;
         }
-        Page pageAlt = pageAlternativeToPage.get(page);
-        if(pageAlt != null) {
-            aliasKey = pageAlt.pageNameToAltKey.get(page);
-            page = pageAlt.name;
+        if(pageAlternativeToPage != null) {
+            Page pageAlt = pageAlternativeToPage.get(page);
+            if(pageAlt != null) {
+                aliasKey = pageAlt.pageNameToAltKey.get(page);
+                page = pageAlt.name;
+            }
         }
         return new PageLookupResult(page, aliasKey);
     }

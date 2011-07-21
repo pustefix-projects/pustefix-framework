@@ -27,10 +27,10 @@
       	     <pfx:langselect>
       	       <pfx:lang name="en_*">
       	         <span>English</span><br/>
-      	         <a href="/{pfx:__omitPage($page,text())}{$__sessionIdPath}?__language=de_DE">Deutsch</a>
+      	         <a href="{$__contextpath}/{pfx:__omitPage($page,text())}{$__sessionIdPath}?__language=de_DE">Deutsch</a>
       	       </pfx:lang>
       	       <pfx:lang name="de_*">
-      	         <a href="/{pfx:__omitPage($page,text())}{$__sessionIdPath}?__language=en_UK">English</a><br/>
+      	         <a href="{$__contextpath}/{pfx:__omitPage($page,text())}{$__sessionIdPath}?__language=en_UK">English</a><br/>
       	         <span>Deutsch</span>
       	       </pfx:lang>
       	     </pfx:langselect>

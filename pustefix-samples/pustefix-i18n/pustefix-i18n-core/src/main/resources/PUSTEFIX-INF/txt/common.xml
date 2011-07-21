@@ -15,7 +15,7 @@
       	        <pfx:include href="txt/common.xml" part="langdesc"/>
       	      </ixsl:when>
       	      <ixsl:otherwise>
-      	        <a href="/{pfx:__omitPage($page,text())}{$__sessionIdPath}">
+      	          <a href="{$__contextpath}/{pfx:__omitPage($page,text())}{$__sessionIdPath}">
       	          <pfx:include href="txt/common.xml" part="langdesc"/>
       	        </a>
       	      </ixsl:otherwise>
@@ -28,7 +28,7 @@
   
   <part name="langdesc">
     <theme name="default">
-      <img class="langflag" src="/modules/pustefix-i18n-lang-{$langonly}/img/flag-24x24.png" width="24" height="24"/>
+      <img class="langflag" src="{$__contextpath}/modules/pustefix-i18n-lang-{$langonly}/img/flag-24x24.png" width="24" height="24"/>
       <ixsl:call-template name="pfx:include">
         <ixsl:with-param name="href">txt/common.xml</ixsl:with-param>
       	<ixsl:with-param name="part">langname</ixsl:with-param>

@@ -385,7 +385,7 @@ public class PustefixContextXMLRequestHandler extends AbstractPustefixXMLRequest
             uris.add("/" + page.getPageName());
         }
         
-        SiteMap siteMap = generator.getNavigation();
+        SiteMap siteMap = generator.getSiteMap();
         
         //add page mappings for standardpages
         Set<String> processedPages = new HashSet<String>();

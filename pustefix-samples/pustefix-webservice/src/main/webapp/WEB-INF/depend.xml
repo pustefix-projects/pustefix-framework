@@ -16,16 +16,6 @@
     <namespace-declaration prefix="ixsl" url="http://www.w3.org/1999/XSL/Transform"/>
   </namespaces>
   
-  <navigation>
-    <page name="calculator"/>
-    <page name="chat"/>
-    <page name="counter"/>
-    <page name="data"/>
-    <page name="typetest"/>
-    <page name="calltest"/>
-    <page name="beantest"/>
-  </navigation>
-
   <standardmaster>
     <!-- <include stylesheet="xsl/skin.xsl"/> -->
   </standardmaster>

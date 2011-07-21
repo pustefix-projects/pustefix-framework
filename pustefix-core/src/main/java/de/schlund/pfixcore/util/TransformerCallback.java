@@ -422,7 +422,7 @@ public class TransformerCallback {
             if(defaultPage.equals(pageName)) {
                 return langPrefix;
             } else {
-                String alias = gen.getNavigation().getAlias(pageName, lang);
+                String alias = gen.getSiteMap().getAlias(pageName, lang);
                 if(langPrefix.length() > 0) {
                     alias = langPrefix + "/" + alias;
                 }
@@ -436,7 +436,7 @@ public class TransformerCallback {
     
     public static String getPageAlias(TargetGenerator gen, String pageName, String lang) throws Exception {
         try {
-            return gen.getNavigation().getAlias(pageName, lang);
+            return gen.getSiteMap().getAlias(pageName, lang);
         } catch (Exception x) {
             ExtensionFunctionUtils.setExtensionFunctionError(x);
             throw x;

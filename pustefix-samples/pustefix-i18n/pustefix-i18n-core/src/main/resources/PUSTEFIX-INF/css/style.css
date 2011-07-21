@@ -2,7 +2,7 @@
 
 body {
   margin: 10px;
-  background: #fff url(/modules/pustefix-i18n-core/img/background.png) 0 0 repeat-x;
+  background: #fff url(../img/background.png) 0 0 repeat-x;
   color: #000;
   font-family: 'Lucida Grande', 'Lucida Sans Unicode', Verdana, sans-serif;
   margin: 0;

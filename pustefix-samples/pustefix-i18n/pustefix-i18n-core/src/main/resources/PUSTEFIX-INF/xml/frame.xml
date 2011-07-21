@@ -19,13 +19,13 @@
       </div>
   
       <div id="footer">
-        <a href="http://ca.{$fqdn}:8080/">
+        <a href="http://ca.{$fqdn}:8080{$__contextpath}">
           <pfx:image src="img/flag-24x24.png" module="pustefix-i18n-tenant-ca"/>
         </a>
-        <a href="http://de.{$fqdn}:8080/">
+        <a href="http://de.{$fqdn}:8080{$__contextpath}">
           <pfx:image src="img/flag-24x24.png" module="pustefix-i18n-tenant-de"/>
         </a>
-        <a href="http://us.{$fqdn}:8080/">
+        <a href="http://us.{$fqdn}:8080{$__contextpath}">
           <pfx:image src="img/flag-24x24.png" module="pustefix-i18n-tenant-us"/>
         </a> 
       </div>
