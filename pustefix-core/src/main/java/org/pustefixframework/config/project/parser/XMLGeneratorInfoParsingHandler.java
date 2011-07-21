@@ -23,6 +23,7 @@ import org.pustefixframework.config.generic.ParsingUtils;
 import org.pustefixframework.config.project.ProjectInfo;
 import org.springframework.beans.factory.config.BeanDefinition;
 import org.springframework.beans.factory.config.BeanDefinitionHolder;
+import org.springframework.beans.factory.config.RuntimeBeanNameReference;
 import org.springframework.beans.factory.support.BeanDefinitionBuilder;
 import org.springframework.beans.factory.support.BeanDefinitionRegistry;
 import org.w3c.dom.Element;
@@ -31,6 +32,7 @@ import com.marsching.flexiparse.parser.HandlerContext;
 import com.marsching.flexiparse.parser.exception.ParserException;
 
 import de.schlund.pfixcore.workflow.SiteMap;
+import de.schlund.pfixxml.TenantInfo;
 import de.schlund.pfixxml.config.EnvironmentProperties;
 import de.schlund.pfixxml.resources.Resource;
 import de.schlund.pfixxml.resources.ResourceUtil;
@@ -96,6 +98,7 @@ public class XMLGeneratorInfoParsingHandler extends CustomizationAwareParsingHan
             targetBeanBuilder.addConstructorArgValue(res);
             targetBeanBuilder.addConstructorArgReference(SPCacheFactory.class.getName());
             targetBeanBuilder.addConstructorArgReference(SiteMap.class.getName());
+            targetBeanBuilder.addPropertyReference("tenantInfo", TenantInfo.class.getName());
             BeanDefinition beanDefinition = targetBeanBuilder.getBeanDefinition();
             String beanName = TargetGenerator.class.getName();
             BeanDefinitionRegistry beanRegistry = ParsingUtils.getSingleTopObject(BeanDefinitionRegistry.class, context);

@@ -18,11 +18,6 @@
   <standardmetatags>
   	<include stylesheet="xsl/metatags.xsl"/>
   </standardmetatags>
-  
-  <standardpage-alternative tenant="US_market" lang="en_US"/>
-  <standardpage-alternative tenant="CA_market" lang="en_CA"/>
-  <standardpage-alternative tenant="CA_market" lang="fr_CA"/>
-  <standardpage-alternative tenant="DE_market" lang="de_DE"/>
 
   <auto-standardpage lookup-path="txt/pages" lookup-module="" xml="xml/frame.xml"/>
 

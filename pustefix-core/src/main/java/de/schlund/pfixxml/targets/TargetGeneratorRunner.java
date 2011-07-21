@@ -4,6 +4,7 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.Writer;
 import java.net.URI;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Properties;
 
@@ -27,6 +28,8 @@ import org.w3c.dom.NodeList;
 import org.xml.sax.InputSource;
 
 import de.schlund.pfixcore.util.ModuleInfo;
+import de.schlund.pfixxml.Tenant;
+import de.schlund.pfixxml.TenantInfo;
 import de.schlund.pfixxml.config.EnvironmentProperties;
 import de.schlund.pfixxml.config.GlobalConfigurator;
 import de.schlund.pfixxml.config.includes.IncludesResolver;
@@ -41,6 +44,9 @@ import de.schlund.pfixxml.resources.ResourceUtil;
  *
  */
 public class TargetGeneratorRunner {
+    
+    private TenantInfo tenantInfo;
+    private Resource confFile;
     
     public boolean run(File docroot, File cache, String mode, Writer output, String logLevel) throws Exception {
         
@@ -73,7 +79,7 @@ public class TargetGeneratorRunner {
             projectConfigInput = new InputSource(new FileInputStream(res));
             projectConfigInput.setSystemId(projectConfigLocation);
         }
-        Resource confFile = setupProject(projectConfigInput);
+        setupProject(projectConfigInput);
        
         if(!cache.exists()) cache.mkdirs();
         FileResource cacheDir = ResourceUtil.getFileResource(cache.toURI());
@@ -81,6 +87,8 @@ public class TargetGeneratorRunner {
         try { 
             TargetGenerator gen = new TargetGenerator(confFile, cacheDir, true);
             gen.setIsGetModTimeMaybeUpdateSkipped(false);
+            gen.setTenantInfo(tenantInfo);
+            gen.afterPropertiesSet();
             gen.generateAll();
             output.write(gen.getReportAsString());
             return !gen.errorsReported();
@@ -90,7 +98,7 @@ public class TargetGeneratorRunner {
         
     }
     
-    private static Resource setupProject(InputSource projectConfig) throws Exception {
+    private void setupProject(InputSource projectConfig) throws Exception {
         try {
             DocumentBuilderFactory dbf = DocumentBuilderFactory.newInstance();
             dbf.setNamespaceAware(true);
@@ -122,17 +130,28 @@ public class TargetGeneratorRunner {
                 if(dependXmlLocation.startsWith("/")) dependXmlLocation = dependXmlLocation.substring(1);
                 dependXmlLocation = "module://" + module + "/" + dependXmlLocation;
             }
+            confFile = ResourceUtil.getResource(dependXmlLocation);
             
             xp = xpf.newXPath();
             xp.setNamespaceContext(nc);
             xpe = xp.compile("/p:project-config/p:tenant");
             nodes = (NodeList)xpe.evaluate(doc, XPathConstants.NODESET);
-            for(int i=0; i<nodes.getLength(); i++) {
-                Element elem = (Element)nodes.item(i);
-                String name = elem.getAttribute("name");
+            if(nodes != null && nodes.getLength() > 0) {
+                List<Tenant> tenants = new ArrayList<Tenant>();
+                for(int i=0; i<nodes.getLength(); i++) {
+                    Element elem = (Element)nodes.item(i);
+                    String name = elem.getAttribute("name");
+                    Tenant tenant = new Tenant(name);
+                    List<Element> langElems = DOMUtils.getChildElementsByTagName(elem, "lang");
+                    for(Element langElem: langElems) {
+                        tenant.addSupportedLanguage(langElem.getTextContent().trim());
+                    }
+                    tenants.add(tenant);
+                }
+                tenantInfo = new TenantInfo();
+                tenantInfo.setTenants(tenants);
             }
             
-            return ResourceUtil.getResource(dependXmlLocation);
         } catch(Exception x) {
             throw new Exception("Can't read project configuration", x);
         }

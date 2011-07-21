@@ -47,6 +47,7 @@ import javax.xml.transform.sax.TransformerHandler;
 import org.apache.log4j.Logger;
 import org.apache.log4j.xml.DOMConfigurator;
 import org.pustefixframework.util.xml.DOMUtils;
+import org.springframework.beans.factory.InitializingBean;
 import org.springframework.web.context.ServletContextAware;
 import org.w3c.dom.Attr;
 import org.w3c.dom.Document;
@@ -67,6 +68,8 @@ import de.schlund.pfixxml.IncludePartInfo;
 import de.schlund.pfixxml.IncludePartsInfo;
 import de.schlund.pfixxml.IncludePartsInfoFactory;
 import de.schlund.pfixxml.IncludePartsInfoParsingException;
+import de.schlund.pfixxml.Tenant;
+import de.schlund.pfixxml.TenantInfo;
 import de.schlund.pfixxml.Variant;
 import de.schlund.pfixxml.XMLException;
 import de.schlund.pfixxml.config.CustomizationHandler;
@@ -88,6 +91,7 @@ import de.schlund.pfixxml.resources.ResourceVisitor;
 import de.schlund.pfixxml.util.FileUtils;
 import de.schlund.pfixxml.util.SimpleResolver;
 import de.schlund.pfixxml.util.TransformerHandlerAdapter;
+import de.schlund.pfixxml.util.XMLUtils;
 import de.schlund.pfixxml.util.Xml;
 import de.schlund.pfixxml.util.XsltVersion;
 
@@ -97,7 +101,7 @@ import de.schlund.pfixxml.util.XsltVersion;
  *
  */
 
-public class TargetGenerator implements ResourceVisitor, ServletContextAware {
+public class TargetGenerator implements ResourceVisitor, ServletContextAware, InitializingBean {
 
     public static final String XSLPARAM_TG = "__target_gen";
 
@@ -156,6 +160,7 @@ public class TargetGenerator implements ResourceVisitor, ServletContextAware {
 
     private Map<String, String> renderParams;
     private ServletContext servletContext;
+    private TenantInfo tenantInfo;
     
     //--
 
@@ -173,18 +178,6 @@ public class TargetGenerator implements ResourceVisitor, ServletContextAware {
         this.cacheFactory = cacheFactory;
         this.siteMap = siteMap;
         this.parseIncludes = parseIncludes;
-        includeDocumentFactory = new IncludeDocumentFactory(cacheFactory);
-        targetDependencyRelation = new TargetDependencyRelation();
-        auxDependencyFactory = new AuxDependencyFactory(targetDependencyRelation);
-        targetFactory = new TargetFactory();
-        sharedLeafFactory = new SharedLeafFactory();
-        pageInfoFactory = new PageInfoFactory();
-        includePartsInfo = new IncludePartsInfoFactory();
-        //TODO: factory init on reload
-        Meminfo meminfo = new Meminfo();
-        meminfo.print("TG: Before loading " + confile.toString());
-        loadConfig(confile);
-        meminfo.print("TG: after loading targets for " + confile.toString());
     }
         
     public TargetGenerator(Resource confile) throws IOException, SAXException, XMLException {
@@ -197,6 +190,21 @@ public class TargetGenerator implements ResourceVisitor, ServletContextAware {
     
     public TargetGenerator(Resource confile, SPCacheFactory cacheFactory, SiteMap siteMap) throws IOException, SAXException, XMLException {
         this(confile, null, cacheFactory, siteMap);
+    }
+    
+    public void afterPropertiesSet() throws Exception {
+        includeDocumentFactory = new IncludeDocumentFactory(cacheFactory);
+        targetDependencyRelation = new TargetDependencyRelation();
+        auxDependencyFactory = new AuxDependencyFactory(targetDependencyRelation);
+        targetFactory = new TargetFactory();
+        sharedLeafFactory = new SharedLeafFactory();
+        pageInfoFactory = new PageInfoFactory();
+        includePartsInfo = new IncludePartsInfoFactory();
+        //TODO: factory init on reload
+        Meminfo meminfo = new Meminfo();
+        meminfo.print("TG: Before loading " + config_path.toString());
+        loadConfig(config_path);
+        meminfo.print("TG: after loading targets for " + config_path.toString());
     }
     
     //-- attributes
@@ -259,6 +267,10 @@ public class TargetGenerator implements ResourceVisitor, ServletContextAware {
     
     public PageInfoFactory getPageInfoFactory() {
         return pageInfoFactory;
+    }
+    
+    public void setTenantInfo(TenantInfo tenantInfo) {
+        this.tenantInfo = tenantInfo;
     }
     
     //-- targets
@@ -416,6 +428,18 @@ public class TargetGenerator implements ResourceVisitor, ServletContextAware {
         iresolver.registerListener(listener);
         iresolver.resolveIncludes(confDoc);
         
+        //automatically add standardpage-alternatives for tenants/languages
+        if(tenantInfo != null) {
+            for(Tenant tenant: tenantInfo.getTenants()) {
+                for(String tenantLang: tenant.getSupportedLanguages()) {
+                    Element pageAltElem = confDoc.createElement("standardpage-alternative");
+                    pageAltElem.setAttribute("tenant", tenant.getName());
+                    pageAltElem.setAttribute("lang", tenantLang);
+                    confDoc.getDocumentElement().appendChild(pageAltElem);
+                }
+            }
+        }
+            
         String configFileModule = null;
         URI configFileURI = configFile.toURI();
         if("module".equals(configFileURI.getScheme())) {
