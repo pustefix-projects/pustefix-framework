@@ -11,4 +11,6 @@
     <path>img</path>
   </static>
   
+  <default-search priority="15"/>
+  
 </module-descriptor>

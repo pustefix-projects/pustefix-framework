@@ -9,7 +9,7 @@
       </init-param>
       <init-param>
          <param-name>contextConfigLocation</param-name>
-         <param-value>module://pustefix-i18n-core/conf/project.xml WEB-INF/spring.xml</param-value>
+         <param-value>module://pustefix-i18n-core/conf/project.xml module://pustefix-i18n-core/conf/spring.xml</param-value>
       </init-param>
       <load-on-startup>1</load-on-startup>
    </servlet>
