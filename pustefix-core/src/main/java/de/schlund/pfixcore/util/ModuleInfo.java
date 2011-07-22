@@ -19,11 +19,14 @@ package de.schlund.pfixcore.util;
 
 import java.net.URL;
 import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.Enumeration;
 import java.util.List;
 import java.util.Set;
 import java.util.SortedMap;
+import java.util.SortedSet;
 import java.util.TreeMap;
+import java.util.TreeSet;
 
 import org.apache.log4j.Logger;
 
@@ -40,7 +43,7 @@ public class ModuleInfo {
     
     private SortedMap<String,ModuleDescriptor> moduleDescMap = new TreeMap<String,ModuleDescriptor>();
     
-    private List<String> commonDefaultSearchModules = new ArrayList<String>();
+    private SortedSet<ModuleDescriptor> commonDefaultSearchModules = new TreeSet<ModuleDescriptor>(new ModulePriorityComparator());
 
     public static ModuleInfo getInstance() {
         return instance;
@@ -114,17 +117,18 @@ public class ModuleInfo {
     }
     
     public void addDefaultSearchModule(String moduleName) {
-        if(!moduleDescMap.containsKey(moduleName)) 
+        ModuleDescriptor moduleDesc = moduleDescMap.get(moduleName);
+        if(moduleDesc == null) {
             throw new RuntimeException("Default-search module '" + moduleName + "' doesn't exist.");
-        commonDefaultSearchModules.add(moduleName);
+        }
+        commonDefaultSearchModules.add(moduleDesc);
     }
     
     public List<String> getDefaultSearchModules(ModuleFilter filter) {
         List<String> modules = new ArrayList<String>();
-        for(String module: commonDefaultSearchModules) {
-            ModuleDescriptor moduleDesc = getModuleDescriptor(module);
-            if(filter == null || filter.accept(moduleDesc.getDefaultSearchFilterAttributes())) {
-                modules.add(module);
+        for(ModuleDescriptor moduleDesc: commonDefaultSearchModules) {
+            if(filter == null || moduleDesc.getDefaultSearchFilterAttributes().isEmpty() || filter.accept(moduleDesc.getDefaultSearchFilterAttributes())) {
+                modules.add(moduleDesc.getName());
             }
         }
         return modules;
@@ -144,4 +148,17 @@ public class ModuleInfo {
     	return sb.toString();
     }
 
+    
+    class ModulePriorityComparator implements Comparator<ModuleDescriptor> {
+        
+        public int compare(ModuleDescriptor m1, ModuleDescriptor m2) {
+            if(m1.getDefaultSearchPriority() == m2.getDefaultSearchPriority()) {
+                return m1.getName().compareTo(m2.getName());
+            } else {
+                return m1.getDefaultSearchPriority() - m2.getDefaultSearchPriority();
+            }
+        }
+        
+    }
+    
 }

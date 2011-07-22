@@ -57,6 +57,7 @@ public class ModuleDescriptor {
     private Dictionary<String,String> moduleOverrideFilterAttributes = new Hashtable<String,String>();
     private Dictionary<String,String> defaultSearchFilterAttributes = new Hashtable<String,String>();
     private boolean defaultSearchable;
+    private int defaultSearchPriority = 10;
     private List<String> staticPaths = new ArrayList<String>();
     
     private AntPathMatcher antPathMatcher = new AntPathMatcher();
@@ -135,6 +136,14 @@ public class ModuleDescriptor {
     public boolean isDefaultSearchable() {
         return defaultSearchable;
     }
+    
+    public void setDefaultSearchPriority(int defaultSearchPriority) {
+        this.defaultSearchPriority = defaultSearchPriority;
+    }
+    
+    public int getDefaultSearchPriority() {
+        return defaultSearchPriority;
+    }
              
     public Dictionary<String,String> getModuleOverrideFilterAttributes() {
         return moduleOverrideFilterAttributes;
@@ -184,6 +193,10 @@ public class ModuleDescriptor {
             Element searchElem = getSingleChildElement(root, "default-search", false);
             if(searchElem != null) {
                 moduleInfo.setDefaultSearchable(true);
+                String priority = searchElem.getAttribute("priority").trim();
+                if(priority.length() > 0) {
+                    moduleInfo.setDefaultSearchPriority(Integer.parseInt(priority));
+                }
                 List<Element> filterAttrElems = getChildElements(searchElem, "filter-attribute");
                 for(Element filterAttrElem: filterAttrElems) {
                     String filterAttrName = filterAttrElem.getAttribute("name");
