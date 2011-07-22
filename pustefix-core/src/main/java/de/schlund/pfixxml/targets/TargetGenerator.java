@@ -435,6 +435,7 @@ public class TargetGenerator implements ResourceVisitor, ServletContextAware, In
                     pageAltElem.setAttribute("tenant", tenant.getName());
                     pageAltElem.setAttribute("lang", tenantLang);
                     confDoc.getDocumentElement().appendChild(pageAltElem);
+                    LOG.debug("Added standardpage-alternative for " + tenant.getName() + "-" + tenantLang);
                 }
             }
         }
