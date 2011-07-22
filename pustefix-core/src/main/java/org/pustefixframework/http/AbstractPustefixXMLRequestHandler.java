@@ -863,7 +863,6 @@ public abstract class AbstractPustefixXMLRequestHandler extends AbstractPustefix
                 }
             }
             if (target == null) {
-                LOGGER.info("   ** Trying root variant **");
                 String variantId = null;
                 if(spdoc.getPageAlternative() != null) variantId = spdoc.getPageAlternative();
                 if(spdoc.getTenant() != null) {
@@ -873,6 +872,7 @@ public abstract class AbstractPustefixXMLRequestHandler extends AbstractPustefix
                         variantId += ":" + spdoc.getTenant().getName() + "-" + spdoc.getLanguage();
                     }
                 }
+                LOGGER.info("   ** Trying root variant: " + variantId + " **");
                 pinfo = generator.getPageInfoFactory().getPage(pagename, variantId);
                 target = pagetree.getTargetForPageInfo(pinfo);
             }

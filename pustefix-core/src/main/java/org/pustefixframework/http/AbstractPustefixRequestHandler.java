@@ -176,6 +176,7 @@ public abstract class AbstractPustefixRequestHandler implements SessionTrackingS
                 matchingTenant = tenantInfo.getTenants().get(0);
             }
             req.setAttribute(REQUEST_ATTR_TENANT, matchingTenant);
+            LOG.debug("Set tenant " + matchingTenant.getName());
             String matchingLanguage = matchingTenant.getDefaultLanguage();
             String pathPrefix = URLUtils.getFirstPathComponent(req.getPathInfo());
             if(pathPrefix != null) {
@@ -190,6 +191,7 @@ public abstract class AbstractPustefixRequestHandler implements SessionTrackingS
                 }
             }
             req.setAttribute(REQUEST_ATTR_LANGUAGE, matchingLanguage);
+            LOG.debug("Set language " + matchingLanguage);
         } else if(!projectInfo.getSupportedLanguages().isEmpty()) {
             String matchingLanguage = projectInfo.getDefaultLanguage();
             String pathPrefix = URLUtils.getFirstPathComponent(req.getPathInfo());
