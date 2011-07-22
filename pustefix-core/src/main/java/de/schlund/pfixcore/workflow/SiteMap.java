@@ -60,10 +60,7 @@ import de.schlund.pfixxml.util.XsltVersion;
 public class SiteMap {
     
     private Set<Resource> fileDependencies = new HashSet<Resource>();
-    
-    private Document siteMapDoc;
     private Map<String, Document> langToDoc = new HashMap<String, Document>();
-    
     private List<Page> pageList;
     private Map<String, Page> pageNameToPage;
     private Map<String, Map<String, String>> aliasMaps;
@@ -80,7 +77,7 @@ public class SiteMap {
         
         if(siteMapFile.exists()) {
         
-        Document navitree = Xml.parseMutable(siteMapFile);
+        Document siteMapDoc = Xml.parseMutable(siteMapFile);
         
         IncludesResolver iresolver = new IncludesResolver(null, "config-include");
         // Make sure list of dependencies only contains the file itself
@@ -94,7 +91,7 @@ public class SiteMap {
 
         };
         iresolver.registerListener(listener);
-        iresolver.resolveIncludes(navitree);
+        iresolver.resolveIncludes(siteMapDoc);
         
         TransformerFactory tf = TransformerFactory.newInstance();
         if (tf.getFeature(SAXTransformerFactory.FEATURE)) {
@@ -114,11 +111,11 @@ public class SiteMap {
             xreader.setDTDHandler(ch);
             xreader.setEntityResolver(ch);
             xreader.setErrorHandler(ch);
-            xreader.parse(new InputSource(new StringReader(Xml.serialize(navitree,false, true))));
-            navitree = dr.getNode().getOwnerDocument();
-            if (navitree == null) {
+            xreader.parse(new InputSource(new StringReader(Xml.serialize(siteMapDoc,false, true))));
+            siteMapDoc = dr.getNode().getOwnerDocument();
+            if (siteMapDoc == null) {
                 if (dr.getNode() instanceof Document) {
-                    navitree = (Document) dr.getNode();
+                    siteMapDoc = (Document) dr.getNode();
                 } else {
                     throw new RuntimeException("XML result is not a Document though it should be");
                 }
@@ -127,14 +124,7 @@ public class SiteMap {
             throw new RuntimeException("TransformerFactory instance does not provide SAXTransformerFactory!");
         }
         
-        
-        siteMapDoc = navitree;
-        
-       
-        
         readSiteMap(siteMapDoc.getDocumentElement());
-        
-       
         
         aliasMaps = new HashMap<String, Map<String, String>>();
         pageMaps = new HashMap<String, Map<String, String>>();

@@ -13,8 +13,8 @@
   <cus:custom_xsl/>
 
   <xsl:param name="page"/>
-  <xsl:param name="__navitree"/>
-  <xsl:param name="navitree" select="$__navitree"/>
+  <xsl:param name="__sitemap"/>
+  <xsl:param name="sitemap" select="$__sitemap"/>
   
   <!--
     Define __contextpath despite it's only evaluated/needed at runtime, cause Saxon2

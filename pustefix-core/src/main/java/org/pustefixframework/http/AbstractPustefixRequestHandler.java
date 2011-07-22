@@ -26,7 +26,10 @@ import java.net.URL;
 import java.nio.charset.Charset;
 import java.util.ArrayList;
 import java.util.Enumeration;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
+import java.util.SortedSet;
 import java.util.regex.Pattern;
 
 import javax.servlet.ServletContext;
@@ -40,6 +43,7 @@ import org.pustefixframework.config.contextxmlservice.ServletManagerConfig;
 import org.pustefixframework.config.project.ProjectInfo;
 import org.pustefixframework.config.project.SessionTimeoutInfo;
 import org.pustefixframework.container.spring.http.UriProvidingHttpRequestHandler;
+import org.pustefixframework.util.LocaleUtils;
 import org.pustefixframework.util.URLUtils;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.web.context.ServletContextAware;
@@ -397,6 +401,56 @@ public abstract class AbstractPustefixRequestHandler implements SessionTrackingS
             request.setAttribute(REQUEST_ATTR_PAGE_ALTERNATIVE, res.getPageAlternativeKey());
         }
         return res.getPageName();
+    }
+    
+    protected void addPageURIs(SortedSet<String> uris) {
+        String[] registeredPages = getRegisteredPages();
+        Set<String> processedPages = new HashSet<String>();
+        for(String registeredPage: registeredPages) {
+            uris.add("/" + registeredPage);
+            if(!processedPages.contains(registeredPage)) {
+                processedPages.add(registeredPage);
+                if(!tenantInfo.getTenants().isEmpty()) {
+                    for(Tenant tenant: tenantInfo.getTenants()) {
+                        for(String supportedLanguage: tenant.getSupportedLanguages()) {
+                            String langPart = LocaleUtils.getLanguagePart(supportedLanguage);
+                            String pathPrefix = "";
+                            if(!supportedLanguage.equals(tenant.getDefaultLanguage())) {
+                                pathPrefix = langPart + "/";
+                            }
+                            String alias = siteMap.getAlias(registeredPage, supportedLanguage);
+                            uris.add("/" + pathPrefix + alias);
+                            List<String> pageAltAliases = siteMap.getPageAlternativeAliases(registeredPage, supportedLanguage);
+                            if(pageAltAliases != null) {
+                                for(String pageAltAlias: pageAltAliases) {
+                                    uris.add("/" + pathPrefix + pageAltAlias);
+                                }
+                            }
+                        }
+                    }
+                } else if(projectInfo.getSupportedLanguages().size() > 1) {
+                    for(String supportedLanguage: projectInfo.getSupportedLanguages()) {
+                        String langPart = LocaleUtils.getLanguagePart(supportedLanguage);
+                        String pathPrefix = "";
+                        if(!supportedLanguage.equals(projectInfo.getDefaultLanguage())) {
+                            pathPrefix = langPart + "/";
+                        }
+                        String alias = siteMap.getAlias(registeredPage, supportedLanguage);
+                        uris.add("/" + pathPrefix + alias);
+                        List<String> pageAltAliases = siteMap.getPageAlternativeAliases(registeredPage, supportedLanguage);
+                        if(pageAltAliases != null) {
+                            for(String pageAltAlias: pageAltAliases) {
+                                uris.add("/" + pathPrefix + pageAltAlias);
+                            }
+                        }
+                    }
+                }
+            }
+        }
+    }
+    
+    public String[] getRegisteredPages() {
+        return new String[0];
     }
     
     public void setServletEncoding(String encoding) {

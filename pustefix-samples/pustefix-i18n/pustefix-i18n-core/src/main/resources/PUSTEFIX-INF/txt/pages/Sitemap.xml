@@ -2,9 +2,7 @@
 <include_parts xmlns:ixsl="http://www.w3.org/1999/XSL/Transform" xmlns:pfx="http://www.schlund.de/pustefix/core">
   <part name="content">
     <theme name="default">
-      dafdfasdf
-      <ixsl:message><ixsl:copy-of select="$navitree"/></ixsl:message>
-      <ixsl:apply-templates select="$navitree/page"/>
+      <ixsl:apply-templates select="$sitemap/page"/>
     </theme>
   </part>
  

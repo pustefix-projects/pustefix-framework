@@ -226,15 +226,26 @@ public class PustefixContextDirectOutputRequestHandler extends AbstractPustefixR
         String[] regUris = super.getRegisteredURIs();
         for(String regUri: regUris) uris.add(regUri);
         
-        //add page mappings for configured pagerequests
-        List<? extends DirectOutputPageRequestConfig> pages = config.getPageRequests();
-        for(DirectOutputPageRequestConfig page: pages) {
-            uris.add("/" + page.getPageName());
-        }
+        addPageURIs(uris);
         
         String[] uriArr = uris.toArray(new String[uris.size()]);
         return uriArr;
         
+    }
+    
+    @Override
+    public String[] getRegisteredPages() {
+        
+        SortedSet<String> pages = new TreeSet<String>();
+        
+        //add pages from configured pagerequests
+        List<? extends DirectOutputPageRequestConfig> configPages = config.getPageRequests();
+        for(DirectOutputPageRequestConfig configPage: configPages) {
+            pages.add(configPage.getPageName());
+        }
+        
+        String[] pageArr = pages.toArray(new String[pages.size()]);
+        return pageArr;
     }
     
 }

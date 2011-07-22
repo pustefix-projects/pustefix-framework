@@ -3,8 +3,8 @@
                 xmlns:callback="xalan://de.schlund.pfixcore.util.TransformerCallback">
 
   <xsl:param name="__context__"/>
-  <xsl:param name="__navitree"/>
-  <xsl:param name="navitree" select="$__navitree"/>
+  <xsl:param name="__sitemap"/>
+  <xsl:param name="sitemap" select="$__sitemap"/>
   <xsl:param name="__target_gen"/>
 
   <xsl:template match="/">
@@ -47,7 +47,7 @@
         <td style="border-bottom: 1px solid black;">Accessible?</td>
         <td style="border-bottom: 1px solid black;">Authorized?</td></tr>
         <xsl:call-template name="render_pages">
-          <xsl:with-param name="thepages" select="$navitree/page"/>
+          <xsl:with-param name="thepages" select="$sitemap/page"/>
         </xsl:call-template>
         </table>
         <br/>

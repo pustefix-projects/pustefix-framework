@@ -78,7 +78,7 @@
                 <b>Indexed parameter test:</b>
               </td>
             </tr>
-            <ixsl:for-each select="$navitree//page">
+            <ixsl:for-each select="$sitemap//page">
               <tr>
                 <pfx:checkfield>
                   <pfx:name>prefix.Value.<ixsl:value-of select="position()"/></pfx:name>

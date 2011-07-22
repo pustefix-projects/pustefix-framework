@@ -18,6 +18,7 @@
 
 package de.schlund.pfixcore.workflow;
 
+import java.util.List;
 import java.util.Properties;
 
 import javax.servlet.http.Cookie;
@@ -83,6 +84,9 @@ public interface Context extends PageFlowContext {
 
     Throwable getLastException();
     String getVisitId();
+    
+    Tenant getTenant();
+    List<Tenant> getTenants();
 
     void addPageMessage(StatusCode scode, String[] args, String level);
 

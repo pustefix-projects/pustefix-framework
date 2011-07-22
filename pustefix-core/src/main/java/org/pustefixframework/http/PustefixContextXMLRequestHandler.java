@@ -19,7 +19,6 @@
 package org.pustefixframework.http;
 
 import java.io.ByteArrayOutputStream;
-import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 import java.util.SortedSet;
@@ -49,7 +48,6 @@ import de.schlund.pfixcore.scriptedflow.vm.VirtualHttpServletRequest;
 import de.schlund.pfixcore.workflow.ContextImpl;
 import de.schlund.pfixcore.workflow.ContextInterceptor;
 import de.schlund.pfixcore.workflow.ExtendedContext;
-import de.schlund.pfixcore.workflow.SiteMap;
 import de.schlund.pfixcore.workflow.context.RequestContextImpl;
 import de.schlund.pfixxml.PfixServletRequest;
 import de.schlund.pfixxml.PfixServletRequestImpl;
@@ -379,58 +377,7 @@ public class PustefixContextXMLRequestHandler extends AbstractPustefixXMLRequest
         String[] regUris = super.getRegisteredURIs();
         for(String regUri: regUris) uris.add(regUri);
         
-        //add page mappings for configured pagerequests
-        List<? extends PageRequestConfig> pages = config.getContextConfig().getPageRequestConfigs();
-        for(PageRequestConfig page: pages) {
-            uris.add("/" + page.getPageName());
-        }
-        
-        SiteMap siteMap = generator.getSiteMap();
-        
-        //add page mappings for standardpages
-        Set<String> processedPages = new HashSet<String>();
-        Set<PageInfo> pageInfos = generator.getPageTargetTree().getPageInfos();
-        for(PageInfo pageInfo: pageInfos) {
-            uris.add("/" + pageInfo.getName());
-            if(!processedPages.contains(pageInfo.getName())) {
-                processedPages.add(pageInfo.getName());
-                if(!tenantInfo.getTenants().isEmpty()) {
-                    for(Tenant tenant: tenantInfo.getTenants()) {
-                        for(String supportedLanguage: tenant.getSupportedLanguages()) {
-                            String langPart = LocaleUtils.getLanguagePart(supportedLanguage);
-                            String pathPrefix = "";
-                            if(!supportedLanguage.equals(tenant.getDefaultLanguage())) {
-                                pathPrefix = langPart + "/";
-                            }
-                            String alias = siteMap.getAlias(pageInfo.getName(), supportedLanguage);
-                            uris.add("/" + pathPrefix + alias);
-                            List<String> pageAltAliases = siteMap.getPageAlternativeAliases(pageInfo.getName(), supportedLanguage);
-                            if(pageAltAliases != null) {
-                                for(String pageAltAlias: pageAltAliases) {
-                                    uris.add("/" + pathPrefix + pageAltAlias);
-                                }
-                            }
-                        }
-                    }
-                } else if(projectInfo.getSupportedLanguages().size() > 1) {
-                    for(String supportedLanguage: projectInfo.getSupportedLanguages()) {
-                        String langPart = LocaleUtils.getLanguagePart(supportedLanguage);
-                        String pathPrefix = "";
-                        if(!supportedLanguage.equals(projectInfo.getDefaultLanguage())) {
-                            pathPrefix = langPart + "/";
-                        }
-                        String alias = siteMap.getAlias(pageInfo.getName(), supportedLanguage);
-                        uris.add("/" + pathPrefix + alias);
-                        List<String> pageAltAliases = siteMap.getPageAlternativeAliases(pageInfo.getName(), supportedLanguage);
-                        if(pageAltAliases != null) {
-                            for(String pageAltAlias: pageAltAliases) {
-                                uris.add("/" + pathPrefix + pageAltAlias);
-                            }
-                        }
-                    }
-                }
-            }
-        }
+        addPageURIs(uris);
         
         //add lang default page mappings
         if(!tenantInfo.getTenants().isEmpty()) {
@@ -451,6 +398,29 @@ public class PustefixContextXMLRequestHandler extends AbstractPustefixXMLRequest
         
         String[] uriArr = uris.toArray(new String[uris.size()]);
         return uriArr;
+    }
+    
+
+    
+    @Override
+    public String[] getRegisteredPages() {
+
+        SortedSet<String> pages = new TreeSet<String>();
+        
+        //add pages from configured pagerequests
+        List<? extends PageRequestConfig> pageConfigs = config.getContextConfig().getPageRequestConfigs();
+        for(PageRequestConfig pageConfig: pageConfigs) {
+            pages.add(pageConfig.getPageName());
+        }
+        
+        //add page mappings for standardpages
+        Set<PageInfo> pageInfos = generator.getPageTargetTree().getPageInfos();
+        for(PageInfo pageInfo: pageInfos) {
+            pages.add(pageInfo.getName());
+        }
+        
+        String[] pageArr = pages.toArray(new String[pages.size()]);
+        return pageArr;
     }
     
 }

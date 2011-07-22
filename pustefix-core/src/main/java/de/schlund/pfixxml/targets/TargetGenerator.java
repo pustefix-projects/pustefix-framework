@@ -91,7 +91,6 @@ import de.schlund.pfixxml.resources.ResourceVisitor;
 import de.schlund.pfixxml.util.FileUtils;
 import de.schlund.pfixxml.util.SimpleResolver;
 import de.schlund.pfixxml.util.TransformerHandlerAdapter;
-import de.schlund.pfixxml.util.XMLUtils;
 import de.schlund.pfixxml.util.Xml;
 import de.schlund.pfixxml.util.XsltVersion;
 
@@ -107,7 +106,7 @@ public class TargetGenerator implements ResourceVisitor, ServletContextAware, In
 
     public static final String XSLPARAM_TKEY = "__target_key";
     
-    public static final String XSLPARAM_NAVITREE = "__navitree";
+    public static final String XSLPARAM_SITEMAP = "__sitemap";
 
     public static final String CACHEDIR = ".cache";
     
@@ -855,7 +854,7 @@ public class TargetGenerator implements ResourceVisitor, ServletContextAware, In
             virtual.addParam(XSLPARAM_TG, this);
             virtual.addParam(XSLPARAM_TKEY, key);
             try {
-                virtual.addParam(XSLPARAM_NAVITREE, siteMap.getSiteMapXMLElement(getXsltVersion(), params.get("lang")));
+                virtual.addParam(XSLPARAM_SITEMAP, siteMap.getSiteMapXMLElement(getXsltVersion(), params.get("lang")));
             } catch (Exception e) {
                 throw new XMLException("Cannot get navigation tree", e);
             }

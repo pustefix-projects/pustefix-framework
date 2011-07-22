@@ -71,8 +71,8 @@
   <xsl:param name="product"><cus:product/></xsl:param>
 
   <xsl:param name="page"/>
-  <xsl:param name="__navitree"/>
-  <xsl:param name="navitree" select="$__navitree"/>
+  <xsl:param name="__sitemap"/>
+  <xsl:param name="sitemap" select="$__sitemap"/>
 
   <!--
     Define __contextpath despite it's only evaluated/needed at runtime, cause Saxon2
@@ -125,8 +125,8 @@
         </xsl:if>
       </ixsl:output>
 
-      <ixsl:param name="__navitree"/>
-      <ixsl:param name="navitree" select="$__navitree"/>
+      <ixsl:param name="__sitemap"/>
+      <ixsl:param name="sitemap" select="$__sitemap"/>
       
       <!-- The next three parameters are opaque Java objects. Use them only to pass them to extension functions! -->
       <ixsl:param name="__context__"/>
