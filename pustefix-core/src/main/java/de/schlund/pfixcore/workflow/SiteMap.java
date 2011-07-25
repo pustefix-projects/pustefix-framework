@@ -297,6 +297,14 @@ public class SiteMap {
         return null;
     }
     
+    public Set<String> getPageAlternativeKeys(String pageName) {
+        Page page = pageNameToPage.get(pageName);
+        if(page != null && page.pageAltKeyToName.size() > 0) {
+            return page.pageAltKeyToName.keySet();
+        }
+        return null;
+    }
+    
     public PageLookupResult getPageName(String alias, String lang) {
         String page = null;
         String aliasKey = null;

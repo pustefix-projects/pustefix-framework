@@ -161,6 +161,8 @@ public class TargetGenerator implements ResourceVisitor, ServletContextAware, In
     private ServletContext servletContext;
     private TenantInfo tenantInfo;
     
+    private Document dependXmlDoc;
+    
     //--
 
     public TargetGenerator(final Resource confile, final FileResource cacheDir, final boolean parseIncludes) throws IOException, SAXException, XMLException {
@@ -270,6 +272,10 @@ public class TargetGenerator implements ResourceVisitor, ServletContextAware, In
     
     public void setTenantInfo(TenantInfo tenantInfo) {
         this.tenantInfo = tenantInfo;
+    }
+    
+    public Node getConfigDocument() {
+        return dependXmlDoc;
     }
     
     //-- targets
@@ -450,7 +456,8 @@ public class TargetGenerator implements ResourceVisitor, ServletContextAware, In
         NodeList pageNodes = confDoc.getElementsByTagName("standardpage");
         for(int i = 0; i < pageNodes.getLength(); i++) {
             Element pageElem = (Element)pageNodes.item(i);
-            definedStandardPages.add(pageElem.getAttribute("name").trim());
+            String pageName = pageElem.getAttribute("name").trim();
+            definedStandardPages.add(pageName);
         }
         
         //Add autodetected standardpages
@@ -488,6 +495,23 @@ public class TargetGenerator implements ResourceVisitor, ServletContextAware, In
             } catch (Exception x) {
                 throw new XMLException("Error while looking up page resources", x);
             }   
+        }
+        
+        pageNodes = confDoc.getElementsByTagName("standardpage");
+        for(int i = 0; i < pageNodes.getLength(); i++) {
+            Element pageElem = (Element)pageNodes.item(i);
+            String pageName = pageElem.getAttribute("name").trim();
+            Set<String> altKeys = siteMap.getPageAlternativeKeys(pageName);
+            if(altKeys != null && !altKeys.isEmpty()) {
+                List<Element> altElems = DOMUtils.getChildElementsByTagName(pageElem, "standardpage-alternative");
+                if(altElems.isEmpty()) {
+                    for(String altKey: altKeys) {
+                        Element pageAltElem = confDoc.createElement("standardpage-alternative");
+                        pageAltElem.setTextContent(altKey);
+                        pageElem.appendChild(pageAltElem);
+                    }
+                }
+            }
         }
         
         for(int i = 0; i < pageNodes.getLength(); i++) {
@@ -586,6 +610,7 @@ public class TargetGenerator implements ResourceVisitor, ServletContextAware, In
             }
         }
         
+        dependXmlDoc = config;
         
         NodeList targetnodes = config.getElementsByTagName("target");
 

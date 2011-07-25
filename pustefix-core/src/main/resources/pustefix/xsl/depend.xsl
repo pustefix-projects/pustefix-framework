@@ -76,7 +76,6 @@
       </xsl:call-template>
       <depxml name="xsl/metatags.xsl" module="pustefix-core"/>
       <depxsl name="xsl/customizemaster.xsl" module="pustefix-core"/>
-      <depaux name="{$project}/WEB-INF/depend.xml"/>
       <xsl:call-template name="render_include_ssheets"/>
       <xsl:apply-templates select="param"/>
       <xsl:apply-templates select="depaux"/>
