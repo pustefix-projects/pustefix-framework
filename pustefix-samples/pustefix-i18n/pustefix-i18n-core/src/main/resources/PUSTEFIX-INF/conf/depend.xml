@@ -21,10 +21,4 @@
 
   <auto-standardpage lookup-path="txt/pages" lookup-module="" xml="xml/frame.xml"/>
 
-  <standardpage name="Info" xml="xml/frame.xml">
-    <standardpage-alternative>cities</standardpage-alternative>
-    <standardpage-alternative>nationalparks</standardpage-alternative>
-    <standardpage-alternative>mountains</standardpage-alternative>
-  </standardpage>
-
 </make>
