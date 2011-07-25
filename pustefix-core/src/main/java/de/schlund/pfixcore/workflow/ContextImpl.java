@@ -233,10 +233,6 @@ public class ContextImpl implements AccessibilityChecker, ExtendedContext, Token
     public Tenant getTenant() {
         return sessioncontext.getTenant();
     }
-    
-    public List<Tenant> getTenants() {
-        return servercontext.getTenantInfo().getTenants();
-    }
         
     public boolean stateMustSupplyFullDocument() {
         return getRequestContextForCurrentThreadWithError().stateMustSupplyFullDocument();
