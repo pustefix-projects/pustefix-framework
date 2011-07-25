@@ -59,6 +59,7 @@ public class ProjectParsingHandler extends CustomizationAwareParsingHandler {
             BeanDefinition beanDefinition = beanBuilder.getBeanDefinition();
             BeanDefinitionRegistry beanRegistry = ParsingUtils.getSingleTopObject(BeanDefinitionRegistry.class, context);
             beanRegistry.registerBeanDefinition(TenantInfo.class.getName(), beanDefinition);
+            beanRegistry.registerAlias(TenantInfo.class.getName(), "pustefixTenantInfo");
             
         }  
       

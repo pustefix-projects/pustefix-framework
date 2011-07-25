@@ -58,15 +58,16 @@ public class ResourceFinder {
             Iterator<String> it = moduleNames.iterator();
             while(it.hasNext()) {
                 ModuleDescriptor desc = moduleInfo.getModuleDescriptor(it.next());
-                findInModule(desc, modulePaths, visitor);
+                findInModule(desc, modulePaths, fileExtensions, visitor);
             }
         } else {
             ModuleDescriptor desc = moduleInfo.getModuleDescriptor(module);
-            findInModule(desc, modulePaths, visitor);
+            findInModule(desc, modulePaths, fileExtensions, visitor);
         }
     }
     
-    private static void findInModule(ModuleDescriptor desc, String[] modulePaths, ResourceVisitor visitor) throws Exception {
+    private static void findInModule(ModuleDescriptor desc, String[] modulePaths, String[] fileExtensions, ResourceVisitor visitor) throws Exception {
+        
         URL url = desc.getURL().getProtocol().equals("jar") ? getJarURL(desc.getURL()) : getFileUrl(desc.getURL());
         if(url.getProtocol().equals("jar")) {
             JarFileURLConnection con = new JarFileURLConnection(url);
@@ -75,13 +76,15 @@ public class ResourceFinder {
             while(entries.hasMoreElements()) {
                 JarEntry entry = entries.nextElement();
                 if(startsWith(entry.getName(), modulePaths)) {
-                    if(!entry.isDirectory()) {
+                    if(!entry.isDirectory() && endsWith(entry.getName(), fileExtensions)) {
                         String uri = "module://" + desc.getName() + "/" + entry.getName().substring(13);
                         Resource res = ResourceUtil.getResource(uri);
                         visitor.visit(res);
                     }
                 }
             }
+        } else if(url.getProtocol().equals("file")) {
+            find(new File(url.toURI()), fileExtensions, visitor);
         }
     }
     
