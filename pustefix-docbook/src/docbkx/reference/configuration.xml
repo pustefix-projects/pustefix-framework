@@ -1772,6 +1772,39 @@
       If you want to register your own <literal>PropertyPlaceholderConfigurer</literal> or <literal>PropertyOverrideConfigurer</literal> capable of the Pustefix XML property format, e.g. for tests or child ApplicationContexts, you can do so by creating a <literal>PustefixPropertiesPersister</literal> bean and referencing it from the configurer's <literal>propertiesPersister</literal> property.
     </para>
     </section>
+    <section xml:id="configuration.spring.beannames">
+      <title>Reserved Spring bean names</title>
+      <para>
+        Some Spring beans created by the core framework are intended for usage by the application, i.e. are registered with fixed/reserved bean names, which can be referred to inject them into application beans. The following table shows those beans with their associated names and aliases. 
+      </para>
+      <para>
+      <table rules="all" frame="box">
+        <caption>Reserved Spring bean names</caption>
+        <thead>
+          <tr>
+            <th>Name</th>
+            <th>Alias</th>
+            <th>Scope</th>
+            <th>Description</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td>de.schlund.pfixcore.workflow.Context</td>
+            <td>pustefixContext</td>
+            <td>Session</td>
+            <td>The context facade providing access to request-/session-state and configuration.</td>
+          </tr>
+          <tr>
+            <td>de.schlund.pfixxml.TenantInfo</td>
+            <td>pustefixTenantInfo</td>
+            <td>Singleton</td>
+            <td>Bean providing the list of available tenants.</td>
+          </tr>
+        </tbody>
+      </table>
+      </para>
+    </section>
   </section>
       
 </chapter>
