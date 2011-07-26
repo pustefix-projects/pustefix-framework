@@ -17,19 +17,27 @@ public class URLUtils {
         }
     }
     
-
-    
-    public static void main(String[] args) {
-        System.out.println(getFirstPathComponent(null));
-        System.out.println(getFirstPathComponent(""));
-        System.out.println(getFirstPathComponent("/ "));
-        System.out.println(getFirstPathComponent("//"));
-        System.out.println(getFirstPathComponent("/foo"));
-        System.out.println(getFirstPathComponent("/foo/bar"));
-        System.out.println(getFirstPathComponent("/foo/bar/baz"));
-        System.out.println(getFirstPathComponent("foo"));
-        System.out.println(getFirstPathComponent("foo/bar"));
-        System.out.println(getFirstPathComponent("foo/bar/baz"));
+    public static String getParentPath(String path) {
+        if(path!= null && path.length() > 0) {
+            int ind = path.lastIndexOf('/');
+            if(ind < 0) {
+                return null;
+            } else if(ind == 0) {
+                if(path.length() == 1) {
+                    return null;
+                } else {
+                    return "/";
+                }
+            } else {
+                if(ind == path.length() -1) {
+                    return getParentPath(path.substring(0, ind));
+                } else {
+                    return path.substring(0, ind);
+                }
+            }
+        } else {
+            return null;
+        }
     }
 
 }

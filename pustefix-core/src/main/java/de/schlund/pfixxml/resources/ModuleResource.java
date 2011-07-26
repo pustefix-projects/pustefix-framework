@@ -24,8 +24,11 @@ import java.io.InputStream;
 import java.net.JarURLConnection;
 import java.net.MalformedURLException;
 import java.net.URI;
+import java.net.URISyntaxException;
 import java.net.URL;
 import java.util.jar.JarEntry;
+
+import org.pustefixframework.util.URLUtils;
 
 import de.schlund.pfixcore.exception.PustefixRuntimeException;
 import de.schlund.pfixcore.util.JarFileURLConnection;
@@ -179,10 +182,14 @@ public class ModuleResource implements Resource {
         return toURI().toASCIIString();
     }
     
-    public org.springframework.core.io.Resource createRelative(
-            String relativePath) throws IOException {
-        // TODO implement
-        throw new RuntimeException("Method not yet implemented");
+    public org.springframework.core.io.Resource createRelative(String relativePath) throws IOException {
+        String parentPath = URLUtils.getParentPath(uri.getPath());
+        try {
+            URI relUri = new URI(uri.getScheme(), uri.getAuthority(), parentPath + "/" + relativePath , null);
+            return ResourceUtil.getResource(relUri);
+        } catch (URISyntaxException e) {
+            throw new IOException("Error creating relative URI: " + uri.toASCIIString() + " " + relativePath, e);
+        }
     }
 
 }

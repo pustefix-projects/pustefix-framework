@@ -49,6 +49,7 @@ import com.marsching.flexiparse.parser.ParsingHandler;
 import com.marsching.flexiparse.parser.exception.ParserException;
 
 import de.schlund.pfixcore.workflow.ConfigurableState;
+import de.schlund.pfixcore.workflow.Context;
 import de.schlund.pfixcore.workflow.ContextImpl;
 import de.schlund.pfixcore.workflow.ContextResourceManagerImpl;
 import de.schlund.pfixcore.workflow.PageMap;
@@ -213,7 +214,7 @@ public class ContextXMLParsingHandler implements ParsingHandler {
             beanBuilder.addPropertyReference("contextResourceManager", ContextResourceManagerImpl.class.getName());
             
             beanDefinition = beanBuilder.getBeanDefinition();
-            beanHolder = new BeanDefinitionHolder(beanDefinition, ContextImpl.class.getName(), new String[] {"pustefixContext"});
+            beanHolder = new BeanDefinitionHolder(beanDefinition, ContextImpl.class.getName(), new String[] {Context.class.getName(), "pustefixContext"});
             beanHolder = ScopedProxyUtils.createScopedProxy(beanHolder, beanReg, true);
             context.getObjectTreeElement().addObject(beanHolder); 
             
