@@ -47,10 +47,30 @@
   </static>
 
   <!--
+    Here you can define if your module should be part of the dynamic search chain.
+    Using the priority attribute you can influence the search order (lower value 
+    means higher priority, leaving out the attribute the default priority is 10)
+  -->
+  <default-search priority="5">
+    <!-- you can restrict dynamic search participation depending on a specific market 
+         or language by specifying according filter-attributes -->
+    <!--
+    <filter-attribute name="tenant" value="DE_market"/>
+    <filter-attribute name="lang" value="de"/>
+    -->
+  </default-search>
+
+  <!--
     Here you can configure which resources from which other module should be
     overridden by your module (see "Dynamic resource resolution").
   -->
   <override-modules>
+    <!-- you can restrict overriding depending on a specific market or language 
+         by specifying according filter-attributes -->
+    <!--
+    <filter-attribute name="tenant" value="US_market"/>
+    <filter-attribute name="lang" value="en"/>
+    -->
     <module name="modulename">
       <resource path="path/to/resource"/>
       ...
@@ -70,7 +90,7 @@
     For details on how to reference module resources and how to override modules, see <xref linkend="advanced.dyninclude"/>.
   </para>
   <para>
-    Statusmessages placed under <literal>PUSTEFIX-INF/dyntxt</literal> within a module jar are automatically merged to <literal>src/main/webapp/modules-override/MODULENAME/dyntxt</literal> (see also <xref linkend="concepts.statuscodes"/>).
+    Statusmessages placed under <literal>PUSTEFIX-INF/dyntxt</literal> within a module jar are automatically merged to <literal>src/main/webapp/modules-override/MODULENAME/dyntxt</literal> (see also <xref linkend="concepts.statuscodes"/>). You optionally can disable merging in the according plugin configuration and use dynamic resource lookup instead.
   </para>
   <para>
     Static resources which should be publicly available/delivered by the server (e.g. resources referenced by HTML pages, like images, CSS or Javascript)

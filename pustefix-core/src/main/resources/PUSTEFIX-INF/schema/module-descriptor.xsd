@@ -13,6 +13,14 @@
       <xs:element name="module-name" type="md:moduleNameType"/>
       <xs:element name="content-editable" type="xs:boolean" minOccurs="0"/>
       <xs:element name="static" type="md:staticType" minOccurs="0"/>
+      <xs:element name="default-search" minOccurs="0">
+        <xs:complexType>
+          <xs:sequence>
+            <xs:element ref="md:filter-attribute" minOccurs="0" maxOccurs="unbounded"/>
+          </xs:sequence>
+          <xs:attribute name="priority" type="xs:int"/>
+        </xs:complexType>
+      </xs:element>
       <xs:element name="override-modules" type="md:overrideType" minOccurs="0"/>
     </xs:sequence>
   </xs:complexType>
@@ -32,7 +40,8 @@
   
   <xs:complexType name="overrideType">
     <xs:sequence>
-      <xs:element name="module">
+      <xs:element ref="md:filter-attribute" minOccurs="0" maxOccurs="unbounded"/>
+      <xs:element name="module" maxOccurs="unbounded">
         <xs:complexType>
           <xs:sequence>
             <xs:element name="resource" maxOccurs="unbounded">
@@ -47,4 +56,11 @@
     </xs:sequence>
   </xs:complexType>
   
+  <xs:element name="filter-attribute">
+    <xs:complexType>
+      <xs:attribute name="name" type="xs:string"/>
+      <xs:attribute name="value" type="xs:string"/>
+    </xs:complexType>
+  </xs:element>
+    
 </xs:schema>
