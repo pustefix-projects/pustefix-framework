@@ -67,6 +67,7 @@ public class SiteMap {
     private Map<String, Map<String, String>> pageMaps;
     private Map<String, Page> pageAlternativeToPage;
     private Map<String, Page> pageAliasToPage;
+    private boolean provided;
     
     public SiteMap(Resource siteMapFile) throws IOException, SAXException, XMLException {
        
@@ -75,85 +76,90 @@ public class SiteMap {
         if(uriStr.endsWith("depend.xml")) uriStr = uriStr.substring(0, uriStr.length() -10) + "sitemap.xml";
         siteMapFile = ResourceUtil.getResource(uriStr);
         
-        if(siteMapFile.exists()) {
-        
-        Document siteMapDoc = Xml.parseMutable(siteMapFile);
-        
-        IncludesResolver iresolver = new IncludesResolver(null, "config-include");
-        // Make sure list of dependencies only contains the file itself
-        fileDependencies.clear();
-        fileDependencies.add(siteMapFile);
-        FileIncludeEventListener listener = new FileIncludeEventListener() {
-
-            public void fileIncluded(FileIncludeEvent event) {
-                fileDependencies.add(event.getIncludedFile());
-            }
-
-        };
-        iresolver.registerListener(listener);
-        iresolver.resolveIncludes(siteMapDoc);
-        
-        TransformerFactory tf = TransformerFactory.newInstance();
-        if (tf.getFeature(SAXTransformerFactory.FEATURE)) {
-            SAXTransformerFactory stf = (SAXTransformerFactory) tf;
-            TransformerHandler th;
-            try {
-                th = stf.newTransformerHandler();
-            } catch (TransformerConfigurationException e) {
-               throw new XMLException("Error reading sitemap", e);
-            }
-            DOMResult dr = new DOMResult();
-            th.setResult(dr);
-            DefaultHandler dh = new TransformerHandlerAdapter(th);
-            DefaultHandler ch = new CustomizationHandler(dh);
-            XMLReader xreader = XMLReaderFactory.createXMLReader();
-            xreader.setContentHandler(ch);
-            xreader.setDTDHandler(ch);
-            xreader.setEntityResolver(ch);
-            xreader.setErrorHandler(ch);
-            xreader.parse(new InputSource(new StringReader(Xml.serialize(siteMapDoc,false, true))));
-            siteMapDoc = dr.getNode().getOwnerDocument();
-            if (siteMapDoc == null) {
-                if (dr.getNode() instanceof Document) {
-                    siteMapDoc = (Document) dr.getNode();
-                } else {
-                    throw new RuntimeException("XML result is not a Document though it should be");
-                }
-            }
-        } else {
-            throw new RuntimeException("TransformerFactory instance does not provide SAXTransformerFactory!");
-        }
-        
-        readSiteMap(siteMapDoc.getDocumentElement());
-        
-        aliasMaps = new HashMap<String, Map<String, String>>();
-        pageMaps = new HashMap<String, Map<String, String>>();
-        
-        Resource res = ResourceUtil.getResource("/WEB-INF/sitemap-aliases.xml");
-        if(res.exists()) {
-            readSiteMapAliases(Xml.parseMutable(res));
-        }
-            
-        ModuleInfo moduleInfo = ModuleInfo.getInstance();
-        Set<String> moduleNames = moduleInfo.getModules();
-        Iterator<String> it = moduleNames.iterator();
-        while(it.hasNext()) {
-            res = ResourceUtil.getResource("module://" + it.next() + "/conf/sitemap-aliases.xml");
-            if(res.exists()) {
-                readSiteMapAliases(Xml.parseMutable(res));
-            }
-        }
-        
-        }
-        
-    }
-   
-    
-    private void readSiteMap(Element siteMapElem) {
         pageList = new ArrayList<Page>();
         pageNameToPage = new HashMap<String, Page>();
         pageAlternativeToPage = new HashMap<String, Page>();
         pageAliasToPage = new HashMap<String, Page>();
+        
+        if(siteMapFile.exists()) {
+            
+            Document siteMapDoc = Xml.parseMutable(siteMapFile);
+            
+            IncludesResolver iresolver = new IncludesResolver(null, "config-include");
+            // Make sure list of dependencies only contains the file itself
+            fileDependencies.clear();
+            fileDependencies.add(siteMapFile);
+            FileIncludeEventListener listener = new FileIncludeEventListener() {
+    
+                public void fileIncluded(FileIncludeEvent event) {
+                    fileDependencies.add(event.getIncludedFile());
+                }
+    
+            };
+            iresolver.registerListener(listener);
+            iresolver.resolveIncludes(siteMapDoc);
+            
+            TransformerFactory tf = TransformerFactory.newInstance();
+            if (tf.getFeature(SAXTransformerFactory.FEATURE)) {
+                SAXTransformerFactory stf = (SAXTransformerFactory) tf;
+                TransformerHandler th;
+                try {
+                    th = stf.newTransformerHandler();
+                } catch (TransformerConfigurationException e) {
+                   throw new XMLException("Error reading sitemap", e);
+                }
+                DOMResult dr = new DOMResult();
+                th.setResult(dr);
+                DefaultHandler dh = new TransformerHandlerAdapter(th);
+                DefaultHandler ch = new CustomizationHandler(dh);
+                XMLReader xreader = XMLReaderFactory.createXMLReader();
+                xreader.setContentHandler(ch);
+                xreader.setDTDHandler(ch);
+                xreader.setEntityResolver(ch);
+                xreader.setErrorHandler(ch);
+                xreader.parse(new InputSource(new StringReader(Xml.serialize(siteMapDoc,false, true))));
+                siteMapDoc = dr.getNode().getOwnerDocument();
+                if (siteMapDoc == null) {
+                    if (dr.getNode() instanceof Document) {
+                        siteMapDoc = (Document) dr.getNode();
+                    } else {
+                        throw new RuntimeException("XML result is not a Document though it should be");
+                    }
+                }
+            } else {
+                throw new RuntimeException("TransformerFactory instance does not provide SAXTransformerFactory!");
+            }
+            
+            readSiteMap(siteMapDoc.getDocumentElement());
+            
+            aliasMaps = new HashMap<String, Map<String, String>>();
+            pageMaps = new HashMap<String, Map<String, String>>();
+            
+            Resource res = ResourceUtil.getResource("/WEB-INF/sitemap-aliases.xml");
+            if(res.exists()) {
+                readSiteMapAliases(Xml.parseMutable(res));
+            }
+                
+            ModuleInfo moduleInfo = ModuleInfo.getInstance();
+            Set<String> moduleNames = moduleInfo.getModules();
+            Iterator<String> it = moduleNames.iterator();
+            while(it.hasNext()) {
+                res = ResourceUtil.getResource("module://" + it.next() + "/conf/sitemap-aliases.xml");
+                if(res.exists()) {
+                    readSiteMapAliases(Xml.parseMutable(res));
+                }
+            }
+        
+            provided = true;
+        }
+        
+    }
+   
+    public boolean isProvided() {
+        return provided;
+    }
+    
+    private void readSiteMap(Element siteMapElem) {
         List<Element> pageElems = DOMUtils.getChildElementsByTagName(siteMapElem, "page");
         for(Element pageElem: pageElems) {
             Page page = readPage(pageElem);

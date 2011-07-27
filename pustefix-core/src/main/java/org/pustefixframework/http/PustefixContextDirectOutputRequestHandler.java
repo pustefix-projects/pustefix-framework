@@ -38,6 +38,7 @@ import de.schlund.pfixcore.auth.AuthConstraint;
 import de.schlund.pfixcore.workflow.ContextImpl;
 import de.schlund.pfixcore.workflow.ContextResourceManager;
 import de.schlund.pfixcore.workflow.DirectOutputState;
+import de.schlund.pfixcore.workflow.PageProvider;
 import de.schlund.pfixcore.workflow.PageRequest;
 import de.schlund.pfixxml.PfixServletRequest;
 import de.schlund.pfixxml.resources.FileResource;
@@ -68,7 +69,7 @@ import de.schlund.pfixxml.resources.FileResource;
  * @author <a href="mailto:jtl@schlund.de">Jens Lautenbacher</a>
  * @version $Id: DirectOutputServlet.java 3515 2008-04-28 22:11:18Z jenstl $
  */
-public class PustefixContextDirectOutputRequestHandler extends AbstractPustefixRequestHandler {
+public class PustefixContextDirectOutputRequestHandler extends AbstractPustefixRequestHandler implements PageProvider {
     
     private Logger                    LOG       = Logger.getLogger(this.getClass());
     private DirectOutputServiceConfig config;

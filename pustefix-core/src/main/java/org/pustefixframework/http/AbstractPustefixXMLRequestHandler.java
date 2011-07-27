@@ -50,11 +50,15 @@ import javax.xml.transform.stream.StreamResult;
 import org.apache.log4j.Logger;
 import org.pustefixframework.config.contextxmlservice.AbstractXMLServletConfig;
 import org.pustefixframework.config.contextxmlservice.ServletManagerConfig;
+import org.springframework.context.ApplicationContext;
+import org.springframework.context.ApplicationContextAware;
 import org.w3c.dom.Document;
+import org.w3c.dom.Element;
 
 import de.schlund.pfixcore.exception.PustefixApplicationException;
 import de.schlund.pfixcore.exception.PustefixCoreException;
 import de.schlund.pfixcore.exception.PustefixRuntimeException;
+import de.schlund.pfixcore.workflow.PageProvider;
 import de.schlund.pfixxml.IncludePartsInfoParsingException;
 import de.schlund.pfixxml.PfixServletRequest;
 import de.schlund.pfixxml.RenderContext;
@@ -85,7 +89,7 @@ import de.schlund.pfixxml.util.Xslt;
  * getDom(HttpServletRequest req, HttpServletResponse res)
  * which returns a SPDocument. <br>
  */
-public abstract class AbstractPustefixXMLRequestHandler extends AbstractPustefixRequestHandler {
+public abstract class AbstractPustefixXMLRequestHandler extends AbstractPustefixRequestHandler implements PageProvider, ApplicationContextAware {
 
     //~ Instance/static variables ..................................................................
     // how to write xml to the result stream
@@ -165,6 +169,7 @@ public abstract class AbstractPustefixXMLRequestHandler extends AbstractPustefix
     private AdditionalTrailInfo additionalTrailInfo = null;
     
     private SessionCleaner sessionCleaner;
+    private ApplicationContext applicationContext;
     
     //~ Methods ....................................................................................
     /**
@@ -751,6 +756,23 @@ public abstract class AbstractPustefixXMLRequestHandler extends AbstractPustefix
 
     private void renderFontify(SPDocument spdoc, HttpServletResponse res, TreeMap<String, Object> paramhash) throws TargetGenerationException, TransformerException, IOException {
         Templates stylevalue = (Templates) generator.createXSLLeafTarget(FONTIFY_SSHEET).getValue();
+        if(!siteMap.isProvided()) {
+            //if application doesn't provide a sitemap, generate a temporary one 
+            //from the list of registered pages for displaying the page status
+            Document doc = Xml.createDocument();
+            Element siteMapElem = doc.createElement("sitemap");
+            doc.appendChild(siteMapElem);
+            for(PageProvider pageProvider: applicationContext.getBeansOfType(PageProvider.class).values()) {
+                String[] pages = pageProvider.getRegisteredPages();
+                for(String page: pages) {
+                    Element pageElem = doc.createElement("page");
+                    doc.getDocumentElement().appendChild(pageElem);
+                    pageElem.setAttribute("name", page);
+                }
+            }
+            doc = Xml.parse(generator.getXsltVersion(), doc);
+            paramhash.put(TargetGenerator.XSLPARAM_SITEMAP, doc.getDocumentElement());
+        }
         Xslt.transform(spdoc.getDocument(), stylevalue, paramhash, new StreamResult(res.getOutputStream()));
     }
 
@@ -1049,6 +1071,10 @@ public abstract class AbstractPustefixXMLRequestHandler extends AbstractPustefix
 
     public void setIncludePartsEditableByDefault(boolean includePartsEditableByDefault) {
         this.includePartsEditableByDefault = includePartsEditableByDefault;
+    }
+    
+    public void setApplicationContext(ApplicationContext applicationContext) {
+        this.applicationContext = applicationContext;
     }
     
 }
