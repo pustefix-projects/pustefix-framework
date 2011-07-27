@@ -183,7 +183,13 @@ public class ModuleResource implements Resource {
     }
     
     public org.springframework.core.io.Resource createRelative(String relativePath) throws IOException {
-        String parentPath = URLUtils.getParentPath(uri.getPath());
+        String parentPath = null;
+        if(!isFile()) {
+            parentPath = uri.getPath();
+        } else {
+            parentPath = URLUtils.getParentPath(uri.getPath());
+        }
+        if(parentPath.endsWith("/")) parentPath = parentPath.substring(0, parentPath.length()-1);
         try {
             URI relUri = new URI(uri.getScheme(), uri.getAuthority(), parentPath + "/" + relativePath , null);
             return ResourceUtil.getResource(relUri);
