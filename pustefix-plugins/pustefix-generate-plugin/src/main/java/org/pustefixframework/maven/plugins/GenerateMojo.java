@@ -18,9 +18,6 @@
 package org.pustefixframework.maven.plugins;
 
 import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileNotFoundException;
-import java.io.InputStream;
 import java.io.StringWriter;
 import java.io.Writer;
 import java.lang.reflect.Method;
@@ -31,10 +28,6 @@ import java.util.List;
 import org.apache.maven.plugin.AbstractMojo;
 import org.apache.maven.plugin.MojoExecutionException;
 import org.apache.maven.project.MavenProject;
-import org.w3c.dom.Document;
-import org.w3c.dom.Element;
-
-import de.schlund.pfixxml.util.XMLUtils;
 
 
 /**
@@ -54,18 +47,6 @@ public class GenerateMojo extends AbstractMojo {
      * @required
      */
     private File docroot;
-
-    /**
-     * @parameter default-value="${basedir}/src/main/webapp/WEB-INF/depend.xml"
-     * @required
-     */
-    private File config;
-
-    /**
-     * @parameter default-value="${basedir}/src/main/webapp/WEB-INF/project.xml"
-     * @required
-     */
-    private File projectConfig;
 
     /**
      * @parameter default-value="error"
@@ -125,19 +106,6 @@ public class GenerateMojo extends AbstractMojo {
         } catch (Exception x) {
             throw new MojoExecutionException("Can't create project runtime classloader", x);
         }
-    }
-
-    private String getProjectName() throws MojoExecutionException {
-        InputStream stream;
-        try {
-            stream = new FileInputStream(config);
-        } catch (FileNotFoundException e) {
-            throw new MojoExecutionException(" Cannot find config file: " + e);
-        }
-        Document depend = XMLUtils.parse(stream);
-        Element make = (Element) depend.getElementsByTagName("make").item(0);
-        String projectName = make.getAttribute("project");
-        return projectName;
     }
 
     private File getWarDir() {
