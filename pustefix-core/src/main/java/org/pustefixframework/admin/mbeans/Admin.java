@@ -1,16 +1,21 @@
 package org.pustefixframework.admin.mbeans;
 
+import java.io.BufferedReader;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
 import java.lang.management.ManagementFactory;
+import java.net.ServerSocket;
+import java.net.Socket;
+import java.util.ArrayList;
 import java.util.Hashtable;
+import java.util.List;
 import java.util.Set;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import javax.management.MBeanServer;
-import javax.management.Notification;
-import javax.management.NotificationListener;
 import javax.management.ObjectName;
-
 
 import de.schlund.pfixcore.exception.PustefixRuntimeException;
 
@@ -20,34 +25,32 @@ import de.schlund.pfixcore.exception.PustefixRuntimeException;
  * @author mleidig@schlund.de
  *
  */
-public class Admin implements AdminMBean, NotificationListener {
+public class Admin implements AdminMBean {
     
     public final static String JMX_NAME = "Pustefix:type=Admin";
     
     private Logger LOG = Logger.getLogger(Admin.class.getName());
+   
+    private int port;
     
-    public Admin() {
+    public Admin(int port) {
+        this.port = port;
         try {
-            AdminBroadcaster ab = new AdminBroadcaster();
-            ObjectName on = new ObjectName(AdminBroadcaster.JMX_NAME);
-            ManagementFactory.getPlatformMBeanServer().registerMBean(ab, on);
-            ManagementFactory.getPlatformMBeanServer().addNotificationListener(on, this, null, null);
+           
+            Thread listener = new ListenerThread(port);
+            listener.start();
+            
         } catch(Exception x) {
             LOG.log(Level.SEVERE, "Can't register AdminBroadcaster MBean", x);
         }    
     }
     
-    public synchronized void handleNotification(Notification notification, Object handback) {
-        if(notification.getType().equals(AdminBroadcaster.NOTIFICATION_TYPE_RELOAD)) {
-            String realPath = (String)notification.getUserData();
-            reload(realPath);
-        }
+    public int getPort() {
+        return port;
     }
     
-   
     
-    public synchronized void reload(String workDir)  {
-        
+    public synchronized void reload(String workDir) {
         try {Thread.sleep(500);} catch(InterruptedException x) {}
         ObjectName objectName = getWebModuleObjectName(workDir);
         if(objectName==null) throw new PustefixRuntimeException("Can't reload webapp because "
@@ -80,6 +83,80 @@ public class Admin implements AdminMBean, NotificationListener {
         } catch(Exception x) {
             throw new PustefixRuntimeException("Error while trying to find WebModule mbean name.",x);
         } 
+    }
+    
+    class ListenerThread extends Thread {
+        
+        int port;
+        
+        ListenerThread(int port) {
+            super("Pustefix-Admin-Listener");
+            this.port = port;
+        }
+        
+        @Override
+        public void run() {
+            
+            ServerSocket serverSock = null;
+            try {
+                serverSock = new ServerSocket(port);
+            } catch(IOException x) {
+                LOG.log(Level.SEVERE, "Can't listen on port " + port, x);
+            }
+            while(!isInterrupted()) {
+                try {
+                    Socket sock = serverSock.accept();
+                    ClientThread client = new ClientThread(sock);
+                    client.start(); 
+                } catch(IOException x) {
+                    LOG.log(Level.SEVERE, "I/O error during connection", x);
+                }
+            }
+        }
+        
+    }
+    
+    class ClientThread extends Thread {
+        
+        Socket sock;
+        
+        ClientThread(Socket sock) {
+            super("Pustefix-Admin-Client");
+            this.sock = sock;
+        }
+        
+        @Override
+        public void run() {
+            try {
+                InputStream in = sock.getInputStream();
+                BufferedReader reader = new BufferedReader(new InputStreamReader(in, "utf-8"));
+                String cmd = null;
+                List<String> params = new ArrayList<String>();
+                String line = null;
+                while((line = reader.readLine()) != null) {
+                    if(cmd == null) {
+                        cmd = line;
+                    } else {
+                        params.add(line);
+                    }
+                }
+                if(cmd == null) {
+                    LOG.log(Level.SEVERE, "Missing command.");
+                } else if(cmd.equals("reload")) {
+                    if(params.size() == 1) {
+                        reload(params.get(0));
+                    } else {
+                        LOG.log(Level.SEVERE, "Command 'reload' called with " + params.size() + " params.");
+                    }
+                } else {
+                    LOG.log(Level.SEVERE, "Command '" + cmd + "' not supported.");
+                }
+                sock.close();
+            } catch(IOException x) {
+                LOG.log(Level.SEVERE, "I/O error during admin request", x);
+            }
+        }
+        
     }
     
 }
