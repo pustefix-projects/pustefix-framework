@@ -24,12 +24,17 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
+import java.io.OutputStream;
+import java.io.OutputStreamWriter;
+import java.io.PrintWriter;
 import java.io.Serializable;
 import java.lang.management.GarbageCollectorMXBean;
 import java.lang.management.ManagementFactory;
 import java.lang.management.MemoryMXBean;
 import java.lang.management.MemoryPoolMXBean;
 import java.lang.management.MemoryUsage;
+import java.net.Socket;
+import java.net.URL;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
@@ -53,7 +58,7 @@ import javax.xml.transform.Templates;
 import javax.xml.transform.stream.StreamResult;
 
 import org.apache.log4j.Logger;
-import org.pustefixframework.admin.mbeans.AdminBroadcaster;
+import org.pustefixframework.admin.mbeans.Admin;
 import org.pustefixframework.container.spring.http.UriProvidingHttpRequestHandler;
 import org.pustefixframework.util.FrameworkInfo;
 import org.springframework.beans.factory.DisposableBean;
@@ -129,22 +134,28 @@ public class PustefixInternalsRequestHandler implements UriProvidingHttpRequestH
                    if((System.currentTimeMillis() - startTime) > reloadTimeout) {
                        messageList.addMessage(Message.Level.INFO, "Scheduled webapp reload.");
                        serialize();
-                       ObjectName mbeanName = new ObjectName(AdminBroadcaster.JMX_NAME);
+                       ObjectName mbeanName = new ObjectName(Admin.JMX_NAME);
                        MBeanServer server = ManagementFactory.getPlatformMBeanServer();
-                       if(server.isRegistered(mbeanName)) {
-                           if(server != null) {
-                               sessionAdmin.invalidateSessions();
-                               File workDir = (File)servletContext.getAttribute("javax.servlet.context.tempdir");
-                               if(workDir != null) {
-                                   String[] paramTypes = {"java.lang.String"};
-                                   Object[] params = {workDir.getPath()};
-                                   server.invoke(mbeanName, "reload", params, paramTypes);
-                               } else {
-                                   messageList.addMessage(Message.Level.WARN, "Missing servlet context attribute 'javax.servlet.context.tempdir'.");
+                       if(server != null && server.isRegistered(mbeanName)) {
+                           sessionAdmin.invalidateSessions();
+                           File workDir = (File)servletContext.getAttribute("javax.servlet.context.tempdir");
+                           if(workDir != null) {
+                               try {
+                                   int port = (Integer)server.getAttribute(mbeanName, "Port");
+                                   Socket sock = new Socket("localhost", port);
+                                   OutputStream out = sock.getOutputStream();
+                                   PrintWriter writer = new PrintWriter(new OutputStreamWriter(out, "utf-8"));
+                                   writer.println("reload");
+                                   writer.println(workDir.getPath());
+                                   writer.close();
+                               } catch(Exception x) {
+                                   messageList.addMessage(Message.Level.WARN, x.getMessage());
                                }
+                           } else {
+                               messageList.addMessage(Message.Level.WARN, "Missing servlet context attribute 'javax.servlet.context.tempdir'.");
                            }
                        } else {
-                           messageList.addMessage(Message.Level.WARN, "Can't do reload because Admin mbean isn't registered.");
+                           messageList.addMessage(Message.Level.WARN, "Can't do reload because Admin mbean isn't available.");
                        }
                    } else {
                        messageList.addMessage(Message.Level.WARN, "Skipped repeated webapp reload scheduling.");
