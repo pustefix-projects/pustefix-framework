@@ -579,12 +579,7 @@ userList.addUser(user);</programlisting>
         <para>
           Remove the sample page element and the sample standardpage alement.
         </para>
-        <para>
-          Add the following page element within the navigation element.
-        </para>
-        <programlisting language="xml"><![CDATA[<page handler="/xml/app" name="Userform"/>
-<page handler="/xml/app" name="Overview"/>]]></programlisting>
-        <para>and this after the standardmetatags element:</para>
+        <para>Add the standardmetatags element:</para>
         <programlisting language="xml"><![CDATA[<standardpage name="Userform" xml="xml/frame.xml"/>
 <standardpage name="Overview" xml="xml/frame.xml"/>]]></programlisting>
       </section>

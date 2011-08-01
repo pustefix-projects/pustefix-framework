@@ -58,7 +58,7 @@ public class TargetGeneratorTest extends TestCase {
     public void testTarget() throws Exception {
         TargetGenerator gen;
 
-        gen = create("<make project='foo' lang='bar'>" + "  <navigation/> " + "  <target name='master.xsl' type='xsl'>" + "    <depxml name='core/xsl/master.xsl'/>"
+        gen = create("<make project='foo' lang='bar'>" + "  <target name='master.xsl' type='xsl'>" + "    <depxml name='core/xsl/master.xsl'/>"
                 + "    <depxsl name='core/xsl/customizemaster.xsl'/>" + "  </target>" + "</make>");
         assertEquals(3, gen.getAllTargets().size());
         // TODO: more tests

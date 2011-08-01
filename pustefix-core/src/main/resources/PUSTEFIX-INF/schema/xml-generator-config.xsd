@@ -5,7 +5,6 @@
   <xsd:element name="make">
     <xsd:complexType>
       <xsd:sequence>
-        <xsd:element name="navigation" type="navigation-type"/>
         <xsd:element name="namespaces" type="namespaces-type"/>
         <xsd:element name="global" type="global-type" minOccurs="0"/>
         <xsd:choice minOccurs="1" maxOccurs="unbounded">
@@ -21,15 +20,6 @@
       <xsd:attribute name="project" type="xsd:string" use="optional"/>
     </xsd:complexType>
   </xsd:element>
-  
-  <xsd:complexType name="navigation-type">
-    <xsd:sequence>
-      <xsd:choice minOccurs="0" maxOccurs="unbounded">
-        <xsd:element name="page" type="page-type"/>
-        <xsd:element name="config-include" type="config-include-type"/>
-      </xsd:choice>
-    </xsd:sequence>
-  </xsd:complexType>
   
   <xsd:complexType name="page-type">
     <xsd:sequence>

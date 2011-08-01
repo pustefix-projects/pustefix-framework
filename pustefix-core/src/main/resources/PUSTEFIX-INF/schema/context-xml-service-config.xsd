@@ -697,7 +697,6 @@
     <xs:attribute name="section" use="optional">
       <xs:simpleType>
         <xs:restriction base="xs:token">
-          <xs:enumeration value="navigation"/>
           <xs:enumeration value="targets"/>
           <xs:enumeration value="resources"/>
           <xs:enumeration value="pageflows"/>

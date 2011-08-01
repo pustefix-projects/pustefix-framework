@@ -7,12 +7,6 @@
     <namespace-declaration prefix="ixsl" url="http://www.w3.org/1999/XSL/Transform"/>
   </namespaces>
 
-  <navigation>
-    <page handler="/xml/app" name="Welcome"/>
-    <page handler="/xml/app" name="Guess"/>
-    <page handler="/xml/app" name="Result"/>
-  </navigation>
-
   <standardmaster>
     <include stylesheet="xsl/skin.xsl"/>
   </standardmaster>

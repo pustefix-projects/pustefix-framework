@@ -206,12 +206,6 @@
     <programlisting language="xml"><![CDATA[<?xml version="1.0" encoding="utf-8"?>
 <make lang="en_GB" project="firstapp">
 
-  <navigation>
-      <page handler="/xml/app" name="EnterData"/>
-      <page handler="/xml/app" name="ReviewData"/>
-      <page handler="/xml/app" name="Confirm"/>
-  </navigation>
-
   <!--
     Metatags have been left out.
   -->

@@ -882,7 +882,7 @@ public class TargetGenerator implements ResourceVisitor, ServletContextAware, In
             try {
                 virtual.addParam(XSLPARAM_SITEMAP, siteMap.getSiteMapXMLElement(getXsltVersion(), params.get("lang")));
             } catch (Exception e) {
-                throw new XMLException("Cannot get navigation tree", e);
+                throw new XMLException("Cannot get sitemap", e);
             }
             
             if (!depxmls.contains(key) && !depxsls.contains(key)) {

@@ -170,4 +170,26 @@
 
   </section>
 
+  <section xml:id="news.0_17_0">
+    <title>What's new in Pustefix 0.17.0</title>
+  
+    <para>Pustefix 0.17.0 focuses on XSLT rendering improvements. It brings the so-called render extensions, a mechanism which allows
+          to call an extension function to produce additional output and write it to the result of the main transformation (on the last
+          transformation level).
+    </para>
+    <para>The default render extension implementation, the so-called render include mechanism, supports the standalone rendering/outputting of 
+        include parts.
+        Thus you're able to include parts at runtime, e.g. based on the data from the result tree. In contrast to the traditional runtime
+        includes, which are restricted to simple content and a subset of tags available on the last transformation level, the render includes support     
+        arbitrary content because the metatags and master XSLT transformations are also applied (see <xref linkend="xslt.renderextensions"/>).
+    </para>
+    <para>
+        Render include parts not just can be rendered within a regular main transformation, but can be also rendered standalone, i.e. you can 
+        request a rendered part via AJAX to dynamically update your page. 
+    </para>
+
+    <para>If you're migrating an existing appliation to Pustefix 0.17.0, you should have a look at <xref linkend="upgrade"/>.</para>
+  
+  </section>
+
 </chapter>

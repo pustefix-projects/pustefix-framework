@@ -12,12 +12,6 @@
     <namespace-declaration prefix="ixsl" url="http://www.w3.org/1999/XSL/Transform"/>
   </namespaces>
   
-  <navigation>
-    <page name="home" handler="/xml/config" accesskey="H"/>
-    <page name="include" handler="/xml/config" accesskey="I"/>
-    <page name="dynamic" handler="/xml/config" accesskey="D"/>
-  </navigation>
-
   <standardmaster>
     <!-- <include stylesheet="xsl/skin.xsl"/> -->
   </standardmaster>

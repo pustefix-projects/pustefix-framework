@@ -23,7 +23,6 @@ import org.pustefixframework.config.generic.ParsingUtils;
 import org.pustefixframework.config.project.ProjectInfo;
 import org.springframework.beans.factory.config.BeanDefinition;
 import org.springframework.beans.factory.config.BeanDefinitionHolder;
-import org.springframework.beans.factory.config.RuntimeBeanNameReference;
 import org.springframework.beans.factory.support.BeanDefinitionBuilder;
 import org.springframework.beans.factory.support.BeanDefinitionRegistry;
 import org.w3c.dom.Element;

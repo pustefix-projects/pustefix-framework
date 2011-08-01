@@ -14,7 +14,7 @@
 
   <xs:complexType name="configFragmentsType">
     <xs:sequence>
-      <xs:element name="navigation" type="fr:navigationType" maxOccurs="unbounded" minOccurs="0" />
+      <xs:element name="sitemap" type="fr:sitemapType" maxOccurs="unbounded" minOccurs="0" />
       <xs:element name="targets" type="fr:targetsType" maxOccurs="unbounded" minOccurs="0" />
       <xs:element name="resources" type="fr:resourcesType" maxOccurs="unbounded" minOccurs="0" />
       <xs:element name="pageflows" type="fr:pageflowsType" maxOccurs="unbounded" minOccurs="0" />
@@ -34,7 +34,7 @@
     <xs:attribute name="id" type="xs:ID" />
   </xs:complexType>
 
-  <xs:complexType name="navigationType">
+  <xs:complexType name="sitemapType">
     <xs:complexContent>
       <xs:extension base="fr:sectionType">
         <xs:sequence>

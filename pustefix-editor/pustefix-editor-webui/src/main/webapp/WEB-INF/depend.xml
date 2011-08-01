@@ -1,21 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <make project="editor2" lang="en">
-  <navigation>
-    <page name="login"/>
-    <page name="start"/>
-    <page name="home"/>
-    <page name="pages"/>
-    <page name="targets"/>
-    <page name="images"/>
-    <page name="includes"/>
-    <page name="dynincludes"/>
-    <page name="search"/>
-    <page name="logout"/>
-    <page name="jumptopage"/>
-    <page name="sessionmanager"/>
-    <page name="useradmin"/>
-    <page name="useredit"/>
-  </navigation>
   
   <global>
     <param name="outputdoctype-public" value="-//W3C//DTD HTML 4.01//EN"/>

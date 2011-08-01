@@ -12,10 +12,6 @@
      <namespace-declaration prefix="ixsl" url="http://www.w3.org/1999/XSL/Transform"/>
   </namespaces>
 
-  <navigation>
-      <page handler="/xml/calc" name="Calculator"/>
-  </navigation>
-
   <standardmaster>
     <include stylesheet="xsl/skin.xsl"/>
   </standardmaster>

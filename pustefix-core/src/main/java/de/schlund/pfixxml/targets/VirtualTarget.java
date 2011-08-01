@@ -260,7 +260,7 @@ public abstract class VirtualTarget extends TargetImpl {
             }
         }
         
-        // check target generator config / navigation tree
+        // check target generator config 
         tmpmodtime = getTargetGenerator().getConfigMaxModTime();
         maxmodtime = Math.max(tmpmodtime, maxmodtime);
 

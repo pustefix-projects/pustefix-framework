@@ -13,15 +13,6 @@
     <namespace-declaration prefix="ixsl" url="http://www.w3.org/1999/XSL/Transform"/>
   </namespaces>
   
-  <navigation>
-    <page name="home"/>
-    <page name="login"/>
-    <page name="accountoverview" accesskey="H"/>
-    <page name="accountdetails" accesskey="O"/>
-    <page name="test"/>
-    <page name="logout"/>
-  </navigation>
-  
   <standardmaster/>
 
   <standardmetatags>

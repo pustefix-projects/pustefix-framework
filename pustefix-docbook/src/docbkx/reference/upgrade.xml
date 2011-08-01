@@ -5,6 +5,31 @@
 >
   <title>Upgrading to a newer Pustefix version</title>
 
+  <section xml:id="upgrade.0_17_to_0_18">
+    <title>Upgrading from Pustefix 0.17 to 0.18</title>
+
+    <section xml:id="upgrade.0_17_to_0_18.depend_xml">
+      <title>depend.xml</title>
+      <para>
+        With Pustefix 0.18 the navigation tree in <literal>depend.xml</literal> became obsolete. You should completely remove the
+        <literal>&lt;navigation&gt;</literal> element and its content. If you still need a declarative page structure available during
+        the XSL transformations, you can alternatively move the child elements of <literal>&lt;navigation&gt;</literal> into an own
+        file called <literal>sitemap.xml</literal> under the <literal>&lt;sitemap&gt;</literal> root tag 
+        (see <xref linkend="configuration.sitemap"/>).
+      </para>
+      <para> 
+        Making the navigation tree obsolete, the XSL parameter <literal>$navitree</literal> was also removed. If you're application's
+        providing a <literal>sitemap.xml</literal> file, you can reference its content instead by using the new XSL parameter
+        <literal>$sitemap</literal>. Without a <literal>sitemap.xml</literal> the parameter value will be empty.
+      </para>
+      <para>
+        If you didn't use the navigation tree within you XSL transformations you can remove the navigation without substitution because
+        Pustefix itself doesn't need it itself any longer.
+      </para>
+    </section>
+   
+  </section>
+
   <section xml:id="upgrade.0_16_to_0_17">
     <title>Upgrading from Pustefix 0.16 to 0.17</title>
     <para>

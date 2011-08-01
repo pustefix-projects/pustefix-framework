@@ -269,9 +269,7 @@
   <section xml:id="configuration.depend">
     <title>Page Configuration (depend.xml)</title>
     <para>
-      The depend.xml configuration file serves two purposes:
-      First, it is used to create the hierarchical page structure of the project by
-      defining a tree of pages. Then, it is used to define the internal structure of the
+      The depend.xml is used to define the internal structure of the
       pages by defining, for every single page, the tree of transformations that need to be
       applied to certain files to get the final stylesheet (which is the representation of
       the page in Pustefix). For an overview over the transformation aspect of the whole
@@ -286,16 +284,6 @@
       <para>
         The structure of the config file is show below:
         <programlisting language="xml"><![CDATA[<make project="MyProject" lang="en" themes="ThemeA ThemeB ... default">
-  <navigation>
-    <page name="foo" accesskey="F">
-      <page name="sub_foo1"/>
-      <page name="sub_foo2"/>
-    </page>
-    <page name="bar">...</page>
-    
-    <!-- Configuration fragements are supported as well -->
-    <config-include file="conf/myfile.xml" section="navigation" module="mymodule"/>
-  </navigation>
 
   <!--
     The global section allows to set default values for ALL pages defined via the
@@ -313,11 +301,10 @@
   <config-include file="conf/myfile.xml" section="targets" module="mymodule"/>
 
   <!--
-    The only other tags allowed besides the navigation tag are target, global,
-    standardmaster, standardmetatags and standardpage. The latter three are only
-    convenience tags that can be expressed fully in terms of target tags
-    (Expanding those tags is one of the duties of the runtime transformation of
-    the depend.xml file mentioned above).
+    The other allowed tags are target, global, standardmaster, standardmetatags and 
+    standardpage. The latter three are only convenience tags that can be expressed 
+    fully in terms of target tags (Expanding those tags is one of the duties of the 
+    runtime transformation of the depend.xml file mentioned above).
   -->
   <target name="a_target_name.xsl" type="[xsl|xml]">...</target>
   <target name="another_target_name.xml" type="[xsl|xml]">...</target>...
