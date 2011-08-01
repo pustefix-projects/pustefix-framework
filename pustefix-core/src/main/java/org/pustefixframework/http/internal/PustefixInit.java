@@ -277,19 +277,25 @@ public class PustefixInit {
                 ObjectName mletName = new ObjectName(Admin.JMX_NAME + ",subtype=MLet");
                 MBeanServer server = ManagementFactory.getPlatformMBeanServer();
                 if(!server.isRegistered(mletName)) {
-                    server.createMBean(mletClass, mletName);
-                    LOG.debug("Created AdminMlet.");
-                    Object mletParams[] = {PustefixInit.class.getProtectionDomain().getCodeSource().getLocation()};
-                    String mletSignature[] = {"java.net.URL"};
-                    server.invoke(mletName, "addURL", mletParams, mletSignature);
-                    String mbeanClass = "org.pustefixframework.admin.mbeans.Admin";
-                    ObjectName mbeanName = new ObjectName(Admin.JMX_NAME);
-                    if(!server.isRegistered(mbeanName)) {
-                        Object[] params = new Object[] {findFreePort()};
-                        String[] signature = new String[] {"int"};
-                        server.createMBean(mbeanClass, mbeanName, mletName, params, signature);
-                        LOG.debug("Created Admin mbean.");
-                    } else LOG.debug("Already found a registered Admin mbean.");
+                    ClassLoader cl = Thread.currentThread().getContextClassLoader();
+                    try {
+                        Thread.currentThread().setContextClassLoader(null);
+                        server.createMBean(mletClass, mletName);
+                        LOG.debug("Created AdminMlet.");
+                        Object mletParams[] = {PustefixInit.class.getProtectionDomain().getCodeSource().getLocation()};
+                        String mletSignature[] = {"java.net.URL"};
+                        server.invoke(mletName, "addURL", mletParams, mletSignature);
+                        String mbeanClass = "org.pustefixframework.admin.mbeans.Admin";
+                        ObjectName mbeanName = new ObjectName(Admin.JMX_NAME);
+                        if(!server.isRegistered(mbeanName)) {
+                            Object[] params = new Object[] {findFreePort()};
+                            String[] signature = new String[] {"int"};
+                            server.createMBean(mbeanClass, mbeanName, mletName, params, signature);
+                            LOG.debug("Created Admin mbean.");
+                        } else LOG.debug("Already found a registered Admin mbean.");
+                    } finally {
+                        Thread.currentThread().setContextClassLoader(cl);
+                    }
                 } else LOG.debug("Already found a registered AdminMLet.");
             } catch(Exception x) {
                 LOG.error("Can't register Admin MBean", x);
