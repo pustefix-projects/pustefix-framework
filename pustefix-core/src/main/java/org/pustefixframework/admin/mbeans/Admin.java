@@ -5,8 +5,12 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.lang.management.ManagementFactory;
+import java.lang.reflect.Field;
 import java.net.ServerSocket;
 import java.net.Socket;
+import java.net.URLClassLoader;
+import java.security.AccessControlContext;
+import java.security.ProtectionDomain;
 import java.util.ArrayList;
 import java.util.Hashtable;
 import java.util.List;
@@ -35,14 +39,18 @@ public class Admin implements AdminMBean {
     
     public Admin(int port) {
         this.port = port;
+        Thread listener = new ListenerThread(port);
+        listener.start();
         try {
-           
-            Thread listener = new ListenerThread(port);
-            listener.start();
-            
+            Field field = Thread.class.getDeclaredField("inheritedAccessControlContext");
+            field.setAccessible(true);
+            field.set(listener, new AccessControlContext(new ProtectionDomain[0]));
+            field = URLClassLoader.class.getDeclaredField("acc");
+            field.setAccessible(true);
+            field.set(getClass().getClassLoader(), new AccessControlContext(new ProtectionDomain[0]));
         } catch(Exception x) {
-            LOG.log(Level.SEVERE, "Can't register AdminBroadcaster MBean", x);
-        }    
+            LOG.log(Level.WARNING, "Can't reset AccessControlContext", x);
+        }
     }
     
     public int getPort() {
