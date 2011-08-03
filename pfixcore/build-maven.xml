@@ -18,13 +18,11 @@
   <target name="mvn-initRemoteRepository" depends="mvn-initTaskDefs, mvn-installSshProvider">
     <condition property="remote.repo.available" value="true">
       <and>
-        <isset property="remote.repository.host"/>
-        <isset property="remote.repository.user"/>
-        <isset property="remote.repository.path"/>
+        <isset property="remote.repository.url.releases"/>
       </and>
     </condition>
     <fail unless="remote.repo.available">No remote maven repository configured</fail>
-    <artifact:remoteRepository id="remote.repository" url="scpexe://${remote.repository.host}/${remote.repository.path}" layout="default"/>
+    <artifact:remoteRepository id="remote.repository" url="${remote.repository.url.releases}" layout="default"/>
   </target>
 
   <target name="mvn-installSshProvider" depends="mvn-initTaskDefs">
@@ -51,7 +49,6 @@
           description="Deploy to remote maven repository">
     <artifact:deploy file="${file.pfixcore_jar}" pomRefId="maven.project">
       <artifact:remoteRepository refid="remote.repository">
-        <artifact:authentication username="${remote.repository.user}" privateKey="${user.home}/.ssh/id_dsa"/>
       </artifact:remoteRepository>
       <attach file="${file.pfixcore_srcjar}" classifier="sources" type="jar"/>
       <attach file="${file.pfixcore_data_tgz}" classifier="data" type="tar.gz"/>

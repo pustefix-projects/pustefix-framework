@@ -4,5 +4,5 @@
   <groupId>de.schlund.pfixcore</groupId>
   <artifactId>pfixcore</artifactId>
   <name>pfixcore</name>
-  <version>0.11.2</version>
+  <version>0.11.3-SNAPSHOT</version>
 </project>
