@@ -199,7 +199,6 @@ public abstract class AbstractPustefixRequestHandler implements UriProvidingHttp
                 if (cookie.getName().equalsIgnoreCase("JSESSIONID")) {
                     cookie.setMaxAge(0);
                     cookie.setPath("/");
-System.out.println("/");
                     res.addCookie(cookie);
                     String path = req.getContextPath() + req.getServletPath();
                     if(req.getPathInfo() != null) path += req.getPathInfo();
@@ -207,13 +206,11 @@ System.out.println("/");
                     while((ind = path.indexOf('/', ind + 1)) > -1) {
                       cookie = (Cookie)cookie.clone();
                       cookie.setPath(path.substring(0, ind));
-System.out.println(path.substring(0,ind));
                       res.addCookie(cookie);
                     }
                     if(path.length() > 0) {
                       cookie = (Cookie)cookie.clone();
                       cookie.setPath(path);
-System.out.println(path);
                       res.addCookie(cookie);
                     }
                    
