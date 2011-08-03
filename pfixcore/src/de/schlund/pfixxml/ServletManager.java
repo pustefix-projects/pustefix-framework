@@ -177,6 +177,35 @@ public abstract class ServletManager extends HttpServlet {
             res.addHeader("P3P", p3pHeader);
         }
 
+        // Delete JSESSIONID cookie
+        // Otherwise a redirect loop will be caused when a request with an
+        // invalid JSESSIONID cookie is made
+        Cookie[] cookies = req.getCookies();
+        if (cookies != null) {
+            for (int i = 0; i < cookies.length; i++) {
+                Cookie cookie = cookies[i];
+                if (cookie.getName().equalsIgnoreCase("JSESSIONID")) {
+                    cookie.setMaxAge(0);
+                    cookie.setPath("/");
+                    res.addCookie(cookie);
+                    String path = req.getContextPath() + req.getServletPath();
+                    if(req.getPathInfo() != null) path += req.getPathInfo();
+                    int ind = 0;
+                    while((ind = path.indexOf('/', ind + 1)) > -1) {
+                      cookie = (Cookie)cookie.clone();
+                      cookie.setPath(path.substring(0, ind));
+                      res.addCookie(cookie);
+                    }
+                    if(path.length() > 0) {
+                      cookie = (Cookie)cookie.clone();
+                      cookie.setPath(path);
+                      res.addCookie(cookie);
+                    }
+
+                }
+            }
+        }
+
         if (req.isRequestedSessionIdValid()) {
             session = req.getSession(false);
             has_session = true;
