@@ -248,7 +248,7 @@
               document.attachEvent("onmousemove", de_schlund_pfixcore_console_drag_move);
             }
           </script>
-          <div id="de_schlund_pfixcore_console_divelement" style="position:fixed;top:20px;right:20px;background-color:#aabbee;padding:5px;opacity:0.9;-moz-opacity:0.9;filter:alpha(opacity=90)">
+          <div id="de_schlund_pfixcore_console_divelement" style="position:fixed;top:20px;right:20px;background-color:#aabbee;padding:5px;opacity:0.9;-moz-opacity:0.9;filter:alpha(opacity=90);border-radius: 6px;">
             <div style="display:none">
               <div onMouseDown="de_schlund_pfixcore_console_drag_start(this.parentNode.parentNode, event);" style="text-align:right;">
                 <img border="0" alt="Maximize" src="{{$__contextpath}}/modules/pustefix-core/img/console_maximize.gif" style="cursor:pointer;" onClick="de_schlund_pfixcore_console_maximize(this.parentNode.parentNode.parentNode, event);" onMouseDown="if (event.stopPropagation) event.stopPropagation(); else if (typeof event.cancelBubble != 'undefined') event.cancelBubble = true;"/>

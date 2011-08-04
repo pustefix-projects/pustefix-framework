@@ -3,6 +3,8 @@
 
   <xsl:param name="__contextpath"/>
 
+  <xsl:key name="priokey" match="/pfxinternals/modules/defaultsearch/module" use="@priority"/>
+
   <xsl:template match="/">
     <html>
       <head>
@@ -11,7 +13,7 @@
           body {
             font-family: monospace;
             padding: 5px; 
-            background: #fff; 
+            background: #ddd; 
           }
           a:link {
             color: #000;
@@ -29,23 +31,25 @@
             color: #666;
           }
           div.section {
+            display: none;
             background: #fff;
-            padding: 5px;
-            padding-left: 10px;
+            padding: 10px;
+            border-bottom-left-radius: 10px;
+            border-bottom-right-radius: 10px;
+            border: 1px solid #ccc;
           }
           div.title {
-            background: #999;
+            background: #777;
             color: #fff; 
             font-size: 130%; 
             font-style:italic; 
             padding: 3px; 
             padding-left: 10px; 
             margin-top: 15px;
-            -moz-border-radius: 10px;
-            -webkit-border-radius: 10px;
-            -khtml-border-radius: 10px;
-            border-radius: 10px;
+            border-top-left-radius: 10px;
+            border-top-right-radius: 10px;
             border: 0px solid #333;
+            cursor: pointer;
           }
           div.header {
             background: #000; 
@@ -54,18 +58,30 @@
             font-style:italic; 
             padding: 3px; 
             padding-left: 10px;
-            -moz-border-radius: 10px;
-            -webkit-border-radius: 10px;
-            -khtml-border-radius: 10px;
-            border-radius: 10px;
+            border-top-left-radius: 10px;
+            border-top-right-radius: 10px;
             border: 0px solid #333;
-            margin-bottom: 5px;
+            margin-bottom: 0px;
           }
-          table.navi {
-            border-spacing: 0px;
+          div.navisection {
+            padding:10px;
+            background: #fff;
+            border-bottom-left-radius: 10px;
+            border-bottom-right-radius: 10px;
           }
-          table.navi td {
-            padding-right: 20px;
+          div.navisection div {
+            padding-bottom:10px;
+          }
+          div.navisection a {
+            padding:10px; 
+            padding-left:0px;
+            font-size: 125%;
+          }
+          div.navisection span {
+            text-decoration: underline;
+            padding: 0px;
+            cursor: pointer;
+            font-size: 85%;
           }
           table.actions {
             border-spacing: 0px;
@@ -129,6 +145,11 @@
           div.info {
             font-size: 80%;
           }
+          div.subtitle {
+            font-weight:bold;
+            padding-top: 10px;
+            padding-left: 10px;
+          }
           span.liveclasses {
             color: green;
             font-size: 150%;
@@ -140,6 +161,24 @@
            	font-size: 150%;
            	padding-left: 10px;
           }
+          td.mod {
+            border: 1px solid #ccc;
+            border-radius: 5px;
+            padding: 5px;
+            background-color: #e4e4e4;
+          }
+          div.mod {
+            border: 1px solid #ccc;
+            border-radius: 5px;
+            padding: 5px;
+            background-color: #e4e4e4;
+            margin: 5px;
+          }
+          table.defsearch {
+            border-spacing: 10px;
+            font-size: 85%;
+          }
+          table.defsearch td {padding-right: 0px;}
         </style>
         <script type="text/javascript">
 
@@ -150,53 +189,136 @@
               var e = c[i].indexOf("=");
               var n = e > -1 ? c[i].substr(0,e) : c[i];
               if(n != "") {
-                document.cookie = n + "=;path=<xsl:value-of select="$__contextpath"/>;expires=Thu, 01 Jan 1970 00:00:00 GMT";
+                var path = location.pathname;
+                while(path.length>0) {
+                  document.cookie = n + "=;path=" + path + ";expires=Thu, 01 Jan 1970 00:00:00 GMT";
+                  var ind = path.lastIndexOf('/');
+                  if(ind > -1) {
+                    path = path.substring(0, ind);
+                  }
+                }
+                document.cookie = n + "=;path=/;expires=Thu, 01 Jan 1970 00:00:00 GMT";
                 d++;
               }
             }
             alert("Removed " + d + " cookie" + (d==1 ? "" : "s"));
           }
           
+          function toggle(id) {
+            var selem = document.getElementById("s_"+id);
+            var telem = document.getElementById("t_"+id);
+            if(selem.style.display == 'none' || selem.style.display == '') {
+              selem.style.display = 'block';
+              telem.innerHTML= "-" + telem.innerHTML.substring(1);
+            } else {
+              selem.style.display = 'none';
+              telem.innerHTML= "+" + telem.innerHTML.substring(1);
+            }
+            saveState();
+          }
+          
+          function expand() {
+            var elems = document.getElementsByTagName('div');
+            for(var i=0; i &lt; elems.length; i++) {
+              if(elems[i].className == 'title') {
+                elems[i].innerHTML= "-" + elems[i].innerHTML.substring(1);
+              } else if(elems[i].className == 'section') {
+                elems[i].style.display = 'block';
+              }
+            }
+            saveState();
+          }
+          
+          function collapse() {
+            var elems = document.getElementsByTagName('div');
+            for(var i=0; i &lt; elems.length; i++) {
+              if(elems[i].className == 'title') {
+                elems[i].innerHTML= "+" + elems[i].innerHTML.substring(1);
+              } else if(elems[i].className == 'section') {
+                elems[i].style.display = 'none';
+              }
+            }
+            saveState();
+          }
+          
+          function activate(id) {
+            var telem = document.getElementById("t_"+id);
+            var selem = document.getElementById("s_"+id);
+            if(selem.style.display == 'none' || selem.style.display == '') {
+              selem.style.display = 'block';
+              telem.innerHTML= "+" + telem.innerHTML.substring(1);
+            }
+            saveState();
+          }
+          
+          function saveState() {
+            var elems = document.getElementsByTagName('div');
+            var expanded = [];
+            for(var i=0; i &lt; elems.length; i++) {
+              if(elems[i].className == 'section' &amp;&amp; elems[i].style.display == 'block') {
+                expanded.push(elems[i].id.substring(2));
+              }
+            }
+            var val = ("" + expanded).replace(/,/g,"#");
+            document.cookie = "pfxinternal_expanded=" + val + ";path=" + location.pathname;
+          }
+          
+          function restoreState() {
+            var regexp = /\s*pfxinternal_expanded\s*=\s*([^;]+)\s*/;
+            regexp.exec(document.cookie);
+            var value = RegExp.$1;
+            if(value) {
+              var expanded = value.split("#");
+              for(var i=0; i &lt; expanded.length; i++) {
+              toggle(expanded[i]);
+              }
+            }
+          }
+          
+          window.onload = restoreState; 
         </script>
       </head>
       <body>
       
         <div class="header">Pustefix internals</div>
       
-        <div class="section">
-          <table class="navi">
-            <tr>
-              <td><a href="#framework">Framework information</a></td>
-              <td><a href="#cache">Cache statistics</a></td>
-              <td><a href="#messages">Messages</a></td>
-            </tr>
-            <tr>
-              <td><a href="#environment">Environment properties</a></td>
-              <td><a href="#modules">Loaded modules</a></td>
-              <td></td>
-            </tr>
-            <tr>
-              <td><a href="#jvm">JVM information</a></td>
-              <td><a href="#actions">Actions</a></td>
-              <td></td>
-            </tr>
-          </table>
+        <div class="navisection">
+          <div>
+          <a href="#framework" onclick="activate('framework')">Framework information</a>
+          <a href="#environment" onclick="activate('environment')">Environment properties</a>
+          <a href="#jvm" onclick="activate('jvm')">JVM information</a>
+          <a href="#cache" onclick="activate('cache')">Cache statistics</a>
+          <a href="#modules" onclick="activate('modules')">Loaded modules</a>
+          <a href="#actions" onclick="activate('actions')">Actions</a>
+          <a href="#messages" onclick="activate('messages')">Messages</a>
+          </div>
+          <div>
+          <span onclick="expand()">Expand all</span> / <span onclick="collapse()">Collapse all</span>
+          </div>
         </div>
       
         <a name="framework"/>
-        <div class="title">Framework information</div>
-        <div class="section">
+        <div id="t_framework" class="title" onclick="toggle('framework')">+ Framework information</div>
+        <div id="s_framework" class="section">
           <table class="info">
             <tr>
               <th>Pustefix version:</th>
               <td><xsl:value-of select="/pfxinternals/framework/@version"/></td>
             </tr>
+            <tr>
+              <th>SCM URL:</th>
+              <td><a href="{/pfxinternals/framework/@scmurl}"><xsl:value-of select="/pfxinternals/framework/@scmurl"/></a></td>
+            </tr>
+            <tr>
+              <th>Website:</th>
+              <td><a href="http://pustefix-framework.org">http://pustefix-framework.org</a></td>
+            </tr>
           </table>
         </div>
       
         <a name="environment"/>
-        <div class="title">Environment properties</div>
-        <div class="section">
+        <div id="t_environment" class="title" onclick="toggle('environment')">+ Environment properties</div>
+        <div id="s_environment" class="section">
           <table class="info">
             <tr>
               <th>fqdn:</th>
@@ -218,8 +340,8 @@
         </div>
         
         <a name="jvm"/>
-        <div class="title">JVM information</div>
-        <div class="section">
+        <div class="title" id="t_jvm" onclick="toggle('jvm')">+ JVM information</div>
+        <div class="section" id="s_jvm">
           <table class="layout">
             <xsl:variable name="max">
               <xsl:for-each select="/pfxinternals/jvm/memory">
@@ -264,8 +386,8 @@
         </div>
         
         <a name="cache"/>
-        <div class="title">Cache statistics</div>
-        <div class="section">
+        <div class="title" id="t_cache" onclick="toggle('cache')">+ Cache statistics</div>
+        <div class="section" id="s_cache">
           <table>
             <tr>
           <xsl:apply-templates select="/pfxinternals/cachestatistic/cache">
@@ -276,14 +398,14 @@
         </div>
         
         <a name="modules"/>
-        <div class="title">Loaded modules</div>
-        <div class="section">
+        <div class="title" id="t_modules" onclick="toggle('modules')">+ Loaded modules</div>
+        <div class="section" id="s_modules">
           <xsl:apply-templates select="/pfxinternals/modules"/>
         </div>
         
         <a name="actions"/>
-        <div class="title">Actions</div>
-        <div class="section">
+        <div class="title" id="t_actions" onclick="toggle('actions')">+ Actions</div>
+        <div class="section" id="s_actions">
           <table class="actions">
             <tr>
               <td><a href="{$__contextpath}/pfxinternals?action=reload">Schedule webapp reload</a></td>
@@ -374,33 +496,48 @@
   </xsl:template>
   
   <xsl:template match="modules">
-    <table class="info">
+    <table class="info" style="border-spacing: 10px">
       <xsl:variable name="rows" select="ceiling(count(module) div 3)"/>
       <xsl:for-each select="module[position() &lt;= $rows]">
         <xsl:variable name="pos" select="position()"/>
         <tr>
-          <td>
+          <td class="mod">
             <xsl:apply-templates select="."/>
           </td>
-          <td> 
+          <td class="mod"> 
             <xsl:choose>
 	          <xsl:when test="../module[$pos + $rows]">
 	            <xsl:apply-templates select="../module[$pos + $rows]"/>
               </xsl:when>
-              <xsl:otherwise></xsl:otherwise>
+              <xsl:otherwise><xsl:attribute name="class"/></xsl:otherwise>
             </xsl:choose>
           </td>
-          <td>
+          <td class="mod">
             <xsl:choose>
 	          <xsl:when test="../module[$pos + $rows +$rows]">
 	            <xsl:apply-templates select="../module[$pos + $rows + $rows]"/>
               </xsl:when>
-              <xsl:otherwise></xsl:otherwise>
+              <xsl:otherwise><xsl:attribute name="class"/></xsl:otherwise>
             </xsl:choose>
           </td>
         </tr>
       </xsl:for-each>
     </table>
+    <div class="subtitle">Default search chain: </div>
+    <table class="defsearch"><tr>
+      <td>
+      <div class="mod">webapp</div>
+      </td>
+      <xsl:for-each select="defaultsearch/module[generate-id() = generate-id(key('priokey', @priority)[1])]">
+        <td style="font-size: 200%; padding: 0px;">&#x21D2;</td>
+        <td>
+        <xsl:for-each select="key('priokey', @priority)">
+        <div class="mod"><xsl:value-of select="@name"/><br/><xsl:value-of select="@filter"/></div>
+        </xsl:for-each>
+        </td>
+      </xsl:for-each>
+      
+    </tr></table>
   </xsl:template>
 
   <xsl:template match="module">
@@ -425,8 +562,8 @@
 
   <xsl:template match="messages">
     <a name="messages"/>
-    <div class="title">Messages</div>
-    <div class="section">
+    <div class="title" id="t_messages" onclick="toggle('messages')">+ Messages</div>
+    <div class="section" id="s_messages">
       <table class="info">
         <tr>
           <th>Date</th>

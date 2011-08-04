@@ -38,6 +38,7 @@ import java.net.URL;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.Dictionary;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -71,6 +72,7 @@ import org.w3c.dom.Node;
 
 import de.schlund.pfixcore.util.ModuleDescriptor;
 import de.schlund.pfixcore.util.ModuleInfo;
+import de.schlund.pfixxml.FilterHelper;
 import de.schlund.pfixxml.config.EnvironmentProperties;
 import de.schlund.pfixxml.resources.ModuleResource;
 import de.schlund.pfixxml.resources.ResourceUtil;
@@ -248,6 +250,7 @@ public class PustefixInternalsRequestHandler implements UriProvidingHttpRequestH
         Element root = parent.getOwnerDocument().createElement("framework");
         parent.appendChild(root);
         root.setAttribute("version", FrameworkInfo.getVersion());
+        root.setAttribute("scmurl", FrameworkInfo.getSCMUrl());
     }
     
     private void addEnvironmentInfo(Element parent) {
@@ -349,6 +352,24 @@ public class PustefixInternalsRequestHandler implements UriProvidingHttpRequestH
             } catch(Exception x) {
                 LOG.warn("Error while getting live location", x);
             }
+        }
+        
+        Element defSearchElem = parent.getOwnerDocument().createElement("defaultsearch");
+        root.appendChild(defSearchElem);
+        List<String> defModules = ModuleInfo.getInstance().getDefaultSearchModules(null);
+        for(String moduleName: defModules) {
+            ModuleDescriptor desc = ModuleInfo.getInstance().getModuleDescriptor(moduleName);
+            Dictionary<String,String> filterAttrs= desc.getDefaultSearchFilterAttributes();
+            Element elem = parent.getOwnerDocument().createElement("module");
+            defSearchElem.appendChild(elem);
+            elem.setAttribute("name", desc.getName());
+            String tenant = filterAttrs.get("tenant");
+            String language = filterAttrs.get("lang");
+            String filter = FilterHelper.getFilter(tenant, language);
+            if(filter != null) {
+                elem.setAttribute("filter", filter);
+            }
+            elem.setAttribute("priority", String.valueOf(desc.getDefaultSearchPriority()));
         }
         
     }
