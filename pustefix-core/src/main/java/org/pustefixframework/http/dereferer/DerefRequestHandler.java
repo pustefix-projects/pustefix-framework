@@ -100,7 +100,15 @@ public class DerefRequestHandler extends AbstractPustefixRequestHandler {
         LOG.debug("===> Referer: " + referer);
         
         long timeStamp = 0;
-        if(tsparam!=null && tsparam.getValue()!=null) timeStamp=Long.parseLong(tsparam.getValue());
+        if(tsparam!=null && tsparam.getValue()!=null) {
+            try {
+                timeStamp=Long.parseLong(tsparam.getValue());
+            } catch(NumberFormatException x) {
+                LOG.warn("Request contains invalid deref timestamp value: " + tsparam.getValue());
+                res.sendError(HttpServletResponse.SC_BAD_REQUEST);
+                return;
+            }
+        }
         
         if (linkparam != null && linkparam.getValue() != null) {
             LOG.debug(" ==> Handle link: " + linkparam.getValue());
