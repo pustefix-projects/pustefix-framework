@@ -137,9 +137,21 @@ public class PustefixInternalsRequestHandler implements UriProvidingHttpRequestH
            res.sendError(HttpServletResponse.SC_FORBIDDEN);
            return;
        }
-        
+       
+       String category = null;
+       String path = req.getPathInfo();
+       String parentPath = "/pfxinternals/";
+       int ind = path.indexOf(parentPath);
+       path = path.substring(ind + parentPath.length());
+       if(path.length() > 0) category = path;
+       
+       String action = req.getParameter("action");
+       if(action == null && category == null) {
+           res.sendRedirect(req.getContextPath() + handlerURI + "/framework");
+           return;
+       }
+       
        try {
-           String action = req.getParameter("action");
            if(action != null) {
                if(action.equals("reload")) {
                    if((System.currentTimeMillis() - startTime) > reloadTimeout) {
@@ -173,33 +185,58 @@ public class PustefixInternalsRequestHandler implements UriProvidingHttpRequestH
                    }
                    String page = req.getParameter("page");
                    if(page == null) {
-                       res.sendRedirect(req.getContextPath() + handlerURI + "#messages");
+                       res.sendRedirect(req.getContextPath() + handlerURI + "/messages");
                    } else {
                        sendReloadPage(req, res);
                    }
                    return;
                } else if(action.equals("invalidate")) {
-                   sessionAdmin.invalidateSessions();
-                   messageList.addMessage(Message.Level.INFO, "Invalidated sessions.");
-                   res.sendRedirect(req.getContextPath()+ handlerURI + "#messages");
+                   String session = req.getParameter("session");
+                   String page = req.getParameter("page");
+                   if(session == null) {
+                       sessionAdmin.invalidateSessions();
+                       messageList.addMessage(Message.Level.INFO, "Invalidated sessions.");
+                   } else {
+                       sessionAdmin.invalidateSession(session);
+                       messageList.addMessage(Message.Level.INFO, "Invalidated session.");
+                   }
+                   if(page == null) {
+                       res.sendRedirect(req.getContextPath()+ handlerURI + "/messages");
+                   } else {
+                       String url = req.getRequestURI();
+                       url = url.replace("pfxinternals", req.getParameter("page"));
+                       res.sendRedirect(url.toString());
+                   }
                    return;
                }
            }
-            
+           
            Document doc = DocumentBuilderFactory.newInstance().newDocumentBuilder().newDocument();
            Element root = doc.createElement("pfxinternals");
            doc.appendChild(root);
-           addFrameworkInfo(root);
-           addEnvironmentInfo(root);
-           addJVMInfo(root);
-           addModuleInfo(root);
-           addCacheStatistics(root);
-           messageList.toXML(root);
+           if(category != null) {
+               if(category.equals("framework")) {
+                   addFrameworkInfo(root);
+               } else if(category.equals("environment")) {
+                   addEnvironmentInfo(root);
+               } else if(category.equals("jvm")) {
+                   addJVMInfo(root);
+               } else if(category.equals("system")) {
+                   addSystemInfo(root);
+               } else if(category.equals("modules")) {
+                   addModuleInfo(root);
+               } else if(category.equals("cache")) {
+                   addCacheStatistics(root);
+               } else if(category.equals("messages")) {
+                   messageList.toXML(root);
+               }
+           }
            doc = Xml.parse(XsltVersion.XSLT1, doc);
            Templates stvalue = Xslt.loadTemplates(XsltVersion.XSLT1, (ModuleResource)ResourceUtil.getResource(STYLESHEET));
            res.setContentType("text/html");
            Map<String, Object> params = new HashMap<String, Object>();
            params.put("__contextpath", req.getContextPath());
+           if(category != null) params.put("category", category);
            Xslt.transform(doc, stvalue, params, new StreamResult(res.getOutputStream()));
         
        } catch(Exception x) {
@@ -285,6 +322,9 @@ public class PustefixInternalsRequestHandler implements UriProvidingHttpRequestH
         MemoryUsage mem = mbean.getHeapMemoryUsage();
         Element root = parent.getOwnerDocument().createElement("jvm");
         parent.appendChild(root);
+        root.setAttribute("version", System.getProperty("java.version"));
+        root.setAttribute("home", System.getProperty("java.home"));
+        
         Element elem = parent.getOwnerDocument().createElement("memory");
         root.appendChild(elem);
         elem.setAttribute("type", "heap");
@@ -313,6 +353,57 @@ public class PustefixInternalsRequestHandler implements UriProvidingHttpRequestH
             elem.setAttribute("count", String.valueOf(gcbean.getCollectionCount()));
             elem.setAttribute("time", String.valueOf(gcbean.getCollectionTime()));
         }
+    }
+    
+    private void addSystemInfo(Element parent) {
+        MBeanServer mbeanServer = ManagementFactory.getPlatformMBeanServer();
+        long freeMem = 0;
+        long totalMem = 0;
+        long freeSwap = 0;
+        long totalSwap = 0;
+        try {
+            ObjectName objName = new ObjectName("java.lang:type=OperatingSystem");
+            freeMem = (Long)mbeanServer.getAttribute(objName, "FreePhysicalMemorySize");
+            totalMem = (Long)mbeanServer.getAttribute(objName, "TotalPhysicalMemorySize");
+            freeSwap = (Long)mbeanServer.getAttribute(objName, "FreeSwapSpaceSize");
+            totalSwap = (Long)mbeanServer.getAttribute(objName, "TotalSwapSpaceSize");
+        } catch(Exception x) {
+            LOG.warn("No system memory information available", x);
+        }
+        Element root = parent.getOwnerDocument().createElement("system");
+        parent.appendChild(root);
+        Element elem = parent.getOwnerDocument().createElement("memory");
+        root.appendChild(elem);
+        elem.setAttribute("free", String.valueOf(freeMem));
+        elem.setAttribute("total", String.valueOf(totalMem));
+        elem = parent.getOwnerDocument().createElement("swap");
+        root.appendChild(elem);
+        elem.setAttribute("free", String.valueOf(freeSwap));
+        elem.setAttribute("total", String.valueOf(totalSwap));
+        long openDesc = 0;
+        long maxDesc = 0;
+        try {
+            ObjectName objName = new ObjectName("java.lang:type=OperatingSystem");
+            openDesc = (Long)mbeanServer.getAttribute(objName, "OpenFileDescriptorCount");
+            maxDesc = (Long)mbeanServer.getAttribute(objName, "MaxFileDescriptorCount");
+        } catch(Exception x) {
+            LOG.warn("No file descriptor information available", x);
+        }
+        elem = parent.getOwnerDocument().createElement("filedescriptors");
+        root.appendChild(elem);
+        elem.setAttribute("open", String.valueOf(openDesc));
+        elem.setAttribute("max", String.valueOf(maxDesc));
+        int processors = 0;
+        double load = 0;
+        try {
+            ObjectName objName = new ObjectName("java.lang:type=OperatingSystem");
+            processors = (Integer)mbeanServer.getAttribute(objName, "AvailableProcessors");
+            load = (Double)mbeanServer.getAttribute(objName, "SystemLoadAverage");
+        } catch(Exception x) {
+            LOG.warn("No CPU information available", x);
+        }
+        root.setAttribute("processors", String.valueOf(processors));
+        root.setAttribute("load", String.valueOf(load));
     }
     
     private void addModuleInfo(Element parent) {

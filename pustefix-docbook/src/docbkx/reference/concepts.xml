@@ -798,7 +798,21 @@ public interface State {
   <section>
     <title>The data model: Context resources</title>
     <para>
-    </para>  
+      Pustefix provides an abstraction layer for management of application state. You generally don't directly work on the Servlet API layer,
+      e.g. you don't directly store session state in the <literal>HttpSession</literal> object, but you use Java beans which are automatically managed 
+      by the framework, so-called <literal>ContextResource</literal> beans. 
+    </para>
+    <para>
+      In prior versions Pustefix itself controlled the lifecycle of these beans, e.g. instantiated them on session startup, and you had to
+      implement a specific interface (<literal>de.schlund.pfixcore.workflow.ContextResource</literal>). Beginning with Pustefix 0.13 
+      <literal>ContextResource</literal> beans are automatically managed by Spring and can be arbitrary POJOs.
+    </para>
+    <para>
+      <literal>ContextResource</literal> beans are not only used to manage application state, but they are also linked to the view. They can be 
+      declaratively assigned to pages and thus serialized to the XML tree, which is used as source of the XSL transformation producing the output. 
+      A <literal>ContextResource</literal> can either be automatically serialized to XML, or it can implement its own method manually creating according
+      DOM output.
+    </para>
   </section>
    
   <section>

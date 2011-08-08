@@ -2,7 +2,8 @@
 <xsl:stylesheet xmlns:xsl="http://www.w3.org/1999/XSL/Transform" version="1.0">
 
   <xsl:param name="__contextpath"/>
-
+  <xsl:param name="category"/>
+  
   <xsl:key name="priokey" match="/pfxinternals/modules/defaultsearch/module" use="@priority"/>
 
   <xsl:template match="/">
@@ -11,9 +12,30 @@
         <title>Pustefix internals</title>
         <style type="text/css">
           body {
+            margin: 0;
+            padding: 0;
             font-family: monospace;
-            padding: 5px; 
-            background: #ddd; 
+            background: #fff url(../../modules/pustefix-core/img/background.png) 0 0 repeat-x;
+          }
+          div.header {
+	        clear: both;
+	        font-family: sans-serif;
+          }
+          div.header div.pagetitle {
+            float: left;
+            padding-left: 60px;
+            padding-top: 30px;
+            font-size: 36px;
+            color: #fff;
+            font-weight: 100;
+          }
+          div.header div.logo {
+            float: left;
+            padding-left: 10px;
+          }
+          div.content {
+            clear: both;
+            padding: 10px;
           }
           a:link {
             color: #000;
@@ -31,57 +53,40 @@
             color: #666;
           }
           div.section {
-            display: none;
             background: #fff;
-            padding: 10px;
+            padding: 15px;
             border-bottom-left-radius: 10px;
             border-bottom-right-radius: 10px;
             border: 1px solid #ccc;
           }
-          div.title {
-            background: #777;
-            color: #fff; 
-            font-size: 130%; 
-            font-style:italic; 
-            padding: 3px; 
-            padding-left: 10px; 
-            margin-top: 15px;
-            border-top-left-radius: 10px;
-            border-top-right-radius: 10px;
-            border: 0px solid #333;
-            cursor: pointer;
-          }
-          div.header {
-            background: #000; 
-            color: #fff; 
-            font-size: 170%; 
-            font-style:italic; 
-            padding: 3px; 
-            padding-left: 10px;
-            border-top-left-radius: 10px;
-            border-top-right-radius: 10px;
-            border: 0px solid #333;
-            margin-bottom: 0px;
-          }
-          div.navisection {
-            padding:10px;
-            background: #fff;
-            border-bottom-left-radius: 10px;
-            border-bottom-right-radius: 10px;
-          }
-          div.navisection div {
-            padding-bottom:10px;
-          }
-          div.navisection a {
-            padding:10px; 
+          div.navi {
+            margin-top: 10px;
+            padding:6px;
             padding-left:0px;
-            font-size: 125%;
+            line-height: 150%;
+            overflow: auto;
+            font-family: sans-serif;
           }
-          div.navisection span {
-            text-decoration: underline;
-            padding: 0px;
-            cursor: pointer;
-            font-size: 85%;
+          div.navi span {
+            background: #666;
+            padding:7px;
+            border-top-left-radius: 10px;
+            border-top-right-radius: 10px;
+            border: 1px solid #444;
+            border-bottom: 0px solid #fff;
+          }
+          div.navi span.active {
+            background: #999;
+            padding:7px;
+            border-top-left-radius: 10px;
+            border-top-right-radius: 10px;
+            border: 1px solid #888;
+            border-bottom: 0px solid #fff;
+          }
+          div.navi span a {
+            text-decoration: none;
+            color: white;
+            font-family: sans-serif;
           }
           table.actions {
             border-spacing: 0px;
@@ -104,14 +109,15 @@
             font-weight: normal;
           }
           table.info th {
-            color: #000000; 
+            color: #000; 
             font-weight: bold;
           }
           table.info td.num {
             text-align:right;
           }
           table.info th.title {
-            font-weight: bold; 
+            font-weight: bold;
+            color: #666;
             padding-bottom: 5px;
           }
           div.info {
@@ -179,6 +185,7 @@
             font-size: 85%;
           }
           table.defsearch td {padding-right: 0px;}
+          
         </style>
         <script type="text/javascript">
 
@@ -204,102 +211,31 @@
             alert("Removed " + d + " cookie" + (d==1 ? "" : "s"));
           }
           
-          function toggle(id) {
-            var selem = document.getElementById("s_"+id);
-            var telem = document.getElementById("t_"+id);
-            if(selem.style.display == 'none' || selem.style.display == '') {
-              selem.style.display = 'block';
-              telem.innerHTML= "-" + telem.innerHTML.substring(1);
-            } else {
-              selem.style.display = 'none';
-              telem.innerHTML= "+" + telem.innerHTML.substring(1);
-            }
-            saveState();
-          }
-          
-          function expand() {
-            var elems = document.getElementsByTagName('div');
-            for(var i=0; i &lt; elems.length; i++) {
-              if(elems[i].className == 'title') {
-                elems[i].innerHTML= "-" + elems[i].innerHTML.substring(1);
-              } else if(elems[i].className == 'section') {
-                elems[i].style.display = 'block';
-              }
-            }
-            saveState();
-          }
-          
-          function collapse() {
-            var elems = document.getElementsByTagName('div');
-            for(var i=0; i &lt; elems.length; i++) {
-              if(elems[i].className == 'title') {
-                elems[i].innerHTML= "+" + elems[i].innerHTML.substring(1);
-              } else if(elems[i].className == 'section') {
-                elems[i].style.display = 'none';
-              }
-            }
-            saveState();
-          }
-          
-          function activate(id) {
-            var telem = document.getElementById("t_"+id);
-            var selem = document.getElementById("s_"+id);
-            if(selem.style.display == 'none' || selem.style.display == '') {
-              selem.style.display = 'block';
-              telem.innerHTML= "+" + telem.innerHTML.substring(1);
-            }
-            saveState();
-          }
-          
-          function saveState() {
-            var elems = document.getElementsByTagName('div');
-            var expanded = [];
-            for(var i=0; i &lt; elems.length; i++) {
-              if(elems[i].className == 'section' &amp;&amp; elems[i].style.display == 'block') {
-                expanded.push(elems[i].id.substring(2));
-              }
-            }
-            var val = ("" + expanded).replace(/,/g,"#");
-            document.cookie = "pfxinternal_expanded=" + val + ";path=" + location.pathname;
-          }
-          
-          function restoreState() {
-            var regexp = /\s*pfxinternal_expanded\s*=\s*([^;]+)\s*/;
-            regexp.exec(document.cookie);
-            var value = RegExp.$1;
-            if(value) {
-              var expanded = value.split("#");
-              for(var i=0; i &lt; expanded.length; i++) {
-              toggle(expanded[i]);
-              }
-            }
-          }
-          
-          window.onload = restoreState; 
         </script>
       </head>
       <body>
       
-        <div class="header">Pustefix internals</div>
-      
-        <div class="navisection">
-          <div>
-          <a href="#framework" onclick="activate('framework')">Framework information</a>
-          <a href="#environment" onclick="activate('environment')">Environment properties</a>
-          <a href="#jvm" onclick="activate('jvm')">JVM information</a>
-          <a href="#cache" onclick="activate('cache')">Cache statistics</a>
-          <a href="#modules" onclick="activate('modules')">Loaded modules</a>
-          <a href="#actions" onclick="activate('actions')">Actions</a>
-          <a href="#messages" onclick="activate('messages')">Messages</a>
-          </div>
-          <div>
-          <span onclick="expand()">Expand all</span> / <span onclick="collapse()">Collapse all</span>
-          </div>
+       <div class="header">
+        <div class="logo"><img class="logo" src="{$__contextpath}/modules/pustefix-core/img/logo.png"/></div>
+        <div class="pagetitle">Pustefix internals</div>
+        </div>
+    
+        <div class="content">
+        <div class="navi">
+          <nobr>
+          <span><xsl:if test="$category='framework'"><xsl:attribute name="class">active</xsl:attribute></xsl:if><a href="framework">Framework information</a></span>
+          <span><xsl:if test="$category='environment'"><xsl:attribute name="class">active</xsl:attribute></xsl:if><a href="environment">Environment properties</a></span>
+          <span><xsl:if test="$category='jvm'"><xsl:attribute name="class">active</xsl:attribute></xsl:if><a href="jvm">JVM information</a></span>
+          <span><xsl:if test="$category='system'"><xsl:attribute name="class">active</xsl:attribute></xsl:if><a href="system">System information</a></span>
+          <span><xsl:if test="$category='cache'"><xsl:attribute name="class">active</xsl:attribute></xsl:if><a href="cache">Cache statistics</a></span>
+          <span><xsl:if test="$category='modules'"><xsl:attribute name="class">active</xsl:attribute></xsl:if><a href="modules">Loaded modules</a></span>
+          <span><xsl:if test="$category='actions'"><xsl:attribute name="class">active</xsl:attribute></xsl:if><a href="actions">Actions</a></span>
+          <span><xsl:if test="$category='messages'"><xsl:attribute name="class">active</xsl:attribute></xsl:if><a href="messages">Messages</a></span>
+          </nobr>
         </div>
       
-        <a name="framework"/>
-        <div id="t_framework" class="title" onclick="toggle('framework')">+ Framework information</div>
-        <div id="s_framework" class="section">
+        <xsl:if test="not($category) or $category='framework'">
+        <div class="section">
           <table class="info">
             <tr>
               <th>Pustefix version:</th>
@@ -315,10 +251,10 @@
             </tr>
           </table>
         </div>
+        </xsl:if>
       
-        <a name="environment"/>
-        <div id="t_environment" class="title" onclick="toggle('environment')">+ Environment properties</div>
-        <div id="s_environment" class="section">
+        <xsl:if test="not($category) or $category='environment'">
+        <div class="section">
           <table class="info">
             <tr>
               <th>fqdn:</th>
@@ -338,10 +274,21 @@
             </tr>
           </table>
         </div>
+        </xsl:if>
         
-        <a name="jvm"/>
-        <div class="title" id="t_jvm" onclick="toggle('jvm')">+ JVM information</div>
-        <div class="section" id="s_jvm">
+        <xsl:if test="not($category) or $category='jvm'">
+        <div class="section">
+          <table class="info">
+            <tr>
+              <th>Java version:</th>
+              <td><xsl:value-of select="/pfxinternals/jvm/@version"/></td>
+            </tr>
+            <tr>
+              <th>Jave home:</th>
+              <td><xsl:value-of select="/pfxinternals/jvm/@home"/></td>
+            </tr>
+          </table>
+          <br/>
           <table class="layout">
             <xsl:variable name="max">
               <xsl:for-each select="/pfxinternals/jvm/memory">
@@ -384,10 +331,109 @@
             </tr>
           </table>
         </div>
+        </xsl:if>
         
-        <a name="cache"/>
-        <div class="title" id="t_cache" onclick="toggle('cache')">+ Cache statistics</div>
-        <div class="section" id="s_cache">
+        <xsl:if test="not($category) or $category='system'">
+        <div class="section">
+          <table class="layout">
+            <xsl:variable name="max">
+              <xsl:for-each select="/pfxinternals/system/*[name()='memory' or name()='swap']">
+                <xsl:sort select="@total" data-type="number" order="descending" />
+                <xsl:if test="position()=1">
+                  <xsl:value-of select="@total" />
+                </xsl:if>
+              </xsl:for-each>
+            </xsl:variable>
+            <xsl:variable name="factor" select="384 div $max"/>
+            <tr>
+              <xsl:for-each select="/pfxinternals/system/*[name()='memory']">
+              <td>
+                <xsl:call-template name="show_free_memory">
+                  <xsl:with-param name="title">Memory</xsl:with-param>
+                  <xsl:with-param name="factor" select="$factor"/>
+                </xsl:call-template>
+              </td>
+              </xsl:for-each>
+              <xsl:for-each select="/pfxinternals/system/*[name()='swap']">
+              <td>
+                <xsl:call-template name="show_free_memory">
+                  <xsl:with-param name="title">Swap space</xsl:with-param>
+                  <xsl:with-param name="factor" select="$factor"/>
+                </xsl:call-template>
+              </td>
+              </xsl:for-each>
+            </tr>
+          </table>
+          <br/>
+          <xsl:for-each select="/pfxinternals/system">
+            <table class="info">
+              <tr>
+                <th class="title" colspan="2">System load:</th>
+              </tr>
+              <tr>
+                <th>Load average for last minute:</th>
+                <td class="num"><xsl:value-of select="format-number(@load, '0.00')"/></td>
+              </tr>
+              <tr>
+                <th>Full load (available processors):</th>
+                <td class="num"><xsl:value-of select="@processors "/></td>
+             </tr>
+           </table>
+           <table class="barchart">
+             <tr>
+               <xsl:variable name="max">
+                 <xsl:choose>
+                   <xsl:when test="@load &gt; @processors"><xsl:value-of select="@load"/></xsl:when>
+                   <xsl:otherwise><xsl:value-of select="@processors"/></xsl:otherwise>
+                 </xsl:choose>
+               </xsl:variable>
+               <xsl:variable name="nload">
+                 <xsl:choose>
+                   <xsl:when test="@load &gt; @processors"><xsl:value-of select="@processors"/></xsl:when>
+                   <xsl:otherwise><xsl:value-of select="@load"/></xsl:otherwise>
+                 </xsl:choose>
+               </xsl:variable>
+               <xsl:variable name="oload">
+                 <xsl:choose>
+                   <xsl:when test="@load &gt; @processors"><xsl:value-of select="@load - @processors"/></xsl:when>
+                   <xsl:otherwise>0</xsl:otherwise>
+                 </xsl:choose>
+               </xsl:variable>
+               <xsl:variable name="factor" select="256 div $max"/>
+               <td><hr style="background:red; width: {$nload * $factor}px; height:20px;"/></td>
+               <td><hr style="background:green; width: {(@processors - $nload) * $factor}px; height:20px;"/></td>
+               <td><hr style="background:darkred; width: {$oload * $factor}px; height:20px;"/></td>
+             </tr>
+           </table>
+         </xsl:for-each>
+          <br/>
+          <xsl:for-each select="/pfxinternals/system/filedescriptors">
+            <table class="info">
+              <tr>
+                <th class="title" colspan="2">File descriptors:</th>
+              </tr>
+              <tr>
+                <th>Open:</th>
+                <td class="num"><xsl:value-of select="@open"/></td>
+              </tr>
+              <tr>
+                <th>Max:</th>
+                <td class="num"><xsl:value-of select="@max"/></td>
+             </tr>
+           </table>
+           <table class="barchart">
+             <tr>
+               <xsl:variable name="factor" select="256 div @max"/>
+               <td><hr style="background:red; width: {@open * $factor}px; height:20px;"/></td>
+               <td><hr style="background:green; width: {(@max - @open) * $factor}px; height:20px;"/></td>
+             </tr>
+           </table>
+         </xsl:for-each>
+        </div>
+        </xsl:if>
+        
+        <xsl:if test="not($category) or $category='cache'">
+        <div class="section">
           <table>
             <tr>
           <xsl:apply-templates select="/pfxinternals/cachestatistic/cache">
@@ -396,16 +442,16 @@
             </tr>
           </table>
         </div>
+        </xsl:if>
         
-        <a name="modules"/>
-        <div class="title" id="t_modules" onclick="toggle('modules')">+ Loaded modules</div>
-        <div class="section" id="s_modules">
+        <xsl:if test="not($category) or $category='modules'">
+        <div class="section">
           <xsl:apply-templates select="/pfxinternals/modules"/>
         </div>
+        </xsl:if>
         
-        <a name="actions"/>
-        <div class="title" id="t_actions" onclick="toggle('actions')">+ Actions</div>
-        <div class="section" id="s_actions">
+        <xsl:if test="not($category) or $category='actions'">
+        <div class="section">
           <table class="actions">
             <tr>
               <td><a href="{$__contextpath}/pfxinternals?action=reload">Schedule webapp reload</a></td>
@@ -416,8 +462,13 @@
             </tr>
           </table>
         </div>
+        </xsl:if>
         
+        <xsl:if test="not($category) or $category='messages'">
         <xsl:apply-templates select="/pfxinternals/messages"/>
+        </xsl:if>
+        
+        </div>
       
       </body>
     </html>
@@ -448,6 +499,30 @@
         <td><hr style="background:red; width: {@used * $factor}px; height:20px;"/></td>
         <td><hr style="background:yellow; width: {(@committed - @used) * $factor}px; height:20px;"/></td>
         <td><hr style="background:green; width: {(@max - @committed) * $factor}px; height:20px;"/></td>
+      </tr>
+    </table>
+  </xsl:template>
+  
+  <xsl:template name="show_free_memory">
+    <xsl:param name="title"/>
+    <xsl:param name="factor"/>
+    <table class="info">
+      <tr>
+        <th class="title" colspan="2"><xsl:value-of select="$title"/>:</th>
+      </tr>
+      <tr>
+        <th>Used:</th>
+        <td class="num"><xsl:value-of select="format-number((@total - @free) div 1024 div 1024, '0.0')"/> M</td>
+      </tr>
+      <tr>
+        <th>Total:</th>
+        <td class="num"><xsl:value-of select="format-number(@total div 1024 div 1024, '0.0')"/> M</td>
+      </tr>
+    </table>
+    <table class="barchart">
+      <tr>
+        <td><hr style="background:red; width: {(@total - @free) * $factor}px; height:20px;"/></td>
+        <td><hr style="background:green; width: {@free * $factor}px; height:20px;"/></td>
       </tr>
     </table>
   </xsl:template>
@@ -561,9 +636,7 @@
   </xsl:template>
 
   <xsl:template match="messages">
-    <a name="messages"/>
-    <div class="title" id="t_messages" onclick="toggle('messages')">+ Messages</div>
-    <div class="section" id="s_messages">
+    <div class="section">
       <table class="info">
         <tr>
           <th>Date</th>
