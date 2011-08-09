@@ -304,6 +304,7 @@
                     <xsl:with-param name="resolved_uri" select="$__resolveduri"/>
                     <xsl:with-param name="search" select="$search"/>
                     <xsl:with-param name="module" select="$module_name"/>
+                    <xsl:with-param name="incnodes" select="$incnodes"/>
                   </xsl:call-template>
                 </xsl:when>
                 <xsl:when test="$incnodes/parent::part/@editable='false'">
@@ -315,6 +316,7 @@
                     <xsl:with-param name="search" select="$search"/>
                     <xsl:with-param name="module" select="$module_name"/>
                     <xsl:with-param name="editable">false</xsl:with-param>
+                    <xsl:with-param name="incnodes" select="$incnodes"/>
                   </xsl:call-template>
                 </xsl:when>
                 <xsl:otherwise>
@@ -327,6 +329,7 @@
                         <xsl:with-param name="resolved_uri" select="$__resolveduri"/>
                         <xsl:with-param name="search" select="$search"/>
                         <xsl:with-param name="module" select="$module_name"/>
+                        <xsl:with-param name="incnodes" select="$incnodes"/>
                       </xsl:call-template>
                     </ixsl:when>
                     <ixsl:otherwise>
@@ -338,6 +341,7 @@
                         <xsl:with-param name="search" select="$search"/>
                         <xsl:with-param name="module" select="$module_name"/>
                         <xsl:with-param name="editable">false</xsl:with-param>
+                        <xsl:with-param name="incnodes" select="$incnodes"/>
                       </xsl:call-template>
                     </ixsl:otherwise>
                   </ixsl:choose>
@@ -355,6 +359,7 @@
                   <xsl:with-param name="resolved_uri" select="$__resolveduri"/>
                   <xsl:with-param name="search" select="$search"/>
                   <xsl:with-param name="module" select="$module_name"/>
+                  <xsl:with-param name="incnodes" select="$incnodes"/>
                 </xsl:call-template>
               </xsl:when>
               <xsl:otherwise>
@@ -366,6 +371,7 @@
                   <xsl:with-param name="search" select="$search"/>
                   <xsl:with-param name="module" select="$module_name"/>
                   <xsl:with-param name="editable">false</xsl:with-param>
+                  <xsl:with-param name="incnodes" select="$incnodes"/>
                 </xsl:call-template>
               </xsl:otherwise>
             </xsl:choose>
@@ -383,6 +389,7 @@
     <xsl:param name="search"/>
     <xsl:param name="module"/>
     <xsl:param name="editable">true</xsl:param>
+    <xsl:param name="incnodes"/>
     <xsl:variable name="resolved_module">
       <xsl:choose>
         <xsl:when test="starts-with($resolved_uri,'module://')"><xsl:value-of select="substring-before(substring-after($resolved_uri,'module://'),'/')"/></xsl:when>
@@ -408,14 +415,15 @@
         <xsl:otherwise>pfx_inc_end pfx_inc_ro</xsl:otherwise>
       </xsl:choose>
     </xsl:variable>
+    <xsl:variable name="nonempty" select="number(boolean($incnodes/* or $incnodes/text()[normalize-space(.)]))"/> 
     <xsl:choose>
       <xsl:when test="$search='dynamic'">
         <xsl:choose>
           <xsl:when test="$__target_key='__NONE__'">
-            <span class="{$classes}" title="{pfx:getDynIncInfo($part,$theme,$path,$resolved_module,$requested_module,$tenant,$lang)}"/>
+            <span class="{$classes}" title="{pfx:getDynIncInfo($part,$theme,$path,$resolved_module,$requested_module,$tenant,$lang)}|{$nonempty}"/>
           </xsl:when>
           <xsl:otherwise>
-            <span class="{$classes}" title="{{pfx:getDynIncInfo('{$part}','{$theme}','{$path}','{$resolved_module}','{$requested_module}','{$tenant}','{$lang}')}}"/>
+            <span class="{$classes}" title="{{pfx:getDynIncInfo('{$part}','{$theme}','{$path}','{$resolved_module}','{$requested_module}','{$tenant}','{$lang}')}}|{$nonempty}"/>
           </xsl:otherwise>
         </xsl:choose>
       </xsl:when>

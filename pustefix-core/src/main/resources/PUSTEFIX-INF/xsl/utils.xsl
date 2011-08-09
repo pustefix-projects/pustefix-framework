@@ -124,6 +124,9 @@
                 } else if(spans[i].className == 'pfx_inc_end' || spans[i].className == 'pfx_inc_end pfx_inc_ro') {
                   var data = spans[i].title.split('|');
                   var partStr = 'part \'' + data[0] + '\'';
+                  if(data[6] == '0') {
+                    partStr = 'empty ' + partStr; 
+                  }
                   var pathStr = ' from resource \'' + data[2] + '\'';
                   var modStr = '';
                   if(data[3] == 'webapp') {
