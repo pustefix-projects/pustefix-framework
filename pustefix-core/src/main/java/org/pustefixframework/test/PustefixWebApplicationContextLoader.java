@@ -63,8 +63,8 @@ public class PustefixWebApplicationContextLoader implements ContextLoader {
     public ApplicationContext loadContext(String... locations) {
         
         //Mock ServletContext
-        MockServletContext servletContext = new MockServletContext();
         if(docroot==null) docroot = GlobalConfig.guessDocroot();
+        MockServletContext servletContext = new MockServletContext(docroot.toURI().toString());
         servletContext.addInitParameter("pustefix.docroot", docroot.getAbsolutePath());
         
         //Initialize factories
