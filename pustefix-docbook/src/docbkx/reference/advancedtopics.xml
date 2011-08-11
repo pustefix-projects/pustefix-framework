@@ -158,6 +158,37 @@
     </section>   
   </section>
 
+  <section xml:id="advanced.pagealternatives">
+    <title>Page alternatives</title>
+     <para>
+        Page alternatives are different representations of the same logical page. Page
+        alternatives are internally used to create different versions for languages/tenants, but can be also used for
+        pages which are based on a common page, assigned to the same logical page, but with different content and display pagename, e.g.
+        landing pages (see <xref linkend="configuration.sitemap"/>).
+      </para>
+      <para>
+        Conceptually related to page variants, page alternatives are implemented on a lower level. Creating a page alternative
+        automatically creates alternatives for all variants of a page, i.e. all existing standardpage definitions of a page
+        are copied, thus providing an own stylesheet per alternative.
+      </para>
+      <para>
+        The definition of page alternatives is done within the sitemap configuration:
+      </para>
+<programlisting language="xml"><![CDATA[<sitemap>
+  <page name="Info">
+    <alt key="cities" name="Cities"/>
+    <alt key="nationalparks" name="NationalParks"/>
+    <alt key="mountains" name="Mountains"/>
+  </page>
+</sitemap>]]></programlisting>
+      <para>
+         Every page alternative has a key, which is referred to select the matching alternative. The key can be programmatically
+         set using the <literal>Context</literal> method <literal>setPageAlternative(String key)</literal>. During the XSL transformation
+         the key can be accessed using the parameter <literal>$pageAlternative</literal>. The key will be also inserted into
+         the theme fallback chain. Thus you can produce different content per alternative.
+      </para>
+  </section>
+
   <section xml:id="advanced.i18n">
     <title>Internationalisation</title>
     <para>

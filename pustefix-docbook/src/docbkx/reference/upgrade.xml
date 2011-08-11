@@ -24,7 +24,7 @@
       </para>
       <para>
         If you didn't use the navigation tree within you XSL transformations you can remove the navigation without substitution because
-        Pustefix itself doesn't need it itself any longer.
+        Pustefix itself doesn't need it any longer.
       </para>
     </section>
    

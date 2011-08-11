@@ -313,6 +313,9 @@
   <standardpage name="a_name" master="..."
                 metatags="..." themes="..." variant="..."
                 xml="a_base_xml_file.xml">
+  <auto-standardpage lookup-path="txt/pages" lookup-module="..." 
+                     master="..." metatags="..." themes="..." variant="..."
+                     xml="a_base_xml_file.xml">
     ...
   </standardpage>
 </make>]]></programlisting>
@@ -366,40 +369,6 @@
                 The allowed characters for themes are: a-zA-Z0-9_+-
               </para>
             </td>
-          </tr>
-        </tbody>
-      </table>
-    </section>
-    <section xml:id="configuration.depend.page">
-      <title>The &lt;page/&gt; tag</title>
-      <para>
-       The <literal>&lt;page&gt;</literal> tag defines all available
-       pages.
-      </para>
-      <table rules="all" frame="box">
-        <caption>Attributes of the &lt;page&gt; tag</caption>
-        <thead>
-          <tr>
-            <th>Attribute</th>
-            <th>Mandatory?</th>
-            <th>Description</th>
-          </tr>
-        </thead>
-        <tbody>
-          <tr>
-            <td>name</td>
-            <td>mandatory</td>
-            <td>The name of the page. This name is used throughout Pustefix to reference the page (e.g. when creating internal links and in other config files). The allowed characters for page names are: a-zA-Z0-9_+-</td>
-          </tr>
-          <tr>
-            <td>handler</td>
-            <td>mandatory</td>
-            <td>This attribute tells the system which servlet is used to handle requests for this page. You can think of the handler attribute as a project wide servlet "name" as defined in the project definition</td>
-          </tr>
-          <tr>
-            <td>accesskey</td>
-            <td>optional</td>
-            <td>This attribute defines a default access key that will be used by the pfx:button tag for the links it generates.</td>
           </tr>
         </tbody>
       </table>
@@ -568,6 +537,17 @@
           </tr>
         </tbody>
       </table>
+      <note xml:id="configuration.depend.autostandardpage">
+        <title>Page auto-configuration</title>
+         If you're configuration contains a lot of repeating standardpage definitions only differing in the page name, you can
+         alternatively use <literal>&lt;auto-standardpage&gt;</literal>, which will automatically create standardpage definitions
+         for all found pages. Pages are searched looking for XML files in the directory specified by the <literal>lookup-path</literal>  
+         attribute (and <literal>lookup-module</literal> if the pages are located in modules). The page name will be derived from the XML file 
+         name. Apart from the <literal>name</literal> attribute all <literal>standardpage</literal> attributes can be used.
+ <programlisting language="xml"><![CDATA[<auto-standardpage lookup-path="txt/pages" lookup-module="*" master="AName" metatags="AName">
+  ...
+</auto-standardpage>]]></programlisting>
+      </note>
       <para>
         After performing the transformation of the depend.xml on loading (automatically done by the runtime system system) this becomes
       </para>
@@ -678,6 +658,56 @@
 </target>]]></programlisting>
     </section>
   </section>
+
+    <section xml:id="configuration.sitemap">
+      <title>Sitemap configuration (sitemap.xml, sitemap-aliases.xml)</title>
+      <para>
+        The optional sitemap configuration file <literal>sitemap.xml</literal> can be used to define a logical page structure, e.g.
+        for grouping pages according to a navigation or menu structure. This sitemap can be accessed during the XSL transformations
+        using the XSL parameter <literal>$sitemap</literal>.
+      </para>
+      <para>
+        The sitemap can be also used to provide page name aliases. Pustefix differentiates between logcial page names and display 
+        page names. Within the sitemap you can set a display page name by setting a so-called page alias. Thus you can rename a page
+        without having to change existing page references, i.e. internally the logical name is still used, but when Pustefix renders
+        the page, page names in links, etc., are replaced by the display names.
+      </para>
+      <para>
+        Finally the sitemap allows the definition of page alternatives. Page alternatives can be used to create different 
+        representations of a page. They base on the same logical page, but can produce different content and display names,
+        e.g. for landing pages.
+      </para>
+ <programlisting language="xml"><![CDATA[<sitemap>
+  <!-- page elements can be arbitrarily listed/nested, the name attribute relates to the logical page name -->
+  <page name="Home">
+    <page name="..."/>
+    <page name="..."/>
+  </page>
+  <!-- the alias attribute can be used to provide a page alias which should be displayed instead of the logical name -->
+  <page name="Overview" alias="Summary"/>
+  <!-- using the alt element you can add page alternatives, matching is done using the mandatory key attribute -->
+  <page name="Info">
+    <alt key="cities" name="Cities"/>
+    <alt key="nationalparks" name="NationalParks"/>
+    <alt key="mountains" name="Mountains"/>
+  </page>
+  <!-- additional parts of a sitemap can be included, e.g. from modules -->
+  <config-include file="conf/sitemap-fragment.xml" section="sitemap" module="*"/>
+</sitemap>]]></programlisting>
+      <para>
+        Internationalizing page names can be done by creating additional language specific alias mappings. These mappings are
+        defined in the <literal>sitemap-alias.xml</literal> configuration files.
+      </para>
+<programlisting language="xml"><![CDATA[<sitemap-aliases lang="de">
+  <!-- the alias elements map page names to language specific display names -->
+  <alias page="Home">Start</alias>
+  <alias page="Overview">Uebersicht</alias>
+  <alias page="Info">Information</alias>
+  <alias page="Cities">Staedte</alias>
+  <alias page="NationalParks">Nationalparks</alias>
+  <alias page="Mountains">Berge</alias>
+</sitemap-aliases>]]></programlisting>
+    </section>
     
     <section xml:id="configuration.servlet.contextxml">
       <title>ContextXMLService configuration file</title>

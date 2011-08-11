@@ -47,7 +47,7 @@
         Pustefix 0.18 differentiates between logical page names and display page names. Thus you can rename pages or provide
         internationalized page names without having to change existing page references (to the logical page name). Such page aliases
         are configured in a file called <literal>sitemap.xml</literal> which is replacing the <literal>navigation</literal> configuration
-        from <literal>depend.xml</literal> (see <xref linkend="configuration.tenants"/>).
+        from <literal>depend.xml</literal> (see <xref linkend="configuration.sitemap"/>).
       </para>
     </section>
 
@@ -57,7 +57,7 @@
         Page alternatives are a new concept for creating different representations of a page (including possible variants). Page
         alternatives are internally used to create different versions for languages/tenants, but can be also used for
         pages which are based on a common page, assigned to the same logical page, but with different content and display pagename, e.g.
-        landing pages (see <xref linkend="configuration.tenants"/>).
+        landing pages (see <xref linkend="advanced.pagealternatives"/>).
       </para>
     </section>
 
@@ -74,7 +74,17 @@
         The dynamic search mechanism now supports adding modules to the default search chain. This is declaratively done
         in the module descriptor <literal>pustefix-module.xml</literal>. You can additionally set a search priority to define
         a search order. Using filter attributes you can define a dynamic search filter allowing to include/exclude certain
-        modules from searching/overriding (useful for multi-tenant/language applications to filter by tenant or language).
+        modules from searching/overriding, which is useful for multi-tenant/language applications to filter by tenant or language
+        (see <xref linkend="modulessupport.types.new"/>).
+      </para>
+    </section>
+
+    <section xml:id="news.0_18_0.autoconfig">
+      <title>Automatic configuration</title>
+      <para>
+        Pustefix 0.18 extends the <literal>depend.xml</literal> configuration by providing a <literal>&lt;auto-standardpage&gt;</literal>
+        element which can be used as template, which automatically creates standardpage definitions for pages found in a specified
+        folder (see <xref linkend="configuration.depend.autostandardpage"/>).
       </para>
     </section>
   
