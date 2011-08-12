@@ -15,9 +15,6 @@
   <name>Pustefix Java Agent</name>
   <description>Pustefix Java Agent</description>
 
-  <dependencies>
-  </dependencies>
-
   <build>
     <plugins>
       <plugin>
@@ -27,6 +24,7 @@
           <archive>
             <manifestEntries>
               <Premain-Class>org.pustefixframework.agent.LiveAgent</Premain-Class>
+              <Agent-Class>org.pustefixframework.agent.LiveAgent</Agent-Class>
             </manifestEntries>
           </archive>
         </configuration>
