@@ -26,7 +26,7 @@
         depending on a selected tenant. Tenants are automatically selected by matching host name patterns against the requested
         host name. Alternative page versions are created by applying filters to the dynamic include mechanism, thus overriding
         and extending the core page content with tenant- and/or language-specific content from according tenant/language modules
-        (see <xref linkend="configuration.tenants"/>).
+        (see <xref linkend="advanced.multitenancy"/>).
       </para>
     </section>
 
@@ -37,7 +37,7 @@
         the <literal>&lt;pfx:langselect&gt;</literal> tags to directly embed all language dependent content into the same
         part and theme side by side. With Pustefix 0.18 it's possible to automatically create different versions of a page serving
         different languages using the dynamic override mechanism, e.g. you can source out all language dependent content
-        into own modules (language packs) which override a language independent core module (see <xref linkend="configuration.tenants"/>).
+        into own modules (language packs) which override a language independent core module (see <xref linkend="advanced.i18n"/>).
       </para>
     </section>
 

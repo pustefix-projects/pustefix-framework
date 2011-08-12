@@ -190,31 +190,88 @@
   </section>
 
   <section xml:id="advanced.i18n">
-    <title>Internationalisation</title>
+    <title>Internationalization</title>
     <para>
-      Pustefix allows you to implement multi-language applications. As there is a clean separation between business
-      logic and presentation, you can easily change the presentation layer to a new language.
+      Pustefix provides various mechanisms to implement internationalized applications. You can write applications
+      which have a fixed language which is selected/resolved at buildtime using the theme mechanism 
+      (see <xref linkend="advanced.variantsandthemes"/>) or the dynamic include mechanism 
+      (see <xref linkend="advanced.dyninclude"/>). You can make the language
+      switchable at runtime using the language-aware core tags (see <xref linkend="xslt.pfx.langselect"/>).
     </para>
-    <section xml:id="advanced.i18n.xsl">
-      <title>Internationalisation in the presentation layer</title>
+    <para>
+      Using Pustefix's multitenancy support (see <xref linkend="advanced.multitenancy"/> you get a combination
+      of both mechanisms. Pages have a fixed language, but an own instance is created for each language, and thus
+      the language is switchable at runtime too.
+    </para>
       <para>
-        See <xref linkend="xslt.pfx.langselect"/> on more information on how the access the currently selected
-        language in the presentation layer.
+		Your business logic can query the currently selected language using the <literal>Context</literal>
+	        method <literal>getLanguage()</literal>, using <literal>setLanguage(String language)</literal>,
+		you can change the selected language at runtime.
       </para>
-    </section>
-    <section xml:id="advanced.i18n.context">
-      <title>Internationalisation in the business logic</title>
-      <para>
-		If your business logic needs to react to the currently selected language, you can retrieve
-		the current language of the application via the <literal>getLanguage() : String</literal> of the
-		<literal>Context</literal>.
-      </para>
-      <para>
-		The <literal>Context</literal> also provides a method <literal>setLangauge(String language)</literal>,
-		which allows you to change the selected language at run-time.
-      </para>
-    </section>
   </section>
+
+  <section xml:id="advanced.multitenancy">
+    <title>Multitenancy</title>
+    <para>
+      Pustefix provides basic multitenancy support, i.e. a single application instance can serve multiple tenants, like markets or 
+      countries. Tenants are automatically selected by matching host name patterns against the requested
+      host name. Tenant configuration is done within <literal>project.xml</literal> or included configuration fragments 
+      (see <xref linkend="configuration.project.projectxml"/>).
+    </para>
+<programlisting language="xml"><![CDATA[<project-config>
+  
+  <tenant name="CA_market">
+    <choose>
+      <when test="$mode='prod'">
+        <host>.*\.ca$</host>
+      </when>
+      <otherwise>
+        <host>^ca\..*</host>
+      </otherwise>
+    </choose>
+    <lang default="true">en_CA</lang>
+    <lang>fr_CA</lang>
+  </tenant>
+
+  <!-- include tenants config fragments from all modules found in classpath -->
+  <config-include file="conf/project-fragment.xml" section="tenants" module="*"/>
+  
+</project-config>]]></programlisting> 
+    <para>
+      The current multitenancy support concentrates on the view layer. Pustefix automatically creates tenant and language specific 
+      versions of all pages. Tenant/language specific page content is created by applying filters to the dynamic include mechanism, 
+      thus overriding and extending the core page content with tenant- and/or language-specific content from according 
+      tenant/language modules (see the following examples of a tenant and language Pustefix module descriptor, also see 
+      (<xref linkend="modulessupport.types.new"/>).
+    </para>
+<programlisting language="xml"><![CDATA[<module-descriptor>
+
+  <module-name>pustefix-i18n-tenant-ca</module-name>
+
+  <default-search priority="1">
+    <filter-attribute name="tenant" value="CA_market"/>
+  </default-search>
+  
+</module-descriptor>]]></programlisting> 
+<programlisting language="xml"><![CDATA[<module-descriptor>
+
+  <module-name>pustefix-i18n-lang-fr</module-name>
+
+  <override-modules>
+    <filter-attribute name="lang" value="fr"/>
+    ...
+  </override-modules>
+
+</module-descriptor>]]></programlisting>
+    
+    <para>
+       Application developers can query the currently set tenant at runtime using the <literal>Context</literal> method 
+       <literal>getTenant()</literal>. Additionally Pustefix automatically adds an element <literal>&lt;tenant&gt;</literal>
+       to the result DOM tree. During XSL transformations the tenant targeted by the transformation can be accessed
+       using the XSL parameter <literal>$tenant</literal>.
+    </para>
+  </section>
+
   <section xml:id="advanced.dyninclude">
     <title>Dynamic resource inclusion</title>
     <para>

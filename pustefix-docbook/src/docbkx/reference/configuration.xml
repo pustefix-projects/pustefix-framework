@@ -164,8 +164,33 @@
       to make disregard this project when building the
       server configuration 
     -->
+    <!-- you can optionally specify which languages should be switchable at runtime -->
+    <!--
+    <lang default="true">en_UK</lang>
+    <lang>de_DE</lang>
+    -->
   </project>
   
+  <!-- You can optionally configure tenants bound to specific hosts supporting different languages.-->
+  <!--
+  <tenant name="CA_market">
+    <choose>
+      <when test="$mode='prod'">
+        <host>.*\.ca$</host>
+      </when>
+      <otherwise>
+        <host>^ca\..*</host>
+      </otherwise>
+    </choose>
+    <lang default="true">en_CA</lang>
+    <lang>fr_CA</lang>
+  </tenant>
+
+  <tenant name="US_market">
+    ...
+  </tenant>
+  -->
+
   <editor>
     <!-- Set this to false to make the project disappear in the Pustefix CMS 
          (can be overridden using the ServletContext init parameter 'editor.enabled') -->
