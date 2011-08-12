@@ -6,12 +6,12 @@
   <parent>
     <groupId>org.pustefixframework.samples</groupId>
     <artifactId>pustefix-i18n</artifactId>
-    <version>0.18.0</version>
+    <version>0.18.1-SNAPSHOT</version>
   </parent>
 
   <groupId>org.pustefixframework.samples</groupId>
   <artifactId>pustefix-i18n-webapp</artifactId>
-  <version>0.18.0</version>
+  <version>0.18.1-SNAPSHOT</version>
   <packaging>war</packaging>
 
   <name>Pustefix i18n sample webapp</name>
@@ -30,23 +30,23 @@
     <dependency>
       <groupId>org.pustefixframework.samples</groupId>
       <artifactId>pustefix-i18n-core</artifactId>
-      <version>0.18.0</version>
+      <version>0.18.1-SNAPSHOT</version>
     </dependency>
     <!-- Tenant modules -->
     <dependency>
       <groupId>org.pustefixframework.samples</groupId>
       <artifactId>pustefix-i18n-tenant-ca</artifactId>
-      <version>0.18.0</version>
+      <version>0.18.1-SNAPSHOT</version>
     </dependency>
     <dependency>
       <groupId>org.pustefixframework.samples</groupId>
       <artifactId>pustefix-i18n-tenant-us</artifactId>
-      <version>0.18.0</version>
+      <version>0.18.1-SNAPSHOT</version>
     </dependency>
     <dependency>
       <groupId>org.pustefixframework.samples</groupId>
       <artifactId>pustefix-i18n-tenant-de</artifactId>
-      <version>0.18.0</version>
+      <version>0.18.1-SNAPSHOT</version>
     </dependency>
   </dependencies>
  
@@ -64,7 +64,7 @@
       <plugin>
         <groupId>org.pustefixframework.maven.plugins</groupId>
         <artifactId>pustefix-webapp-plugin</artifactId>
-        <version>0.18.0</version>
+        <version>0.18.1-SNAPSHOT</version>
         <executions>
           <execution>
             <goals>
