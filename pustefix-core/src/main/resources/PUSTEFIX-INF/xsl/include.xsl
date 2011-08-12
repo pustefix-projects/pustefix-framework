@@ -416,14 +416,20 @@
       </xsl:choose>
     </xsl:variable>
     <xsl:variable name="nonempty" select="number(boolean($incnodes/* or $incnodes/text()[normalize-space(.)]))"/> 
+    <xsl:variable name="othermodule">
+      <xsl:choose>
+        <xsl:when test="starts-with(include:getSystemId(),concat('module://',$resolved_module,'/'))">0</xsl:when>
+        <xsl:otherwise>1</xsl:otherwise>
+      </xsl:choose>
+    </xsl:variable>
     <xsl:choose>
       <xsl:when test="$search='dynamic'">
         <xsl:choose>
           <xsl:when test="$__target_key='__NONE__'">
-            <span class="{$classes}" title="{pfx:getDynIncInfo($part,$theme,$path,$resolved_module,$requested_module,$tenant,$lang)}|{$nonempty}"/>
+            <span class="{$classes}" title="{pfx:getDynIncInfo($part,$theme,$path,$resolved_module,$requested_module,$tenant,$lang)}|{$nonempty}|{$othermodule}"/>
           </xsl:when>
           <xsl:otherwise>
-            <span class="{$classes}" title="{{pfx:getDynIncInfo('{$part}','{$theme}','{$path}','{$resolved_module}','{$requested_module}','{$tenant}','{$lang}')}}|{$nonempty}"/>
+            <span class="{$classes}" title="{{pfx:getDynIncInfo('{$part}','{$theme}','{$path}','{$resolved_module}','{$requested_module}','{$tenant}','{$lang}')}}|{$nonempty}|{$othermodule}"/>
           </xsl:otherwise>
         </xsl:choose>
       </xsl:when>
