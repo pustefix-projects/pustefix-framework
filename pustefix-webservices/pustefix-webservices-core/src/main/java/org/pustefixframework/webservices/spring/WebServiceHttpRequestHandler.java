@@ -45,7 +45,7 @@ import org.springframework.context.ApplicationContext;
 import org.springframework.context.ApplicationContextAware;
 import org.springframework.web.context.ServletContextAware;
 
-import de.schlund.pfixxml.resources.FileResource;
+import de.schlund.pfixxml.resources.Resource;
 import de.schlund.pfixxml.resources.ResourceUtil;
 
 /**
@@ -63,7 +63,7 @@ public class WebServiceHttpRequestHandler implements UriProvidingHttpRequestHand
 
     private AdminWebapp adminWebapp;
 
-    private FileResource configFile;
+    private Resource configFile;
     
     private ServletContext servletContext;
     private String handlerURI;
@@ -197,7 +197,7 @@ public class WebServiceHttpRequestHandler implements UriProvidingHttpRequestHand
     }
 
     public void setConfigFile(String path) {
-        configFile = ResourceUtil.getFileResource(path);
+        configFile = ResourceUtil.getResource(path);
     }
     
     public void setServletContext(ServletContext servletContext) {
