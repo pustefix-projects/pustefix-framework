@@ -18,6 +18,8 @@
 package org.pustefixframework.webservices.spring;
 
 import org.pustefixframework.config.Constants;
+import org.pustefixframework.config.generic.ParsingUtils;
+import org.pustefixframework.config.project.ProjectInfo;
 import org.pustefixframework.webservices.ServiceRuntime;
 import org.springframework.beans.factory.config.BeanDefinition;
 import org.springframework.beans.factory.config.BeanDefinitionHolder;
@@ -46,6 +48,11 @@ public class WebServiceRequestHandlerParsingHandler implements ParsingHandler {
         Element configurationFileElement = (Element)serviceElement.getElementsByTagNameNS(Constants.NS_PROJECT,"config-file").item(0);
         if (configurationFileElement == null) throw new ParserException("Could not find expected <config-file> element");
         String configurationFile = configurationFileElement.getTextContent().trim();
+        ProjectInfo projectInfo = ParsingUtils.getSingleTopObject(ProjectInfo.class, context);
+        if(projectInfo.getDefiningModule() != null && !configurationFile.matches("^\\w+:.*")) {
+            if(configurationFile.startsWith("/")) configurationFile = configurationFile.substring(1);
+            configurationFile = "module://" + projectInfo.getDefiningModule() + "/" + configurationFile;
+        }
         
         BeanDefinitionBuilder beanBuilder = BeanDefinitionBuilder.genericBeanDefinition(WebServiceHttpRequestHandler.class);
         beanBuilder.setScope("singleton");

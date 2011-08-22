@@ -287,7 +287,7 @@ public class ConfigurationReader extends DefaultHandler {
         }
         try {
             Resource metaFile= (Resource)configFile.createRelative("beanmetadata.xml");
-            if(config.getGlobalServiceConfig()!=null) 
+            if(config.getGlobalServiceConfig()!=null && metaFile.exists()) 
                 config.getGlobalServiceConfig().setDefaultBeanMetaDataURL(metaFile.getFile().toURI().toURL());
         } catch(MalformedURLException x) {
             throw new SAXException("Can't get default bean metadata URL.",x);
