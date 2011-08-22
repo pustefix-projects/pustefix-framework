@@ -14,6 +14,17 @@
 
   <xs:complexType name="configFragmentsType">
     <xs:sequence>
+      <xs:element name="section" maxOccurs="unbounded" minOccurs="0">
+        <xs:complexType>
+          <xs:complexContent>
+            <xs:extension base="fr:sectionType">
+              <xs:sequence>
+                <xs:any minOccurs="0" maxOccurs="unbounded" processContents="skip" />
+              </xs:sequence>
+            </xs:extension>
+          </xs:complexContent>
+        </xs:complexType>
+      </xs:element>
       <xs:element name="sitemap" type="fr:sitemapType" maxOccurs="unbounded" minOccurs="0" />
       <xs:element name="targets" type="fr:targetsType" maxOccurs="unbounded" minOccurs="0" />
       <xs:element name="resources" type="fr:resourcesType" maxOccurs="unbounded" minOccurs="0" />

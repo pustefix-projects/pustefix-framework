@@ -186,7 +186,7 @@ public class IncludesResolver {
                         xpathProc.setNamespaceContext(new DOMBasedNamespaceContext(elem));
                         includeNodes = (NodeList) xpathProc.evaluate(xpath, includeDocument, XPathConstants.NODESET);
                     } catch (XPathExpressionException e) {
-                        throw new SAXException("XPath Expression invalid: " + xpath);
+                        throw new SAXException("XPath expression invalid: " + xpath, e);
                     }
                     
                     for (int i=0; i < includeNodes.getLength(); i++) {
