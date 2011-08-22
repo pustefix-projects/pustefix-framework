@@ -19,6 +19,7 @@
 package org.pustefixframework.webservices.config;
 
 import java.io.CharArrayWriter;
+import java.io.IOException;
 import java.io.InputStream;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
@@ -42,6 +43,7 @@ import org.xml.sax.helpers.DefaultHandler;
 
 import de.schlund.pfixxml.config.CustomizationHandler;
 import de.schlund.pfixxml.resources.FileResource;
+import de.schlund.pfixxml.resources.Resource;
 import de.schlund.pfixxml.resources.ResourceUtil;
 
 /**
@@ -49,8 +51,7 @@ import de.schlund.pfixxml.resources.ResourceUtil;
  */
 public class ConfigurationReader extends DefaultHandler {
 
-    FileResource configFile;
-    FileResource configDir;
+    Resource configFile;
     Configuration config;
     Stack<Object> contextStack=new Stack<Object>();
     Object context;
@@ -59,24 +60,23 @@ public class ConfigurationReader extends DefaultHandler {
     boolean isRootFile;
     ApplicationContext appContext;
     
-    public static Configuration read(FileResource file, ApplicationContext appContext) throws Exception {
+    public static Configuration read(Resource file, ApplicationContext appContext) throws Exception {
         return read(file, true, appContext);
     }
     
-    public static Configuration read(FileResource file) throws Exception {
+    public static Configuration read(Resource file) throws Exception {
         return read(file, true, null);
     }
     
-    private static Configuration read(FileResource file,boolean isRootFile, ApplicationContext appContext) throws Exception {
+    private static Configuration read(Resource file,boolean isRootFile, ApplicationContext appContext) throws Exception {
         ConfigurationReader reader=new ConfigurationReader(file, isRootFile, appContext);
         reader.read();
         return reader.getConfiguration();
     }
     
-    private ConfigurationReader(FileResource configFile, boolean isRootFile, ApplicationContext appContext) {
+    private ConfigurationReader(Resource configFile, boolean isRootFile, ApplicationContext appContext) {
         this.configFile = configFile;
         this.isRootFile = isRootFile;
-        configDir = configFile.getParentAsFileResource();
         this.appContext = appContext;
     }
     
@@ -285,13 +285,15 @@ public class ConfigurationReader extends DefaultHandler {
                 ws.setGlobalServiceConfig(globSrvConf);
             }
         }
-        FileResource metaFile=ResourceUtil.getFileResource(configDir,"beanmetadata.xml");
         try {
+            Resource metaFile= (Resource)configFile.createRelative("beanmetadata.xml");
             if(config.getGlobalServiceConfig()!=null) 
-                config.getGlobalServiceConfig().setDefaultBeanMetaDataURL(metaFile.toURL());
+                config.getGlobalServiceConfig().setDefaultBeanMetaDataURL(metaFile.getFile().toURI().toURL());
         } catch(MalformedURLException x) {
             throw new SAXException("Can't get default bean metadata URL.",x);
-        }
+        } catch(IOException x) {
+            throw new SAXException("Can't read bean metadata.", x);
+        } 
     }
     
     @Override
