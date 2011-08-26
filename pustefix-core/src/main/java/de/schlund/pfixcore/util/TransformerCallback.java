@@ -189,7 +189,7 @@ public class TransformerCallback {
             State state = context.getPageMap().getState(pageRequest);
             if (state != null && state instanceof IWrapperState) {
                 IWrapperState iwState = (IWrapperState) state;
-                Map<String, ? extends IWrapperConfig> iwrappers = iwState.getIWrapperConfigMap();
+                Map<String, ? extends IWrapperConfig> iwrappers = iwState.getIWrapperConfigMap(context.getTenant());
                 IWrapperConfig iwrpConfig = iwrappers.get(prefix);
                 if (iwrpConfig != null) {
                     Class<? extends IWrapper> iwrpClass = (Class<? extends IWrapper>) iwrpConfig.getWrapperClass();
@@ -223,7 +223,7 @@ public class TransformerCallback {
             State state = context.getPageMap().getState(pageRequest);
             if (state != null && state instanceof IWrapperState) {
                 IWrapperState iwState = (IWrapperState) state;
-                Map<String, ? extends IWrapperConfig> iwrappers = iwState.getIWrapperConfigMap();
+                Map<String, ? extends IWrapperConfig> iwrappers = iwState.getIWrapperConfigMap(context.getTenant());
                 for (String prefix : iwrappers.keySet()) {
                     Element elem = doc.createElement("iwrapper");
                     elem.setAttribute("prefix", prefix);

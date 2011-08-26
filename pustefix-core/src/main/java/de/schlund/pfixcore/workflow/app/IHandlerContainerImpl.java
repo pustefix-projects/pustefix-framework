@@ -29,6 +29,7 @@ import de.schlund.pfixcore.generator.IHandler;
 import de.schlund.pfixcore.workflow.Context;
 import de.schlund.pfixxml.PfixServletRequest;
 import de.schlund.pfixxml.ResultDocument;
+import de.schlund.pfixxml.Tenant;
 
 /**
  * This class is a default implementation of the <code>IHandlerContainer</code> interface.
@@ -57,7 +58,7 @@ public class IHandlerContainerImpl implements IHandlerContainer {
      * @param props the properties containing the interface names
      * @see de.schlund.pfixcore.workflow.app.IHandlerContainer#initIHandlers(Properties)
      */
-    public void initIHandlers(StateConfig config) {
+    public void initIHandlers(StateConfig config, Tenant tenant) {
         handlers  = new HashSet<IHandler>();
         activeset = new HashSet<IHandler>();
         stateConfig = config;
@@ -70,7 +71,7 @@ public class IHandlerContainerImpl implements IHandlerContainer {
             this.policy = "NONE";
         }
         
-        for (IWrapperConfig iConfig : config.getIWrappers().values()) {
+        for (IWrapperConfig iConfig : config.getIWrappers(tenant).values()) {
             IHandler handler = iConfig.getHandler();
             handlers.add(handler);
             if (iConfig.doCheckActive()) {

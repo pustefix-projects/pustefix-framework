@@ -18,6 +18,7 @@
 
 package de.schlund.pfixcore.workflow.app;
 import java.util.HashMap;
+import java.util.Map;
 import java.util.Properties;
 
 import org.pustefixframework.config.contextxmlservice.StateConfig;
@@ -25,6 +26,7 @@ import org.pustefixframework.config.contextxmlservice.StateConfig;
 import de.schlund.pfixcore.workflow.Context;
 import de.schlund.pfixcore.workflow.PageRequest;
 import de.schlund.pfixxml.ConfigurableObject;
+import de.schlund.pfixxml.Tenant;
 import de.schlund.pfixxml.XMLException;
 
 /**
@@ -37,7 +39,8 @@ import de.schlund.pfixxml.XMLException;
 public class IHandlerContainerManager implements ConfigurableObject {
     /** Store the already created IHandlerContainer here, use the page as key*/
     private HashMap<PageRequest, IHandlerContainer> known = new HashMap<PageRequest, IHandlerContainer>();
-
+    private Map<String, Map<PageRequest, IHandlerContainer>> tenantToKnown = new HashMap<String, Map<PageRequest, IHandlerContainer>>();
+    
     /**
      * @see de.schlund.pfixxml.PropertyObject#init(Properties)
      */
@@ -56,16 +59,40 @@ public class IHandlerContainerManager implements ConfigurableObject {
      * @throws XMLException on errors when creating the IHandlerContainer.
      */
     public IHandlerContainer getIHandlerContainer(Context context, StateConfig stateConfig) throws XMLException {
-        synchronized (known) {
-            PageRequest       page   = context.getCurrentPageRequest();
-            IHandlerContainer retval = known.get(page); 
-            if (retval == null) {
-                retval = new IHandlerContainerImpl();
-                retval.initIHandlers(stateConfig);
-                known.put(page, retval);
+        PageRequest page = context.getCurrentPageRequest();
+        IHandlerContainer retval = null;
+        Tenant tenant = context.getTenant();
+        if(tenant == null) {
+            synchronized(known) {
+                retval = known.get(page);
             }
-            return retval;
+        } else {
+            synchronized(tenantToKnown) {
+                Map<PageRequest, IHandlerContainer> cont = tenantToKnown.get(tenant.getName());
+                if(cont != null) {
+                    retval = cont.get(page);
+                }
+            }
         }
+        if (retval == null) {
+            retval = new IHandlerContainerImpl();
+            retval.initIHandlers(stateConfig, context.getTenant());
+            if(tenant == null) {
+                synchronized(known) {
+                    known.put(page, retval);
+                }
+            } else {
+                synchronized(tenantToKnown) {
+                    Map<PageRequest, IHandlerContainer> cont = tenantToKnown.get(tenant.getName());
+                    if(cont == null) {
+                        cont = new HashMap<PageRequest, IHandlerContainer>();
+                        tenantToKnown.put(tenant.getName(), cont);
+                    }
+                    cont.put(page, retval);
+                }
+            }
+        }
+        return retval;
     }
 
 }// IHandlerContainerFactory

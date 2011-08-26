@@ -19,6 +19,7 @@
 package org.pustefixframework.config.contextxmlservice.parser;
 
 import java.util.Collection;
+import java.util.List;
 import java.util.Map;
 
 import org.pustefixframework.config.Constants;
@@ -37,6 +38,7 @@ import org.springframework.beans.factory.config.RuntimeBeanReference;
 import org.springframework.beans.factory.support.BeanDefinitionBuilder;
 import org.springframework.beans.factory.support.BeanDefinitionRegistry;
 import org.springframework.beans.factory.support.DefaultBeanNameGenerator;
+import org.springframework.beans.factory.support.ManagedList;
 import org.springframework.beans.factory.support.ManagedMap;
 import org.w3c.dom.Element;
 
@@ -147,11 +149,10 @@ public class PageRequestParsingHandler implements ParsingHandler {
                 BeanDefinition beanDefinition;
                 String configBeanName;
                 String stateBeanName;
-                
+                List<IWrapperConfig> iwrpConfList = stateConfig.getIWrapperList();
                 @SuppressWarnings({"unchecked","rawtypes"})
-                Map<String, Object> wrapperMap = new ManagedMap(stateConfig.getIWrappers().size());
-                for (String prefix : stateConfig.getIWrappers().keySet()) {
-                    IWrapperConfig wrapperConfig = stateConfig.getIWrappers().get(prefix);
+                List<Object> wrapperList = new ManagedList(iwrpConfList.size());
+                for (IWrapperConfig wrapperConfig : iwrpConfList) {
                     Class<? extends IWrapper> wrapperClass = wrapperConfig.getWrapperClass();
                     
                     Class<? extends IHandler> handlerClass = null;
@@ -181,7 +182,8 @@ public class PageRequestParsingHandler implements ParsingHandler {
                         }
                         beanDefinition = beanBuilder.getBeanDefinition();
                         handlerBeanName = nameGenerator.generateBeanName(beanDefinition, beanRegistry);
-                        String handlerBeanAlias = handlerClass.getName()+"#"+pageConfig.getPageName()+"#"+prefix;
+                        String handlerBeanAlias = handlerClass.getName()+"#"+pageConfig.getPageName()+"#"+wrapperConfig.getPrefix();
+                        if(wrapperConfig.getTenant() != null) handlerBeanAlias = handlerBeanAlias + "#" + wrapperConfig.getTenant();
                         BeanDefinitionHolder beanHolder = new BeanDefinitionHolder(beanDefinition, handlerBeanName, new String[] {handlerBeanAlias});
                         if (!beanDefinition.getScope().equals("singleton") && !beanDefinition.getScope().equals("prototype")) {
                             beanHolder = ScopedProxyUtils.createScopedProxy(beanHolder, beanRegistry, true);
@@ -203,10 +205,11 @@ public class PageRequestParsingHandler implements ParsingHandler {
                     beanBuilder.addPropertyReference("handler", handlerBeanName);
                     beanBuilder.addPropertyValue("scope", wrapperConfig.getScope());
                     beanBuilder.addPropertyValue("checkActive", wrapperConfig.doCheckActive());
+                    beanBuilder.addPropertyValue("tenant", wrapperConfig.getTenant());
                     beanDefinition = beanBuilder.getBeanDefinition();
                     String wrapperConfigBeanName = nameGenerator.generateBeanName(beanDefinition, beanRegistry);
                     beanRegistry.registerBeanDefinition(wrapperConfigBeanName, beanDefinition);
-                    wrapperMap.put(prefix, new RuntimeBeanReference(wrapperConfigBeanName));
+                    wrapperList.add(new RuntimeBeanReference(wrapperConfigBeanName));
                 }
                 
                 beanBuilder = BeanDefinitionBuilder.genericBeanDefinition(StateConfigImpl.class);
@@ -217,7 +220,7 @@ public class PageRequestParsingHandler implements ParsingHandler {
                 beanBuilder.addPropertyValue("contextResources", contextResources);
                 beanBuilder.addPropertyValue("requiresToken", stateConfig.requiresToken());
                 beanBuilder.addPropertyValue("IWrapperPolicy", stateConfig.getIWrapperPolicy());
-                beanBuilder.addPropertyValue("IWrappers", wrapperMap);
+                beanBuilder.addPropertyValue("IWrappers", wrapperList);
                 beanBuilder.addPropertyValue("processActions", stateConfig.getProcessActions());
                 beanBuilder.addPropertyValue("properties", stateConfig.getProperties());
                 beanBuilder.addPropertyValue("state", stateConfig.getState());

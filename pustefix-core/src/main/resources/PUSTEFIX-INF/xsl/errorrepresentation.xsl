@@ -41,6 +41,11 @@
       XML/XSLT error at <i><xsl:value-of select="$rootcause/xsltinfo/@systemId"/></i>
       (line <i><xsl:value-of select="$rootcause/xsltinfo/@line"/>, column <xsl:value-of select="$rootcause/xsltinfo/@column"/></i>):<br/>
       <b><xsl:value-of select="$rootcause/@type"/>: <xsl:value-of select="$rootcause/@msg"/></b>
+      <xsl:if test="$rootcause/xsltinfo/@context">
+        <pre style="font-size: 80%">
+          <xsl:value-of select="$rootcause/xsltinfo/@context"/>
+        </pre>
+      </xsl:if>
       </td></tr>
     </xsl:if>
   

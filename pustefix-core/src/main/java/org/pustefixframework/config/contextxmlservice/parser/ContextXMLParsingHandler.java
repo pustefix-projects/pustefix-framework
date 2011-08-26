@@ -55,6 +55,7 @@ import de.schlund.pfixcore.workflow.ContextResourceManagerImpl;
 import de.schlund.pfixcore.workflow.PageMap;
 import de.schlund.pfixcore.workflow.State;
 import de.schlund.pfixcore.workflow.context.ServerContextImpl;
+import de.schlund.pfixxml.Tenant;
 
 /**
  * 
@@ -140,7 +141,7 @@ public class ContextXMLParsingHandler implements ParsingHandler {
                         return Policy.ANY;
                     }
             
-                    public Map<String, ? extends IWrapperConfig> getIWrappers() {
+                    public Map<String, ? extends IWrapperConfig> getIWrappers(Tenant tenant) {
                         return Collections.emptyMap();
                     }
             

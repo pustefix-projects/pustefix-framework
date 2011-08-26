@@ -280,10 +280,11 @@ public abstract class VirtualTarget extends TargetImpl {
                         setModTime(-1);
                         FileResource cachefile = ResourceUtil.getFileResource(getTargetGenerator()
                                 .getDisccachedir(), getTargetKey());
+                        /**
                         if (cachefile.exists()) {
                             cachefile.delete();
                         }
-
+                        */
                         TransformerException tex = e;
                         TargetGenerationException targetex = null;
                         if (storedException != null) {

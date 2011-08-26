@@ -23,6 +23,7 @@ import de.schlund.pfixcore.generator.IHandler;
 import de.schlund.pfixcore.workflow.Context;
 import de.schlund.pfixxml.PfixServletRequest;
 import de.schlund.pfixxml.ResultDocument;
+import de.schlund.pfixxml.Tenant;
 
 
 /**
@@ -38,7 +39,7 @@ public interface IHandlerContainer {
      * Initialize all IHandlers in this container.
      * @param config Configuration for pagerequest
      */
-    void initIHandlers(StateConfig config);
+    void initIHandlers(StateConfig config, Tenant tenant);
 
     /**
      * Determine if the associated page is accessible.

@@ -18,9 +18,11 @@
 
 package org.pustefixframework.config.contextxmlservice.parser.internal;
 
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Enumeration;
 import java.util.LinkedHashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.Properties;
 
@@ -29,6 +31,7 @@ import org.pustefixframework.config.contextxmlservice.ProcessActionStateConfig;
 import org.pustefixframework.config.contextxmlservice.StateConfig;
 
 import de.schlund.pfixcore.workflow.ConfigurableState;
+import de.schlund.pfixxml.Tenant;
 
 /**
  * Stores configuration for a PageRequest
@@ -42,7 +45,7 @@ public class StateConfigImpl implements Cloneable, StateConfig {
     private String defaultStaticStateParentBeanName = null;
     private Class<? extends ConfigurableState> defaultIWrapperStateClass = null;
     private String defaultIWrapperStateParentBeanName = null;
-    private Map<String, IWrapperConfig> iwrappers = new LinkedHashMap<String, IWrapperConfig>();
+    private List<IWrapperConfig> iwrappers = new ArrayList<IWrapperConfig>();
     private Map<String, Object> resources = new LinkedHashMap<String, Object>();
     private Properties props = new Properties();
     private StateConfig.Policy policy = StateConfig.Policy.ANY;
@@ -117,15 +120,25 @@ public class StateConfigImpl implements Cloneable, StateConfig {
     }
     
     public void addIWrapper(IWrapperConfigImpl config) {
-        this.iwrappers.put(config.getPrefix(), config);
+        this.iwrappers.add(config);
     }
     
-    public void setIWrappers(Map<String, IWrapperConfig> iwrappers) {
+    public void setIWrappers(List<IWrapperConfig> iwrappers) {
         this.iwrappers = iwrappers;
     }
     
-    public Map<String, IWrapperConfig> getIWrappers() {
-        return Collections.unmodifiableMap(this.iwrappers);
+    public List<IWrapperConfig> getIWrapperList() {
+        return iwrappers;
+    }
+    
+    public Map<String, IWrapperConfig> getIWrappers(Tenant tenant) {
+        Map<String, IWrapperConfig> map = new LinkedHashMap<String, IWrapperConfig>();
+        for(IWrapperConfig iwrp: iwrappers) {
+            if(tenant == null || iwrp.getTenant() == null || tenant.getName().equals(iwrp.getTenant())) {
+                map.put(iwrp.getPrefix(), iwrp);
+            }
+        }
+        return Collections.unmodifiableMap(map);
     }
     
     public void addContextResource(String prefix, Object resource) {

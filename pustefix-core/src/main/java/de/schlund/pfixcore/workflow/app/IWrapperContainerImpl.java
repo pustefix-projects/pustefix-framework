@@ -43,6 +43,7 @@ import de.schlund.pfixcore.workflow.context.RequestContextImpl;
 import de.schlund.pfixxml.PfixServletRequest;
 import de.schlund.pfixxml.RequestParam;
 import de.schlund.pfixxml.ResultDocument;
+import de.schlund.pfixxml.Tenant;
 import de.schlund.pfixxml.XMLException;
 import de.schlund.pfixxml.resources.FileResource;
 import de.schlund.pfixxml.resources.ResourceUtil;
@@ -98,7 +99,7 @@ public class IWrapperContainerImpl implements IWrapperContainer {
         this.resdoc = resdoc;
         this.reqdata = new RequestDataImpl(context, preq);
 
-        createIWrapperGroups(stateConfig);
+        createIWrapperGroups(stateConfig, context.getTenant());
     }
 
     /**
@@ -273,8 +274,8 @@ public class IWrapperContainerImpl implements IWrapperContainer {
     // PRIVATE
     // 
 
-    private void createIWrapperGroups(StateConfig config) throws Exception {
-        Collection<? extends IWrapperConfig> confwrappers = config.getIWrappers().values();
+    private void createIWrapperGroups(StateConfig config, Tenant tenant) throws Exception {
+        Collection<? extends IWrapperConfig> confwrappers = config.getIWrappers(tenant).values();
 
         if (confwrappers.size() == 0) {
             LOG.debug("*** Found no wrappers for page '" + context.getCurrentPageRequest().getName() + "'");

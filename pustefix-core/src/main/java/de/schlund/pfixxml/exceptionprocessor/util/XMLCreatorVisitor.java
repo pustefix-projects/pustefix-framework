@@ -18,6 +18,12 @@
 
 package de.schlund.pfixxml.exceptionprocessor.util;
 
+import java.io.BufferedReader;
+import java.io.File;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
+import java.net.URI;
 import java.util.HashMap;
 import java.util.Iterator;
 
@@ -32,6 +38,8 @@ import org.w3c.dom.Text;
 import org.xml.sax.SAXParseException;
 
 import de.schlund.pfixxml.RenderingException;
+import de.schlund.pfixxml.resources.Resource;
+import de.schlund.pfixxml.resources.ResourceUtil;
 import de.schlund.pfixxml.util.XsltExtensionFunctionException;
 
 
@@ -123,6 +131,17 @@ public class XMLCreatorVisitor implements ExceptionDataValueVisitor {
 	                xsltInfo.setAttribute("column", String.valueOf(locator.getColumnNumber()));
 	                xsltInfo.setAttribute("publicId", locator.getPublicId());
 	                xsltInfo.setAttribute("systemId", locator.getSystemId());
+	                String systemId = locator.getSystemId();
+	                if(systemId.startsWith("file:") || systemId.startsWith("module:")) {
+	                    try {
+	                        URI uri = new URI(systemId);
+                            Resource res = ResourceUtil.getResource(uri);
+	                        String context = cut(res, "utf-8", locator.getLineNumber(), locator.getColumnNumber(), 10, 10, 100);
+	                        xsltInfo.setAttribute("context", context);
+	                    } catch(Exception x) {
+	                        x.printStackTrace();
+	                    }
+	                }
 	            }
 	        } else if (throwable instanceof SAXParseException) {
 	            SAXParseException spe = (SAXParseException)throwable;
@@ -132,6 +151,19 @@ public class XMLCreatorVisitor implements ExceptionDataValueVisitor {
                 xsltInfo.setAttribute("column", String.valueOf(spe.getColumnNumber()));
                 xsltInfo.setAttribute("publicId", spe.getPublicId());
                 xsltInfo.setAttribute("systemId", spe.getSystemId());
+                if(spe.getLineNumber() > -1) {
+                    String systemId = spe.getSystemId();
+                    if(systemId.startsWith("file:") || systemId.startsWith("module:")) {
+                        try {
+                            URI uri = new URI(systemId);
+                            Resource res = ResourceUtil.getResource(uri);
+                            String context = cut(res, "utf-8", spe.getLineNumber(), spe.getColumnNumber(),10, 10, 100);
+                            xsltInfo.setAttribute("context", context);
+                        } catch(Exception x) {
+                            x.printStackTrace();
+                        }
+                    }
+                }
 	        }
 	        
 	        Element stackElem = doc.createElement("stacktrace");
@@ -178,5 +210,46 @@ public class XMLCreatorVisitor implements ExceptionDataValueVisitor {
 	    return false;
 	}
 	
+    private static String cut(Resource res, String encoding, int line, int col, int before, int after, int maxLineLen) throws IOException {
+        InputStream in = res.getInputStream();
+        BufferedReader reader = new BufferedReader(new InputStreamReader(in, encoding));
+        StringBuilder cutStr = new StringBuilder();
+        String str = null;
+        int currentLine = 0;
+        String lineFormatStr = "%s %" + (("" + col).length() + 1) + "s";
+        try {
+            while ((str = reader.readLine()) != null) {
+                currentLine++;
+                if(currentLine < line) {
+                    if(line - currentLine <= before) {
+                        cutStr.append(String.format(lineFormatStr, " ", currentLine));
+                        if(str.length() > maxLineLen) str = str.substring(0, maxLineLen) + " ...";
+                        cutStr.append(str).append("\n");
+                    }
+                } else if(currentLine == line) {
+                    cutStr.append(String.format(lineFormatStr, "X", currentLine));
+                    if(str.length() > maxLineLen) {
+                        if(col > 0) {
+                            str = str.substring(col);
+                            if(str.length() > maxLineLen) str = str.substring(0, maxLineLen) + " ...";
+                            str = "... " + str;
+                        } else {
+                            str = str.substring(0, maxLineLen) + " ...";
+                        }
+                    }
+                    cutStr.append(str).append("\n");
+                } else {
+                    if(currentLine - line <= after) {
+                        cutStr.append(String.format(lineFormatStr, " ", currentLine));
+                        if(str.length() > maxLineLen) str = str.substring(0, maxLineLen) + " ...";
+                        cutStr.append(str).append("\n");
+                    }
+                }
+            }
+        } finally {
+            in.close();
+        }
+        return cutStr.toString();
+    }
 	
 }

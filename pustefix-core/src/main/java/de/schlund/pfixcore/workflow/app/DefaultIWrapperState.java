@@ -33,6 +33,7 @@ import de.schlund.pfixxml.PfixServletRequest;
 import de.schlund.pfixxml.PropertyObjectManager;
 import de.schlund.pfixxml.RequestParam;
 import de.schlund.pfixxml.ResultDocument;
+import de.schlund.pfixxml.Tenant;
 import de.schlund.pfixxml.XMLException;
 
 /**
@@ -184,8 +185,8 @@ public class DefaultIWrapperState extends StateImpl implements IWrapperState, Re
         return ihcm.getIHandlerContainer(context, this.getConfig());
     }
 
-    public Map<String, ? extends IWrapperConfig> getIWrapperConfigMap() {
-        return getConfig().getIWrappers();
+    public Map<String, ? extends IWrapperConfig> getIWrapperConfigMap(Tenant tenant) {
+        return getConfig().getIWrappers(tenant);
     }
 
     public boolean requiresToken() {

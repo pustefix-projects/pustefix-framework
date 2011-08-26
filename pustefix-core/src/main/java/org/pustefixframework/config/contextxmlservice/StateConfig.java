@@ -22,6 +22,7 @@ import java.util.Map;
 import java.util.Properties;
 
 import de.schlund.pfixcore.workflow.ConfigurableState;
+import de.schlund.pfixxml.Tenant;
 
 public interface StateConfig {
 
@@ -57,7 +58,7 @@ public interface StateConfig {
      * 
      * @return list of IWrappers
      */
-    Map<String, ? extends IWrapperConfig> getIWrappers();
+    Map<String, ? extends IWrapperConfig> getIWrappers(Tenant tenant);
 
     /**
      * Returns context resources defined for this page. The map has the form
