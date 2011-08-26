@@ -29,10 +29,11 @@
   <pagerequest name="Home">
     <input>
       <wrapper prefix="registration" class="org.pustefixframework.samples.i18n.wrapper.Registration"/>
+      <config-include file="conf/app-fragment.xml" module="*" refid="registration_wrappers"/>
     </input>
   </pagerequest>
 
- <pagerequest name="Overview">
+  <pagerequest name="Overview">
     <input policy="NONE">
       <wrapper prefix="terms" class="org.pustefixframework.samples.i18n.wrapper.Info"/>
     </input>
