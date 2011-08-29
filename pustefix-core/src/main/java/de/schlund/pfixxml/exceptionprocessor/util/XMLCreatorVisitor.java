@@ -136,7 +136,7 @@ public class XMLCreatorVisitor implements ExceptionDataValueVisitor {
 	                    try {
 	                        URI uri = new URI(systemId);
                             Resource res = ResourceUtil.getResource(uri);
-	                        String context = cut(res, "utf-8", locator.getLineNumber(), locator.getColumnNumber(), 10, 10, 100);
+	                        String context = cut(res, "utf-8", locator.getLineNumber(), locator.getColumnNumber(), 10, 10, 160);
 	                        xsltInfo.setAttribute("context", context);
 	                    } catch(Exception x) {
 	                        x.printStackTrace();
@@ -157,7 +157,7 @@ public class XMLCreatorVisitor implements ExceptionDataValueVisitor {
                         try {
                             URI uri = new URI(systemId);
                             Resource res = ResourceUtil.getResource(uri);
-                            String context = cut(res, "utf-8", spe.getLineNumber(), spe.getColumnNumber(),10, 10, 100);
+                            String context = cut(res, "utf-8", spe.getLineNumber(), spe.getColumnNumber(),10, 10, 160);
                             xsltInfo.setAttribute("context", context);
                         } catch(Exception x) {
                             x.printStackTrace();
@@ -216,7 +216,7 @@ public class XMLCreatorVisitor implements ExceptionDataValueVisitor {
         StringBuilder cutStr = new StringBuilder();
         String str = null;
         int currentLine = 0;
-        String lineFormatStr = "%s %" + (("" + col).length() + 1) + "s";
+        String lineFormatStr = "%s %" + (("" + col).length() + 1) + "s ";
         try {
             while ((str = reader.readLine()) != null) {
                 currentLine++;
@@ -229,10 +229,19 @@ public class XMLCreatorVisitor implements ExceptionDataValueVisitor {
                 } else if(currentLine == line) {
                     cutStr.append(String.format(lineFormatStr, "X", currentLine));
                     if(str.length() > maxLineLen) {
+                        int left, right;
                         if(col > 0) {
-                            str = str.substring(col);
-                            if(str.length() > maxLineLen) str = str.substring(0, maxLineLen) + " ...";
-                            str = "... " + str;
+                            if(col + maxLineLen/2 < str.length()) {
+                                left = Math.max(0, col - maxLineLen/2);
+                                right = Math.min(str.length(), col + maxLineLen/2 + (maxLineLen/2 - (col - left)));
+                            } else {
+                                right = Math.min(str.length(), col + maxLineLen/2);
+                                left = Math.max(0, col - maxLineLen/2 - (maxLineLen/2 - (right - col)));
+                            }
+                            int origLen = str.length();
+                            str = str.substring(left, right);
+                            if(left > 0) str = " ... " + str;
+                            if(right < origLen) str = str + " ...";
                         } else {
                             str = str.substring(0, maxLineLen) + " ...";
                         }
