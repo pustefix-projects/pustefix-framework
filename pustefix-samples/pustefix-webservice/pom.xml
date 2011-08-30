@@ -35,7 +35,7 @@
       <artifactId>pustefix-webservices-jsonws</artifactId>
       <version>0.18.1-SNAPSHOT</version>
     </dependency>
-
+<!--
     <dependency>
       <groupId>rhino</groupId>
       <artifactId>js</artifactId>
@@ -46,7 +46,7 @@
       <artifactId>bsh</artifactId>
       <version>2.0b4</version>
     </dependency>
-    
+    -->
     <dependency>
       <groupId>org.tuckey</groupId>
       <artifactId>urlrewritefilter</artifactId>

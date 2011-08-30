@@ -2,6 +2,7 @@ package de.schlund.pfixcore.util;
 
 import java.io.File;
 import java.io.FileNotFoundException;
+import java.io.IOException;
 import java.net.JarURLConnection;
 import java.net.URL;
 import java.util.zip.ZipException;
@@ -41,10 +42,14 @@ public class JarFileURLConnectionTest extends TestCase {
         JarURLConnection con = (JarURLConnection)url.openConnection();
         JarURLConnection conFile = new JarFileURLConnection(url);
         Assert.assertEquals(con.getLastModified(), con.getLastModified());
-        ZipException error = null;
+        IOException error = null;
         try {
             con.getJarFile();
         } catch(ZipException x) {
+            //before JDK 1.7
+            error = x;
+        } catch(FileNotFoundException x) {
+            //since JDK 1.7
             error = x;
         }
         assertNotNull(error);
@@ -52,6 +57,10 @@ public class JarFileURLConnectionTest extends TestCase {
         try {
             conFile.getJarFile();
         } catch(ZipException x) {
+            //before JDK 1.7
+            error = x;
+        } catch(FileNotFoundException x) {
+            //since JDK 1.7
             error = x;
         }
         assertNotNull(error);
