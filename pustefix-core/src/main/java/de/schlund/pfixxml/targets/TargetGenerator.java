@@ -757,7 +757,7 @@ public class TargetGenerator implements ResourceVisitor, ServletContextAware, In
         start = System.currentTimeMillis();
         if(parseIncludes) {
             try {
-                ResourceFinder.find(new String[] {".xml"}, new String[] {"txt", "xml"}, null, this);
+                ResourceFinder.findAll(new String[] {".xml"}, new String[] {"txt", "xml"}, this);
             } catch (Exception e) {
                 throw new XMLException("Parsing of include files failed", e);
             }

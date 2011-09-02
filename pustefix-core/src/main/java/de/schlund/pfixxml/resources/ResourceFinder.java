@@ -21,6 +21,16 @@ import de.schlund.pfixxml.resources.ResourceUtil;
 
 public class ResourceFinder {
     
+    public static void findAll(String[] fileExtensions, String[] paths, ResourceVisitor visitor) throws Exception {
+        find(fileExtensions, paths, null, visitor);
+        ModuleInfo moduleInfo = ModuleInfo.getInstance();
+        Set<String> moduleNames = moduleInfo.getModules();
+        Iterator<String> it = moduleNames.iterator();
+        while(it.hasNext()) {
+            find(fileExtensions, paths, it.next(), visitor);
+        }
+    }
+        
     public static void find(String[] fileExtensions, String[] paths, String module, ResourceVisitor visitor) throws Exception {
         
         for(int i=0; i<fileExtensions.length; i++) {
@@ -29,14 +39,13 @@ public class ResourceFinder {
         for(int i=0; i<paths.length; i++) {
             if(paths[i].startsWith("/")) paths[i] = paths[i].substring(1);
             if(paths[i].endsWith("/")) paths[i] = paths[i].substring(0, paths[i].length() - 1);
-        }
+        }   
         String[] modulePaths = new String[paths.length];
         for(int i=0; i<paths.length; i++) {
             modulePaths[i] = "PUSTEFIX-INF/" + paths[i];
         }
 
         if(module == null) {
-            //Find render includes in webapp
             if(GlobalConfig.getDocroot() != null) {
                 File docroot = new File(GlobalConfig.getDocroot());
                 for(String path: paths) {
@@ -48,19 +57,8 @@ public class ResourceFinder {
                     find("/" + path + "/", fileExtensions, GlobalConfig.getServletContext(), visitor);
                 }
             }
-        }
-        
-        //Find render includes in modules
-        ModuleInfo moduleInfo = ModuleInfo.getInstance();
-        
-        if(module == null) {
-            Set<String> moduleNames = moduleInfo.getModules();
-            Iterator<String> it = moduleNames.iterator();
-            while(it.hasNext()) {
-                ModuleDescriptor desc = moduleInfo.getModuleDescriptor(it.next());
-                findInModule(desc, modulePaths, fileExtensions, visitor);
-            }
         } else {
+            ModuleInfo moduleInfo = ModuleInfo.getInstance();
             ModuleDescriptor desc = moduleInfo.getModuleDescriptor(module);
             findInModule(desc, modulePaths, fileExtensions, visitor);
         }
