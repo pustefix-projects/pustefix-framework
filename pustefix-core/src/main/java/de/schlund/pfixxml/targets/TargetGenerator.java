@@ -467,7 +467,7 @@ public class TargetGenerator implements ResourceVisitor, ServletContextAware, In
             String lookupPath = templateNode.getAttribute("lookup-path").trim();
             if(lookupPath.equals("")) lookupPath = "txt/pages";
             String lookupModule = templateNode.getAttribute("lookup-module").trim();
-            if(lookupModule.equals("")) lookupModule = null;
+            if(lookupModule.equals("")) lookupModule = configFileModule;
             ResourceVisitor pageVisitor = new ResourceVisitor() {
                 public void visit(Resource resource) {
                     URI uri = resource.toURI();
