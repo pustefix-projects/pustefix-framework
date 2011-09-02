@@ -32,7 +32,6 @@ public class ResourceFinder {
     }
         
     public static void find(String[] fileExtensions, String[] paths, String module, ResourceVisitor visitor) throws Exception {
-        
         for(int i=0; i<fileExtensions.length; i++) {
             if(!fileExtensions[i].startsWith(".")) fileExtensions[i] = "." + fileExtensions[i];
         }
@@ -40,11 +39,6 @@ public class ResourceFinder {
             if(paths[i].startsWith("/")) paths[i] = paths[i].substring(1);
             if(paths[i].endsWith("/")) paths[i] = paths[i].substring(0, paths[i].length() - 1);
         }   
-        String[] modulePaths = new String[paths.length];
-        for(int i=0; i<paths.length; i++) {
-            modulePaths[i] = "PUSTEFIX-INF/" + paths[i];
-        }
-
         if(module == null) {
             if(GlobalConfig.getDocroot() != null) {
                 File docroot = new File(GlobalConfig.getDocroot());
@@ -58,6 +52,10 @@ public class ResourceFinder {
                 }
             }
         } else {
+            String[] modulePaths = new String[paths.length];
+            for(int i=0; i<paths.length; i++) {
+                modulePaths[i] = "PUSTEFIX-INF/" + paths[i];
+            }
             ModuleInfo moduleInfo = ModuleInfo.getInstance();
             ModuleDescriptor desc = moduleInfo.getModuleDescriptor(module);
             findInModule(desc, modulePaths, fileExtensions, visitor);
@@ -82,7 +80,10 @@ public class ResourceFinder {
                 }
             }
         } else if(url.getProtocol().equals("file")) {
-            find(new File(url.toURI()), fileExtensions, visitor);
+            File base = new File(url.toURI());
+            for(String modulePath: modulePaths) {
+                find(new File(base, modulePath), fileExtensions, visitor);
+            }
         }
     }
     
@@ -94,14 +95,16 @@ public class ResourceFinder {
     }
     
     private static void find(File dir, String[] fileExtensions, ResourceVisitor visitor) {
-        File[] files = dir.listFiles();
-        for(File file: files) {
-            if(!file.isHidden()) {
-                if(file.isDirectory() && !file.getName().equals("CVS")) {
-                    find(file, fileExtensions, visitor);
-                } else if(file.isFile() && endsWith(file.getName(), fileExtensions)) {
-                    Resource res = ResourceUtil.getResource(file.toURI());
-                    visitor.visit(res);
+        if(dir.exists()) {
+            File[] files = dir.listFiles();
+            for(File file: files) {
+                if(!file.isHidden()) {
+                    if(file.isDirectory() && !file.getName().equals("CVS")) {
+                        find(file, fileExtensions, visitor);
+                    } else if(file.isFile() && endsWith(file.getName(), fileExtensions)) {
+                        Resource res = ResourceUtil.getResource(file.toURI());
+                        visitor.visit(res);
+                    }
                 }
             }
         }
