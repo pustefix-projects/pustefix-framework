@@ -29,6 +29,7 @@
         <xsd:element name="config-include" type="config-include-type"/>
       </xsd:choice>
     </xsd:sequence>
+    <xsd:anyAttribute namespace="##any" processContents="lax"/>
   </xsd:complexType>
   
   <xsd:complexType name="page-type">
