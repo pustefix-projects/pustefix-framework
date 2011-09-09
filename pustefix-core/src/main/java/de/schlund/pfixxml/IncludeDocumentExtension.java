@@ -95,7 +95,7 @@ public final class IncludeDocumentExtension {
                                    TargetGenerator targetgen, String targetkey,
                                    String parent_part_in, String parent_theme_in, String computed_inc,
                                    String module, String search, String tenant, String language) throws Exception {
-       
+
         if(path_str.startsWith("docroot:")) path_str = path_str.substring(9);
         if(module != null) {
             module = module.trim();
@@ -134,11 +134,10 @@ public final class IncludeDocumentExtension {
                 if(!"WEBAPP".equalsIgnoreCase(module)) {
                     if(module != null) {
                         uriStr += "&module="+module;
-                        if(filter != null)  uriStr += "&filter=" + URLEncoder.encode(filter, "UTF-8");
                     } else if("module".equals(parentURI.getScheme())) {
                         uriStr += "&module="+parentURI.getAuthority();
-                        if(filter != null)  uriStr += "&filter=" + URLEncoder.encode(filter, "UTF-8");
                     }
+                    if(filter != null)  uriStr += "&filter=" + URLEncoder.encode(filter, "UTF-8");
                 }
             } else {
                 if(!"WEBAPP".equalsIgnoreCase(module)) {
