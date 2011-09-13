@@ -98,6 +98,12 @@ public abstract class VirtualTarget extends TargetImpl {
             params.put(key, val);
         }
     }
+    
+    public Object removeParam(String key) {
+        synchronized(params) {
+            return params.remove(key);
+        }
+    }
 
     /**
      * @see de.schlund.pfixxml.targets.Target#getModTime()

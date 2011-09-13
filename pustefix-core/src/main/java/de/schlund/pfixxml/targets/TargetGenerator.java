@@ -794,7 +794,7 @@ public class TargetGenerator implements IncludeFileVisitor {
             xmlTarget.addParam("render_href", href);
             xmlTarget.addParam("render_part", part);
             xmlTarget.addParam("render_module", module);
-                    
+            
             XSLVirtualTarget xslTarget = (XSLVirtualTarget)createTarget(TargetType.XSL_VIRTUAL, renderKey + ".xsl", themes);
             xmlSource = xmlTarget;
             xslSource = createTarget(TargetType.XSL_VIRTUAL, "master.xsl", null);
@@ -807,6 +807,9 @@ public class TargetGenerator implements IncludeFileVisitor {
                 String name = it.next();
                 xslTarget.addParam(name, renderParams.get(name));
             }
+            //create no doctype declaration
+            xslTarget.removeParam("outputdoctype-public");
+            xslTarget.removeParam("outputdoctype-system");
          
             alltargets.put(renderKey, xslTarget);
             target = xslTarget;
