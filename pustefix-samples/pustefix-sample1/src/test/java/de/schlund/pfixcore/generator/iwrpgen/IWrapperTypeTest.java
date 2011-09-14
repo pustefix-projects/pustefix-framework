@@ -10,6 +10,7 @@ public class IWrapperTypeTest extends TestCase {
     public void test() throws Exception {
         TypeTestBeanWrapper wrapper = new TypeTestBeanWrapper();
         wrapper.init("test");
+        wrapper.setStringValEnabled("true");
         wrapper.setStringValNumberArray(new String[] { "1", "2", "3" });
         wrapper.setStringValNumberObjArray(new String[] { "1", "2", "3" });
         wrapper.setStringValNumberList(new String[] { "1", "2", "3" });
@@ -20,6 +21,7 @@ public class IWrapperTypeTest extends TestCase {
         wrapper.loadFromStringValues();
         Integer[] numbers = new Integer[] {1, 2, 3};
         String[] strs = new String[] {"a", "b", "c"};
+        assertTrue(wrapper.getEnabled());
         assertTrue(Arrays.equals(numbers, wrapper.getNumberArray()));
         assertTrue(Arrays.equals(numbers, wrapper.getNumberObjArray()));
         assertTrue(Arrays.equals(numbers, wrapper.getNumberList()));

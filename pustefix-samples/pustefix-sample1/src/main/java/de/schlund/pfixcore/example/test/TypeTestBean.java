@@ -6,7 +6,7 @@ import java.util.List;
 import de.schlund.pfixcore.generator.annotation.IWrapper;
 
 @IWrapper(ihandler = TypeTestBeanDummyHandler.class)
-public class TypeTestBean {
+public class TypeTestBean extends TypeTestBeanBase {
 
     private int[] numberArray;
     private Integer[] numberObjArray;
