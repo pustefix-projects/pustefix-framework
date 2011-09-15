@@ -19,12 +19,32 @@
 package de.schlund.pfixcore.generator.iwrpgen;
 
 import java.io.InputStream;
-import java.io.PrintWriter;
+import java.io.Writer;
 import java.util.Collection;
 import java.util.Date;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
 
+import javax.annotation.processing.AbstractProcessor;
+import javax.annotation.processing.Filer;
+import javax.annotation.processing.RoundEnvironment;
+import javax.annotation.processing.SupportedAnnotationTypes;
+import javax.annotation.processing.SupportedSourceVersion;
+import javax.lang.model.SourceVersion;
+import javax.lang.model.element.ElementKind;
+import javax.lang.model.element.ExecutableElement;
+import javax.lang.model.element.TypeElement;
+import javax.lang.model.element.VariableElement;
+import javax.lang.model.type.ArrayType;
+import javax.lang.model.type.DeclaredType;
+import javax.lang.model.type.MirroredTypeException;
+import javax.lang.model.type.PrimitiveType;
+import javax.lang.model.type.TypeKind;
+import javax.lang.model.type.TypeMirror;
+import javax.lang.model.util.ElementScanner6;
+import javax.tools.Diagnostic.Kind;
+import javax.tools.JavaFileObject;
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.ParserConfigurationException;
@@ -34,66 +54,40 @@ import javax.xml.transform.dom.DOMSource;
 import javax.xml.transform.stream.StreamResult;
 import javax.xml.transform.stream.StreamSource;
 
+import org.pustefixframework.util.AnnotationUtils;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 
-import com.sun.mirror.apt.AnnotationProcessor;
-import com.sun.mirror.apt.AnnotationProcessorEnvironment;
-import com.sun.mirror.apt.Filer;
-import com.sun.mirror.declaration.AnnotationMirror;
-import com.sun.mirror.declaration.AnnotationTypeDeclaration;
-import com.sun.mirror.declaration.AnnotationValue;
-import com.sun.mirror.declaration.ClassDeclaration;
-import com.sun.mirror.declaration.Declaration;
-import com.sun.mirror.declaration.FieldDeclaration;
-import com.sun.mirror.declaration.MethodDeclaration;
-import com.sun.mirror.type.ArrayType;
-import com.sun.mirror.type.ClassType;
-import com.sun.mirror.type.InterfaceType;
-import com.sun.mirror.type.PrimitiveType;
-import com.sun.mirror.type.TypeMirror;
-import com.sun.mirror.type.VoidType;
-import com.sun.mirror.util.SimpleDeclarationVisitor;
-
 import de.schlund.pfixcore.generator.IHandler;
+import de.schlund.pfixcore.generator.annotation.Caster;
+import de.schlund.pfixcore.generator.annotation.IWrapper;
+import de.schlund.pfixcore.generator.annotation.Param;
+import de.schlund.pfixcore.generator.annotation.PostCheck;
+import de.schlund.pfixcore.generator.annotation.PreCheck;
+import de.schlund.pfixcore.generator.annotation.Property;
+import de.schlund.pfixcore.generator.annotation.Transient;
 
 /**
  * @author mleidig@schlund.de
  */
-public class IWrapperAnnotationProcessor implements AnnotationProcessor {
+@SupportedSourceVersion(SourceVersion.RELEASE_6)
+@SupportedAnnotationTypes(value= {"de.schlund.pfixcore.generator.annotation.IWrapper"})
+public class IWrapperAnnotationProcessor extends AbstractProcessor {
 
     private final static String XMLNS_IWRP = "http://www.pustefix-framework.org/2008/namespace/iwrapper";
     private final static String DEFAULT_SUFFIX = "Wrapper";
 
     private static DocumentBuilderFactory docBuilderFactory;
 
-    protected AnnotationProcessorEnvironment env;
-    protected AnnotationTypeDeclaration iwrpType;
-    protected AnnotationTypeDeclaration transientType;
-    protected AnnotationTypeDeclaration paramType;
-    protected AnnotationTypeDeclaration casterType;
-    protected AnnotationTypeDeclaration preCheckType;
-    protected AnnotationTypeDeclaration postCheckType;
-    protected AnnotationTypeDeclaration propertyType;
-
-    public IWrapperAnnotationProcessor(AnnotationProcessorEnvironment env) {
-        this.env = env;
-        iwrpType = (AnnotationTypeDeclaration) env.getTypeDeclaration("de.schlund.pfixcore.generator.annotation.IWrapper");
-        transientType = (AnnotationTypeDeclaration) env.getTypeDeclaration("de.schlund.pfixcore.generator.annotation.Transient");
-        paramType = (AnnotationTypeDeclaration) env.getTypeDeclaration("de.schlund.pfixcore.generator.annotation.Param");
-        casterType = (AnnotationTypeDeclaration) env.getTypeDeclaration("de.schlund.pfixcore.generator.annotation.Caster");
-        preCheckType = (AnnotationTypeDeclaration) env.getTypeDeclaration("de.schlund.pfixcore.generator.annotation.PreCheck");
-        postCheckType = (AnnotationTypeDeclaration) env.getTypeDeclaration("de.schlund.pfixcore.generator.annotation.PostCheck");
-        propertyType = (AnnotationTypeDeclaration) env.getTypeDeclaration("de.schlund.pfixcore.generator.annotation.Property");
-    }
-
-    public void process() {
-        Collection<Declaration> decls = env.getDeclarationsAnnotatedWith(iwrpType);
-        for (Declaration decl : decls) {
-            decl.accept(new TypeVisitor());
+    @Override
+    public boolean process(Set<? extends TypeElement> annotations, RoundEnvironment roundEnv) {
+        TypeVisitor visitor = new TypeVisitor();
+        for(javax.lang.model.element.Element element: roundEnv.getElementsAnnotatedWith(IWrapper.class)) {
+            element.accept(visitor, null);
         }
+        return true;
     }
-
+    
     protected static Document createDocument() {
         if (docBuilderFactory == null) {
             docBuilderFactory = DocumentBuilderFactory.newInstance();
@@ -108,24 +102,22 @@ public class IWrapperAnnotationProcessor implements AnnotationProcessor {
     }
 
     protected void warn(String msg) {
-        env.getMessager().printWarning(msg);
+        processingEnv.getMessager().printMessage(Kind.WARNING, msg);
     }
 
-    protected String getIWrapperName(ClassDeclaration classDecl) {
-        String beanFullName = classDecl.getQualifiedName();
-        AnnotationMirror iwrpMirror = MirrorApiUtils.getAnnotationMirror(classDecl, iwrpType);
+    protected String getIWrapperName(TypeElement typeElem) {
+        String beanFullName = typeElem.getQualifiedName().toString();
+        IWrapper iwrp = typeElem.getAnnotation(IWrapper.class);
         String iwrapperClass = beanFullName + DEFAULT_SUFFIX;
-        if (iwrpMirror != null) {
-            AnnotationValue nameValue = MirrorApiUtils.getAnnotationValue(iwrpMirror, "name");
-            if (nameValue != null) {
-                String name = nameValue.getValue().toString();
-                if (!name.equals("")) {
-                    if (name.contains(".")) iwrapperClass = name;
-                    else {
-                        int ind = beanFullName.lastIndexOf(".");
-                        if (ind == -1) iwrapperClass = name;
-                        else iwrapperClass = beanFullName.substring(0, ind) + "." + name;
-                    }
+        if(iwrp != null) {
+            String name= iwrp.name();
+            if (!name.equals("")) {
+                if (name.contains(".")) {
+                    iwrapperClass = name;
+                } else {
+                    int ind = beanFullName.lastIndexOf(".");
+                    if (ind == -1) iwrapperClass = name;
+                    else iwrapperClass = beanFullName.substring(0, ind) + "." + name;
                 }
             }
         }
@@ -150,12 +142,12 @@ public class IWrapperAnnotationProcessor implements AnnotationProcessor {
         return "set" + Character.toUpperCase(propName.charAt(0)) + propName.substring(1);
     }
 
-    class TypeVisitor extends SimpleDeclarationVisitor {
+    class TypeVisitor extends ElementScanner6<Void,Void> {
 
         Document doc;
         Element root;
 
-        Set<PrimitiveType.Kind> builtinPrimitives = new HashSet<PrimitiveType.Kind>();
+        Set<TypeKind> builtinPrimitives = new HashSet<TypeKind>();
         Set<String> builtinTypes = new HashSet<String>();
 
         private String BOOLEAN_CASTER = "de.schlund.pfixcore.generator.casters.ToBoolean";
@@ -168,12 +160,12 @@ public class IWrapperAnnotationProcessor implements AnnotationProcessor {
         private String DATE_CASTER = "de.schlund.pfixcore.generator.casters.ToDate";
 
         public TypeVisitor() {
-            builtinPrimitives.add(PrimitiveType.Kind.BOOLEAN);
-            builtinPrimitives.add(PrimitiveType.Kind.BYTE);
-            builtinPrimitives.add(PrimitiveType.Kind.DOUBLE);
-            builtinPrimitives.add(PrimitiveType.Kind.FLOAT);
-            builtinPrimitives.add(PrimitiveType.Kind.INT);
-            builtinPrimitives.add(PrimitiveType.Kind.LONG);
+            builtinPrimitives.add(TypeKind.BOOLEAN);
+            builtinPrimitives.add(TypeKind.BYTE);
+            builtinPrimitives.add(TypeKind.DOUBLE);
+            builtinPrimitives.add(TypeKind.FLOAT);
+            builtinPrimitives.add(TypeKind.INT);
+            builtinPrimitives.add(TypeKind.LONG);
             builtinTypes.add(Boolean.class.getName());
             builtinTypes.add(Byte.class.getName());
             builtinTypes.add(Double.class.getName());
@@ -185,209 +177,238 @@ public class IWrapperAnnotationProcessor implements AnnotationProcessor {
         }
 
         @Override
-        public void visitClassDeclaration(ClassDeclaration classDecl) {
+        public Void visitType(TypeElement typeElem, Void param) {
 
-            AnnotationMirror iwrpMirror = MirrorApiUtils.getAnnotationMirror(classDecl, iwrpType);
-
-            String iwrapperClass = null;
-
-            if (doc == null) {
-
-                doc = createDocument();
-                root = doc.createElementNS(XMLNS_IWRP, "iwrp:interface");
-                doc.appendChild(root);
-
-                iwrapperClass = getIWrapperName(classDecl);
-
-                Element ihandlerElem = doc.createElementNS(XMLNS_IWRP, "iwrp:ihandler");
-                root.appendChild(ihandlerElem);
+            if(typeElem.getKind() == ElementKind.CLASS) {   
                 
-                String beanRef = null;
-                String ihandlerClass = null;
+                String iwrapperClass = null;
+                IWrapper iwrpAnno = typeElem.getAnnotation(IWrapper.class);
+
+                if (doc == null) {
+
+                    doc = createDocument();
+                    root = doc.createElementNS(XMLNS_IWRP, "iwrp:interface");
+                    doc.appendChild(root);
+
+                    iwrapperClass = getIWrapperName(typeElem);
+
+                    Element ihandlerElem = doc.createElementNS(XMLNS_IWRP, "iwrp:ihandler");
+                    root.appendChild(ihandlerElem);
                 
-                AnnotationValue beanRefValue = MirrorApiUtils.getAnnotationValue(iwrpMirror, "beanRef");
-                if(beanRefValue != null) {
-                    beanRef = beanRefValue.getValue().toString();
-                    if(beanRef.equals("")) beanRef = null;
-                }
-                AnnotationValue ihandlerValue = MirrorApiUtils.getAnnotationValue(iwrpMirror, "ihandler");
-                if(ihandlerValue != null) {
-                    ihandlerClass = ihandlerValue.getValue().toString();
-                    if(ihandlerClass.equals(IHandler.class.getName())) ihandlerClass = null;
-                }
-                if(beanRef == null && ihandlerClass == null) {
-                    env.getMessager().printError("Neither beanRef nor ihandler is set: " + classDecl.getQualifiedName());
-                } else if(beanRef != null && ihandlerClass != null) {
-                    env.getMessager().printError("Setting both, beanRef and ihandler, isn't allowed: " + classDecl.getQualifiedName());
-                } else if(beanRef != null) {
-                    ihandlerElem.setAttribute("bean-ref", beanRef);
-                } else if(ihandlerClass != null) {
-                    ihandlerElem.setAttribute("class", ihandlerClass);
-                }
-
-            }
-
-            Collection<FieldDeclaration> fieldDecls = classDecl.getFields();
-            for (FieldDeclaration fieldDecl : fieldDecls) {
-                fieldDecl.accept(this);
-            }
-            Collection<MethodDeclaration> methDecls = classDecl.getMethods();
-            for (MethodDeclaration methDecl : methDecls) {
-                methDecl.accept(this);
-            }
-
-            boolean hasSuperIWrapper = false;
-            ClassType supType = classDecl.getSuperclass();
-            if (supType != null) {
-                ClassDeclaration supDecl = supType.getDeclaration();
-                hasSuperIWrapper = MirrorApiUtils.getAnnotationMirror(supDecl, iwrpType) != null;
-                if (hasSuperIWrapper) {
-                    String superIWrapperName = getIWrapperName(supDecl);
-                    root.setAttribute("extends", superIWrapperName);
-                }
-            }
-
-            if (!hasSuperIWrapper && supType != null && !supType.getDeclaration().getQualifiedName().equals("java.lang.Object")) {
-                supType.getDeclaration().accept(this);
-            }
-
-            if (iwrpMirror != null) {
-                Filer filer = env.getFiler();
-                try {
-                    env.getMessager().printNotice("Generate class " + iwrapperClass);
-                    PrintWriter writer = filer.createSourceFile(iwrapperClass);
-
-                    TransformerFactory tf = TransformerFactory.newInstance();
-                    InputStream fis = getClass().getResourceAsStream("/pustefix/xsl/iwrapper.xsl");
-                    Transformer t = tf.newTransformer(new StreamSource(fis));
-                    // t.setOutputProperty(OutputKeys.INDENT,"yes");
-                    int ind = iwrapperClass.lastIndexOf('.');
-                    String packageName = "";
-                    String className = iwrapperClass;
-                    if (ind > -1) {
-                        packageName = iwrapperClass.substring(0, ind);
-                        className = iwrapperClass.substring(ind + 1);
+                    String beanRef = null;
+                    String ihandlerClass = null;
+                
+                    if(!iwrpAnno.beanRef().equals("")) {
+                        beanRef = iwrpAnno.beanRef(); 
                     }
-                    t.setParameter("package", packageName);
-                    t.setParameter("classname", className);
-                    t.transform(new DOMSource(doc), new StreamResult(writer));
+                
+                    try {
+                        iwrpAnno.ihandler();
+                    } catch(MirroredTypeException x) {
+                        ihandlerClass = ((TypeElement)((DeclaredType)x.getTypeMirror()).asElement()).getQualifiedName().toString();
+                    }
+                    if(ihandlerClass.equals(IHandler.class.getName())) {
+                        ihandlerClass = null;
+                    }
+                
+                    if(beanRef == null && ihandlerClass == null) {
+                        processingEnv.getMessager().printMessage(Kind.ERROR, "Neither beanRef nor ihandler is set: " + typeElem.getQualifiedName());
+                    } else if(beanRef != null && ihandlerClass != null) {
+                        processingEnv.getMessager().printMessage(Kind.ERROR, "Setting both, beanRef and ihandler, isn't allowed: " + typeElem.getQualifiedName());
+                    } else if(beanRef != null) {
+                        ihandlerElem.setAttribute("bean-ref", beanRef);
+                    } else if(ihandlerClass != null) {
+                        ihandlerElem.setAttribute("class", ihandlerClass);
+                    }
 
-                    // t=tf.newTransformer();
-                    // t.setOutputProperty(OutputKeys.INDENT,"yes");
-                    // t.transform(new DOMSource(doc),new
-                    // StreamResult(System.out));
-                } catch (Exception x) {
-                    x.printStackTrace();
                 }
-            }
-        }
+                
+                List<VariableElement> fieldElems = AnnotationUtils.getPublicNonStaticNonFinalFields(typeElem);
+                for(VariableElement fieldElem: fieldElems) {
+                    fieldElem.accept(this, null);
+                }
+                
+                List<ExecutableElement> execElems = AnnotationUtils.getPublicNonStaticMethods(typeElem);
+                for(ExecutableElement execElem: execElems) {
+                    execElem.accept(this, null);
+                }
 
-        @Override
-        public void visitFieldDeclaration(FieldDeclaration fieldDecl) {
-            if (MirrorApiUtils.isPublicNonStaticNonFinal(fieldDecl)) {
-                String propName = fieldDecl.getSimpleName();
-                String getterName = createGetterName(propName);
-                ClassDeclaration classDecl = (ClassDeclaration) fieldDecl.getDeclaringType();
-                MethodDeclaration methDecl = MirrorApiUtils.getMethodDeclaration(classDecl, getterName);
-                if (methDecl != null) {
-                    if (MirrorApiUtils.isPublicNonStatic(methDecl)) {
-                        TypeMirror retType = methDecl.getReturnType();
-                        if (retType instanceof VoidType) {
-                            warn("Ignore getter returning void: " + methDecl);
-                            methDecl = null;
-                        } else {
-                            TypeMirror fieldType = fieldDecl.getType();
-                            if (retType != fieldType) {
-                                warn("Ignore field with differing getter type: " + propName + " " + fieldType + " " + retType);
+                boolean hasSuperIWrapper = false;
+                TypeElement supElem = null;
+                if(typeElem.getSuperclass().getKind() != TypeKind.NONE) {
+                    TypeMirror typeMirror = typeElem.getSuperclass();
+                    if(typeMirror instanceof DeclaredType) {
+                        DeclaredType decType = (DeclaredType)typeMirror;
+                        javax.lang.model.element.Element elem = decType.asElement();
+                        if(elem instanceof TypeElement && !((TypeElement) elem).getQualifiedName().toString().equals("java.lang.Object")) {
+                            supElem = (TypeElement)elem;
+                            IWrapper supIwrp = supElem.getAnnotation(IWrapper.class);
+                            if(supIwrp != null) {
+                                hasSuperIWrapper = true;
+                                String superIWrapperName = getIWrapperName(supElem);
+                                root.setAttribute("extends", superIWrapperName);
                             }
                         }
                     }
                 }
-                if (methDecl == null) {
-                    AnnotationMirror transientMirror = MirrorApiUtils.getAnnotationMirror(fieldDecl, transientType);
-                    if (transientMirror == null) {
-                        AnnotationMirror paramMirror = MirrorApiUtils.getAnnotationMirror(fieldDecl, paramType);
-                        AnnotationMirror casterMirror = MirrorApiUtils.getAnnotationMirror(fieldDecl, casterType);
-                        if (paramMirror != null || casterMirror != null || isBuiltinType(fieldDecl.getType())) {
-                            Element paramElem = addParam(root, propName, fieldDecl.getType(), paramMirror);
-                            if (paramElem == null) return;
-                            if (casterMirror != null) addCaster(paramElem, casterMirror);
-                            else autoAddCaster(paramElem, fieldDecl.getType());
-                            AnnotationMirror preCheckMirror = MirrorApiUtils.getAnnotationMirror(fieldDecl, preCheckType);
-                            if (preCheckMirror != null) addPreCheck(paramElem, preCheckMirror);
-                            AnnotationMirror postCheckMirror = MirrorApiUtils.getAnnotationMirror(fieldDecl, postCheckType);
-                            if (postCheckMirror != null) addPostCheck(paramElem, postCheckMirror);
+                
+                
+                if (!hasSuperIWrapper && supElem != null) {
+                    supElem.accept(this, null);
+                }
+
+                if (iwrpAnno != null) {
+                    Filer filer = processingEnv.getFiler();
+                    try {
+                        processingEnv.getMessager().printMessage(Kind.NOTE, "Generate class " + iwrapperClass);
+                        JavaFileObject fileObj = filer.createSourceFile(iwrapperClass, typeElem);
+                        Writer writer = fileObj.openWriter();
+
+                        TransformerFactory tf = TransformerFactory.newInstance();
+                        InputStream fis = getClass().getResourceAsStream("/pustefix/xsl/iwrapper.xsl");
+                        Transformer t = tf.newTransformer(new StreamSource(fis));
+                        // t.setOutputProperty(OutputKeys.INDENT,"yes");
+                        int ind = iwrapperClass.lastIndexOf('.');
+                        String packageName = "";
+                        String className = iwrapperClass;
+                        if (ind > -1) {
+                            packageName = iwrapperClass.substring(0, ind);
+                            className = iwrapperClass.substring(ind + 1);
+                        }
+                        t.setParameter("package", packageName);
+                        t.setParameter("classname", className);
+                        t.transform(new DOMSource(doc), new StreamResult(writer));
+                        doc = null;
+                        root = null;
+                        writer.close();
+                        // t=tf.newTransformer();
+                        // t.setOutputProperty(OutputKeys.INDENT,"yes");
+                        // t.transform(new DOMSource(doc),new
+                        // StreamResult(System.out));
+                    } catch (Exception x) {
+                        throw new RuntimeException("Error while generating IWrapper " + typeElem.getQualifiedName(), x);
+                    }
+                }
+            
+            } else {
+                throw new RuntimeException("Type annotated with @IWrapper isn't class: " + typeElem.getKind() + " " + typeElem.getQualifiedName());
+            }
+            return null;
+        }
+
+        @Override
+        public Void visitVariable(VariableElement varElem, Void param) {
+            if(varElem.getKind() == ElementKind.FIELD) {
+                if(AnnotationUtils.isPublicNonStaticNonFinal(varElem)) {
+                    String propName = varElem.getSimpleName().toString();
+                    String getterName = createGetterName(propName);
+                    TypeElement encElem = (TypeElement)varElem.getEnclosingElement();
+                    ExecutableElement meth = AnnotationUtils.getMethod(encElem, getterName);
+                    if(meth != null) {
+                        if(AnnotationUtils.isPublicNonStatic(meth)) {
+                            TypeMirror retType = meth.getReturnType();
+                            if(retType.getKind() == TypeKind.VOID) {
+                                warn("Ignore getter returning void: " + meth);
+                                meth = null;
+                            } else {
+                                TypeMirror fieldType = varElem.asType();
+                                if(!processingEnv.getTypeUtils().isSameType(fieldType, retType)) {
+                                    warn("Ignore field with differing getter type: " + propName + " " + fieldType + " " + retType);
+                                }
+                            }
+                        }
+                    }
+                    if (meth == null) {
+                        Transient transientAnno = varElem.getAnnotation(Transient.class);
+                        if(transientAnno == null) {
+                            Param paramAnno = varElem.getAnnotation(Param.class);
+                            Caster casterAnno = varElem.getAnnotation(Caster.class);
+                            if(paramAnno != null || casterAnno != null || isBuiltinType(varElem.asType())) {
+                                Element paramElem = addParam(root, propName, varElem.asType(), paramAnno);
+                                if (paramElem == null) {
+                                    return null;
+                                } else {
+                                    if (casterAnno != null) addCaster(paramElem, casterAnno);
+                                    else autoAddCaster(paramElem, varElem.asType());
+                                    PreCheck preCheckAnno = varElem.getAnnotation(PreCheck.class);
+                                    if (preCheckAnno != null) addPreCheck(paramElem, preCheckAnno);
+                                    PostCheck postCheckAnno = varElem.getAnnotation(PostCheck.class);
+                                    if (postCheckAnno != null) addPostCheck(paramElem, postCheckAnno);
+                                }
+                            }
                         }
                     }
                 }
             }
+            return null;
         }
 
         @Override
-        public void visitMethodDeclaration(MethodDeclaration methDecl) {
-            String getterName = methDecl.getSimpleName();
-            if (MirrorApiUtils.isPublicNonStatic(methDecl) && 
-                    ((getterName.length() > 3 && Character.isUpperCase(getterName.charAt(3)) && getterName.startsWith("get")) || 
-                    (getterName.length() > 2 && Character.isUpperCase(getterName.charAt(2)) && getterName.startsWith("is")))
-                    && methDecl.getParameters().size() == 0 && !(methDecl.getReturnType() instanceof VoidType)) {
-                String propName = extractPropertyName(getterName);
-                ClassDeclaration classDecl = (ClassDeclaration) methDecl.getDeclaringType();
-                FieldDeclaration fieldDecl = MirrorApiUtils.getFieldDeclaration(classDecl, propName);
-                if (fieldDecl != null && !fieldDecl.getType().equals(methDecl.getReturnType())) {
-                    warn("Ignore field with differing type: " + fieldDecl);
-                    fieldDecl = null;
-                }
-                String setterName = createSetterName(propName);
-                MethodDeclaration setter = MirrorApiUtils.getMethodDeclaration(classDecl, setterName);
-                if (setter == null) {
-                    warn("Ignore getter without setter or public field: " + methDecl);
-                    return;
-                } else {
-                    if (!(setter.getReturnType() instanceof VoidType)) {
-                        warn("Ignore getter with setter having return type: " + methDecl);
-                        return;
-                    } else if (setter.getParameters().size() != 1) {
-                        warn("Ignore getter with setter not having single parameter: " + methDecl);
-                    } else if (!setter.getParameters().iterator().next().getType().equals(methDecl.getReturnType())) {
-                        warn("Ignore getter with setter having different type: " + methDecl + " "
-                                + setter.getParameters().iterator().next().getType() + " " + methDecl.getReturnType());
-                        return;
+        public Void visitExecutable(ExecutableElement execElem, Void param) {
+            if(execElem.getKind() == ElementKind.METHOD) {
+                String getterName = execElem.getSimpleName().toString();
+                if (AnnotationUtils.isPublicNonStatic(execElem) && 
+                        ((getterName.length() > 3 && Character.isUpperCase(getterName.charAt(3)) && getterName.startsWith("get")) || 
+                        (getterName.length() > 2 && Character.isUpperCase(getterName.charAt(2)) && getterName.startsWith("is")))
+                        && execElem.getParameters().size() == 0 && !(execElem.getReturnType().getKind() == TypeKind.VOID)) {
+                    String propName = extractPropertyName(getterName);
+                    TypeElement encElem = (TypeElement)execElem.getEnclosingElement();
+                    VariableElement field = AnnotationUtils.getField(encElem, propName);
+                    if (field != null && !processingEnv.getTypeUtils().isSameType(field.asType(), execElem.getReturnType())) {
+                        warn("Ignore field with differing type: " + field.getSimpleName());
+                        field = null;
+                    }
+                    String setterName = createSetterName(propName);
+                    ExecutableElement setter = AnnotationUtils.getMethod(encElem, setterName);
+                    if (setter == null) {
+                        warn("Ignore getter without setter or public field: " + execElem);
+                        return null;
+                    } else {
+                        if (!(setter.getReturnType().getKind() == TypeKind.VOID)) {
+                            warn("Ignore getter with setter having return type: " + execElem);
+                            return null;
+                        } else if (setter.getParameters().size() != 1) {
+                            warn("Ignore getter with setter not having single parameter: " + execElem);
+                        } else if (!processingEnv.getTypeUtils().isSameType(setter.getParameters().iterator().next().asType(), execElem.getReturnType())) {
+                            warn("Ignore getter with setter having different type: " + execElem + " "
+                                    + setter.getParameters().iterator().next().asType() + " " + execElem.getReturnType());
+                            return null;
+                        }
+                    }
+                    Transient transientAnno = execElem.getAnnotation(Transient.class);
+                    if (transientAnno == null) {
+                        Param paramAnno = execElem.getAnnotation(Param.class);
+                        if (paramAnno == null && field != null) paramAnno = field.getAnnotation(Param.class);
+                        Caster casterAnno = execElem.getAnnotation(Caster.class);
+                        if (casterAnno == null && field != null) casterAnno = field.getAnnotation(Caster.class);
+                        if (paramAnno != null || casterAnno != null || isBuiltinType(execElem.getReturnType())) {
+                            Element paramElem = addParam(root, propName, execElem.getReturnType(), paramAnno);
+                            if (paramElem == null) return null;
+                            if (casterAnno != null) addCaster(paramElem, casterAnno);
+                            else autoAddCaster(paramElem, execElem.getReturnType());
+                            PreCheck preCheckAnno = execElem.getAnnotation(PreCheck.class);
+                            if (preCheckAnno == null && field != null)
+                                preCheckAnno = field.getAnnotation(PreCheck.class);
+                            if (preCheckAnno != null) addPreCheck(paramElem, preCheckAnno);
+                            PostCheck postCheckAnno = execElem.getAnnotation(PostCheck.class);
+                            if (postCheckAnno == null && field != null)
+                                postCheckAnno = field.getAnnotation(PostCheck.class);
+                            if (postCheckAnno != null) addPostCheck(paramElem, postCheckAnno);
+                        }
                     }
                 }
-                AnnotationMirror transientMirror = MirrorApiUtils.getAnnotationMirror(methDecl, transientType);
-                if (transientMirror == null && fieldDecl != null) transientMirror = MirrorApiUtils.getAnnotationMirror(fieldDecl, transientType);
-                if (transientMirror == null) {
-                    AnnotationMirror paramMirror = MirrorApiUtils.getAnnotationMirror(methDecl, paramType);
-                    if (paramMirror == null && fieldDecl != null) paramMirror = MirrorApiUtils.getAnnotationMirror(fieldDecl, paramType);
-                    AnnotationMirror casterMirror = MirrorApiUtils.getAnnotationMirror(methDecl, casterType);
-                    if (casterMirror == null && fieldDecl != null) casterMirror = MirrorApiUtils.getAnnotationMirror(fieldDecl, casterType);
-                    if (paramMirror != null || casterMirror != null || isBuiltinType(methDecl.getReturnType())) {
-                        Element paramElem = addParam(root, propName, methDecl.getReturnType(), paramMirror);
-                        if (paramElem == null) return;
-                        if (casterMirror != null) addCaster(paramElem, casterMirror);
-                        else autoAddCaster(paramElem, methDecl.getReturnType());
-                        AnnotationMirror preCheckMirror = MirrorApiUtils.getAnnotationMirror(methDecl, preCheckType);
-                        if (preCheckMirror == null && fieldDecl != null)
-                            preCheckMirror = MirrorApiUtils.getAnnotationMirror(fieldDecl, preCheckType);
-                        if (preCheckMirror != null) addPreCheck(paramElem, preCheckMirror);
-                        AnnotationMirror postCheckMirror = MirrorApiUtils.getAnnotationMirror(methDecl, postCheckType);
-                        if (postCheckMirror == null && fieldDecl != null)
-                            postCheckMirror = MirrorApiUtils.getAnnotationMirror(fieldDecl, postCheckType);
-                        if (postCheckMirror != null) addPostCheck(paramElem, postCheckMirror);
-                    }
-                }
-
             }
+            return null;
         }
 
-        private Element addParam(Element rootElem, String propertyName, TypeMirror typeMirror, AnnotationMirror mirror) {
+        private Element addParam(Element rootElem, String propertyName, TypeMirror typeMirror, Param paramAnno) {
             Element paramElem = rootElem.getOwnerDocument().createElementNS(XMLNS_IWRP, "iwrp:param");
             String paramType = null;
             if (!isArrayType(typeMirror)) {
-                if (typeMirror instanceof ClassType) {
-                    ClassType propType = (ClassType) typeMirror;
-                    paramType = propType.getDeclaration().getQualifiedName();
-                } else if (typeMirror instanceof PrimitiveType) {
+                if (typeMirror instanceof DeclaredType) {
+                    DeclaredType propType = (DeclaredType) typeMirror;
+                    paramType = ((TypeElement)propType.asElement()).getQualifiedName().toString();
+                } else if (typeMirror.getKind().isPrimitive()) {
                     PrimitiveType propType = (PrimitiveType) typeMirror;
                     paramType = getPrimitiveWrapperType(propType.getKind());
                     if (paramType == null) {
@@ -396,10 +417,10 @@ public class IWrapperAnnotationProcessor implements AnnotationProcessor {
                 }
             } else {
                 TypeMirror compType = getArrayComponentType(typeMirror);
-                if (compType instanceof ClassType) {
+                if (compType instanceof DeclaredType) {
                     paramElem.setAttribute("frequency", "multiple");
-                    paramType = ((ClassType) compType).getDeclaration().getQualifiedName();
-                } else if (compType instanceof PrimitiveType) {
+                    paramType = ((TypeElement)((DeclaredType)compType).asElement()).getQualifiedName().toString();
+                } else if (compType.getKind().isPrimitive()) {
                     paramElem.setAttribute("frequency", "multiple");
                     paramType = getPrimitiveWrapperType(((PrimitiveType) compType).getKind());
                     if (paramType == null) {
@@ -413,42 +434,36 @@ public class IWrapperAnnotationProcessor implements AnnotationProcessor {
             paramElem.setAttribute("type", paramType);
 
             String occurStr = "mandatory";
-            if (mirror != null) {
-                AnnotationValue value = MirrorApiUtils.getAnnotationValue(mirror, "mandatory");
-                if (value != null && value.getValue().toString().equals("false")) occurStr = "optional";
+            if (paramAnno != null) {
+                if (!paramAnno.mandatory()) occurStr = "optional";
             }
             paramElem.setAttribute("occurrence", occurStr);
 
             boolean trim = true;
-            if (mirror != null) {
-                AnnotationValue value = MirrorApiUtils.getAnnotationValue(mirror, "trim");
-                if (value != null && value.getValue().toString().equals("false")) trim = false;
+            if (paramAnno != null) {
+                if(!paramAnno.trim()) trim = false;
             }
             paramElem.setAttribute("trim", String.valueOf(trim));
 
             String misscode = "";
-            if (mirror != null) {
-                AnnotationValue value = MirrorApiUtils.getAnnotationValue(mirror, "missingscode");
-                if (value != null) misscode = value.getValue().toString();
+            if (paramAnno != null) {
+                misscode = paramAnno.missingscode();
             }
             if (!misscode.equals("")) paramElem.setAttribute("missingscode", misscode);
 
             String name = Character.toUpperCase(propertyName.charAt(0)) + propertyName.substring(1);
-            if (mirror != null) {
-                AnnotationValue value = MirrorApiUtils.getAnnotationValue(mirror, "name");
-                if (value != null) name = value.getValue().toString();
+            if (paramAnno != null) {
+                if (!paramAnno.name().equals("")) name = paramAnno.name();
             }
             paramElem.setAttribute("name", name);
 
-            if (mirror != null) {
-                AnnotationValue value = MirrorApiUtils.getAnnotationValue(mirror, "defaults");
-                if (value != null) {
+            if (paramAnno != null) {
+                if (paramAnno.defaults().length > 0) {
                     Element defElem = paramElem.getOwnerDocument().createElementNS(XMLNS_IWRP, "iwrp:default");
                     paramElem.appendChild(defElem);
-                    Collection<AnnotationValue> defaults = getCollectionFromAnnotationValue(value);
-                    for (AnnotationValue def : defaults) {
+                    for (String def : paramAnno.defaults()) {
                         Element valElem = paramElem.getOwnerDocument().createElementNS(XMLNS_IWRP, "iwrp:value");
-                        valElem.setTextContent(def.getValue().toString());
+                        valElem.setTextContent(def);
                         defElem.appendChild(valElem);
                     }
                 }
@@ -457,73 +472,69 @@ public class IWrapperAnnotationProcessor implements AnnotationProcessor {
             return paramElem;
         }
 
-        private void addCaster(Element paramElem, AnnotationMirror mirror) {
+        private void addCaster(Element paramElem, Caster casterAnno) {
             Element casterElem = paramElem.getOwnerDocument().createElementNS(XMLNS_IWRP, "iwrp:caster");
             paramElem.appendChild(casterElem);
-            AnnotationValue value = MirrorApiUtils.getAnnotationValue(mirror, "type");
-            String casterType = value.getValue().toString();
+            String casterType = null;
+            try {
+                casterAnno.type();
+            } catch(MirroredTypeException x) {
+                casterType = ((TypeElement)((DeclaredType)x.getTypeMirror()).asElement()).getQualifiedName().toString();
+            }
             casterElem.setAttribute("class", casterType);
-            value = MirrorApiUtils.getAnnotationValue(mirror, "properties");
-            if (value != null) {
-                Collection<AnnotationValue> casterProps = getCollectionFromAnnotationValue(value);
-                for (AnnotationValue val : casterProps) {
+            Property[] casterProps = casterAnno.properties();
+            if (casterProps != null && casterProps.length > 0) {
+                for(Property casterProp: casterProps) {
                     Element propElem = paramElem.getOwnerDocument().createElementNS(XMLNS_IWRP, "iwrp:cparam");
                     casterElem.appendChild(propElem);
-                    AnnotationMirror propMirror = (AnnotationMirror) val.getValue();
-                    propElem.setAttribute("name", MirrorApiUtils.getAnnotationValue(propMirror, "name").getValue().toString());
-                    propElem.setAttribute("value", MirrorApiUtils.getAnnotationValue(propMirror, "value").getValue().toString());
+                    propElem.setAttribute("name", casterProp.name());
+                    propElem.setAttribute("value", casterProp.value());
                 }
             }
         }
 
-        private void addPreCheck(Element paramElem, AnnotationMirror mirror) {
+        private void addPreCheck(Element paramElem, PreCheck preCheckAnno) {
             Element preCheckElem = paramElem.getOwnerDocument().createElementNS(XMLNS_IWRP, "iwrp:precheck");
             paramElem.appendChild(preCheckElem);
-            AnnotationValue value = MirrorApiUtils.getAnnotationValue(mirror, "type");
-            String preCheckType = value.getValue().toString();
+            String preCheckType = preCheckAnno.type().getName();
             preCheckElem.setAttribute("class", preCheckType);
-            value = MirrorApiUtils.getAnnotationValue(mirror, "properties");
-            if (value != null) {
-                Collection<AnnotationValue> preCheckProps = getCollectionFromAnnotationValue(value);
-                for (AnnotationValue val : preCheckProps) {
+            Property[] preCheckProps = preCheckAnno.properties();
+            if (preCheckProps != null && preCheckProps.length > 0) {
+                for(Property preCheckProp: preCheckProps) {
                     Element propElem = paramElem.getOwnerDocument().createElementNS(XMLNS_IWRP, "iwrp:cparam");
                     preCheckElem.appendChild(propElem);
-                    AnnotationMirror propMirror = (AnnotationMirror) val.getValue();
-                    propElem.setAttribute("name", MirrorApiUtils.getAnnotationValue(propMirror, "name").getValue().toString());
-                    propElem.setAttribute("value", MirrorApiUtils.getAnnotationValue(propMirror, "value").getValue().toString());
+                    propElem.setAttribute("name", preCheckProp.name());
+                    propElem.setAttribute("value", preCheckProp.value());
                 }
             }
         }
 
-        private void addPostCheck(Element paramElem, AnnotationMirror mirror) {
+        private void addPostCheck(Element paramElem, PostCheck postCheckAnno) {
             Element postCheckElem = paramElem.getOwnerDocument().createElementNS(XMLNS_IWRP, "iwrp:postcheck");
             paramElem.appendChild(postCheckElem);
-            AnnotationValue value = MirrorApiUtils.getAnnotationValue(mirror, "type");
-            String postCheckType = value.getValue().toString();
+            String postCheckType = postCheckAnno.type().getName();
             postCheckElem.setAttribute("class", postCheckType);
-            value = MirrorApiUtils.getAnnotationValue(mirror, "properties");
-            if (value != null) {
-                Collection<AnnotationValue> postCheckProps = getCollectionFromAnnotationValue(value);
-                for (AnnotationValue val : postCheckProps) {
+            Property[] postCheckProps = postCheckAnno.properties();
+            if (postCheckProps != null && postCheckProps.length > 0) {
+                for(Property postCheckProp: postCheckProps) {
                     Element propElem = paramElem.getOwnerDocument().createElementNS(XMLNS_IWRP, "iwrp:cparam");
                     postCheckElem.appendChild(propElem);
-                    AnnotationMirror propMirror = (AnnotationMirror) val.getValue();
-                    propElem.setAttribute("name", MirrorApiUtils.getAnnotationValue(propMirror, "name").getValue().toString());
-                    propElem.setAttribute("value", MirrorApiUtils.getAnnotationValue(propMirror, "value").getValue().toString());
+                    propElem.setAttribute("name", postCheckProp.name());
+                    propElem.setAttribute("value", postCheckProp.value());
                 }
             }
         }
 
-        private String getPrimitiveWrapperType(PrimitiveType.Kind kind) {
+        private String getPrimitiveWrapperType(TypeKind kind) {
             String type = null;
-            if (kind == PrimitiveType.Kind.BOOLEAN) type = Boolean.class.getName();
-            else if (kind == PrimitiveType.Kind.BYTE) type = Byte.class.getName();
+            if (kind == TypeKind.BOOLEAN) type = Boolean.class.getName();
+            else if (kind == TypeKind.BYTE) type = Byte.class.getName();
             // else if(kind==PrimitiveType.Kind.CHAR)
             // type=Character.class.getName();
-            else if (kind == PrimitiveType.Kind.DOUBLE) type = Double.class.getName();
-            else if (kind == PrimitiveType.Kind.FLOAT) type = Float.class.getName();
-            else if (kind == PrimitiveType.Kind.INT) type = Integer.class.getName();
-            else if (kind == PrimitiveType.Kind.LONG) type = Long.class.getName();
+            else if (kind == TypeKind.DOUBLE) type = Double.class.getName();
+            else if (kind == TypeKind.FLOAT) type = Float.class.getName();
+            else if (kind == TypeKind.INT) type = Integer.class.getName();
+            else if (kind == TypeKind.LONG) type = Long.class.getName();
             // else if(kind==PrimitiveType.Kind.SHORT)
             // type=Short.class.getName();
             return type;
@@ -535,19 +546,20 @@ public class IWrapperAnnotationProcessor implements AnnotationProcessor {
                 TypeMirror compType = getArrayComponentType(mirror);
                 mirror = compType;
             }
-            if (mirror instanceof PrimitiveType) {
-                PrimitiveType.Kind kind = ((PrimitiveType) mirror).getKind();
-                if (kind == PrimitiveType.Kind.BOOLEAN) caster = BOOLEAN_CASTER;
-                else if (kind == PrimitiveType.Kind.BYTE) caster = BYTE_CASTER;
+            if (mirror.getKind().isPrimitive()) {
+                TypeKind kind = ((PrimitiveType) mirror).getKind();
+                
+                if (kind == TypeKind.BOOLEAN) caster = BOOLEAN_CASTER;
+                else if (kind == TypeKind.BYTE) caster = BYTE_CASTER;
                 // else if(kind==PrimitiveType.Kind.CHAR)
                 // caster=CHARACTER_CASTER;
-                else if (kind == PrimitiveType.Kind.DOUBLE) caster = DOUBLE_CASTER;
-                else if (kind == PrimitiveType.Kind.FLOAT) caster = FLOAT_CASTER;
-                else if (kind == PrimitiveType.Kind.INT) caster = INTEGER_CASTER;
-                else if (kind == PrimitiveType.Kind.LONG) caster = LONG_CASTER;
+                else if (kind == TypeKind.DOUBLE) caster = DOUBLE_CASTER;
+                else if (kind == TypeKind.FLOAT) caster = FLOAT_CASTER;
+                else if (kind == TypeKind.INT) caster = INTEGER_CASTER;
+                else if (kind == TypeKind.LONG) caster = LONG_CASTER;
                 // else if(kind==PrimitiveType.Kind.SHORT) caster=SHORT_CASTER;
-            } else if (mirror instanceof ClassType) {
-                String qname = ((ClassType) mirror).getDeclaration().getQualifiedName();
+            } else if (mirror instanceof DeclaredType) {
+                String qname = ((TypeElement)((DeclaredType) mirror).asElement()).getQualifiedName().toString();
                 if (qname.equals(Boolean.class.getName())) caster = BOOLEAN_CASTER;
                 else if (qname.equals(Byte.class.getName())) caster = BYTE_CASTER;
                 else if (qname.equals(Double.class.getName())) caster = DOUBLE_CASTER;
@@ -575,25 +587,16 @@ public class IWrapperAnnotationProcessor implements AnnotationProcessor {
             if (mirror instanceof ArrayType) {
                 TypeMirror compType = ((ArrayType) mirror).getComponentType();
                 builtin = isBuiltinSingleType(compType);
-            } else if (mirror instanceof ClassType) {
-                String qname = ((ClassType) mirror).getDeclaration().getQualifiedName();
-                if (qname.equals("java.util.ArrayList")) {
-                    Collection<TypeMirror> args = ((ClassType) mirror).getActualTypeArguments();
+            } else if (mirror instanceof DeclaredType) {
+                TypeElement typeElem = (TypeElement)((DeclaredType)mirror).asElement();
+                String qname = typeElem.getQualifiedName().toString();
+                if (qname.equals("java.util.ArrayList") || qname.equals("java.util.List")) {
+                    List<? extends TypeMirror> args = ((DeclaredType)mirror).getTypeArguments();
                     if (args.size() == 1) {
                         TypeMirror arg = args.iterator().next();
                         builtin = isBuiltinSingleType(arg);
                     }
                 }
-            } else if (mirror instanceof InterfaceType) {
-                String qname = ((InterfaceType) mirror).getDeclaration().getQualifiedName();
-                if (qname.equals("java.util.List")) {
-                    Collection<TypeMirror> args = ((InterfaceType) mirror).getActualTypeArguments();
-                    if (args.size() == 1) {
-                        TypeMirror arg = args.iterator().next();
-                        builtin = isBuiltinSingleType(arg);
-                    }
-                }
-
             }
             return builtin;
         }
@@ -601,34 +604,26 @@ public class IWrapperAnnotationProcessor implements AnnotationProcessor {
         private boolean isArrayType(TypeMirror mirror) {
             if (mirror instanceof ArrayType) {
                 return true;
-            } else if (mirror instanceof ClassType) {
-                String qname = ((ClassType) mirror).getDeclaration().getQualifiedName();
-                if (qname.equals("java.util.ArrayList")) {
-                    Collection<TypeMirror> args = ((ClassType) mirror).getActualTypeArguments();
+            } else if (mirror instanceof DeclaredType) {
+                TypeElement typeElem = (TypeElement)((DeclaredType)mirror).asElement();
+                String qname = typeElem.getQualifiedName().toString();
+                if (qname.equals("java.util.ArrayList") || qname.equals("java.util.List")) {
+                    List<? extends TypeMirror> args = ((DeclaredType)mirror).getTypeArguments();
                     if (args.size() == 1) {
                         return true;
                     }
                 }
-            } else if (mirror instanceof InterfaceType) {
-                String qname = ((InterfaceType) mirror).getDeclaration().getQualifiedName();
-                if (qname.equals("java.util.List")) {
-                    Collection<TypeMirror> args = ((InterfaceType) mirror).getActualTypeArguments();
-                    if (args.size() == 1) {
-                        return true;
-                    }
-                }
-
             }
             return false;
         }
 
         private boolean isBuiltinSingleType(TypeMirror mirror) {
             boolean builtin = false;
-            if (mirror instanceof PrimitiveType) {
-                PrimitiveType.Kind kind = ((PrimitiveType) mirror).getKind();
+            if (mirror.getKind().isPrimitive()) {
+                TypeKind kind = ((PrimitiveType) mirror).getKind();
                 builtin = builtinPrimitives.contains(kind);
-            } else if (mirror instanceof ClassType) {
-                String qname = ((ClassType) mirror).getDeclaration().getQualifiedName();
+            } else if (mirror instanceof DeclaredType) {
+                String qname = ((TypeElement)((DeclaredType) mirror).asElement()).getQualifiedName().toString();
                 builtin = builtinTypes.contains(qname);
             }
             return builtin;
@@ -636,28 +631,18 @@ public class IWrapperAnnotationProcessor implements AnnotationProcessor {
 
         private TypeMirror getArrayComponentType(TypeMirror typeMirror) {
             TypeMirror compType = null;
-            if (typeMirror instanceof ClassType) {
-                String qname = ((ClassType) typeMirror).getDeclaration().getQualifiedName();
-                if (qname.equals("java.util.ArrayList")) {
-                    Collection<TypeMirror> args = ((ClassType) typeMirror).getActualTypeArguments();
-                    if (args.size() == 1) compType = args.iterator().next();
-                }
-            } else if (typeMirror instanceof InterfaceType) {
-                String qname = ((InterfaceType) typeMirror).getDeclaration().getQualifiedName();
-                if (qname.equals("java.util.List")) {
-                    Collection<TypeMirror> args = ((InterfaceType) typeMirror).getActualTypeArguments();
-                    if (args.size() == 1) compType = args.iterator().next();
-                }
-            } else if (typeMirror instanceof ArrayType) {
+            if (typeMirror instanceof ArrayType) {
                 ArrayType propType = (ArrayType) typeMirror;
                 compType = propType.getComponentType();
+            } else if (typeMirror instanceof DeclaredType) {
+                TypeElement typeElem = (TypeElement)((DeclaredType)typeMirror).asElement();
+                String qname = typeElem.getQualifiedName().toString();
+                if (qname.equals("java.util.ArrayList") || qname.equals("java.util.List")) {
+                    Collection<? extends TypeMirror> args = ((DeclaredType) typeMirror).getTypeArguments();
+                    if (args.size() == 1) compType = args.iterator().next();
+                }
             }
             return compType;
-        }
-        
-        @SuppressWarnings("unchecked")
-        private Collection<AnnotationValue> getCollectionFromAnnotationValue(AnnotationValue v) {
-            return (Collection<AnnotationValue>) v.getValue();
         }
     }
 

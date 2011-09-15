@@ -96,7 +96,7 @@ public class PustefixWebappMojo extends AbstractMojo {
         new File(docroot, "WEB-INF").mkdirs();
         
         basedir = project.getBasedir();
-        new Apt(basedir, aptdir, getLog()).execute(getPluginClasspath());
+        new Apt(basedir, aptdir, getLog(), project).execute(getPluginClasspath());
         if(aptdir.exists()) {
             project.addCompileSourceRoot(aptdir.getAbsolutePath());
         }

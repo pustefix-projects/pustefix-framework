@@ -21,34 +21,50 @@ package org.pustefixframework.maven.plugins;
 import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
-import java.io.InputStream;
-import java.io.InputStreamReader;
 import java.io.PrintWriter;
+import java.net.URL;
+import java.net.URLClassLoader;
 import java.util.ArrayList;
+import java.util.LinkedList;
 import java.util.List;
+
+import javax.annotation.processing.AbstractProcessor;
+import javax.tools.Diagnostic;
+import javax.tools.DiagnosticListener;
+import javax.tools.JavaCompiler;
+import javax.tools.JavaCompiler.CompilationTask;
+import javax.tools.JavaFileObject;
+import javax.tools.StandardJavaFileManager;
+import javax.tools.ToolProvider;
 
 import org.apache.maven.plugin.MojoExecutionException;
 import org.apache.maven.plugin.logging.Log;
+import org.apache.maven.project.MavenProject;
+
+import de.schlund.pfixcore.generator.iwrpgen.IWrapperAnnotationProcessor;
 
 /**
  * 
  * @author mleidig@schlund.de
  * 
  */
-public class Apt {
+public class Apt implements DiagnosticListener<JavaFileObject> {
+    
     private final File srcDir;
     private final File destDir;
-    private final File preprocessDir;
-
+    private final File aptDir;
     private final File basedir;
     private final Log log;
+    private MavenProject mavenProject;
     
-    public Apt(File basedir, File preprocessDir, Log log) {
+    public Apt(File basedir, File aptDir, Log log, MavenProject mavenProject) {
         this.basedir = basedir;
+        //TODO: support src/test/java too
         this.srcDir = new File(basedir, "src/main/java");
         this.destDir = new File(basedir, "target/classes");
-        this.preprocessDir = preprocessDir;
+        this.aptDir = aptDir;
         this.log = log;
+        this.mavenProject = mavenProject;
     }
 
     public int execute(String classpath) throws MojoExecutionException {
@@ -98,54 +114,69 @@ public class Apt {
         } catch (IOException x) {
             throw new MojoExecutionException("Error creating file list", x);
         }
-
-        List<String> cmd = new ArrayList<String>();
-        cmd.add("apt");
-        cmd.add("-J-Xmx512m");
-        cmd.add("-classpath");
-        cmd.add(classpath);
-        cmd.add("-sourcepath");
-        cmd.add(srcDir.toString());
-        cmd.add("-nocompile");
-        cmd.add("-encoding");
-        cmd.add("UTF-8");
-        cmd.add("-factory");
-        cmd.add("de.schlund.pfixcore.util.CommonAnnotationProcessorFactory");
-        cmd.add("-s");
-        cmd.add(preprocessDir.toString());
-        cmd.add("@" + filelist);
-        log.debug(cmd.toString());
-            
-        try {
-            ProcessBuilder builder = new ProcessBuilder(cmd);
-            builder.directory(basedir);
-            builder.redirectErrorStream(true);
-            Process process = builder.start();
-            int ret = process.waitFor();
-            InputStream in = process.getInputStream();
-            StringBuilder sb = new StringBuilder();
-            if(in != null) {
-                InputStreamReader reader = new InputStreamReader(in);
-                char[] buffer = new char[4096];
-                int i = 0;
-                try {
-                    while ((i = reader.read(buffer)) != -1)
-                        sb.append(buffer, 0, i);
-                } finally {
-                    in.close();
-                }
-            }
-            if(ret == 0) {
-                log.debug(sb.toString());
-            } else {
-                log.error(sb.toString());
-                throw new MojoExecutionException("Error while executing apt (exit value: " + ret + ").");
-            }
-        } catch (IOException e) {
-            throw new MojoExecutionException("Error invoking apt", e);
-        } catch (InterruptedException e) {
-            throw new MojoExecutionException("Apt interrupted", e);
+        
+        if(!aptDir.exists()) {
+            aptDir.mkdirs();
         }
+
+        JavaCompiler compiler = ToolProvider.getSystemJavaCompiler();
+        
+        List<String> options = new ArrayList<String>();
+        options.add("-classpath");
+        StringBuilder sb = new StringBuilder();
+        URLClassLoader urlClassLoader = getCompileClassLoader();
+        for(URL url: urlClassLoader.getURLs()) {
+            sb.append(url.getFile()).append(File.pathSeparator);
+        }
+        sb.append(srcDir.getAbsolutePath());
+        options.add(sb.toString());
+        options.add("-proc:only");
+        options.add("-s");
+        options.add(aptDir.getAbsolutePath());
+        
+        StandardJavaFileManager fileManager = compiler.getStandardFileManager(null, null, null);
+        Iterable<? extends JavaFileObject> compilationUnits = fileManager.getJavaFileObjectsFromFiles(files);
+        CompilationTask task = compiler.getTask(null, fileManager, this, options, null, compilationUnits);
+        LinkedList<AbstractProcessor> processors = new LinkedList<AbstractProcessor>();
+        processors.add(new IWrapperAnnotationProcessor());
+        task.setProcessors(processors);
+        task.call();
+        
+      
+        
+        File[] aptFiles = aptDir.listFiles();
+        if(aptFiles == null) {
+            aptDir.delete();
+        }
+        
         filelist.delete();
     }
+    
+    private URLClassLoader getCompileClassLoader() throws MojoExecutionException {
+        try {
+            List<?> elements = mavenProject.getCompileClasspathElements();
+            URL[] urls = new URL[elements.size()];
+            for (int i = 0; i < elements.size(); i++) {
+                String element = (String) elements.get(i);
+                urls[i] = new File(element).toURI().toURL();
+            }
+            return new URLClassLoader(urls);
+        } catch (Exception x) {
+            throw new MojoExecutionException("Can't create project runtime classloader", x);
+        }
+    }
+
+    public void report(Diagnostic<? extends JavaFileObject> diagnostic) {
+        Diagnostic.Kind kind = diagnostic.getKind();
+        if(kind == Diagnostic.Kind.NOTE || kind == Diagnostic.Kind.OTHER) {
+            log.debug(diagnostic.toString());
+        } else if(kind == Diagnostic.Kind.ERROR) {
+            log.error(diagnostic.toString());
+        } else if(kind == Diagnostic.Kind.WARNING) {
+            log.debug(diagnostic.toString());
+        } else if(kind == Diagnostic.Kind.MANDATORY_WARNING) {
+            log.warn(diagnostic.toString());
+        }
+    }
+
 }
