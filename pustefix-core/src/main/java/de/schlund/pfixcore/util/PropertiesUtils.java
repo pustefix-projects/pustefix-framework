@@ -72,7 +72,7 @@ public class PropertiesUtils {
     /**
      * Select the Properties with the given prefix and return them in a
      * TreeMap, using the natural Ordering.
-     * @return java.util.TreeMap. If prefix is null or 0 &lt;
+     * @return com.sun.java.util.TreeMap. If prefix is null or 0 &lt;
      *     prefix.length() return all Properties sorted. If props is null
      *     return an empty TreeMap
      */
@@ -84,7 +84,7 @@ public class PropertiesUtils {
      * Select the Properties with the given prefix and return them in a
      * TreeMap, using the given Comparator for Ordering.
      * If the Comparator is null, the natural Ordering is used.
-     * @return java.util.TreeMap. If prefix is null or 0 &lt;
+     * @return com.sun.java.util.TreeMap. If prefix is null or 0 &lt;
      *     prefix.length() return all Properties sorted. If props is null
      *     return an empty TreeMap
      */

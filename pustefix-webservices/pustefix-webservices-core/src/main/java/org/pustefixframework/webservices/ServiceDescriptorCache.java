@@ -21,7 +21,7 @@ package org.pustefixframework.webservices;
 import java.util.HashMap;
 import java.util.Map;
 
-import org.pustefixframework.webservices.spring.WebserviceRegistration;
+import org.pustefixframework.webservices.config.ServiceConfig;
 
 
 /**
@@ -47,8 +47,8 @@ public class ServiceDescriptorCache {
         return srvDesc;
     }
     
-    public ServiceDescriptor getServiceDescriptor(WebserviceRegistration registration) throws ServiceException {
-        ServiceDescriptor srvDesc=new ServiceDescriptor(registration);
+    public ServiceDescriptor getServiceDescriptor(ServiceConfig config) throws ServiceException {
+        ServiceDescriptor srvDesc=new ServiceDescriptor(config);
         synchronized(srvDescs) {
             srvDescs.put(srvDesc.getServiceClass(),srvDesc);
         }

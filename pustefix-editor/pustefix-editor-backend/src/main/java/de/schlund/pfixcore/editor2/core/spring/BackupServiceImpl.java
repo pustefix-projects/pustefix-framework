@@ -72,11 +72,11 @@ public class BackupServiceImpl implements BackupService {
             fullPath = BACKUPDIR + File.separator + path;
         }
         fullPath = fullPath + File.separator + version;
-        return new File(pathresolver.resolve(fullPath));
+        return pathresolver.resolve(fullPath);
     }
 
     private File getFile(String path) {
-        return new File(pathresolver.resolve(path));
+        return pathresolver.resolve(path);
     }
 
     private File getBackupDir(String path) {
@@ -86,7 +86,7 @@ public class BackupServiceImpl implements BackupService {
         } else {
             fullPath = BACKUPDIR + File.separator + path;
         }
-        return new File(pathresolver.resolve(fullPath));
+        return pathresolver.resolve(fullPath);
     }
 
     private String getVersion() {

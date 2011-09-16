@@ -4,6 +4,18 @@
   <prop name="foo">bar</prop>
   <property name="hey">ho</property>
   
-  <property name="fqdn">${fqdn}</property>
+  <choose>
+    <when test="$mode='prod'">
+      <property name="mode">prod</property>
+    </when>
+    <when test="$mode='test'">
+      <property name="mode">test</property>
+    </when>
+    <otherwise>
+      <property name="mode">other</property>
+    </otherwise>
+  </choose>
   
+  <prop name="fqdn">${fqdn}</prop>
+
 </properties>

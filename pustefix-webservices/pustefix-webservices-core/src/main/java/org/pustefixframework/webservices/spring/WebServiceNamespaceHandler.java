@@ -26,10 +26,7 @@ import org.springframework.beans.factory.xml.NamespaceHandlerSupport;
  */
 public class WebServiceNamespaceHandler extends NamespaceHandlerSupport {
     
-	public WebServiceNamespaceHandler() {
-	}
-	
     public void init() {
-    	registerBeanDefinitionParser("extension", new ExtensionBeanDefinitionParser());     
+        registerBeanDefinitionParser("webservice", new WebServiceBeanDefinitionParser());        
     }
 }

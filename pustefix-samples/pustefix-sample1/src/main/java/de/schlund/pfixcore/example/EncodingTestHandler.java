@@ -17,21 +17,20 @@
  */
 package de.schlund.pfixcore.example;
 
-import de.schlund.pfixcore.example.iwrapper.EncodingTest;
+import de.schlund.pfixcore.example.iwrapper.EncodingTestWrapper;
 import de.schlund.pfixcore.generator.IHandler;
 import de.schlund.pfixcore.generator.IWrapper;
 import de.schlund.pfixcore.workflow.Context;
 
 /**
- * @author ml
- *
- * To change the template for this generated type comment go to
- * Window - Preferences - Java - Code Generation - Code and Comments
+ * 
+ * @author mleidig@schlund.de
+ * 
  */
 public class EncodingTestHandler implements IHandler {
-
+    
     public void handleSubmittedData(Context context,IWrapper wrapper) throws Exception {
-        EncodingTest test     = (EncodingTest)wrapper;
+        EncodingTestWrapper test     = (EncodingTestWrapper)wrapper;
         String       encoding = test.getEncoding();
         if (encoding == null || encoding.trim().equals("") || encoding.equals("none")) {
             ContextEncodingTest ctx = context.getContextResourceManager().getResource(ContextEncodingTest.class);
@@ -40,7 +39,7 @@ public class EncodingTestHandler implements IHandler {
     }
     
     public void retrieveCurrentStatus(Context context,IWrapper wrapper) throws Exception {
-        EncodingTest        test = (EncodingTest)wrapper;
+        EncodingTestWrapper        test = (EncodingTestWrapper)wrapper;
         ContextEncodingTest ctx  = context.getContextResourceManager().getResource(ContextEncodingTest.class);
         if (ctx.getText() != null) test.setText(ctx.getText());
     }

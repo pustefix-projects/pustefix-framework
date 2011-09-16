@@ -17,46 +17,43 @@
  */
 package org.pustefixframework.webservices.fault;
 
+import java.io.IOException;
+import java.io.PrintWriter;
 import java.util.Properties;
 
+import javax.servlet.ServletOutputStream;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import javax.servlet.http.HttpServletResponseWrapper;
 import javax.servlet.http.HttpSession;
 
 import org.apache.log4j.Logger;
 import org.pustefixframework.webservices.ServiceRequest;
 import org.pustefixframework.webservices.ServiceResponse;
+import org.springframework.beans.BeansException;
+import org.springframework.context.ApplicationContext;
+import org.springframework.context.ApplicationContextAware;
 
 import de.schlund.pfixxml.PfixServletRequest;
 import de.schlund.pfixxml.PfixServletRequestImpl;
 import de.schlund.pfixxml.exceptionprocessor.ExceptionConfig;
+import de.schlund.pfixxml.exceptionprocessor.ExceptionProcessingConfiguration;
 import de.schlund.pfixxml.exceptionprocessor.ExceptionProcessor;
 
+public class ExceptionProcessorAdapter extends FaultHandler implements ApplicationContextAware {
 
-public class ExceptionProcessorAdapter extends FaultHandler {
-
-    /**
-     * 
-     */
     private static final long serialVersionUID = -7046404948962289457L;
 
     final static Logger LOG=Logger.getLogger(ExceptionProcessorAdapter.class);
     
-    ExceptionProcessor exProc;
-    Properties exProcProps;
-    ExceptionConfig exConf;
-    
-    public ExceptionProcessorAdapter() {
-        
-    }
-    
-    //TODO: inject ExceptionProcessor
-    public void setExceptionProcessor(ExceptionProcessor exProc) {
-    	this.exProc = exProc;
-    }
+    transient ApplicationContext appContext;
     
     @Override
-    public void init() {
+    public void init() {   
+    }
+    
+    public void setApplicationContext(ApplicationContext appContext) throws BeansException {
+        this.appContext = appContext;
     }
     
     @Override
@@ -66,19 +63,34 @@ public class ExceptionProcessorAdapter extends FaultHandler {
                 LOG.error("Throwable isn't Exception instance: "+fault.getThrowable().getClass().getName());
                 return;
             }
-            Exception ex=(Exception)fault.getThrowable();
-            ServiceRequest srvReq=fault.getRequest();
-            ServiceResponse srvRes=fault.getResponse();
-            if(srvReq.getUnderlyingRequest() instanceof HttpServletRequest) {
-                HttpServletRequest req=(HttpServletRequest)srvReq.getUnderlyingRequest();
-                HttpServletResponse res=(HttpServletResponse)srvRes.getUnderlyingResponse();
-                PfixServletRequest pfixReq=new PfixServletRequestImpl(req, new String[0], new Properties());
-                HttpSession session=req.getSession(false);
-                if(session!=null) {
-                    try {
-                        exProc.processException(ex, exConf, pfixReq, session.getServletContext(), req, res, exProcProps);
-                    } catch(Exception x) {
-                        LOG.error("Can't process exception.",x);
+            if(appContext != null) {
+                Exception ex=(Exception)fault.getThrowable();
+                ServiceRequest srvReq=fault.getRequest();
+                ServiceResponse srvRes=fault.getResponse();
+                if(srvReq.getUnderlyingRequest() instanceof HttpServletRequest) {
+                    HttpServletRequest req=(HttpServletRequest)srvReq.getUnderlyingRequest();
+                    HttpServletResponse res=(HttpServletResponse)srvRes.getUnderlyingResponse();
+                    PfixServletRequest pfixReq=new PfixServletRequestImpl(req,new Properties());
+                    HttpSession session=req.getSession(false);
+                    if(session!=null) {
+                        try {
+                            res = new NoOpHttpServletResponse(res);
+                            ExceptionProcessingConfiguration conf = (ExceptionProcessingConfiguration)appContext.getBean(ExceptionProcessingConfiguration.class.getName());
+                            if(conf != null) {
+                                ExceptionConfig exConf = conf.getExceptionConfigForThrowable(ex.getClass());
+                                ExceptionProcessor exProc = exConf.getProcessor();
+                                if(exProc != null) {
+                                    Properties exProcProps = new Properties();
+                                    exProc.processException(ex, exConf, pfixReq, session.getServletContext(), req, res, exProcProps);
+                                } else {
+                                    LOG.error("Can't get ExceptionProcessor for " + ex.getClass().getName());
+                                }
+                            } else {
+                                LOG.error("Can't get ExceptionProcessingConfiguration for " + ex.getClass().getName());
+                            }
+                        } catch(Exception x) {
+                            LOG.error("Can't process exception.",x);
+                        }
                     }
                 }
             }
@@ -94,6 +106,43 @@ public class ExceptionProcessorAdapter extends FaultHandler {
     
     public boolean isNotificationError(Fault fault) {
         return true;
+    }
+    
+    private class NoOpHttpServletResponse extends HttpServletResponseWrapper {
+    
+        private ServletOutputStream out = new NoOpServletOutputStream();
+        private PrintWriter writer = new PrintWriter(out);
+        
+        public NoOpHttpServletResponse(HttpServletResponse res) {
+            super(res);
+        }
+        
+        @Override
+        public ServletOutputStream getOutputStream() throws IOException {
+            return out;
+        }
+        
+        @Override
+        public PrintWriter getWriter() throws IOException {
+            return writer;
+        }
+        
+        @Override
+        public void addHeader(String name, String value) {}
+        
+        @Override
+        public void setHeader(String name, String value) {}
+        
+        @Override
+        public void setContentType(String type) {}
+         
+    }
+    
+    private class NoOpServletOutputStream extends ServletOutputStream {
+        
+        @Override
+        public void write(int b) throws IOException {}
+        
     }
     
 }

@@ -18,85 +18,107 @@
 package org.pustefixframework.maven.plugins;
 
 import java.io.File;
+import java.io.StringWriter;
+import java.io.Writer;
+import java.lang.reflect.Method;
+import java.net.URL;
+import java.net.URLClassLoader;
+import java.util.List;
 
 import org.apache.maven.plugin.AbstractMojo;
 import org.apache.maven.plugin.MojoExecutionException;
-import org.apache.tools.ant.BuildException;
-import org.codehaus.plexus.util.DirectoryScanner;
+import org.apache.maven.project.MavenProject;
 
-import de.schlund.pfixxml.config.GlobalConfigurator;
-import de.schlund.pfixxml.resources.FileResource;
-import de.schlund.pfixxml.resources.ResourceUtil;
-import de.schlund.pfixxml.targets.TargetGenerator;
 
 /**
- * Generate IWrapper classes from .iwrp files.
+ * Generate all XSL targets with TargetGenerator
  *
  * @author mleidig@schlund.de
  *
  * @goal generate
  * @phase prepare-package
+ *
+ * @requiresDependencyResolution compile
  */
 public class GenerateMojo extends AbstractMojo {
-    
+
     /**
-     * @parameter
+     * @parameter default-value="${basedir}/src/main/webapp"
      * @required
      */
     private File docroot;
-    
+
     /**
-     * @parameter
+     * @parameter default-value="error"
      * @required
      */
-    private String[] includes;
-    
-    
+    private String loglevel;
+
+    /** @parameter default-value="${project}" */
+    private MavenProject mavenProject;
+
     public void execute() throws MojoExecutionException {
-
-        try {
-            GlobalConfigurator.setDocroot(docroot.getPath());
-        } catch (IllegalStateException e) {
-            // Ignore exception as there is no problem
-            // if the docroot has already been configured
+        if ("pom".equals(mavenProject.getPackaging())) {
+            getLog().info("Generated Plugin invoked for packaging pom - ignored.");
+            getLog().info("(This happens if you declare the plugin in your parent pom - which is fine)");
+            return;
         }
-            
-        DirectoryScanner scanner = new DirectoryScanner();
-        scanner.setIncludes(includes);
-        scanner.setBasedir(docroot);
-        scanner.setCaseSensitive(true);
-        scanner.scan();
-        String[] files = scanner.getIncludedFiles();
-     
-        if (files.length > 0) {
-            try {
-                for (int i = 0; i < files.length; i++) {
-                    FileResource confile = ResourceUtil.getFileResourceFromDocroot(files[i]);
-                    if (confile.exists() && confile.canRead() && confile.isFile()) {
-                        try {
-                            TargetGenerator gen = new TargetGenerator(confile);
-                            gen.setIsGetModTimeMaybeUpdateSkipped(false);
-                            getLog().info("---------- Doing " + files[i] + "...");
-                            gen.generateAll();
-                            getLog().info("---------- ...done [" + files[i] + "]");
 
-                            TargetGenerator.resetFactories();
-                        } catch (Exception e) {
-                            throw new BuildException(confile + ": " + e.getMessage(), e);
-                        }
-                    } else {
-                        throw new BuildException("Couldn't read configfile '" + files[i] + "'");
-                    }
-                }
-            } finally {
-                getLog().info(TargetGenerator.getReportAsString());
-                if(TargetGenerator.errorsReported()) throw new BuildException("TargetGenerator reported errors.");
-            }
-        } else {
-            getLog().warn("Need configfile to work on");
+        File warDir = getWarDir();
+        if (warDir == null) {
+            throw new MojoExecutionException("Can't find project WAR directory in target folder");
         }
-            
-    }
         
-  
+        File cache = new File(warDir, ".cache");
+
+        URLClassLoader loader = getProjectRuntimeClassLoader();
+        ClassLoader contextLoader = Thread.currentThread().getContextClassLoader();
+        try {
+            Class<?> generator = Class.forName("de.schlund.pfixxml.targets.TargetGeneratorRunner", true, loader);
+            Method meth =
+                    generator.getMethod("run", File.class, File.class, String.class,
+                            Writer.class, String.class);
+            Object instance = generator.newInstance();
+            StringWriter output = new StringWriter();
+            Thread.currentThread().setContextClassLoader(loader);
+            boolean ok =
+                    (Boolean) meth.invoke(instance, docroot, cache, "prod", output, loglevel);
+            getLog().info(output.toString());
+            if (!ok)
+                throw new MojoExecutionException("Target generation errors occurred.");
+        } catch (Exception x) {
+            throw new MojoExecutionException("Can't create targets", x);
+        } finally {
+            Thread.currentThread().setContextClassLoader(contextLoader);
+        }
+
+    }
+
+    private URLClassLoader getProjectRuntimeClassLoader() throws MojoExecutionException {
+        try {
+            List<?> elements = mavenProject.getCompileClasspathElements();
+            URL[] urls = new URL[elements.size()];
+            for (int i = 0; i < elements.size(); i++) {
+                String element = (String) elements.get(i);
+                urls[i] = new File(element).toURI().toURL();
+            }
+            return new URLClassLoader(urls);
+        } catch (Exception x) {
+            throw new MojoExecutionException("Can't create project runtime classloader", x);
+        }
+    }
+
+    private File getWarDir() {
+        File targetDir = new File(mavenProject.getBasedir(), "target");
+        File[] files = targetDir.listFiles();
+        for (File file : files) {
+            if (file.isDirectory()) {
+                File webInfDir = new File(file, "WEB-INF");
+                if (webInfDir.exists() && webInfDir.isDirectory())
+                    return file;
+            }
+        }
+        return null;
+    }
+
 }

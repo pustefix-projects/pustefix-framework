@@ -1,19 +1,22 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <xsl:stylesheet version="1.1"
-                exclude-result-prefixes="xsl cus" 
+                exclude-result-prefixes="xsl cus gen" 
                 xmlns:xsl="http://www.w3.org/1999/XSL/Transform"
                 xmlns:pfx="http://www.schlund.de/pustefix/core"
                 xmlns:cus="http://www.schlund.de/pustefix/customize"
+                xmlns:gen="xalan://de.schlund.pfixxml.targets.TargetGenerator"
                 xmlns:ixsl="http://www.w3.org/1999/XSL/TransformOutputAlias">
   
   <xsl:output method="xml" encoding="UTF-8" indent="no"/>
   
+  <xsl:param name="product"/>
   <xsl:param name="lang"/>
   <xsl:param name="__target_gen"/>
-  <xsl:param name="__namespaces"/>
   
   <xsl:param name="stylesheets_to_include"/>
   <xsl:param name="exclude_result_prefixes"/>
+  
+  <xsl:param name="config_document" select="gen:getConfigDocument($__target_gen)"/>
 
   <xsl:template match="cus:custom_xsl">
     <xsl:call-template name="gen_xsl_import">
@@ -57,7 +60,7 @@
   
   <xsl:template match="/xsl:stylesheet/xsl:template[@match='/']/ixsl:stylesheet">
     <xsl:variable name="complete_exclude_result_prefixes" xmlns:prj="http://www.pustefix-framework.org/2008/namespace/project-config">
-      <xsl:for-each select="$__namespaces/namespace-declaration[@exclude-result-prefix='true']">
+      <xsl:for-each select="$config_document/make/namespaces/namespace-declaration[@exclude-result-prefix='true']">
         <xsl:value-of select="@prefix"/>
         <xsl:text>:</xsl:text>
         <xsl:value-of select="@url"/>
@@ -125,8 +128,8 @@
     </xsl:if>
   </xsl:template>
 
-  <xsl:template match="cus:navigation">
-    <xsl:value-of select="$__target_gen"/>
+  <xsl:template match="cus:product">
+    <xsl:value-of select="$product"/>
   </xsl:template>
 
   <xsl:template match="cus:lang">
@@ -135,7 +138,6 @@
 
 
 </xsl:stylesheet>
-
 
 <!--
 Local Variables:

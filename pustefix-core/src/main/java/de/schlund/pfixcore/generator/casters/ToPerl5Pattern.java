@@ -29,6 +29,7 @@ import de.schlund.pfixcore.generator.IWrapperParamCaster;
 import de.schlund.pfixcore.generator.SimpleCheck;
 import de.schlund.pfixxml.RequestParam;
 import de.schlund.util.statuscodes.StatusCode;
+import de.schlund.util.statuscodes.StatusCodeHelper;
 
 
 /**
@@ -51,8 +52,8 @@ public class ToPerl5Pattern extends SimpleCheck implements IWrapperParamCaster {
         scode = CoreStatusCodes.CASTER_ERR_TO_P5PATTERN;
     }
     
-    public void setScodeCasterror(StatusCode scode) {
-        this.scode = scode;
+    public void setScodeCasterror(String fqscode) {
+        scode = StatusCodeHelper.getStatusCodeByName(fqscode);
     }
 
     // implementation of de.schlund.pfixcore.generator.IWrapperParamCaster interface

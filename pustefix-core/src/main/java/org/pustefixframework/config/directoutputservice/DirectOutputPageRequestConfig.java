@@ -20,8 +20,6 @@ package org.pustefixframework.config.directoutputservice;
 
 import java.util.Properties;
 
-import de.schlund.pfixcore.workflow.DirectOutputState;
-
 /**
  * Provides configuration for a direct output page. This configuration is 
  * used by {@link de.schlund.pfixxml.DirectOutputServlet} to configure the
@@ -41,11 +39,11 @@ public interface DirectOutputPageRequestConfig {
     String getAuthConstraintRef();
 
     /**
-     * Returns the direct output state.
+     * Returns the name of the bean that represents the state.
      * 
-     * @return the direct output state
+     * @return name of the bean representing the state
      */
-    DirectOutputState getDirectOutputState();
+    String getBeanName();
 
     /**
      * Returns extra configuration parameters.

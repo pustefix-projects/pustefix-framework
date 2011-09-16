@@ -33,7 +33,7 @@
   <section xml:id="ajax-calculator.setup">
     <title>Setup</title>
     <para>
-      To build this tutorial, create a new project <literal>ajax-caculator</literal> with one servlet as described in
+      To build this tutorial, create a new project <literal>calculator</literal> with one servlet as described in
       <xref linkend="wrapper-handler.setup"/> with the following data:
     </para>
     <informaltable>
@@ -45,23 +45,45 @@
       </thead>
       <tbody>
         <tr>
-          <td>Project name</td>
-          <td><literal>ajax-calculator</literal></td>
+          <td>groupId</td>
+          <td>org.pustefixframework.tutorial</td>
         </tr>
         <tr>
-          <td>Project language</td>
-          <td>Use the default value</td>
+          <td>artifactId</td>
+          <td>calculator</td>
         </tr>
         <tr>
-          <td>Project comment</td>
-          <td><literal>AJAX Calculator tutorial</literal></td>
+          <td>version</td>
+          <td>default</td>
         </tr>
         <tr>
-          <td>Servlet name</td>
-          <td><literal>calc</literal></td>
+          <td>package</td>
+          <td>org.pustefixframework.tutorial.calculator</td>
+        </tr>
+        <tr>
+          <td>pustefixVersion</td>
+          <td>the latest 0.16.x version</td>
         </tr>
       </tbody>
     </informaltable>
+    <para>
+      You will also need additional dependencies in your <filename>pom.xml</filename> as described below. The version might differ from the version of pustefix-core, go to http://pustefix-framework.org/repository/maven/org/pustefixframework/webservices/ to see which versions are actually available.
+    </para>
+    <programlisting language="xml"><![CDATA[<dependency>
+    <groupId>org.pustefixframework.webservices</groupId>
+    <artifactId>pustefix-webservices-core</artifactId>
+    <version>0.16.2</version>
+</dependency>
+<dependency>
+    <groupId>org.pustefixframework.webservices</groupId>
+    <artifactId>pustefix-webservices-jsonws</artifactId>
+    <version>0.16.2</version>
+</dependency>
+<dependency>
+    <groupId>org.pustefixframework.webservices</groupId>
+    <artifactId>pustefix-webservices-jaxws</artifactId>
+    <version>0.16.2</version>
+</dependency>]]></programlisting>
     <para>
       Although you are building an AJAX application and will not need any wrappers and handlers which process your submit requests, you
       still need at least one HTML page as a starting point for your application. Please create a page called <literal>Calculator</literal>
@@ -83,76 +105,31 @@
     <programlisting language="xml"><![CDATA[<?xml version="1.0" encoding="utf-8"?>
 <project-config xmlns="http://www.pustefix-framework.org/2008/namespace/project-config">
 
-<!-- These lines have been generated -->
 <project>
-  <name>ajax-calculator</name>
-  <description>AJAX calculator tutorial</description>
-  </project>
-
-  <editor>
-    <enabled>true</enabled>
-    <location>http://cms.${fqdn}/</location>
-  </editor>
-
-  <xml-generator>
-    <config-file>pfixroot:/ajax-calculator/conf/depend.xml</config-file>
-  </xml-generator>
-
-  <http-server>
-
-    <http-port>
-      <address>${fqdn}</address>
-    </http-port>
-
-    <!-- we do not use SSL here
-    <https-port>-->
-      <address>${fqdn}</address>
-      <ssl-key>pfixroot:/ajax-calculator/conf/server.key</ssl-key>
-      <ssl-crt>pfixroot:/ajax-calculator/conf/server.crt</ssl-crt>
-    </https-port>
-    -->
-
-    <server-name>ajax-calculator.${fqdn}</server-name>
-    <server-alias>ajax-calculator.${machine}</server-alias>
-
-    <apache>
-      <literal>
-        <!-- Stuff that is copied to the Apache configuration -->
-      </literal>
-    </apache>
-
-    <tomcat>
-      <enable-extra-webapps>false</enable-extra-webapps>
-    </tomcat>
-
-  </http-server>
-
   <application>
 
-    <docroot-path>pfixroot:/ajax-calculator/htdocs</docroot-path>
-    <default-path>/xml/calc</default-path>
+    <!-- auto-generated content -->
 
-    <context-xml-service>
-      <path>/xml/calc</path>
-      <config-file>pfixroot:/ajax-calculator/conf/calc.conf.xml</config-file>
-    </context-xml-service>
-
-    <static>
-      <path>ajax-calculator/img</path>
-    </static>
-
-    <!-- Add these lines manually -->
+    <!-- Add these lines manually above <static> and <choose> -->
     <webservice-service>
-      <path>/xml/webservice</path>
-      <config-file>pfixroot:/ajax-calculator/conf/webservice.conf.xml</config-file>
+      <path>/webservice</path>
+      <config-file>docroot:/WEB-INF/webservice.conf.xml</config-file>
     </webservice-service>
+    
+    <static>
+      <!-- ... -->
+    </static>
+    
+    <choose>
+      <!-- ... -->
+    </choose>
 
   </application>
 </project-config>]]></programlisting>
     <para>
       Instead of using the <classname>ContextXMLServlet</classname> for the servlet, you need to use the
-      <classname>org.pustefixframework.webservices.WebServiceServlet</classname> instead (In version 0.12.2 you need to use <classname>de.schlund.pfixcore.webservice.WebServiceServlet</classname>.). To configure the webservice servlet
-      you add the <filename>ajax-calculator/conf/webservice.conf.xml</filename> file in the <literal>&lt;propfile/&gt;</literal> tag.
+      <classname>org.pustefixframework.webservices.WebServiceServlet</classname> instead. To configure the webservice servlet
+      you add the <filename>docroot:/WEB-INF/webservice.conf.xml</filename> file in the <literal>&lt;propfile/&gt;</literal> tag.
     </para>
     <para>
       This <filename>webservice.conf.xml</filename> file makes use of the XML syntax like all the previous configuration files
@@ -164,7 +141,7 @@
   xsi:schemaLocation="http://www.pustefix-framework.org/2008/namespace/webservice-config ../../core/schema/webservice-config.xsd">
   
   <webservice-global>
-    <requestpath>/xml/webservice</requestpath>
+    <requestpath>/webservice</requestpath>
     <wsdlsupport enabled="false"/>
     <stubgeneration enabled="false"/>
     <protocol type="JSONWS"/>
@@ -174,7 +151,8 @@
     <monitoring enabled="true" scope="session" historysize="10"/>
     <logging enabled="true"/>
     <faulthandler class="org.pustefixframework.webservices.fault.LoggingHandler"/>
-  </webservice-global>]]></programlisting>
+  </webservice-global>
+</webservice-config>]]></programlisting>
     <para>
       <xref linkend="ajax-calculator.servlet.config"/> lists all used configuration options and describes
       their usage in this example. 
@@ -252,7 +230,7 @@
     </table>
     <para>
       You have now configured the <classname>WebServiceServlet</classname> and it is now available at
-      <uri>http://ajax-calculator.HOSTNAME.DOMAIN.de/xml/webservice/</uri>. If you open this URL in your
+      <uri>http://localhost:8080/calc/webservice/</uri>. If you open this URL in your
       browser, you will get an HTTP Code <literal>400 Bad Request</literal> as you made a simple HTTP
       request instead of a webservice request.
     </para>
@@ -337,7 +315,7 @@ public class CalculatorServiceImpl extends AbstractService implements Calculator
   
   <!-- global config -->
   
-  <webservice name="Calculator">
+  <webservice name="CalculatorService">
     <interface name="org.pustefixframework.tutorial.calculator.CalculatorService"/>
     <implementation name="org.pustefixframework.tutorial.calculator.CalculatorServiceImpl"/>
   </webservice>
@@ -396,7 +374,7 @@ public class CalculatorServiceImpl extends AbstractService implements Calculator
     <title>Consuming the service</title>
     <para>
       With these steps, you have finished all Java and configuration work packages and can continue implementing the client
-      side of your application. Open the <filename>main_Calculator.xml</filename> file and add some HTML as a frontend for
+      side of your application. Open the <filename>Calculator.xml</filename> file and add some HTML as a frontend for
       your calculator application:
     </para>
     <programlisting language="xml"><![CDATA[<?xml version="1.0" encoding="utf-8"?>
@@ -441,8 +419,8 @@ public class CalculatorServiceImpl extends AbstractService implements Calculator
       include the following files:
     </para>
     <itemizedlist>
-      <listitem><para><filename>/core/script/httpRequest.js</filename> provides an abstraction over the different <literal>XmlHttpRequest</literal> implementations in the different browsers.</para></listitem>
-      <listitem><para><filename>/core/script/webservice_json.js</filename> provides an abstraction of the <literal>JSONWS</literal> protocol used by Pustefix.</para></listitem>
+      <listitem><para><filename>httpRequest.js</filename> provides an abstraction over the different <literal>XmlHttpRequest</literal> implementations in the different browsers.</para></listitem>
+      <listitem><para><filename>webservice_json.js</filename> provides an abstraction of the <literal>JSONWS</literal> protocol used by Pustefix.</para></listitem>
       <listitem>
         <para>
           The JavaScript stub for your calculator service is not available as a file, but is generated on demand by the servlet.
@@ -454,15 +432,20 @@ public class CalculatorServiceImpl extends AbstractService implements Calculator
       </listitem>
     </itemizedlist>
     <para>
-      The following listing shows the <literal>javascript-includes</literal> part, which is referenced by the frontend of your application:
+      The following listing shows the <literal>javascript-includes</literal> part, which is referenced by the frontend of your application and has to be included in your <filename>Calculator.xml</filename> file:
     </para>
     <programlisting language="xml"><![CDATA[<?xml version="1.0" encoding="utf-8"?>
 <include_parts xmlns:ixsl="http://www.w3.org/1999/XSL/Transform"
   xmlns:pfx="http://www.schlund.de/pustefix/core">
+  
+  <part name="content">
+    <!-- content, including part "javascript-includes", see above -->
+  </part>
+  
   <part name="javascript-includes">
     <theme name="default">
-      <script type="text/javascript" src="/core/script/httpRequest.js"></script>
-      <script type="text/javascript" src="/core/script/webservice_json.js"></script>
+      <script type="text/javascript" src="{$__contextpath}/modules/pustefix-core/script/httpRequest.js"></script>
+      <script type="text/javascript" src="{$__contextpath}/modules/pustefix-webservices-jsonws/script/webservice_json.js"></script>
       <pfx:wsscript name="CalculatorService"/>
     </theme>
   </part>
@@ -530,11 +513,19 @@ WS_CalculatorService.prototype.add=function() {
     </para>
     <programlisting language="xml"><![CDATA[<?xml version="1.0" encoding="utf-8"?>
 <include_parts xmlns:ixsl="http://www.w3.org/1999/XSL/Transform" xmlns:pfx="http://www.schlund.de/pustefix/core">
+
+  <part name="content">
+    <!-- content, see above -->
+  </part>
+  
+  <part name="javascript-includes">
+    <!-- see above -->
+  </part>
   
   <part name="javascript-logic">
     <theme name="default">
       <pfx:script>
-var calcProxy = new WS_Calculator();
+var calcProxy = new WS_CalculatorService();
 function add() {
   var a = parseInt(document.getElementById('a').value);
   var b = parseInt(document.getElementById('b').value);

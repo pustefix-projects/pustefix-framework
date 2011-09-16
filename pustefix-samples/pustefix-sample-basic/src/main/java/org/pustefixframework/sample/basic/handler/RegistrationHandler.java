@@ -1,5 +1,6 @@
 package org.pustefixframework.sample.basic.handler;
 
+
 import org.pustefixframework.sample.basic.context.User;
 import org.pustefixframework.sample.basic.wrapper.Registration;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -11,9 +12,9 @@ import de.schlund.pfixcore.workflow.Context;
 public class RegistrationHandler implements IHandler {
 
     private User user;
-    
+
     public void handleSubmittedData(Context context, IWrapper wrapper) throws Exception {
-        
+
         Registration registration = (Registration)wrapper;
         user.setName(registration.getName());
     }
@@ -36,9 +37,10 @@ public class RegistrationHandler implements IHandler {
             registration.setName(user.getName());
         }
     }
-    
+
     @Autowired
     public void setUser(User user) {
         this.user = user;
     }
+
 }

@@ -35,8 +35,6 @@ public class SessionHelper {
 
     private final static Logger LOG = Logger.getLogger(SessionHelper.class);
 
-    public static final String SESSION_ID_URL = "__SESSION_ID_URL__";
-
     private static final String ENC_STR = "jsessionid";
 
     public static void saveSessionData(Map<String, Object> store, HttpSession session) {
@@ -101,11 +99,6 @@ public class SessionHelper {
         return rcBuf.toString();
     }
 
-    public static String getURLSessionId(HttpServletRequest req) {
-        String rc = ENC_STR + "=" + req.getSession(false).getId();
-        return rc;
-    }
-
     public static String encodeURI(HttpServletRequest req) {
         StringBuffer rcBuf = new StringBuffer();
 
@@ -113,12 +106,30 @@ public class SessionHelper {
 
         HttpSession session = req.getSession(false);
         if (session != null) {
-            rcBuf.append(';').append(ENC_STR).append('=').append(session.getId());
+            if(session.getAttribute(AbstractPustefixRequestHandler.SESSION_ATTR_COOKIE_SESSION) == null) {
+                rcBuf.append(';').append(ENC_STR).append('=').append(session.getId());
+            }
         } else if (oldSessionId != null && 0 < oldSessionId.length()) {
             rcBuf.append(';').append(ENC_STR).append('=').append(oldSessionId);
         }
-
+        
         return rcBuf.toString();
+    }
+    
+    /**
+     * 
+     * @param req
+     * @return session id path extension or empty string if session comes from cookie
+     */
+    public static String getSessionIdPath(HttpServletRequest req) {
+        String sessionIdPath = "";
+        HttpSession session = req.getSession(false);
+        if (session != null) {
+            if(session.getAttribute(AbstractPustefixRequestHandler.SESSION_ATTR_COOKIE_SESSION) == null) {
+                sessionIdPath = ";" + ENC_STR + "=" + session.getId();
+            }
+        }
+        return sessionIdPath;
     }
 
     public static String encodeURL(String scheme, String host, HttpServletRequest req) {

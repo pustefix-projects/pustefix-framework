@@ -1,8 +1,0 @@
-<?xml version="1.0" encoding="UTF-8"?>
-<include_parts xmlns:ixsl="http://www.w3.org/1999/XSL/Transform" xmlns:pfx="http://www.schlund.de/pustefix/core">
-  
-  <part name="UNSELECTED_TASKLIST_CHANGE">
-    <theme name="default">You tried to change a tasklist which isn't currently selected.</theme>
-  </part>
- 
-</include_parts>

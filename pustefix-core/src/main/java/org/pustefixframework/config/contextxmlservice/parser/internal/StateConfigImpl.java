@@ -29,52 +29,58 @@ import java.util.Properties;
 import org.pustefixframework.config.contextxmlservice.IWrapperConfig;
 import org.pustefixframework.config.contextxmlservice.ProcessActionStateConfig;
 import org.pustefixframework.config.contextxmlservice.StateConfig;
-import org.pustefixframework.config.contextxmlservice.StateConfigChangeListener;
 
 import de.schlund.pfixcore.workflow.ConfigurableState;
+import de.schlund.pfixxml.Tenant;
 
 /**
  * Stores configuration for a PageRequest
  * 
  * @author Sebastian Marsching <sebastian.marsching@1und1.de>
  */
-public class StateConfigImpl implements Cloneable, StateConfig, IWrapperConfigMapChangeListener {
+public class StateConfigImpl implements Cloneable, StateConfig {
     
     private Class<? extends ConfigurableState> stateClass = null;
     private Class<? extends ConfigurableState> defaultStaticStateClass = null;
     private String defaultStaticStateParentBeanName = null;
     private Class<? extends ConfigurableState> defaultIWrapperStateClass = null;
     private String defaultIWrapperStateParentBeanName = null;
-    private Map<String, IWrapperConfig> iwrappers = new LinkedHashMap<String, IWrapperConfig>();
+    private List<IWrapperConfig> iwrappers = new ArrayList<IWrapperConfig>();
     private Map<String, Object> resources = new LinkedHashMap<String, Object>();
     private Properties props = new Properties();
     private StateConfig.Policy policy = StateConfig.Policy.ANY;
     private boolean requiresToken = false;
     private boolean externalBean = false;
-    private String beanName;
     private String parentBeanName = null;
     private String scope = "singleton";
     private Map<String, ProcessActionStateConfig> actions = new LinkedHashMap<String, ProcessActionStateConfig>();
-    private List<StateConfigChangeListener> changeListeners = new ArrayList<StateConfigChangeListener>();
-    
-    public void addChangeListener(StateConfigChangeListener listener) {
-        changeListeners.add(listener);
-    }
-    
-    public boolean removeChangeListener(StateConfigChangeListener listener) {
-        return changeListeners.remove(listener);
-    }
     
     public void setState(Class<? extends ConfigurableState> clazz) {
         this.stateClass = clazz;
     }
     
     public Class<? extends ConfigurableState> getState() {
-        return this.stateClass;
+        if (this.stateClass != null) {
+            return this.stateClass;
+        } else {
+            if (this.iwrappers.size() > 0) {
+                return this.defaultIWrapperStateClass;
+            } else {
+                return this.defaultStaticStateClass;
+            }
+        }
     }
     
     public String getParentBeanName() {
-        return parentBeanName;
+        if(parentBeanName != null) return parentBeanName;
+        if(stateClass == null) {
+            if(this.iwrappers.size() > 0) {
+                return defaultIWrapperStateParentBeanName;
+            } else {
+                return defaultStaticStateParentBeanName;
+            }
+        }
+        return null;
     }
     
     public void setParentBeanName(String parentBeanName) {
@@ -83,10 +89,6 @@ public class StateConfigImpl implements Cloneable, StateConfig, IWrapperConfigMa
     
     public void setDefaultStaticState(Class<? extends ConfigurableState> clazz) {
         this.defaultStaticStateClass = clazz;
-    }
-
-    public Class<? extends ConfigurableState> getDefaultStaticState() {
-        return this.defaultStaticStateClass;
     }
     
     public void setDefaultStaticStateParentBeanName(String parentBeanName) {
@@ -99,10 +101,6 @@ public class StateConfigImpl implements Cloneable, StateConfig, IWrapperConfigMa
     
     public void setDefaultIHandlerState(Class<? extends ConfigurableState> clazz) {
         this.defaultIWrapperStateClass = clazz;
-    }
-    
-    public Class<? extends ConfigurableState> getDefaultIHandlerState() {
-        return this.defaultIWrapperStateClass;
     }
     
     public void setDefaultIHandlerStateParentBeanName(String parentBeanName) {
@@ -121,16 +119,26 @@ public class StateConfigImpl implements Cloneable, StateConfig, IWrapperConfigMa
         return this.policy;
     }
     
-    public void setIWrappers(Map<String, IWrapperConfig> iwrappers) {
-        if(this.iwrappers != null && this.iwrappers instanceof IWrapperConfigMap) {
-            ((IWrapperConfigMap)this.iwrappers).removeChangeListener(this);
-        }
-        this.iwrappers = iwrappers;
-        ((IWrapperConfigMap)iwrappers).addChangeListener(this);
+    public void addIWrapper(IWrapperConfigImpl config) {
+        this.iwrappers.add(config);
     }
     
-    public Map<String, IWrapperConfig> getIWrappers() {
-        return Collections.unmodifiableMap(this.iwrappers);
+    public void setIWrappers(List<IWrapperConfig> iwrappers) {
+        this.iwrappers = iwrappers;
+    }
+    
+    public List<IWrapperConfig> getIWrapperList() {
+        return iwrappers;
+    }
+    
+    public Map<String, IWrapperConfig> getIWrappers(Tenant tenant) {
+        Map<String, IWrapperConfig> map = new LinkedHashMap<String, IWrapperConfig>();
+        for(IWrapperConfig iwrp: iwrappers) {
+            if(tenant == null || iwrp.getTenant() == null || tenant.getName().equals(iwrp.getTenant())) {
+                map.put(iwrp.getPrefix(), iwrp);
+            }
+        }
+        return Collections.unmodifiableMap(map);
     }
     
     public void addContextResource(String prefix, Object resource) {
@@ -192,21 +200,16 @@ public class StateConfigImpl implements Cloneable, StateConfig, IWrapperConfigMa
     }
     
     public Map<String, ? extends ProcessActionStateConfig> getProcessActions() {
+        //When Spring's PropertyPlaceholderConfigurer is used it will clear and
+        //refill property value maps, even if there's nothing to replace, take a
+        //look at http://jira.springframework.org/browse/SPR-5318 
+        //To be able to work with Spring 2.5.6 we'll return a modifiable map here
+        //TODO: return unmodifiable map when issue is fixed
         return this.actions; 
+        //return Collections.unmodifiableMap(this.actions);
     }
     
-    public void setBeanName(String beanName) {
-        this.beanName = beanName;
+    public void addProcessAction(String name, ProcessActionStateConfig action) {
+        actions.put(name, action);
     }
-
-    public String getBeanName() {
-        return beanName;
-    }
-    
-    public void iwrapperConfigMapChanged() {
-        for(StateConfigChangeListener listener: changeListeners) {
-            listener.stateConfigChanged();
-        }
-    }
-    
  }

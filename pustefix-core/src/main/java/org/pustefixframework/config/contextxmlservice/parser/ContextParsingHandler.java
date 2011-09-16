@@ -18,15 +18,15 @@
 
 package org.pustefixframework.config.contextxmlservice.parser;
 
-import org.pustefixframework.config.application.XMLGeneratorInfo;
 import org.pustefixframework.config.contextxmlservice.parser.internal.ContextConfigImpl;
-import org.pustefixframework.config.contextxmlservice.parser.internal.PustefixContextXMLRequestHandlerConfigImpl;
+import org.pustefixframework.config.contextxmlservice.parser.internal.ContextXMLServletConfigImpl;
 import org.pustefixframework.config.generic.ParsingUtils;
 import org.w3c.dom.Element;
 
 import com.marsching.flexiparse.parser.HandlerContext;
 import com.marsching.flexiparse.parser.ParsingHandler;
 import com.marsching.flexiparse.parser.exception.ParserException;
+
 
 /**
  * 
@@ -36,23 +36,19 @@ import com.marsching.flexiparse.parser.exception.ParserException;
 public class ContextParsingHandler implements ParsingHandler {
 
     public void handleNode(HandlerContext context) throws ParserException {
-
-        Element element = (Element) context.getNode();
-        ParsingUtils.checkAttributes(element, null, new String[] { "defaultpage", "synchronized" });
-
-        XMLGeneratorInfo info = ParsingUtils.getSingleTopObject(XMLGeneratorInfo.class, context);
-        PustefixContextXMLRequestHandlerConfigImpl config = ParsingUtils.getSingleTopObject(PustefixContextXMLRequestHandlerConfigImpl.class, context);
-
+        
+        Element element = (Element)context.getNode();
+        ParsingUtils.checkAttributes(element, null, new String[] {"defaultpage", "synchronized"});
+        
+        ContextXMLServletConfigImpl config = ParsingUtils.getSingleTopObject(ContextXMLServletConfigImpl.class, context);
+        
         ContextConfigImpl ctxConfig = new ContextConfigImpl();
-        // Navigation is stored in depend.xml
-        ctxConfig.setNavigationFile(info.getConfigurationFile());
         ctxConfig.setDefaultStateType(config.getDefaultStaticState());
         ctxConfig.setDefaultStateParentBeanName(config.getDefaultStaticStateParentBeanName());
-
+        
         String defaultPage = element.getAttribute("defaultpage").trim();
-        if (defaultPage.length() > 0)
-            ctxConfig.setDefaultPage(defaultPage);
-
+        if(defaultPage.length()>0) ctxConfig.setDefaultPage(defaultPage);
+        
         String syncStr = element.getAttribute("synchronized");
         if (syncStr.length() > 0) {
             ctxConfig.setSynchronized(Boolean.parseBoolean(syncStr));

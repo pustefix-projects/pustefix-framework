@@ -20,16 +20,19 @@ package org.pustefixframework.webservices;
 
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
+import java.util.HashMap;
+import java.util.Map;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 
 import org.apache.log4j.Logger;
-import org.pustefixframework.webservices.config.WebserviceConfiguration;
+import org.pustefixframework.webservices.config.Configuration;
+import org.pustefixframework.webservices.config.GlobalServiceConfig;
+import org.pustefixframework.webservices.config.ServiceConfig;
 import org.pustefixframework.webservices.monitor.Monitor;
 import org.pustefixframework.webservices.monitor.MonitorRecord;
-import org.pustefixframework.webservices.spring.WebserviceRegistration;
 import org.pustefixframework.webservices.utils.FileCache;
 import org.pustefixframework.webservices.utils.FileCacheData;
 import org.pustefixframework.webservices.utils.RecordingRequestWrapper;
@@ -51,23 +54,25 @@ public class ServiceRuntime {
     
     private static ThreadLocal<ServiceCallContext> currentContext=new ThreadLocal<ServiceCallContext>();
 	
-    private WebserviceConfiguration configuration;	
+    private Configuration configuration;	
     private Monitor monitor;
 	
-    private ProtocolProviderRegistry protocolProviderRegistry;
-
+    private Map<String,ServiceProcessor> processors;
+    private Map<String,ServiceStubGenerator> generators;
     private String defaultProtocol;
     
     private FileCache stubCache;
 	
     private ServiceDescriptorCache srvDescCache;
-    private ServiceRegistry serviceRegistry;
+    private ServiceRegistry appServiceRegistry;
 	
     private ServerContextImpl serverContext;
     private ContextImpl context;
     
     public ServiceRuntime() {
         srvDescCache=new ServiceDescriptorCache();
+        processors=new HashMap<String,ServiceProcessor>();
+        generators=new HashMap<String,ServiceStubGenerator>();
         stubCache=new FileCache(100);
     }	
 	
@@ -75,28 +80,34 @@ public class ServiceRuntime {
         return srvDescCache;
     }
     
-    public WebserviceConfiguration getConfiguration() {
+	public void addServiceProcessor(String protocol,ServiceProcessor processor) {
+		if(processors.isEmpty()) defaultProtocol=protocol;
+		processors.put(protocol,processor);
+	}
+    
+    public void addServiceStubGenerator(String protocol,ServiceStubGenerator generator) {
+        generators.put(protocol,generator);
+    }
+	
+    public Configuration getConfiguration() {
         return configuration;
     }
 	
-    public void setConfiguration(WebserviceConfiguration configuration) {
+    public void setConfiguration(Configuration configuration) {
         this.configuration=configuration;
-        if(configuration.getMonitoringEnabled()) {
-            Monitor.Scope scope=Monitor.Scope.valueOf(configuration.getMonitoringScope().toUpperCase());
-            monitor=new Monitor(scope,configuration.getMonitoringHistorySize());
+        GlobalServiceConfig globConf=configuration.getGlobalServiceConfig();
+        if(globConf.getMonitoringEnabled()) {
+            Monitor.Scope scope=Monitor.Scope.valueOf(globConf.getMonitoringScope().toUpperCase());
+            monitor=new Monitor(scope,globConf.getMonitoringHistorySize());
         }
     }
 
-    public void setServiceRegistry(ServiceRegistry serviceRegistry) {
-        this.serviceRegistry = serviceRegistry;
+    public void setApplicationServiceRegistry(ServiceRegistry appServiceRegistry) {
+        this.appServiceRegistry=appServiceRegistry;
     }
 	
     public Monitor getMonitor() {
         return monitor;
-    }
-    
-    public void setProtocolProviderRegistry(ProtocolProviderRegistry protocolProviderRegistry) {
-    	this.protocolProviderRegistry = protocolProviderRegistry;
     }
 	
     public void process(HttpServletRequest req,HttpServletResponse res) throws ServiceException {
@@ -105,7 +116,8 @@ public class ServiceRuntime {
         ServiceRequest serviceReq=new HttpServiceRequest(req);
         ServiceResponse serviceRes=new HttpServiceResponse(res);
         
-        boolean doRecord = configuration.getMonitoringEnabled() || configuration.getLoggingEnabled();
+        GlobalServiceConfig globConf=getConfiguration().getGlobalServiceConfig();
+        boolean doRecord=globConf.getMonitoringEnabled()||globConf.getLoggingEnabled();
         if(doRecord) {
             serviceReq=new RecordingRequestWrapper(serviceReq);
             serviceRes=new RecordingResponseWrapper(serviceRes);
@@ -124,18 +136,26 @@ public class ServiceRuntime {
             if(wsType==null) wsType=req.getParameter(Constants.PARAM_WSTYPE);
             if(wsType!=null) wsType=wsType.toUpperCase();
             
-            HttpSession session = req.getSession(false);
-            WebserviceRegistration registration = serviceRegistry.getWebserviceRegistration(serviceName);
-            if(registration == null) throw new ServiceException("Service not found: " + serviceName);
+            HttpSession session=req.getSession(false);
+            ServiceRegistry serviceReg=null;
+            ServiceConfig srvConf=appServiceRegistry.getService(serviceName);
+            if(srvConf!=null) serviceReg=appServiceRegistry;
+            else {
+                if(session!=null) {
+                    serviceReg=(ServiceRegistry)session.getAttribute(ServiceRegistry.class.getName());
+                    if(serviceReg==null) {
+                        serviceReg=new ServiceRegistry(configuration,ServiceRegistry.RegistryType.SESSION);
+                        session.setAttribute(ServiceRegistry.class.getName(),serviceReg);
+                    }
+                    srvConf=serviceReg.getService(serviceName);
+                } 
+            }
+            if(srvConf==null) throw new ServiceException("Service not found: "+serviceName);
            
-            String sessionType = registration.getSessionType();
-            if(sessionType == null) sessionType = configuration.getSessionType();
-            if(sessionType.equals(Constants.SESSION_TYPE_SERVLET)) {
+           
+            if(srvConf.getSessionType().equals(Constants.SESSION_TYPE_SERVLET)) {
                 if(session==null) throw new AuthenticationException("Authentication failed: No valid session.");
-                boolean sslForce = false;
-                if(registration.getSSLForce() != null) sslForce = registration.getSSLForce();
-                else if(configuration.getSSLForce() != null) sslForce = configuration.getSSLForce();
-                if(sslForce && !req.getScheme().equals("https")) 
+                if(srvConf.getSSLForce() && !req.getScheme().equals("https")) 
                     throw new AuthenticationException("Authentication failed: SSL connection required");
                 if(req.getScheme().equals("https")) {
                     Boolean secure=(Boolean)session.getAttribute(SessionAdmin.SESSION_IS_SECURE);
@@ -148,8 +168,7 @@ public class ServiceRuntime {
                 //   - authconstraint referenced by webservice-global (implicit)
                 //   - default authconstraint from context configuration
                 AuthConstraint authConst = null;
-                String authRef = registration.getAuthConstraint();
-                if(authRef == null) authRef = configuration.getAuthConstraintRef();
+                String authRef=srvConf.getAuthConstraintRef();
                 if(authRef != null) {
                     authConst = serverContext.getContextConfig().getAuthConstraint(authRef);
                     if(authConst == null) throw new ServiceException("AuthConstraint not found: "+authRef);
@@ -164,7 +183,7 @@ public class ServiceRuntime {
                     // Prepare context for current thread.
                     // Cleanup is performed in finally block.
                     context.setServerContext(serverContext);
-                    context.prepareForRequest();                                                                                                                                  
+                    context.prepareForRequest(req);                                                                                                                                  
                 } catch(Exception x) {
                     throw new ServiceException("Preparing context failed",x);
                 }
@@ -172,8 +191,8 @@ public class ServiceRuntime {
             }
             
           
-            String protocolType = registration.getProtocol();
-            if(protocolType == null) protocolType = getConfiguration().getProtocolType();
+            String protocolType=srvConf.getProtocolType();
+            if(protocolType==null) protocolType=getConfiguration().getGlobalServiceConfig().getProtocolType();
             
             if(wsType!=null) {
                 if(!protocolType.equals(Constants.PROTOCOL_TYPE_ANY)&&!wsType.equals(protocolType))
@@ -182,21 +201,16 @@ public class ServiceRuntime {
             }
 
             if(protocolType.equals(Constants.PROTOCOL_TYPE_ANY)) protocolType=defaultProtocol;
-            ProtocolProvider protocolProvider = protocolProviderRegistry.getProtocolProvider(protocolType, null);
-            if(protocolProvider == null) throw new ServiceException("No provider found for protocol: " + protocolType);
-            ServiceProcessor processor = protocolProvider.getServiceProcessor();
+            ServiceProcessor processor=processors.get(protocolType);
+            if(processor==null) throw new ServiceException("No ServiceProcessor found for protocol '"+protocolType+"'.");
             
             if(LOG.isDebugEnabled()) LOG.debug("Process webservice request: "+serviceName+" "+processor);
 
             ProcessingInfo procInfo=new ProcessingInfo(serviceName,null);
             procInfo.setStartTime(System.currentTimeMillis());
             procInfo.startProcessing();
-                                         
-            boolean synchronize = true;
-            if(registration.getSynchronizeOnContext() != null) synchronize = registration.getSynchronizeOnContext();
-            else if(configuration.getSynchronizeOnContext() != null) synchronize = configuration.getSynchronizeOnContext();
-            
-            if(context != null && synchronize) {
+                                                                  
+            if(context!=null&&srvConf.getSynchronizeOnContext()) {
                 Advised proxy = (Advised)context;
                 Object object = null;
                 try {
@@ -205,10 +219,10 @@ public class ServiceRuntime {
                     throw new RuntimeException("Can't get target object", e);
                 }
                 synchronized(object) {
-                    processor.process(serviceReq, serviceRes, this, serviceRegistry, procInfo);
+                    processor.process(serviceReq,serviceRes,this,serviceReg,procInfo);
                 }
             } else {
-                processor.process(serviceReq, serviceRes, this, serviceRegistry, procInfo);
+                processor.process(serviceReq,serviceRes,this,serviceReg,procInfo);
             }
                                                                                                                                                         
             procInfo.endProcessing();
@@ -231,7 +245,7 @@ public class ServiceRuntime {
                 RecordingResponseWrapper monitorRes=(RecordingResponseWrapper)serviceRes;
                 String reqMsg=monitorReq.getRecordedMessage();
                 String resMsg=monitorRes.getRecordedMessage();
-                if(configuration.getMonitoringEnabled()) {
+                if(globConf.getMonitoringEnabled()) {
                     MonitorRecord monitorRecord=new MonitorRecord();
                     monitorRecord.setStartTime(procInfo.getStartTime());
                     monitorRecord.setProcessingTime(procInfo.getProcessingTime());
@@ -243,7 +257,7 @@ public class ServiceRuntime {
                     monitorRecord.setResponseMessage(resMsg);
                     getMonitor().getMonitorHistory(req).addRecord(monitorRecord);
                 }
-                if(configuration.getLoggingEnabled()) {
+                if(globConf.getLoggingEnabled()) {
                     StringBuffer sb=new StringBuffer();
                     sb.append("\nService: "+serviceName+"\n");
                     sb.append("Protocol: "+protocolType+"\n");
@@ -258,9 +272,7 @@ public class ServiceRuntime {
             }
         } catch(AuthenticationException x) {
             if(LOG.isDebugEnabled()) LOG.debug(x);
-            ProtocolProvider protocolProvider = protocolProviderRegistry.getProtocolProvider(wsType, null);
-            if(protocolProvider == null) throw new ServiceException("No provider found for protocol: " + wsType);
-            ServiceProcessor processor = protocolProvider.getServiceProcessor();
+            ServiceProcessor processor=processors.get(wsType);
             if(processor!=null) processor.processException(serviceReq,serviceRes,x);
             else throw x;
         } finally {
@@ -291,11 +303,22 @@ public class ServiceRuntime {
         String[] serviceNames=nameParam.split("\\s+");
         if(serviceNames.length==0) throw new ServiceException("No service name found");
         String serviceType=typeParam.toUpperCase();
-        if(!serviceType.equals(Constants.PROTOCOL_TYPE_JSONWS)) throw new ServiceException("Protocol not supported: "+serviceType);
+        if(!(serviceType.equals(Constants.PROTOCOL_TYPE_JSONWS)||serviceType.equals(Constants.PROTOCOL_TYPE_SOAP))) throw new ServiceException("Protocol not supported: "+serviceType);
         
-        WebserviceRegistration[] services = new WebserviceRegistration[serviceNames.length];
+        ServiceConfig[] services=new ServiceConfig[serviceNames.length];
         for(int i=0;i<serviceNames.length;i++) {
-            WebserviceRegistration service = serviceRegistry.getWebserviceRegistration(serviceNames[i]);
+            HttpSession session=req.getSession(false);
+            ServiceConfig service=appServiceRegistry.getService(serviceNames[i]);
+            if(service==null) {
+                if(session!=null) {
+                    ServiceRegistry serviceReg=(ServiceRegistry)session.getAttribute(ServiceRegistry.class.getName());
+                    if(serviceReg==null) {
+                        serviceReg=new ServiceRegistry(configuration,ServiceRegistry.RegistryType.SESSION);
+                        session.setAttribute(ServiceRegistry.class.getName(),serviceReg);
+                    }
+                    service=serviceReg.getService(serviceNames[i]);
+                } 
+            }
             if(service==null) throw new ServiceException("Service not found: "+serviceNames[i]);
             services[i]=service;
         }
@@ -305,18 +328,19 @@ public class ServiceRuntime {
             sb.append(serviceName);
             sb.append(" ");
         }
+        sb.append("#");
+        sb.append(serviceType);
         String cacheKey=sb.toString();
                  
         FileCacheData data=stubCache.get(cacheKey);
         if(data==null) {
-        	ProtocolProvider protocolProvider = protocolProviderRegistry.getProtocolProvider(serviceType, null);
-            if(protocolProvider == null) throw new ServiceException("No provider found for protocol: " + serviceType);
-            ServiceStubGenerator stubGen = protocolProvider.getServiceStubGenerator();
+            ServiceStubGenerator stubGen=generators.get(serviceType);
             if(stubGen!=null) {
                 long tt1=System.currentTimeMillis();
                 ByteArrayOutputStream bout=new ByteArrayOutputStream();
                 for(int i=0;i<services.length;i++) {
-                    stubGen.generateStub(services[i], configuration, bout);
+                    String requestPath = req.getContextPath() + services[i].getGlobalServiceConfig().getRequestPath();
+                    stubGen.generateStub(services[i], requestPath, bout);
                     if(i<services.length-1) bout.write("\n\n".getBytes());
                 }
                 byte[] bytes=bout.toByteArray();
@@ -343,8 +367,8 @@ public class ServiceRuntime {
         }
     }
 
-    public ServiceRegistry getServiceRegistry() {
-        return serviceRegistry;
+    public ServiceRegistry getAppServiceRegistry() {
+        return appServiceRegistry;
     }
     
     public void setServerContext(ServerContextImpl serverContext) {

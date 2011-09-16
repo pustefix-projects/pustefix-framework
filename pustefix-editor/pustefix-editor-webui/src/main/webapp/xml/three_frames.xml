@@ -9,7 +9,7 @@
       <html>
         <head>
           <style type="text/css">
-            <pfx:include href="core/txt/styles.xml" part="standard"/>
+            <pfx:include href="txt/styles.xml" module="pustefix-core" part="standard"/>
             <pfx:include href="txt/styles.xml" part="standard"/>
           </style>
         </head>
@@ -24,10 +24,10 @@
           <html>
             <head>
               <style type="text/css">
-                <pfx:include href="core/txt/styles.xml" part="standard"/>
+                <pfx:include href="txt/styles.xml" module="pustefix-core" part="standard"/>
                 <pfx:include href="txt/styles.xml" part="standard"/>
               </style>
-              <script type="text/javascript" src="{$__contextpath}/core/script/baselib.js"></script>
+              <script type="text/javascript" src="{$__contextpath}/modules/pustefix-core/script/baselib.js"></script>
               <script type="text/javascript" src="{$__contextpath}/script/editor.js"></script>
             </head>
             <body class="editor_body_sidebar">
@@ -39,7 +39,7 @@
           <html>
             <head>
               <style type="text/css">
-                <pfx:include href="core/txt/styles.xml" part="standard"/>
+                <pfx:include href="txt/styles.xml" module="pustefix-core" part="standard"/>
                 <pfx:include href="txt/styles.xml" part="standard"/>
               </style>
               <script type="text/javascript" src="{$__contextpath}/script/wfx.js"></script>

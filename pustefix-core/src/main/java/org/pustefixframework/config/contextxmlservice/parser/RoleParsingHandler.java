@@ -18,6 +18,7 @@
 
 package org.pustefixframework.config.contextxmlservice.parser;
 
+import org.pustefixframework.config.contextxmlservice.parser.internal.ContextXMLServletConfigImpl;
 import org.pustefixframework.config.generic.ParsingUtils;
 import org.w3c.dom.Element;
 
@@ -29,7 +30,7 @@ import de.schlund.pfixcore.auth.RoleImpl;
 
 /**
  * 
- * @author mleidig@schlund.de
+ * @author mleidig
  *
  */
 public class RoleParsingHandler implements ParsingHandler {
@@ -38,14 +39,16 @@ public class RoleParsingHandler implements ParsingHandler {
 
         Element element = (Element)context.getNode();
         ParsingUtils.checkAttributes(element, new String[] {"name"}, new String[] {"initial"});
-            
+        
+        ContextXMLServletConfigImpl config = ParsingUtils.getSingleTopObject(ContextXMLServletConfigImpl.class, context);
+        
         String roleName = element.getAttribute("name").trim();
         boolean initial=false;
         String initialStr = element.getAttribute("initial").trim();
         if(initialStr!=null) initial=Boolean.parseBoolean(initialStr);
         RoleImpl role=new RoleImpl(roleName,initial);
-
-        context.getObjectTreeElement().addObject(role);
+      
+        config.getContextConfig().getRoleProvider().addRole(role);
     }
 
 }

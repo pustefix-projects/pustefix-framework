@@ -23,9 +23,7 @@ import java.io.Reader;
 import java.net.URI;
 import java.util.Properties;
 
-import org.osgi.framework.BundleContext;
 import org.pustefixframework.config.generic.PropertyFileReader;
-import org.springframework.osgi.context.BundleContextAware;
 import org.springframework.util.DefaultPropertiesPersister;
 import org.xml.sax.InputSource;
 
@@ -38,17 +36,12 @@ import com.marsching.flexiparse.parser.exception.ParserException;
  * @author mleidig
  *
  */
-public class PustefixPropertiesPersister extends DefaultPropertiesPersister implements BundleContextAware {
+public class PustefixPropertiesPersister extends DefaultPropertiesPersister {
     
     private URI uri;
-    private BundleContext bundleContext;
     
     public void setLocation(URI uri) {
         this.uri = uri;
-    }
-    
-    public void setBundleContext(BundleContext bundleContext) {
-    	this.bundleContext = bundleContext;
     }
     
     @Override
@@ -66,7 +59,7 @@ public class PustefixPropertiesPersister extends DefaultPropertiesPersister impl
         try {
             InputSource inputSource = new InputSource(in);
             if(uri != null) inputSource.setSystemId(uri.toASCIIString());
-            PropertyFileReader.read(inputSource, bundleContext, properties);
+            PropertyFileReader.read(inputSource, properties);
         } catch(ParserException x) {
             String msg = x.getMessage();
             Throwable cause = x.getCause();

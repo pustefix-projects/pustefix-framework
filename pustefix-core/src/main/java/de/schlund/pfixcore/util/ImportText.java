@@ -28,6 +28,9 @@ import org.w3c.dom.Element;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 
+import de.schlund.pfixxml.config.GlobalConfigurator;
+import de.schlund.pfixxml.resources.DocrootResource;
+import de.schlund.pfixxml.resources.ResourceUtil;
 import de.schlund.pfixxml.util.XPath;
 import de.schlund.pfixxml.util.Xml;
 import de.schlund.pfixxml.util.XsltVersion;
@@ -40,10 +43,8 @@ import de.schlund.pfixxml.util.XsltVersion;
  */
 
 public class ImportText {
-    
-	private final static DocumentBuilderFactory dbfac = DocumentBuilderFactory.newInstance();
-	private File docroot;
-	
+    private final static DocumentBuilderFactory dbfac = DocumentBuilderFactory.newInstance();
+
     static {
         dbfac.setNamespaceAware(true);
     }
@@ -57,14 +58,10 @@ public class ImportText {
         }
         String    docroot = args[0];
         String    dumpxml = args[1];
-
-        ImportText trans = new ImportText(docroot);
+        GlobalConfigurator.setDocroot(docroot);
+        ImportText trans = new ImportText();
         Logging.configure("generator_quiet.xml");
         trans.importList(dumpxml);
-    }
-    
-    public ImportText(String docroot) {
-    	this.docroot = new File(docroot);
     }
 
     /**
@@ -88,14 +85,14 @@ public class ImportText {
 
         String oldpath  = null;
         Document incdoc = null;
-        File incfile = null;
+        DocrootResource incfile = null;
         
         for (Iterator<Node> i = dumpedinclude.iterator(); i.hasNext();) {
             Element usedinc  = (Element) i.next();
 
             String path = usedinc.getAttribute("PATH");
             // We serialize the old incdoc, because a new include file has to be parsed
-            incfile = new File(docroot, path);
+            incfile = ResourceUtil.getFileResourceFromDocroot(path);
             if (incfile.exists()) {
                 if (!path.equals(oldpath) || incdoc == null) {
                     if (incdoc != null) {

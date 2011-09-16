@@ -30,6 +30,7 @@ import de.schlund.pfixxml.RequestParam;
 import de.schlund.pfixxml.RequestParamType;
 import de.schlund.pfixxml.SimpleRequestParam;
 import de.schlund.util.statuscodes.StatusCode;
+import de.schlund.util.statuscodes.StatusCodeHelper;
 
 /**
  * Describe class <code>IWrapperParam</code> here.
@@ -101,8 +102,9 @@ public class IWrapperParam implements IWrapperParamCheck, IWrapperParamDefinitio
         return (IWrapperParamPostCheck[]) postcheck.toArray(new IWrapperParamPostCheck[]{});
     }
 
-    public void setCustomSCode(StatusCode statusCode) {
-        missing = new StatusCodeInfo(statusCode, null, null);
+    public void setCustomSCode(String scode) {
+        StatusCode sc = StatusCodeHelper.getStatusCodeByName(scode);
+        missing = new StatusCodeInfo(sc, null, null);
     }
 
     public void setParamCaster(IWrapperParamCaster caster) {

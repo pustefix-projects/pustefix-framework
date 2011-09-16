@@ -34,5 +34,6 @@ public @interface IWrapper {
 
     String name() default "";
     Class<? extends IHandler> ihandler() default IHandler.class;
+    String beanRef() default "";
 
 }

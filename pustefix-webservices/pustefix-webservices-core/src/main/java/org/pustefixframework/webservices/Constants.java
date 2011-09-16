@@ -79,7 +79,7 @@ public class Constants {
     
     public static final String SOAPBINDING_TRANSPORT_HTTP="http://schemas.xmlsoap.org/soap/http";
     
-    public final static String WS_CONF_NS = "http://pustefix.sourceforge.net/wsconfig200401";
+    public final static String WS_CONF_NS = "http://www.pustefix-framework.org/2008/namespace/webservice-config";
     public final static String CUS_NS = "http://www.schlund.de/pustefix/customize";
     
     public final static String HEADER_WSTYPE="wstype";

@@ -65,7 +65,6 @@ import de.schlund.pfixxml.targets.AuxDependencyManager;
 import de.schlund.pfixxml.targets.AuxDependencyTarget;
 import de.schlund.pfixxml.targets.DependencyType;
 import de.schlund.pfixxml.targets.PageInfo;
-import de.schlund.pfixxml.targets.TargetDependencyRelation;
 import de.schlund.pfixxml.targets.TargetGenerationException;
 import de.schlund.pfixxml.targets.TargetImpl;
 import de.schlund.pfixxml.targets.VirtualTarget;
@@ -153,8 +152,7 @@ public class TargetPfixImpl extends AbstractTarget {
         File file;
         if (this.pfixTarget.getType() == de.schlund.pfixxml.targets.TargetType.XML_LEAF
                 || this.pfixTarget.getType() == de.schlund.pfixxml.targets.TargetType.XSL_LEAF) {
-            file = new File(this.pathresolver.resolve(this.pfixTarget
-                    .getTargetKey()));
+            file = this.pathresolver.resolve(this.pfixTarget.getTargetKey());
         } else {
             // Make sure file is existing
             try {
@@ -167,7 +165,7 @@ public class TargetPfixImpl extends AbstractTarget {
             FileResource targetFile = this.pfixTarget.getTargetGenerator().getDisccachedir();
             if (targetFile instanceof DocrootResource) {
                 String targetPath = ((DocrootResource) targetFile).getRelativePath();
-                file = new File(this.pathresolver.resolve(targetPath + "/" + this.pfixTarget.getTargetKey()));
+                file = this.pathresolver.resolve(targetPath + "/" + this.pfixTarget.getTargetKey());
             } else if (targetFile instanceof FileSystemResource) {
                 String targetPath = ((FileSystemResource) targetFile).getPathOnFileSystem();
                 file = new File(targetPath);
@@ -266,7 +264,7 @@ public class TargetPfixImpl extends AbstractTarget {
         ArrayList<IncludePartThemeVariant> deps = new ArrayList<IncludePartThemeVariant>();
         if (this.pfixTarget instanceof VirtualTarget) {
             if (recursive) {
-                Set<AuxDependency> alldeps = TargetDependencyRelation.getInstance()
+                Set<AuxDependency> alldeps = pfixTarget.getTargetGenerator().getTargetDependencyRelation()
                         .getDependenciesForTarget(this.pfixTarget);
                 if (alldeps != null) {
                     for (Iterator<AuxDependency> i = alldeps.iterator(); i.hasNext();) {
@@ -329,7 +327,7 @@ public class TargetPfixImpl extends AbstractTarget {
         ArrayList<Image> deps = new ArrayList<Image>();
         if (this.pfixTarget instanceof VirtualTarget) {
             if (recursive) {
-                Set<AuxDependency> alldeps = TargetDependencyRelation.getInstance()
+                Set<AuxDependency> alldeps = pfixTarget.getTargetGenerator().getTargetDependencyRelation()
                         .getDependenciesForTarget(this.pfixTarget);
                 if (alldeps != null) {
                     for (Iterator<AuxDependency> i = alldeps.iterator(); i.hasNext();) {

@@ -45,13 +45,11 @@ import de.schlund.pfixcore.editor2.core.spring.ThemeFactoryService;
 import de.schlund.pfixcore.editor2.core.spring.VariantFactoryService;
 import de.schlund.pfixxml.resources.ResourceUtil;
 import de.schlund.pfixxml.targets.AuxDependency;
-import de.schlund.pfixxml.targets.AuxDependencyFactory;
 import de.schlund.pfixxml.targets.AuxDependencyImage;
 import de.schlund.pfixxml.targets.AuxDependencyInclude;
 import de.schlund.pfixxml.targets.DependencyType;
 import de.schlund.pfixxml.targets.PageInfo;
 import de.schlund.pfixxml.targets.Target;
-import de.schlund.pfixxml.targets.TargetDependencyRelation;
 
 /**
  * Implementation of IncludePartThemeVariant using a DOM tree
@@ -87,7 +85,7 @@ public class IncludePartThemeVariantImpl extends
     }
 
     private AuxDependency getAuxDependency() {
-        return AuxDependencyFactory.getInstance().getAuxDependencyInclude(
+        return ((ProjectImpl)projectfactory.getProject()).getTargetGenerator().getAuxDependencyFactory().getAuxDependencyInclude(
                 ResourceUtil.getResource(
                         this.getIncludePart().getIncludeFile().getPath()),
                 this.getIncludePart().getName(), this.getTheme().getName());
@@ -101,7 +99,7 @@ public class IncludePartThemeVariantImpl extends
     public Collection<IncludePartThemeVariant> getIncludeDependencies(
             boolean recursive) throws EditorParsingException {
         HashSet<IncludePartThemeVariant> includes = new HashSet<IncludePartThemeVariant>();
-        Collection<AuxDependency> childs = TargetDependencyRelation.getInstance()
+        Collection<AuxDependency> childs = ((ProjectImpl)projectfactory.getProject()).getTargetGenerator().getTargetDependencyRelation()
                 .getChildrenOverallForAuxDependency(this.getAuxDependency());
         if (childs == null) {
             return includes;
@@ -128,7 +126,7 @@ public class IncludePartThemeVariantImpl extends
     public Collection<Image> getImageDependencies(boolean recursive)
             throws EditorParsingException {
         HashSet<Image> images = new HashSet<Image>();
-        Collection<AuxDependency> childs = TargetDependencyRelation.getInstance()
+        Collection<AuxDependency> childs = ((ProjectImpl)projectfactory.getProject()).getTargetGenerator().getTargetDependencyRelation()
                 .getChildrenOverallForAuxDependency(this.getAuxDependency());
         if (childs == null) {
             return images;
@@ -156,7 +154,7 @@ public class IncludePartThemeVariantImpl extends
     public Collection<Page> getAffectedPages() {
         HashSet<PageInfo> pageinfos = new HashSet<PageInfo>();
         HashSet<Page> pages = new HashSet<Page>();
-        Set<Target> afftargets = TargetDependencyRelation.getInstance()
+        Set<Target> afftargets = ((ProjectImpl)projectfactory.getProject()).getTargetGenerator().getTargetDependencyRelation()
                 .getAffectedTargets(this.getAuxDependency());
         if (afftargets == null) {
             return pages;
@@ -242,7 +240,7 @@ public class IncludePartThemeVariantImpl extends
         } else {
             return new TreeSet<AuxDependency>();
         }
-        TreeSet<AuxDependency> retval = TargetDependencyRelation.getInstance()
+        TreeSet<AuxDependency> retval = ((ProjectImpl)projectfactory.getProject()).getTargetGenerator().getTargetDependencyRelation()
                 .getChildrenForTargetForAuxDependency(pfixTarget, parent);
         if (retval == null) {
             return new TreeSet<AuxDependency>();

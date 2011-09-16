@@ -24,17 +24,26 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 
-
 public class ProjectTO implements Serializable {
-    
+
     private static final long serialVersionUID = -7081358794051834368L;
-    
+
     public String name;
+
     public String comment;
+
+    public boolean includePartsEditableByDefault;
+
     public List<String> pages = new LinkedList<String>();
+
     public List<String> topPages = new LinkedList<String>();
+
     public List<IncludePartThemeVariantReferenceTO> includeParts = new LinkedList<IncludePartThemeVariantReferenceTO>();
+
     public List<String> images = new LinkedList<String>();
+
     public Map<String, String> prefixToNamespaceMappings = new LinkedHashMap<String, String>();
+
     public List<String> dynIncludeFiles = new LinkedList<String>();
+
 }

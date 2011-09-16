@@ -40,8 +40,6 @@ public class VirtualHttpServletRequest implements HttpServletRequest {
 
     private String pagename = null;
 
-    private String requestHandlerPath = null;
-
     private Map<String, String[]> params;
 
     private String queryString;
@@ -49,9 +47,8 @@ public class VirtualHttpServletRequest implements HttpServletRequest {
     // Constructor is intenionally in default scope
     // as it should only be used within this package
     VirtualHttpServletRequest(HttpServletRequest originalRequest,
-            String requestHandlerPath, String pagename, Map<String, String[]> params) {
+            String pagename, Map<String, String[]> params) {
         this.orig = originalRequest;
-        this.requestHandlerPath = requestHandlerPath;
         this.pagename = pagename;
         this.params = params;
 
@@ -92,12 +89,12 @@ public class VirtualHttpServletRequest implements HttpServletRequest {
         return orig.getHeader(arg0);
     }
 
-    @SuppressWarnings("unchecked")
+    @SuppressWarnings("rawtypes")
     public Enumeration getHeaders(String arg0) {
         return orig.getHeaders(arg0);
     }
 
-    @SuppressWarnings("unchecked")
+    @SuppressWarnings("rawtypes")
     public Enumeration getHeaderNames() {
         return orig.getHeaderNames();
     }
@@ -113,9 +110,9 @@ public class VirtualHttpServletRequest implements HttpServletRequest {
 
     public String getPathInfo() {
         if (pagename == null) {
-            return requestHandlerPath;
+            return null;
         } else {
-            return ((requestHandlerPath != null) ? requestHandlerPath : "") + "/" + pagename;
+            return "/" + pagename;
         }
     }
 
@@ -222,7 +219,7 @@ public class VirtualHttpServletRequest implements HttpServletRequest {
         return orig.getAttribute(arg0);
     }
 
-    @SuppressWarnings("unchecked")
+    @SuppressWarnings("rawtypes")
     public Enumeration getAttributeNames() {
         return orig.getAttributeNames();
     }
@@ -265,7 +262,7 @@ public class VirtualHttpServletRequest implements HttpServletRequest {
         }
     }
 
-    @SuppressWarnings("unchecked")
+    @SuppressWarnings("rawtypes")
     public Enumeration getParameterNames() {
         return Collections.enumeration(params.keySet());
     }
@@ -274,7 +271,7 @@ public class VirtualHttpServletRequest implements HttpServletRequest {
         return params.get(arg0);
     }
 
-    @SuppressWarnings("unchecked")
+    @SuppressWarnings("rawtypes")
     public Map getParameterMap() {
         return Collections.unmodifiableMap(params);
     }
@@ -320,7 +317,7 @@ public class VirtualHttpServletRequest implements HttpServletRequest {
         return orig.getLocale();
     }
 
-    @SuppressWarnings("unchecked")
+    @SuppressWarnings("rawtypes")
     public Enumeration getLocales() {
         return orig.getLocales();
     }
@@ -363,7 +360,7 @@ public class VirtualHttpServletRequest implements HttpServletRequest {
      *         any parameters or path info
      */
     public static HttpServletRequest getVoidRequest(HttpServletRequest orig) {
-        return new VirtualHttpServletRequest(orig, null, null,
+        return new VirtualHttpServletRequest(orig, null,
                 new HashMap<String, String[]>());
     }
 

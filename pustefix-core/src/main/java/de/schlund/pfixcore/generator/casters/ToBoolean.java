@@ -25,6 +25,7 @@ import de.schlund.pfixcore.generator.IWrapperParamCaster;
 import de.schlund.pfixcore.generator.SimpleCheck;
 import de.schlund.pfixxml.RequestParam;
 import de.schlund.util.statuscodes.StatusCode;
+import de.schlund.util.statuscodes.StatusCodeHelper;
 
 /**
  * ToBoolean.java
@@ -38,7 +39,6 @@ import de.schlund.util.statuscodes.StatusCode;
  */
 
 public class ToBoolean extends SimpleCheck implements IWrapperParamCaster {
-	
     private Boolean[]  value = null;
     private StatusCode scode;
 
@@ -46,8 +46,8 @@ public class ToBoolean extends SimpleCheck implements IWrapperParamCaster {
         scode = CoreStatusCodes.CASTER_ERR_TO_BOOLEAN;
     }
     
-    public void setScodeCastError(StatusCode scode) {
-        this.scode = scode;
+    public void setScodeCastError(String fqscode) {
+        scode = StatusCodeHelper.getStatusCodeByName(fqscode);
     }
 
     public Object[] getValue() {

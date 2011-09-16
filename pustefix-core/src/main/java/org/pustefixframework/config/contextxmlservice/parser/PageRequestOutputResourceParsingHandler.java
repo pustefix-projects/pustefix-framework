@@ -20,11 +20,10 @@ package org.pustefixframework.config.contextxmlservice.parser;
 
 import org.pustefixframework.config.contextxmlservice.ContextConfig;
 import org.pustefixframework.config.contextxmlservice.ContextResourceConfig;
-import org.pustefixframework.config.contextxmlservice.PageRequestOutputResourceHolder;
-import org.pustefixframework.config.contextxmlservice.PustefixContextXMLRequestHandlerConfig;
+import org.pustefixframework.config.contextxmlservice.ContextXMLServletConfig;
+import org.pustefixframework.config.contextxmlservice.parser.internal.StateConfigImpl;
 import org.pustefixframework.config.generic.ParsingUtils;
 import org.springframework.beans.factory.config.RuntimeBeanReference;
-import org.springframework.osgi.context.ConfigurableOsgiBundleApplicationContext;
 import org.w3c.dom.Element;
 
 import com.marsching.flexiparse.parser.HandlerContext;
@@ -45,44 +44,34 @@ public class PageRequestOutputResourceParsingHandler implements ParsingHandler {
         Element element = (Element)context.getNode();
         ParsingUtils.checkAttributes(element, new String[] {"node"}, new String[] {"class","bean-ref"});
         
-        ConfigurableOsgiBundleApplicationContext appContext = ParsingUtils.getSingleTopObject(ConfigurableOsgiBundleApplicationContext.class, context);
-
-        final String node = element.getAttribute("node").trim();
+        StateConfigImpl stateConfig = ParsingUtils.getFirstTopObject(StateConfigImpl.class, context, true);
+        String node = element.getAttribute("node").trim();
        
         String className = element.getAttribute("class").trim();
         String beanRef = element.getAttribute("bean-ref").trim();
         if (className.length() == 0 && beanRef.length() == 0) {
             throw new ParserException("Either attribute 'class' or attribute 'bean-ref' required.");
-        }
-        if (className.length() > 0) {
+        } else if (className.length() > 0 && beanRef.length() > 0) {
+            throw new ParserException("Only one of the attributes 'class' or 'bean-ref' is allowed at a 'resource' element: " +
+                    "class='" + className + "' bean-ref='" + beanRef +"'");
+        } else if (className.length() > 0) {
             Class<?> clazz;
             try {
-                clazz = Class.forName(className, true, appContext.getClassLoader());
+                clazz = Class.forName(className);
             } catch (ClassNotFoundException e) {
                 throw new ParserException("Could not load resource interface \"" + className + "\"!");
             }
-            PustefixContextXMLRequestHandlerConfig servletConfig = ParsingUtils.getSingleTopObject(PustefixContextXMLRequestHandlerConfig.class, context);
+            ContextXMLServletConfig servletConfig = ParsingUtils.getSingleTopObject(ContextXMLServletConfig.class, context);
             ContextConfig contextConfig = servletConfig.getContextConfig();
             ContextResourceConfig resourceConfig = contextConfig.getContextResourceConfig(clazz);
             if (resourceConfig == null) {
                 throw new ParserException("Could not find suitable context resource for class or interface \"" + className + "\"!");
             }
-            beanRef = resourceConfig.getBeanName();
+            stateConfig.addContextResource(node, new RuntimeBeanReference(resourceConfig.getBeanName()));
+        } else if (beanRef.length() > 0) {
+            stateConfig.addContextResource(node, new RuntimeBeanReference(beanRef));
         }
-
-        final RuntimeBeanReference reference = new RuntimeBeanReference(beanRef);
-        PageRequestOutputResourceHolder holder = new PageRequestOutputResourceHolder() {
-
-            public String getName() {
-                return node;
-            }
-
-            public Object getOutputResource() {
-                return reference;
-            }
-            
-        };
-        context.getObjectTreeElement().addObject(holder);
+        
     }
 
 }

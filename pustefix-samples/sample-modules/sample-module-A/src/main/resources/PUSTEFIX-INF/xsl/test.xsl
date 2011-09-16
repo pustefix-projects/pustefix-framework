@@ -6,7 +6,7 @@
 
 <xsl:template match="foo">
 XXXXXfooooooooooooooooooooooooooooooo
-<pfx:include href="txt/common.xml" part="partA" search="dynamic" module="org.pustefixframework.samples.modules.sample-module-A"/>
+<pfx:include href="txt/common.xml" part="partA" search="dynamic" module="sample-module-A"/>
 </xsl:template>
 
 </xsl:stylesheet>

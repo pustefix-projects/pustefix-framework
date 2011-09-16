@@ -3,22 +3,18 @@
   xmlns="http://www.pustefix-framework.org/2008/namespace/project-config"
   xmlns:jee="http://java.sun.com/xml/ns/javaee"
   xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-  xsi:schemaLocation="http://java.sun.com/xml/ns/javaee http://java.sun.com/xml/ns/javaee/web-app_2_5.xsd"
->
+  xsi:schemaLocation="http://java.sun.com/xml/ns/javaee http://java.sun.com/xml/ns/javaee/web-app_2_5.xsd
+                      http://www.pustefix-framework.org/2008/namespace/project-config  http://www.pustefix-framework.org/2008/namespace/project-config.xsd">
   
   <project>
     <name>editor2</name>
     <description>Pustefix CMS</description>
-    <choose>
-      <when test="$mode = 'prod'">
-        <enabled>false</enabled>
-      </when>
-    </choose>
   </project>
   
   <editor>
     <enabled>false</enabled>
     <location>http://cms.${fqdn}/</location>
+    <secret>foobar</secret>
   </editor>
   
   <xml-generator>
@@ -30,51 +26,13 @@
       </when>
     </choose>
   </xml-generator>
-  
-  <http-server>
     
-    <choose>
-      <when test="pfx:isSet('pustefix.editor.address')">
-        <http-port>
-          <address>${pustefix.editor.address}</address>
-        </http-port>
-      </when>
-      <otherwise>
-        <http-port>
-          <address>${fqdn}</address>
-        </http-port>
-      </otherwise>
-    </choose>
-    
-    <choose>
-      <when test="pfx:isSet('pustefix.editor.servername')">
-        <server-name>${pustefix.editor.servername}</server-name>
-      </when>
-      <otherwise>
-        <server-name>cms.${fqdn}</server-name>
-      </otherwise>
-    </choose>
-    
-    <choose>
-      <when test="pfx:isSet('pustefix.editor.serveralias')">
-        <server-alias>${pustefix.editor.serveralias}</server-alias>
-      </when>
-      <otherwise>
-        <server-alias>cms.${machine}</server-alias>
-      </otherwise>
-    </choose>
-    
-  </http-server>
-  
   <application>
     
     <docroot-path>docroot:/docroot</docroot-path>
-    <default-path>/xml/main</default-path>
     
     <context-xml-service>
-      <path>/xml/main</path>
       <config-file>docroot:/WEB-INF/edit.conf.xml</config-file>
-      <additional-trail-info>de.schlund.pfixxml.perflogging.DefaultAdditionalTrailInfoImpl</additional-trail-info>
       <choose>
         <when test="$mode='prod'">
           <session-cleaner-timeout>20</session-cleaner-timeout>
@@ -87,7 +45,6 @@
     
     <deref-service>
       <path>/xml/deref</path>            <!-- optional: default is /xml/deref -->
-      <signkey>987foobarbaz123</signkey> <!-- mandatory -->
       <validtime>3600</validtime>        <!-- optional: default is 3600 (seconds) -->
       <mustsign>false</mustsign>         <!-- optional: default is false -->
     </deref-service>
@@ -97,20 +54,15 @@
       <path>script</path>
     </static>
     
-    <web-xml>
-      <jee:web-app>
-        <jee:filter>
-          <jee:filter-name>editor-session-cookie-filter</jee:filter-name>
-          <jee:filter-class>org.pustefixframework.editor.webui.util.SessionCookieFilter</jee:filter-class>
-        </jee:filter>
-        
-        <jee:filter-mapping>
-          <jee:filter-name>editor-session-cookie-filter</jee:filter-name>
-          <jee:url-pattern>/xml/main/*</jee:url-pattern>
-        </jee:filter-mapping>
-      </jee:web-app>
-    </web-xml>
-    
+    <choose>
+      <when test="$mode='test'">
+        <exception-processing>
+          <process type="java.lang.Throwable" 
+                   processor="de.schlund.pfixxml.exceptionprocessor.UniversalExceptionProcessor"/>
+        </exception-processing>
+      </when>
+    </choose>
+
   </application>
 
   <properties>

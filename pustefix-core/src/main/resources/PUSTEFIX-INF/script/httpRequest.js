@@ -168,8 +168,8 @@ pfx.net.HTTPRequest.prototype.start = function( content, headers, reqId ) {
                   self.statusText = pfx.net.HTTPRequest._xml[i].statusText;
                 } catch(e) {
                 }
-                if( self.status && self.status >= 300 ) {
-                  //throw new Error("HTTP_Request: Asynchronous call failed" + " (status " + self.status + ", " + self.statusText + ")");
+                if( self.status && self.status >= 400 ) {
+                  throw new Error("HTTP_Request: Asynchronous call failed" + " (status " + self.status + ", " + self.statusText + ")");
                 }
                 var reqId;
                 try {
@@ -177,7 +177,7 @@ pfx.net.HTTPRequest.prototype.start = function( content, headers, reqId ) {
                 } catch(e) {
                 }
                 var content = self._getResponse(pfx.net.HTTPRequest._xml[i]);
-                if(content!=null) self.callback.call( self.context, content, reqId );
+                if(content!=null) self.callback.call( self.context, content, reqId);
                 else if(!pfx.net.HTTPRequest._xml[i].aborted) throw new Error("Empty response");
                 pfx.net.HTTPRequest._xml[i] = null;
               }
@@ -405,7 +405,7 @@ pfx.net.HTTPRequest.prototype._getResponse = function(request) {
        return null;
     }
     throw new Error("Missing response content type");
-  } else if(ctype.indexOf("text/plain")==0) {
+  } else if(ctype.indexOf("text/plain")==0 || ctype.indexOf("text/html")==0) {
     return request.responseText;
   } else if(ctype.indexOf("text/xml")==0) {
     return request.responseXML;

@@ -50,6 +50,7 @@ import org.xml.sax.SAXException;
 
 import de.schlund.pfixcore.beans.InsertStatus;
 import de.schlund.pfixcore.editor2.core.dom.SessionInfo;
+import de.schlund.pfixcore.editor2.core.spring.ProjectPool;
 import de.schlund.pfixcore.editor2.core.spring.SecurityManagerService;
 import de.schlund.pfixxml.ResultDocument;
 import de.schlund.pfixxml.util.Xml;
@@ -59,6 +60,8 @@ public abstract class CommonIncludesResource {
     private SessionInfoStore sessionInfoStore;
     
     private ProjectsResource projectsResource;
+
+    private ProjectPool projectPool;
     
     protected SecurityManagerService securitymanager;
     
@@ -103,11 +106,12 @@ public abstract class CommonIncludesResource {
             currentInclude.setAttribute("part", this.selectedIncludePart.getIncludePart().getName());
             currentInclude.setAttribute("theme", this.selectedIncludePart.getTheme().getName());
             currentInclude.setAttribute("hash", this.selectedIncludePart.getMD5());
-            if (this.securitymanager.mayEditIncludes(projectsResource.getSelectedProject())) {
+            if (mayEditIncludePart(projectsResource.getSelectedProject(), this.selectedIncludePart)) {
                 currentInclude.setAttribute("mayEdit", "true");
             } else {
                 currentInclude.setAttribute("mayEdit", "false");
             }
+            currentInclude.setAttribute("readOnly", String.valueOf(this.selectedIncludePart.isReadOnly()));
 
             // Render possible new branches
             Collection<Page> pages = this.selectedIncludePart.getAffectedPages();
@@ -173,6 +177,17 @@ public abstract class CommonIncludesResource {
                     Element imageNode = resdoc.createSubNode(imagesNode, "image");
                     imageNode.setAttribute("path", image.getPath());
                     imageNode.setAttribute("modtime", Long.toString(image.getLastModTime()));
+                    
+                    String path = image.getPath();
+                    String url = projectPool.getURIForProject(project);
+                    if (path.startsWith("docroot:/")) {
+                        url = url + path.substring(9);
+                    } else if(path.startsWith("module://")) {
+                        url = url + "modules/" + path.substring(9);
+                    } else {
+                        url = url + path;
+                    }
+                    imageNode.setAttribute("url", url);
                 }
             }
 
@@ -409,7 +424,7 @@ public abstract class CommonIncludesResource {
             return false;
         }
 
-        if (!securitymanager.mayEditIncludes(projectsResource.getSelectedProject())) {
+        if (!securitymanager.mayEditIncludes(projectsResource.getSelectedProject()) || !projectsResource.getSelectedProject().isIncludePartsEditableByDefault()) {
             return false;
         }
 
@@ -599,11 +614,34 @@ public abstract class CommonIncludesResource {
         return output.toString();
     }
     
+    private boolean mayEditIncludePart(Project project, IncludePartThemeVariant includePartThemeVariant) {
+        if (!this.securitymanager.mayEditIncludes(project)) {
+            return false;
+        }
+        
+        Node xmlNode = includePartThemeVariant.getIncludePart().getContentXML();
+        if (xmlNode.getNodeType() == Node.ELEMENT_NODE) {
+            Element xmlElement = (Element) xmlNode;
+            String editable = xmlElement.getAttribute("editable");
+            if (editable.equalsIgnoreCase("true")) {
+                return true;
+            } else if (editable.equalsIgnoreCase("false")) {
+                return false;
+            }
+        }
+        return project.isIncludePartsEditableByDefault();
+    }
+
     @Inject
     public void setProjectsResource(ProjectsResource projectsResource) {
         this.projectsResource = projectsResource;
     }
 
+    @Inject
+    public void setProjectPool(ProjectPool projectPool) {
+        this.projectPool = projectPool;
+    }
+    
     @Inject
     public void setSessionInfoStore(SessionInfoStore sessionInfoStore) {
         this.sessionInfoStore = sessionInfoStore;

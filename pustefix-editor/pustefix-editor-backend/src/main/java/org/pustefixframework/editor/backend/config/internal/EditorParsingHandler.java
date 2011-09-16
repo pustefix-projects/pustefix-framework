@@ -19,6 +19,7 @@
 package org.pustefixframework.editor.backend.config.internal;
 
 import java.util.NoSuchElementException;
+import java.util.Properties;
 
 import org.pustefixframework.config.customization.CustomizationAwareParsingHandler;
 import org.pustefixframework.config.generic.ParsingUtils;
@@ -35,6 +36,8 @@ import org.xml.sax.InputSource;
 import com.marsching.flexiparse.parser.HandlerContext;
 import com.marsching.flexiparse.parser.exception.ParserException;
 
+import de.schlund.pfixxml.config.EnvironmentProperties;
+
 
 public class EditorParsingHandler extends CustomizationAwareParsingHandler {
     
@@ -46,8 +49,10 @@ public class EditorParsingHandler extends CustomizationAwareParsingHandler {
             editorConfig = context.getObjectTreeElement().getObjectsOfTypeFromSubTree(EditorConfig.class).iterator().next();
         } catch (NoSuchElementException e) {
             // No editor configuration in this configuration file
-            return;
+            editorConfig = new EditorConfig();
+            editorConfig.setEnabled(false);
         }
+        overrideByEnvironment(editorConfig);
         if (!editorConfig.isEnabled()) {
             return;
         }
@@ -69,6 +74,7 @@ public class EditorParsingHandler extends CustomizationAwareParsingHandler {
         beanBuilder = BeanDefinitionBuilder.genericBeanDefinition(EditorProjectInfo.class);
         beanBuilder.addPropertyValue("name", projectInfo.getName());
         beanBuilder.addPropertyValue("description", projectInfo.getDescription());
+        beanBuilder.addPropertyValue("includePartsEditableByDefault", editorConfig.isIncludePartsEditableByDefault());
         beanBuilder.addPropertyValue("enableTargetUpdateService", editorConfig.isEnableTargetUpdateService());
         beanDefinition = beanBuilder.getBeanDefinition();
         beanRegistry.registerBeanDefinition(EditorProjectInfo.class.getName(), beanDefinition);
@@ -76,6 +82,23 @@ public class EditorParsingHandler extends CustomizationAwareParsingHandler {
         XmlBeanDefinitionReader reader = new XmlBeanDefinitionReader(beanRegistry);
         reader.setValidationMode(XmlBeanDefinitionReader.VALIDATION_XSD);
         reader.loadBeanDefinitions(new InputSource(this.getClass().getResourceAsStream("editor-spring.xml")));
+    }
+    
+    private void overrideByEnvironment(EditorConfig editorConfig) {
+        Properties envProps = EnvironmentProperties.getProperties();
+        String val = envProps.getProperty("editor.enabled");
+        if(val != null) {
+            boolean enabled = Boolean.parseBoolean(val);
+            editorConfig.setEnabled(enabled);
+        }
+        val = envProps.getProperty("editor.location");
+        if(val != null) {
+            editorConfig.setLocation(val);
+        }
+        val = envProps.getProperty("editor.secret");
+        if(val != null) {
+            editorConfig.setSecret(val);
+        }
     }
     
 }

@@ -55,6 +55,8 @@ public class DocumentCache {
     public Document getDocument(String path, Type type) throws FileNotFoundException, IOException, SAXException {
         // look in cache
 //        LOG.debug("looking for " + path);
+        //TODO: support modules
+        if(path.startsWith("module:")) return null;
         Document retval = lookup(path);
         if (retval != null) {
             found++;

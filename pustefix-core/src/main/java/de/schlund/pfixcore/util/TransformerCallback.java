@@ -36,8 +36,10 @@ import org.apache.log4j.Logger;
 import org.pustefixframework.config.contextxmlservice.IWrapperConfig;
 import org.pustefixframework.config.contextxmlservice.PageRequestConfig;
 import org.pustefixframework.config.contextxmlservice.ProcessActionPageRequestConfig;
+import org.pustefixframework.config.project.ProjectInfo;
+import org.pustefixframework.http.BotDetector;
 import org.pustefixframework.util.FrameworkInfo;
-import org.pustefixframework.xmlgenerator.targets.TargetGenerator;
+import org.pustefixframework.util.LocaleUtils;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.Node;
@@ -57,6 +59,8 @@ import de.schlund.pfixcore.workflow.State;
 import de.schlund.pfixcore.workflow.context.AccessibilityChecker;
 import de.schlund.pfixcore.workflow.context.RequestContextImpl;
 import de.schlund.pfixxml.ResultDocument;
+import de.schlund.pfixxml.Tenant;
+import de.schlund.pfixxml.targets.TargetGenerator;
 import de.schlund.pfixxml.util.ExtensionFunctionUtils;
 import de.schlund.pfixxml.util.Xml;
 import de.schlund.pfixxml.util.XsltVersion;
@@ -79,13 +83,13 @@ public class TransformerCallback {
     // spdoc.setNostore(true);
     // }
 
-    public static int isAccessible(RequestContextImpl requestcontext, TargetGenerator targetGen, String pagename) throws Exception {
+    public static int isAccessible(RequestContextImpl requestcontext, TargetGenerator targetgen, String pagename) throws Exception {
         try {
             ContextImpl context = requestcontext.getParentContext();
             
             boolean pageExists = true;
             if(context.getContextConfig().getPageRequestConfig(pagename) == null) {
-                pageExists = targetGen.getPageTargetTree().containsPage(pagename);
+                pageExists = (targetgen.getPageTargetTree().getPageInfoForPageName(pagename) != null);
             }
             if(pageExists) {
                 AccessibilityChecker check = (AccessibilityChecker) context;
@@ -153,9 +157,9 @@ public class TransformerCallback {
             ContextImpl context = requestContext.getParentContext();
             State state;
             if (pageName != null) {
-                state = getState(context, pageName);
+                state = context.getPageMap().getState(pageName);
             } else {
-                state = getState(context, context.getCurrentPageRequest().getName());
+                state = context.getPageMap().getState(context.getCurrentPageRequest());
             }
             if (state == null) {
                 return false;
@@ -182,11 +186,10 @@ public class TransformerCallback {
             } else {
                 pageRequest = context.createPageRequest(pageName);
             }
-            PageRequestConfig pageConfig = context.getContextConfig().getPageRequestConfig(pageRequest.getName());
-            State state = pageConfig.getState();
+            State state = context.getPageMap().getState(pageRequest);
             if (state != null && state instanceof IWrapperState) {
                 IWrapperState iwState = (IWrapperState) state;
-                Map<String, ? extends IWrapperConfig> iwrappers = iwState.getIWrapperConfigMap();
+                Map<String, ? extends IWrapperConfig> iwrappers = iwState.getIWrapperConfigMap(context.getTenant());
                 IWrapperConfig iwrpConfig = iwrappers.get(prefix);
                 if (iwrpConfig != null) {
                     Class<? extends IWrapper> iwrpClass = (Class<? extends IWrapper>) iwrpConfig.getWrapperClass();
@@ -217,10 +220,10 @@ public class TransformerCallback {
                 pageRequest = context.createPageRequest(pageName);
             }
             PageRequestConfig pageConfig = context.getContextConfig().getPageRequestConfig(pageRequest.getName());
-            State state = pageConfig.getState();
+            State state = context.getPageMap().getState(pageRequest);
             if (state != null && state instanceof IWrapperState) {
                 IWrapperState iwState = (IWrapperState) state;
-                Map<String, ? extends IWrapperConfig> iwrappers = iwState.getIWrapperConfigMap();
+                Map<String, ? extends IWrapperConfig> iwrappers = iwState.getIWrapperConfigMap(context.getTenant());
                 for (String prefix : iwrappers.keySet()) {
                     Element elem = doc.createElement("iwrapper");
                     elem.setAttribute("prefix", prefix);
@@ -352,11 +355,14 @@ public class TransformerCallback {
             int result = 0;
             ContextImpl context = requestContext.getParentContext();
             PageRequestConfig config = context.getContextConfig().getPageRequestConfig(pageName);
-            AuthConstraint authConst = requestContext.getAuthConstraint(config);
-            if(authConst != null) {
-                if(authConst.isAuthorized(context)) result = 1;
-                else if(authConst.getAuthPage()!=null) result = 2;
-                else result = 3;
+            if(config != null) {
+                AuthConstraint authConst = config.getAuthConstraint();
+                if(authConst==null) authConst = context.getContextConfig().getDefaultAuthConstraint();
+                if(authConst != null) {
+                    if(authConst.isAuthorized(context)) result = 1;
+                    else if(authConst.getAuthPage(context)!=null) result = 2;
+                    else result = 3;
+                }
             }
             return result;
         } catch (Exception x) {
@@ -370,9 +376,12 @@ public class TransformerCallback {
             boolean result = true;
             ContextImpl context = requestContext.getParentContext();
             PageRequestConfig config = context.getContextConfig().getPageRequestConfig(pageName);
-            AuthConstraint authConst = requestContext.getAuthConstraint(config);
-            if(authConst != null) {
-                if(!authConst.isAuthorized(context)) result = false;
+            if(config != null) {
+                AuthConstraint authConst = config.getAuthConstraint();
+                if(authConst==null) authConst = context.getContextConfig().getDefaultAuthConstraint();
+                if(authConst != null) {
+                    if(!authConst.isAuthorized(context)) result = false;
+                }
             }
             return result;
         } catch (Exception x) {
@@ -380,17 +389,58 @@ public class TransformerCallback {
             throw x;
         }
     }
-
-    private static State getState(ContextImpl context, String pageName) {
-        PageRequestConfig config = context.getContextConfig().getPageRequestConfig(pageName);
-        if (config == null) {
-            return null;
-        }
-        return config.getState();
+    
+    public static boolean isBot(RequestContextImpl requestContext) {
+        return BotDetector.isBot(requestContext.getPfixServletRequest().getRequest());
     }
     
     public static String getFrameworkVersion() {
         return FrameworkInfo.getVersion();
+    }
+    
+    public static boolean needsLastFlow(RequestContextImpl requestContext, String pageName, String lastFlowName) throws Exception {
+        try {
+            ContextImpl context = requestContext.getParentContext();
+            return context.needsLastFlow(pageName, lastFlowName);
+        } catch (Exception x) {
+            ExtensionFunctionUtils.setExtensionFunctionError(x);
+            throw x;
+        }
+    }
+    
+    public static String omitPage(RequestContextImpl requestContext, TargetGenerator gen, String pageName, String lang) throws Exception {
+        try {
+            ContextImpl context = requestContext.getParentContext();
+            String langPrefix = "";
+            Tenant tenant = context.getTenant();
+            ProjectInfo projectInfo = context.getProjectInfo();
+            if((tenant != null && !lang.equals(tenant.getDefaultLanguage())) ||
+                    (tenant == null && projectInfo.getSupportedLanguages().size() > 1 && !lang.equals(projectInfo.getDefaultLanguage()))) {
+                langPrefix = LocaleUtils.getLanguagePart(lang);
+            }
+            String defaultPage = context.getContextConfig().getDefaultPage(context.getVariant());
+            if(defaultPage.equals(pageName)) {
+                return langPrefix;
+            } else {
+                String alias = gen.getSiteMap().getAlias(pageName, lang);
+                if(langPrefix.length() > 0) {
+                    alias = langPrefix + "/" + alias;
+                }
+                return alias;
+            }
+        } catch (Exception x) {
+            ExtensionFunctionUtils.setExtensionFunctionError(x);
+            throw x;
+        }
+    }
+    
+    public static String getPageAlias(TargetGenerator gen, String pageName, String lang) throws Exception {
+        try {
+            return gen.getSiteMap().getAlias(pageName, lang);
+        } catch (Exception x) {
+            ExtensionFunctionUtils.setExtensionFunctionError(x);
+            throw x;
+        }
     }
     
 }

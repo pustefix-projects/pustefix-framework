@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<sitemap-aliases lang="de">
+  <alias page="home">Start</alias>
+  <alias page="order">Bestellung</alias>
+  <alias page="overview">Uebersicht</alias>
+</sitemap-aliases>

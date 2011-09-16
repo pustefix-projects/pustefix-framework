@@ -18,21 +18,14 @@
 
 package org.pustefixframework.config.contextxmlservice.parser;
 
-import java.util.Collection;
-
-import org.pustefixframework.config.contextxmlservice.PageFlowStepConfig;
-import org.pustefixframework.config.contextxmlservice.PageFlowStepHolder;
 import org.pustefixframework.config.contextxmlservice.parser.internal.PageFlowConfigImpl;
 import org.pustefixframework.config.contextxmlservice.parser.internal.PageFlowStepConfigImpl;
 import org.pustefixframework.config.generic.ParsingUtils;
 import org.w3c.dom.Element;
 
-import com.marsching.flexiparse.configuration.RunOrder;
 import com.marsching.flexiparse.parser.HandlerContext;
 import com.marsching.flexiparse.parser.ParsingHandler;
 import com.marsching.flexiparse.parser.exception.ParserException;
-
-import de.schlund.pfixcore.workflow.FlowStep;
 
 
 /**
@@ -43,22 +36,11 @@ import de.schlund.pfixcore.workflow.FlowStep;
 public class PageFlowStepParsingHandler implements ParsingHandler {
 
     public void handleNode(HandlerContext context) throws ParserException {
-        if (context.getRunOrder() == RunOrder.START) {
-            handleNodeStart(context);
-        } else if (context.getRunOrder() == RunOrder.END) {
-            handleNodeEnd(context);
-        }
-    }
-
-    public void handleNodeStart(HandlerContext context) throws ParserException {
+       
         Element element = (Element)context.getNode();
         ParsingUtils.checkAttributes(element, new String[] {"name"}, new String[] {"stophere"});
         
-        PageFlowConfigImpl flowConfig = null;
-        Collection<PageFlowConfigImpl> flowConfigs = context.getObjectTreeElement().getObjectsOfTypeFromTopTree(PageFlowConfigImpl.class);
-        if (flowConfigs.size() > 0) {
-            flowConfig = flowConfigs.iterator().next();
-        }
+        PageFlowConfigImpl flowConfig = ParsingUtils.getFirstTopObject(PageFlowConfigImpl.class, context, true);
         
         String pageName = element.getAttribute("name").trim();
         PageFlowStepConfigImpl stepConfig = new PageFlowStepConfigImpl();
@@ -67,27 +49,11 @@ public class PageFlowStepParsingHandler implements ParsingHandler {
         if (stophere.length()>0) {
             stepConfig.setStopHere(Boolean.parseBoolean(stophere));
         } else {
-            // Check whether we have a flow config. If the flow step
-            // is defined within an extension, the flow configuration
-            // will not be available.
-            if (flowConfig != null) {
-                stepConfig.setStopHere(flowConfig.isStopNext());
-            }
+            stepConfig.setStopHere(flowConfig.isStopNext());
         }
+        flowConfig.addFlowStep(stepConfig);
         context.getObjectTreeElement().addObject(stepConfig);
-    }
-
-    public void handleNodeEnd(HandlerContext context) throws ParserException {
-        PageFlowStepConfig stepConfig = ParsingUtils.getSingleObject(PageFlowStepConfig.class, context);
-        
-        final FlowStep flowStep = new FlowStep(stepConfig);
-        context.getObjectTreeElement().addObject(new PageFlowStepHolder() {
-    
-            public Object getPageFlowStepObject() {
-                return flowStep;
-            }
-            
-        });
+       
     }
 
 }

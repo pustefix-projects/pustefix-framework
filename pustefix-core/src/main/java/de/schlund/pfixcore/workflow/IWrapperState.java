@@ -22,6 +22,8 @@ import java.util.Map;
 
 import org.pustefixframework.config.contextxmlservice.IWrapperConfig;
 
+import de.schlund.pfixxml.Tenant;
+
 
 public interface IWrapperState extends State {
     /**
@@ -30,5 +32,5 @@ public interface IWrapperState extends State {
      * 
      * @return map with wrapper configurations
      */
-    public Map<String, ? extends IWrapperConfig> getIWrapperConfigMap();
+    public Map<String, ? extends IWrapperConfig> getIWrapperConfigMap(Tenant tenant);
 }

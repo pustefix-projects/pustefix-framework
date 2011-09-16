@@ -27,7 +27,7 @@ import java.util.Set;
 import org.pustefixframework.container.annotations.ImplementedBy;
 import org.pustefixframework.container.annotations.Inject;
 import org.pustefixframework.container.annotations.Scope;
-import org.pustefixframework.container.spring.beans.support.ScopedProxyUtils;
+import org.springframework.aop.scope.ScopedProxyUtils;
 import org.springframework.beans.PropertyValue;
 import org.springframework.beans.factory.BeanInitializationException;
 import org.springframework.beans.factory.NoSuchBeanDefinitionException;
@@ -36,7 +36,6 @@ import org.springframework.beans.factory.config.BeanDefinitionHolder;
 import org.springframework.beans.factory.config.BeanFactoryPostProcessor;
 import org.springframework.beans.factory.config.ConfigurableListableBeanFactory;
 import org.springframework.beans.factory.config.RuntimeBeanReference;
-import org.springframework.beans.factory.support.AbstractBeanDefinition;
 import org.springframework.beans.factory.support.BeanDefinitionBuilder;
 import org.springframework.beans.factory.support.BeanDefinitionRegistry;
 import org.springframework.beans.factory.support.BeanDefinitionValidationException;
@@ -86,10 +85,7 @@ public class AnnotationBeanDefinitionPostProcessor implements BeanFactoryPostPro
         this.scopedProxyMap.clear();
         for (String beanName : beanFactory.getBeanDefinitionNames()) {
             BeanDefinition beanDefinition = beanFactory.getBeanDefinition(beanName);
-            if (!beanDefinition.isAbstract() && 
-                    beanDefinition.getBeanClassName() != null &&
-            		( beanDefinition.getBeanClassName().equals("org.springframework.aop.scope.ScopedProxyFactoryBean")
-            		|| beanDefinition.getBeanClassName().equals("org.pustefixframework.container.spring.beans.support.ScopedProxyFactoryBean")	)) {
+            if (!beanDefinition.isAbstract() && beanDefinition.getBeanClassName() != null && beanDefinition.getBeanClassName().equals("org.springframework.aop.scope.ScopedProxyFactoryBean")) {
                 PropertyValue value = beanDefinition.getPropertyValues().getPropertyValue("targetBeanName");
                 if (value != null) {
                     scopedProxyMap.put((String) value.getValue(), beanName);
@@ -109,26 +105,13 @@ public class AnnotationBeanDefinitionPostProcessor implements BeanFactoryPostPro
      * invalid method
      */
     private void processBeanDefinition(String beanName, BeanDefinition beanDefinition, ConfigurableListableBeanFactory beanFactory) {
-        if (beanDefinition.isAbstract() || beanDefinition.getBeanClassName() == null) {
-            return;
-        }
+        if(beanDefinition.isAbstract() || beanDefinition.getBeanClassName() == null) return;
         ClassLoader beanClassLoader = getClassLoader(beanFactory);
-        Class<?> beanClass = null;
-        if (beanDefinition instanceof AbstractBeanDefinition) {
-            AbstractBeanDefinition abstractBeanDefinition = (AbstractBeanDefinition) beanDefinition;
-            try {
-                beanClass = abstractBeanDefinition.getBeanClass();
-            } catch (IllegalStateException e) {
-                // bean class might not have been resolved yet
-                beanClass = null;
-            }
-        }
+        Class<?> beanClass;
         try {
-            if (beanClass == null) {
-                beanClass = beanClassLoader.loadClass(beanDefinition.getBeanClassName());
-            }
+            beanClass = beanClassLoader.loadClass(beanDefinition.getBeanClassName());
         } catch (ClassNotFoundException e) {
-            throw new BeanDefinitionValidationException("Class \"" + beanDefinition.getBeanClassName() + "\" specified for bean \"" + beanName + "\" could not be loaded.", e);
+            throw new BeanDefinitionValidationException("Class \"" + beanDefinition.getBeanClassName() + "\" specified for bean \"" + beanName + "\" could not be loaded.");
         }
         if(notAnnotatedClasses.contains(beanClass)) return;
         
@@ -224,26 +207,12 @@ public class AnnotationBeanDefinitionPostProcessor implements BeanFactoryPostPro
             }
             BeanDefinition beanDefinition = beanFactory.getBeanDefinition(beanName);
             if(beanDefinition.isAbstract() || beanDefinition.getBeanClassName() == null) continue;
-            Class<?> beanClass = null;
-            
-            if (beanDefinition instanceof AbstractBeanDefinition) {
-                try {
-                    beanClass = ((AbstractBeanDefinition) beanDefinition).getBeanClass();
-                } catch (IllegalStateException e) {
-                    // Bean class might not have been initialized yet
-                    beanClass = null;
-                }
+            Class<?> beanClass;
+            try {
+                beanClass = beanClassLoader.loadClass(beanDefinition.getBeanClassName());
+            } catch (ClassNotFoundException e) {
+                throw new BeanDefinitionValidationException("Type \"" + beanDefinition.getBeanClassName() + "\" could not be loaded.");
             }
-            if (beanClass == null) {
-                try {
-                    beanClass = beanClassLoader.loadClass(beanDefinition.getBeanClassName());
-                } catch (ClassNotFoundException e) {
-                    // Bean class has neither been set nor can be loaded from class name.
-                    // This is an error condition.
-                    throw new BeanDefinitionValidationException("Type \"" + beanDefinition.getBeanClassName() + "\" could not be loaded.");
-                }
-            }
-
             if (wantedType.isAssignableFrom(beanClass)) {
                 if (matchingBeanName == null) {
                     matchingBeanName = beanName;

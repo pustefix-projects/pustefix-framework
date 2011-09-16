@@ -32,17 +32,6 @@ import java.util.Iterator;
 import java.util.List;
 
 import org.apache.log4j.Logger;
-import org.pustefixframework.webservices.ProcessingInfo;
-import org.pustefixframework.webservices.ServiceCallContext;
-import org.pustefixframework.webservices.ServiceDescriptor;
-import org.pustefixframework.webservices.ServiceException;
-import org.pustefixframework.webservices.ServiceProcessor;
-import org.pustefixframework.webservices.ServiceRegistry;
-import org.pustefixframework.webservices.ServiceRequest;
-import org.pustefixframework.webservices.ServiceResponse;
-import org.pustefixframework.webservices.ServiceRuntime;
-import org.pustefixframework.webservices.fault.Fault;
-import org.pustefixframework.webservices.fault.FaultHandler;
 import org.pustefixframework.webservices.json.JSONArray;
 import org.pustefixframework.webservices.json.JSONObject;
 import org.pustefixframework.webservices.json.parser.JSONParser;
@@ -52,11 +41,22 @@ import org.pustefixframework.webservices.jsonws.JSONSerializer;
 import org.pustefixframework.webservices.jsonws.SerializationException;
 import org.pustefixframework.webservices.jsonws.Serializer;
 import org.pustefixframework.webservices.jsonws.SerializerRegistry;
-import org.pustefixframework.webservices.spring.WebserviceRegistration;
 
 import de.schlund.pfixcore.beans.BeanDescriptorFactory;
 import de.schlund.pfixcore.beans.InitException;
 import de.schlund.pfixcore.beans.metadata.DefaultLocator;
+import org.pustefixframework.webservices.ProcessingInfo;
+import org.pustefixframework.webservices.ServiceCallContext;
+import org.pustefixframework.webservices.ServiceDescriptor;
+import org.pustefixframework.webservices.ServiceException;
+import org.pustefixframework.webservices.ServiceProcessor;
+import org.pustefixframework.webservices.ServiceRegistry;
+import org.pustefixframework.webservices.ServiceRequest;
+import org.pustefixframework.webservices.ServiceResponse;
+import org.pustefixframework.webservices.ServiceRuntime;
+import org.pustefixframework.webservices.config.ServiceConfig;
+import org.pustefixframework.webservices.fault.Fault;
+import org.pustefixframework.webservices.fault.FaultHandler;
 
 /**
  * @author mleidig@schlund.de
@@ -98,7 +98,7 @@ public class JSONQXProcessor implements ServiceProcessor {
         int errorCode=0;
         Throwable error=null;            
         String serviceName=null;
-        WebserviceRegistration service=null;
+        ServiceConfig service=null;
         JSONObject jsonReq=null;
         Object resultObject=null;
         String jsonData=null;
@@ -125,7 +125,7 @@ public class JSONQXProcessor implements ServiceProcessor {
                 errorOrigin=1;
                 errorCode=1;
                 throw new ServiceException("Illegal service name: "+serviceName);
-            } else service=registry.getWebserviceRegistration(serviceName);
+            } else service=registry.getService(serviceName);
             if(service==null) {
                 errorOrigin=1;
                 errorCode=2;
@@ -189,7 +189,7 @@ public class JSONQXProcessor implements ServiceProcessor {
                             
             //Invocation
             try { 
-                Object serviceObject=service.getTarget();
+                Object serviceObject=registry.getServiceObject(serviceName);
                 resultObject=method.invoke(serviceObject,paramObjects);
             } catch(Throwable t) {
                 if(t instanceof InvocationTargetException && t.getCause()!=null) {
@@ -228,10 +228,7 @@ public class JSONQXProcessor implements ServiceProcessor {
                 if(resultObject instanceof Void || resultObject==null) {
                     writer.write("null");
                 } else {
-                	boolean classHinting = false;
-                	if(service.getClassHinting() != null) classHinting = service.getClassHinting();
-                	else if(runtime.getConfiguration().getClassHinting() != null) classHinting = runtime.getConfiguration().getClassHinting();
-                    JSONSerializer jsonSer=new JSONSerializer(serializerRegistry,classHinting);
+                    JSONSerializer jsonSer=new JSONSerializer(serializerRegistry,service.getJSONClassHinting());
                     jsonSer.serialize(resultObject,writer);
                 }
                 long t2=System.currentTimeMillis();
@@ -243,7 +240,8 @@ public class JSONQXProcessor implements ServiceProcessor {
                 Fault fault=new Fault(serviceName,callContext.getServiceRequest(),
                         callContext.getServiceResponse(),jsonData,callContext.getContext());
                 fault.setThrowable(error);
-                FaultHandler faultHandler=runtime.getConfiguration().getFaultHandler();
+                FaultHandler faultHandler=service.getFaultHandler();
+                if(faultHandler==null) faultHandler=runtime.getConfiguration().getGlobalServiceConfig().getFaultHandler();
                 if(faultHandler!=null) faultHandler.handleFault(fault);
                 error=fault.getThrowable();
                 JSONObject errobj=new JSONObject();

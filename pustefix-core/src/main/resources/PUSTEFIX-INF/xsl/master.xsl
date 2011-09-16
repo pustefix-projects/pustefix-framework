@@ -18,7 +18,7 @@
 
      NOTE: THIS IS NOT A WORKING MASTER STYLESHEET!  You need to
      process it with a customization stylesheet that handles the tags
-     <cus:lang/>, <cus:navigation/> and <cus:custom_xsl/>.
+     <cus:product/>, <cus:lang/> and <cus:custom_xsl/>.
 
      Let me repeat once again: NEVER EVER change anything here that
      doesn't apply to the most general case. If the need arises, do
@@ -45,12 +45,11 @@
                 xmlns:pfx="http://www.schlund.de/pustefix/core"
 				xmlns:ixsl="http://www.w3.org/1999/XSL/TransformOutputAlias">
 
-  <xsl:import href="core/xsl/default_copy.xsl"/>
-  <xsl:import href="core/xsl/include.xsl"/>
-  <xsl:import href="core/xsl/navigation.xsl"/>
-  <xsl:import href="core/xsl/utils.xsl"/>
-  <xsl:import href="core/xsl/forminput.xsl"/>
-  <xsl:import href="core/xsl/json_resources.xsl"/>
+  <xsl:import href="module://pustefix-core/xsl/default_copy.xsl"/>
+  <xsl:import href="module://pustefix-core/xsl/include.xsl"/>
+  <xsl:import href="module://pustefix-core/xsl/navigation.xsl"/>
+  <xsl:import href="module://pustefix-core/xsl/utils.xsl"/>
+  <xsl:import href="module://pustefix-core/xsl/forminput.xsl"/>
 
   <cus:custom_xsl/>
 
@@ -66,14 +65,14 @@
   <!-- <xsl:param name="exclude_custom_ns_prefixes"/> -->
   
   <!-- Needed for includes to work. Remember to include this in the resulting stylesheet, too! -->
+  <xsl:param name="tenant"/>
   <xsl:param name="lang"><cus:lang/></xsl:param>
+  <xsl:param name="pageAlternative"/>
+  <xsl:param name="product"><cus:product/></xsl:param>
 
-  <!-- Needed for navibuttons to work. Normally not needed in the resulting stylesheet -->
-  <xsl:param name="navigation"><cus:navigation/></xsl:param>
   <xsl:param name="page"/>
-  <xsl:param name="bundle"/>
-  <xsl:param name="__navitree"/>
-  <xsl:param name="navitree" select="$__navitree"/>
+  <xsl:param name="__sitemap"/>
+  <xsl:param name="sitemap" select="$__sitemap"/>
 
   <!--
     Define __contextpath despite it's only evaluated/needed at runtime, cause Saxon2
@@ -101,10 +100,10 @@
                      xmlns:rfh="java:org.pustefixframework.http.AbstractPustefixXMLRequestHandler$RegisterFrameHelper" 
                      exclude-result-prefixes="pfx cus xsl url deref callback compress func rfh">
 
-      <ixsl:import href="core/xsl/default_copy.xsl"/>
-      <ixsl:import href="core/xsl/include.xsl"/>
-      <ixsl:import href="core/xsl/json_resources.xsl"/>
-      <ixsl:import href="core/xsl/functions.xsl"/>
+      <ixsl:import href="module://pustefix-core/xsl/default_copy.xsl"/>
+      <ixsl:import href="module://pustefix-core/xsl/include.xsl"/>
+      <ixsl:import href="module://pustefix-core/xsl/functions.xsl"/>
+      <ixsl:import href="module://pustefix-core/xsl/render.xsl"/>
 
       <!-- generate user defined imports -->
       <xsl:call-template name="gen_ixsl_import">
@@ -126,8 +125,8 @@
         </xsl:if>
       </ixsl:output>
 
-      <ixsl:param name="__navitree"/>
-      <ixsl:param name="navitree" select="$__navitree"/>
+      <ixsl:param name="__sitemap"/>
+      <ixsl:param name="sitemap" select="$__sitemap"/>
       
       <!-- The next three parameters are opaque Java objects. Use them only to pass them to extension functions! -->
       <ixsl:param name="__context__"/>
@@ -135,11 +134,7 @@
       <ixsl:param name="__register_frame_helper__"/>
       
       <!-- these parameters will always be passed in by the servlet -->
-      <!-- e.g. /xml/static/FOOBAR;jsessionid=1E668C65F42697962A31177EB5319D8B.foo -->
       <ixsl:param name="__uri"/>
-      
-      <!-- e.g. jsessionid=1E668C65F42697962A31177EB5319D8B.foo -->
-      <!--<ixsl:param name="__sessid"/>--> <!-- defined in include.xsl.in -->
 
       <!-- e.g. 1E668C65F42697962A31177EB5319D8B.foo -->
       <!--
@@ -154,8 +149,6 @@
       -->
       <ixsl:param name="__external_session_ref"/>
       
-      <!-- e.g. /xml/static -->
-      <ixsl:param name="__servletpath"/>
       <!-- e.g. /context -->
       <ixsl:param name="__contextpath"/>
 
@@ -164,15 +157,20 @@
       <ixsl:param name="__remote_addr"/>
       <ixsl:param name="__server_name"/>
       <ixsl:param name="__request_scheme"/>
-      <ixsl:param name="__frame">_top</ixsl:param>
+      <ixsl:param name="__frame">
+        <xsl:if test="/pfx:document/pfx:frameset or /pfx:document/html/pfx:frameset">_top</xsl:if>
+      </ixsl:param>
+      
       <ixsl:param name="__reusestamp">-1</ixsl:param>
       
       <ixsl:param name="__lf"/>
       <ixsl:param name="pageflow"/>
       
+      <ixsl:param name="tenant"><xsl:value-of select="$tenant"/></ixsl:param>
       <ixsl:param name="lang"><xsl:value-of select="$lang"/></ixsl:param>
-      <ixsl:variable name="page"><xsl:value-of select="$page"/></ixsl:variable>
-      <ixsl:variable name="bundle"><xsl:value-of select="$bundle"/></ixsl:variable>
+      <ixsl:param name="pageAlternative"><xsl:value-of select="$pageAlternative"/></ixsl:param>
+      <ixsl:param name="page"><xsl:value-of select="$page"/></ixsl:param>
+      <ixsl:variable name="product"><xsl:value-of select="$product"/></ixsl:variable>
       <ixsl:variable name="__root" select="/"/>
       
       <ixsl:template name="__enc">
@@ -194,7 +192,7 @@
       </ixsl:template>
       
       <ixsl:template name="__fake_session_id_argument">
-        <ixsl:value-of select="deref:getFakeSessionIdArgument($__sessid)"/>
+        <ixsl:value-of select="deref:getFakeSessionIdArgument($__sessionIdPath)"/>
       </ixsl:template>
       
       <ixsl:template name="__deref">
@@ -214,7 +212,7 @@
           </ixsl:call-template>
         </ixsl:variable>
         <ixsl:value-of select="$__contextpath"/>
-        <ixsl:text>/xml/deref</ixsl:text>
+        <ixsl:text>/deref</ixsl:text>
         <ixsl:call-template name="__fake_session_id_argument"/>
         <ixsl:text>?link=</ixsl:text>
         <ixsl:value-of select="$enclink"/>&amp;__sign=<ixsl:value-of select="$sign"/>&amp;__ts=<ixsl:value-of select="$ts"/>
@@ -265,9 +263,38 @@
             </ixsl:if>
           </xsl:when>
        </xsl:choose>
-    </ixsl:template>    
+    </ixsl:template>
+
+  <ixsl:template name="__formwarn_command">
+    <xsl:choose>
+      <xsl:when test="$prohibitEdit = 'no'">
+        <ixsl:param name="fullname" />
+        <ixsl:param name="targetpage" />
+
+        <ixsl:if test="not(contains($fullname, '.'))">
+          <ixsl:choose>
+            <ixsl:when test="not(pfx:getIWrapperInfo($targetpage,$fullname))">
+              <div
+                style="position: absolute; color: #000000; background-color: #eeaaaa; border: solid 1px #aa8888; font-family: sans-serif; font-size:9px; font-weight: normal;"
+                onclick="if (event.stopPropagation) event.stopPropagation(); else if (typeof event.cancelBubble != 'undefined') event.cancelBubble = true; this.style.display='none';return false;">
+                Warning: Unknown wrapper
+                <b>
+                  <ixsl:value-of select="$fullname" />
+                </b>
+                on page
+                <b>
+                  <ixsl:value-of select="$targetpage" />
+                </b>
+              </div>
+            </ixsl:when>
+          </ixsl:choose>
+        </ixsl:if>
+      </xsl:when>
+    </xsl:choose>
+  </ixsl:template>    
 
       <ixsl:template match="/">
+        <ixsl:call-template name="__render_start__"/>
         <xsl:choose>
           <!-- <xsl:when test="//frameset"> -->
           <xsl:when test="key('frameset_key','fset')">
@@ -411,8 +438,8 @@
   <xsl:template match="pfx:wsscript">
     <script type="text/javascript">
       <ixsl:attribute name="src">
-        <ixsl:value-of select="concat($__contextpath,'/xml/webservice')"/>
-        <xsl:if test="@session='true'">;<ixsl:value-of select="$__sessid"/></xsl:if>
+        <ixsl:value-of select="concat($__contextpath,'/webservice')"/>
+        <xsl:if test="@session='true'"><ixsl:value-of select="$__sessionIdPath"/></xsl:if>
         <ixsl:value-of select="concat('?wsscript&amp;name=',url:encode('{@name}','{$outputencoding}'),'&amp;type=')"/>
         <xsl:choose>
           <xsl:when test="@type"><xsl:value-of select="@type"/></xsl:when>
@@ -420,10 +447,6 @@
         </xsl:choose>
       </ixsl:attribute>
     </script>
-  </xsl:template>
-
-  <xsl:template match="pfx:partinfo">
-    <xsl:apply-templates/>
   </xsl:template>
 
 </xsl:stylesheet>

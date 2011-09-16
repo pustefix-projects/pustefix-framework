@@ -22,14 +22,15 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.pustefixframework.resource.InputStreamResource;
-import org.pustefixframework.resource.URLResource;
+import javax.xml.transform.TransformerException;
+
+import org.apache.log4j.Logger;
+import org.pustefixframework.util.xml.NamespaceUtils;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.NamedNodeMap;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
-import org.xml.sax.InputSource;
 import org.xml.sax.SAXException;
 
 import de.schlund.pfixcore.scriptedflow.vm.Instruction;
@@ -40,6 +41,7 @@ import de.schlund.pfixcore.scriptedflow.vm.pvo.DynamicObject;
 import de.schlund.pfixcore.scriptedflow.vm.pvo.ListObject;
 import de.schlund.pfixcore.scriptedflow.vm.pvo.ParamValueObject;
 import de.schlund.pfixcore.scriptedflow.vm.pvo.StaticObject;
+import de.schlund.pfixxml.resources.FileResource;
 import de.schlund.pfixxml.util.Xml;
 
 /**
@@ -50,25 +52,34 @@ import de.schlund.pfixxml.util.Xml;
  * @see de.schlund.pfixcore.scriptedflow.vm.ScriptVM
  */
 public class Compiler {
-    public final static String NS_SCRIPTEDFLOW = "http://pustefix.sourceforge.net/scriptedflow200602";
-
-    public static Script compile(InputStreamResource resource) throws CompilerException {
+    
+    private final static Logger LOG = Logger.getLogger(Compiler.class);
+    
+    public final static String DEPRECATED_NS_SCRIPTEDFLOW = "http://pustefix.sourceforge.net/scriptedflow200602";
+    public final static String NS_SCRIPTEDFLOW = "http://www.pustefix-framework.org/2008/namespace/scriptedflow";
+    
+    public static Script compile(FileResource scriptFile) throws CompilerException {
         Document doc;
         try {
-            InputSource is = new InputSource(resource.getInputStream());
-            if (resource instanceof URLResource) {
-                is.setSystemId(((URLResource) resource).getURL().toExternalForm());
-            }
-            doc = Xml.parseMutable(is);
+            doc = Xml.parseMutable(scriptFile);
         } catch (SAXException e) {
-            throw new CompilerException("XML parser could not parse file " + resource.toString(), e);
+            throw new CompilerException("XML parser could not parse file " + scriptFile.toString(), e);
         } catch (IOException e) {
-            throw new CompilerException("XML parser could not read file " + resource.toString(), e);
+            throw new CompilerException("XML parser could not read file " + scriptFile.toString(), e);
         }
         
+        if(DEPRECATED_NS_SCRIPTEDFLOW.equals(doc.getDocumentElement().getNamespaceURI())) {
+            LOG.warn("[DEPRECATED] Scripted flow file '" + scriptFile.toString() + "' uses deprecated namespace '" + 
+                    DEPRECATED_NS_SCRIPTEDFLOW + ". It should be replaced by '" + NS_SCRIPTEDFLOW + "'.");
+            try {
+                doc = NamespaceUtils.setNamespace(doc, NS_SCRIPTEDFLOW, NS_SCRIPTEDFLOW + ".xsd");
+            } catch (TransformerException x) {
+                throw new CompilerException("Error handling deprecated scripteflow XML namespace: " + scriptFile.toString(), x);
+            }
+        }
         Element root = doc.getDocumentElement();
         if (!root.getLocalName().equals("scriptedflow") || !root.getNamespaceURI().equals(NS_SCRIPTEDFLOW)) {
-            throw new CompilerException("Input file " + resource.toString() + " is not a scripted flow!");
+            throw new CompilerException("Input file " + scriptFile.toString() + " is not a scripted flow!");
         }
         
         // Check version
@@ -80,7 +91,7 @@ public class Compiler {
         }
         
         if (!version.equals("1.0")) {
-            throw new CompilerException("Script file \"" + resource.toString() + "\" uses version "
+            throw new CompilerException("Script file \"" + scriptFile.toString() + "\" uses version "
                                         + version + " but compiler only supports version 1.0");
         }
         

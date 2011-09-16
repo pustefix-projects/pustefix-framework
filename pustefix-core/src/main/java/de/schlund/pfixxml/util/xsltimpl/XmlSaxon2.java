@@ -44,7 +44,7 @@ public class XmlSaxon2 implements XmlSupport {
         Transformer t = Xslt.createIdentityTransformer(XsltVersion.XSLT2);
         t.transform(input, builder);
         NodeInfo node = builder.getCurrentRoot();
-        return (Document) NodeOverNodeInfo.wrap(node);
+        return (Document)NodeOverNodeInfo.wrap(node);
     }
 
     public boolean isInternalDOM(Node node) {

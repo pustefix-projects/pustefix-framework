@@ -1,9 +1,0 @@
-<?xml version="1.0" encoding="UTF-8"?>
-<statuscodeinfo xmlns="http://pustefix-framework.org/statuscodeinfo" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-  xsi:schemaLocation="http://pustefix-framework.org/statuscodeinfo ../../core/schema/statuscodeinfo.xsd">
-
-  <statuscodes class="org.pustefixframework.samples.taskmanager.StatusCodes">
-    <file>statusmessages.xml</file>
-  </statuscodes>
-  
-</statuscodeinfo>

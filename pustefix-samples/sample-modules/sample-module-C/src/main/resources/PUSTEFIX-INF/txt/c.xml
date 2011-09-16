@@ -4,7 +4,7 @@
     <theme name="default">
       <div class="part_module">
         <h3>CCC - C</h3>
-        <partinfo part="partC" theme="default" path="txt/c.xml" module="org.pustefixframework.samples.modules.sample-module-C"/>
+        <partinfo part="partC" theme="default" path="txt/c.xml" module="sample-module-C"/>
       </div>
     </theme>
   </part>

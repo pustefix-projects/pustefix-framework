@@ -30,4 +30,6 @@ public class IncludeFileTO implements Serializable {
     public String path;
     public List<String> parts = new LinkedList<String>();
     public long serial;
+    public boolean readOnly;
+    
 }

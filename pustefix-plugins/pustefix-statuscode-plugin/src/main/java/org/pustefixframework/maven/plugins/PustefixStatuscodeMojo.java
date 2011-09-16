@@ -22,13 +22,17 @@ import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
 
+import javax.xml.parsers.DocumentBuilder;
+import javax.xml.parsers.DocumentBuilderFactory;
+import javax.xml.xpath.XPath;
+import javax.xml.xpath.XPathFactory;
+
 import org.apache.maven.plugin.AbstractMojo;
 import org.apache.maven.plugin.MojoExecutionException;
 import org.apache.maven.project.MavenProject;
-import org.apache.maven.shared.osgi.DefaultMaven2OsgiConverter;
-import org.apache.maven.shared.osgi.Maven2OsgiConverter;
 import org.codehaus.plexus.util.DirectoryScanner;
 import org.pustefixframework.maven.plugins.GenerateSCodes.Result;
+import org.w3c.dom.Document;
 
 /**
  * Generate StatusCode constant classes from statusmessage files.
@@ -46,10 +50,9 @@ public class PustefixStatuscodeMojo extends AbstractMojo {
     private File genDir;
     
     /**
-     * @parameter default-value="${basedir}/src/main/resources/PUSTEFIX-INF"
-     * @required
+     * @parameter
      */
-    private File resDir;
+    private File docRoot;
     
     /**
      * @parameter
@@ -59,7 +62,7 @@ public class PustefixStatuscodeMojo extends AbstractMojo {
     /**
      * @parameter
      */
-    private String targetPath;
+    private boolean dynamic;
     
     /**
      * If not specified, dyntxt/statuscodeinfo.xml is used.
@@ -81,8 +84,21 @@ public class PustefixStatuscodeMojo extends AbstractMojo {
     
     public void execute() throws MojoExecutionException {
         
-	if(!resDir.exists()) return;
-  
+        //automatically detect docroot and module if not already set
+        if(docRoot == null) {
+            File webappDir = new File(project.getBasedir(), "src/main/webapp");
+            if(webappDir.exists()) {
+                docRoot = webappDir;
+            } else {
+                if(module == null) module = getModuleName();
+                if(module != null) {
+                    docRoot = new File(project.getBasedir(), "src/main/resources/PUSTEFIX-INF");
+                }
+            }
+        }
+        
+        if(docRoot == null || !docRoot.exists()) return;
+	
         DirectoryScanner ds = new DirectoryScanner();
         if(includes!=null) {
             ds.setIncludes(includes);
@@ -90,7 +106,7 @@ public class PustefixStatuscodeMojo extends AbstractMojo {
             ds.setIncludes(new String[] { "dyntxt/statuscodeinfo.xml" });
         }
         if(excludes!=null) ds.setExcludes(excludes);
-        ds.setBasedir(resDir);
+        ds.setBasedir(docRoot);
         ds.setCaseSensitive(true);
         ds.scan();
         String[] files = ds.getIncludedFiles();
@@ -101,13 +117,8 @@ public class PustefixStatuscodeMojo extends AbstractMojo {
             resList.add(file);
         }
         
-        if(module == null) {
-        	Maven2OsgiConverter converter = new DefaultMaven2OsgiConverter();
-        	module = converter.getBundleSymbolicName(project.getArtifact());
-        }
-        
         try {
-            Result result = GenerateSCodes.generateFromInfo(resList, resDir.getAbsolutePath(), genDir, module, targetPath);
+            Result result = GenerateSCodes.generateFromInfo(resList, docRoot.getAbsolutePath(), genDir, module, dynamic);
             if(result.generatedClasses.size()>0) {
                 getLog().info("Generated "+result.generatedClasses.size()+" statuscode class"+
                         (result.generatedClasses.size()>1?"es":""));
@@ -119,4 +130,23 @@ public class PustefixStatuscodeMojo extends AbstractMojo {
         }
 
     }
+    
+    private String getModuleName() throws MojoExecutionException {
+        String name = null;
+        File descriptor = new File(project.getBasedir(), "src/main/resources/META-INF/pustefix-module.xml");
+        if(descriptor.exists()) {
+            try {
+                DocumentBuilderFactory dbf = DocumentBuilderFactory.newInstance(); 
+                dbf.setNamespaceAware(false);
+                DocumentBuilder db = dbf.newDocumentBuilder();
+                Document doc = db.parse(descriptor);
+                XPath xpath = XPathFactory.newInstance().newXPath();
+                name = xpath.evaluate("/module-descriptor/module-name", doc);
+            } catch(Exception x) {
+                throw new MojoExecutionException("Error while reading module name from descriptor", x);
+            }
+        }
+        return name;
+    }
+    
 }

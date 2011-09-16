@@ -75,4 +75,6 @@ public interface IWrapperConfig {
      */
     IHandler getHandler();
     
+    String getTenant();
+    
 }

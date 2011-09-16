@@ -6,13 +6,14 @@
 >
   <info>
     <title>Pustefix Reference Documentation</title>
-    <subtitle>Version 1.0.x</subtitle>
-    <releaseinfo>This documentation relates to Pustefix 1.0.x.</releaseinfo>
+    <subtitle>Version 0.18.x</subtitle>
+    <releaseinfo>This documentation relates to the latest Pustefix release from the 0.18 branch.</releaseinfo>
     <copyright>
       <year>2007</year>
       <year>2008</year>
       <year>2009</year>
       <year>2010</year>
+      <year>2011</year>
       <holder>1&amp;1 Internet AG</holder>
     </copyright>
     <authorgroup>
@@ -52,11 +53,11 @@
       <keyword>Pustefix</keyword>
       <keyword>Spring</keyword>
       <keyword>Maven</keyword>
-      <keyword>OSGi</keyword>
     </keywordset>
   </info>
   
   <xi:include href="preface.xml" />
+  <xi:include href="news.xml" />
   <xi:include href="installation.xml" />
   <xi:include href="architecture.xml" />
   <xi:include href="configuration.xml" />
@@ -65,6 +66,9 @@
   <xi:include href="advancedtopics.xml" />
   <xi:include href="module-support.xml" />
   <xi:include href="testing.xml" />
+  <xi:include href="tooling.xml" />
+  <xi:include href="upgrade.xml" />
+  <xi:include href="news-archive.xml" />
   <xi:include href="glossary.xml" />
 
 </book>

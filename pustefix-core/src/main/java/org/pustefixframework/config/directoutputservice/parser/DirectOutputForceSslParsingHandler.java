@@ -19,7 +19,7 @@
 package org.pustefixframework.config.directoutputservice.parser;
 
 import org.pustefixframework.config.customization.CustomizationAwareParsingHandler;
-import org.pustefixframework.config.directoutputservice.parser.internal.DirectOutputRequestHandlerConfigImpl;
+import org.pustefixframework.config.directoutputservice.parser.internal.DirectOutputServiceConfigImpl;
 import org.w3c.dom.Element;
 
 import com.marsching.flexiparse.parser.HandlerContext;
@@ -32,7 +32,7 @@ public class DirectOutputForceSslParsingHandler extends CustomizationAwareParsin
         Element elem = (Element) context.getNode();
         String text = elem.getTextContent();
         if (text.equalsIgnoreCase("true")) {
-            DirectOutputRequestHandlerConfigImpl serviceConfig = context.getObjectTreeElement().getObjectsOfTypeFromTopTree(DirectOutputRequestHandlerConfigImpl.class).iterator().next();
+            DirectOutputServiceConfigImpl serviceConfig = context.getObjectTreeElement().getObjectsOfTypeFromTopTree(DirectOutputServiceConfigImpl.class).iterator().next();
             serviceConfig.setSSL(true);
         }
     }

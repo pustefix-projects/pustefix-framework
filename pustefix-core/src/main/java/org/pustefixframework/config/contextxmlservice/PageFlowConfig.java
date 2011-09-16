@@ -18,6 +18,7 @@
 
 package org.pustefixframework.config.contextxmlservice;
 
+import java.util.List;
 
 /**
  * Provides configuration for a page flow.  
@@ -52,5 +53,12 @@ public interface PageFlowConfig {
      * a submit 
      */
     boolean isStopNext();
+
+    /**
+     * Returns a list of configurations for each flow step.
+     * 
+     * @return configurations of the flow steps
+     */
+    List<? extends PageFlowStepConfig> getFlowSteps();
 
 }

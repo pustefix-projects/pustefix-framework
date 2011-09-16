@@ -17,6 +17,9 @@
  */
 package de.schlund.pfixcore.auth;
 
+import java.util.List;
+
+import de.schlund.pfixcore.auth.conditions.NavigationCase;
 import de.schlund.pfixcore.workflow.Context;
 
 /**
@@ -29,13 +32,15 @@ public interface AuthConstraint extends Condition {
     public boolean isAuthorized(Context context);
 
     public Condition getCondition();
+    
+    public List<NavigationCase> getNavigation();
 
     public void setCondition(Condition condition);
 
     public String getId();
 
-    public String getAuthPage();
+    public String getAuthPage(Context context);
     
-    public boolean isDefault();
+    public String getDefaultAuthPage();
 
 }

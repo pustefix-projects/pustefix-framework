@@ -17,22 +17,22 @@
     </layout>		
   </appender>
 
-  <category name="org.pustefixframework.xmlgenerator.targets.XSLVirtualTarget.TREE" additivity="false">
+  <category name="de.schlund.pfixxml.targets.XSLVirtualTarget.TREE" additivity="false">
     <priority value="debug"/>
     <appender-ref ref="STDOUT_TREE"/>
   </category>
 
-  <category name="org.pustefixframework.xmlgenerator.targets.XMLVirtualTarget.TREE" additivity="false">
+  <category name="de.schlund.pfixxml.targets.XMLVirtualTarget.TREE" additivity="false">
     <priority value="debug"/>
     <appender-ref ref="STDOUT_TREE"/>
   </category>
   
-  <category name="org.pustefixframework.xmlgenerator.targets.XMLLeafTarget.TREE" additivity="false">
+  <category name="de.schlund.pfixxml.targets.XMLLeafTarget.TREE" additivity="false">
     <priority value="debug"/>
     <appender-ref ref="STDOUT_TREE"/>
   </category>
 
-  <category name="org.pustefixframework.xmlgenerator.targets.XSLLeafTarget.TREE" additivity="false">
+  <category name="de.schlund.pfixxml.targets.XSLLeafTarget.TREE" additivity="false">
     <priority value="debug"/>
     <appender-ref ref="STDOUT_TREE"/>
   </category>

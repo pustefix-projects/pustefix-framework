@@ -20,13 +20,53 @@ package de.schlund.pfixxml;
 
 
 import org.apache.log4j.Logger;
-import org.pustefixframework.resource.Resource;
-import org.pustefixframework.xmlgenerator.targets.DependencyType;
-import org.pustefixframework.xmlgenerator.targets.VirtualTarget;
+
+import de.schlund.pfixxml.resources.Resource;
+import de.schlund.pfixxml.resources.ResourceUtil;
+import de.schlund.pfixxml.targets.DependencyType;
+import de.schlund.pfixxml.targets.TargetGenerator;
+import de.schlund.pfixxml.targets.VirtualTarget;
+import de.schlund.pfixxml.util.XsltContext;
 
 public class DependencyTracker {
-	
+    
     private final static Logger LOG = Logger.getLogger(DependencyTracker.class);
+    
+    /** xslt extension */
+    public static String logImage(XsltContext context, Resource path,
+                                  String parent_part_in, String parent_theme_in,
+                                  TargetGenerator targetGen, String targetKey, String type) throws Exception {
+
+        if (targetKey.equals("__NONE__")) {
+            return "0";
+        }
+
+        VirtualTarget   target    = (VirtualTarget) targetGen.getTarget(targetKey);
+
+        String parent_path  = "";
+        String parent_part  = "";
+        String parent_theme = "";
+
+        if (IncludeDocumentExtension.isIncludeDocument(context)) {
+            parent_path  = IncludeDocumentExtension.getSystemId(context);
+            parent_part  = parent_part_in;
+            parent_theme = parent_theme_in;
+        }
+        
+        if (target == null) {
+            LOG.error("Error adding Dependency: target not found (targetGen=" + targetGen + ", targetKey=" + targetKey + ")");
+            return "1";
+        }
+        
+        Resource relativeParent = parent_path.equals("") ? null : ResourceUtil.getResource(parent_path);
+        try {
+            logTyped(type, path, "", "", relativeParent, parent_part, parent_theme, target);
+            return "0";
+        } catch (Exception e) {
+            LOG.error("Error adding Dependency: ",e); 
+            return "1"; 
+        }
+    }
     
     public static void logTyped(String type, Resource path, String part, String theme,
                                 Resource parent_path, String parent_part, String parent_theme,
@@ -34,10 +74,10 @@ public class DependencyTracker {
         if (LOG.isDebugEnabled()) {
             LOG.debug("Adding dependency to AuxdependencyManager :+\n"+
                       "Type       = " + type + "\n" +
-                      "Path       = " + path.getURI().toString() + "\n" +
+                      "Path       = " + path.toURI().toString() + "\n" +
                       "Part       = " + part + "\n" +
                       "Theme      = " + theme + "\n" +
-                      "ParentPath = " + ((parent_path == null)? "null" : parent_path.getURI().toString()) + "\n" +
+                      "ParentPath = " + ((parent_path == null)? "null" : parent_path.toURI().toString()) + "\n" +
                       "ParentPart = " + parent_part + "\n" +
                       "ParentProd = " + parent_theme + "\n");
         }

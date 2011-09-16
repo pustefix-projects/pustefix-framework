@@ -23,6 +23,7 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.LinkedHashSet;
+import java.util.List;
 import java.util.Map;
 import java.util.TreeSet;
 
@@ -37,6 +38,9 @@ import org.pustefixframework.editor.common.dom.ThemeList;
 import org.pustefixframework.editor.common.dom.Variant;
 import org.pustefixframework.editor.common.exception.EditorInitializationException;
 import org.pustefixframework.editor.common.exception.EditorParsingException;
+import org.pustefixframework.util.xml.DOMUtils;
+import org.springframework.util.xml.DomUtils;
+import org.w3c.dom.Element;
 
 import de.schlund.pfixcore.editor2.core.spring.ConfigurationService;
 import de.schlund.pfixcore.editor2.core.spring.DynIncludeFactoryService;
@@ -47,21 +51,18 @@ import de.schlund.pfixcore.editor2.core.spring.PustefixTargetUpdateService;
 import de.schlund.pfixcore.editor2.core.spring.TargetFactoryService;
 import de.schlund.pfixcore.editor2.core.spring.ThemeFactoryService;
 import de.schlund.pfixcore.editor2.core.spring.VariantFactoryService;
-import de.schlund.pfixcore.workflow.Navigation;
-import de.schlund.pfixcore.workflow.NavigationFactory;
-import de.schlund.pfixcore.workflow.Navigation.NavigationElement;
+import de.schlund.pfixcore.workflow.SiteMap;
 import de.schlund.pfixxml.event.ConfigurationChangeEvent;
 import de.schlund.pfixxml.event.ConfigurationChangeListener;
 import de.schlund.pfixxml.resources.ResourceUtil;
 import de.schlund.pfixxml.targets.AuxDependency;
-import de.schlund.pfixxml.targets.AuxDependencyFactory;
 import de.schlund.pfixxml.targets.AuxDependencyImage;
 import de.schlund.pfixxml.targets.DependencyType;
 import de.schlund.pfixxml.targets.PageInfo;
 import de.schlund.pfixxml.targets.PageTargetTree;
-import de.schlund.pfixxml.targets.TargetDependencyRelation;
 import de.schlund.pfixxml.targets.TargetGenerator;
 import de.schlund.pfixxml.targets.Themes;
+import de.schlund.pfixxml.util.XsltVersion;
 
 /**
  * Implementation of Project using a XML file to read project information during
@@ -70,9 +71,12 @@ import de.schlund.pfixxml.targets.Themes;
  * @author Sebastian Marsching <sebastian.marsching@1und1.de>
  */
 public class ProjectImpl extends AbstractProject {
+    
     private String projectName;
 
     private String projectComment;
+    
+    private boolean includePartsEditableByDefault;
 
     private VariantFactoryService variantfactory;
 
@@ -118,9 +122,11 @@ public class ProjectImpl extends AbstractProject {
             TargetFactoryService targetfactory,
             ConfigurationService configuration,
             PustefixTargetUpdateService updater, String name, String comment,
+            boolean includePartsEditableByDefault,
             TargetGenerator tgen) throws EditorInitializationException {
         this.projectName = name;
         this.projectComment = comment;
+        this.includePartsEditableByDefault = includePartsEditableByDefault;
         this.variantfactory = variantfactory;
         this.themefactory = themefactory;
         this.pagefactory = pagefactory;
@@ -154,15 +160,15 @@ public class ProjectImpl extends AbstractProject {
     }
 
     private synchronized void reloadConfig() {
-        Navigation navi = this.getNavigation();
+        SiteMap navi = this.getNavigation();
         TargetGenerator gen = this.getTargetGenerator();
 
         // Create hierarchical tree of pages
         PageTargetTree ptree = gen.getPageTargetTree();
         HashSet<Page> pages = new HashSet<Page>();
-        NavigationElement[] navElements = navi.getNavigationElements();
-        for (int i = 0; i < navElements.length; i++) {
-            pages.addAll(this.recurseNavigationElement(navElements[i], null,
+        List<Element>  navElements = DOMUtils.getChildElementsByTagName(navi.getSiteMapXMLElement(XsltVersion.XSLT1, null), "page");
+        for (Element navElement : navElements) {
+            pages.addAll(this.recurseNavigationElement(navElement, null,
                     ptree));
         }
         
@@ -184,7 +190,6 @@ public class ProjectImpl extends AbstractProject {
         // Add pages from target definitions which are not present in navigation tree
         for (PageInfo pinfo : gen.getPageTargetTree().getPageInfos()) {
             String pageName = pinfo.getName();
-            String pageHandler = "none";
             String variantName = pinfo.getVariant();
             Variant pageVariant;
             if (variantName != null) {
@@ -199,8 +204,7 @@ public class ProjectImpl extends AbstractProject {
                 // with the same name and same variant before
                 MutablePage page;
                 page = this.pagefactory.getMutablePage(pageName,
-                        pageVariant, pageHandler, pageThemes, this);
-                page.setHandlerPath(pageHandler);
+                        pageVariant, pageThemes, this);
                 pages.add(page);
                 this.recursePage(page, pagemap);
                 allpages.add(page);
@@ -249,13 +253,12 @@ public class ProjectImpl extends AbstractProject {
      * @return Collection containing page objects for all variants of the page
      *         specified by the NavigationElement
      */
-    private Collection<Page> recurseNavigationElement(NavigationElement nav,
+    private Collection<Page> recurseNavigationElement(Element nav,
             Page parent, PageTargetTree ptree) {
         HashSet<MutablePage> pages = new HashSet<MutablePage>();
         Page defaultPage = null;
 
-        String pageName = nav.getName();
-        String pageHandler = nav.getHandler();
+        String pageName = nav.getAttribute("name");
         Collection<PageInfo> pinfos = ptree.getPageInfoForPageName(pageName);
         if (pinfos == null) {
             String msg = "Could not load PageInfo from PageTree for page "
@@ -279,9 +282,8 @@ public class ProjectImpl extends AbstractProject {
                     // Create new page only if there has not been a page
                     // with the same name and same variant before
                     page = this.pagefactory.getMutablePage(pageName,
-                            pageVariant, pageHandler, pageThemes, this);
+                            pageVariant, pageThemes, this);
                 }
-                page.setHandlerPath(pageHandler);
                 pages.add(page);
                 if (pageVariant == null) {
                     defaultPage = page;
@@ -293,19 +295,18 @@ public class ProjectImpl extends AbstractProject {
         // otherwise, subpages cannot not be handled correctly
         if (defaultPage == null) {
             MutablePage page;
-            page = this.pagefactory.getMutablePage(pageName, null, pageHandler, new ThemeListImpl(this.themefactory, new Themes("default")), this);
-            page.setHandlerPath(pageHandler);
+            page = this.pagefactory.getMutablePage(pageName, null, new ThemeListImpl(this.themefactory, new Themes("default")), this);
             pages.add(page);
             defaultPage = page;
         }
         
         HashSet<Page> subpages = new HashSet<Page>();
 
-        if (nav.hasChildren()) {
-            NavigationElement[] elements = nav.getChildren();
-            for (int i = 0; i < elements.length; i++) {
+        List<Element> childPages = DomUtils.getChildElementsByTagName(nav, "page");
+        if (!childPages.isEmpty()) {
+            for (Element childPage: childPages) {
                 Collection<Page> subpageElements = this
-                        .recurseNavigationElement(elements[i], defaultPage,
+                        .recurseNavigationElement(childPage, defaultPage,
                                 ptree);
                 subpages.addAll(subpageElements);
             }
@@ -395,9 +396,9 @@ public class ProjectImpl extends AbstractProject {
         return this.tgen;
     }
 
-    private Navigation getNavigation() {
+    private SiteMap getNavigation() {
         try {
-            return NavigationFactory.getInstance().getNavigation(tgen.getConfigPath(), tgen.getXsltVersion());
+            return tgen.getSiteMap();
         } catch (Exception e) {
             throw new RuntimeException(
                     "Could not get navigation object for prokec \""
@@ -407,8 +408,8 @@ public class ProjectImpl extends AbstractProject {
 
     public Collection<IncludePartThemeVariant> getAllIncludeParts() {
         HashSet<IncludePartThemeVariant> includes = new HashSet<IncludePartThemeVariant>();
-        TreeSet<AuxDependency> deps = TargetDependencyRelation.getInstance()
-                .getProjectDependenciesForType(this.tgen, DependencyType.TEXT);
+        TreeSet<AuxDependency> deps = tgen.getTargetDependencyRelation()
+                .getProjectDependenciesForType(DependencyType.TEXT);
         if (deps == null) {
             return includes;
         }
@@ -427,8 +428,8 @@ public class ProjectImpl extends AbstractProject {
 
     public Collection<Image> getAllImages() {
         HashSet<Image> images = new HashSet<Image>();
-        TreeSet<AuxDependency> deps = TargetDependencyRelation.getInstance()
-                .getProjectDependenciesForType(this.tgen, DependencyType.IMAGE);
+        TreeSet<AuxDependency> deps = tgen.getTargetDependencyRelation()
+                .getProjectDependenciesForType(DependencyType.IMAGE);
         if (deps == null) {
             return images;
         }
@@ -441,13 +442,12 @@ public class ProjectImpl extends AbstractProject {
 
     public IncludePartThemeVariant findIncludePartThemeVariant(String file,
             String part, String theme) {
-        AuxDependency auxdep = AuxDependencyFactory
-                .getInstance()
+        AuxDependency auxdep = tgen.getAuxDependencyFactory()
                 .getAuxDependencyInclude(
                         ResourceUtil.getResource(file), part, theme);
 
-        TreeSet<AuxDependency> deps = TargetDependencyRelation.getInstance()
-                .getProjectDependencies(tgen);
+        TreeSet<AuxDependency> deps = tgen.getTargetDependencyRelation()
+                .getProjectDependencies();
         if (deps == null) {
             return null;
         }
@@ -467,17 +467,10 @@ public class ProjectImpl extends AbstractProject {
     }
 
     public boolean hasIncludePart(String file, String part, String theme) {
-        AuxDependency aux = AuxDependencyFactory
-                .getInstance()
+        AuxDependency aux = tgen.getAuxDependencyFactory()
                 .getAuxDependencyInclude(
                         ResourceUtil.getResource(file), part, theme);
-        TreeSet<TargetGenerator> generators = TargetDependencyRelation.getInstance()
-                .getAffectedTargetGenerators(aux);
-        if (generators == null) {
-            return false;
-        }
-
-        return generators.contains(this.tgen);
+        return aux != null;
     }
 
     public IncludeFile getDynIncludeFile(String path) {
@@ -490,6 +483,10 @@ public class ProjectImpl extends AbstractProject {
 
     public Map<String, String> getPrefixToNamespaceMappings() {
         return configuration.getPrefixToNamespaceMappings();
+    }
+
+    public boolean isIncludePartsEditableByDefault() {
+        return includePartsEditableByDefault;
     }
 
 }

@@ -21,7 +21,9 @@ package de.schlund.pfixcore.workflow.context;
 import java.util.Properties;
 
 import org.pustefixframework.config.contextxmlservice.ContextConfig;
+import org.pustefixframework.config.project.ProjectInfo;
 
+import de.schlund.pfixcore.workflow.PageMap;
 import de.schlund.pfixcore.workflow.VariantManager;
 import de.schlund.pfixxml.Variant;
 
@@ -38,9 +40,11 @@ public class ServerContextImpl {
     
     private PageFlowManager pageflowmanager;
     private VariantManager variantmanager;
+    private PageMap pagemap;
+    private ProjectInfo projectInfo;
     
     public void init() throws Exception {
-        if (config == null) {
+        if (config == null || pagemap == null) {
             throw new IllegalStateException("Properties have to be set before calling init().");
         }
         
@@ -50,6 +54,10 @@ public class ServerContextImpl {
     
     public void setConfig(ContextConfig config) {
         this.config = config;
+    }
+    
+    public void setPageMap(PageMap pageMap) {
+        this.pagemap = pageMap;
     }
     
     public Properties getProperties() {
@@ -72,6 +80,10 @@ public class ServerContextImpl {
         return variantmanager;
     }
     
+    public PageMap getPageMap() {
+        return pagemap;
+    }
+    
     public String getPageMatchingVariant(String pagename, Variant variant) {
         if (variant != null & variant.getVariantFallbackArray() != null && variantmanager != null) {
             return variantmanager.getVariantMatchingPageRequestName(pagename, variant);
@@ -80,4 +92,12 @@ public class ServerContextImpl {
         }
     }
     
+    public ProjectInfo getProjectInfo() {
+        return projectInfo;
+    }
+    
+    public void setProjectInfo(ProjectInfo projectInfo) {
+        this.projectInfo = projectInfo;
+    }
+
 }

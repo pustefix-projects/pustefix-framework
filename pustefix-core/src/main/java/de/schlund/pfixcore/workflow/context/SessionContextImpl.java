@@ -45,6 +45,7 @@ import de.schlund.pfixcore.workflow.ContextResourceManager;
 import de.schlund.pfixcore.workflow.ContextResourceManagerImpl;
 import de.schlund.pfixcore.workflow.SessionStatusEvent;
 import de.schlund.pfixcore.workflow.SessionStatusListener;
+import de.schlund.pfixxml.Tenant;
 import de.schlund.pfixxml.Variant;
 
 /**
@@ -56,10 +57,12 @@ import de.schlund.pfixxml.Variant;
  */
 public class SessionContextImpl {
 
-    private static Logger LOG = Logger.getLogger(SessionContextImpl.class);
+    private final static Logger LOG = Logger.getLogger(SessionContextImpl.class);
     
     private HttpSession                session;
     private Variant                    variant      = null;
+    private Tenant                     tenant;
+    private String                     language;
     private String                     visitId      = null;
     private ContextResourceManager     crm;
     private SessionEndNotificator      sessionEndNotificator;
@@ -77,13 +80,13 @@ public class SessionContextImpl {
         public void valueUnbound(HttpSessionBindingEvent ev) {
             // Send event to registered listeners
             try {
-            	SessionStatusListener[] currentListeners;
+                SessionStatusListener[] currentListeners;
                 synchronized (this) {
                     currentListeners = new SessionStatusListener[sessionListeners.size()];
                     sessionListeners.toArray(currentListeners);
                 }
                 for (SessionStatusListener l : currentListeners) {
-                	l.sessionStatusChanged(new SessionStatusEvent(SessionStatusEvent.Type.SESSION_DESTROYED));
+                    l.sessionStatusChanged(new SessionStatusEvent(SessionStatusEvent.Type.SESSION_DESTROYED));
                 }
             } catch(Throwable t) {
                 //if we're not catching all exceptions here, valueUnbound for the SessionAdmin
@@ -140,16 +143,11 @@ public class SessionContextImpl {
     }
     
     public void setLanguage(String langcode) {
-        session.setAttribute(AbstractPustefixXMLRequestHandler.SESS_LANG, langcode);
+        this.language = langcode;
     }
 
     public String getLanguage() {
-        try {
-            return (String) session.getAttribute(AbstractPustefixXMLRequestHandler.SESS_LANG);
-        } catch (IllegalStateException e) {
-            // May be thrown if session has been invalidated
-            return null;
-        }
+        return language;
     }
 
     public Variant getVariant() {
@@ -158,6 +156,14 @@ public class SessionContextImpl {
 
     public void setVariant(Variant variant) {
         this.variant = variant;
+    }
+    
+    public Tenant getTenant() {
+        return tenant;
+    }
+    
+    public void setTenant(Tenant tenant) {
+        this.tenant = tenant;
     }
 
     public String getVisitId() {

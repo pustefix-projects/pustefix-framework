@@ -25,7 +25,6 @@ import java.util.Set;
 
 import javax.jws.WebService;
 
-import org.apache.maven.artifact.Artifact;
 import org.apache.maven.plugin.AbstractMojo;
 import org.apache.maven.plugin.MojoExecutionException;
 import org.apache.maven.project.MavenProject;
@@ -243,12 +242,6 @@ public class PustefixWebserviceMojo extends AbstractMojo {
                                     wsgenDirs.add(wsgenDir);
                                 } 
                                 FileUtils.copyFiles(wsgenDir, wsdlDir, ".*wsdl", ".*xsd");
-                                // Replace endpoint URL
-                                String srvName = "HOST";
-                                String srvPort = "";
-                                srvPort = ":" + (portbase + 80);
-                                String wsUrl = "http://" + srvName + srvPort + globConf.getRequestPath() + "/" + conf.getName();
-                                FileUtils.searchAndReplace(wsdlFile, "UTF-8", "REPLACE_WITH_ACTUAL_URL", wsUrl);
                                 wsdlCount++;
                                 // Generate javascript stubs
                                 if (globConf.getStubGenerationEnabled()) {

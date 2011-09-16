@@ -17,45 +17,28 @@
  */
 package org.pustefixframework.config.contextxmlservice.parser;
 
-import java.net.URI;
-import java.net.URISyntaxException;
-
-import org.pustefixframework.config.contextxmlservice.ScriptedFlowProvider;
-import org.pustefixframework.config.contextxmlservice.parser.internal.ScriptedFlowProviderImpl;
+import org.pustefixframework.config.contextxmlservice.parser.internal.ContextXMLServletConfigImpl;
 import org.pustefixframework.config.generic.ParsingUtils;
-import org.pustefixframework.resource.InputStreamResource;
-import org.pustefixframework.resource.ResourceLoader;
 import org.w3c.dom.Element;
 
 import com.marsching.flexiparse.parser.HandlerContext;
 import com.marsching.flexiparse.parser.ParsingHandler;
 import com.marsching.flexiparse.parser.exception.ParserException;
 
-/**
- * Handles declaration of a scripted flow.  
- * 
- * @author Sebastian Marsching <sebastian.marsching@1und1.de>
- */
+
 public class ScriptedFlowParsingHandler implements ParsingHandler {
 
     public void handleNode(HandlerContext context) throws ParserException {
-
-        Element element = (Element) context.getNode();
-        ParsingUtils.checkAttributes(element, new String[] { "name", "file" }, null);
-
-        ResourceLoader resourceLoader = ParsingUtils.getSingleTopObject(ResourceLoader.class, context);
-
+       
+        Element element = (Element)context.getNode();
+        ParsingUtils.checkAttributes(element, new String[] {"name","file"}, null);
+        
+        ContextXMLServletConfigImpl config = ParsingUtils.getSingleTopObject(ContextXMLServletConfigImpl.class, context);     
+        
         String scriptName = element.getAttribute("name").trim();
         String scriptFile = element.getAttribute("file").trim();
-        URI uri;
-        try {
-            uri = new URI(scriptFile);
-        } catch (URISyntaxException e) {
-            throw new ParserException("Not a valid URI: " + scriptFile, e);
-        }
-        InputStreamResource resource = resourceLoader.getResource(uri, InputStreamResource.class);
-        ScriptedFlowProvider scriptedFlowProvider = new ScriptedFlowProviderImpl(scriptName, resource);
-        context.getObjectTreeElement().addObject(scriptedFlowProvider);
+        config.getScriptedFlowConfig().addScript(scriptName, scriptFile);
+        
     }
 
 }

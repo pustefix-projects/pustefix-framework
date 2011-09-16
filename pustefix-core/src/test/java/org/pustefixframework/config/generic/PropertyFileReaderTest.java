@@ -28,9 +28,8 @@ import org.apache.log4j.Logger;
 import org.apache.log4j.PatternLayout;
 import org.junit.Before;
 import org.junit.Test;
-import org.pustefixframework.config.customization.RuntimeProperties;
-import org.springframework.osgi.mock.MockBundleContext;
 
+import de.schlund.pfixxml.config.EnvironmentProperties;
 
 /**
  * 
@@ -50,14 +49,22 @@ public class PropertyFileReaderTest {
     
     @Test
     public void test() throws Exception {
+        Properties btp = new Properties();
+        btp.put("mode", "test");
+        btp.put("fqdn", "fqdn");
+        EnvironmentProperties.setProperties(btp);
         InputStream in = getClass().getResourceAsStream("/properties.xml");
         Properties props = new Properties();
-        MockBundleContext bundleContext = new MockBundleContext();
-        PropertyFileReader.read(in, bundleContext, props);
+        PropertyFileReader.read(in, props);
         Properties refProps = new Properties();
         refProps.setProperty("foo", "bar");
         refProps.setProperty("hey", "ho");
-        refProps.setProperty("fqdn", RuntimeProperties.getProperties().getProperty("fqdn"));
+        
+        String mode = EnvironmentProperties.getProperties().getProperty("mode");
+        refProps.setProperty("mode", mode);
+        String fqdn = EnvironmentProperties.getProperties().getProperty("fqdn");
+        refProps.setProperty("fqdn", fqdn);
+        
         assertEquals(props, refProps);
     }
 }

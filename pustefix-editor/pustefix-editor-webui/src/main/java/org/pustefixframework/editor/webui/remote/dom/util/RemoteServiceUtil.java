@@ -18,6 +18,8 @@
 
 package org.pustefixframework.editor.webui.remote.dom.util;
 
+import java.lang.reflect.InvocationHandler;
+import java.lang.reflect.Proxy;
 import java.net.MalformedURLException;
 
 import org.pustefixframework.editor.common.remote.service.RemoteDynIncludeService;
@@ -50,10 +52,20 @@ public class RemoteServiceUtil {
         setRemoteDynIncludeService(createProxyObject(factory, location, RemoteDynIncludeService.class));
         setRemoteImageService(createProxyObject(factory, location, RemoteImageService.class));
         setRemoteIncludeService(createProxyObject(factory, location, RemoteIncludeService.class));
-        setRemotePageService(createProxyObject(factory, location, RemotePageService.class));
+        
+        RemotePageService pageService = createProxyObject(factory, location, RemotePageService.class);
+        InvocationHandler handler = new RemotePageServiceCaching(pageService);
+        pageService = (RemotePageService)Proxy.newProxyInstance(getClass().getClassLoader(), new Class[] {RemotePageService.class}, handler);
+        setRemotePageService(pageService);
+        
         setRemoteProjectService(createProxyObject(factory, location, RemoteProjectService.class));
         setRemoteSearchService(createProxyObject(factory, location, RemoteSearchService.class));
-        setRemoteTargetService(createProxyObject(factory, location, RemoteTargetService.class));
+        
+        RemoteTargetService targetService = createProxyObject(factory, location, RemoteTargetService.class);
+        handler = new RemoteTargetServiceCaching(targetService);
+        targetService = (RemoteTargetService)Proxy.newProxyInstance(getClass().getClassLoader(), new Class[] {RemoteTargetService.class}, handler);
+        setRemoteTargetService(targetService);
+        
     }
 
     @SuppressWarnings("unchecked")

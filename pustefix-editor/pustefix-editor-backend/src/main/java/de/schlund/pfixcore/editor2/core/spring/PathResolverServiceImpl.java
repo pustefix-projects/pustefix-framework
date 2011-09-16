@@ -18,7 +18,15 @@
 
 package de.schlund.pfixcore.editor2.core.spring;
 
+import java.io.File;
+import java.net.URL;
+
+import org.pustefixframework.live.LiveResolver;
+
 import de.schlund.pfixxml.config.GlobalConfig;
+import de.schlund.pfixxml.resources.ModuleSourceResource;
+import de.schlund.pfixxml.resources.Resource;
+import de.schlund.pfixxml.resources.ResourceUtil;
 
 /**
  * Implementation using {@link de.schlund.pfixxml.config.GlobalConfig} to get
@@ -28,12 +36,14 @@ import de.schlund.pfixxml.config.GlobalConfig;
  */
 public class PathResolverServiceImpl implements PathResolverService {
     private String docroot;
+    private LiveResolver live;
 
     /**
      * Constructor makes use of <code>PathFactory</code> to get docroot.
      */
     public PathResolverServiceImpl() {
         docroot = GlobalConfig.getDocroot();
+        live = new LiveResolver();
     }
 
     /*
@@ -41,18 +51,35 @@ public class PathResolverServiceImpl implements PathResolverService {
      * 
      * @see de.schlund.pfixcore.editor2.core.spring.PathResolverService#resolve(java.lang.String)
      */
-    public String resolve(String path) {
+    public File resolve(String path) {
+        URL url;
+
         if (path.startsWith("docroot:")) {
-            path=path.substring(9);
+            path = path.substring(9);
         } else if (path.startsWith("module:")) {
-            throw new IllegalArgumentException("Modules are currently not supported");
+            Resource res = ResourceUtil.getResource(path);
+            if(res != null && res instanceof ModuleSourceResource){
+                return ((ModuleSourceResource)res).getFile();
+            }
+            return null;
         }
-        if (path.startsWith("/")) {
-            return docroot + path;
+        if (!path.startsWith("/")) {
+            path = "/" + path;
+        }
+        try {
+            url = live.resolveLiveDocroot(docroot, path);
+        } catch (Exception e) {
+            throw new RuntimeException("TODO", e);
+        }
+        if (url != null) {
+            if (url.getProtocol().equals("file")) {
+                return new File(url.getFile() + path);
+            } else {
+                throw new IllegalStateException("file protocol expected, got " + url.getProtocol());
+            }
         } else {
-            return docroot + "/" + path;
+            return new File(docroot + path);
         }
-
+        
     }
-
 }

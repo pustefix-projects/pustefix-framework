@@ -61,7 +61,7 @@
         <title>DerefRequestHandler</title>
         <para>
           This is a small request handler that should be used whenever a link to a URL outside the own site is made. All such
-          external links must be of the form <uri>/xml/deref?link=http://some.other.domain/foo/bar</uri>. This is important
+          external links must be of the form <uri>/deref?link=http://some.other.domain/foo/bar</uri>. This is important
           because for any link that goes directly to a foreign destination (e.g. <literal>&lt;a href="http://some.other.domain/foo/bar"&gt;</literal>)
           the session id visible in the logfile of the foreign site's webserver (via the Referer header). This is of course
           a security problem. Using the <literal>DerefServlet</literal> avoids this by using a redirect loop so the <literal>Referer</literal>
@@ -328,8 +328,8 @@ public interface State {
                   PageRequests).</para>
                 </td>
                 <td>
-                  Supplied by the request via either the third request path element (e.g.
-                  http://host.dom/xml/config/PAGE?...) or if this is not given via the request parameter
+                  Supplied by the request via either the first request path element (e.g.
+                  http://host.dom/PAGE?...) or if this is not given via the request parameter
                   <code>__page</code>.
                   
                   <para> In Pustefix, this is usually transparent to the user: For POST requests, use the
@@ -798,7 +798,21 @@ public interface State {
   <section>
     <title>The data model: Context resources</title>
     <para>
-    </para>  
+      Pustefix provides an abstraction layer for management of application state. You generally don't directly work on the Servlet API layer,
+      e.g. you don't directly store session state in the <literal>HttpSession</literal> object, but you use Java beans which are automatically managed 
+      by the framework, so-called <literal>ContextResource</literal> beans. 
+    </para>
+    <para>
+      In prior versions Pustefix itself controlled the lifecycle of these beans, e.g. instantiated them on session startup, and you had to
+      implement a specific interface (<literal>de.schlund.pfixcore.workflow.ContextResource</literal>). Beginning with Pustefix 0.13 
+      <literal>ContextResource</literal> beans are automatically managed by Spring and can be arbitrary POJOs.
+    </para>
+    <para>
+      <literal>ContextResource</literal> beans are not only used to manage application state, but they are also linked to the view. They can be 
+      declaratively assigned to pages and thus serialized to the XML tree, which is used as source of the XSL transformation producing the output. 
+      A <literal>ContextResource</literal> can either be automatically serialized to XML, or it can implement its own method manually creating according
+      DOM output.
+    </para>
   </section>
    
   <section>
@@ -821,11 +835,10 @@ public interface State {
         The syntax of the .iwrp file is given below.
       </para>
       <programlisting language="xml"><![CDATA[<interface xmlns="http://www.pustefix-framework.org/2008/namespace/iwrapper"
-           xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-           xsi:schemaLocation="http://www.pustefix-framework.org/2008/namespace/iwrapper 
-                               http://www.pustefix-framework.org/2008/namespace/iwrapper.xsd"
-           extends="some.other.iwrapper.class">
-
+  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xsi:schemaLocation="http://www.pustefix-framework.org/2008/namespace/iwrapper 
+                      http://www.pustefix-framework.org/2008/namespace/iwrapper.xsd"
+  extends="some.other.iwrapper.class">
   <!--
     The class attribute references the associated IHandler class. Alternatively you can
     reference an existing Spring bean using the bean-ref attribute.
@@ -901,17 +914,17 @@ public interface State {
                 <td>The java type of the parameter. This will determine the return type of the generated getter method.</td>
               </tr>
               <tr>
-                <td>occurence</td>
+                <td>occurrence</td>
                 <td>Optional, default is mandatory</td>
                 <td>This attribute specifies if the parameter must be given (mandatory), or if it's not considered to be an error if it is omitted (optional). The special value indexed tells the system that it should search for occurrences of the parameter name with a suffix appended of the form AParamName.ASuffix. The suffix string must be unique for every occurrence of the parameter named AParamName. Indexed parameters are never mandatory.</td>
               </tr>
               <tr>
-                <td>occurence</td>
+                <td>occurrence</td>
                 <td>Optional, default is single</td>
                 <td>This attribute specifies if only one parameter of the same name should be accepted or multiple. This determines if the generated getter method's return value is a single object or an array.</td>
               </tr>
               <tr>
-                <td>occurence</td>
+                <td>occurrence</td>
                 <td>Optional, default is de.schlund.pfixcore.generator.MISSING_PARAM</td>
                 <td>This attribute applies only to mandatory parameters. It allows to specify a different than the default StatusCode to use when the parameter is not supplied.</td>
               </tr>
@@ -923,7 +936,7 @@ public interface State {
           method signatures in the generated wrapper code.
         </para>
         <para>
-          The parameter type is influenced by the attributes <literal>occurance</literal>
+          The parameter type is influenced by the attributes <literal>occurrence</literal>
           and <literal>frequency</literal>
         </para>
         <section>
@@ -1055,8 +1068,10 @@ Before the StatusCode files are recognized by the build process, they have to be
 </para>
 <programlisting language="xml"><![CDATA[
 <?xml version="1.0" encoding="UTF-8"?>
-<statuscodeinfo xmlns="http://pustefix-framework.org/statuscodeinfo" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-                xsi:schemaLocation="http://pustefix-framework.org/statuscodeinfo ../../core/schema/statuscodeinfo.xsd">
+<statuscodeinfo xmlns="http://www.pustefix-framework.org/2008/namespace/statuscodeinfo" 
+                xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+                xsi:schemaLocation="http://www.pustefix-framework.org/2008/namespace/statuscodeinfo 
+                                    http://www.pustefix-framework.org/2008/namespace/statuscodeinfo.xsd">
   <statuscodes class="example.bank.BankStatusCodes">
     <file>statusmessages.xml</file>
     <file>...</file>
@@ -1248,98 +1263,5 @@ public class MySessionScopedInterceptor implements ContextInterceptor {
     <para><literal>ContextInterceptors</literal> are singleton-scoped beans by default. So if you want to store data or call non-threadsafe code, you possibly will have to do some synchronization or use an appropriate scope.</para>
     <para><literal>ContextInterceptors</literal> are called on every request. So you shouldn't execute long-running tasks and avoid that time-consuming code is unnecessarily called with each invocation.</para>
   </note>
-</section>
-
-<section xml:id="concepts.extensionpoints">
-  <title>Extension points</title>
-  <para>
-    Pustefix leverages OSGi for building highly modular applications. Nearly every aspect making up a web application can be sourced out into modules, i.e.
-    a module can contribute its own pages, XML fragments, XSL templates, view and business logic, etc. to the application or other modules. Therefor you
-    need a kind of plugin mechanism letting you define where your application or module is extensible and what extensions your modules contribute to
-    the application or other modules.
-  </para>
-  <para>
-    Pustefix 1.0 introduced an extension point mechanism based on OSGi services. Extension points are defined in a declarative way, i.e. extension points
-    can be declared by inserting according XML tags at the designated locations within the various Pustefix configuration files or within the view templates.
-    Extensions are declared in a similar way by inserting according XML tags defining the target extension point and enclosing elements configuring the
-    contribution.
-  </para>
-  <para>
-    <xref linkend="concepts.extensionpoints.figure"/> shows how a webmodule adds an additional pageflow step to the main application by contributing an
-    according extension to the pageflow extension point defined by the application:
-  </para>
-  <figure xml:id="concepts.extensionpoints.figure">
-    <title>Extension Points</title>
-    <mediaobject>
-      <imageobject>
-        <imagedata fileref="images/reference/concepts-extensionpoints.png" format="PNG"/>
-      </imageobject>
-    </mediaobject>
-  </figure>
-  <para>
-    Extension points and extension declarations are processed as part of the general configuration parsing during ApplicationContext setup. For each extension point an according bean will be created and exported as OSGI service. For each extension a ServiceTracker is created, which will track matching services and add/remove the
-extension.
-  </para>
-  <para>
-    Extension points are published under the <literal>org.pustefixframework.extension.ExtensionPoint</literal> interface. They must specify a unique id and a type supported by Pustefix. Version and cardinality are optional (default values are <literal>0.0.0</literal> and <literal>0..n</literal>). Extensions must specify a type and must reference one or more extension-points (of the same type) by their ids. The version attribute is optional and defaults to <literal>0</literal> - interpreted as <literal>[0.0.0,∞)</literal>.
-  </para>
-
-  <section xml:id="concepts.extensionpoints.types">
-    <title>Extension point types</title>
-    <para>
-      The available extension points can be grouped by their type. Also corresponding to their location we can differentiate <literal>application</literal>, 
-      <literal>context</literal>, <literal>direct</literal> and <literal>xml</literal> extension points.
-    </para>
-    <para>
-      Currently there's only one <literal>application</literal> extension point. <literal>application.static</literal> allows to contribute resource folders containing
-      static resources which should be delivered by the application.
-    </para>
-    <programlisting language="xml"><![CDATA[
-<extension-point type="application.static"/>]]></programlisting>
-    <para>
-      The <literal>context</literal> extension points are used for plugging into the view logic, e.g. adding pageflows, pagerequests or request data wrappers. They are declared within the <literal>context-xml-service-config</literal> configuration file.
-    </para>
-    <programlisting language="xml"><![CDATA[
-<extension-point type="context.interceptor"/>
-<extension-point type="context.scriptedflow"/>
-<extension-point type="context.pageflow"/>
-<extension-point type="context.pageflowvariant"/>
-<extension-point type="context.flowstep"/>
-<extension-point type="context.pagerequest"/>
-<extension-point type="context.pagerequestvariant"/>
-<extension-point type="context.wrapper"/>
-<extension-point type="context.action"/>
-<extension-point type="context.resource"/>
-<extension-point type="context.property"/>]]></programlisting>
-    <para>
-      The <literal>direct-output-service-config</literal> configuration file supports one extension point, which can be used to add pagerequests for direct
-      output generation. 
-    </para>
-    <programlisting language="xml"><![CDATA[
-<extension-point type="direct.pagerequest"/>]]></programlisting>
-    <para>
-      The <literal>xml-generator-config</literal> configuration file supports various extension points, e.g. for adding pages and templates.
-    </para>
-    <programlisting language="xml"><![CDATA[
-<extension-point type="xml.param"/>
-<extension-point type="xml.page"/>
-<extension-point type="xml.standardmaster"/>
-<extension-point type="xml.standardmetatag"/>
-<extension-point type="xml.include"/>
-<extension-point type="xml.standardpage"/>
-<extension-point type="xml.target"/>
-<extension-point type="xml.depxml"/>
-<extension-point type="xml.depxsl"/>
-<extension-point type="xml.depaux"/>]]></programlisting>
-    <para>
-      There's one special <literal>xml</literal> extension point, <literal>xml.view</literal>, which isn't declared in a configuration file but directly
-      in the view's XML using a Pustefix view tag, thus allowing to plug in view fragments:
-    </para>
-    <programlisting language="xml"><![CDATA[
-<div id="content">
-  <pfx:extension-point id="main.content" cardinality="0..n"/>
-</div>]]></programlisting>
-  </section>
-
 </section>
 </chapter>

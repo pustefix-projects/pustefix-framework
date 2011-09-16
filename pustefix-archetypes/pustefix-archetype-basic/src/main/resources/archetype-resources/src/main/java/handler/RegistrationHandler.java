@@ -3,6 +3,7 @@
 #set( $symbol_escape = '\' )
 package ${package}.handler;
 
+
 import ${package}.context.User;
 import ${package}.wrapper.Registration;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -14,9 +15,9 @@ import de.schlund.pfixcore.workflow.Context;
 public class RegistrationHandler implements IHandler {
 
     private User user;
-    
+
     public void handleSubmittedData(Context context, IWrapper wrapper) throws Exception {
-        
+
         Registration registration = (Registration)wrapper;
         user.setName(registration.getName());
     }
@@ -39,9 +40,10 @@ public class RegistrationHandler implements IHandler {
             registration.setName(user.getName());
         }
     }
-    
+
     @Autowired
     public void setUser(User user) {
         this.user = user;
     }
+
 }

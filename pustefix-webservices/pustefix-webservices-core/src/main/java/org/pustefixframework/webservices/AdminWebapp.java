@@ -33,10 +33,10 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 
-import org.pustefixframework.webservices.config.WebserviceConfiguration;
+import org.pustefixframework.webservices.config.GlobalServiceConfig;
+import org.pustefixframework.webservices.config.ServiceConfig;
 import org.pustefixframework.webservices.monitor.MonitorHistory;
 import org.pustefixframework.webservices.monitor.MonitorRecord;
-import org.pustefixframework.webservices.spring.WebserviceRegistration;
 
 
 public class AdminWebapp {
@@ -53,20 +53,19 @@ public class AdminWebapp {
         if(qs==null) {
             sendBadRequest(req,res);
         } else if(qs.equalsIgnoreCase("WSDL")) {
-            if(runtime.getConfiguration().getWSDLSupportEnabled()) {
+            if(runtime.getConfiguration().getGlobalServiceConfig().getWSDLSupportEnabled()) {
                 String pathInfo=req.getPathInfo();
                 String serviceName;
                 int ind = pathInfo.lastIndexOf('/');
                 serviceName=pathInfo.substring(ind+1);
-                WebserviceRegistration registration = runtime.getServiceRegistry().getWebserviceRegistration(serviceName);
-                String type = registration.getSessionType();
-                if(type == null) type = runtime.getConfiguration().getSessionType();
+                ServiceConfig conf=runtime.getConfiguration().getServiceConfig(serviceName);
+                String type=conf.getSessionType();
                 if(type.equals(Constants.SESSION_TYPE_SERVLET) && session==null) {
                     sendForbidden(req,res);
                     return;
                 }
                 res.setContentType("text/xml");
-                String repoPath=runtime.getConfiguration().getWSDLRepository();
+                String repoPath=runtime.getConfiguration().getGlobalServiceConfig().getWSDLRepository();
                 InputStream in=session.getServletContext().getResourceAsStream(repoPath+"/"+serviceName+".wsdl");
                 if(in!=null) {
                     PrintWriter writer=res.getWriter();
@@ -99,11 +98,11 @@ public class AdminWebapp {
                 } else sendError(req,res);
             } else sendForbidden(req,res);
         } else if(qs.equalsIgnoreCase("monitor")) {
-            if(session!=null && runtime.getConfiguration().getMonitoringEnabled()) {
+            if(session!=null && runtime.getConfiguration().getGlobalServiceConfig().getMonitoringEnabled()) {
                 sendMonitor(req,res);
             } else sendForbidden(req,res);
         } else if(qs.equalsIgnoreCase("admin")) {
-            if(session!=null && runtime.getConfiguration().getAdminEnabled()) {
+            if(session!=null && runtime.getConfiguration().getGlobalServiceConfig().getAdminEnabled()) {
                 sendAdmin(req,res);
             } else sendForbidden(req,res);
         } else if(req.getParameter("wsscript")!=null) {
@@ -145,33 +144,33 @@ public class AdminWebapp {
         
         //TODO: source out html
         HttpSession session=req.getSession(false);
-        if(session!=null && runtime.getConfiguration().getAdminEnabled()) {
+        if(session!=null && runtime.getConfiguration().getGlobalServiceConfig().getAdminEnabled()) {
             res.setStatus(HttpURLConnection.HTTP_OK);
             res.setContentType("text/html");
             writer.println("<html><head><title>Webservice admin</title>"+getJS()+getCSS()+"</head><body>");
             writer.println("<div class=\"title\">Webservice admin</div><div class=\"content\">");
             writer.println("<table>");
             writer.println("<tr><td>");
-            WebserviceConfiguration globConf=runtime.getConfiguration();
-            for(WebserviceRegistration registration: runtime.getServiceRegistry().getWebserviceRegistrations()) {
-                String name = registration.getServiceName();
+            GlobalServiceConfig globConf=runtime.getConfiguration().getGlobalServiceConfig();
+            for(ServiceConfig srvConf:runtime.getConfiguration().getServiceConfig()) {
+                String name=srvConf.getName();
                 writer.println("<p>");
                 writer.println("<b>"+name+"</b>");
-                String protocol = registration.getProtocol();
-                if(protocol == null) protocol = globConf.getProtocolType();
-                if(protocol.equals(Constants.PROTOCOL_TYPE_ANY) || protocol.equals(Constants.PROTOCOL_TYPE_SOAP)) {
+                if(srvConf.getProtocolType().equals(Constants.PROTOCOL_TYPE_ANY)||
+                        srvConf.getProtocolType().equals(Constants.PROTOCOL_TYPE_SOAP)) {
                     String wsdlUri=req.getRequestURI()+"/"+name+";jsessionid="+session.getId()+"?WSDL";
                     writer.println("&nbsp;&nbsp;<a style=\"color:#666666\" target=\"_blank\" href=\""+wsdlUri+"\" title=\"Show generated WSDL\">WSDL</a>");
-                    String soapUri=req.getContextPath()+"/xml"+globConf.getStubRepository()+"/"+name+".js";
+                    String soapUri=req.getRequestURI()+"?wsscript&name="+srvConf.getName()+"&type=soap";
                     writer.println("&nbsp;&nbsp;<a style=\"color:#666666\" target=\"_blank\" href=\""+soapUri+"\" title=\"Show generated SOAP Javascript stub\">SOAP JS</a>");
                 }
-                if(protocol.equals(Constants.PROTOCOL_TYPE_ANY) || protocol.equals(Constants.PROTOCOL_TYPE_JSONWS)) {
-                    String jsonwsUri=req.getRequestURI()+"?wsscript&name="+name+"&type=jsonws";
+                if(srvConf.getProtocolType().equals(Constants.PROTOCOL_TYPE_ANY)||
+                        srvConf.getProtocolType().equals(Constants.PROTOCOL_TYPE_JSONWS)) {
+                    String jsonwsUri=req.getRequestURI()+"?wsscript&name="+srvConf.getName()+"&type=jsonws";
                     writer.println("&nbsp;&nbsp;<a style=\"color:#666666\" target=\"_blank\" href=\""+jsonwsUri+"\" title=\"Show generated JSONWS Javascript stub\">JSONWS JS</a>");
                 }
                 writer.println("<br/>");
                 try {
-                    ServiceDescriptor desc=runtime.getServiceDescriptorCache().getServiceDescriptor(registration);
+                    ServiceDescriptor desc=runtime.getServiceDescriptorCache().getServiceDescriptor(srvConf);
                     writer.println("<ul>");
                     for(String methName:desc.getMethods()) {
                         for(Method meth:desc.getMethods(methName)) {
@@ -195,7 +194,7 @@ public class AdminWebapp {
     public void sendMonitor(HttpServletRequest req,HttpServletResponse res) throws IOException {
         PrintWriter writer=res.getWriter();
         //TODO: source out html
-        if(runtime.getConfiguration().getMonitoringEnabled()) {
+        if(runtime.getConfiguration().getGlobalServiceConfig().getMonitoringEnabled()) {
             res.setStatus(HttpURLConnection.HTTP_OK);
             res.setContentType("text/html");
             MonitorHistory history=runtime.getMonitor().getMonitorHistory(req);

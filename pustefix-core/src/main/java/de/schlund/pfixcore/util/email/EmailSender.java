@@ -48,7 +48,6 @@ import org.apache.oro.text.perl.Perl5Util;
 
 public class EmailSender {
 
-    // private static Logger LOG = Logger.getLogger(EmailSender.class);
     private static final String CHARSET = "ISO-8859-15";
 
     /**

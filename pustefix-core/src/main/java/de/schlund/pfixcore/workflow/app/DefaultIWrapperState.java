@@ -30,8 +30,10 @@ import de.schlund.pfixcore.workflow.IWrapperState;
 import de.schlund.pfixcore.workflow.RequestTokenAwareState;
 import de.schlund.pfixcore.workflow.StateImpl;
 import de.schlund.pfixxml.PfixServletRequest;
+import de.schlund.pfixxml.PropertyObjectManager;
 import de.schlund.pfixxml.RequestParam;
 import de.schlund.pfixxml.ResultDocument;
+import de.schlund.pfixxml.Tenant;
 import de.schlund.pfixxml.XMLException;
 
 /**
@@ -45,7 +47,7 @@ import de.schlund.pfixxml.XMLException;
 
 public class DefaultIWrapperState extends StateImpl implements IWrapperState, RequestTokenAwareState {
 
-    private IHandlerContainer handlerContainer;
+    private final static String IHDL_CONT_MANAGER = "de.schlund.pfixcore.workflow.app.IHandlerContainerManager";
 
     /**
      * @see de.schlund.pfixcore.workflow.State#isAccessible(Context,
@@ -53,7 +55,7 @@ public class DefaultIWrapperState extends StateImpl implements IWrapperState, Re
      */
     @Override
     public boolean isAccessible(Context context, PfixServletRequest preq) throws Exception {
-        return getIHandlerContainer().isAccessible(context);
+        return getIHandlerContainer(context).isAccessible(context);
     }
 
     /**
@@ -64,7 +66,7 @@ public class DefaultIWrapperState extends StateImpl implements IWrapperState, Re
     public boolean needsData(Context context, PfixServletRequest preq) throws Exception {
         CAT.debug(">>> [" + context.getCurrentPageRequest().getName() + "] Checking needsData()...");
 
-        boolean retval = getIHandlerContainer().needsData(context);
+        boolean retval = getIHandlerContainer(context).needsData(context);
         if (retval) {
             CAT.debug("    TRUE! now going to retrieve the current status.");
         } else {
@@ -83,7 +85,7 @@ public class DefaultIWrapperState extends StateImpl implements IWrapperState, Re
         
         ResultDocument  resdoc = new ResultDocument();
       
-        IWrapperContainer wrp_container =  getIHandlerContainer().createIWrapperContainerInstance(context, preq, resdoc);
+        IWrapperContainer wrp_container =  getIHandlerContainer(context).createIWrapperContainerInstance(context, preq, resdoc);
 
         if (isSubmitTrigger(context, preq)) {
             CAT.debug(">>> In SubmitHandling...");
@@ -133,7 +135,6 @@ public class DefaultIWrapperState extends StateImpl implements IWrapperState, Re
                     CAT.debug("    => No error happened during work... end of submit reached successfully.");
                     CAT.debug("    => retrieving current status.");
                     wrp_container.retrieveCurrentStatus(false);
-
                 }
             }
         } else if (isDirectTrigger(context, preq) || isPageFlowRunning(context)) {
@@ -176,27 +177,19 @@ public class DefaultIWrapperState extends StateImpl implements IWrapperState, Re
         return resdoc;
     }
 
-    private IHandlerContainer getIHandlerContainer() {
-       return handlerContainer; 
+    // Remember, a IHandlerContainer is a flyweight!!!
+    protected IHandlerContainer getIHandlerContainer(Context context) throws Exception {
+        // Use context config object as dummy configuration object to make sure
+        // each context (server) has its own IHandlerContainerManager
+        IHandlerContainerManager ihcm = (IHandlerContainerManager) PropertyObjectManager.getInstance().getConfigurableObject(context.getContextConfig(), IHDL_CONT_MANAGER);
+        return ihcm.getIHandlerContainer(context, this.getConfig());
     }
-    
-    @Override
-    public void setConfig(StateConfig config) {
-        super.setConfig(config);
-        handlerContainer = new IHandlerContainerImpl(config);
-    }
-    
-    @Override
-    public void stateConfigChanged() {
-        handlerContainer = new IHandlerContainerImpl(config);
-    }
-    
-    public Map<String, ? extends IWrapperConfig> getIWrapperConfigMap() {
-        return getConfig().getIWrappers();
+
+    public Map<String, ? extends IWrapperConfig> getIWrapperConfigMap(Tenant tenant) {
+        return getConfig().getIWrappers(tenant);
     }
 
     public boolean requiresToken() {
         return getConfig().requiresToken();
     }
-    
 }// DefaultIWrapperState

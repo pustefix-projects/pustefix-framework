@@ -35,7 +35,6 @@ import org.pustefixframework.editor.common.dom.Variant;
 import de.schlund.pfixcore.editor2.core.spring.PustefixTargetUpdateService;
 import de.schlund.pfixcore.editor2.core.spring.TargetFactoryService;
 import de.schlund.pfixcore.editor2.core.spring.ThemeFactoryService;
-import de.schlund.pfixxml.targets.PageInfoFactory;
 import de.schlund.pfixxml.targets.TargetGenerationException;
 
 /**
@@ -44,6 +43,7 @@ import de.schlund.pfixxml.targets.TargetGenerationException;
  * @author Sebastian Marsching <sebastian.marsching@1und1.de>
  */
 public class PageImpl extends AbstractPage implements MutablePage {
+    
     private String name;
 
     private Variant variant;
@@ -57,8 +57,6 @@ public class PageImpl extends AbstractPage implements MutablePage {
     private ArrayList<Page> childPages = new ArrayList<Page>();
 
     private ThemeFactoryService themefactory;
-
-    private String handlerPath;
 
     /**
      * Creates a page using the specified parameters
@@ -109,19 +107,6 @@ public class PageImpl extends AbstractPage implements MutablePage {
      */
     public Variant getVariant() {
         return this.variant;
-    }
-
-    /*
-     * (non-Javadoc)
-     * 
-     * @see de.schlund.pfixcore.editor2.core.dom.Page#getHandlerPath()
-     */
-    public String getHandlerPath() {
-        return this.handlerPath;
-    }
-
-    public void setHandlerPath(String path) {
-        this.handlerPath = path;
     }
 
     /*
@@ -203,9 +188,8 @@ public class PageImpl extends AbstractPage implements MutablePage {
     private de.schlund.pfixxml.targets.Target getPfixTarget() {
         return project.getTargetGenerator().getPageTargetTree()
                 .getTargetForPageInfo(
-                        PageInfoFactory.getInstance()
+                        project.getTargetGenerator().getPageInfoFactory()
                                 .getPage(
-                                        project.getTargetGenerator(),
                                         this.getName(),
                                         (variant == null) ? null : this.variant
                                                 .getName()));

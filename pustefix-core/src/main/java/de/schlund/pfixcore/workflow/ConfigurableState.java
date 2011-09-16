@@ -28,5 +28,4 @@ public interface ConfigurableState extends State {
      *  resources, etc.
      */
     void setConfig(StateConfig config);
-    
 }

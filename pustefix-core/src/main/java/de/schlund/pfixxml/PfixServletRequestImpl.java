@@ -34,7 +34,6 @@ import javax.servlet.http.HttpSession;
 
 import org.apache.log4j.Logger;
 import org.pustefixframework.http.AbstractPustefixXMLRequestHandler;
-import org.springframework.util.AntPathMatcher;
 
 import de.schlund.pfixxml.multipart.MultipartHandler;
 import de.schlund.pfixxml.multipart.PartData;
@@ -78,8 +77,9 @@ public class PfixServletRequestImpl implements PfixServletRequest {
     private int                   serverport;
     private HttpServletRequest    request;
     private long                  starttime        = 0;
-    private String[] uris;
-
+    private PageAliasResolver     pageAliasResolver;
+    private String                internalPageName;
+    
     /* (non-Javadoc)
      * @see de.schlund.pfixxml.PfixServletRequest#getCreationTimeStamp()
      */
@@ -96,7 +96,7 @@ public class PfixServletRequestImpl implements PfixServletRequest {
      * @param properties
      * @param cUtil
      */
-    public PfixServletRequestImpl(HttpServletRequest req, String[] uris, Properties properties) {
+    public PfixServletRequestImpl(HttpServletRequest req, Properties properties) {
     
         starttime   = System.currentTimeMillis();
         getRequestParams(req, properties);
@@ -107,8 +107,12 @@ public class PfixServletRequestImpl implements PfixServletRequest {
         serverport  = req.getServerPort();
         request     = req;
         session     = req.getSession(false);
-        this.uris   = uris;
 
+    }
+    
+    public PfixServletRequestImpl(HttpServletRequest req, Properties properties, PageAliasResolver pageAliasResolver) {
+        this(req, properties);
+        this.pageAliasResolver = pageAliasResolver;
     }
 
     //~ Methods ....................................................................................
@@ -471,34 +475,19 @@ public class PfixServletRequestImpl implements PfixServletRequest {
     /* (non-Javadoc)
      * @see de.schlund.pfixxml.PfixServletRequest#getPageName()
      */
-    public String getPageName() {
+    public String getRequestedPageName() {
         String       pagename = "";
         String       pathinfo = getPathInfo();
         RequestParam name     = getRequestParam(PAGEPARAM);
         if (name != null && !name.getValue().equals("")) {
             pagename = name.getValue();
-        } else if (pathinfo != null && pathinfo.length() != 0) {
-            if (pathinfo.startsWith("/")) {
-                pathinfo = "/" + pathinfo;
-            }
-            // Remove jsessionid argument (if present)
-            if (pathinfo.contains(";")) {
-                pathinfo = pathinfo.substring(0, pathinfo.indexOf(";"));
-            }
-            
-            if (pathinfo.length() <= 1) {
-                // Slash only
-                return null;
-            }
-        	pagename = getPageName(uris, pathinfo);
-        	if (pagename == null) {
-        	    return null;
-        	}
+        } else if (pathinfo != null && !pathinfo.equals("") && 
+                   pathinfo.startsWith("/") && pathinfo.length() > 1) {
+            pagename = pathinfo.substring(1);
         } else {
             return null;
         }
         // We must remove any '::' that may have slipped in through the request
-        
         if (pagename.indexOf("::") > 0) {
             pagename = pagename.substring(0, pagename.indexOf("::"));
         }
@@ -509,39 +498,14 @@ public class PfixServletRequestImpl implements PfixServletRequest {
         }
     }
     
-    public String getRequestBasePath() {
-    	String path = getPathInfo();
-    	String pageName = getPageName(uris, path);
-    	if(pageName != null && !pageName.equals("")) {
-    		int ind = path.lastIndexOf(pageName);
-    		path = path.substring(0,ind);
-    	} else {
-    	    // Make sure to remove jsessionid parameter
-    	    if (path.contains(";")) {
-    	        path = path.substring(0, path.indexOf(";"));
-    	    }
-    	}
-    	path = getContextPath()+getServletPath()+path;
-    	if(path.endsWith("/")) path = path.substring(0, path.length()-1);
-    	return path;
-    }
-    
-    private static String getPageName(String[] uris, String path) {
-    	String pageName = "";
-    	for(String uri:uris) {
-    		AntPathMatcher matcher = new AntPathMatcher();
-    		String matchPath = matcher.extractPathWithinPattern(uri, path);
-    		if(!matchPath.equals("")) {
-    			if(pageName.equals("") || matchPath.length() < pageName.length()) {
-    				pageName = matchPath;
-    			}
-    		}
-    	}
-    	if (pageName.length() > 0) {
-    	    return pageName;
-    	} else {
-    	    return null;
-    	}
+    public String getPageName() {
+        if(internalPageName == null) {
+            String pageName = getRequestedPageName();
+            if(pageName != null) {
+                internalPageName = pageAliasResolver.getPageName(pageName, request);
+            }
+        }
+        return internalPageName;
     }
     
 } // PfixServletRequest

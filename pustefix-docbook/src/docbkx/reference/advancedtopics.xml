@@ -158,32 +158,120 @@
     </section>   
   </section>
 
-  <section xml:id="advanced.i18n">
-    <title>Internationalisation</title>
-    <para>
-      Pustefix allows you to implement multi-language applications. As there is a clean separation between business
-      logic and presentation, you can easily change the presentation layer to a new language.
-    </para>
-    <section xml:id="advanced.i18n.xsl">
-      <title>Internationalisation in the presentation layer</title>
-      <para>
-        See <xref linkend="xslt.pfx.langselect"/> on more information on how the access the currently selected
-        language in the presentation layer.
-      </para>
-    </section>
-    <section xml:id="advanced.i18n.context">
-      <title>Internationalisation in the business logic</title>
-      <para>
-		If your business logic needs to react to the currently selected language, you can retrieve
-		the current language of the application via the <literal>getLanguage() : String</literal> of the
-		<literal>Context</literal>.
+  <section xml:id="advanced.pagealternatives">
+    <title>Page alternatives</title>
+     <para>
+        Page alternatives are different representations of the same logical page. Page
+        alternatives are internally used to create different versions for languages/tenants, but can be also used for
+        pages which are based on a common page, assigned to the same logical page, but with different content and display pagename, e.g.
+        landing pages (see <xref linkend="configuration.sitemap"/>).
       </para>
       <para>
-		The <literal>Context</literal> also provides a method <literal>setLangauge(String language)</literal>,
-		which allows you to change the selected language at run-time.
+        Conceptually related to page variants, page alternatives are implemented on a lower level. Creating a page alternative
+        automatically creates alternatives for all variants of a page, i.e. all existing standardpage definitions of a page
+        are copied, thus providing an own stylesheet per alternative.
       </para>
-    </section>
+      <para>
+        The definition of page alternatives is done within the sitemap configuration:
+      </para>
+<programlisting language="xml"><![CDATA[<sitemap>
+  <page name="Info">
+    <alt key="cities" name="Cities"/>
+    <alt key="nationalparks" name="NationalParks"/>
+    <alt key="mountains" name="Mountains"/>
+  </page>
+</sitemap>]]></programlisting>
+      <para>
+         Every page alternative has a key, which is referred to select the matching alternative. The key can be programmatically
+         set using the <literal>Context</literal> method <literal>setPageAlternative(String key)</literal>. During the XSL transformation
+         the key can be accessed using the parameter <literal>$pageAlternative</literal>. The key will be also inserted into
+         the theme fallback chain. Thus you can produce different content per alternative.
+      </para>
   </section>
+
+  <section xml:id="advanced.i18n">
+    <title>Internationalization</title>
+    <para>
+      Pustefix provides various mechanisms to implement internationalized applications. You can write applications
+      which have a fixed language which is selected/resolved at buildtime using the theme mechanism 
+      (see <xref linkend="advanced.variantsandthemes"/>) or the dynamic include mechanism 
+      (see <xref linkend="advanced.dyninclude"/>). You can make the language
+      switchable at runtime using the language-aware core tags (see <xref linkend="xslt.pfx.langselect"/>).
+    </para>
+    <para>
+      Using Pustefix's multitenancy support (see <xref linkend="advanced.multitenancy"/> you get a combination
+      of both mechanisms. Pages have a fixed language, but an own instance is created for each language, and thus
+      the language is switchable at runtime too.
+    </para>
+      <para>
+		Your business logic can query the currently selected language using the <literal>Context</literal>
+	        method <literal>getLanguage()</literal>, using <literal>setLanguage(String language)</literal>,
+		you can change the selected language at runtime.
+      </para>
+  </section>
+
+  <section xml:id="advanced.multitenancy">
+    <title>Multitenancy</title>
+    <para>
+      Pustefix provides basic multitenancy support, i.e. a single application instance can serve multiple tenants, like markets or 
+      countries. Tenants are automatically selected by matching host name patterns against the requested
+      host name. Tenant configuration is done within <literal>project.xml</literal> or included configuration fragments 
+      (see <xref linkend="configuration.project.projectxml"/>).
+    </para>
+<programlisting language="xml"><![CDATA[<project-config>
+  
+  <tenant name="CA_market">
+    <choose>
+      <when test="$mode='prod'">
+        <host>.*\.ca$</host>
+      </when>
+      <otherwise>
+        <host>^ca\..*</host>
+      </otherwise>
+    </choose>
+    <lang default="true">en_CA</lang>
+    <lang>fr_CA</lang>
+  </tenant>
+
+  <!-- include tenants config fragments from all modules found in classpath -->
+  <config-include file="conf/project-fragment.xml" section="tenants" module="*"/>
+  
+</project-config>]]></programlisting> 
+    <para>
+      The current multitenancy support concentrates on the view layer. Pustefix automatically creates tenant and language specific 
+      versions of all pages. Tenant/language specific page content is created by applying filters to the dynamic include mechanism, 
+      thus overriding and extending the core page content with tenant- and/or language-specific content from according 
+      tenant/language modules (see the following examples of a tenant and language Pustefix module descriptor, also see 
+      (<xref linkend="modulessupport.types.new"/>).
+    </para>
+<programlisting language="xml"><![CDATA[<module-descriptor>
+
+  <module-name>pustefix-i18n-tenant-ca</module-name>
+
+  <default-search priority="1">
+    <filter-attribute name="tenant" value="CA_market"/>
+  </default-search>
+  
+</module-descriptor>]]></programlisting> 
+<programlisting language="xml"><![CDATA[<module-descriptor>
+
+  <module-name>pustefix-i18n-lang-fr</module-name>
+
+  <override-modules>
+    <filter-attribute name="lang" value="fr"/>
+    ...
+  </override-modules>
+
+</module-descriptor>]]></programlisting>
+    
+    <para>
+       Application developers can query the currently set tenant at runtime using the <literal>Context</literal> method 
+       <literal>getTenant()</literal>. Additionally Pustefix automatically adds an element <literal>&lt;tenant&gt;</literal>
+       to the result DOM tree. During XSL transformations the tenant targeted by the transformation can be accessed
+       using the XSL parameter <literal>$tenant</literal>.
+    </para>
+  </section>
+
   <section xml:id="advanced.dyninclude">
     <title>Dynamic resource inclusion</title>
     <para>
@@ -236,6 +324,12 @@ PUSTEFIX-INF/xsl/skin.xsl</screen>
           <listitem>if you're specifying <literal>part</literal> and <literal>href</literal>, the include is loaded from the specified href/path from within the current module</listitem>
           <listitem>if you're specifying <literal>part</literal> and <literal>module</literal>, the include is loaded from the href/path of the current file from within the specified module</listitem>
         </itemizedlist>
+      </note>
+      <note xml:id="advanced.dyninclude.modinclude.special">
+        <title>Special module names</title>
+        If you want to explicitly reference an include from the application, you can use the special module name <emphasis>webapp</emphasis>, which indicates
+        Pustefix, that it shouldn't look in the current module as done by default, but load the file from the webapp folder.
+        If you want to explicitly reference an include from the module where the page is defined (where the config fragment with the <literal>standardpage</literal> definition resides), you can use the special name <emphasis>pagedef</emphasis>.
       </note>
       <para>
         If you want to directly reference XML/XSL files in the <literal>depend.xml</literal> configuration file, this works the same way by adding a <literal>module</literal> attribute to the according elements:
@@ -313,10 +407,11 @@ projects/common/img/default/image.png
       <para>
         Resources from modules can be overridden by other modules. Therefor a module can declare, which resources from which module it wants to override. This declaration is done within its module descriptor (see <xref linkend="modulessupport"/>).
       </para>
-<programlisting language="xml"><![CDATA[<module-descriptor
-     xsi:schemaLocation="http://pustefix.sourceforge.net/moduledescriptor200702 http://pustefix.sourceforge.net/moduledescriptor200702.xsd" 
-     xmlns="http://pustefix.sourceforge.net/moduledescriptor200702" 
-     xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+<programlisting language="xml"><![CDATA[<module-descriptor 
+     xmlns="http://www.pustefix-framework.org/2008/namespace/module-descriptor"
+     xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+     xsi:schemaLocation="http://www.pustefix-framework.org/2008/namespace/module-descriptor
+                         http://www.pustefix-framework.org/2008/namespace/module-descriptor.xsd">
 
   <module-name>module-B</module-name>
 
@@ -342,10 +437,11 @@ module://module-A/txt/common.xml</screen>
       <para>
         An overriding module itself can be overridden by another module. Consider the following descriptor for <literal>sample-module-C</literal>:
       </para>
-<programlisting language="xml"><![CDATA[<module-descriptor
-     xsi:schemaLocation="http://pustefix.sourceforge.net/moduledescriptor200702 http://pustefix.sourceforge.net/moduledescriptor200702.xsd" 
-     xmlns="http://pustefix.sourceforge.net/moduledescriptor200702" 
-     xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+<programlisting language="xml"><![CDATA[<module-descriptor 
+     xmlns="http://www.pustefix-framework.org/2008/namespace/module-descriptor"
+     xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+     xsi:schemaLocation="http://www.pustefix-framework.org/2008/namespace/module-descriptor
+                         http://www.pustefix-framework.org/2008/namespace/module-descriptor.xsd">
 
   <module-name>module-C</module-name>
 
@@ -368,10 +464,11 @@ module://module-A/txt/common.xml</screen>
     <para>
       Now we add another module, called <literal>module-A-ext</literal>, which is also overriding <literal>module-A</literal>:
     </para>
-<programlisting language="xml"><![CDATA[<module-descriptor
-     xsi:schemaLocation="http://pustefix.sourceforge.net/moduledescriptor200702 http://pustefix.sourceforge.net/moduledescriptor200702.xsd" 
-     xmlns="http://pustefix.sourceforge.net/moduledescriptor200702" 
-     xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+<programlisting language="xml"><![CDATA[<module-descriptor 
+     xmlns="http://www.pustefix-framework.org/2008/namespace/module-descriptor"
+     xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+     xsi:schemaLocation="http://www.pustefix-framework.org/2008/namespace/module-descriptor
+                         http://www.pustefix-framework.org/2008/namespace/module-descriptor.xsd">
 
   <module-name>module-A-ext</module-name>
 
@@ -423,11 +520,21 @@ module://module-A/txt/common.xml</screen>
         set one toplevel <literal>authconstraint</literal> to be the default one for 
         all <literal>pagerequests</literal> having no <literal>authconstraint</literal> asssigned.
       </para>
+      <tip version="0.13.24">
+        <para>
+          In addition to the <literal>authpage</literal>-attribute one can define more fine-grained, 
+          conditional navigation-cases via the new <literal>navigateTo</literal>-child-element to <literal>authconstraint</literal>.
+        </para>
+      </tip>
       <programlisting language="xml"><![CDATA[<authconstraint id="MYCONSTRAINT" authpage="login" default="true">
   <or>
     <hasrole name="MYROLE"/>
     <hasrole name="OTHERROLE"/>
   </or>
+  <!-- navigate to page guests, if constraints above fail, but user still has the "GUEST"-role -->
+  <navigateTo page="guests">
+    <hasrole name="GUEST"/>
+  </navigateTo>
 </authconstraint>]]></programlisting>
       <para>
         <literal>Pagerequests</literal> can either define new <literal>authconstraints</literal> as 
@@ -820,14 +927,6 @@ public class PremiumCustomerCondition implements Condition {
   <webservice-global>
 
     <!--
-      Set the path under which the webservice servlet is reachable (as defined in you project
-      configuration)
-      
-      [Optional - Default: /xml/webservice]
-    -->  
-    <requestpath>/xml/webservice</requestpath>
-
-    <!--
       Set if WSDL should be generated for SOAP-enabled webservices and where to store it (absolute path within
       the project's webapp directory)
       
@@ -1118,6 +1217,7 @@ service.serviceMethod(arg0, arg1, ... , requestid); //asynchronous with requesti
         Additional Java types supported by JSON services:
       </para>
       <itemizedlist>
+        <listitem><simpara>Primitive and object wrapper type for characters (char and java.lang.Character)</simpara></listitem>
         <listitem><simpara>Arbitrary Lists (Java -> JSON), parameterized Lists with type parameter of instantiable type (JSON -> Java)</simpara></listitem>
         <listitem><simpara>Arbitrary Maps with keys of type java.lang.String (Java -> JSON), parameterized Maps with key type parameter of type java.lang.String and value type parameter of instantiable type (JSON -> Java)</simpara></listitem>
       </itemizedlist>
@@ -1255,96 +1355,7 @@ public class B extends A {
        </section>
     </section>
   </section>
-  
-  <section xml:id="advanced.json_resources">
-    <title>JSON resources</title>
-    <para>
-      If you just want to load data from the server after the page has been 
-      sent to the browser, instead of using the webservice interface, it 
-      might be easier to use the JSON resource feature. 
-    </para>  
-    <para>
-      This feature provides a very easy way for creating a JavaScript object 
-      from a context resource. There are two points in time, when this 
-      feature can be used.
-    </para>
-    <para>
-      When a page is being rendered the <tag>pfx:json-resource</tag> or
-      <tag>pfx:json-resources</tag> tag can be used within a 
-      <tag>script</tag> tag to generate JSON code 
-      from a context resource.
-    </para>
-    <para>
-      For example 
-      <programlisting><![CDATA[
-myResource = <pfx:json-resouce node-name="myresource"/>;
-alert(myResource.foo._attr.bar);
-      ]]></programlisting>
-      and 
-      <programlisting><![CDATA[
-myResources = <pfx:json-resources><resource node-name="myresource" json-name="someOtherName"/></pfx:json-resources>;
-alert(myResources.someOtherName.foo._attr.bar);
-      ]]></programlisting>
-      both have the same effect: They will show the value of the attribute
-      <literal>/formresult/myresource/foo/@bar</literal> in the result XML tree.
-      The <tag class="attribute">json-name</tag> attribute is optional. If it 
-      is not given, the value of the <tag class="attribute">node-name</tag> 
-      attribute will be used.
-    </para>
-    <para>
-      Both <tag>pfx:json-resource</tag> and <tag>pfx:json-resources</tag> have 
-      an optional <tag class="attribute">variable-name</tag> attribute. This 
-      attribute can be used to create a variable containing the date of the 
-      resource.
-      For example
-      <programlisting><![CDATA[
-<pfx:json-resouce node-name="myresource" variable-name="myResource"/>;
-alert(myResource.foo._attr.bar);
-      ]]></programlisting>
-      has the same effect as the first example.
-    </para>
-    <para>
-      The other part of the JSON resource support can be used to get data from 
-      the server <emphasis>after</emphasis> the page has been sent to the 
-      browser. In order to use the JavaScript methods provided by Pustefix, 
-      the files <filename>/core/script/httpRequest.js</filename> and
-      <filename>/core/script/jsonResources.js</filename> have to be included 
-      in the HTML code.
-    </para>
-    <para>
-      The resources which should published using JSON have to be configured
-      using the <tag>json-resources</tag> tag in the server configuration file. 
-      See <xref linkend="configuration.servlet.contextxml"/> for details.
-    </para>
-    <para>
-      There are two JavaScript methods: 
-      <methodname>pfx.json.requestResource</methodname> gets a single resource 
-      from the server:
-      <programlisting><![CDATA[
-myResource = pfx.json.requestResource("MyResource");
-alert(myResource.foo._attr.bar);
-      ]]></programlisting>
-      The method <methodname>pfx.json.requestResources</methodname> gets one 
-      or more than one resources from the server:
-      <programlisting><![CDATA[
-myResources = pfx.json.requestResource(["MyResource", "MyOtherResource"]);
-alert(myResources.MyResource.foo._attr.bar);
-alert(myResources.MyOtherResource.bar._text);
-      ]]></programlisting>
-      Both methods can also be used in an asynchronous way by passing a 
-      callback handler as the second method parameter:
-      <programlisting><![CDATA[
-myHandler = function(myResource) {
-  alert(myResource.foo._attr.bar);
-};
-pfx.json.requestResource("MyResource", myHandler);
-      ]]></programlisting>
-      Instead of returning the result of the remote call, the method will
-      return immediately and will call the specified callback handler with 
-      the result, when the response is received from the server.
-    </para>
-  </section>
-  
+
   <section xml:id="advanced.object2xml">
     <title>Object-to-XML mapping</title>
 	<para>
@@ -1874,6 +1885,7 @@ public @interface CustomerSerializer {}]]></programlisting>
         public @interface IWrapper {
           String name() default "";
           Class<? extends IHandler> ihandler() default IHandler.class;
+          String beanRef() default "";
         }
         
         @IWrapper(name="MyBeanWrapper",ihandler=MyBeanHandler.class)
@@ -1887,7 +1899,8 @@ public @interface CustomerSerializer {}]]></programlisting>
         an IWrapper. The <literal>name</literal> attribute denotes the class name of the
         generated IWrapper class (without package). By default the bean name with the
         suffix <literal>Wrapper</literal> is used (and the same package). The <literal>ihandler</literal>
-        attribute denotes the <literal>IHandler</literal> implementation class.
+        attribute denotes the <literal>IHandler</literal> implementation class. Alternatively you can
+        use the <literal>beanRef</literal> attribute to reference a Spring managed IHandler bean by name.
       </para>
       <para>
       <programlisting language="java"><![CDATA[

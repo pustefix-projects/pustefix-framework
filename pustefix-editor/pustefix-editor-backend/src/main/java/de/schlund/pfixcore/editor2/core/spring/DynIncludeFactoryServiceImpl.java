@@ -85,7 +85,7 @@ public class DynIncludeFactoryServiceImpl implements DynIncludeFactoryService {
     }
 
     public void init() {
-        File docroot = new File(this.pathresolver.resolve("."));
+        File docroot = this.pathresolver.resolve(".");
         File[] directories = docroot.listFiles(FILTER_DIRECTORY);
         HashSet<File> includeFiles = new HashSet<File>();
         for (int i = 0; i < directories.length; i++) {

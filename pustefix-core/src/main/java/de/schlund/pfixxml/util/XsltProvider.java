@@ -52,14 +52,14 @@ public class XsltProvider {
             Class.forName(DETECT_SAXON1);
             saxon1Available=true;    
         } catch(Exception x) {
-            LOG.warn("No Saxon XSLT1 implementation found!");
+            LOG.info("No Saxon XSLT1 implementation found!");
         }
         boolean saxon2Available=false;
         try {
             Class.forName(DETECT_SAXON2);
             saxon2Available=true;    
         } catch(Exception x) {
-            LOG.warn("No Saxon XSLT2 implementation found!");
+            LOG.info("No Saxon XSLT2 implementation found!");
         }
         if(saxon1Available) {
             try {
@@ -108,9 +108,6 @@ public class XsltProvider {
     }
     
     public static XmlSupport getXmlSupport(XsltVersion version) {
-        if (version == null) {
-            version = preferredXsltVersion;
-        }
         return xmlSupport.get(version);
     }
     
@@ -119,9 +116,6 @@ public class XsltProvider {
     }
     
     public static XPathSupport getXPathSupport(XsltVersion version) {
-        if (version == null) {
-            version = preferredXsltVersion;
-        }
         return xpathSupport.get(version);
     }
     
@@ -130,9 +124,6 @@ public class XsltProvider {
     }
     
     public static XsltSupport getXsltSupport(XsltVersion version) {
-        if (version == null) {
-            version = preferredXsltVersion;
-        }
         return xsltSupport.get(version);
     }
     

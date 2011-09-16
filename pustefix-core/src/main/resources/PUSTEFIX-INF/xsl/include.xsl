@@ -22,13 +22,16 @@
   <xsl:namespace-alias stylesheet-prefix="ixsl" result-prefix="xsl"/>
 
   <xsl:param name="__editmode"/>
-  <xsl:param name="__sessid"/>
+  <xsl:param name="__sessionId"/>
+  <xsl:param name="__sessionIdPath"/>
   <xsl:param name="__target_gen"/>
   <xsl:param name="__target_key"/>
   <xsl:param name="__editor_url"/>
+  <xsl:param name="__editor_include_parts_editable_by_default"/>
   <xsl:param name="__application_url"/>
   <xsl:param name="themes"/>
   <xsl:param name="prohibitEdit">no</xsl:param>
+  <xsl:param name="__defining_module">WEBAPP</xsl:param>
 
   <xsl:template match="pfx:langselect">
     <xsl:param name="__env"/>
@@ -70,7 +73,7 @@
                   <ixsl:otherwise>
                     <span>
                       <div style="width: 100px; align: center; color:white; background-color:black;">
-                        <img src="{{$__contextpath}}/core/img/warning2.png"/><br/>
+                        <img src="{{$__contextpath}}/modules/pustefix-core/img/warning2.png"/><br/>
                         <span style="font-size: 8px; font-family: verdana,arial,helvetica,sans;"> No content for [<xsl:value-of select="$lang"/>]</span>
                       </div>
                     </span>
@@ -107,7 +110,7 @@
           <xsl:otherwise>
             <span>
               <div style="width: 100px; align: center; color:white; background-color:black;">
-                <img src="{$__contextpath}/core/img/warning2.png"/><br/>
+                <img src="{$__contextpath}/modules/pustefix-core/img/warning2.png"/><br/>
                 <span style="font-size: 8px; font-family: verdana,arial,helvetica,sans;"> No content for [<xsl:value-of select="$lang"/>]</span>
               </div>
             </span>
@@ -140,9 +143,9 @@
       <xsl:otherwise>
         <span>
           <div style="width: 100px; align: center; color:white; background-color:black;">
-            <img src="{{$__contextpath}}/core/img/warning2.png">
+            <img src="{{$__contextpath}}/modules/pustefix-core/img/warning2.png">
               <xsl:if test="$__target_key = '__NONE__'">
-                <xsl:attribute name="src"><xsl:value-of select="$__contextpath"/>/core/img/warning2.png</xsl:attribute>
+                <xsl:attribute name="src"><xsl:value-of select="$__contextpath"/>/modules/pustefix-core/img/warning2.png</xsl:attribute>
               </xsl:if>
             </img>
             <br/>
@@ -181,15 +184,15 @@
     <xsl:param name="href"/>
     <xsl:param name="module"/>
     <xsl:variable name="thetext">Missing include: '<xsl:value-of select="$part"/>' in resource '<xsl:value-of select="$href"/>'</xsl:variable>
-    <img src="{{$__contextpath}}/core/img/warning.gif">
+    <img src="{{$__contextpath}}/modules/pustefix-core/img/warning.gif">
       <xsl:if test="$__target_key = '__NONE__'">
-        <xsl:attribute name="src"><xsl:value-of select="$__contextpath"/>/core/img/warning.gif</xsl:attribute>
+        <xsl:attribute name="src"><xsl:value-of select="$__contextpath"/>/modules/pustefix-core/img/warning.gif</xsl:attribute>
       </xsl:if>
       <xsl:attribute name="alt"><xsl:value-of select="$thetext"/></xsl:attribute>
       <xsl:attribute name="title"><xsl:value-of select="$thetext"/></xsl:attribute>
     </img>
     <xsl:message>*** Include not found:
-      TargetKey = <xsl:value-of select="$__target_key"/>
+      TargetKey = <xsl:value-of select="$__target_key"/> 
       Resource = <xsl:value-of select="$href"/>
       Part = <xsl:value-of select="$part"/> ***</xsl:message>
   </xsl:template>
@@ -199,13 +202,22 @@
     <xsl:param name="computed_inc">false</xsl:param>
     <xsl:param name="parent_part"><xsl:value-of select="ancestor::part[position() = 1]/@name"/></xsl:param>
     <xsl:param name="parent_theme"><xsl:value-of select="ancestor::theme[position() = 1]/@name"/></xsl:param>
-    <xsl:param name="extension" select="ancestor::extension[position() = 1]"/>
     <xsl:param name="noerror"><xsl:value-of select="@noerror"/></xsl:param>
     <xsl:param name="noedit"><xsl:value-of select="@noedit"/></xsl:param>
     <xsl:param name="part"><xsl:value-of select="@part"/></xsl:param>
     <xsl:param name="href"><xsl:value-of select="@href"/></xsl:param>
-    <xsl:param name="module"><xsl:choose><xsl:when test="@module"><xsl:value-of select="@module"/></xsl:when><xsl:when test="$extension"><xsl:value-of select="$extension/@module"/></xsl:when></xsl:choose></xsl:param>
+    <xsl:param name="module"><xsl:value-of select="@module"/></xsl:param>
     <xsl:param name="search"><xsl:value-of select="@search"/></xsl:param>
+    <xsl:variable name="module_name">
+      <xsl:choose>
+        <xsl:when test="@module='PAGEDEF' or @module='pagedef'">
+          <xsl:value-of select="$__defining_module"/>
+        </xsl:when>
+        <xsl:otherwise>
+          <xsl:value-of select="$module"/>
+        </xsl:otherwise>
+      </xsl:choose>
+    </xsl:variable>
     <xsl:variable name="href_int">
       <xsl:if test="$href">
         <xsl:choose>
@@ -224,9 +236,6 @@
         <xsl:when test="not(string($href_int) = '')">
           <xsl:value-of select="string($href_int)"/>
         </xsl:when>
-        <xsl:when test="$extension">
-          <xsl:value-of select="$extension/@path"/>
-        </xsl:when>
         <xsl:otherwise>
           <xsl:value-of select="include:getRelativePathFromSystemId()"/>
         </xsl:otherwise>
@@ -240,19 +249,20 @@
         <xsl:variable name="incnodes"
                       select="include:get(string($realpath), string($part),
                               $__target_gen, string($__target_key),
-                              string($parent_part), string($parent_theme), $computed_inc, $module, $search)"/>
+                              string($parent_part), string($parent_theme), $computed_inc, $module_name, $search, $tenant, $lang)"/>
+        <xsl:variable name="__resolveduri"><xsl:value-of select="include:getResolvedURI()"/></xsl:variable>
         <!-- Start image of edited region -->
         <xsl:choose>
           <xsl:when test="$noedit = 'true'"/> <!-- Do NOTHING! -->
           <xsl:when test="not($__target_key = '__NONE__') and $prohibitEdit = 'no'">
             <ixsl:if test="$__editmode='admin'">
-              <img border="0" alt="[" src="{{$__contextpath}}/core/img/edit_start.gif"/>
+              <span class="pfx_inc_start"/>
             </ixsl:if>
           </xsl:when>
           <xsl:when test="$__target_key = '__NONE__' and $__editmode = 'admin'">
-            <img border="0" alt="[" src="{$__contextpath}/core/img/edit_start.gif"/>
+            <span class="pfx_inc_start"/>
           </xsl:when>
-        </xsl:choose>
+        </xsl:choose>        
         <!-- -->
         <xsl:variable name="used_theme">
           <xsl:choose>
@@ -268,16 +278,14 @@
         </xsl:variable>
         <xsl:choose>
           <xsl:when test="$incnodes and $incnodes[name() = 'theme']">
-            <pfx:partinfo bundle="{include:getResolvedBundleName()}" path="{include:getResolvedPath()}">
             <xsl:apply-templates select="$incnodes/node()">
               <xsl:with-param name="__env" select="."/>
             </xsl:apply-templates>
-            </pfx:partinfo>
           </xsl:when>
           <xsl:when test="not($noerror = 'true')">
             <xsl:call-template name="pfx:missinc">
               <xsl:with-param name="href" select="include:getResolvedURI()"/>
-              <xsl:with-param name="module" select="$module"/>
+              <xsl:with-param name="module" select="$module_name"/>
               <xsl:with-param name="part" select="$part"/>
             </xsl:call-template>
           </xsl:when>
@@ -287,29 +295,146 @@
           <xsl:when test="$noedit = 'true'"/> <!-- Do NOTHING! -->
           <xsl:when test="not($__target_key = '__NONE__') and $prohibitEdit = 'no'">
             <ixsl:if test="$__editmode = 'admin'">
-              <xsl:variable name="__resolveduri"><xsl:value-of select="include:getResolvedURI()"/></xsl:variable>
-              <a href="#">
-                <xsl:choose>
-                  <xsl:when test="not(starts-with($__resolveduri,'module:'))">
-                    <ixsl:attribute name="onclick">window.open('<ixsl:value-of select="$__editor_url"/>/xml/main?__scriptedflow=selectinclude&amp;theme=<xsl:value-of select="string($used_theme)"/>&amp;path=<xsl:value-of select="substring-after($__resolveduri,'/')"/>&amp;part=<xsl:value-of select="$part"/>&amp;uri=<ixsl:value-of select="$__application_url"/>&amp;type=include&amp;__anchor=left_navi|<xsl:value-of select="$realpath"/>','PustefixEditor','menubar=yes,status=yes,resizable=yes');return(false);</ixsl:attribute>
-                  </xsl:when>
-                  <xsl:otherwise>
-                    <ixsl:attribute name="onclick">alert("Editing <xsl:value-of select="$__resolveduri"/> not yet supported!")</ixsl:attribute>
-                  </xsl:otherwise>
-                </xsl:choose>
-                <img border="0" src="{{$__contextpath}}/core/img/edit.gif"
-                     alt="] Edit include: '{$part}' in resource '{$__resolveduri}'"
-                     title="Edit include: '{$part}' in resource '{$__resolveduri}'"/>
-              </a>
+              <xsl:choose>
+                <xsl:when test="$incnodes/parent::part/@editable='true'">
+                  <xsl:call-template name="pfx:include_internal_render_edit">
+                    <xsl:with-param name="part" select="$part"/>
+                    <xsl:with-param name="theme" select="$used_theme"/>
+                    <xsl:with-param name="path" select="$realpath"/>
+                    <xsl:with-param name="resolved_uri" select="$__resolveduri"/>
+                    <xsl:with-param name="search" select="$search"/>
+                    <xsl:with-param name="module" select="$module_name"/>
+                    <xsl:with-param name="incnodes" select="$incnodes"/>
+                  </xsl:call-template>
+                </xsl:when>
+                <xsl:when test="$incnodes/parent::part/@editable='false'">
+                  <xsl:call-template name="pfx:include_internal_render_edit">
+                    <xsl:with-param name="part" select="$part"/>
+                    <xsl:with-param name="theme" select="$used_theme"/>
+                    <xsl:with-param name="path" select="$realpath"/>
+                    <xsl:with-param name="resolved_uri" select="$__resolveduri"/>
+                    <xsl:with-param name="search" select="$search"/>
+                    <xsl:with-param name="module" select="$module_name"/>
+                    <xsl:with-param name="editable">false</xsl:with-param>
+                    <xsl:with-param name="incnodes" select="$incnodes"/>
+                  </xsl:call-template>
+                </xsl:when>
+                <xsl:otherwise>
+                  <ixsl:choose>
+                    <ixsl:when test="$__editor_include_parts_editable_by_default='true'">
+                      <xsl:call-template name="pfx:include_internal_render_edit">
+                        <xsl:with-param name="part" select="$part"/>
+                        <xsl:with-param name="theme" select="$used_theme"/>
+                        <xsl:with-param name="path" select="$realpath"/>
+                        <xsl:with-param name="resolved_uri" select="$__resolveduri"/>
+                        <xsl:with-param name="search" select="$search"/>
+                        <xsl:with-param name="module" select="$module_name"/>
+                        <xsl:with-param name="incnodes" select="$incnodes"/>
+                      </xsl:call-template>
+                    </ixsl:when>
+                    <ixsl:otherwise>
+                      <xsl:call-template name="pfx:include_internal_render_edit">
+                        <xsl:with-param name="part" select="$part"/>
+                        <xsl:with-param name="theme" select="$used_theme"/>
+                        <xsl:with-param name="path" select="$realpath"/>
+                        <xsl:with-param name="resolved_uri" select="$__resolveduri"/>
+                        <xsl:with-param name="search" select="$search"/>
+                        <xsl:with-param name="module" select="$module_name"/>
+                        <xsl:with-param name="editable">false</xsl:with-param>
+                        <xsl:with-param name="incnodes" select="$incnodes"/>
+                      </xsl:call-template>
+                    </ixsl:otherwise>
+                  </ixsl:choose>
+                </xsl:otherwise>
+              </xsl:choose>
             </ixsl:if>
           </xsl:when>
           <xsl:when test="$__target_key='__NONE__' and $__editmode = 'admin'">
-            <a href="#">
-              <xsl:attribute name="onClick">window.open('<xsl:value-of select="$__editor_url"/>/xml/main?__scriptedflow=selectinclude&amp;theme=<xsl:value-of select="string($used_theme)"/>&amp;path=<xsl:value-of select="$realpath"/>&amp;part=<xsl:value-of select="$part"/>&amp;uri=<xsl:value-of select="$__application_url"/>&amp;type=dyninclude&amp;__anchor=left_navi|<xsl:value-of select="$realpath"/>','PustefixEditor','menubar=yes,status=yes,resizable=yes');return(false);</xsl:attribute>
-              <img border="0" src="{$__contextpath}/core/img/edit.gif" alt="] Edit include: '{$part}' in file '{$realpath}'" title="Edit include: '{$part}' in file '{$realpath}'"/>
-            </a>
+            <xsl:choose>
+              <xsl:when test="$incnodes/parent::part/@editable='true' or (not($incnodes/parent::part/@editable='false') and $__editor_include_parts_editable_by_default='true')">
+                <xsl:call-template name="pfx:include_internal_render_edit">
+                  <xsl:with-param name="part" select="$part"/>
+                  <xsl:with-param name="theme" select="$used_theme"/>
+                  <xsl:with-param name="path" select="$realpath"/>
+                  <xsl:with-param name="resolved_uri" select="$__resolveduri"/>
+                  <xsl:with-param name="search" select="$search"/>
+                  <xsl:with-param name="module" select="$module_name"/>
+                  <xsl:with-param name="incnodes" select="$incnodes"/>
+                </xsl:call-template>
+              </xsl:when>
+              <xsl:otherwise>
+                <xsl:call-template name="pfx:include_internal_render_edit">
+                  <xsl:with-param name="part" select="$part"/>
+                  <xsl:with-param name="theme" select="$used_theme"/>
+                  <xsl:with-param name="path" select="$realpath"/>
+                  <xsl:with-param name="resolved_uri" select="$__resolveduri"/>
+                  <xsl:with-param name="search" select="$search"/>
+                  <xsl:with-param name="module" select="$module_name"/>
+                  <xsl:with-param name="editable">false</xsl:with-param>
+                  <xsl:with-param name="incnodes" select="$incnodes"/>
+                </xsl:call-template>
+              </xsl:otherwise>
+            </xsl:choose>
           </xsl:when>
         </xsl:choose>
+      </xsl:otherwise>
+    </xsl:choose>
+  </xsl:template>
+  
+  <xsl:template name="pfx:include_internal_render_edit">
+    <xsl:param name="part"/>
+    <xsl:param name="theme"/>
+    <xsl:param name="path"/>
+    <xsl:param name="resolved_uri"/>
+    <xsl:param name="search"/>
+    <xsl:param name="module"/>
+    <xsl:param name="editable">true</xsl:param>
+    <xsl:param name="incnodes"/>
+    <xsl:variable name="resolved_module">
+      <xsl:choose>
+        <xsl:when test="starts-with($resolved_uri,'module://')"><xsl:value-of select="substring-before(substring-after($resolved_uri,'module://'),'/')"/></xsl:when>
+        <xsl:otherwise>webapp</xsl:otherwise>
+      </xsl:choose>
+    </xsl:variable>
+    <xsl:variable name="requested_module">
+      <xsl:choose>
+        <xsl:when test="not($module = '')">
+          <xsl:choose>
+            <xsl:when test="$module='WEBAPP' or $module='webapp'"></xsl:when>
+            <xsl:otherwise><xsl:value-of select="$module"/></xsl:otherwise>
+          </xsl:choose>
+        </xsl:when>
+        <xsl:when test="starts-with(include:getSystemId(),'module://')">
+          <xsl:value-of select="substring-before(substring-after(include:getSystemId(),'//'),'/')"/>  
+        </xsl:when>
+      </xsl:choose>
+    </xsl:variable>
+    <xsl:variable name="classes">
+      <xsl:choose>
+        <xsl:when test="$editable='true'">pfx_inc_end</xsl:when>
+        <xsl:otherwise>pfx_inc_end pfx_inc_ro</xsl:otherwise>
+      </xsl:choose>
+    </xsl:variable>
+    <xsl:variable name="nonempty" select="number(boolean($incnodes/* or $incnodes/text()[normalize-space(.)]))"/> 
+    <xsl:variable name="othermodule">
+      <xsl:choose>
+        <xsl:when test="starts-with(include:getSystemId(),concat('module://',$resolved_module,'/'))">0</xsl:when>
+        <xsl:otherwise>1</xsl:otherwise>
+      </xsl:choose>
+    </xsl:variable>
+    <xsl:choose>
+      <xsl:when test="$search='dynamic'">
+        <xsl:choose>
+          <xsl:when test="$__target_key='__NONE__'">
+            <span class="{$classes}" title="{pfx:getDynIncInfo($part,$theme,$path,$resolved_module,$requested_module,$tenant,$lang)}|{$nonempty}|{$othermodule}"/>
+          </xsl:when>
+          <xsl:otherwise>
+            <span class="{$classes}" title="{{pfx:getDynIncInfo('{$part}','{$theme}','{$path}','{$resolved_module}','{$requested_module}','{$tenant}','{$lang}')}}|{$nonempty}|{$othermodule}"/>
+          </xsl:otherwise>
+        </xsl:choose>
+      </xsl:when>
+      <xsl:otherwise>
+        <span class="{$classes}" title="{$part}|{$theme}|{$path}|{$resolved_module}"/>
       </xsl:otherwise>
     </xsl:choose>
   </xsl:template>
@@ -345,12 +470,9 @@
           </xsl:otherwise>
         </xsl:choose>
       </ixsl:with-param>
-      <ixsl:with-param name="module">
-        <xsl:choose>
-          <xsl:when test="@module"><xsl:value-of select="@module"/></xsl:when>
-          <xsl:otherwise><xsl:value-of select="$bundle"/></xsl:otherwise>
-        </xsl:choose>
-      </ixsl:with-param>
+      <xsl:if test="@module">
+        <ixsl:with-param name="module"><xsl:value-of select="@module"/></ixsl:with-param>
+      </xsl:if>
       <xsl:if test="@search">
         <ixsl:with-param name="search"><xsl:value-of select="@search"/></ixsl:with-param>
       </xsl:if>
@@ -363,6 +485,16 @@
     <xsl:param name="themed-img"/>
     <xsl:param name="module"/>
     <xsl:param name="search"/>
+    <xsl:variable name="module_name">
+      <xsl:choose>
+        <xsl:when test="$module='PAGEDEF' or $module='pagedef'">
+          <xsl:value-of select="$__defining_module"/>
+        </xsl:when>
+        <xsl:otherwise>
+          <xsl:value-of select="$module"/>
+        </xsl:otherwise>
+      </xsl:choose>
+    </xsl:variable>
     <xsl:choose>
       <xsl:when test="($src and not($src = '') and (not($themed-path) or $themed-path = '') and (not($themed-img) or $themed-img = '')) or
                       ((not($src) or $src = '') and $themed-path and not($themed-path = '') and $themed-img and not($themed-img = ''))">
@@ -370,7 +502,7 @@
         <xsl:variable name="parent_theme"><xsl:value-of select="ancestor::theme[position() = 1]/@name"/></xsl:variable>
         <xsl:value-of select="image:getSrc(string($src),string($themed-path),string($themed-img),
                               string($parent_part),string($parent_theme),
-                              $__target_gen,string($__target_key),string($module),string($search))"/>          
+                              $__target_gen,string($__target_key),string($module_name),string($search),$tenant,$lang)"/>          
       </xsl:when>
       <xsl:otherwise>
         <xsl:message terminate="no">
@@ -378,11 +510,6 @@
         </xsl:message>
       </xsl:otherwise>
     </xsl:choose>
-  </xsl:template>
-  
-  <xsl:template name="pfx:imageUriToPath">
-    <xsl:param name="uri"/>
-    <xsl:value-of select="image:uriToPath($uri)"/>
   </xsl:template>
   
   <xsl:template match="pfx:image" name="pfx:image">
@@ -403,11 +530,7 @@
         <xsl:with-param name="search" select="$search"/>
       </xsl:call-template>
     </xsl:variable>
-    <img alt="{$alt}">
-      <xsl:attribute name="src">
-        <xsl:text>{$__contextpath}</xsl:text>
-        <xsl:value-of select="image:uriToPath($real_src)"/>
-      </xsl:attribute>
+    <img src="{{$__contextpath}}/{$real_src}" alt="{$alt}">
       <xsl:if test="$__target_key='__NONE__'"><xsl:attribute name="src"><xsl:value-of select="concat($__contextpath,'/',$real_src)"/></xsl:attribute></xsl:if>      
       <xsl:copy-of select="@*[not(contains(concat('|',$always-exclude-attributes,'|',$exclude-attributes,'|') , concat('|',name(),'|')))]"/>
       <xsl:call-template name="pfx:image_geom_impl">
@@ -446,9 +569,7 @@
           <ixsl:with-param name="search"><xsl:value-of select="@search"/></ixsl:with-param>
         </ixsl:call-template>
       </ixsl:variable>
-      <ixsl:attribute name="src">
-        <ixsl:value-of select="concat($__contextpath,image:uriToPath($real_src))"/>
-      </ixsl:attribute>
+      <ixsl:attribute name="src"><ixsl:value-of select="concat($__contextpath,'/',$real_src)"/></ixsl:attribute>
       <ixsl:attribute name="alt">
         <xsl:choose>
           <xsl:when test="pfx:alt"><xsl:apply-templates select="pfx:alt/node()"/></xsl:when>
@@ -486,7 +607,7 @@
               <xsl:value-of select="./@width"/>
             </xsl:when>
             <xsl:otherwise>
-              <xsl:value-of select="geometry:getWidth(string($path),$__target_gen)"/>
+              <xsl:value-of select="geometry:getWidth(string($path))"/>
             </xsl:otherwise>
           </xsl:choose>
         </xsl:variable>
@@ -496,7 +617,7 @@
               <xsl:value-of select="./@height"/>
             </xsl:when>
             <xsl:otherwise>
-              <xsl:value-of select="geometry:getHeight(string($path),$__target_gen)"/>
+              <xsl:value-of select="geometry:getHeight(string($path))"/>
             </xsl:otherwise>
           </xsl:choose>
         </xsl:variable>
@@ -534,7 +655,7 @@
           </xsl:choose>
         </xsl:variable>
         <xsl:variable name="style">
-          <xsl:value-of select="geometry:getStyleStringForImage(string($path), string(./@style), string(./@width), string(./@height), $__target_gen)"/>
+          <xsl:value-of select="geometry:getStyleStringForImage(string($path), string(./@style), string(./@width), string(./@height))"/>
         </xsl:variable>
         <xsl:if test="not($style = '')">
           <xsl:attribute name="style">
@@ -548,58 +669,16 @@
   <func:function name="pfx:getIncludePath">
     <func:result select="include:getRelativePathFromSystemId()"/>
   </func:function>
-
-  <xsl:template match="pfx:extension-point">
-    <xsl:param name="computed_inc">false</xsl:param>
-    <xsl:param name="parent_part"><xsl:value-of select="ancestor::part[position() = 1]/@name"/></xsl:param>
-    <xsl:param name="parent_theme"><xsl:value-of select="ancestor::theme[position() = 1]/@name"/></xsl:param>
-    <xsl:variable name="extensions" select="include:getExtensions($__target_gen, $__target_key, @id, @version, $parent_part, $parent_theme, $computed_inc)"/>
-    <xsl:choose>
-      <xsl:when test="$extensions/extension-point/missing-extension">
-        <xsl:variable name="msg">Missing extension for extension point '<xsl:value-of select="@id"/>'</xsl:variable>
-        <xsl:if test="$prohibitEdit = 'no'">
-          <img src="{{$__contextpath}}/core/img/warning.gif">
-            <xsl:if test="$__target_key = '__NONE__'">
-              <xsl:attribute name="src"><xsl:value-of select="$__contextpath"/>/core/img/warning.gif</xsl:attribute>
-            </xsl:if>
-            <xsl:attribute name="alt"><xsl:value-of select="$msg"/></xsl:attribute>
-            <xsl:attribute name="title"><xsl:value-of select="$msg"/></xsl:attribute>
-          </img>
-        </xsl:if>
-        <xsl:message>WARNING!!! <xsl:value-of select="$msg"/></xsl:message>
-      </xsl:when>
-      <xsl:otherwise>
-        <xsl:for-each select="$extensions/extension-point/extension">
-          <xsl:choose>
-            <xsl:when test="theme">
-              <xsl:apply-templates select="theme/node()">
-                <xsl:with-param name="__env" select="."/>
-              </xsl:apply-templates>
-            </xsl:when>
-            <xsl:when test="missing-theme">
-              <xsl:variable name="msg">Missing theme within extension '<xsl:value-of select="@uri"/>@<xsl:value-of select="@part"/>' of extension point '<xsl:value-of select="../@id"/>'</xsl:variable>
-              <xsl:if test="$prohibitEdit = 'no'">
-                <img src="{{$__contextpath}}/core/img/warning.gif">
-                  <xsl:if test="$__target_key = '__NONE__'">
-                    <xsl:attribute name="src"><xsl:value-of select="$__contextpath"/>/core/img/warning.gif</xsl:attribute>
-                  </xsl:if>
-                  <xsl:attribute name="alt"><xsl:value-of select="$msg"/></xsl:attribute>
-                  <xsl:attribute name="title"><xsl:value-of select="$msg"/></xsl:attribute>
-                </img>
-              </xsl:if>
-              <xsl:message>WARNING!!! <xsl:value-of select="$msg"/></xsl:message>
-            </xsl:when>
-            <xsl:otherwise>
-               <xsl:message>
-                 WARNING!!! Retrieved unexpected XML for extension point '<xsl:value-of select="@id"/>':
-                 <xsl:copy-of select="$extensions"/>
-               </xsl:message>
-            </xsl:otherwise>
-          </xsl:choose>
-        </xsl:for-each>
-      </xsl:otherwise>
-    </xsl:choose>
-    
-  </xsl:template>
-
+  
+  <func:function name="pfx:getDynIncInfo">
+    <xsl:param name="part"/>
+    <xsl:param name="theme"/>
+    <xsl:param name="path"/>
+    <xsl:param name="resolved_module"/>
+    <xsl:param name="requested_module"/>
+    <xsl:param name="tenant"/>
+    <xsl:param name="lang"/>
+    <func:result select="include:getDynIncInfo($part, $theme, $path, $resolved_module, $requested_module, $tenant, $lang)"/>
+  </func:function>
+ 
 </xsl:stylesheet>

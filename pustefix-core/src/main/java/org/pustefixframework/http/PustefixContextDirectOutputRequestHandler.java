@@ -18,24 +18,30 @@
 
 package org.pustefixframework.http;
 
+import java.util.List;
+import java.util.Map;
 import java.util.Properties;
+import java.util.SortedSet;
+import java.util.TreeSet;
 
+import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 
 import org.apache.log4j.Logger;
-import org.pustefixframework.config.contextxmlservice.AbstractPustefixRequestHandlerConfig;
+import org.pustefixframework.config.contextxmlservice.ServletManagerConfig;
 import org.pustefixframework.config.directoutputservice.DirectOutputPageRequestConfig;
-import org.pustefixframework.config.directoutputservice.DirectOutputRequestHandlerConfig;
-import org.pustefixframework.http.internal.ContextStore;
+import org.pustefixframework.config.directoutputservice.DirectOutputServiceConfig;
 import org.springframework.aop.framework.Advised;
 
 import de.schlund.pfixcore.auth.AuthConstraint;
 import de.schlund.pfixcore.workflow.ContextImpl;
 import de.schlund.pfixcore.workflow.ContextResourceManager;
 import de.schlund.pfixcore.workflow.DirectOutputState;
+import de.schlund.pfixcore.workflow.PageProvider;
 import de.schlund.pfixcore.workflow.PageRequest;
 import de.schlund.pfixxml.PfixServletRequest;
+import de.schlund.pfixxml.resources.FileResource;
 
 /**
  * The <code>DirectOutputServlet</code> is a servlet that hijacks the {@link de.schlund.pfixcore.workflow.Context} of a
@@ -63,9 +69,11 @@ import de.schlund.pfixxml.PfixServletRequest;
  * @author <a href="mailto:jtl@schlund.de">Jens Lautenbacher</a>
  * @version $Id: DirectOutputServlet.java 3515 2008-04-28 22:11:18Z jenstl $
  */
-public class PustefixContextDirectOutputRequestHandler extends AbstractPustefixRequestHandler {
+public class PustefixContextDirectOutputRequestHandler extends AbstractPustefixRequestHandler implements PageProvider {
+    
     private Logger                    LOG       = Logger.getLogger(this.getClass());
-    private DirectOutputRequestHandlerConfig config;
+    private DirectOutputServiceConfig config;
+    private Map<String, DirectOutputState> stateMap;
     
     private ContextImpl context;
     
@@ -77,7 +85,7 @@ public class PustefixContextDirectOutputRequestHandler extends AbstractPustefixR
      * @return a <code>boolean</code> value
      */
     @Override
-    protected final boolean needsSession() {
+    public final boolean needsSession() {
         return true;
     }
    
@@ -88,7 +96,7 @@ public class PustefixContextDirectOutputRequestHandler extends AbstractPustefixR
      * @return a <code>boolean</code> value
      */
     @Override
-    protected final boolean allowSessionCreate() {
+    public final boolean allowSessionCreate() {
         return false;
     }
 
@@ -121,10 +129,9 @@ public class PustefixContextDirectOutputRequestHandler extends AbstractPustefixR
              return;
          }
          
-         // Make sure the context is initialized and deinitialized this thread
-         context.prepareForRequest();
-         ContextStore.setContextForCurrentThread(context);
          try {
+             // Make sure the context is initialized and deinitialized this thread
+             context.prepareForRequest(preq.getRequest());
              if (config.isSynchronized()) {
                  Advised proxy = (Advised)context;
                  Object contextObject = proxy.getTargetSource().getTarget();
@@ -136,7 +143,6 @@ public class PustefixContextDirectOutputRequestHandler extends AbstractPustefixR
                  doProcess(preq, res, context);
              }
          } finally {
-             ContextStore.setContextForCurrentThread(null);
              context.cleanupAfterRequest();
          }
     }
@@ -174,18 +180,12 @@ public class PustefixContextDirectOutputRequestHandler extends AbstractPustefixR
          }
          
          PageRequest       page  = new PageRequest(pagename);
-         DirectOutputState state = pageConfig != null ? pageConfig.getDirectOutputState() : null;
+         DirectOutputState state = stateMap.get(page.getName());
          if (state != null) {
              Properties props   = config.getPageRequest(page.getName()).getProperties();
              boolean    allowed = state.isAccessible(crm, props, preq);
              if (allowed) {
-                 try {
-                     state.handleRequest(crm, props, preq, res);
-                 } catch (Exception exep) {
-                     if (!exep.getClass().getName().equals("org.apache.catalina.connector.ClientAbortException")) {
-                         throw exep;
-                     }
-                 }
+                 state.handleRequest(crm, props, preq, res);
              } else {
                  throw new RuntimeException("*** Called DirectOutputState " + state.getClass().getName() +
                                             " for page " + page.getName() + " without being accessible ***");  
@@ -198,16 +198,55 @@ public class PustefixContextDirectOutputRequestHandler extends AbstractPustefixR
     }
     
     @Override
-    protected AbstractPustefixRequestHandlerConfig getServletManagerConfig() {
+    public ServletManagerConfig getServletManagerConfig() {
         return this.config;
+    }
+
+    protected void reloadServletConfig(FileResource configFile, Properties globalProperties) throws ServletException {
+        // Do nothing, configuration is injected
     }
     
     public void setContext(ContextImpl context) {
         this.context = context;
     }
     
-    public void setConfiguration(DirectOutputRequestHandlerConfig config) {
+    public void setStateMap(Map<String, DirectOutputState> stateMap) {
+        this.stateMap = stateMap;
+    }
+    
+    public void setConfiguration(DirectOutputServiceConfig config) {
         this.config = config;
+    }
+    
+    @Override
+    public String[] getRegisteredURIs() {
+   
+        SortedSet<String> uris = new TreeSet<String>();
+        
+        //add path mapping for backwards compatibility
+        String[] regUris = super.getRegisteredURIs();
+        for(String regUri: regUris) uris.add(regUri);
+        
+        addPageURIs(uris);
+        
+        String[] uriArr = uris.toArray(new String[uris.size()]);
+        return uriArr;
+        
+    }
+    
+    @Override
+    public String[] getRegisteredPages() {
+        
+        SortedSet<String> pages = new TreeSet<String>();
+        
+        //add pages from configured pagerequests
+        List<? extends DirectOutputPageRequestConfig> configPages = config.getPageRequests();
+        for(DirectOutputPageRequestConfig configPage: configPages) {
+            pages.add(configPage.getPageName());
+        }
+        
+        String[] pageArr = pages.toArray(new String[pages.size()]);
+        return pageArr;
     }
     
 }

@@ -47,12 +47,7 @@
       <!-- this is tricky to understand --> 
       <xsl:with-param name="computed_inc">true</xsl:with-param>
       <xsl:with-param name="noerr" select="$noerror"/>      
-      <xsl:with-param name="module">
-        <xsl:choose>
-          <xsl:when test="@module"><xsl:value-of select="@module"/></xsl:when>
-          <xsl:otherwise><xsl:value-of select="$bundle"/></xsl:otherwise>
-        </xsl:choose>
-      </xsl:with-param>
+      <xsl:with-param name="module" select="@module"/>
       <xsl:with-param name="search" select="@search"/>
     </xsl:call-template>
   </xsl:template>
@@ -70,14 +65,14 @@
                       <a target="_top">
                         <ixsl:attribute name="href">
                           <ixsl:value-of select="$__uri"/>?__editmode=none</ixsl:attribute>
-                        <img border="0" alt="Disable edit mode" title="Switch edit mode OFF" src="{{$__contextpath}}/core/img/do_noedit.gif"/>
+                        <img border="0" alt="Disable edit mode" title="Switch edit mode OFF" src="{{$__contextpath}}/modules/pustefix-core/img/do_noedit.gif"/>
                       </a>
                     </ixsl:when>
                     <ixsl:otherwise>
                       <a target="_top">
                         <ixsl:attribute name="href">
                           <ixsl:value-of select="$__uri"/>?__editmode=admin</ixsl:attribute>
-                        <img border="0" alt="Enable edit mode" title="Switch edit mode ON" src="{{$__contextpath}}/core/img/do_edit.gif"/>
+                        <img border="0" alt="Enable edit mode" title="Switch edit mode ON" src="{{$__contextpath}}/modules/pustefix-core/img/do_edit.gif"/>
                       </a>
                     </ixsl:otherwise>
                   </ixsl:choose>
@@ -86,16 +81,31 @@
                   <a target="pfixcore_xml_source__">
                     <ixsl:attribute name="href">
                       <ixsl:value-of select="$__uri"/>?__xmlonly=1</ixsl:attribute>
-                    <img border="0" alt="Show XML" title="Show last XML tree" src="{{$__contextpath}}/core/img/show_xml.gif"/></a>
+                    <img border="0" alt="Show XML" title="Show last XML tree" src="{{$__contextpath}}/modules/pustefix-core/img/show_xml.gif"/></a>
+                </td>
+                <td align="left">
+                  <a target="pfixcore_internals__">
+                    <ixsl:attribute name="href"><ixsl:value-of select="$__contextpath"/>/pfxinternals</ixsl:attribute>
+                    <img border="0" alt="Show XML" title="Show last XML tree" src="{{$__contextpath}}/modules/pustefix-core/img/show_info.gif"/></a>
+                </td>
+                <td align="left">
+                  <a>
+                    <ixsl:attribute name="href"><ixsl:value-of select="$__contextpath"/>/pfxinternals?action=reload&amp;page=<ixsl:value-of select="$page"/></ixsl:attribute>
+                    <img border="0" alt="Reload webapp" title="Reload webapp" src="{{$__contextpath}}/modules/pustefix-core/img/reload.gif"/></a>
+                </td>
+                <td align="left">
+                  <a>
+                    <ixsl:attribute name="href"><ixsl:value-of select="$__contextpath"/>/pfxinternals?action=invalidate&amp;page=<ixsl:value-of select="$page"/></ixsl:attribute>
+                    <img border="0" alt="Invalidate session" title="Invalidate session" src="{{$__contextpath}}/modules/pustefix-core/img/trash.gif"/></a>
                 </td>
               </tr>
               <tr>
-                <td nowrap="nowrap" colspan="2" style="font-family: Verdana,Sans; font-size: 10px; background-color: black; color: white; padding-left: 5px; padding-right: 2px;">
+                <td nowrap="nowrap" colspan="5" style="font-family: Verdana,Sans; font-size: 10px; background-color: black; color: white; padding-left: 5px; padding-right: 2px;">
                   P: <ixsl:value-of select="$page"/>
                 </td>
               </tr>
               <tr>
-                <td nowrap="nowrap" colspan="2" style="font-family: Verdana,Sans; font-size: 10px; background-color: black; color: white; padding-left: 5px; padding-right: 2px;">
+                <td nowrap="nowrap" colspan="5" style="font-family: Verdana,Sans; font-size: 10px; background-color: black; color: white; padding-left: 5px; padding-right: 2px;">
                   F: <ixsl:value-of select="$__root/formresult/pageflow/@name"/>
                 </td>
               </tr>
@@ -103,6 +113,55 @@
           </form>
         </xsl:when>
         <xsl:otherwise>
+          <script type="text/javascript">
+            if(!window.pfx) pfx={};
+            if(!pfx.editor) pfx.editor={}; 
+            pfx.editor.enrichSpans=function() {
+              var spans = document.getElementsByTagName("span");
+              for(var i=0; i&lt;spans.length; i++) {
+                if(spans[i].className == 'pfx_inc_start') {
+                  spans[i].innerHTML = '<img border="0" alt="[" src="{{$__contextpath}}/modules/pustefix-core/img/edit_start.gif"/>';
+                } else if(spans[i].className == 'pfx_inc_end' || spans[i].className == 'pfx_inc_end pfx_inc_ro') {
+                  var data = spans[i].title.split('|');
+                  var partStr = 'part \'' + data[0] + '\'';
+                  if(data[6] == '0') {
+                    partStr = 'empty ' + partStr; 
+                  }
+                  var pathStr = ' from resource \'' + data[2] + '\'';
+                  var modStr = '';
+                  if(data[3] == 'webapp') {
+                    modStr = ' within webapp';
+                  } else {
+                    modStr = ' within module \'' + data[3] + '\'';
+                  }
+                  var dynStr = '';
+                  if(data.length > 4) {
+                    dynStr = ' having searched \''+ data[5] + '\'';
+                  }
+                  if(spans[i].className == 'pfx_inc_end') {
+                    spans[i].innerHTML = '<a href="#" onclick="pfx.editor.openEditor(\'' + spans[i].title + '\')">' +
+                                                  '<img border="0" alt="] Edit ' + partStr + pathStr + modStr + dynStr + '" title="Edit ' + partStr + pathStr + modStr + dynStr + '" src="{{$__contextpath}}/modules/pustefix-core/img/edit.gif"/>';
+                                                  '</a>';
+                  } else {
+                    spans[i].innerHTML = '<img border="0" alt="] This is ' + partStr + pathStr + modStr + dynStr + '" title="This is ' + partStr + pathStr + modStr + dynStr + '" src="{{$__contextpath}}/modules/pustefix-core/img/noedit.gif"/>';
+                  }
+                }
+              }
+            }
+            pfx.editor.openEditor=function(title) {
+            	var data = title.split('|');
+            	var uri = '';
+            	if(data[2].indexOf("/")==0) data[2] = data[2].substr(1);
+            	if(data[3]=='webapp') uri = 'docroot:/' + data[2];
+            	else uri = 'module://' + data[3] + '/' + data[2];
+            	window.open('<ixsl:value-of select="$__editor_url"/>?__scriptedflow=selectinclude&amp;' +
+            	            'theme=' + data[1] + '&amp;path=' + uri + '&amp;part=' + data[0] + '&amp;' +
+            	            'uri=<ixsl:value-of select="$__application_url"/>&amp;type=include&amp;__anchor=left_navi|' + data[2]
+            	            ,'PustefixEditor','menubar=yes,status=yes,resizable=yes');
+            	return false;
+            }
+            pfx.editor.enrichSpans();
+          </script>
           <script type="text/javascript">
             var de_schlund_pfixcore_console_drag_start_x = 0;
             var de_schlund_pfixcore_console_drag_start_y = 0;
@@ -197,56 +256,70 @@
               document.attachEvent("onmousemove", de_schlund_pfixcore_console_drag_move);
             }
           </script>
-          <div id="de_schlund_pfixcore_console_divelement" style="position:fixed;top:20px;right:20px;background-color:#aabbee;padding:5px;opacity:0.9;-moz-opacity:0.9;filter:alpha(opacity=90)">
+          <div id="de_schlund_pfixcore_console_divelement" style="position:fixed;top:20px;right:20px;background-color:#aabbee;padding:5px;opacity:0.9;-moz-opacity:0.9;filter:alpha(opacity=90);border-radius: 6px;">
             <div style="display:none">
               <div onMouseDown="de_schlund_pfixcore_console_drag_start(this.parentNode.parentNode, event);" style="text-align:right;">
-                <img border="0" alt="Maximize" src="{{$__contextpath}}/core/img/console_maximize.gif" style="cursor:pointer;" onClick="de_schlund_pfixcore_console_maximize(this.parentNode.parentNode.parentNode, event);" onMouseDown="if (event.stopPropagation) event.stopPropagation(); else if (typeof event.cancelBubble != 'undefined') event.cancelBubble = true;"/>
-                <img border="0" alt="Close" src="{{$__contextpath}}/core/img/console_close.gif" style="margin-left:5px;cursor:pointer;" onClick="this.parentNode.parentNode.parentNode.style.display='none';" onMouseDown="if (event.stopPropagation) event.stopPropagation(); else if (typeof event.cancelBubble != 'undefined') event.cancelBubble = true;"/>
+                <img alt="Maximize" src="{{$__contextpath}}/modules/pustefix-core/img/console_maximize.gif" style="cursor:pointer;border:1px solid #fff;" onClick="de_schlund_pfixcore_console_maximize(this.parentNode.parentNode.parentNode, event);" onMouseDown="if (event.stopPropagation) event.stopPropagation(); else if (typeof event.cancelBubble != 'undefined') event.cancelBubble = true;"/>
+                <img alt="Close" src="{{$__contextpath}}/modules/pustefix-core/img/console_close.gif" style="margin-left:5px;cursor:pointer;border:1px solid #fff;" onClick="this.parentNode.parentNode.parentNode.style.display='none';" onMouseDown="if (event.stopPropagation) event.stopPropagation(); else if (typeof event.cancelBubble != 'undefined') event.cancelBubble = true;"/>
               </div>
             </div>
-            <div style="font-family:sans-serif;font-size:10pt;font-weight:bold;color:#ffffff;">
+            <div style="font-family:monospace;font-size:10pt;color:#ffffff;">
               <div onMouseDown="de_schlund_pfixcore_console_drag_start(this.parentNode.parentNode, event);" style="text-align:right;">
-                <img border="0" alt="Minimize" src="{{$__contextpath}}/core/img/console_minimize.gif" style="cursor:pointer;" onClick="de_schlund_pfixcore_console_minimize(this.parentNode.parentNode.parentNode, event);" onMouseDown="if (event.stopPropagation) event.stopPropagation(); else if (typeof event.cancelBubble != 'undefined') event.cancelBubble = true;"/>
-                <img border="0" alt="Close" src="{{$__contextpath}}/core/img/console_close.gif" style="margin-left:5px;cursor:pointer;" onClick="this.parentNode.parentNode.parentNode.style.display='none';" onMouseDown="if (event.stopPropagation) event.stopPropagation(); else if (typeof event.cancelBubble != 'undefined') event.cancelBubble = true;"/>
+                <img alt="Minimize" src="{{$__contextpath}}/modules/pustefix-core/img/console_minimize.gif" style="cursor:pointer;border:1px solid #fff;" onClick="de_schlund_pfixcore_console_minimize(this.parentNode.parentNode.parentNode, event);" onMouseDown="if (event.stopPropagation) event.stopPropagation(); else if (typeof event.cancelBubble != 'undefined') event.cancelBubble = true;"/>
+                <img alt="Close" src="{{$__contextpath}}/modules/pustefix-core/img/console_close.gif" style="margin-left:5px;cursor:pointer;border:1px solid #fff;" onClick="this.parentNode.parentNode.parentNode.style.display='none';" onMouseDown="if (event.stopPropagation) event.stopPropagation(); else if (typeof event.cancelBubble != 'undefined') event.cancelBubble = true;"/>
               </div>
-              <div style="text-align:center;margin-top:5px">
+              <div style="text-align:left;margin-top:8px;">
                 <ixsl:choose>
                   <ixsl:when test="$__editmode='admin'">
                     <a target="_top">
                       <ixsl:attribute name="href">
                         <ixsl:value-of select="$__uri"/>?__editmode=none</ixsl:attribute>
-                      <img border="0" alt="Disable edit mode" title="Switch edit mode OFF" src="{{$__contextpath}}/core/img/console_editoff.gif"/>
+                      <img alt="Disable edit mode" title="Switch edit mode OFF" src="{{$__contextpath}}/modules/pustefix-core/img/console_editoff.gif" style="border:1px solid #fff; border-radius: 8px;"/>
                     </a>
                   </ixsl:when>
                   <ixsl:otherwise>
                     <a target="_top">
                       <ixsl:attribute name="href">
                         <ixsl:value-of select="$__uri"/>?__editmode=admin</ixsl:attribute>
-                      <img border="0" alt="Enable edit mode" title="Switch edit mode ON" src="{{$__contextpath}}/core/img/console_editon.gif"/>
+                      <img alt="Enable edit mode" title="Switch edit mode ON" src="{{$__contextpath}}/modules/pustefix-core/img/console_editon.gif" style="border:1px solid #fff; border-radius: 8px;"/>
                     </a>
                   </ixsl:otherwise>
                 </ixsl:choose>
                 <a target="pfixcore_xml_source__">
                   <ixsl:attribute name="href">
                   <ixsl:value-of select="$__uri"/>?__xmlonly=1</ixsl:attribute>
-                  <img border="0" alt="Show XML" title="Show last XML tree" src="{{$__contextpath}}/core/img/console_showxml.gif" style="margin-left:5px"/>
+                  <img alt="Show XML" title="Show last XML tree" src="{{$__contextpath}}/modules/pustefix-core/img/console_showxml.gif" style="margin-left:2px; border:1px solid #fff; border-radius: 8px;"/>
                 </a>
+                <a target="pfixcore_internals__">
+                  <ixsl:attribute name="href"><ixsl:value-of select="$__contextpath"/>/pfxinternals</ixsl:attribute>
+                  <img alt="Show Pustefix internals" title="Show Pustefix internals" src="{{$__contextpath}}/modules/pustefix-core/img/console_showinfo.gif" style="margin-left:2px; border:1px solid #fff; border-radius: 8px;"/>
+                </a>
+                <a>
+                  <ixsl:attribute name="href"><ixsl:value-of select="$__contextpath"/>/pfxinternals?action=invalidate&amp;page=<ixsl:value-of select="$page"/>&amp;session=<ixsl:value-of select="$__sessionId"/></ixsl:attribute>
+                  <img alt="Invalidate session" title="Invalidate session" src="{{$__contextpath}}/modules/pustefix-core/img/console_invalidate.gif" style="margin-left:2px; border:1px solid #fff; border-radius: 8px;"/>
+                </a>
+                <a>
+                  <ixsl:attribute name="href"><ixsl:value-of select="$__contextpath"/>/pfxinternals?action=reload&amp;page=<ixsl:value-of select="$page"/></ixsl:attribute>
+                  <img alt="Reload webapp" title="Reload webapp" src="{{$__contextpath}}/modules/pustefix-core/img/console_reload.gif" style="margin-left:2px; border:1px solid #fff; border-radius: 8px;"/>
+                </a>
+              </div>
+              <div style="text-align:left;margin-top:4px;">
                 <xsl:if test="@webserviceconsole='true'">
                   <a target="pfixcore_web_service_monitor">
                     <ixsl:attribute name="href">
-                      <ixsl:value-of select="concat($__contextpath, '/xml/webservice;',$__sessid,'?monitor')"/>
+                      <ixsl:value-of select="concat($__contextpath, '/webservice',$__sessionIdPath,'?monitor')"/>
                     </ixsl:attribute>
-                    <img border="0" alt="Webservice monitor" title="Show webservice monitor" src="{{$__contextpath}}/core/img/console_webservicemonitor.gif" style="margin-left:5px"/>
+                    <img alt="Webservice monitor" title="Show webservice monitor" src="{{$__contextpath}}/modules/pustefix-core/img/console_webservicemonitor.gif" style="border:1px solid #fff; border-radius: 8px;"/>
                   </a>
                   <a target="pfixcore_web_service_admin">
                     <ixsl:attribute name="href">
-                      <ixsl:value-of select="concat($__contextpath, '/xml/webservice;',$__sessid,'?admin')"/>
+                      <ixsl:value-of select="concat($__contextpath, '/webservice',$__sessionIdPath,'?admin')"/>
                     </ixsl:attribute>
-                    <img border="0" alt="Webservice admin" title="Show webservice admin" src="{{$__contextpath}}/core/img/console_webserviceadmin.gif" style="margin-left:5px"/>
+                    <img alt="Webservice admin" title="Show webservice admin" src="{{$__contextpath}}/modules/pustefix-core/img/console_webserviceadmin.gif" style="margin-left:2px;border:1px solid #fff; border-radius: 8px;"/>
                   </a>
                 </xsl:if>
               </div>
-              <div style="padding-left:5px;padding-right:5px">
+              <div style="padding-left:5px;padding-right:5px;margin-top:4px;">
                 <span title="Page">P: <ixsl:value-of select="$page"/></span>
                 <br/>
                 <span title="Pageflow">F: <ixsl:value-of select="$__root/formresult/pageflow/@name"/></span>
@@ -262,6 +335,10 @@
                     </ixsl:otherwise>
                   </ixsl:choose>
                 </span>
+                <ixsl:if test="$tenant">
+                  <br/>
+                  <span title="Tenant">T: <ixsl:value-of select="$tenant"/></span>
+                </ixsl:if>
               </div>
             </div>
             <script type="text/javascript">
@@ -282,13 +359,13 @@
         Web service tools:
         <a target="pfixcore_web_service_monitor">
           <ixsl:attribute name="href">
-            <ixsl:value-of select="concat($__contextpath, '/xml/webservice;',$__sessid,'?monitor')"/>
+            <ixsl:value-of select="concat($__contextpath, '/webservice',$__sessionIdPath,'?monitor')"/>
           </ixsl:attribute>
           Monitor
         </a>
         <a target="pfixcore_web_service_admin">
           <ixsl:attribute name="href">
-            <ixsl:value-of select="concat($__contextpath, '/xml/webservice;',$__sessid,'?admin')"/>
+            <ixsl:value-of select="concat($__contextpath, '/webservice',$__sessionIdPath,'?admin')"/>
           </ixsl:attribute>
           Admin
         </a>
@@ -297,9 +374,9 @@
   </xsl:template>
 
   <xsl:template match="pfx:blank">
-    <img src="/core/img/blank.gif" width="1" height="1" border="0" alt="">
+    <img src="/modules/pustefix-core/img/blank.gif" width="1" height="1" border="0" alt="">
       <xsl:copy-of select="@*"/>
     </img>
   </xsl:template>
-    
+  
 </xsl:stylesheet>

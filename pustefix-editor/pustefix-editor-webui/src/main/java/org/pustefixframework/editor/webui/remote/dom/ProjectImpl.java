@@ -42,6 +42,7 @@ public class ProjectImpl extends AbstractProject {
     private RemoteServiceUtil remoteServiceUtil;
     private String name;
     private String comment;
+    private boolean includePartsEditableByDefault;
     private Map<String, String> prefixToNamespaceMappings;
     private Object initLock = new Object();
     private boolean initialized = false;
@@ -58,6 +59,7 @@ public class ProjectImpl extends AbstractProject {
             ProjectTO  projectTO = getProjectTO();
             this.name = projectTO.name;
             this.comment = projectTO.comment;
+            this.includePartsEditableByDefault = projectTO.includePartsEditableByDefault;
             this.prefixToNamespaceMappings = projectTO.prefixToNamespaceMappings;
             initialized = true;
         }
@@ -195,6 +197,10 @@ public class ProjectImpl extends AbstractProject {
     @Override
     public int hashCode() {
         return remoteServiceUtil.hashCode();
+    }
+
+    public boolean isIncludePartsEditableByDefault() {
+        return includePartsEditableByDefault;
     }
     
 }

@@ -20,6 +20,7 @@ package de.schlund.pfixxml;
 
 import java.net.URI;
 import java.net.URISyntaxException;
+import java.net.URLEncoder;
 import java.text.MessageFormat;
 import java.util.List;
 import java.util.regex.Matcher;
@@ -28,16 +29,17 @@ import java.util.regex.Pattern;
 import javax.xml.transform.TransformerException;
 
 import org.apache.log4j.Logger;
-import org.pustefixframework.resource.Resource;
-import org.pustefixframework.resource.support.NullResource;
-import org.pustefixframework.xmlgenerator.targets.TargetGenerator;
-import org.pustefixframework.xmlgenerator.targets.VirtualTarget;
-import org.pustefixframework.xmlgenerator.view.ViewExtensionResolver;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.Node;
 import org.xml.sax.SAXException;
 
+import de.schlund.pfixxml.resources.DynamicResourceInfo;
+import de.schlund.pfixxml.resources.DynamicResourceProvider;
+import de.schlund.pfixxml.resources.Resource;
+import de.schlund.pfixxml.resources.ResourceUtil;
+import de.schlund.pfixxml.targets.TargetGenerator;
+import de.schlund.pfixxml.targets.VirtualTarget;
 import de.schlund.pfixxml.util.ExtensionFunctionUtils;
 import de.schlund.pfixxml.util.URIParameters;
 import de.schlund.pfixxml.util.XPath;
@@ -66,7 +68,8 @@ public final class IncludeDocumentExtension {
     private static ThreadLocal<String> resolvedUri = new ThreadLocal<String>();
     
     private static Pattern dynamicUriPattern = Pattern.compile("dynamic://[^?#]*(\\?([^#]*))?(#.*)?");
-    private static Pattern bundlePattern = Pattern.compile("bundle://([^/]+)(/[^#?]+).*");
+    
+    private static DynamicResourceProvider dynamicResourceProvider = new DynamicResourceProvider();
     
     //~ Methods
     // ....................................................................................
@@ -89,17 +92,12 @@ public final class IncludeDocumentExtension {
      * @throws Exception on all errors
      */
     public static final Object get(XsltContext context, String path_str, String part,
-                                   TargetGenerator targetGen, String targetkey,
+                                   TargetGenerator targetgen, String targetkey,
                                    String parent_part_in, String parent_theme_in, String computed_inc,
-                                   String module, String search) throws Exception {
-        
-        boolean dynamic = false;
-        if(search!=null && !search.trim().equals("")) {
-            if(search.equals("dynamic")) dynamic = true;
-            else throw new XMLException("Unsupported include search argument: " + search);
-        }
-        
-        if(module!=null) {
+                                   String module, String search, String tenant, String language) throws Exception {
+
+        if(path_str.startsWith("docroot:")) path_str = path_str.substring(9);
+        if(module != null) {
             module = module.trim();
             if(module.equals("")) module = null;
         }
@@ -125,55 +123,64 @@ public final class IncludeDocumentExtension {
         String uriStr = path_str;
         
         if(!uriStr.matches("^\\w+:.*")) {
-
-            if(module == null && "bundle".equals(parentURI.getScheme())) module = parentURI.getAuthority();
-            if(module == null) throw new IllegalArgumentException("Can't detect source bundle of: " + uriStr + " parent: " + parentURI.toASCIIString());
-
+            boolean dynamic = false;
+            if(search!=null && !search.trim().equals("")) {
+                if(search.equals("dynamic")) dynamic = true;
+                else throw new XMLException("Unsupported include search argument: " + search);
+            }
             if(dynamic) {
-                    uriStr = "dynamic://" + module + "/PUSTEFIX-INF/" + path_str + "?part=" + part +
-                                            "&parent=" + parent_uri_str + "&application=" + targetGen.getApplicationBundle();
+                String filter = FilterHelper.getFilter(tenant, language);
+                uriStr = "dynamic:/" + path_str + "?part=" + part + "&parent=" + parent_uri_str;
+                if(!"WEBAPP".equalsIgnoreCase(module)) {
+                    if(module != null) {
+                        uriStr += "&module="+module;
+                    } else if("module".equals(parentURI.getScheme())) {
+                        uriStr += "&module="+parentURI.getAuthority();
+                    }
+                    if(filter != null)  uriStr += "&filter=" + URLEncoder.encode(filter, "UTF-8");
+                }
             } else {
-                    uriStr = "bundle://" + module + "/PUSTEFIX-INF/" + path_str;
+                if(!"WEBAPP".equalsIgnoreCase(module)) {
+                    if(module != null) {
+                        uriStr = "module://" + module + "/" + path_str;
+                    } else if("module".equals(parentURI.getScheme())) {
+                        uriStr = "module://" + parentURI.getAuthority() + "/" + path_str;
+                    }
+                }
             }
         } else if(uriStr.matches("^dynamic://.*")) {
-        	//add missing dynamic URI parameters
-        	Matcher matcher = dynamicUriPattern.matcher(uriStr);
-        	if(matcher.matches()) {
-    			URIParameters params;
-    			if(matcher.group(2) != null) params = new URIParameters(matcher.group(2), "UTF-8");
-    			else params = new URIParameters();
-    			if(params.getParameter("application") == null) params.addParameter("application", targetGen.getApplicationBundle());
-    			if(params.getParameter("part") == null) params.addParameter("part", part);
-    			if(params.getParameter("parent") == null) params.addParameter("parent", parent_uri_str);
-    			if(matcher.group(2) == null) {
-    				if(matcher.group(3) == null) uriStr += "?" + params.toString();
-    				else uriStr = uriStr.substring(0, matcher.start(3)) + "?" +  params.toString() + uriStr.substring(matcher.start(3));
-    			} else {
-    				uriStr = uriStr.substring(0, matcher.start(2)) + params.toString() + uriStr.substring(matcher.end(2));
-    			}
-        	}
+            //add missing dynamic URI parameters
+            Matcher matcher = dynamicUriPattern.matcher(uriStr);
+            if(matcher.matches()) {
+                URIParameters params;
+                if(matcher.group(2) != null) params = new URIParameters(matcher.group(2), "UTF-8");
+                else params = new URIParameters();
+                if(params.getParameter("part") == null) params.addParameter("part", part);
+                if(params.getParameter("parent") == null) params.addParameter("parent", parent_uri_str);
+                if(matcher.group(2) == null) {
+                    if(matcher.group(3) == null) uriStr += "?" + params.toString();
+                    else uriStr = uriStr.substring(0, matcher.start(3)) + "?" +  params.toString() + uriStr.substring(matcher.start(3));
+                } else {
+                    uriStr = uriStr.substring(0, matcher.start(2)) + params.toString() + uriStr.substring(matcher.end(2));
+                }
+            }
         }
+
+        // EEEEK! this code is in need of some serious beautifying....
         
         try {
-          
-            URI uri = new URI(uriStr);
-            Resource path = targetGen.getResourceLoader().getResource(uri);
             
-            resolvedUri.set(path == null? uri.toString():path.getURI().toString());
-            
-            Resource    parent_path = null;
-            if(!parent_uri_str.equals("")) {
-            	uri = new URI(parent_uri_str);
-            	parent_path = targetGen.getResourceLoader().getResource(uri);
-            }
+            Resource    path        = ResourceUtil.getResource(uriStr);
+            resolvedUri.set(path.toURI().toString());
+            Resource    parent_path = "".equals(parent_uri_str) ? null : ResourceUtil.getResource(parent_uri_str);
             boolean            dolog       = !targetkey.equals(NOTARGET);
             int                length      = 0;
             IncludeDocument    iDoc        = null;
             Document           doc;
 
-            VirtualTarget target = (VirtualTarget) targetGen.getTarget(targetkey);
+            VirtualTarget target = (VirtualTarget) targetgen.getTarget(targetkey);
 
-            String[] themes = targetGen.getGlobalThemes().getThemesArr();
+            String[] themes = targetgen.getGlobalThemes().getThemesArr();
             if (!targetkey.equals(NOTARGET)) {
                 themes = target.getThemes().getThemesArr();
             }
@@ -188,20 +195,19 @@ public final class IncludeDocumentExtension {
                 throw ex;
             }
             
-            String DEF_THEME = targetGen.getDefaultTheme();
+            String DEF_THEME = targetgen.getDefaultTheme();
 
-            if (path == null) {
+            if (path == null || !path.exists()) {
                 if (dolog) {
-                    DependencyTracker.logTyped("text", new NullResource(uri), part, DEF_THEME,
+                    DependencyTracker.logTyped("text", path, part, DEF_THEME,
                                                parent_path, parent_part, parent_theme, target);
                 }
                 return errorNode(context,DEF_THEME);
                 //return new EmptyNodeSet();
             }
-            
             // get the includedocument
             try {
-                iDoc = targetGen.getIncludeDocument(context.getXsltVersion(), path, false);
+                iDoc = targetgen.getIncludeDocumentFactory().getIncludeDocument(context.getXsltVersion(), path, false);
             } catch (SAXException saxex) {
                 if (dolog)
                     DependencyTracker.logTyped("text", path, part, DEF_THEME,
@@ -309,7 +315,7 @@ public final class IncludeDocumentExtension {
             //return new EmptyNodeSet();
             
         } catch (Exception e) {
-            Object[] args = {uriStr, part, targetGen, targetkey, 
+            Object[] args = {uriStr, part, targetgen, targetkey, 
                              parent_uri_str, parent_part, parent_theme};
             String sb = MessageFormat.format("path={0}|part={1}|targetgen={2}|targetkey={3}|"+
                                              "parent_path={4}|parent_part={5}|parent_theme={6}", args);
@@ -317,29 +323,35 @@ public final class IncludeDocumentExtension {
             ExtensionFunctionUtils.setExtensionFunctionError(e);
             throw e;
         }
-        
     }
     
     public static String getResolvedURI() {
         return resolvedUri.get();
     }
+    
+    public static String getDynIncInfo(String part, String theme, String path, String resolvedModule, String requestedModule, String tenant, String language) {
+        try {
+            StringBuilder sb = new StringBuilder();
+            sb.append(part).append("|").append(theme).append("|").append(path).append("|").append(resolvedModule);
+            sb.append("|").append(requestedModule).append("|");
+            if(!path.startsWith("/")) path = "/" + path;
+            String filter = FilterHelper.getFilter(tenant, language);
+            if(filter != null) {
+                filter = "&filter=" + URLEncoder.encode(filter, "UTF-8");
+            } else {
+                filter = "";
+            }
+            URI uri = new URI("dynamic://" + requestedModule + path + "?part=" + part + filter);
+            DynamicResourceInfo info = new DynamicResourceInfo();
+            dynamicResourceProvider.getResource(uri, info);
+            sb.append(info.toString());
+            return sb.toString();
+        } catch (Exception x) {
+            LOG.error("Error getting dynamic include information", x);
+            return "n/a";
+        }
+    }
 
-    public static String getResolvedBundleName() {
-        Matcher matcher = bundlePattern.matcher(getResolvedURI());
-        if(matcher.matches()) {
-            return matcher.group(1);
-        }
-        return "";
-    }
-    
-    public static String getResolvedPath() {
-        Matcher matcher = bundlePattern.matcher(getResolvedURI());
-        if(matcher.matches()) {
-            return matcher.group(2);
-        }
-        return "";
-    }
-    
     private static final Node errorNode(XsltContext context,String prodname) {
         Document retdoc  = Xml.createDocumentBuilder().newDocument();
         Element  retelem = retdoc.createElement("missing");
@@ -357,9 +369,7 @@ public final class IncludeDocumentExtension {
         String sysid = context.getSystemId();
         try {
             URI uri = new URI(sysid);
-            String path = uri.getPath();
-            if(path.startsWith("/PUSTEFIX-INF")) path = path.substring(13);
-            return path;
+            return uri.getPath();
         } catch(URISyntaxException x) {
             throw new IllegalArgumentException("Illegal system id: " + sysid, x);
         }
@@ -368,21 +378,4 @@ public final class IncludeDocumentExtension {
     public static boolean isIncludeDocument(XsltContext context) {
         return context.getDocumentElementName().equals("include_parts");
     }
-    
-    
-    public static final Node getExtensions(XsltContext context, TargetGenerator targetGen,
-    		String targetKey, String extensionPointId, String extensionPointVersion,
-    		String parentPart, String parentTheme, String computed) throws Exception {
-    	try {
-    		ViewExtensionResolver resolver = targetGen.getViewExtensionResolver();
-    		Node node = resolver.getExtensionNodes(context, targetKey, extensionPointId, extensionPointVersion, 
-    		        parentPart, parentTheme, computed);
-    		return node;
-    	} catch (Exception x) {
-    		ExtensionFunctionUtils.setExtensionFunctionError(x);
-    		throw x;
-    	}
-    }
-    
-    
 }// end of class IncludeDocumentExtension

@@ -21,7 +21,6 @@ package org.pustefixframework.config.contextxmlservice.parser;
 import org.pustefixframework.config.contextxmlservice.parser.internal.PageFlowStepActionConditionConfigImpl;
 import org.pustefixframework.config.contextxmlservice.parser.internal.PageFlowStepActionConfigImpl;
 import org.pustefixframework.config.generic.ParsingUtils;
-import org.springframework.osgi.context.ConfigurableOsgiBundleApplicationContext;
 import org.w3c.dom.Element;
 import org.w3c.dom.NamedNodeMap;
 
@@ -30,9 +29,6 @@ import com.marsching.flexiparse.parser.ParsingHandler;
 import com.marsching.flexiparse.parser.exception.ParserException;
 
 import de.schlund.pfixcore.workflow.FlowStepAction;
-import de.schlund.pfixcore.workflow.FlowStepForceStopAction;
-import de.schlund.pfixcore.workflow.FlowStepJumpToAction;
-import de.schlund.pfixcore.workflow.FlowStepSetFlowAction;
 
 /**
  * 
@@ -40,34 +36,25 @@ import de.schlund.pfixcore.workflow.FlowStepSetFlowAction;
  *
  */
 public class PageFlowStepActionParsingHandler implements ParsingHandler {
-    private final static String JUMPTO = "jumpto";
-    private final static String SETFLOW = "setflow";
-    private final static String STOP = "stop";
+
     public void handleNode(HandlerContext context) throws ParserException {
        
         Element element = (Element)context.getNode();
         
-        ConfigurableOsgiBundleApplicationContext appContext = ParsingUtils.getSingleTopObject(ConfigurableOsgiBundleApplicationContext.class, context);
-
         PageFlowStepActionConditionConfigImpl condConfig = ParsingUtils.getFirstTopObject(PageFlowStepActionConditionConfigImpl.class, context, true);
         
-        Class<?> clazz = null;
         String type = element.getAttribute("type").trim();
         if (type.length()==0) {
             throw new ParserException("Mandatory attribute \"type\" is missing!");
         }
-        if (type.equals(JUMPTO)) {
-            clazz = FlowStepJumpToAction.class;
-        } else if (type.equals(SETFLOW)) {
-            clazz = FlowStepSetFlowAction.class;
-        } else if (type.equals(STOP)) {
-            clazz = FlowStepForceStopAction.class;
-        } else {
-            try {
-                clazz = Class.forName(type, true, appContext.getClassLoader());
-            } catch (ClassNotFoundException e) {
-                throw new ParserException("Could not load class \"" + type + "\"!", e);
-            }
+        if (type.equals("jumpto")) {
+            type = "de.schlund.pfixcore.workflow.FlowStepJumpToAction";
+        }
+        Class<?> clazz;
+        try {
+            clazz = Class.forName(type);
+        } catch (ClassNotFoundException e) {
+            throw new ParserException("Could not load class \"" + type + "\"!", e);
         }
         if (!FlowStepAction.class.isAssignableFrom(clazz)) {
             throw new ParserException("Pageflow step action " + clazz + " does not implmenent " + FlowStepAction.class + " interface!");

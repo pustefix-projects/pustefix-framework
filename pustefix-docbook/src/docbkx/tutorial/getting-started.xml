@@ -6,11 +6,6 @@
   
   <info>
     <title>Getting started</title>
-    <copyright>
-      <year>2007</year>
-      <year>2008</year>
-      <holder>1&amp;1 Internet AG</holder>
-    </copyright>
   </info>
   
   <section xml:id="gettingstarted.requirements">
@@ -30,104 +25,116 @@
         </para>
       </listitem>
       <listitem>
-        <para>Apache Tomcat 5.5.x</para>
-      </listitem>
-      <listitem>
-        <para>Apache Ant 1.6.5 or newer</para>
+        <para>Apache Maven 2.0.10 or newer</para>
       </listitem>
     </itemizedlist>
     <para>
-      The installation of these tools (except Tomcat) is not covered by this
+      The installation of these tools is not covered by this
       tutorial. Please refer to the documentation provided with these tools
       for installation instructions.
     </para>
   </section>
-  <section xml:id="gettingstarted.prepareprojectdirectory">
-    <title>Prepare the project directory</title>
+  <section xml:id="gettingstarted.mavensetup">
+    <title>Maven setup</title>
     <para>
-      If you are not using Eclipse, you can just create an empty directory
-      that will contain the project files and proceed with <xref linkend="gettingstarted.unpack"/>.
+      Pustefix provides some Maven archetypes for quickly creating new applications. Therefore you
+      have to configure the repository where the according Pustefix artifacts reside (because
+      they currently aren't hosted in the Maven central repository).  
     </para>
     <para>
-      Start the Eclipse workbench and create a new project of type Java Project".
-      Make sure that you choose separate source and build folders: Use 
-      <filename>src</filename> for the source and <filename>build</filename> for 
-      the build folder. This is important because the Pustefix build script 
-      expects these folders.
+      You can either configure the repository globally for Maven or always specify the URL of the repository's
+      archetype-catalog when generating a new project (and add the repository configuration to the project's POM,
+      if not already there). If you don't want to configure it globally,
+      you can skip the next paragraphs and continue with the archetype generation in the next section.
+    </para>
+    <para>
+      Adding the Pustefix repository can be easily done by adding the following profile to the
+      Maven settings. The profile can be either added to the <filename>settings.xml</filename>
+      file located in the <filename>.m2</filename> directory within your home directory (if it
+      doesn't already exist you can just create it) or to the <filename>settings.xml</filename> file 
+      located in the <filename>conf</filename> directory of your Maven installation.
+    </para>
+<programlisting language="xml"><![CDATA[<settings>
+  <profiles>
+
+    <profile>
+      <id>pustefix</id>
+      <activation>
+        <activeByDefault>true</activeByDefault>
+      </activation>
+      <repositories>
+        <repository>
+          <id>pustefix</id>
+          <name>Pustefix Maven Repository</name>
+          <url>http://pustefix-framework.org/repository/maven</url>
+        </repository>
+      </repositories>
+      <pluginRepositories>
+        <pluginRepository>
+          <id>pustefix</id>
+          <url>http://pustefix-framework.org/repository/maven</url>
+        </pluginRepository>
+      </pluginRepositories> 
+
+    </profile>
+  </profiles>
+</settings>]]></programlisting>
+  </section>
+  <section xml:id="gettingstarted.mavenarchetypes">
+    <title>Generating a new project from a Maven archetype</title>
+    <para>
+      Pustefix provides an archetype for creating a basic application. Just call <literal>mvn archetype:generate</literal>
+      and select the archetype <literal>pustefix-archetype-basic</literal>. You only have to specifiy the
+      <literal>archetypeCatalog</literal> parameter if you didn't globally setup the Pustefix Maven repository like 
+      described in the last section.
+    </para>
+    <screen>
+      $ mvn archetype:generate -DarchetypeCatalog=http://pustefix-framework.org/repository/maven/archetype-catalog.xml</screen>
+    <para>
+      After choosing the <literal>pustefix-archetype-basic</literal> Maven will ask you for your project's <literal>groupId</literal>, 
+      <literal>artifactId</literal>, <literal>version</literal> and <literal>package</literal>.
+      Having finished these settings Maven will generate the new project within a new directory called like the <literal>artifactId</literal>
+      and located within the current working directory.
+    </para>
+    <screen>
+      $ cd myproject
+      $ mvn tomcat:run</screen>
+    <para>
+      The generated project is a standard Maven project with <literal>war</literal> packaging type, i.e. you can immediately build and
+      run your application, e.g. using Tomcat by calling <literal>mvn tomcat:run</literal> or <literal>mvn tomcat:run-war</literal> and
+      opening <literal>http://localhost:8080/myproject</literal> in your browser.
     </para>
   </section>
-  <section xml:id="gettingstarted.unpack">
-    <title>Unpack the skeleton</title>
+  <section xml:id="gettingstarted.ide">
+    <title>Configure your IDE</title>
     <para>
-      Download the newest <literal>pfixcore-skel-X.X.X.tar.gz</literal> from 
-      Pustefix's <link xlink:href="http://sourceforge.net/project/showfiles.php?group_id=72089&amp;package_id=71811">downloads page</link>.
-      Unpack the archive to a temporary directory. A new directory with the name 
-      <filename>skel</filename> will be created. Copy the content of this directory
-      to your new project directory.
+      You can use the IDE of your choice. As a Pustefix project is a standard Maven project, you can
+      use an arbitrary IDE supporting projects with Maven layout.
     </para>
     <para>
-      Now you need to download Apache Tomcat. Choose the 
-      <literal>.tar.gz</literal> archive from the download page and place it in 
-      the <filename>lib/tomcat</filename> directory of your project directory.
+      Eclipse will be a good choice, e.g. you can just generate an according Eclipse configuration for your project
+      using the Eclipse Maven plugin:
     </para>
+    <screen>
+      $ mvn eclipse:eclipse</screen>
     <para>
-      After you are done with that, refresh the resources view in Eclipse to
-      make the new files appear.
-    </para>
-  </section>
-  <section xml:id="gettingstarted.configureeclipse">
-    <title>Configure Eclipse</title>
-    <para>
-      To make features like auto-completion and auto-build work, you have to 
-      import the libraries into Eclipse. Right-click on your project in Eclipse
-      and choose "Build Path" ⇒ "Configure Build Path...". Now use the
-      "Add JARs..." button to add all libraries from the project's 
-      <filename>lib</filename> directory.
-    </para>
-    <para>
-      As Pustefix generates some classes, you have to add the folder with the
-      generated sources to Eclipse's source path. To make this work choose the
-      "Source" tab in the same dialog you used to configure the build path and
-      add the <filename>gensrc</filename> folder to the list of source folders.
-    </para>
-    <para>
-      Finally, you have to configure the path to the JAR file containing Ant.
-      In Eclipse choose <guimenu>Window</guimenu> ⇒ <guimenuitem>Preferences</guimenuitem>.
-      In the dialog window choose <guimenu>Java</guimenu> ⇒ <guimenuitem>Build Path</guimenuitem> ⇒
-      <guimenuitem>Classpath Variables</guimenuitem>. Choose
-      <guimenuitem>New...</guimenuitem> and create a variable with the name <literal>PFX_ANT_LIB</literal>
-      that contains the path to the <filename>lib/ant.jar</filename> within your
-      Ant installation directory.
+      Then you can import your project into Eclipse. Doing this the first time you will have to add 
+      the <literal>M2_REPO</literal> classpath variable pointing to your local Maven repository
+      (usually <literal>.m2/repository</literal> within your home directory). This can be done by 
+      opening the <guimenu>Window</guimenu> ⇒ <guimenuitem>Preferences</guimenuitem> dialog
+      and navigating to <guimenu>Java</guimenu> ⇒ <guimenuitem>Build Path</guimenuitem> ⇒
+      <guimenuitem>Classpath Variables</guimenuitem>
+      (also see the <link xlink:href="http://maven.apache.org/guides/mini/guide-ide-eclipse.html">Maven Eclipse documentation</link>).
     </para>
   </section>
-  <section xml:id="gettingstarted.firstbuild">
-    <title>Build parameters &amp; first build</title>
+  <section xml:id="gettingstarted.getsources">
+    <title>Getting the source code</title>
     <para>
-      Within the project directory, create a file called 
-      <filename>build.properties</filename> containing two properties:
-    </para>
-    <programlisting>standalone.tomcat=true
-makemode=test</programlisting>
-    <para>
-      The first property tells the build process, that we do want to run
-      Tomcat without Apache Httpd integration. Apache Httpd integration can 
-      be useful, because static files can be served faster. However this
-      is an advanced topic and for our purposes Tomcat alone will be okay. 
-    </para>
-    <para>
-      The second parameter set the so-called "make mode". This flag can be
-      set to either "test" or "prod" and will cause the editor console
-      to appear in web pages when in "test" mode. In fact you can even make
-      your own settings depend on the make mode, but we will take care of 
-      this later. For the moment "test" mode is just what we want. By the way,
-      whenever you switch the make mode, you should do a complete rebuild 
-      using <command>ant realclean &amp;&amp; ant</command> to make sure, 
-      all resources have been built using the same make mode.
-    </para>
-    <para>
-      Now run <command>ant</command> to perform a first build of the 
-      environment. This will create needed symlinks and initialize the 
-      environment.
-    </para>
+    The source code used in the tutorials is available for public checkout. To test the tutorials on
+    your local development machine, execute the following commands:
+  </para>
+  <screen>$ svn co https://pustefix.svn.sourceforge.net/svnroot/pustefix/branches/release-0.15.x/pustefix-tutorial
+$ cd pustefix-tutorial/ajax-calculator (or first-app, usermanagement)
+$ mvn tomcat:run</screen>
   </section>
 </chapter>

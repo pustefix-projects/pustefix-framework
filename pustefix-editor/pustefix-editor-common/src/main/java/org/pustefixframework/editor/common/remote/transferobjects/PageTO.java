@@ -28,7 +28,6 @@ public class PageTO implements Serializable {
     private static final long serialVersionUID = -7081358794051834368L;
     
     public String name;
-    public String handlerPath;
     public List<PageTO> subPages = new LinkedList<PageTO>();
     public List<String> themes = new LinkedList<String>();
     public String variant;

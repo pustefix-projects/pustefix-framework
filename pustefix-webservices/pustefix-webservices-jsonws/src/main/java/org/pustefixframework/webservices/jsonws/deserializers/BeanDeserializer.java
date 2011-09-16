@@ -144,7 +144,7 @@ public class BeanDeserializer extends Deserializer {
 
                     String className = jsonObj.getStringMember("javaClass");
                     if (className != null) {
-                        Class<?> clazz = Class.forName(className, true, targetClass.getClassLoader());
+                        Class<?> clazz = Class.forName(className);
                         if (targetClass != null && !targetClass.isAssignableFrom(clazz))
                             throw new DeserializationException("Class '" + targetClass.getName() + "' isn't assignable from '" + clazz.getName());
                         targetClass = clazz;

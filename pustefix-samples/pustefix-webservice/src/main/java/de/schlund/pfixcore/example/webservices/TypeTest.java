@@ -39,6 +39,10 @@ public interface TypeTest {
     
     public Byte echoByteObj(Byte val);
     
+    public char echoChar(char val);
+    
+    public Character echoCharacter(Character val);
+    
     public short echoShort(short val);
     
     public Short echoShortObj(Short val);

@@ -32,4 +32,5 @@ public class IncludePartThemeVariantTO implements Serializable {
     public String theme;
     public String md5;
     public List<String> affectedPages = new LinkedList<String>();
+    public boolean readOnly;
 }

@@ -26,6 +26,7 @@ import java.io.OutputStream;
 import java.io.StringReader;
 import java.io.StringWriter;
 import java.io.Writer;
+import java.net.MalformedURLException;
 import java.util.Iterator;
 import java.util.Map;
 
@@ -43,9 +44,6 @@ import javax.xml.transform.sax.SAXSource;
 import javax.xml.transform.stream.StreamResult;
 
 import org.apache.log4j.Logger;
-import org.pustefixframework.resource.FileResource;
-import org.pustefixframework.resource.InputStreamResource;
-import org.pustefixframework.resource.OutputStreamResource;
 import org.w3c.dom.Comment;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
@@ -59,11 +57,16 @@ import org.xml.sax.XMLReader;
 import org.xml.sax.helpers.XMLReaderFactory;
 
 import de.schlund.pfixxml.SPDocument;
-
+import de.schlund.pfixxml.resources.FileResource;
+import de.schlund.pfixxml.resources.ModuleResource;
+import de.schlund.pfixxml.resources.Resource;
 
 public class Xml {
     
     static final Logger               CAT     = Logger.getLogger(Xml.class);
+    
+    private static final String DEFAULT_XMLREADER = "com.sun.org.apache.xerces.internal.parsers.SAXParser";
+    private static final String DEFAULT_DOCUMENTBUILDERFACTORY = "com.sun.org.apache.xerces.internal.jaxp.DocumentBuilderFactoryImpl";
     
     private static final DocumentBuilderFactory factory = createDocumentBuilderFactory();
    
@@ -71,6 +74,12 @@ public class Xml {
 
     public static XMLReader createXMLReader() {
         XMLReader reader = null;
+        try {
+            reader = XMLReaderFactory.createXMLReader(DEFAULT_XMLREADER);
+        } catch(SAXException x) {
+            x.printStackTrace();
+            //ignore and try to get XMLReader via factory finder in next step
+        }
         if(reader == null) {
             try {
                 reader = XMLReaderFactory.createXMLReader();
@@ -128,20 +137,24 @@ public class Xml {
     }
     
     public static Document parse(XsltVersion xsltVersion, FileResource file) throws TransformerException {
-        SAXSource src; 
-        src = new SAXSource(createXMLReader(), new InputSource(file.getURI().toString()));
+        SAXSource src;
+        try {
+            src = new SAXSource(createXMLReader(), new InputSource(file.toURL().toString()));
+        } catch (MalformedURLException e) {
+            throw new TransformerException("Cannot create URL for input file: " + file.toString(), e);
+        }
         return parse(xsltVersion,src);
     }
     
-    public static Document parse(XsltVersion xsltVersion, InputStreamResource res) throws TransformerException {
-    	InputSource is = new InputSource();
-        is.setSystemId(res.getOriginalURI().toASCIIString());
+    public static Document parse(XsltVersion xsltVersion, Resource res) throws TransformerException {
+        InputSource is = new InputSource();
+        is.setSystemId(res.toURI().toString());
         try {
             is.setByteStream(res.getInputStream());
             SAXSource src = new SAXSource(createXMLReader(), is);
             return parse(xsltVersion,src);
         } catch(IOException x) {
-            throw new TransformerException("Can't read XML resource: " + res.getURI().toString(), x);
+            throw new TransformerException("Can't read XML resource: " + res.toURI().toString(), x);
         }
     }
 
@@ -188,14 +201,25 @@ public class Xml {
     }
     
     public static Document parseMutable(FileResource file) throws IOException, SAXException {
-        return parseMutable(new InputSource(file.getURI().toString()));
+        if (file.isDirectory()) {
+            // otherwise, I get obscure content-not-allowed-here exceptions
+            throw new IOException("expected file, got directory: " + file);
+        }
+        return parseMutable(new InputSource(file.toURL().toString()));
     }
     
-    public static Document parseMutable(InputStreamResource res) throws IOException, SAXException {
-    	InputSource in = new InputSource();
-    	in.setByteStream(res.getInputStream());
-    	in.setSystemId(res.getURI().toASCIIString());
-    	return parseMutable(in);
+    public static Document parseMutable(Resource res) throws IOException, SAXException {
+        InputSource is = new InputSource();
+        is.setSystemId(res.toURI().toString());
+        is.setByteStream(res.getInputStream());
+    	return parseMutable(is);
+    }
+    
+    public static Document parseMutable(ModuleResource res) throws IOException, SAXException {
+        InputSource is = new InputSource();
+        is.setSystemId(res.toURI().toString());
+        is.setByteStream(res.getInputStream());
+        return parseMutable(is);
     }
     
     public static Document parseMutable(File file) throws IOException, SAXException {
@@ -274,16 +298,6 @@ public class Xml {
         dest.write(tmp.toByteArray());
         dest.close();
     }
-    
-    public static void serialize(Node node, OutputStreamResource file, boolean pp, boolean decl) throws IOException {
-        ByteArrayOutputStream tmp = new ByteArrayOutputStream();
-
-        serialize(node, tmp, pp, decl);
-        
-        OutputStream dest = file.getOutputStream();
-        dest.write(tmp.toByteArray());
-        dest.close();
-    }
 
     /**
      * @param pp pretty print
@@ -343,6 +357,15 @@ public class Xml {
 
     private static DocumentBuilderFactory createDocumentBuilderFactory() {
         DocumentBuilderFactory fact = null;
+        try {
+            ClassLoader cl = Thread.currentThread().getContextClassLoader();
+            if(cl == null) cl = Xml.class.getClassLoader();
+            Class<?> clazz = Class.forName(DEFAULT_DOCUMENTBUILDERFACTORY, true, cl);
+            fact = (DocumentBuilderFactory)clazz.newInstance();
+        } catch(Exception x) {
+            x.printStackTrace();
+            //ignore and try to get DocumentBuilderFactory via factory finder in next step
+        }
         if(fact == null) {
             try {
                 fact = DocumentBuilderFactory.newInstance();

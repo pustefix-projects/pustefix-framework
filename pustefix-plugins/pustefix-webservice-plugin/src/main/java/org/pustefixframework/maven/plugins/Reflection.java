@@ -53,7 +53,7 @@ public class Reflection {
 
         classpath = new StringBuilder();
         try {
-            artifacts = project.getCompileArtifacts();
+            artifacts = extracted(project);
             cp = new URL[artifacts.size() + 1];
             file = new File(project.getBuild().getOutputDirectory());
             cp[0] = file.toURI().toURL();
@@ -67,6 +67,11 @@ public class Reflection {
             throw new MojoExecutionException("invalid url", e); 
         }
         return new Reflection(new URLClassLoader(cp, Reflection.class.getClassLoader()), classpath.toString());
+    }
+
+    @SuppressWarnings("unchecked")
+    private static List<Artifact> extracted(MavenProject project) {
+        return project.getCompileArtifacts();
     }
     
     private final URLClassLoader loader;

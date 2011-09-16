@@ -21,12 +21,12 @@
         </para>
       </listitem>
       <listitem>
-        <para>Apache Maven 2.0.9 or newer</para>
+        <para>Apache Maven 2.0.10 or newer</para>
       </listitem>
     </itemizedlist>
     <para>
       The installation of these tools is not covered by this
-      tutorial. Please refer to the documentation provided with these tools
+      document. Please refer to the documentation provided with these tools
       for installation instructions.
     </para>
   </section>
@@ -79,41 +79,11 @@
   <section xml:id="gettingstarted.mavenarchetypes">
     <title>Generating a new project from a Maven archetype</title>
     <para>
-      Pustefix provides some Maven archetypes to help you quickly setting up new applications or application modules.
-    </para>
-    <para>
-    <table rules="all" frame="box">
-        <caption>Maven archetypes</caption>
-        <thead>
-          <tr>
-            <th>ArtifactId</th>
-            <th>Description</th>
-          </tr>
-        </thead>
-        <tbody>
-          <tr>
-            <td>pustefix-archetype-basic</td>
-            <td>Creates a basic application only consisting of the main application bundle.</td>
-          </tr>
-          <tr>
-            <td>pustefix-archetype-modular</td>
-            <td>Creates a modular application consisting of application, webmodule and service bundles.</td>
-          </tr>
-          <tr>
-            <td>pustefix-archetype-webmodule</td>
-            <td>Creates an application module bundle.</td>
-          </tr>
-        </tbody>
-      </table>
-    </para>
-    <para>
-      For example to create a new application: just call <literal>mvn archetype:generate</literal>
-      and select the archetype <literal>pustefix-archetype-basic</literal>. You only have to specifiy the
-      <literal>archetypeCatalog</literal> parameter if you didn't globally setup the Pustefix Maven repository like 
-      described in the last section.
+      Pustefix provides an archetype for creating a basic application. Just call <literal>mvn archetype:generate</literal>
+      and select the archetype <literal>pustefix-archetype-basic</literal>.
     </para>
     <screen>
-      $ mvn archetype:generate -DarchetypeCatalog=http://pustefix-framework.org/repository/maven/archetype-catalog.xml</screen>
+      $ mvn archetype:generate</screen>
     <para>
       After choosing the <literal>pustefix-archetype-basic</literal> Maven will ask you for your project's <literal>groupId</literal>, 
       <literal>artifactId</literal>, <literal>version</literal> and <literal>package</literal>.
@@ -121,17 +91,12 @@
       and located within the current working directory.
     </para>
     <screen>
-      $ cd myproject
-      $ mvn pustefix-launcher:run</screen>
+      $ cd myapp
+      $ mvn tomcat:run-war</screen>
     <para>
-      The generated project is a standard Maven project with <literal>bundle</literal> packaging type. It uses 
-      <link xlink:href="http://felix.apache.org/site/apache-felix-maven-bundle-plugin-bnd.html">Apache Felix's Maven Bundle Plugin</link>
-      to build your application as an OSGi bundle.
-    </para>
-    <para>
-      Pustefix provides a simple application launcher plugin, which configures and starts an OSGi runtime. By default it just installs/starts all dependencies
-      (available as OSGi bundles) from the Maven POM. You can run your application by calling <literal>mvn pustefix-launcher:run</literal> and
-      opening <literal>http://localhost:8080</literal> in your browser.
+      The generated project is a standard Maven project with <literal>war</literal> packaging type, i.e. you can immediately build and
+      run your application, e.g. using Tomcat by calling <literal>mvn tomcat:run</literal> or <literal>mvn tomcat:run-war</literal> and
+      opening <literal>http://localhost:8080/myapp</literal> in your browser.
     </para>
   </section>
   <section xml:id="gettingstarted.ide">
@@ -156,4 +121,5 @@
       (also see the <link xlink:href="http://maven.apache.org/guides/mini/guide-ide-eclipse.html">Maven Eclipse documentation</link>).
     </para>
   </section>
+
 </chapter>

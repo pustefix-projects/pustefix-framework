@@ -3,8 +3,8 @@
                 xmlns:callback="xalan://de.schlund.pfixcore.util.TransformerCallback">
 
   <xsl:param name="__context__"/>
-  <xsl:param name="__navitree"/>
-  <xsl:param name="navitree" select="$__navitree"/>
+  <xsl:param name="__sitemap"/>
+  <xsl:param name="sitemap" select="$__sitemap"/>
   <xsl:param name="__target_gen"/>
 
   <xsl:template match="/">
@@ -24,6 +24,10 @@
           .datatable td {padding:4px;}
           .datatable th {padding:4px;text-align:left;font-weight:normal;border-bottom: 1px solid black;}
           .rowsep {border-bottom: 1px dotted #888888;}
+          table.info {padding-left: 20px;}
+          table.info th,td {text-align:left; padding:4px;}
+          table.info td {color: #666666; font-weight: normal;}
+          table.info th {color: #000000; font-weight: normal;}
         </style>
       </head>
       <body>
@@ -38,12 +42,12 @@
         <table cellpadding="4" cellspacing="0" style="padding-left:20px;">
         <tr>
         <td style="border-bottom: 1px solid black;">Page name</td>
-        <td style="border-bottom: 1px solid black;">Handler</td>
+        <td style="border-bottom: 1px solid black;">Alias</td>
         <td style="border-bottom: 1px solid black;">Visited?</td>
         <td style="border-bottom: 1px solid black;">Accessible?</td>
         <td style="border-bottom: 1px solid black;">Authorized?</td></tr>
         <xsl:call-template name="render_pages">
-          <xsl:with-param name="thepages" select="$navitree/page"/>
+          <xsl:with-param name="thepages" select="$sitemap/page"/>
         </xsl:call-template>
         </table>
         <br/>
@@ -110,7 +114,9 @@
       <td>  
         <xsl:value-of select="$ind"/><xsl:value-of select="@name"/>
       </td>
-      <td><span style="color:#aaaaaa;"><xsl:value-of select="@handler"/></span></td>
+      <td>
+        <xsl:value-of select="@alias"/>
+      </td>
       <td align="center" style="font-family: sans;"><xsl:copy-of select="$visited"/></td>
       <td align="center"><xsl:copy-of select="$visible"/></td>
       <td align="center"><xsl:copy-of select="$authorized"/></td>
@@ -285,6 +291,7 @@
       <xsl:choose>
         <xsl:when test="ancestor-or-self::wrapperstatus[1] and generate-id(ancestor-or-self::wrapperstatus[1]) = generate-id(/formresult/wrapperstatus)">true</xsl:when>
         <xsl:when test="ancestor-or-self::pageflow[1] and generate-id(ancestor-or-self::pageflow[1]) = generate-id(/formresult/pageflow)">true</xsl:when>
+        <xsl:when test="ancestor-or-self::tenant[1] and generate-id(ancestor-or-self::tenant[1]) = generate-id(/formresult/tenant)">true</xsl:when>
         <xsl:when test="ancestor-or-self::formhiddenvals[1] and generate-id(ancestor-or-self::formhiddenvals[1]) = generate-id(/formresult/formhiddenvals)">true</xsl:when>
         <xsl:when test="generate-id(current()) = generate-id(/formresult/formerrors)">true</xsl:when>
         <xsl:when test="ancestor-or-self::formvalues[1] and generate-id(ancestor-or-self::formvalues[1]) = generate-id(/formresult/formvalues)">true</xsl:when>
@@ -376,5 +383,4 @@
   </xsl:template>
 
   
-
 </xsl:stylesheet>

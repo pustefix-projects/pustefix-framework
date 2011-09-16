@@ -43,9 +43,7 @@ import de.schlund.pfixxml.util.XsltSupport;
 public class XsltSaxon1 implements XsltSupport {
 
     private TransformerFactory ifactory = new TransformerFactoryImpl();
-    
-    private static final ThreadLocal<TransformerFactory> threadfactory = new ThreadLocal<TransformerFactory>();
-    
+       
     // pretty-print script by M. Kay, see 
     // http://www.cafeconleche.org/books/xmljava/chapters/ch17s02.html#d0e32721
     private static final String ID = "<?xml version='1.0'?>"
@@ -72,15 +70,7 @@ public class XsltSaxon1 implements XsltSupport {
     }
     
     public TransformerFactory getThreadTransformerFactory() {
-        TransformerFactory factory = threadfactory.get();
-        if (factory == null) {
-            // Create a new factory. As we have to use a new URIResolver
-            // for each transformation, we cannot reuse the same factory
-            // in other threads
-            factory = new TransformerFactoryImpl();
-            threadfactory.set(factory);
-        }
-        return factory;
+        return new TransformerFactoryImpl();
     }
     
     public Templates getPrettyPrinterTemplates() {

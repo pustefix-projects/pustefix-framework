@@ -5,13 +5,13 @@
   <parent>
     <groupId>org.pustefixframework</groupId>
     <artifactId>pustefixframework</artifactId>
-    <version>1.0.3-SNAPSHOT</version>
+    <version>0.18.1-SNAPSHOT</version>
   </parent>
 
   <groupId>org.pustefixframework.maven.archetypes</groupId>
   <artifactId>pustefix-archetypes</artifactId>
   <packaging>pom</packaging>
-  <version>1.0.3-SNAPSHOT</version>
+  <version>0.18.1-SNAPSHOT</version>
 
   <name>Pustefix Archetypes</name>
   <description>Pustefix Archetypes</description>
@@ -19,9 +19,8 @@
 
   <modules>
     <module>pustefix-archetype-application</module>
-    <module>pustefix-archetype-module</module>
-    <module>pustefix-archetype-springmodule</module>
     <module>pustefix-archetype-basic</module>
+    <module>pustefix-archetype-module</module>
   </modules>
 
   <profiles>

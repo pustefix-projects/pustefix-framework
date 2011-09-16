@@ -79,7 +79,7 @@ public class Generics {
         return (List<T>) list;
     }
     
-    @SuppressWarnings("unchecked")
+    @SuppressWarnings({"unchecked","rawtypes"})
     public static <T1, T2> Map<T1, T2> convertMap(Map<?, ?> map) {
         for (Iterator i = map.entrySet().iterator(); i.hasNext();) {
             Entry entry = (Entry) i.next();
@@ -92,7 +92,7 @@ public class Generics {
         return (Map<T1, T2>) map;
     }
 
-    @SuppressWarnings("unchecked")
+    @SuppressWarnings({"unchecked","rawtypes"})
     public static <T1, T2> SortedMap<T1, T2> convertSortedMap(SortedMap<?, ?> map) {
         for (Iterator i = map.entrySet().iterator(); i.hasNext();) {
             Entry entry = (Entry) i.next();

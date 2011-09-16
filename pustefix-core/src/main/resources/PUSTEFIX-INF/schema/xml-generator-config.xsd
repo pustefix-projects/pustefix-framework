@@ -1,13 +1,10 @@
 <?xml version="1.0" encoding="utf-8"?>
 <xsd:schema xmlns:xsd="http://www.w3.org/2001/XMLSchema" 
-            xmlns="http://www.pustefix-framework.org/2009/namespace/xml-generator-config"
-            targetNamespace="http://www.pustefix-framework.org/2009/namespace/xml-generator-config"
             elementFormDefault="qualified" attributeFormDefault="unqualified">
-
-  <xsd:element name="xml-generator-config">
+            
+  <xsd:element name="make">
     <xsd:complexType>
       <xsd:sequence>
-        <xsd:element name="navigation" type="navigation-type"/>
         <xsd:element name="namespaces" type="namespaces-type"/>
         <xsd:element name="global" type="global-type" minOccurs="0"/>
         <xsd:choice minOccurs="1" maxOccurs="unbounded">
@@ -18,20 +15,11 @@
           <xsd:element name="config-include" type="config-include-type"/>
         </xsd:choice>
       </xsd:sequence>
-      <xsd:attribute name="project" type="xsd:string" use="optional"/>
       <xsd:attribute name="lang" type="xsd:string" use="required"/>
       <xsd:attribute name="themes" type="xsd:string"/>
+      <xsd:attribute name="project" type="xsd:string" use="optional"/>
     </xsd:complexType>
   </xsd:element>
-  
-  <xsd:complexType name="navigation-type">
-    <xsd:sequence>
-      <xsd:choice minOccurs="0" maxOccurs="unbounded">
-        <xsd:element name="page" type="page-type"/>
-        <xsd:element name="config-include" type="config-include-type"/>
-      </xsd:choice>
-    </xsd:sequence>
-  </xsd:complexType>
   
   <xsd:complexType name="page-type">
     <xsd:sequence>
@@ -41,7 +29,6 @@
       </xsd:choice>
     </xsd:sequence>
     <xsd:attribute name="name" type="xsd:string" use="required"/>
-    <xsd:attribute name="handler" type="xsd:string" use="required"/>
     <xsd:attribute name="accesskey" type="xsd:string"/>
     <xsd:anyAttribute namespace="##any" processContents="lax"/>
   </xsd:complexType>
@@ -147,6 +134,7 @@
     <xsd:attribute name="section" type="xsd:string"/>
     <xsd:attribute name="refid" type="xsd:string"/>
     <xsd:attribute name="xpath" type="xsd:string"/>
+    <xsd:attribute name="module" type="xsd:string"/>
   </xsd:complexType>
             
 </xsd:schema>

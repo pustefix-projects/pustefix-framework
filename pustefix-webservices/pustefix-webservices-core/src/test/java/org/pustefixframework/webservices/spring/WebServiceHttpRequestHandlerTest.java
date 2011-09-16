@@ -22,12 +22,7 @@ import static org.junit.Assert.assertEquals;
 
 import org.junit.Before;
 import org.junit.Test;
-import org.pustefixframework.test.BundleContextAwareBeanPostProcessor;
 import org.pustefixframework.webservices.BaseTestCase;
-import org.pustefixframework.webservices.ProtocolProvider;
-import org.pustefixframework.webservices.ProtocolProviderRegistryImpl;
-import org.pustefixframework.webservices.ServiceProcessor;
-import org.pustefixframework.webservices.ServiceStubGenerator;
 import org.pustefixframework.webservices.TestServiceProcessor;
 import org.springframework.beans.factory.xml.XmlBeanDefinitionReader;
 import org.springframework.core.io.FileSystemResource;
@@ -51,34 +46,16 @@ public class WebServiceHttpRequestHandlerTest extends BaseTestCase {
     public void setUp() {
         super.setUp();        
         GenericWebApplicationContext ctx=new GenericWebApplicationContext();
-        ctx.getBeanFactory().addBeanPostProcessor(new BundleContextAwareBeanPostProcessor());
         MockServletContext servletContext = new MockServletContext();
         ctx.setServletContext(servletContext);
         ctx.refresh();
         XmlBeanDefinitionReader xmlReader = new XmlBeanDefinitionReader(ctx);
-        xmlReader.loadBeanDefinitions(new FileSystemResource("src/test/resources/META-INF/pustefix/spring.xml"));
+        xmlReader.loadBeanDefinitions(new FileSystemResource("src/test/resources/WEB-INF/spring.xml"));
         
         handler = (WebServiceHttpRequestHandler)ctx.getBean("org.pustefixframework.webservices.spring.WebServiceHttpRequestHandler");
-       
-        ProtocolProvider proto = new ProtocolProvider() {
-        	public String getProtocolName() {
-        		return "TEST";
-        	}
-        	public String getProtocolVersion() {
-        		return "1";
-        	}
-        	public ServiceProcessor getServiceProcessor() {
-        		TestServiceProcessor proc = new TestServiceProcessor();
-        		proc.setServiceMethod("echo");
-        	    return proc;    
-        	}
-        	public ServiceStubGenerator getServiceStubGenerator() {
-        		return null;
-        	}
-        };
-        ProtocolProviderRegistryImpl protoRegistry = new ProtocolProviderRegistryImpl();
-        protoRegistry.addProtocolProvider(proto);
-        handler.getServiceRuntime().setProtocolProviderRegistry(protoRegistry);
+        TestServiceProcessor proc = new TestServiceProcessor();
+        proc.setServiceMethod("echo");
+        handler.getServiceRuntime().addServiceProcessor("TEST", proc);
     }
 
     @Test

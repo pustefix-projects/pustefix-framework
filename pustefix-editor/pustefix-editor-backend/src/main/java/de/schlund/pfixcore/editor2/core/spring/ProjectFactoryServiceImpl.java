@@ -117,7 +117,7 @@ public class ProjectFactoryServiceImpl implements ProjectFactoryService {
             throw new EditorInitializationException("Mandatory <description> is not set for <project>.");
         }
         
-        this.project = new ProjectImpl(variantfactory, themefactory, pagefactory, includefactory, dynincludefactory, imagefactory, targetfactory, configuration, updater, projectName, projectDescription, targetGenerator);
+        this.project = new ProjectImpl(variantfactory, themefactory, pagefactory, includefactory, dynincludefactory, imagefactory, targetfactory, configuration, updater, projectName, projectDescription, editorProjectInfo.isIncludePartsEditableByDefault(), targetGenerator);
         
         this.initialized = true;
     }

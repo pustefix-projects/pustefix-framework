@@ -4,7 +4,7 @@
     <theme name="default">
       <div class="part_module">
         <h3>AAA - A</h3>
-        <partinfo part="partA" theme="default" path="txt/common.xml" module="org.pustefixframework.samples.modules.sample-module-A"/>
+        <partinfo part="partA" theme="default" path="txt/common.xml" module="sample-module-A"/>
       </div>
     </theme>
   </part>
@@ -13,7 +13,7 @@
     <theme name="default">
       <div class="part_module">
         <h3>AAA - AB</h3>
-        <partinfo part="partAB" theme="default" path="txt/common.xml" module="org.pustefixframework.samples.modules.sample-module-A"/>
+        <partinfo part="partAB" theme="default" path="txt/common.xml" module="sample-module-A"/>
       </div>
     </theme>
   </part>
@@ -22,7 +22,7 @@
     <theme name="default">
       <div class="part_module">
         <h3>AAA - AC</h3>
-        <partinfo part="partAC" theme="default" path="txt/common.xml" module="org.pustefixframework.samples.modules.sample-module-A"/>
+        <partinfo part="partAC" theme="default" path="txt/common.xml" module="sample-module-A"/>
       </div>
     </theme>
   </part>
@@ -31,7 +31,7 @@
     <theme name="default">
       <div class="part_module">
         <h3>AAA - ABC</h3>
-        <partinfo part="partABC" theme="default" path="txt/common.xml" module="org.pustefixframework.samples.modules.sample-module-A"/>
+        <partinfo part="partABC" theme="default" path="txt/common.xml" module="sample-module-A"/>
       </div>
     </theme>
   </part>
@@ -40,7 +40,7 @@
     <theme name="default">
       <div class="part_module">
         <h3>AAA - ProjectCommonABC</h3>
-        <partinfo part="partProjectCommonABC" theme="default" path="txt/common.xml" module="org.pustefixframework.samples.modules.sample-module-A"/>
+        <partinfo part="partProjectCommonABC" theme="default" path="txt/common.xml" module="sample-module-A"/>
       </div>
     </theme>
   </part>
@@ -49,7 +49,7 @@
     <theme name="default">
       <div class="part_module">
         <h3>AAA - CommonABC</h3>
-        <partinfo part="partCommonABC" theme="default" path="txt/common.xml" module="org.pustefixframework.samples.modules.sample-module-A"/>
+        <partinfo part="partCommonABC" theme="default" path="txt/common.xml" module="sample-module-A"/>
       </div>
     </theme>
   </part>
@@ -58,7 +58,7 @@
     <theme name="default">
       <div class="part_module">
         <h3>AAA - ProjectABC</h3>
-        <partinfo part="partProjectABC" theme="default" path="txt/common.xml" module="org.pustefixframework.samples.modules.sample-module-A"/>
+        <partinfo part="partProjectABC" theme="default" path="txt/common.xml" module="sample-module-A"/>
       </div>
     </theme>
   </part> 
@@ -68,11 +68,11 @@
       <div class="part_module">
         <h3>AAA - A_inc</h3>
         <xmloutput>
-          <pfx:include part="partC" href="txt/common.xml" module="org.pustefixframework.samples.modules.sample-module-C"/>
+          <pfx:include part="partC" href="txt/common.xml" module="sample-module-C"/>
         </xmloutput>
         <br/>
         <xmloutput>
-          <pfx:include part="partB" module="org.pustefixframework.samples.modules.sample-module-B"/>
+          <pfx:include part="partB" module="sample-module-B"/>
         </xmloutput>
         <br/>
         <xmloutput>
@@ -83,7 +83,7 @@
           <pfx:include part="partA_test" href="txt/test.xml"/>
         </xmloutput>
         <br/>
-        <partinfo part="partA_inc" theme="default" path="txt/common.xml" module="org.pustefixframework.samples.modules.sample-module-A"/>
+        <partinfo part="partA_inc" theme="default" path="txt/common.xml" module="sample-module-A"/>
       </div>
     </theme>
   </part>

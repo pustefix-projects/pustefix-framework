@@ -22,6 +22,7 @@ import org.pustefixframework.generated.CoreStatusCodes;
 import de.schlund.pfixcore.generator.IWrapperParamPostCheck;
 import de.schlund.pfixcore.generator.SimpleCheck;
 import de.schlund.util.statuscodes.StatusCode;
+import de.schlund.util.statuscodes.StatusCodeHelper;
 
 /**
  * @author <a href="mailto:thomas.braun@schlund.de>Tom Braun</a>
@@ -38,12 +39,12 @@ public class StringLength extends SimpleCheck implements IWrapperParamPostCheck 
         scTooLong  = CoreStatusCodes.POSTCHECK_STRING_TOO_LONG;
     }
     
-    public void setScodeTooLong(StatusCode scode) {
-        scTooLong = scode;
+    public void setScodeTooLong(String scode) {
+        scTooLong = StatusCodeHelper.getStatusCodeByName(scode);
     }
     
-    public void setScodeTooShort(StatusCode scode) {
-        scTooShort = scode;
+    public void setScodeTooShort(String scode) {
+        scTooShort = StatusCodeHelper.getStatusCodeByName(scode);
     }
     
     public void setMinLength(String minLength) {

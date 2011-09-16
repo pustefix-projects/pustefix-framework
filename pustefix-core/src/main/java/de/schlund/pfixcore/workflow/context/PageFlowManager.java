@@ -18,10 +18,15 @@
 
 package de.schlund.pfixcore.workflow.context;
 
-import java.util.LinkedList;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.Iterator;
+import java.util.Map;
+import java.util.Set;
 
 import org.apache.log4j.Logger;
 import org.pustefixframework.config.contextxmlservice.ContextConfig;
+import org.pustefixframework.config.contextxmlservice.PageRequestConfig;
 
 import de.schlund.pfixcore.workflow.PageRequest;
 import de.schlund.pfixcore.workflow.VariantManager;
@@ -33,6 +38,11 @@ import de.schlund.pfixxml.Variant;
  */
 
 public class PageFlowManager {
+    
+    private Map<String, Set<String>> pagetoflowmap = new HashMap<String, Set<String>>();
+    private Map<String, PageFlow> flowmap = new HashMap<String, PageFlow>();
+    private Set<String> pagesInNoVariantFlows = new HashSet<String>();
+    
     private VariantManager vmanager;
     private ContextConfig config;
 
@@ -43,19 +53,60 @@ public class PageFlowManager {
     public PageFlowManager(ContextConfig config, VariantManager variantmanager) {
         vmanager = variantmanager;
         this.config = config;
-    }
 
-    protected PageFlow pageFlowToPageRequest(PageFlow lastflow, PageRequest page, Variant variant) {
-        String pageRootName = page.getRootName();
-        if (lastflow == null || !lastflow.containsPage(pageRootName)) {
+        Set<String> pagesFromFlowVariant = new HashSet<String>();
+        Set<String> pagesFromFlowNoVariant = new HashSet<String>();
+        
+        // Initialize map mapping each page name to a list of
+        // flows which contain this page in at least one variant
+        // and create PageFlow object for each flow
+        for (PageFlow flow : config.getPageFlows()) {
+
+            flowmap.put(flow.getName(), flow);
             
-            LinkedList<String> pageFlowRootNames = new LinkedList<String>();
-            for (PageFlow pageFlow : config.getPageFlowMap().values()) {
-                if (pageFlow.containsPage(pageRootName)) {
-                    pageFlowRootNames.add(pageFlow.getRootName());
+            String rootname = flow.getRootName();
+            for (PageRequestConfig pageConfig : config.getPageRequestConfigs()) {
+                String pageName = getRootName(pageConfig.getPageName());
+                if (flow.containsPage(pageName)) {
+                    Set<String> names = pagetoflowmap.get(pageName);
+                    if (names == null) {
+                        names = new HashSet<String>();
+                        pagetoflowmap.put(pageName, names);
+                    }
+                    if (!names.contains(rootname)) {
+                        names.add(rootname);
+                    }
+                    if(flow.getName().equals(flow.getRootName())) {
+                        pagesFromFlowNoVariant.add(pageName);
+                    } else {
+                        pagesFromFlowVariant.add(pageName);
+                    }
                 }
             }
-            if (pageFlowRootNames.size() == 0) {
+        }
+        
+        Iterator<String> it = pagesFromFlowNoVariant.iterator();
+        while(it.hasNext()) {
+            String page = it.next();
+            if(!pagesFromFlowVariant.contains(page)) {
+                pagesInNoVariantFlows.add(page);
+            }
+        }
+    }
+    
+    private String getRootName(String genericName) {
+        if (!genericName.contains("::")) {
+            return genericName;
+        } else {
+            return genericName.substring(0, genericName.indexOf("::"));
+        }
+    }
+
+    public PageFlow pageFlowToPageRequest(PageFlow lastflow, PageRequest page, Variant variant) {
+        //LOG.debug("===> Testing pageflow: " + currentflow.getName() + " / page: " + page);
+        if (lastflow == null || !lastflow.containsPage(page.getRootName())) {
+            Set<String> rootflownames = pagetoflowmap.get(page.getRootName());
+            if (rootflownames == null) {
                 LOG.debug("===> Page " + page + " isn't a member of any pageflow: returning no pageflow");
                 return null;
             }
@@ -71,9 +122,9 @@ public class PageFlowManager {
                     }
                 }
             }
-            for (String pageFlowRootName : pageFlowRootNames) {
-                String pageFlowName = vmanager.getVariantMatchingPageFlowName(pageFlowRootName, variant);
-                PageFlow pf = getPageFlowByName(pageFlowName);
+            for (Iterator<String> i = rootflownames.iterator(); i.hasNext();) {
+                String pageflowname = vmanager.getVariantMatchingPageFlowName(i.next(), variant);
+                PageFlow pf = getPageFlowByName(pageflowname);
                 if (pf.containsPage(page.getRootName())) {
                     //LOG.debug("===> Switching to pageflow: " + pf.getName());
                     return pf;
@@ -92,6 +143,21 @@ public class PageFlowManager {
     }
     
     protected PageFlow getPageFlowByName(String fullname) {
-        return config.getPageFlowMap().get(fullname);
+        return flowmap.get(fullname);
     }
+    
+    protected boolean needsLastFlow(PageFlow lastFlow, PageRequest page) {
+      
+        if(pagesInNoVariantFlows.contains(page.getRootName())) {
+            PageFlow flowWithLast = pageFlowToPageRequest(lastFlow, page, null);
+            PageFlow flowWithoutLast = pageFlowToPageRequest(null, page, null);
+            if(flowWithLast != null && flowWithoutLast != null) {
+                if(flowWithLast.getRootName().equals(flowWithoutLast.getRootName())) {
+                    return false;
+                }
+            }
+        }
+        return true;
+    }
+    
 }

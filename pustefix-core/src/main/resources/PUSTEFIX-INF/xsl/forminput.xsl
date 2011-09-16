@@ -174,38 +174,28 @@
         </xsl:otherwise>
       </xsl:choose>
     </xsl:variable>
-    <xsl:variable name="thehandler">
-      <xsl:choose>
-        <xsl:when test="$send-to-page">
-          <xsl:value-of select="$navitree//page[@name=$send-to-page]/@handler"/>
-        </xsl:when>
-        <xsl:otherwise>
-          <xsl:value-of select="$navitree//page[@name=$page]/@handler"/>
-        </xsl:otherwise>
-      </xsl:choose>
-    </xsl:variable>
     <form method="post">
       <xsl:copy-of select="./@*[name()!='send-to-page' and name()!='send-to-pageflow' and name()!='type']"/>
       <ixsl:attribute name="action">
         <ixsl:value-of select="$__contextpath"/>
         <xsl:choose>
           <xsl:when test="$send-to-page">
-            <xsl:value-of select="concat($thehandler, '/', $send-to-page)"/>;<ixsl:value-of select="$__sessid"/><xsl:if test="not($theframe = '')"></xsl:if>?__frame=<xsl:value-of select="$theframe"/>
+            <xsl:value-of select="concat('/', pfx:__omitPage($send-to-page))"/><ixsl:value-of select="$__sessionIdPath"/><xsl:if test="not($theframe = '')">?__frame=<xsl:value-of select="$theframe"/></xsl:if>
           </xsl:when>
           <xsl:otherwise>
             <xsl:choose>
               <xsl:when test="@type='auth'">
                 <ixsl:choose>
                   <ixsl:when test="$__root/formresult/authentication/@targetpage">
-                    <xsl:value-of select="$thehandler"/>/<ixsl:value-of select="$__root/formresult/authentication/@targetpage"/>;<ixsl:value-of select="$__sessid"/>
+                    <xsl:text>/</xsl:text><ixsl:value-of select="pfx:__omitPage($__root/formresult/authentication/@targetpage)"/><ixsl:value-of select="$__sessionIdPath"/>
                   </ixsl:when>
                   <ixsl:otherwise>
-                    <xsl:value-of select="concat($thehandler, '/', $page)"/>;<ixsl:value-of select="$__sessid"/><xsl:if test="not($theframe = '')"></xsl:if>?__frame=<xsl:value-of select="$theframe"/>
+                    <ixsl:value-of select="concat('/', pfx:__omitPage($page))"/><ixsl:value-of select="$__sessionIdPath"/><xsl:if test="not($theframe = '')">?__frame=<xsl:value-of select="$theframe"/></xsl:if>
                   </ixsl:otherwise>
                 </ixsl:choose>
               </xsl:when>
               <xsl:otherwise>
-                <xsl:value-of select="concat($thehandler, '/', $page)"/>;<ixsl:value-of select="$__sessid"/><xsl:if test="not($theframe = '')"></xsl:if>?__frame=<xsl:value-of select="$theframe"/>
+                <ixsl:value-of select="concat('/', pfx:__omitPage($page))"/><ixsl:value-of select="$__sessionIdPath"/><xsl:if test="not($theframe = '')">?__frame=<xsl:value-of select="$theframe"/></xsl:if>
               </xsl:otherwise>
             </xsl:choose>
           </xsl:otherwise>
@@ -237,17 +227,26 @@
         <ixsl:attribute name="value"><ixsl:value-of select="./text()"/></ixsl:attribute>
       </input>
     </ixsl:for-each>
-    <xsl:if test="not(.//pfx:token)">
-      <xsl:variable name="pageName">
-        <xsl:choose>
-          <xsl:when test="@send-to-page"><xsl:value-of select="@send-to-page"/></xsl:when>
-          <xsl:otherwise><xsl:value-of select="$page"/></xsl:otherwise>
-        </xsl:choose>
-      </xsl:variable>
-      <ixsl:if test="pfx:requiresToken('{$pageName}')">
-        <xsl:call-template name="createToken">
-          <xsl:with-param name="tokenName"><xsl:value-of select="concat($pageName,'#',generate-id())"/></xsl:with-param>
-        </xsl:call-template>
+    <xsl:if test="not(.//pfx:token)">   
+      <ixsl:if>
+        <xsl:attribute name="test">
+          <xsl:choose>
+            <xsl:when test="@send-to-page">pfx:requiresToken('<xsl:value-of select="@send-to-page"/>')</xsl:when>
+            <xsl:otherwise>pfx:requiresToken($page)</xsl:otherwise>
+          </xsl:choose>
+        </xsl:attribute>
+        <input type="hidden" name="__token">
+          <ixsl:variable name="__token">
+            <xsl:choose>
+              <xsl:when test="@send-to-page"><xsl:value-of select="@send-to-page"/></xsl:when>
+              <xsl:otherwise><ixsl:value-of select="$page"/></xsl:otherwise>
+            </xsl:choose>
+            <xsl:value-of select="concat('#',generate-id())"/>
+          </ixsl:variable>
+          <ixsl:attribute name="value">
+            <ixsl:value-of select="$__token"/>::<ixsl:value-of select="pfx:getToken($__token)"/>
+          </ixsl:attribute>
+        </input>
       </ixsl:if>
     </xsl:if>
   </xsl:template>
@@ -292,7 +291,7 @@
       <ixsl:call-template name="__formwarn">
         <ixsl:with-param name="targetpage"><xsl:choose>
           <xsl:when test="ancestor::pfx:forminput[position()=1]/@send-to-page"><xsl:value-of select="ancestor::pfx:forminput[position()=1]/@send-to-page"/></xsl:when>
-          <xsl:otherwise><xsl:value-of select="$page"/></xsl:otherwise>
+          <xsl:otherwise><ixsl:value-of select="$page"/></xsl:otherwise>
         </xsl:choose></ixsl:with-param>
         <ixsl:with-param name="fullname"><ixsl:value-of select="$pfx_name"/></ixsl:with-param>
       </ixsl:call-template>
@@ -315,7 +314,7 @@
         <xsl:value-of select="ancestor::pfx:forminput[position() = 1]/@send-to-page"/>
       </xsl:when>
       <xsl:otherwise>
-        <xsl:value-of select="$page"/>
+        <ixsl:value-of select="$page"/>
       </xsl:otherwise>
     </xsl:choose>]:<xsl:value-of select="@name"/></ixsl:attribute><ixsl:attribute name="value"><xsl:apply-templates select="./node()"/></ixsl:attribute></input>
     </xsl:for-each>
@@ -327,13 +326,7 @@
     <xsl:param name="themed-img"  select="@themed-img"/>
     <xsl:param name="alt" select="@alt"/>
     <xsl:param name="exclude-attributes"/>
-    <xsl:param name="module">
-      <xsl:choose>
-        <xsl:when test="@module"><xsl:value-of select="@module"/></xsl:when>
-        <xsl:when test="ancestor::pfx:partinfo[position()=1]"><xsl:value-of select="ancestor::pfx:partinfo[position()=1]/@bundle"/></xsl:when>
-        <xsl:otherwise><xsl:value-of select="$bundle"/></xsl:otherwise>
-      </xsl:choose>
-    </xsl:param>
+    <xsl:param name="module" select="@module"/>
     <xsl:param name="search" select="@search"/>
     <xsl:variable name="always-exclude-attributes" select="'src|themed-path|themed-img|alt|width|height|type|name|jumptopage|jumptopageflow|forcestop|pageflow|module|search|action|level'"/>
     <xsl:choose>
@@ -350,10 +343,6 @@
         <ixsl:variable><xsl:attribute name="name">genname_<xsl:value-of select="generate-id(.)"/></xsl:attribute><xsl:value-of select="generate-id(.)"/><ixsl:value-of select="generate-id(.)"/></ixsl:variable>
         <input type="image" src="{{$__contextpath}}/{$realsrc}" alt="{$alt}"> 
           <xsl:copy-of select="@*[not(contains(concat('|',$always-exclude-attributes,'|',$exclude-attributes,'|') , concat('|',name(),'|')))]"/>
-          <xsl:attribute name="src">
-            <xsl:text>{$__contextpath}</xsl:text>
-            <xsl:call-template name="pfx:imageUriToPath"><xsl:with-param name="uri" select="$realsrc"/></xsl:call-template>
-          </xsl:attribute>
           <xsl:attribute name="class"><xsl:value-of select="@class"/> PfxInputImage</xsl:attribute>
           <xsl:call-template name="pfx:image_geom_impl_new">
             <xsl:with-param name="src" select="$realsrc"/>
@@ -483,7 +472,7 @@
     <ixsl:call-template name="__formwarn">
       <ixsl:with-param name="targetpage"><xsl:choose>
         <xsl:when test="ancestor::pfx:forminput[position()=1]/@send-to-page"><xsl:value-of select="ancestor::pfx:forminput[position()=1]/@send-to-page"/></xsl:when>
-        <xsl:otherwise><xsl:value-of select="$page"/></xsl:otherwise>
+        <xsl:otherwise><ixsl:value-of select="$page"/></xsl:otherwise>
       </xsl:choose></ixsl:with-param>
       <ixsl:with-param name="fullname"><ixsl:value-of select="$pfx_name"/></ixsl:with-param>
     </ixsl:call-template>
@@ -537,7 +526,7 @@
     <ixsl:call-template name="__formwarn">
       <ixsl:with-param name="targetpage"><xsl:choose>
         <xsl:when test="ancestor::pfx:forminput[position()=1]/@send-to-page"><xsl:value-of select="ancestor::pfx:forminput[position()=1]/@send-to-page"/></xsl:when>
-        <xsl:otherwise><xsl:value-of select="$page"/></xsl:otherwise>
+        <xsl:otherwise><ixsl:value-of select="$page"/></xsl:otherwise>
       </xsl:choose></ixsl:with-param>
       <ixsl:with-param name="fullname"><ixsl:value-of select="$pfx_name"/></ixsl:with-param>
     </ixsl:call-template>
@@ -581,7 +570,7 @@
     <ixsl:call-template name="__formwarn">
       <ixsl:with-param name="targetpage"><xsl:choose>
         <xsl:when test="ancestor::pfx:forminput[position()=1]/@send-to-page"><xsl:value-of select="ancestor::pfx:forminput[position()=1]/@send-to-page"/></xsl:when>
-        <xsl:otherwise><xsl:value-of select="$page"/></xsl:otherwise>
+        <xsl:otherwise><ixsl:value-of select="$page"/></xsl:otherwise>
       </xsl:choose></ixsl:with-param>
       <ixsl:with-param name="fullname"><ixsl:value-of select="$pfx_name"/></ixsl:with-param>
     </ixsl:call-template>
@@ -625,7 +614,7 @@
     <ixsl:call-template name="__formwarn">
       <ixsl:with-param name="targetpage"><xsl:choose>
         <xsl:when test="ancestor::pfx:forminput[position()=1]/@send-to-page"><xsl:value-of select="ancestor::pfx:forminput[position()=1]/@send-to-page"/></xsl:when>
-        <xsl:otherwise><xsl:value-of select="$page"/></xsl:otherwise>
+        <xsl:otherwise><ixsl:value-of select="$page"/></xsl:otherwise>
       </xsl:choose></ixsl:with-param>
       <ixsl:with-param name="fullname"><ixsl:value-of select="$pfx_name"/></ixsl:with-param>
     </ixsl:call-template>
@@ -676,7 +665,7 @@
     <ixsl:call-template name="__formwarn">
       <ixsl:with-param name="targetpage"><xsl:choose>
         <xsl:when test="ancestor::pfx:forminput[position()=1]/@send-to-page"><xsl:value-of select="ancestor::pfx:forminput[position()=1]/@send-to-page"/></xsl:when>
-        <xsl:otherwise><xsl:value-of select="$page"/></xsl:otherwise>
+        <xsl:otherwise><ixsl:value-of select="$page"/></xsl:otherwise>
       </xsl:choose></ixsl:with-param>
       <ixsl:with-param name="fullname"><ixsl:value-of select="$pfx_name"/></ixsl:with-param>
     </ixsl:call-template>
@@ -710,7 +699,7 @@
     <ixsl:call-template name="__formwarn">
       <ixsl:with-param name="targetpage"><xsl:choose>
         <xsl:when test="ancestor::pfx:forminput[position()=1]/@send-to-page"><xsl:value-of select="ancestor::pfx:forminput[position()=1]/@send-to-page"/></xsl:when>
-        <xsl:otherwise><xsl:value-of select="$page"/></xsl:otherwise>
+        <xsl:otherwise><ixsl:value-of select="$page"/></xsl:otherwise>
       </xsl:choose></ixsl:with-param>
       <ixsl:with-param name="fullname"><ixsl:value-of select="$pfx_name"/></ixsl:with-param>
     </ixsl:call-template>
@@ -741,95 +730,22 @@
     </ixsl:if>
   </xsl:template>
 
-
-  <!-- ****************** Helper templates ******************************* -->
-
-<!--  <xsl:template name="pfx:formwarn">-->
-<!--    <xsl:param name="type"/>-->
-<!--    <xsl:param name="data"/>-->
-<!--    <xsl:variable name="style_err">position: absolute; color: #000000; background-color: #eeaaaa; border: solid 1px #aa8888; font-family: sans-serif; font-size:9px; font-weight: normal;</xsl:variable>-->
-<!--    <xsl:variable name="theform" select="ancestor::pfx:forminput[position()=1]"/>-->
-<!--    <xsl:variable name="targetpage">-->
-<!--      <xsl:choose>-->
-<!--        <xsl:when test="$theform/@send-to-page">-->
-<!--          <xsl:value-of select="$theform/@send-to-page"/>-->
-<!--        </xsl:when>-->
-<!--        <xsl:otherwise>-->
-<!--          <xsl:value-of select="$page"/>-->
-<!--        </xsl:otherwise>-->
-<!--      </xsl:choose> -->
-<!--    </xsl:variable>-->
-<!--    <xsl:if test="$prohibitEdit = 'no'">-->
-<!--      <xsl:choose>-->
-<!--        <xsl:when test="$type = 'unknown'">-->
-<!--           <xsl:variable name="fullname"><xsl:value-of select="$data/@name"/></xsl:variable>-->
-<!--           <xsl:if test="contains($fullname, '.')">-->
-<!--            <xsl:variable name="prefix" select="substring-before($fullname, '.')"/>-->
-<!--            <xsl:variable name="tmp" select="substring-after($fullname, '.')"/>-->
-<!--            <xsl:variable name="name">-->
-<!--              <xsl:choose>-->
-<!--                <xsl:when test="contains($tmp, '.')"><xsl:value-of select="substring-before($tmp, '.')"/></xsl:when>-->
-<!--                <xsl:otherwise><xsl:value-of select="$tmp"/></xsl:otherwise>-->
-<!--              </xsl:choose>-->
-<!--            </xsl:variable>-->
-<!--            <xsl:variable name="index" select="substring-after($tmp, '.')"/>-->
-<!--            <ixsl:choose>-->
-<!--              <ixsl:when test="not(pfx:getIWrapperInfo('{$targetpage}','{$prefix}'))">-->
-<!--                <div style="{$style_err}" onclick="if (event.stopPropagation) event.stopPropagation(); else if (typeof event.cancelBubble != 'undefined') event.cancelBubble = true; this.style.display='none';">-->
-<!--                  Warning: Unknown wrapper <b><xsl:value-of select="$prefix"/></b>-->
-<!--                </div>-->
-<!--              </ixsl:when>-->
-<!--              <ixsl:when test="not(pfx:getIWrapperInfo('{$targetpage}','{$prefix}')/iwrapper/param[@name = '{$name}'])">-->
-<!--                <div style="{$style_err}" onclick="if (event.stopPropagation) event.stopPropagation(); else if (typeof event.cancelBubble != 'undefined') event.cancelBubble = true; this.style.display='none';">-->
-<!--                  Warning: Unknown parameter <b><xsl:value-of select="$name"/></b> in wrapper <b><xsl:value-of select="$prefix"/></b>-->
-<!--                </div>-->
-<!--              </ixsl:when>-->
-<!--              <xsl:choose>-->
-<!--                <xsl:when test="$index">-->
-<!--                  <ixsl:when test="not(pfx:getIWrapperInfo('{$targetpage}','{$prefix}')/iwrapper/param[@name = '{$name}' and @occurrence = 'indexed'])">-->
-<!--                    <div style="{$style_err}" onclick="if (event.stopPropagation) event.stopPropagation(); else if (typeof event.cancelBubble != 'undefined') event.cancelBubble = true; this.style.display='none';">-->
-<!--                      Warning: No indexed parameter <b><xsl:value-of select="$name"/></b> in wrapper <b><xsl:value-of select="$prefix"/></b>-->
-<!--                    </div>-->
-<!--                  </ixsl:when>-->
-<!--                </xsl:when>-->
-<!--                <xsl:otherwise>-->
-<!--                  <ixsl:when test="not(pfx:getIWrapperInfo('{$targetpage}','{$prefix}')/iwrapper/param[@name = '{$name}' and @occurrence != 'indexed'])">-->
-<!--                    <div style="{$style_err}" onclick="if (event.stopPropagation) event.stopPropagation(); else if (typeof event.cancelBubble != 'undefined') event.cancelBubble = true; this.style.display='none';">-->
-<!--                      Warning: Parameter <b><xsl:value-of select="$name"/></b> in wrapper <b><xsl:value-of select="$prefix"/> must be indexed</b>-->
-<!--                    </div>-->
-<!--                  </ixsl:when>-->
-<!--              </xsl:otherwise>-->
-<!--              </xsl:choose>-->
-<!--            </ixsl:choose>-->
-<!--          </xsl:if>-->
-<!--        </xsl:when> -->
-<!--        <xsl:otherwise>-->
-<!--          <div onclick="if (event.stopPropagation) event.stopPropagation(); else if (typeof event.cancelBubble != 'undefined') event.cancelBubble = true; this.style.display='none';">-->
-<!--             <xsl:apply-templates/>-->
-<!--          </div>-->
-<!--        </xsl:otherwise>  -->
-<!--      </xsl:choose> -->
-<!--    </xsl:if>-->
-<!--  </xsl:template>-->
-
-  <xsl:template match="pfx:token" name="createToken">
-    <xsl:param name="tokenName">
-      <xsl:choose>
-          <xsl:when test="@name">
-            <xsl:value-of select="@name"/>
-          </xsl:when>
+  <xsl:template match="pfx:token">
+    <input type="hidden" name="__token">
+      <ixsl:variable name="__token">
+        <xsl:choose>
+          <xsl:when test="@name"><xsl:value-of select="@name"/></xsl:when>
           <xsl:otherwise>
             <xsl:choose>
               <xsl:when test="ancestor::pfx:forminput[position()=1]/@send-to-page"><xsl:value-of select="ancestor::pfx:forminput[position()=1]/@send-to-page"/></xsl:when>
-              <xsl:otherwise><xsl:value-of select="$page"/></xsl:otherwise>
+              <xsl:otherwise><ixsl:value-of select="$page"/></xsl:otherwise>
             </xsl:choose>
             <xsl:value-of select="concat('#',generate-id())"/>
           </xsl:otherwise>
         </xsl:choose>
-    </xsl:param>
-    <input type="hidden" name="__token">
+      </ixsl:variable>
       <ixsl:attribute name="value">
-        <xsl:value-of select="$tokenName"/>:<xsl:value-of select="@errorpage"/>:<ixsl:value-of select="pfx:getToken('{$tokenName}')"/>
+        <ixsl:value-of select="$__token"/>:<xsl:value-of select="@errorpage"/>:<ixsl:value-of select="pfx:getToken($__token)"/>
       </ixsl:attribute>
     </input>
   </xsl:template>
@@ -838,7 +754,7 @@
   <form method="post">
     <ixsl:attribute name="action">
       <ixsl:value-of select="$__contextpath"/>
-      <ixsl:text>/xml/deref</ixsl:text>
+      <ixsl:text>/deref</ixsl:text>
       <ixsl:call-template name="__fake_session_id_argument"/>
     </ixsl:attribute>
     <xsl:variable name="link">addallparams:<xsl:value-of select="@href"/></xsl:variable>
@@ -866,9 +782,3 @@
   </xsl:template>
   
 </xsl:stylesheet>
-
-<!--
-Local Variables:
-mode: xsl
-End:
--->

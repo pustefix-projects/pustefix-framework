@@ -83,6 +83,7 @@ public abstract class RemoteCommonIncludeServiceImpl implements RemoteCommonIncl
         for (IncludePart part : file.getParts()) {
             to.parts.add(part.getName());
         }
+        to.readOnly = file.isReadOnly();
         return to;
     }
     
@@ -134,6 +135,7 @@ public abstract class RemoteCommonIncludeServiceImpl implements RemoteCommonIncl
         for (Page page : includePartThemeVariant.getAffectedPages()) {
             to.affectedPages.add(page.getFullName());
         }
+        to.readOnly = includePartThemeVariant.isReadOnly();
         return to;
     }
     

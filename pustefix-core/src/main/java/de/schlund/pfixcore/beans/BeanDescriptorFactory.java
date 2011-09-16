@@ -21,12 +21,11 @@ package de.schlund.pfixcore.beans;
 import java.net.URL;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.WeakHashMap;
 
 import net.sf.cglib.proxy.Enhancer;
+
 import de.schlund.pfixcore.beans.metadata.Beans;
 import de.schlund.pfixcore.beans.metadata.DOMInit;
-import de.schlund.pfixcore.beans.metadata.DOMInitException;
 import de.schlund.pfixcore.beans.metadata.Locator;
 
 
@@ -36,16 +35,15 @@ import de.schlund.pfixcore.beans.metadata.Locator;
 public class BeanDescriptorFactory {
 
     Map<Class<?>,BeanDescriptor> descriptors;
-    WeakHashMap<ClassLoader, Beans> classLoaderToBeans;
+    Beans metadata;
     
     public BeanDescriptorFactory() {
-        descriptors = new HashMap<Class<?>,BeanDescriptor>();
-        classLoaderToBeans = new WeakHashMap<ClassLoader, Beans>();
+        descriptors=new HashMap<Class<?>,BeanDescriptor>();
     }
     
     public BeanDescriptorFactory(Beans metadata) {
         this();
-        classLoaderToBeans.put(getClass().getClassLoader(), metadata);
+        this.metadata=metadata;
     }
     
     public BeanDescriptorFactory(Locator locator) throws InitException {
@@ -54,28 +52,7 @@ public class BeanDescriptorFactory {
         for(URL url:locator.getMetadataResources()) {
             domInit.update(url);
         }
-        classLoaderToBeans.put(getClass().getClassLoader(), domInit.getBeans());
-    }
-    
-    private Beans getMetaData(Class<?> clazz) {
-        Beans beans = classLoaderToBeans.get(clazz.getClassLoader());
-        if(beans == null) {
-            beans = new Beans();
-            ClassLoader cl = clazz.getClassLoader();
-            if(cl != null) {
-                URL url = cl.getResource("/META-INF/pustefix/beanmetadata.xml");
-                if(url != null) {
-                    DOMInit domInit = new DOMInit(beans);
-                    try {
-                        domInit.update(url);
-                    } catch(DOMInitException x) {
-                        throw new RuntimeException("Error reading bean metadata", x);
-                    }
-                }
-            }
-            classLoaderToBeans.put(clazz.getClassLoader(), beans);
-        }
-        return beans;
+        metadata=domInit.getBeans();
     }
     
     @SuppressWarnings("unchecked")
@@ -85,7 +62,7 @@ public class BeanDescriptorFactory {
         }
         BeanDescriptor desc=descriptors.get(clazz);
         if(desc==null) {
-            desc=new BeanDescriptor(clazz, getMetaData(clazz));
+            desc=new BeanDescriptor(clazz,metadata);
             descriptors.put(clazz,desc);
         }
         return desc;

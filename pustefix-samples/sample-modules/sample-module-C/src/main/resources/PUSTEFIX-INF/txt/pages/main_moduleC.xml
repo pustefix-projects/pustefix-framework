@@ -2,7 +2,7 @@
 
   <part name="content">
     <theme name="default">
-      <h1>org.pustefixframework.samples.modules.sample-module-C</h1>
+      <h1>sample-module-C</h1>
       <table>
         <tr>
           <th align="left">Part:</th> 
@@ -14,7 +14,7 @@
         </tr>
         <tr>
           <th align="left">Module:</th>
-          <td align="left">org.pustefixframework.samples.modules.sample-module-C</td>
+          <td align="left">sample-module-C</td>
         </tr>
       </table>
     </theme>

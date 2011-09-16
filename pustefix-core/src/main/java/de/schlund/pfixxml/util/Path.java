@@ -19,6 +19,7 @@ package de.schlund.pfixxml.util;
 
 import java.io.File;
 
+import de.schlund.pfixxml.resources.FileResource;
 
 /**
  * Similar to java.io.File, but the base directory for relative paths can be 

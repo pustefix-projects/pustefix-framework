@@ -21,7 +21,6 @@ package de.schlund.pfixxml.serverutil;
 import java.io.IOException;
 import java.lang.management.ManagementFactory;
 import java.util.ArrayList;
-import java.util.Enumeration;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.LinkedList;
@@ -37,32 +36,27 @@ import javax.servlet.http.HttpSessionBindingEvent;
 import javax.servlet.http.HttpSessionBindingListener;
 
 import org.apache.log4j.Logger;
-import org.osgi.framework.Bundle;
-import org.osgi.framework.BundleContext;
-import org.osgi.framework.BundleEvent;
-import org.osgi.framework.BundleListener;
-import org.pustefixframework.util.PustefixBundleDetection;
 import org.springframework.beans.factory.DisposableBean;
 import org.springframework.beans.factory.InitializingBean;
-import org.springframework.osgi.context.BundleContextAware;
 
 /**
  *
  *
  */
 
-public class SessionAdmin implements HttpSessionBindingListener, SessionAdminMBean, InitializingBean, DisposableBean, BundleContextAware, BundleListener {
+public class SessionAdmin implements HttpSessionBindingListener, SessionAdminMBean, InitializingBean, DisposableBean {
     
-    public  static String       LISTENER       = "__SESSION_LISTENER__"; 
-    public  static String       PARENT_SESS_ID = "__PARENT_SESSION_ID__";
-    public  static final String SESSION_IS_SECURE             = "__SESSION_IS_SECURE__";
-    private static final Logger LOG            = Logger.getLogger(SessionAdmin.class);
+    public final static String LISTENER = "__SESSION_LISTENER__"; 
+    public final static String PARENT_SESS_ID = "__PARENT_SESSION_ID__";
+    public final static String SESSION_IS_SECURE = "__SESSION_IS_SECURE__";
+    private final static Logger LOG = Logger.getLogger(SessionAdmin.class);
     /** Maps session to it's id. */
-    private        HashMap<HttpSession, String> sessionid = new HashMap<HttpSession, String>();
-    private        HashMap<String, SessionInfoStruct> sessioninfo = new HashMap<String, SessionInfoStruct>();
-    private        HashMap<String,HttpSession>      parentinfo     = new HashMap<String,HttpSession>();
-    private        HashMap<String,String>      parentinfo_rev = new HashMap<String,String>();
+    private HashMap<HttpSession, String> sessionid = new HashMap<HttpSession, String>();
+    private HashMap<String, SessionInfoStruct> sessioninfo = new HashMap<String, SessionInfoStruct>();
+    private HashMap<String,HttpSession> parentinfo = new HashMap<String,HttpSession>();
+    private HashMap<String,String> parentinfo_rev = new HashMap<String,String>();
     private String projectName;
+    
     
     public void afterPropertiesSet() throws Exception {
         try {
@@ -88,32 +82,7 @@ public class SessionAdmin implements HttpSessionBindingListener, SessionAdminMBe
     public void setProjectName(String projectName) {
         this.projectName = projectName;
     }
-    
-    public void setBundleContext(BundleContext bundleContext) {
-        bundleContext.addBundleListener(this);
-    }
 
-    public void bundleChanged(BundleEvent event) {
-        if(event.getType() == BundleEvent.STOPPED) {
-            Bundle bundle = event.getBundle();
-            if(PustefixBundleDetection.isPustefixBundle(bundle)) {
-                LOG.info("Removing beans from sessions for stopped bundle " + bundle.getSymbolicName() + "[" + bundle.getBundleId() + "]");
-                Iterator<HttpSession> it = sessionid.keySet().iterator();
-                while(it.hasNext()) {
-                    HttpSession session = it.next();
-                    String id = "@bundle:"+event.getBundle().getBundleId();
-                    List<String> attrs = new ArrayList<String>();
-                    Enumeration<?> en = session.getAttributeNames();
-                    while(en.hasMoreElements()) {
-                        String attr = (String)en.nextElement();
-                        if(attr.endsWith(id)) attrs.add(attr);
-                    }
-                    for(String attr:attrs) session.removeAttribute(attr);
-                }
-            }
-        }
-    }
-    
     @Override
     public String toString() {
         return "[Number of active Sessions: " + sessioninfo.keySet().size() + "]";
@@ -263,6 +232,16 @@ public class SessionAdmin implements HttpSessionBindingListener, SessionAdminMBe
     
     public void invalidateSession(String id) throws IOException {
         getSession(id).invalidate();
+    }
+    
+    public void invalidateSessions() throws IOException {
+        synchronized(sessioninfo) {
+            List<SessionInfoStruct> sessionSnapshot = new ArrayList<SessionInfoStruct>(sessioninfo.values());
+            Iterator<SessionInfoStruct> infos = sessionSnapshot.iterator();
+            while(infos.hasNext()) {
+                infos.next().getSession().invalidate();
+            }
+        }
     }
     
     public HttpSession getSession(String id) throws IOException {

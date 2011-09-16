@@ -20,7 +20,7 @@ package org.pustefixframework.config.contextxmlservice.parser;
 import java.util.Iterator;
 
 import org.pustefixframework.config.contextxmlservice.parser.internal.AuthConstraintRef;
-import org.pustefixframework.config.contextxmlservice.parser.internal.PustefixContextXMLRequestHandlerConfigImpl;
+import org.pustefixframework.config.contextxmlservice.parser.internal.ContextXMLServletConfigImpl;
 import org.pustefixframework.config.generic.ParsingUtils;
 import org.w3c.dom.Element;
 import org.w3c.dom.Node;
@@ -36,6 +36,7 @@ import de.schlund.pfixcore.auth.Role;
 import de.schlund.pfixcore.auth.conditions.And;
 import de.schlund.pfixcore.auth.conditions.ConditionGroup;
 import de.schlund.pfixcore.auth.conditions.HasRole;
+import de.schlund.pfixcore.auth.conditions.NavigationCase;
 import de.schlund.pfixcore.auth.conditions.Not;
 import de.schlund.pfixcore.auth.conditions.Or;
 
@@ -45,22 +46,51 @@ import de.schlund.pfixcore.auth.conditions.Or;
  *
  */
 public class ConditionParsingHandler implements ParsingHandler {
-
-    public void handleNode(HandlerContext context) throws ParserException {
-
-        Element element = (Element)context.getNode();
-        ParsingUtils.checkAttributes(element, null, new String[] {"name", "class", "ref", "id"});
-        
-        PustefixContextXMLRequestHandlerConfigImpl config = ParsingUtils.getSingleTopObject(PustefixContextXMLRequestHandlerConfigImpl.class, context);
-        
+    
+    private Condition findParentCondition(HandlerContext context) {
         Iterator<Condition> parentConditions = context.getObjectTreeElement().getObjectsOfTypeFromTopTree(Condition.class).iterator();
         Condition parentCondition = null;
         if(parentConditions.hasNext()) parentCondition = parentConditions.next();
-        boolean inCondition = ( parentCondition != null);
-        boolean inPageRequest = isInPageRequest(element);
-        
-        String name = element.getNodeName();
-        Condition condition = null;
+        return parentCondition;
+    }
+
+    public void handleNode(HandlerContext context) throws ParserException {
+        Condition condition = parseCondition(context);
+
+        //assemble the parent element by setting or adding the parsed condition
+        Condition parentCondition = findParentCondition(context);
+        if(parentCondition != null) {
+            if (parentCondition instanceof NavigationCase) {
+                ((NavigationCase) parentCondition).setCondition(condition);
+            } else if (parentCondition instanceof AuthConstraint) {
+                AuthConstraintImpl authConstraint = (AuthConstraintImpl) parentCondition;
+                if (condition instanceof NavigationCase) {
+                    authConstraint.addNavigationCase(((NavigationCase) condition));
+                } else {
+                    authConstraint.setCondition(condition);
+                }
+            } else if (parentCondition instanceof ConditionGroup) {
+                ((ConditionGroup) parentCondition).add(condition);
+            } else if (parentCondition instanceof Not) {
+                ((Not) parentCondition).set(condition);
+            } else throw new ParserException("Illegal object: " + parentCondition.getClass().getName());
+        }
+
+        context.getObjectTreeElement().addObject(condition);
+    }
+
+    private ContextXMLServletConfigImpl getConfig(HandlerContext context) throws ParserException {
+        return ParsingUtils.getSingleTopObject(ContextXMLServletConfigImpl.class, context);
+    }
+
+    private Condition parseCondition(HandlerContext context) throws ParserException {
+
+        Element element = (Element)context.getNode();
+        ParsingUtils.checkAttributes(element, null, new String[] {"page", "name", "class", "ref", "id"});
+
+        String name = element.getTagName();
+
+        Condition condition;
         if (name.equals("or")) {
             condition = new Or();
         } else if (name.equals("and")) {
@@ -68,17 +98,22 @@ public class ConditionParsingHandler implements ParsingHandler {
         } else if (name.equals("not")) {
             condition = new Not();
         } else if (name.equals("hasrole")) {
+            ContextXMLServletConfigImpl config = getConfig(context);
             String roleName = element.getAttribute("name").trim();
             if(roleName.equals("")) throw new ParserException("Element 'hasrole' requires 'name' attribute value.");
             condition = new HasRole(roleName);
+            Role role = config.getContextConfig().getRoleProvider().getRole(roleName);
+            if (role == null) throw new ParserException("Condition hasrole references unknown role: " + roleName);
         } else if (name.equals("condition")) {
-            if (!inCondition) {
+            if (findParentCondition(context) == null) {
                 String id = element.getAttribute("id").trim();
                 condition = createCondition(element);
+                ContextXMLServletConfigImpl config = getConfig(context);
                 config.getContextConfig().addCondition(id, condition);
             } else {
                 String ref = element.getAttribute("ref").trim();
                 if (ref != null) {
+                    ContextXMLServletConfigImpl config = ParsingUtils.getSingleTopObject(ContextXMLServletConfigImpl.class, context);
                     condition = config.getContextConfig().getCondition(ref);
                     if (condition == null) throw new ParserException("Condition reference not found: " + ref);
                 } else {
@@ -88,30 +123,30 @@ public class ConditionParsingHandler implements ParsingHandler {
         } else if (name.equals("authconstraint")) {
             String ref = element.getAttribute("ref").trim();
             if(ref.equals("")) throw new ParserException("Nested authconstraint requires 'ref' attribute.");
-            if(inPageRequest) {
+            if(isInPageRequest(element)) {
+                ContextXMLServletConfigImpl config = getConfig(context);
                 AuthConstraint constraint = config.getContextConfig().getAuthConstraint(ref);
                 if(constraint == null) throw new ParserException("Referenced authconstraint not found: "+ref);
                 condition = constraint.getCondition();
             } else {
                 condition = new AuthConstraintRef(ref);
             }
-        } else throw new ParserException("Unsupported condition: " + name);
-      
-        if(inCondition) {
-            if (parentCondition instanceof AuthConstraint) {
-                ((AuthConstraintImpl) parentCondition).setCondition(condition);
-            } else if (parentCondition instanceof ConditionGroup) {
-                ((ConditionGroup) parentCondition).add(condition);
-            } else if (parentCondition instanceof Not) {
-                ((Not) parentCondition).set(condition);
-            } else throw new ParserException("Illegal object: " + parentCondition.getClass().getName());
+        } else if (name.equals("navigateTo")) {
+            String page = element.getAttribute("page").trim();
+            if (page.equals("")) {
+                throw new ParserException("Element navigation requires 'page' attribute.");
+            }
+            NavigationCase navigationCase = new NavigationCase(page);
+            condition = navigationCase;
+        } else {
+            throw new ParserException("Unsupported condition: " + name);
         }
-        
+
         PropertyParsingUtils.setProperties(condition, element);
-        
-        context.getObjectTreeElement().addObject(condition);
+
+        return condition;
     }
-    
+
     private Condition createCondition(Element element) throws ParserException {
         String className = element.getAttribute("class").trim();
         if (className.equals("")) throw new ParserException("Condition needs class attribute.");
@@ -124,7 +159,7 @@ public class ConditionParsingHandler implements ParsingHandler {
             throw new ParserException("Condition class can't be instantiated: " + className, x);
         }
     }
-    
+
     private boolean isInPageRequest(Element element) {
         Node parent = element.getParentNode();
         if(parent!=null && parent.getNodeType()==Node.ELEMENT_NODE) {

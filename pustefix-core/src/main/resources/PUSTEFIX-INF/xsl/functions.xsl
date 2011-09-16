@@ -85,9 +85,50 @@
     <xsl:param name="pageName"/>
     <func:result select="callback:isAuthorized($__context__,$pageName)"/>
   </func:function>
+
+  <func:function name="pfx:isBot">
+    <func:result select="callback:isBot($__context__)"/>
+  </func:function>
   
+  <func:function name="pfx:__addParams">
+    <xsl:param name="params"/>
+    <xsl:choose>
+      <xsl:when test="$params=''">
+        <func:result></func:result> 
+      </xsl:when>
+      <xsl:otherwise>
+        <xsl:choose>
+          <xsl:when test="starts-with($params,'&amp;')">
+            <func:result select="concat('?',substring-after($params,'&amp;'))"/>
+          </xsl:when>
+          <xsl:otherwise>
+            <func:result select="concat('?',$params)"/>
+          </xsl:otherwise>
+        </xsl:choose>
+      </xsl:otherwise>
+    </xsl:choose>
+  </func:function>
+
   <func:function name="pfx:getFrameworkVersion">
     <func:result select="callback:getFrameworkVersion()"/>
+  </func:function>
+  
+  <func:function name="pfx:__needsLastFlow">
+    <xsl:param name="pageName"/>
+    <xsl:param name="lastFlow"/>
+    <func:result select="callback:needsLastFlow($__context__,$pageName,$lastFlow)"/>
+  </func:function>
+  
+  <func:function name="pfx:__omitPage">
+    <xsl:param name="pageName"/>
+    <xsl:param name="language"><xsl:value-of select="$lang"/></xsl:param>
+    <func:result select="callback:omitPage($__context__,$__target_gen,$pageName,$language)"/>
+  </func:function>
+  
+  <func:function name="pfx:getPageAlias">
+    <xsl:param name="pageName"/>
+    <xsl:param name="language"><xsl:value-of select="$lang"/></xsl:param>
+    <func:result select="callback:getPageAlias($__target_gen,$pageName,$language)"/>
   </func:function>
   
 </xsl:stylesheet>

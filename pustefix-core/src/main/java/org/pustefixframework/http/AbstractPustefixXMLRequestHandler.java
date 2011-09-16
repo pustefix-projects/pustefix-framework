@@ -26,6 +26,7 @@ import java.net.SocketException;
 import java.security.DigestOutputStream;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
+import java.util.Collections;
 import java.util.Enumeration;
 import java.util.HashMap;
 import java.util.Iterator;
@@ -47,27 +48,32 @@ import javax.xml.transform.dom.DOMSource;
 import javax.xml.transform.stream.StreamResult;
 
 import org.apache.log4j.Logger;
-import org.pustefixframework.config.contextxmlservice.AbstractPustefixXMLRequestHandlerConfig;
-import org.pustefixframework.config.contextxmlservice.AbstractPustefixRequestHandlerConfig;
-import org.pustefixframework.xmlgenerator.targets.PageTargetTree;
-import org.pustefixframework.xmlgenerator.targets.Target;
-import org.pustefixframework.xmlgenerator.targets.TargetGenerationException;
-import org.pustefixframework.xmlgenerator.targets.TargetGenerator;
+import org.pustefixframework.config.contextxmlservice.AbstractXMLServletConfig;
+import org.pustefixframework.config.contextxmlservice.ServletManagerConfig;
+import org.springframework.context.ApplicationContext;
+import org.springframework.context.ApplicationContextAware;
 import org.w3c.dom.Document;
+import org.w3c.dom.Element;
 
 import de.schlund.pfixcore.exception.PustefixApplicationException;
 import de.schlund.pfixcore.exception.PustefixCoreException;
-import de.schlund.pfixcore.workflow.NavigationInitializationException;
+import de.schlund.pfixcore.exception.PustefixRuntimeException;
+import de.schlund.pfixcore.workflow.PageProvider;
+import de.schlund.pfixxml.IncludePartsInfoParsingException;
 import de.schlund.pfixxml.PfixServletRequest;
+import de.schlund.pfixxml.RenderContext;
 import de.schlund.pfixxml.RenderingException;
 import de.schlund.pfixxml.RequestParam;
 import de.schlund.pfixxml.SPDocument;
 import de.schlund.pfixxml.SessionCleaner;
 import de.schlund.pfixxml.Variant;
-import de.schlund.pfixxml.perflogging.AdditionalTrailInfo;
+import de.schlund.pfixxml.config.EnvironmentProperties;
 import de.schlund.pfixxml.serverutil.SessionHelper;
-import de.schlund.pfixxml.testrecording.TestRecording;
-import de.schlund.pfixxml.testrecording.TrailLogger;
+import de.schlund.pfixxml.targets.PageInfo;
+import de.schlund.pfixxml.targets.PageTargetTree;
+import de.schlund.pfixxml.targets.Target;
+import de.schlund.pfixxml.targets.TargetGenerationException;
+import de.schlund.pfixxml.targets.TargetGenerator;
 import de.schlund.pfixxml.util.CacheValueLRU;
 import de.schlund.pfixxml.util.MD5Utils;
 import de.schlund.pfixxml.util.Xml;
@@ -83,28 +89,30 @@ import de.schlund.pfixxml.util.Xslt;
  * getDom(HttpServletRequest req, HttpServletResponse res)
  * which returns a SPDocument. <br>
  */
-public abstract class AbstractPustefixXMLRequestHandler extends AbstractPustefixRequestHandler {
+public abstract class AbstractPustefixXMLRequestHandler extends AbstractPustefixRequestHandler implements PageProvider, ApplicationContextAware {
 
     //~ Instance/static variables ..................................................................
     // how to write xml to the result stream
     private enum RENDERMODE { RENDER_NORMAL, RENDER_EXTERNAL, RENDER_FONTIFY, RENDER_XMLONLY };
 
     public static final String DEF_PROP_TMPDIR = "java.io.tmpdir";
-    private static final String FONTIFY_SSHEET        = "core/xsl/xmlfontify.xsl";
-    public  static final String SESS_LANG             = "__SELECTED_LANGUAGE__";
+    private static final String FONTIFY_SSHEET        = "module://pustefix-core/xsl/xmlfontify.xsl";
     public  static final String PARAM_XMLONLY         = "__xmlonly";
     public  static final String PARAM_XMLONLY_FONTIFY = "1"; // -> RENDER_FONFIFY
     public  static final String PARAM_XMLONLY_XMLONLY = "2"; // -> RENDER_XMLONLY
     public  static final String PARAM_ANCHOR          = "__anchor";
     private static final String PARAM_EDITMODE        = "__editmode";
-    private static final String PARAM_LANG            = "__language";
     private static final String PARAM_FRAME           = "__frame";
     private static final String PARAM_REUSE           = "__reuse"; // internally used
+    public static final String PARAM_RENDER_HREF = "__render_href";
+    public static final String PARAM_RENDER_PART = "__render_part";
+    public static final String PARAM_RENDER_MODULE = "__render_module";
+    public static final String PARAM_RENDER_SEARCH = "__render_search";
     
     private static final String   XSLPARAM_LANG           = "lang";
-    private static final String   XSLPARAM_SESSID         = "__sessid";
+    private static final String   XSLPARAM_SESSION_ID     = "__sessionId";
+    private static final String   XSLPARAM_SESSION_ID_PATH = "__sessionIdPath";
     private static final String   XSLPARAM_URI            = "__uri";
-    private static final String   XSLPARAM_SERVP          = "__servletpath";
     private static final String   XSLPARAM_CONTEXTPATH    = "__contextpath";
     private static final String   XSLPARAM_REMOTE_ADDR    = "__remote_addr";
     private static final String   XSLPARAM_SERVER_NAME    = "__server_name";
@@ -113,6 +121,7 @@ public abstract class AbstractPustefixXMLRequestHandler extends AbstractPustefix
     private static final String   XSLPARAM_FRAME          = "__frame";
     private static final String   XSLPARAM_REUSE          = "__reusestamp";
     private static final String   XSLPARAM_EDITOR_URL     = "__editor_url";
+    private static final String   XSLPARAM_EDITOR_INCLUDE_PARTS_EDITABLE_BY_DEFAULT = "__editor_include_parts_editable_by_default";
     private static final String   XSL_PARAM_APP_URL       = "__application_url";
     private static final String   VALUE_NONE              = "__NONE__";
     private static final String   SUFFIX_SAVEDDOM         = "_SAVED_DOM";
@@ -121,6 +130,7 @@ public abstract class AbstractPustefixXMLRequestHandler extends AbstractPustefix
     public static final String PREPROCTIME = "__PREPROCTIME__";
     public static final String GETDOMTIME  = "__GETDOMTIME__";
     public static final String TRAFOTIME   = "__TRAFOTIME__";
+    public static final String RENDEREXTTIME = "__RENDEREXTTIME__";
     
     public final static String SESS_CLEANUP_FLAG_STAGE1 = "__pfx_session_cleanup_stage1";
     public final static String SESS_CLEANUP_FLAG_STAGE2 = "__pfx_session_cleanup_stage2";
@@ -142,31 +152,30 @@ public abstract class AbstractPustefixXMLRequestHandler extends AbstractPustefix
     protected String editorLocation;
     
     @Override
-    protected AbstractPustefixRequestHandlerConfig getServletManagerConfig() {
+    public ServletManagerConfig getServletManagerConfig() {
         return this.getAbstractXMLServletConfig();
     }
     
-    protected abstract AbstractPustefixXMLRequestHandlerConfig getAbstractXMLServletConfig();
+    protected abstract AbstractXMLServletConfig getAbstractXMLServletConfig();
     
     private boolean      renderExternal            = false;
     private boolean      editmodeAllowed            = false;
-    private boolean      xmlOnlyAllowed             = false;
-    private boolean      checkModtime               = true;
+    private boolean      includePartsEditableByDefault = true;
+    private boolean xmlOnlyAllowed = false;
     
     private final static Logger LOGGER_TRAIL = Logger.getLogger("LOGGER_TRAIL");
     private final static Logger LOGGER       = Logger.getLogger(AbstractPustefixXMLRequestHandler.class);
     
     private AdditionalTrailInfo additionalTrailInfo = null;
     
-    private TestRecording testRecording;
-    
     private SessionCleaner sessionCleaner;
+    private ApplicationContext applicationContext;
     
     //~ Methods ....................................................................................
     /**
      * Init method of all servlets inheriting from AbstractXMLServlets.
      * It calls super.init(Config) as a first step.
-     * @param PustefixContextXMLRequestHandlerConfig config. Passed in from the servlet container.
+     * @param ContextXMLServletConfig config. Passed in from the servlet container.
      * @return void
      * @exception ServletException thrown when the initialisation goes havoc somehow
      */
@@ -186,12 +195,13 @@ public abstract class AbstractPustefixXMLRequestHandler extends AbstractPustefix
     private void initValues() throws ServletException {
         servletname = this.getAbstractXMLServletConfig().getServletName();
 
+        String mode = EnvironmentProperties.getProperties().getProperty("mode");
+        if(!"prod".equals(mode)) xmlOnlyAllowed = true; 
+        
         if (generator == null) {
             LOGGER.error("Error: TargetGenerator has not been set.");
             throw new ServletException("TargetGenerator is not set");
         }
-        
-        generator.setIsGetModTimeMaybeUpdateSkipped(!checkModtime);
         
         if (LOGGER.isInfoEnabled()) {
             StringBuffer sb = new StringBuffer(255);
@@ -201,7 +211,6 @@ public abstract class AbstractPustefixXMLRequestHandler extends AbstractPustefix
             sb.append("            xmlOnlyAllowed = ").append(xmlOnlyAllowed).append("\n");
             sb.append("             maxStoredDoms = ").append(maxStoredDoms).append("\n");
             sb.append("                   timeout = ").append(sessionCleaner.getTimeout()).append("\n");
-            sb.append("              checkModtime = ").append(checkModtime).append("\n");
             sb.append("           render_external = ").append(renderExternal).append("\n");
             LOGGER.info(sb.toString());
         }
@@ -247,6 +256,7 @@ public abstract class AbstractPustefixXMLRequestHandler extends AbstractPustefix
      */
     @Override
     protected void process(PfixServletRequest preq, HttpServletResponse res) throws Exception {
+        
         Properties  params     = new Properties();
         HttpSession session    = preq.getSession(false);
         CacheValueLRU<String,SPDocument> storeddoms = null;
@@ -286,11 +296,10 @@ public abstract class AbstractPustefixXMLRequestHandler extends AbstractPustefix
         // if __reuse is set, we will try to reuse a stored DomTree, if __reuse is
         // not set, we store the DomTree from getDom in the Session as servletname + _saved_dom
         if ((value = preq.getRequestParam(PARAM_FRAME)) != null)
-            if (value.getValue() != null) {
+            if (value.getValue() != null && !value.getValue().equals("")) {
                 params.put(XSLPARAM_FRAME, value.getValue());
             }
         params.put(XSLPARAM_URI, preq.getRequestURI());
-        params.put(XSLPARAM_SERVP, preq.getContextPath() + preq.getServletPath());
         params.put(XSLPARAM_CONTEXTPATH, preq.getContextPath());
         if (preq.getRemoteAddr() != null)
             params.put(XSLPARAM_REMOTE_ADDR, preq.getRemoteAddr());
@@ -307,7 +316,10 @@ public abstract class AbstractPustefixXMLRequestHandler extends AbstractPustefix
         params.put(XSL_PARAM_APP_URL, getApplicationURL(preq));
         
         if (session != null) {
-            params.put(XSLPARAM_SESSID, session.getAttribute(SessionHelper.SESSION_ID_URL));
+            params.put(XSLPARAM_SESSION_ID, session.getId());
+            if(session.getAttribute(AbstractPustefixRequestHandler.SESSION_ATTR_COOKIE_SESSION) == null) {
+                params.put(XSLPARAM_SESSION_ID_PATH, ";jsessionid=" + session.getId());
+            }
             if (doreuse) {
                 synchronized (session) {
                     // Make sure redirect is only done once
@@ -315,12 +327,7 @@ public abstract class AbstractPustefixXMLRequestHandler extends AbstractPustefix
                     spdoc.resetRedirectURL();
                 }
             }
-           
-            if ((value = preq.getRequestParam(PARAM_LANG)) != null) {
-                if (value.getValue() != null) {
-                    session.setAttribute(SESS_LANG, value.getValue());
-                }
-            }
+
             // Now look for the parameter __editmode, and store it in the
             // session if it's there. Get the parameter from the session, and hand it over to the
             // Stylesheet params.
@@ -358,9 +365,7 @@ public abstract class AbstractPustefixXMLRequestHandler extends AbstractPustefix
                     throw e;
                 }
             }
-	    
             
-            TrailLogger.log(preq, spdoc, session);
             RequestParam[] anchors   = preq.getAllRequestParams(PARAM_ANCHOR);
             Map<String, String> anchormap;
             if (anchors != null && anchors.length > 0) {
@@ -382,17 +387,17 @@ public abstract class AbstractPustefixXMLRequestHandler extends AbstractPustefix
         }
         preq.getRequest().setAttribute(GETDOMTIME, spdoc.getCreationTime());
         params.put(XSLPARAM_REUSE, "" + spdoc.getTimestamp());
-        if (session != null && session.getAttribute(SESS_LANG) != null) {
-            params.put(XSLPARAM_LANG, session.getAttribute(SESS_LANG));
+        if (spdoc.getLanguage() != null) {
+            params.put(XSLPARAM_LANG, spdoc.getLanguage());
         }
         
         handleDocument(preq, res, spdoc, params, doreuse);
 
         if (session != null && (getRendering(preq) != RENDERMODE.RENDER_FONTIFY) && !doreuse) {
-            // This will store just the last dom, but only when xmlOnlyMode is allowed (so this normally doesn't apply to production mode)
+            // This will store just the last dom, but only when editmode is allowed (so this normally doesn't apply to production mode)
             // This is a seperate place from the SessionCleaner as we don't want to interfere with this, nor do we want to use 
             // the whole queue of possible stored SPDocs only for the viewing of the DOM during development.
-            if (xmlOnlyAllowed) {
+            if (xmlOnlyAllowed && preq.getRequestParam(PARAM_RENDER_HREF) == null) {
                 session.setAttribute(ATTR_SHOWXMLDOC, spdoc);
             }
 
@@ -449,7 +454,7 @@ public abstract class AbstractPustefixXMLRequestHandler extends AbstractPustefix
     }
    
     protected void handleDocument(PfixServletRequest preq, HttpServletResponse res,
-                                  SPDocument spdoc, Properties params, boolean doreuse) throws PustefixCoreException {
+                                  SPDocument spdoc, Properties params, boolean doreuse) throws IOException, PustefixCoreException {
         long currtime = System.currentTimeMillis();
         
         // Check the document for supplied headers...
@@ -478,8 +483,16 @@ public abstract class AbstractPustefixXMLRequestHandler extends AbstractPustefix
         } else {
             res.setContentType(DEF_CONTENT_TYPE);
         }
+        
+        if(preq.getRequestParam(PARAM_RENDER_HREF) != null) {
+            String reqId = preq.getRequest().getHeader("Request-Id");
+            if(reqId != null) {
+                res.addHeader("Request-Id", reqId);
+            }
+        }
+        
         if (spdoc.getResponseError() == HttpServletResponse.SC_NOT_FOUND && spdoc.getDocument() != null) {
-            String stylesheet = extractStylesheetFromSPDoc(spdoc);
+            String stylesheet = extractStylesheetFromSPDoc(spdoc, preq);
             if (generator.getTarget(stylesheet) != null) {
                 spdoc.setResponseError(0);
                 spdoc.setResponseErrorText(null);
@@ -495,7 +508,7 @@ public abstract class AbstractPustefixXMLRequestHandler extends AbstractPustefix
         // So no error happened, let's go on with normal processing.
         HttpSession   session    = preq.getSession(false);
         TreeMap<String, Object> paramhash  = constructParameters(spdoc, params, session);
-        String        stylesheet = extractStylesheetFromSPDoc(spdoc);
+        String        stylesheet = extractStylesheetFromSPDoc(spdoc, preq);
         if (stylesheet == null) {
         	if(spdoc.getPagename()!=null && !isPageDefined(spdoc.getPagename())) {
         		spdoc.setResponseError(HttpServletResponse.SC_NOT_FOUND);
@@ -572,9 +585,10 @@ public abstract class AbstractPustefixXMLRequestHandler extends AbstractPustefix
             LOGGER.info(">>> Complete handleDocument(...) took " + handletime + "ms" + 
                     " (needed xslt: " + modified_or_no_etag + ")");
         }
-        try {
-            if (modified_or_no_etag && 
-                    (spdoc.getResponseContentType() == null || spdoc.getResponseContentType().startsWith("text/html"))) {
+     
+        if (modified_or_no_etag && 
+                (spdoc.getResponseContentType() == null || spdoc.getResponseContentType().startsWith("text/html"))) {
+            try {
                 OutputStream       out          = res.getOutputStream();
                 OutputStreamWriter writer       = new OutputStreamWriter(out, res.getCharacterEncoding());
                 writer.write("\n<!--");
@@ -585,34 +599,30 @@ public abstract class AbstractPustefixXMLRequestHandler extends AbstractPustefix
                     }
                 }
                 writer.write(" -->");
-                writer.flush();
-                if(getRendering(preq) == RENDERMODE.RENDER_NORMAL) {
-                    hookAfterDelivery(preq, spdoc, output);
-                }
+            } catch (Exception e) {
+                LOGGER.warn("Error adding info data to page", e);
             }
-        } catch (Exception e) {
-            LOGGER.warn("Error adding info data to page", e);
+            res.flushBuffer();
+            if(getRendering(preq) == RENDERMODE.RENDER_NORMAL) {
+                hookAfterDelivery(preq, spdoc, output);
+            }
         }
+
     }
 
-    private void sendError(SPDocument spdoc, HttpServletResponse res) throws PustefixCoreException {
-    	 int    err;
+    private void sendError(SPDocument spdoc, HttpServletResponse res) throws IOException {
          String errtxt;
-         try {
-        	 err = spdoc.getResponseError();
-        	 setCookies(spdoc,res);
-        	 if ((errtxt = spdoc.getResponseErrorText()) != null) {
-        		 res.sendError(err, errtxt);
-        	 } else {
-        		 res.sendError(err);
-        	 }
-         } catch (IOException e) {
-             throw new PustefixCoreException("IOException while trying to send an error code", e);
+         int err = spdoc.getResponseError();
+         setCookies(spdoc,res);
+         if ((errtxt = spdoc.getResponseErrorText()) != null) {
+             res.sendError(err, errtxt);
+         } else {
+             res.sendError(err);
          }
     }
     
     private boolean doHandleDocument(SPDocument spdoc, String stylesheet, TreeMap<String, Object> paramhash, 
-            PfixServletRequest preq, HttpServletResponse res, HttpSession session, ByteArrayOutputStream output) throws PustefixCoreException {
+            PfixServletRequest preq, HttpServletResponse res, HttpSession session, ByteArrayOutputStream output) throws IOException, PustefixCoreException {
         
         boolean modified_or_no_etag = true;
         String etag_incoming = preq.getRequest().getHeader("If-None-Match");
@@ -625,7 +635,7 @@ public abstract class AbstractPustefixXMLRequestHandler extends AbstractPustefix
         DigestOutputStream digestOutput = new DigestOutputStream(output, digest);
         try {
             hookBeforeRender(preq, spdoc, paramhash, stylesheet);
-            render(spdoc, getRendering(preq), res, paramhash, stylesheet, digestOutput);
+            render(spdoc, getRendering(preq), res, paramhash, stylesheet, digestOutput, preq);
         } finally {
             hookAfterRender(preq, spdoc, paramhash, stylesheet);
         }
@@ -643,21 +653,17 @@ public abstract class AbstractPustefixXMLRequestHandler extends AbstractPustefix
             LOGGER.info("*** Reusing UI: " + spdoc.getPagename());
             modified_or_no_etag = false;
         } else {
-            try {
-                output.writeTo(res.getOutputStream());
-            } catch (IOException e) {
-                throw new PustefixCoreException(e);
-            }
+            output.writeTo(res.getOutputStream());
         }
         
         return modified_or_no_etag;
     }
     
-    private void render(SPDocument spdoc, RENDERMODE rendering, HttpServletResponse res, TreeMap<String, Object> paramhash, String stylesheet, OutputStream output) throws RenderingException {
+    private void render(SPDocument spdoc, RENDERMODE rendering, HttpServletResponse res, TreeMap<String, Object> paramhash, String stylesheet, OutputStream output, PfixServletRequest preq) throws RenderingException {
         try {
         switch (rendering) {
             case RENDER_NORMAL:
-                renderNormal(spdoc, res, paramhash, stylesheet, output);
+                renderNormal(spdoc, res, paramhash, stylesheet, output, preq);
                 break;
             case RENDER_FONTIFY:
                 renderFontify(spdoc, res, paramhash);
@@ -686,7 +692,7 @@ public abstract class AbstractPustefixXMLRequestHandler extends AbstractPustefix
         Xml.serialize(spdoc.getDocument(), res.getOutputStream(), true, true);
     }
 
-    private void renderNormal(SPDocument spdoc, HttpServletResponse res, TreeMap<String, Object> paramhash, String stylesheet, OutputStream output) throws
+    private void renderNormal(SPDocument spdoc, HttpServletResponse res, TreeMap<String, Object> paramhash, String stylesheet, OutputStream output, PfixServletRequest preq) throws
         TargetGenerationException, IOException, TransformerException {
         Templates stylevalue;
         Target    target = generator.getTarget(stylesheet);
@@ -696,8 +702,17 @@ public abstract class AbstractPustefixXMLRequestHandler extends AbstractPustefix
             LOGGER.warn("stylevalue MUST NOT be null: stylesheet=" + stylesheet + "; " +
                      ((spdoc != null) ? ("pagename=" +  spdoc.getPagename()) : "spdoc==null")); 
         }
+        paramhash.put("page", spdoc.getPagename());
+        RenderContext renderContext = RenderContext.create(generator.getXsltVersion());
+        paramhash.put("__rendercontext__", renderContext);
+        renderContext.setParameters(Collections.unmodifiableMap(paramhash));
         try {
+            long t1 = System.currentTimeMillis();
             Xslt.transform(spdoc.getDocument(), stylevalue, paramhash, new StreamResult(output), getServletEncoding());
+            long t2 = System.currentTimeMillis();
+            if(LOGGER.isDebugEnabled()) LOGGER.debug("Transformation time => Total: " + (t2-t1) + " REX-Create: " + 
+                    renderContext.getTemplateCreationTime() + " REX-Trafo: " + renderContext.getTransformationTime());
+            preq.getRequest().setAttribute(RENDEREXTTIME, renderContext.getTemplateCreationTime() + renderContext.getTransformationTime());
         } catch (TransformerException e) {
             Throwable inner = e.getException();
             Throwable cause = null;
@@ -726,7 +741,8 @@ public abstract class AbstractPustefixXMLRequestHandler extends AbstractPustefix
         }
         
         ext.insertBefore(ext.createProcessingInstruction("xml-stylesheet", "type=\"text/xsl\" media=\"all\" href=\"file: //"
-        			+ stylesheet + "\""), ext.getDocumentElement()); 
+                                                         + stylesheet + "\""),
+                         ext.getDocumentElement()); 
         for (Iterator<String> i = paramhash.keySet().iterator(); i.hasNext();) {
             String key = i.next();
             String val = (String) paramhash.get(key);
@@ -740,6 +756,23 @@ public abstract class AbstractPustefixXMLRequestHandler extends AbstractPustefix
 
     private void renderFontify(SPDocument spdoc, HttpServletResponse res, TreeMap<String, Object> paramhash) throws TargetGenerationException, TransformerException, IOException {
         Templates stylevalue = (Templates) generator.createXSLLeafTarget(FONTIFY_SSHEET).getValue();
+        if(!siteMap.isProvided()) {
+            //if application doesn't provide a sitemap, generate a temporary one 
+            //from the list of registered pages for displaying the page status
+            Document doc = Xml.createDocument();
+            Element siteMapElem = doc.createElement("sitemap");
+            doc.appendChild(siteMapElem);
+            for(PageProvider pageProvider: applicationContext.getBeansOfType(PageProvider.class).values()) {
+                String[] pages = pageProvider.getRegisteredPages();
+                for(String page: pages) {
+                    Element pageElem = doc.createElement("page");
+                    doc.getDocumentElement().appendChild(pageElem);
+                    pageElem.setAttribute("name", page);
+                }
+            }
+            doc = Xml.parse(generator.getXsltVersion(), doc);
+            paramhash.put(TargetGenerator.XSLPARAM_SITEMAP, doc.getDocumentElement());
+        }
         Xslt.transform(spdoc.getDocument(), stylevalue, paramhash, new StreamResult(res.getOutputStream()));
     }
 
@@ -763,14 +796,14 @@ public abstract class AbstractPustefixXMLRequestHandler extends AbstractPustefix
         } else {
             throw new IllegalArgumentException("invalid value for " + PARAM_XMLONLY + ": " + value);
         }
-        if (xmlOnlyAllowed || (testRecording!=null && testRecording.isKnownClient(pfreq.getRemoteAddr()))) {
+        if (xmlOnlyAllowed) {
             return rendering;
         } else {
             return RENDERMODE.RENDER_NORMAL;
         }
     }
 
-    private TreeMap<String, Object> constructParameters(SPDocument spdoc, Properties gen_params, HttpSession session) throws NavigationInitializationException {
+    private TreeMap<String, Object> constructParameters(SPDocument spdoc, Properties gen_params, HttpSession session) {
         TreeMap<String, Object> paramhash = new TreeMap<String, Object>();
         HashMap<String, Object> params = spdoc.getProperties();
         // These are properties which have been set in the process method
@@ -797,8 +830,8 @@ public abstract class AbstractPustefixXMLRequestHandler extends AbstractPustefix
         }
         paramhash.put(TargetGenerator.XSLPARAM_TG, generator);
         paramhash.put(TargetGenerator.XSLPARAM_TKEY, VALUE_NONE);
-        paramhash.put(TargetGenerator.XSLPARAM_NAVITREE, generator.getNavigation());
-        paramhash.put(TargetGenerator.XSLPARAM_NAMESPACES, generator.getNamespaces());
+        paramhash.put(TargetGenerator.XSLPARAM_SITEMAP, generator.getSiteMap().getSiteMapXMLElement(generator.getXsltVersion(), spdoc.getLanguage()));
+        paramhash.put(XSLPARAM_EDITOR_INCLUDE_PARTS_EDITABLE_BY_DEFAULT, Boolean.toString(includePartsEditableByDefault));
 
         String session_to_link_from_external = getSessionAdmin().getExternalSessionId(session);
         paramhash.put("__external_session_ref", session_to_link_from_external);
@@ -809,28 +842,61 @@ public abstract class AbstractPustefixXMLRequestHandler extends AbstractPustefix
     
     
 
-    private String extractStylesheetFromSPDoc(SPDocument spdoc) {
+    private String extractStylesheetFromSPDoc(SPDocument spdoc, PfixServletRequest preq) {
         // First look if the pagename is set
         String pagename             = spdoc.getPagename();
         if (pagename != null) {
+            if(preq.getRequestParam(PARAM_RENDER_HREF) != null) {
+                String href = preq.getRequestParam(PARAM_RENDER_HREF).getValue();
+                String part = "render";
+                RequestParam param = preq.getRequestParam(PARAM_RENDER_PART);
+                if(param != null) part = param.getValue();
+                String module = null;
+                param = preq.getRequestParam(PARAM_RENDER_MODULE);
+                if(param != null) module = param.getValue();
+                String search = null;
+                param = preq.getRequestParam(PARAM_RENDER_SEARCH);
+                if(param != null) search = param.getValue();
+                try {
+                    Target target = generator.getRenderTarget(href, part, module, search, spdoc.getVariant());
+                    if(target != null) return target.getTargetKey();
+                    return null;
+                } catch (IncludePartsInfoParsingException e) {
+                    throw new PustefixRuntimeException("Can't get render target", e);
+                }
+            }
             Variant        variant    = spdoc.getVariant();
             PageTargetTree pagetree   = generator.getPageTargetTree();
+            PageInfo       pinfo      = null;
             Target         target     = null;
             String         variant_id = null;
             if (variant != null && variant.getVariantFallbackArray() != null) {
                 String[] variants = variant.getVariantFallbackArray();
                 for (int i = 0; i < variants.length; i++) {
                     variant_id = variants[i];
+                    if(spdoc.getPageAlternative() != null) variant_id += ":" + spdoc.getPageAlternative();
+                    if(spdoc.getTenant() != null) variant_id += ":" + spdoc.getTenant().getName() + "-" + spdoc.getLanguage();
                     LOGGER.info("   ** Trying variant '" + variant_id + "' **");
-                    target  = pagetree.getTargetForPage(pagename, variant_id);
+                    pinfo   = generator.getPageInfoFactory().getPage(pagename, variant_id);
+                    target  = pagetree.getTargetForPageInfo(pinfo);
                     if (target != null) {
                         return target.getTargetKey();
                     }
                 }
             }
             if (target == null) {
-                LOGGER.info("   ** Trying root variant **");
-                target = pagetree.getTargetForPage(pagename, null);
+                String variantId = null;
+                if(spdoc.getPageAlternative() != null) variantId = spdoc.getPageAlternative();
+                if(spdoc.getTenant() != null) {
+                    if(variantId == null) {
+                        variantId = spdoc.getTenant().getName() + "-" + spdoc.getLanguage();
+                    } else {
+                        variantId += ":" + spdoc.getTenant().getName() + "-" + spdoc.getLanguage();
+                    }
+                }
+                LOGGER.info("   ** Trying root variant: " + variantId + " **");
+                pinfo = generator.getPageInfoFactory().getPage(pagename, variantId);
+                target = pagetree.getTargetForPageInfo(pinfo);
             }
             if (target == null) {
                 LOGGER.warn("\n********************** NO TARGET ******************************");
@@ -976,19 +1042,11 @@ public abstract class AbstractPustefixXMLRequestHandler extends AbstractPustefix
         this.generator = tgen;
     }
     
-    public void setTestRecording(TestRecording testRecording) {
-        this.testRecording = testRecording;
-    }
-    
     public void setEditorLocation(String editorLocation) {
         if (editorLocation.endsWith("/")) {
             editorLocation = editorLocation.substring(0, editorLocation.length() - 1);
         }
         this.editorLocation = editorLocation;
-    }
-    
-    public void setCheckModtime(boolean checkModtime) {
-        this.checkModtime = checkModtime;
     }
     
     public void setSessionCleaner(SessionCleaner sessionCleaner) {
@@ -1010,9 +1068,13 @@ public abstract class AbstractPustefixXMLRequestHandler extends AbstractPustefix
     public void setEditModeAllowed(boolean editModeAllowed) {
         this.editmodeAllowed = editModeAllowed;
     }
+
+    public void setIncludePartsEditableByDefault(boolean includePartsEditableByDefault) {
+        this.includePartsEditableByDefault = includePartsEditableByDefault;
+    }
     
-    public void setXmlOnlyAllowed(boolean xmlOnlyAllowed) {
-    	this.xmlOnlyAllowed = xmlOnlyAllowed;
+    public void setApplicationContext(ApplicationContext applicationContext) {
+        this.applicationContext = applicationContext;
     }
     
 }

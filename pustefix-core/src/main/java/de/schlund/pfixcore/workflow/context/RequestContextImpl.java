@@ -29,12 +29,13 @@ import java.util.Properties;
 import java.util.Set;
 
 import javax.servlet.http.Cookie;
+import javax.servlet.http.HttpSession;
 
 import org.apache.log4j.Logger;
 import org.pustefixframework.config.contextxmlservice.PageRequestConfig;
 import org.pustefixframework.config.contextxmlservice.ProcessActionPageRequestConfig;
-import org.pustefixframework.config.contextxmlservice.parser.internal.AuthConstraintRef;
 import org.pustefixframework.http.AbstractPustefixRequestHandler;
+import org.pustefixframework.http.AbstractPustefixXMLRequestHandler;
 import org.pustefixframework.http.PustefixContextXMLRequestHandler;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
@@ -51,6 +52,7 @@ import de.schlund.pfixcore.generator.StatusCodeInfo;
 import de.schlund.pfixcore.workflow.Context;
 import de.schlund.pfixcore.workflow.ContextImpl;
 import de.schlund.pfixcore.workflow.ContextInterceptor;
+import de.schlund.pfixcore.workflow.PageMap;
 import de.schlund.pfixcore.workflow.PageRequest;
 import de.schlund.pfixcore.workflow.PageRequestStatus;
 import de.schlund.pfixcore.workflow.State;
@@ -85,9 +87,11 @@ public class RequestContextImpl implements Cloneable, AuthorizationInterceptor {
     private ServerContextImpl   servercontext;
     private PageFlowManager     pageflowmanager;
     private VariantManager      variantmanager;
+    private PageMap             pagemap;
 
     private Variant             variant             = null;
     private String              language            = null;
+    private String              pageAlternativeKey;
 
     private PageRequest         currentpagerequest  = null;
     private PageFlow            currentpageflow     = null;
@@ -110,6 +114,7 @@ public class RequestContextImpl implements Cloneable, AuthorizationInterceptor {
         this.servercontext = servercontext;
         this.pageflowmanager = servercontext.getPageFlowManager();
         this.variantmanager = servercontext.getVariantManager();
+        this.pagemap = servercontext.getPageMap();
 
         this.variant = parentcontext.getSessionVariant();
         this.language = parentcontext.getSessionLanguage();
@@ -243,7 +248,11 @@ public class RequestContextImpl implements Cloneable, AuthorizationInterceptor {
     public void setLanguage(String lang) {
         language = lang;
     }
-
+    
+    public void setPageAlternative(String key) {
+        pageAlternativeKey = key;
+    }
+    
     public Variant getVariant() {
         return variant;
     }
@@ -311,18 +320,22 @@ public class RequestContextImpl implements Cloneable, AuthorizationInterceptor {
             if (port == null) {
                 port = "443";
             }
-
+            String sessionIdPath = "";
+            HttpSession session = preq.getSession(false);
+            if(session.getAttribute(AbstractPustefixRequestHandler.SESSION_ATTR_COOKIE_SESSION) == null) {
+                sessionIdPath = ";jsessionid=" + session.getId();
+            }
             String redirectURL = scheme + "://" + AbstractPustefixRequestHandler.getServerName(preq.getRequest()) + ":" + port + preq.getContextPath()
-                    + preq.getServletPath() + "/" + spdoc.getPagename() + ";jsessionid=" + preq.getSession(false).getId() + "?__reuse="
+                    + preq.getServletPath() + "/" + spdoc.getPagename() + sessionIdPath + "?__reuse="
                     + spdoc.getTimestamp();
 
             RequestParam rp = preq.getRequestParam("__frame");
-            if (rp != null) {
+            if (rp != null && rp.getValue() != null && !rp.getValue().equals("")) {
                 redirectURL += "&__frame=" + rp.getValue();
             }
-            rp = preq.getRequestParam("__lf");
+            rp = preq.getRequestParam(PARAM_LASTFLOW);
             if (rp != null) {
-                redirectURL += "&__lf=" + rp.getValue();
+            	redirectURL += "&" + PARAM_LASTFLOW + "=" + rp.getValue();
             }
             spdoc.setRedirect(redirectURL);
 
@@ -360,15 +373,17 @@ public class RequestContextImpl implements Cloneable, AuthorizationInterceptor {
                 currentpagerequest = createPageRequest(defaultPage);
             } else throw new RuntimeException("No defaultpage found!");
         }
-
         RequestParam reqParam = currentpservreq.getRequestParam(PARAM_ROLEAUTH);
         roleAuth = (reqParam != null && reqParam.isTrue());
         if (roleAuth) {
             roleAuthTarget = currentpagerequest.getName();
+            AuthConstraint authConst = null;
             PageRequestConfig targetPageConf = servercontext.getContextConfig().getPageRequestConfig(roleAuthTarget);
-            AuthConstraint authConst = getAuthConstraint(targetPageConf);
+            if (targetPageConf != null) authConst = targetPageConf.getAuthConstraint();
+            if (authConst == null)
+                authConst = getParentContext().getContextConfig().getDefaultAuthConstraint();
             if (authConst != null) {
-                String authPageName = authConst.getAuthPage();
+                String authPageName = authConst.getAuthPage(parentcontext);
                 if (authPageName != null) {
                     currentpagerequest = createPageRequest(authPageName);
                     if (!roleAuthTarget.equals(authPageName))
@@ -394,7 +409,7 @@ public class RequestContextImpl implements Cloneable, AuthorizationInterceptor {
                     }
                 }
                 if (action == null) {
-                    throw new PustefixApplicationException("Page " + currentpagerequest.getName() + " has been called with unknown action " + actionname);
+                    throw new UnknownActionException(actionname.getValue(), currentpagerequest.getName());
                 }
             } else {
                 LOG.warn("Page " + currentpagerequest.getName() + " has been called with action, but isn't configured.");
@@ -470,22 +485,31 @@ public class RequestContextImpl implements Cloneable, AuthorizationInterceptor {
                 LOG.debug("     ...got no matching pageflow for page [" + currentpagerequest.getName() + "]");
             }
         }
-
-        SPDocument spdoc = documentFromFlow(startwithflow, stopnextforcurrentrequest);
-
+        SPDocument spdoc = null;
+        if(currentpservreq.getRequestParam(AbstractPustefixXMLRequestHandler.PARAM_RENDER_HREF) != null) {
+            if(checkIsAccessible(currentpagerequest)) {
+                spdoc = documentFromCurrentStep().getSPDocument();
+            } else {
+                throw new PustefixCoreException("Can't get result document for render part because page '" + 
+                        currentpagerequest.getName() + "' isn't accessible.");
+            }
+        } else {
+            spdoc = documentFromFlow(startwithflow, stopnextforcurrentrequest);
+        }
+        
         processIC(parentcontext.getContextConfig().getEndInterceptors());
-
+        
         if (spdoc != null) {
             if (spdoc.getPagename() == null) {
                 spdoc.setPagename(currentpagerequest.getRootName());
             }
 
             if (currentpageflow != null) {
-                spdoc.setProperty("__lf", currentpageflow.getRootName());
+                spdoc.setProperty(PARAM_LASTFLOW, currentpageflow.getRootName());
                 spdoc.setProperty("pageflow", currentpageflow.getRootName());
                 addPageFlowInfo(spdoc);
             } else if (lastflow != null) {
-                spdoc.setProperty("__lf", lastflow.getRootName());
+                spdoc.setProperty(PARAM_LASTFLOW, lastflow.getRootName());
             }
 
             Variant var = getVariant();
@@ -497,7 +521,17 @@ public class RequestContextImpl implements Cloneable, AuthorizationInterceptor {
                 if (currentpageflow != null)
                     spdoc.getDocument().getDocumentElement().setAttribute("used-pf", currentpageflow.getName());
             }
-
+            if(parentcontext.getTenant() != null) {
+                spdoc.setTenant(parentcontext.getTenant());
+                parentcontext.getTenant().toXML(spdoc.getDocument().getDocumentElement());
+            }
+            if(language != null) {
+                spdoc.setLanguage(language);
+            }
+            if(pageAlternativeKey != null) {
+                spdoc.setPageAlternative(pageAlternativeKey);
+            }
+            
             if (spdoc.getResponseError() == 0 && parentcontext.getContextConfig().getPageRequestConfig(spdoc.getPagename()) != null) {
                 parentcontext.addVisitedPage(spdoc.getPagename());
             }
@@ -594,7 +628,7 @@ public class RequestContextImpl implements Cloneable, AuthorizationInterceptor {
         if (!startwithflow) {
             ResultDocument resdoc;
 
-            State state = getState(currentpagerequest);
+            State state = pagemap.getState(currentpagerequest);
             if (state == null) {
                 LOG.warn("*** Can't get a handling state for page " + currentpagerequest);
                 LOG.warn("    ...will continue and use the default state '" + parentcontext.getContextConfig().getDefaultStateType().getName() + "'");
@@ -713,8 +747,12 @@ public class RequestContextImpl implements Cloneable, AuthorizationInterceptor {
 
     public void checkAuthorization(Context context) {
         String pageName = currentpagerequest.getRootName();
-        AuthConstraint authConstraint = getAuthConstraint(getConfigForCurrentPageRequest());
-        if(authConstraint != null) {
+        AuthConstraint authConstraint = null;
+        PageRequestConfig pageConfig = this.getConfigForCurrentPageRequest();
+        if(pageConfig != null) authConstraint = pageConfig.getAuthConstraint();
+        if (authConstraint == null)
+            authConstraint = parentcontext.getContextConfig().getDefaultAuthConstraint();
+        if (authConstraint != null) {
             if (!authConstraint.isAuthorized(parentcontext)) {
                 if (LOG.isDebugEnabled())
                     LOG.debug("Not authorized to access page '" + pageName + "'");
@@ -725,37 +763,16 @@ public class RequestContextImpl implements Cloneable, AuthorizationInterceptor {
 
     /**
      * Returns if accessing the current page is already permitted or 
-     * if it will be possible by authenticating using an according authpage 
+     * it it will be possible by authenticating using an according authpage 
      */
     private boolean isAuthorizationPossible() {
-        AuthConstraint authConstraint = getAuthConstraint(getConfigForCurrentPageRequest());
-        if(authConstraint != null) {
-            if(!authConstraint.isAuthorized(parentcontext) && authConstraint.getAuthPage()==null) return false;
+        PageRequestConfig pageConfig = getConfigForCurrentPageRequest();
+        if(pageConfig != null) {
+            AuthConstraint authConstraint = pageConfig.getAuthConstraint();
+            if (authConstraint == null) authConstraint = parentcontext.getContextConfig().getDefaultAuthConstraint();
+            if (authConstraint != null && !authConstraint.isAuthorized(parentcontext) && authConstraint.getAuthPage(parentcontext)==null) return false;
         }
         return true;
-    }
-
-    /**
-     * Get the AuthConstraint for a page. If the page has no AuthConstraint configured
-     * the default AuthConstraint is returned (if defined).
-     * If an AuthConstraint is of type AuthConstraintRef the reference instance is replaced by
-     * the according AuthConstraint instance.
-     * 
-     * @param pageConfig - page configuration
-     * @return the AuthConstraint for a page
-     */
-    public AuthConstraint getAuthConstraint(PageRequestConfig pageConfig) {
-        AuthConstraint authConstraint = null;
-        if(pageConfig != null) authConstraint = pageConfig.getAuthConstraint();
-        if(authConstraint == null) authConstraint = parentcontext.getContextConfig().getDefaultAuthConstraint();
-        if(authConstraint != null) {
-            if(authConstraint instanceof AuthConstraintRef) {
-                AuthConstraintRef ref = (AuthConstraintRef)authConstraint;
-                authConstraint = parentcontext.getContextConfig().getAuthConstraint(ref.getRef());
-                if(authConstraint == null) throw new RuntimeException("Authconstraint reference '" + ref.getRef() + " can't be resolved.");
-            }
-        }
-        return authConstraint;
     }
     
     private ResultDocument checkPageAuthorization() throws PustefixApplicationException, PustefixCoreException {
@@ -777,9 +794,12 @@ public class RequestContextImpl implements Cloneable, AuthorizationInterceptor {
             roleAuthDeps.add(authEx.getTarget());
             PageRequest localAuthPage = null;
             PageRequestConfig pageConfig = this.getConfigForCurrentPageRequest();
-            AuthConstraint authConstraint = getAuthConstraint(pageConfig);
+            AuthConstraint authConstraint = null;
+            if(pageConfig != null) authConstraint = pageConfig.getAuthConstraint();
+            if (authConstraint == null)
+                authConstraint = parentcontext.getContextConfig().getDefaultAuthConstraint();
             if (authConstraint != null) {
-                String authPageName = authConstraint.getAuthPage();
+                String authPageName = authConstraint.getAuthPage(parentcontext);
                 if (authPageName != null)
                     localAuthPage = createPageRequest(authPageName);
             }
@@ -965,19 +985,22 @@ public class RequestContextImpl implements Cloneable, AuthorizationInterceptor {
     }
 
     private State getStateForPageRequest(PageRequest page) throws PustefixApplicationException {
-        State state = getState(page);
+        State state = pagemap.getState(page);
         if (state == null) {
             state = parentcontext.getContextConfig().getDefaultState();
         }
         return state;
     }
     
-    private State getState(PageRequest pageRequest) {
-        PageRequestConfig config = servercontext.getContextConfig().getPageRequestConfig(pageRequest.getName());
-        if (config == null) {
-            return null;
+    public boolean needsLastFlow(String pageName, String lastFlowName) {
+        if(lastFlowName != null && !lastFlowName.equals("")) {
+            PageFlow lastFlow = pageflowmanager.getPageFlowByName(lastFlowName, variant);
+            if(lastFlow != null) {
+                PageRequest page = createPageRequest(pageName);
+                return pageflowmanager.needsLastFlow(lastFlow, page);
+            }
         }
-        return config.getState();
+        return false;
     }
 
 }

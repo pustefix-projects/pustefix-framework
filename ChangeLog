@@ -7,6 +7,29 @@
 	after the service object's method invocation and right before
 	writing the response.
 
+2010-01-13  Martin Leidig  <mleidig@schlund.de>
+
+	Added support for inserting modules into the default search
+	chain of dynamic includes. Thus resources can be overridden
+	by a module without having to explicitly configure the
+	overriding of another module.
+	The default-search chain be configured in the
+	project.xml file as follows:
+
+	<project-config>
+	  ...
+	  <dynamic-includes>
+	    <default-search>
+	      <module>mymodule</module>
+	      <module>anothermodule</module>
+	    </default-search>
+	  </dynamic-includes>
+	  ...
+	</project-config>
+
+	Before looking up modules defined here, a dynamic resource
+	is always searched first within the application itself.
+
 2009-12-16  Martin Leidig  <mleidig@schlund.de>
 
 	Added support for form submit buttons using the <button> element.
@@ -14,81 +37,6 @@
 	The element supports the same attributes as <pfx:xinp type="submit">,
 	but is transformed to <button type="submit"> and supports content,
 	which is applied/copied through to the result document.
-
-2009-11-27  Sebastian Marsching <sebastian.marsching@1und1.de>
-
-	Added URL rewrite filter.
-
-2009-11-21  Andreas Kurth  <andreas.kurth@1und1.de>
-
-	Added "contextXMLFile" configuration parameter to pustefix-webapp-plugin
-	allowing to add custom META-INF/context.xml file to resulting war file.
-	META-INF directory will be created by default now.
-
-2009-11-13  Sebastian Marsching <sebastian.marsching@1und1.de>
-
-	Added support for filtering HTTP requests. Beans implementing the 
-	new interface HttpRequestFilter will be automatically detected.
-	They can be used in the same way J2EE Filter instances are used. 
-
-	Added new tags <pfx:json-resource> and <pfx:json-resources> 
-	to render context resources as javascript in the HTML page.
-
-2009-11-11  Martin Leidig  <mleidig@schlund.de>
-
-	Added support for specifying and/or restricting the set of 
-	installed modules which are taken into account for a specific
-	application when processing dynamic includes.
-	Therefor a module can define so-called filter-attributes in its
-	descriptor and an application can define a filter inside its configuration
-	which will be applied based on these attributes.
-
-	Example (filtering by a language attribute):
-
-	Module descriptor (META-INF/pustefix-module.xml)
-
-	<module-descriptor>
-	  ...
-	  <dynamic-includes>
-	    <override-modules>
-	      <filter-attribute name="lang" value="de"/>
-	      <filter-attribute name="foo" value="bar"/>
-	      <module name="..."/>
-	    </override-modules>
-	  </dynamic-includes>
-	</module-descriptor>
-
-	Application configuration (META-INF/pustefix-application.xml)
-
-	<pustefix-application>
-	  <application>
-	    ...
-	    <dynamic-includes filter="(lang=de)"/>
-	  </application>
-	</pustefix-application>>
-
-	In this example the override mechanism only uses modules which define
-	a filter attribute "lang" with value "de", or which set no filter
-	attribute at all (which is the backwards-compatible default
-	behaviour).
-	The filter uses the OSGi filter syntax (see the OSGi Service Platform
-	Release 4 Version 4.2 Core Specification, section 3.2.7 Filter
-	syntax), which itself is based on the syntax of LDAP search
-	filters (see RFC1960/RFC2254).
-
-	Examples:
-	<dynamic-includes filter="(& (lang=de) (foo=bar))"/>
-	<dynamic-includes filter="(| (lang=de) (foo=baz))"/>
-	<dynamic-includes filter="(! (lang=en))"/>
-
-2009-11-06  Sebastian Marsching <sebastian.marsching@1und1.de>
-
-	Added JavaScript support for JSON resources.
-	These functions are based on pfx.net.HTTPRequest and 
-	and their code is stored in jsonResources.js.
-
-	Added Java-side support for delivering "context resources" 
-	through JSON, using the special "__json/" page name. 
 
 2009-11-03  Martin Leidig  <mleidig@schlund.de>
 
@@ -101,72 +49,20 @@
 	    <!-- all XML files from txt folder: -->
 	    <resource path="txt/*.xml"/>
 	    <!-- all XSL files from xsl folder or arbitrary subfolders: -->
-	    <resource path="xsl/**/*.xsl"/>
+	    <resource path="xsl/**/*.xsl"/>          
 	  </module>
 	</override-modules>
 
-2009-10-09  Sebastian Marsching <sebastian.marsching@1und1.de>
+2009-10-09  Sebastian Marsching  <sebastian.marsching@1und1.de>
 
-	Create a Spring bean for the default state, to make injection
-	available to the default state.
+	Added option to editor code, to make include parts as
+	editable or not editable.
 
-2009-09-24  Sebastian Marsching <sebastian.marsching@1und1.de>
+2009-07-28  Martin Leidig  <mleidig@schlund.de>
 
-	Added extension points for scripted flows.
-
-	Added extension points for context interceptors.
-
-2009-09-18  Sebastian Marsching <sebastian.marsching@1und1.de>
-
-	Made Pustefix context available in modules.
-
-	Fixed URI handling in pfx:image.
-
-2009-08-10  Sebastian Marsching <sebastian.marsching@1und1.de>
-
-	Added support for includepart scheme.
-
-	Added extension points for static resource and rewrote 
-	DocrootRequestHandler to use new resource system.
-
-2009-08-10  Sebastian Marsching <sebastian.marsching@1und1.de>
-
-	Removed config-include support.
-
-	Added extension point support for direct output pages
-
-2009-08-07  Sebastian Marsching <sebastian.marsching@1und1.de>
-
-	Removed old PustefixWebApplicationContext.
-
-	Added extension point support for page request process actions.
-
-	Removed "ResdocFinalizer".
-
-	Added extension point support for input wrappers.
-
-	Removed PropertyObjectManager.
-
-2009-08-05  Sebastian Marsching <sebastian.marsching@1und1.de>
-
-	Added page request output resource extension points.
-
-2009-07-30  Sebastian Marsching <sebastian.marsching@1und1.de>
-
-	Added page request extension points.
-
-	Refactored page configuration in order to prepare for extension
-	point support.
-
-	Added page flow step extension points.
-
-	Removed caching of page name to page flow name map.
-
-2009-07-30  Sebastian Marsching <sebastian.marsching@1und1.de>
-
-	Removed FlowStepActionFactory.
-
-	Support for page flow variant extension points.
+	Throw RuntimeException if docroot resource is requested
+	and no docroot ResourceProvider is registered (instead of
+	running into a StackOverflow).
 
 2009-07-27  Martin Leidig  <mleidig@schlund.de>
 
@@ -176,49 +72,9 @@
 	the session and calls a registered SessionListener, which itself
 	tries to lock the same application object.
 
-2009-07-24  Sebastian Marsching <sebastian.marsching@1und1.de>
-
-	Added code to load the configuration for a module application context.
-
-	Added more code for page flow extension points.
-
-	Made Pustefix Context available and register request and session
-	scope in module's application context.
-
-2009-07-23  Sebastian Marsching <sebastian.marsching@1und1.de>
-
-	Added base classes for extension point support and very first part
-	of the extension points for page flows.
-
-2009-07-16  Sebastian Marsching <sebastian.marsching@1und1.de>
-
-	Removed pustefix-osgi-spring-dm bundle and moved classes to 
-	pustefix-core.
-
-	Support for file: URIs
-
-	Removed code for building pustefix-core-*-data.jar.
-
-2009-07-10  Sebastian Marsching <sebastian.marsching@1und1.de>
-
-	Introduced pustefixcore scheme for access to core XML files.
-
-	Create modified implementation of ScopedProxyUtils / ScopedProxyFactoryBean
-	that uses class loader of target bean class.
-
-	Refactored resource handling in target generator.
-
-	Support for "persistentstorage:"-URIs providing access to the
-	persistent storage area of the OSGi container.
-
 2009-07-09  Martin Leidig  <mleidig@schlund.de>
 
 	Re-added forgotten defaultflow config option for pagerequests.
-
-2009-07-03  Sebastian Marsching <sebastian.marsching@1und1.de>
-
-	First part of new resource framework:
-	Base classes and bundle resource loader implementation.
 
 2009-06-30  Martin Leidig  <mleidig@schlund.de>
 
@@ -226,31 +82,17 @@
 	ContextResourceManager.getResource for unconfigured
 	ContextResources.
 
-2009-06-26  Sebastian Marsching <sebastian.marsching@1und1.de>
-
-	Use OSGi-aware fleXiParse parser and use ApplicationContext's class loader
-	to load non-core beans.
-
 2009-06-25  Martin Leidig  <mleidig@schlund.de>
 
-	Fixed HTTP caching header problem: adding custom HTTP headers using
-	SPDocument.addResponseHeader caused that the "Cache-Control" and
-	"Expires" headers weren't set. Now these headers are always set if
-	they were not overridden by the application.
+        Fixed HTTP caching header problem: adding custom HTTP headers using
+        SPDocument.addResponseHeader caused that the "Cache-Control" and
+        "Expires" headers weren't set. Now these headers are always set if
+        they were not overridden by the application.
 
 2009-06-24  Martin Leidig  <mleidig@schlund.de>
 
-	Added support for relative resolving of xincluded Pustefix
-	property files.
-
-2009-06-24  Sebastian Marsching <sebastian.marsching@1und1.de>
-
-	Fixed maven.test.skip property for pustefix-sample1 project.
-
-	Changed "build time property" mechanism to "runtime property" using
-	a file from the classpath.
-	
-	Created basic support for Spring Dynamic Modules for OSGi.
+        Added support for relative resolving of xincluded Pustefix
+        property files.
 
 2009-06-08  Martin Leidig  <mleidig@schlund.de>
 

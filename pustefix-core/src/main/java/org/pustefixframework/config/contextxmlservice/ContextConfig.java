@@ -19,7 +19,6 @@
 package org.pustefixframework.config.contextxmlservice;
 
 import java.util.List;
-import java.util.Map;
 import java.util.Properties;
 
 import org.w3c.dom.Document;
@@ -43,26 +42,26 @@ public interface ContextConfig {
     /**
      * Returns the type of the default state. This is the type of the state
      * returned by {@link #getDefaultState()}.
-     * @return type of default state 
+     * @return type of default state
      */
     Class<? extends State> getDefaultStateType();
-
-    String getDefaultStateParentBeanName();
     
     /**
      * Returns the default state to use if no more specific information is available.
      * @return the default state to use for a page where no other information is given. 
      */
     State getDefaultState();
-
-    /**
+    
+    String getDefaultStateParentBeanName();
+    
+     /**
      * Returns name of the page to use when the user enters the site without
      * specifying a specific page.
      * 
      * @return name of default page
      */
     String getDefaultPage(Variant variant);
-
+    
     /**
      * Returns a list of the configuration for all context resources that should
      * be created by the context.
@@ -78,23 +77,29 @@ public interface ContextConfig {
      * @return configuration object for the context resource
      */
     ContextResourceConfig getContextResourceConfig(Class<?> clazz);
-
     ContextResourceConfig getContextResourceConfig(String name);
 
     /**
-     * Returns a map mapping page flow (full) names to
-     * page flow implementations.
+     * Returns a list of all pageflows.
      * 
-     * @return page flow map
+     * @return list of pageflows
      */
-    Map<String, PageFlow> getPageFlowMap();
+    List<? extends PageFlow> getPageFlows();
 
     /**
-     * Returns the map mapping page names to the respective configurations.
+     * Returns the pageflow specified by <code>name</code>.
      * 
-     * @return map containing page configurations
+     * @param name name of the pageflow
+     * @return pageflow instance
      */
-    Map<String, ? extends PageRequestConfig> getPageRequestConfigMap();
+    PageFlow getPageFlow(String name);
+
+    /**
+     * Returns a list of configurations for all pagerequests.
+     * 
+     * @return list of all pagerequest configurations.
+     */
+    List<? extends PageRequestConfig> getPageRequestConfigs();
 
     /**
      * Returns the configuration for the pagerequest specified by <code>name</code>.
@@ -117,21 +122,13 @@ public interface ContextConfig {
      * @return list of end interceptors
      */
     List<? extends ContextInterceptor> getEndInterceptors();
-
+    
     /**
      * Returns a list of all postrender interceptors.
      * 
      * @return list of end interceptors
      */
     List<? extends ContextInterceptor> getPostRenderInterceptors();
-
-    /**
-     * Returns the path to the file containing the navigation tree. The path
-     * is specified relative to the Pustefix docroot.
-     * 
-     * @return path to navigation structure XML file
-     */
-    String getNavigationFile();
 
     /**
      * Returns configuration properties for the context instance.
@@ -150,13 +147,9 @@ public interface ContextConfig {
     boolean isSynchronized();
 
     RoleProvider getRoleProvider();
-
     AuthConstraint getDefaultAuthConstraint();
-
     AuthConstraint getAuthConstraint(String id);
-
     Condition getCondition(String id);
-
     Element getAuthConstraintAsXML(Document doc, AuthConstraint authConstraint);
-
+    
 }

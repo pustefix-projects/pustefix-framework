@@ -1,20 +1,31 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <xs:schema
-  targetNamespace="http://www.pustefix-framework.org/2009/namespace/config-fragments"
+  targetNamespace="http://www.pustefix-framework.org/2008/namespace/config-fragments"
   xmlns:xs="http://www.w3.org/2001/XMLSchema"
-  xmlns:fr="http://www.pustefix-framework.org/2009/namespace/config-fragments"
-  xmlns:prop="http://www.pustefix-framework.org/2009/namespace/context-xml-service-config"
-  xmlns:dos="http://www.pustefix-framework.org/2009/namespace/direct-output-service-config"
+  xmlns:fr="http://www.pustefix-framework.org/2008/namespace/config-fragments"
+  xmlns:prop="http://www.pustefix-framework.org/2008/namespace/context-xml-service-config"
+  xmlns:dos="http://www.pustefix-framework.org/2008/namespace/direct-output-service-config"
   elementFormDefault="qualified">
   
-  <xs:import namespace="http://www.pustefix-framework.org/2009/namespace/context-xml-service-config" schemaLocation="context-xml-service-config.xsd"></xs:import>
-  <xs:import namespace="http://www.pustefix-framework.org/2009/namespace/direct-output-service-config" schemaLocation="direct-output-service-config.xsd"></xs:import>
+  <xs:import namespace="http://www.pustefix-framework.org/2008/namespace/context-xml-service-config" schemaLocation="context-xml-service-config.xsd"></xs:import>
+  <xs:import namespace="http://www.pustefix-framework.org/2008/namespace/direct-output-service-config" schemaLocation="direct-output-service-config.xsd"></xs:import>
   
   <xs:element name="config-fragments" type="fr:configFragmentsType" />
 
   <xs:complexType name="configFragmentsType">
     <xs:sequence>
-      <xs:element name="navigation" type="fr:navigationType" maxOccurs="unbounded" minOccurs="0" />
+      <xs:element name="section" maxOccurs="unbounded" minOccurs="0">
+        <xs:complexType>
+          <xs:complexContent>
+            <xs:extension base="fr:sectionType">
+              <xs:sequence>
+                <xs:any minOccurs="0" maxOccurs="unbounded" processContents="skip" />
+              </xs:sequence>
+            </xs:extension>
+          </xs:complexContent>
+        </xs:complexType>
+      </xs:element>
+      <xs:element name="sitemap" type="fr:sitemapType" maxOccurs="unbounded" minOccurs="0" />
       <xs:element name="targets" type="fr:targetsType" maxOccurs="unbounded" minOccurs="0" />
       <xs:element name="resources" type="fr:resourcesType" maxOccurs="unbounded" minOccurs="0" />
       <xs:element name="pageflows" type="fr:pageflowsType" maxOccurs="unbounded" minOccurs="0" />
@@ -34,7 +45,7 @@
     <xs:attribute name="id" type="xs:ID" />
   </xs:complexType>
 
-  <xs:complexType name="navigationType">
+  <xs:complexType name="sitemapType">
     <xs:complexContent>
       <xs:extension base="fr:sectionType">
         <xs:sequence>

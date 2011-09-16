@@ -20,9 +20,10 @@ package de.schlund.pfixxml;
 
 import net.sf.saxon.expr.XPathContext;
 
-import org.pustefixframework.xmlgenerator.targets.TargetGenerator;
 import org.w3c.dom.Node;
 
+import de.schlund.pfixxml.targets.TargetGenerator;
+import de.schlund.pfixxml.util.ExtensionFunctionUtils;
 import de.schlund.pfixxml.util.XsltContext;
 import de.schlund.pfixxml.util.xsltimpl.XsltContextSaxon2;
 
@@ -31,11 +32,17 @@ import de.schlund.pfixxml.util.xsltimpl.XsltContextSaxon2;
  */
 public class IncludeDocumentExtensionSaxon2 {
 
-    public static Node get(XPathContext context,String path_str,String part,TargetGenerator targetGen,String targetkey,
-            String parent_part_in,String parent_theme_in,String computed_inc,String module,String search) throws Exception {    
-        XsltContext xsltContext=new XsltContextSaxon2(context);
-        return (Node)IncludeDocumentExtension.get(xsltContext,path_str,part,targetGen,targetkey,
-                parent_part_in,parent_theme_in,computed_inc,module,search);
+    public static Node get(XPathContext context,String path_str,String part,TargetGenerator targetgen,String targetkey,
+            String parent_part_in,String parent_theme_in,String computed_inc,String module,String search,
+            String tenant, String language) throws Exception {    
+        try {
+            XsltContext xsltContext=new XsltContextSaxon2(context);
+            return (Node)IncludeDocumentExtension.get(xsltContext,path_str,part,targetgen,targetkey,
+                    parent_part_in,parent_theme_in,computed_inc,module,search, tenant, language);
+        } catch(Exception x) {
+            ExtensionFunctionUtils.setExtensionFunctionError(x);
+            throw x;
+        }
     }
     
     public static String getSystemId(XPathContext context) {
@@ -57,20 +64,8 @@ public class IncludeDocumentExtensionSaxon2 {
         return IncludeDocumentExtension.getResolvedURI();
     }
     
-    public static String getResolvedBundleName() {
-        return IncludeDocumentExtension.getResolvedBundleName();
-    }
-    
-    public static String getResolvedPath() {
-        return IncludeDocumentExtension.getResolvedPath();
-    }
-    
-    public static Object getExtensions(XPathContext context, TargetGenerator targetGen,
-    		String targetKey, String extensionPointId, String extensionPointVersion,
-    		String parentPart, String parentTheme, String computed) throws Exception {
-    	XsltContext xsltContext=new XsltContextSaxon2(context);
-    	return IncludeDocumentExtension.getExtensions(xsltContext, targetGen, targetKey, extensionPointId, extensionPointVersion,
-    	        parentPart, parentTheme, computed);
+    public static String getDynIncInfo(String part, String theme, String path, String resolvedModule, String requestedModule, String tenant, String language) {
+        return IncludeDocumentExtension.getDynIncInfo(part, theme, path, resolvedModule, requestedModule, tenant, language);
     }
     
 }

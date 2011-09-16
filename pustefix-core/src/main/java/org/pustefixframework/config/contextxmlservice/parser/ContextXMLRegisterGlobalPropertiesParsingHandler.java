@@ -23,7 +23,7 @@ import java.util.Enumeration;
 import java.util.Properties;
 
 import org.pustefixframework.config.contextxmlservice.parser.internal.ContextConfigImpl;
-import org.pustefixframework.config.contextxmlservice.parser.internal.PustefixContextXMLRequestHandlerConfigImpl;
+import org.pustefixframework.config.contextxmlservice.parser.internal.ContextXMLServletConfigImpl;
 import org.pustefixframework.config.customization.CustomizationAwareParsingHandler;
 import org.pustefixframework.config.generic.ParsingUtils;
 
@@ -35,7 +35,7 @@ public class ContextXMLRegisterGlobalPropertiesParsingHandler extends Customizat
 
     @Override
     protected void handleNodeIfActive(HandlerContext context) throws ParserException {
-        PustefixContextXMLRequestHandlerConfigImpl servletConfig = ParsingUtils.getFirstTopObject(PustefixContextXMLRequestHandlerConfigImpl.class, context, true);
+        ContextXMLServletConfigImpl servletConfig = ParsingUtils.getFirstTopObject(ContextXMLServletConfigImpl.class, context, true);
         ContextConfigImpl contextConfig = servletConfig.getContextConfig();
         
         Properties servletProperties = servletConfig.getProperties();

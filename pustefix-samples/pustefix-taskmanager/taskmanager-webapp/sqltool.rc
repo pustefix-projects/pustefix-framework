@@ -1,4 +1,0 @@
-urlid db
-url jdbc:hsqldb:file:database/taskmanager
-username sa
-password

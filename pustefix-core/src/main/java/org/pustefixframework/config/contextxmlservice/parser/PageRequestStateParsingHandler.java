@@ -18,11 +18,11 @@
 
 package org.pustefixframework.config.contextxmlservice.parser;
 
+import org.pustefixframework.config.contextxmlservice.parser.internal.PageRequestConfigImpl;
 import org.pustefixframework.config.contextxmlservice.parser.internal.ScriptingStatePathInfo;
 import org.pustefixframework.config.contextxmlservice.parser.internal.StateConfigImpl;
 import org.pustefixframework.config.customization.CustomizationAwareParsingHandler;
 import org.pustefixframework.config.generic.ParsingUtils;
-import org.springframework.osgi.context.ConfigurableOsgiBundleApplicationContext;
 import org.w3c.dom.Element;
 
 import com.marsching.flexiparse.parser.HandlerContext;
@@ -35,9 +35,8 @@ public class PageRequestStateParsingHandler extends CustomizationAwareParsingHan
 
     @Override
     protected void handleNodeIfActive(HandlerContext context) throws ParserException {
+        PageRequestConfigImpl pageConfig = ParsingUtils.getSingleTopObject(PageRequestConfigImpl.class, context);
         StateConfigImpl stateConfig = ParsingUtils.getSingleTopObject(StateConfigImpl.class, context);
-
-        ConfigurableOsgiBundleApplicationContext appContext = ParsingUtils.getSingleTopObject(ConfigurableOsgiBundleApplicationContext.class, context);
         
         Element stateElement = (Element) context.getNode();
         String stateClassName = stateElement.getAttribute("class");
@@ -68,7 +67,7 @@ public class PageRequestStateParsingHandler extends CustomizationAwareParsingHan
         
         if (beanRef.length() > 0) {
             stateConfig.setExternalBean(true);
-            stateConfig.setBeanName(beanRef);
+            pageConfig.setBeanName(beanRef);
         }
         
         if (parentBeanRef.length() > 0) {
@@ -77,7 +76,6 @@ public class PageRequestStateParsingHandler extends CustomizationAwareParsingHan
         
         if (stateClassName.length() > 0) {
             if (stateClassName.startsWith("script:")) {
-                // FIXME Fix or drop support for scripts
                 String scriptPath = stateClassName.substring(7);
                 stateConfig.setState(ScriptingState.class);
                 ScriptingStatePathInfo info = new ScriptingStatePathInfo();
@@ -86,7 +84,7 @@ public class PageRequestStateParsingHandler extends CustomizationAwareParsingHan
             } else {
                 Class<?> clazz;
                 try {
-                    clazz = Class.forName(stateClassName, true, appContext.getClassLoader());
+                    clazz = Class.forName(stateClassName);
                 } catch (ClassNotFoundException e) {
                     throw new ParserException("Could not load state class " + stateClassName, e);
                 }
@@ -95,7 +93,7 @@ public class PageRequestStateParsingHandler extends CustomizationAwareParsingHan
                 }
                 stateConfig.setState(clazz.asSubclass(ConfigurableState.class));
                 if (beanName.length() > 0) {
-                    stateConfig.setBeanName(beanName);
+                    pageConfig.setBeanName(beanName);
                 }
             }
         }

@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xmlns:aop="http://www.springframework.org/schema/aop"
+       xmlns:context="http://www.springframework.org/schema/context"
+       xmlns:ws="http://pustefixframework.org/schema/webservices"
+       xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-2.5.xsd http://www.springframework.org/schema/aop http://www.springframework.org/schema/aop/spring-aop-2.5.xsd
+                           http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context-2.5.xsd
+                           http://pustefixframework.org/schema/webservices http://pustefixframework.org/schema/webservices/pustefix-webservices.xsd">
+
+  <context:annotation-config/>
+
+  <bean id="dictionary" class="sample.games.hangman.Dictionary"/>
+
+  <bean id="highscore" class="sample.games.hangman.HighScore"/>
+
+  <bean id="play" class="sample.games.hangman.webservice.PlayImpl" scope="session">
+    <aop:scoped-proxy/>
+  </bean>
+  
+  <ws:webservice 
+    id="Webservice_Play" 
+    servicename="Play" 
+    interface="sample.games.hangman.webservice.Play" 
+    ref="play" 
+    protocol="JSONWS"
+  />
+
+</beans>

@@ -19,24 +19,34 @@
 package org.pustefixframework.webservices.spring;
 
 import java.io.IOException;
+import java.lang.reflect.Method;
+import java.net.URL;
 
 import javax.servlet.ServletContext;
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import net.sf.cglib.proxy.Enhancer;
+
 import org.apache.log4j.Logger;
 import org.pustefixframework.container.spring.http.UriProvidingHttpRequestHandler;
 import org.pustefixframework.webservices.AdminWebapp;
+import org.pustefixframework.webservices.Constants;
+import org.pustefixframework.webservices.ServiceProcessor;
 import org.pustefixframework.webservices.ServiceRegistry;
 import org.pustefixframework.webservices.ServiceRuntime;
-import org.pustefixframework.webservices.config.WebserviceConfiguration;
-import org.pustefixframework.webservices.osgi.WebserviceExtension;
+import org.pustefixframework.webservices.ServiceStubGenerator;
+import org.pustefixframework.webservices.config.Configuration;
+import org.pustefixframework.webservices.config.ConfigurationReader;
+import org.pustefixframework.webservices.config.ServiceConfig;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.ApplicationContextAware;
 import org.springframework.web.context.ServletContextAware;
 
+import de.schlund.pfixxml.resources.Resource;
+import de.schlund.pfixxml.resources.ResourceUtil;
 
 /**
  * Webservice HTTP endpoint handling service requests (along with admin/tool stuff).
@@ -53,45 +63,128 @@ public class WebServiceHttpRequestHandler implements UriProvidingHttpRequestHand
 
     private AdminWebapp adminWebapp;
 
-    //TODO: inject configuration
-    private WebserviceConfiguration configuration;
+    private Resource configFile;
     
     private ServletContext servletContext;
     private String handlerURI;
     private ApplicationContext applicationContext;
-      
-    private WebserviceExtension rootExtension;
+    
+    private static final String PROCESSOR_IMPL_JAXWS="org.pustefixframework.webservices.jaxws.JAXWSProcessor";
+    private static final String PROCESSOR_IMPL_JSONWS="org.pustefixframework.webservices.jsonws.JSONWSProcessor";
+    private static final String PROCESSOR_IMPL_JSONQX="org.pustefixframework.webservices.jsonqx.JSONQXProcessor";
+    
+    private static final String GENERATOR_IMPL_JSONWS="org.pustefixframework.webservices.jsonws.JSONWSStubGenerator";
+    private static final String GENERATOR_IMPL_JAXWS="org.pustefixframework.webservices.jaxws.JAXWSStubGenerator";
+    
+    //TODO: dynamic ServiceProcessor detection/registration
+    private ServiceProcessor findServiceProcessor(String protocolType) throws ServletException {
+        String procClass = null;
+        if(protocolType.equals(Constants.PROTOCOL_TYPE_SOAP)) procClass = PROCESSOR_IMPL_JAXWS;
+        else if(protocolType.equals(Constants.PROTOCOL_TYPE_JSONWS)) procClass = PROCESSOR_IMPL_JSONWS;
+        else if(protocolType.equals(Constants.PROTOCOL_TYPE_JSONQX)) procClass = PROCESSOR_IMPL_JSONQX;
+        try {
+            Class<?> clazz = Class.forName(procClass);
+            ServiceProcessor proc = (ServiceProcessor)clazz.newInstance();
+            return proc;
+        } catch(ClassNotFoundException x) {
+            if(LOG.isDebugEnabled()) LOG.debug("ServiceProcessor '"+procClass+"' for protocol '"+
+                protocolType+"' not found. Ignore and disable support for this protocol."); 
+            return null;
+        } catch(Exception x) {
+            throw new ServletException("Can't instantiate ServiceProcessor: "+procClass, x);
+        }
+    }
     
     public void afterPropertiesSet() throws Exception {
         LOG.info("Initialize ServiceRuntime ...");
         try {
-            runtime.setConfiguration(configuration);
-            runtime.setServiceRegistry(new ServiceRegistry());
+            Configuration srvConf = ConfigurationReader.read(configFile, applicationContext);
+            //if (srvConf.getGlobalServiceConfig().getContextName() == null && config.getInitParameter(Constants.PROP_CONTEXT_NAME) != null) {
+            //    srvConf.getGlobalServiceConfig().setContextName(config.getInitParameter(Constants.PROP_CONTEXT_NAME));
+            //}
+            runtime.setConfiguration(srvConf);
+            runtime.setApplicationServiceRegistry(new ServiceRegistry(runtime.getConfiguration(),
+                    ServiceRegistry.RegistryType.APPLICATION));
+            //TODO: dynamic ServiceProcessor detection/registration
+            ServiceProcessor sp = findServiceProcessor(Constants.PROTOCOL_TYPE_SOAP);
+            if(sp!=null) {
+                Method meth = sp.getClass().getMethod("setServletContext", ServletContext.class);
+                meth.invoke(sp, getServletContext());
+                runtime.addServiceProcessor(Constants.PROTOCOL_TYPE_SOAP, sp);
+                try {
+                    Class<?> clazz = Class.forName(GENERATOR_IMPL_JAXWS);
+                    ServiceStubGenerator gen = (ServiceStubGenerator)clazz.newInstance();
+                    runtime.addServiceStubGenerator(Constants.PROTOCOL_TYPE_SOAP, gen);
+                    LOG.info("Registered ServiceProcessor for "+Constants.PROTOCOL_TYPE_SOAP);
+                } catch(Exception x) {
+                    throw new ServletException("Can't instantiate ServiceStubGenerator: "+GENERATOR_IMPL_JSONWS,x);
+                }
+            }
+            URL metaURL = srvConf.getGlobalServiceConfig().getDefaultBeanMetaDataURL();
+            sp = findServiceProcessor(Constants.PROTOCOL_TYPE_JSONWS);
+            if(sp!=null) {
+                Method meth = sp.getClass().getMethod("setBeanMetaDataURL", URL.class);
+                meth.invoke(sp, metaURL);
+                runtime.addServiceProcessor(Constants.PROTOCOL_TYPE_JSONWS, sp);
+                try {
+                    Class<?> clazz = Class.forName(GENERATOR_IMPL_JSONWS);
+                    ServiceStubGenerator gen = (ServiceStubGenerator)clazz.newInstance();
+                    runtime.addServiceStubGenerator(Constants.PROTOCOL_TYPE_JSONWS, gen);
+                    LOG.info("Registered ServiceProcessor for "+Constants.PROTOCOL_TYPE_JSONWS);
+                } catch(Exception x) {
+                    throw new ServletException("Can't instantiate ServiceStubGenerator: "+GENERATOR_IMPL_JSONWS,x);
+                }
+            }
+            sp = findServiceProcessor(Constants.PROTOCOL_TYPE_JSONQX);
+            if(sp!=null) {
+                Method meth = sp.getClass().getMethod("setBeanMetaDataURL", URL.class);
+                meth.invoke(sp, metaURL);
+                runtime.addServiceProcessor(Constants.PROTOCOL_TYPE_JSONQX, sp);
+                LOG.info("Registered ServiceProcessor for "+Constants.PROTOCOL_TYPE_JSONQX);
+            }
+            getServletContext().setAttribute(ServiceRuntime.class.getName(), runtime);
             adminWebapp = new AdminWebapp(runtime);
         } catch (Exception x) {
             LOG.error("Error while initializing ServiceRuntime", x);
             throw new ServletException("Error while initializing ServiceRuntime", x);
         }
        
-        String[] extNames = applicationContext.getBeanNamesForType(WebserviceExtension.class);
-        if(extNames.length > 1) throw new Exception("Found multiple root extensions");
-        rootExtension = (WebserviceExtension)applicationContext.getBean(extNames[0]);
+        initServices();
         
         LOG.info("Initialization of ServiceRuntime done.");
     }
     
-    private void tryRefreshRegistry() {
-    	if(rootExtension.getWebserviceRegistrations() != runtime.getServiceRegistry().getWebserviceRegistrations()) {
-    		runtime.getServiceRegistry().setWebserviceRegistrations(rootExtension.getWebserviceRegistrations());
-    	}
-    	if(getServletContext().getAttribute(ServiceRuntime.class.getName()) == null) {
-    	    getServletContext().setAttribute(ServiceRuntime.class.getName(), runtime);
-    	}
+    
+    private void initServices() {
+        LOG.info("Register Spring backed webservices ...");
+        String[] names = applicationContext.getBeanNamesForType(WebServiceRegistration.class);
+        for(String name:names) {
+            WebServiceRegistration reg = (WebServiceRegistration)applicationContext.getBean(name);
+            ServiceConfig serviceConfig = new ServiceConfig(runtime.getConfiguration().getGlobalServiceConfig());
+            serviceConfig.setName(reg.getServiceName());
+            serviceConfig.setScopeType(Constants.SERVICE_SCOPE_APPLICATION);
+            serviceConfig.setSessionType(reg.getSessionType());
+            serviceConfig.setAuthConstraintRef(reg.getAuthConstraint());
+            String ref = reg.getTargetBeanName();
+            serviceConfig.setInterfaceName(reg.getInterface());
+            Object serviceObject = null;
+            if(ref==null) {
+                serviceObject = reg.getTarget();
+            } else {
+                serviceObject = applicationContext.getBean(ref);
+            }
+            Class<?> serviceObjectClass = serviceObject.getClass();
+            if(Enhancer.isEnhanced(serviceObjectClass)) serviceObjectClass = serviceObjectClass.getSuperclass();
+            serviceConfig.setImplementationName(serviceObjectClass.getName());
+            serviceConfig.setProtocolType(reg.getProtocol());
+            runtime.getConfiguration().addServiceConfig(serviceConfig);
+            runtime.getAppServiceRegistry().register(reg.getServiceName(), serviceObject);
+            LOG.info("Registered webservice "+reg.getServiceName());
+        }
     }
 
     public void handleRequest(HttpServletRequest req, HttpServletResponse res) throws ServletException, IOException {
-        tryRefreshRegistry();
-    	try {
+        try {
             if(req.getMethod().equals("POST")) {
                 runtime.process(req, res);
             } else if(req.getMethod().equals("GET")) {
@@ -103,8 +196,8 @@ public class WebServiceHttpRequestHandler implements UriProvidingHttpRequestHand
         }
     }
 
-    public void setConfiguration(WebserviceConfiguration configuration) {
-    	this.configuration = configuration;
+    public void setConfigFile(String path) {
+        configFile = ResourceUtil.getResource(path);
     }
     
     public void setServletContext(ServletContext servletContext) {
@@ -120,7 +213,7 @@ public class WebServiceHttpRequestHandler implements UriProvidingHttpRequestHand
     }
     
     public String[] getRegisteredURIs() {
-        return new String[] { handlerURI };
+        return new String[] { handlerURI, handlerURI + "/**" };
     }
     
     public void setApplicationContext(ApplicationContext applicationContext) {

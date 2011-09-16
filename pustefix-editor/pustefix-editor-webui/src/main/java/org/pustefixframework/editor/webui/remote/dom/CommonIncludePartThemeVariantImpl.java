@@ -102,6 +102,10 @@ public abstract class CommonIncludePartThemeVariantImpl extends AbstractIncludeP
         return getIncludePartThemeVariantTO().md5;
     }
     
+    public boolean isReadOnly() {
+        return getIncludePartThemeVariantTO().readOnly;
+    }
+    
     public Theme getTheme() {
         return theme;
     }

@@ -17,17 +17,15 @@
  */
 
 package de.schlund.pfixxml;
-
 import java.net.URI;
-import java.net.URISyntaxException;
+import java.net.URLEncoder;
 
 import org.apache.log4j.Logger;
-import org.pustefixframework.resource.Resource;
-import org.pustefixframework.resource.support.NullResource;
-import org.pustefixframework.xmlgenerator.targets.TargetGenerator;
-import org.pustefixframework.xmlgenerator.targets.VirtualTarget;
 
-import de.schlund.pfixxml.util.ExtensionFunctionUtils;
+import de.schlund.pfixxml.resources.Resource;
+import de.schlund.pfixxml.resources.ResourceUtil;
+import de.schlund.pfixxml.targets.TargetGenerator;
+import de.schlund.pfixxml.targets.VirtualTarget;
 import de.schlund.pfixxml.util.XsltContext;
     
 /**
@@ -40,32 +38,36 @@ import de.schlund.pfixxml.util.XsltContext;
  * @version 1.0
  */
 public class ImageThemedSrc {
+    
     private final static Logger LOG = Logger.getLogger(ImageThemedSrc.class);
 
     /** xslt extension */
     public static String getSrc(XsltContext context, String src, String themed_path, String themed_img,
-                                String parent_part_in, String parent_theme_in,
-                                TargetGenerator targetGen, String targetKey, String module, String search) throws Exception {
+                                String parent_part_in, String parent_product_in,
+                                TargetGenerator targetGen, String targetKey, String module, String search,
+                                String tenant, String language) throws Exception {
         
-    	try {
-    	
+        String filter = FilterHelper.getFilter(tenant, language);
+        
         boolean dynamic = false;
-        if(search!=null && !search.trim().equals("")) {
+        if(search != null && !search.trim().equals("")) {
             if(search.equals("dynamic")) dynamic = true;
             else throw new XMLException("Unsupported include search argument: " + search);
         }
         
-        String parentSystemId = context.getSystemId();
-        URI parentURI = new URI(parentSystemId);
-        
         if(module != null) {
             module = module.trim();
             if(module.equals("")) module = null;
+            if(module == null) {
+                if(!(src.startsWith("modules/") || src.startsWith("/modules/"))) {
+                    String parentSystemId = context.getSystemId();
+                    URI parentURI = new URI(parentSystemId);
+                    if("module".equals(parentURI.getScheme())) module = parentURI.getAuthority();
+                }
+            } else if(module.equalsIgnoreCase("WEBAPP")) {
+                module = null;
+            }
         }
-        
-        if(module == null && "bundle".equals(parentURI.getScheme())) module = parentURI.getAuthority();
-        if(module == null) throw new IllegalArgumentException("Can't detect source bundle for requested image: " 
-        		+ src + " " + themed_path + " " + themed_img);
         
         String[]        themes    = null;
           
@@ -78,94 +80,105 @@ public class ImageThemedSrc {
             themes = targetGen.getGlobalThemes().getThemesArr();
         }
         
-        String parent_uri_str  = "";
-        
-        if (IncludeDocumentExtension.isIncludeDocument(context)) {
-            parent_uri_str  = parentSystemId;
-        }
-        
-        Resource parent_path = null;
-        if(!parent_uri_str.equals("")) {
-        	URI uri = new URI(parent_uri_str);
-        	parent_path = targetGen.getResourceLoader().getResource(uri);
-        }
-        
         if (isSimpleSrc(src, themed_path, themed_img)) {
-            
-        	if (src.startsWith("/")) {
+            if (src.startsWith("/")) {
                 src = src.substring(1);
             }
-            String uriStr;
+            Resource res;
+            LOG.debug("  -> Register image src '" + src + "'");
             if(dynamic) {
-            	uriStr = "dynamic://" + module + "/PUSTEFIX-INF/" + src + "?application=" + targetGen.getApplicationBundle();
+                String uri =  "dynamic:/"+src;
+                if(module != null) {
+                    uri += "?module="+module;
+                    if(filter!=null) uri += "&filter=" + URLEncoder.encode(filter, "UTF-8");
+                }
+                res = ResourceUtil.getResource(uri);
+                URI resUri = res.toURI();
+                if("module".equals(resUri.getScheme())) {
+                    src = "modules/"+resUri.getAuthority()+"/"+src;
+                } else {
+                    src = resUri.getPath();
+                    if(src.startsWith("/")) src=src.substring(1);
+                }
             } else {
-            	uriStr = "bundle://" + module + "/PUSTEFIX-INF/" + src;
+                String uri = null;
+                if(module != null) {
+                    uri = "module://" + module + "/" + src;
+                    src = "modules/" + module + "/" + src;
+                } else {
+                    uri = "docroot:/" + src;
+                }
+                res = ResourceUtil.getResource(uri);
             }
-            URI uri = new URI(uriStr);
-            Resource res = targetGen.getResourceLoader().getResource(uri);
-            if(res == null) res = new NullResource(uri);
-            DependencyTracker.logTyped("image", res, "", "", parent_path, parent_part_in, parent_theme_in, target);
-            //TODO: return request-path-prefix + path by looking up static resource extensions
-            return res.getOriginalURI().toASCIIString();
-            
+            DependencyTracker.logImage(context, res, parent_part_in, parent_product_in, targetGen, targetKey, "image");
+            return src;
         } else if (isThemedSrc(src, themed_path, themed_img)) {
-        	
             if (themed_path.startsWith("/")) {
                 themed_path = themed_path.substring(1);
             }
+
+            String testsrc = null;
             
             if(dynamic) {
-            	
-                String themeParam = "&themes=";
+                String themeParam = "?themes=";
                 for (int i = 0; i < themes.length; i++) {
                     themeParam += themes[i];
                     if(i<themes.length-1) themeParam += ",";
                 }
-                String uriStr = "dynamic://" + module + "/PUSTEFIX-INF/" + themed_path +"/THEME/" + themed_img + "?application="+targetGen.getApplicationBundle();
-                uriStr += themeParam;
-                URI uri = new URI(uriStr);
-                Resource res = targetGen.getResourceLoader().getResource(uri);
-                if(res == null) res = new NullResource(uri);
-                DependencyTracker.logTyped("image", res, "", "", parent_path, parent_part_in, parent_theme_in, target);
-                //TODO: return request-path-prefix + path by looking up static resource extensions
-                return res.getOriginalURI().toASCIIString();
-                
+                String uri =  "dynamic:/" + themed_path +"/THEME/" + themed_img;
+                uri += themeParam;
+                if(module != null) {
+                    uri += "&module="+module;
+                    if(filter!=null) uri += "&filter=" + URLEncoder.encode(filter, "UTF-8");
+                }
+                Resource res = ResourceUtil.getResource(uri);
+                URI resUri = res.toURI();
+                if("module".equals(resUri.getScheme()) && res.exists()) {
+                    testsrc = "modules/"+resUri.getAuthority()+resUri.getPath();
+                } else {
+                    testsrc = resUri.getPath();
+                    if(testsrc.startsWith("/")) testsrc=testsrc.substring(1);
+                }
+                String parent_path = IncludeDocumentExtension.getSystemId(context);
+                Resource relativeParent = parent_path.equals("") ? null : ResourceUtil.getResource(parent_path);
+                DependencyTracker.logTyped("image", res, "", "", relativeParent, parent_part_in, parent_product_in, target);
+                //DependencyTracker.logImage(context, testsrc, parent_part_in, parent_product_in, targetGen, targetKey, "image");
             } else {
             
-            	String uriStr = src;
-            	for (int i = 0; i < themes.length; i++) {
-            		String currtheme = themes[i];
-            		uriStr = "bundle://" + module + "/PUSTEFIX-INF/" + themed_path + "/" + currtheme + "/" + themed_img;
-            		URI uri = new URI(uriStr);
-            		Resource res = targetGen.getResourceLoader().getResource(uri);
-            		if(res != null) {
-            			DependencyTracker.logTyped("image", res, "", "", parent_path, parent_part_in, parent_theme_in, target);
-            			//TODO: return request-path-prefix + path by looking up static resource extensions
-            			return res.getOriginalURI().toASCIIString();
-            		} 
-            		if (i < (themes.length - 1)) {
-            			// FIXME: the next commented line should be used sometime so we can discriminate between
-            			// "real" missing and "missing, but we found a better version" -- but make sure editor copes with it.
-            			//DependencyTracker.logImage(context, testsrc, parent_part_in, parent_theme_in, targetGen, targetKey, "shadow");
-            			DependencyTracker.logTyped("image", new NullResource(uri), "", "", parent_path, parent_part_in, parent_theme_in, target);
-            			LOG.info("    -> Image src '" + uriStr + "' not found, trying next theme");
-            		} else {
-            			DependencyTracker.logTyped("image", new NullResource(uri), "", "", parent_path, parent_part_in, parent_theme_in, target);
-            			LOG.warn("    -> No themed image found!");
-            		}
-            	}
-            	return uriStr;
+            for (int i = 0; i < themes.length; i++) {
+                String currtheme = themes[i];
+                testsrc = themed_path + "/" + currtheme + "/" + themed_img;
+                String uri = null;
+                if(module!=null) {
+                    uri = "module://" + module + "/" + testsrc;
+                    testsrc = "modules/" + module + "/" + testsrc;
+                } else {
+                    uri = "docroot:/" + testsrc;
+                }
+                Resource res = ResourceUtil.getResource(uri);
+                LOG.info("  -> Trying to find image src '" + testsrc + "'");
+                if (res.exists()) {
+                    LOG.info("    -> Found src '" + testsrc + "'");
+                    DependencyTracker.logImage(context, res, parent_part_in, parent_product_in, targetGen, targetKey, "image");
+                    return testsrc;
+                }
+                if (i < (themes.length - 1)) {
+                    // FIXME: the next commented line should be used sometime so we can discriminate between
+                    // "real" missing and "missing, but we found a better version" -- but make sure editor copes with it.
+                    //DependencyTracker.logImage(context, testsrc, parent_part_in, parent_product_in, targetGen, targetKey, "shadow");
+                    DependencyTracker.logImage(context, res, parent_part_in, parent_product_in, targetGen, targetKey, "image");
+                    LOG.info("    -> Image src '" + testsrc + "' not found, trying next theme");
+                } else {
+                    DependencyTracker.logImage(context, res, parent_part_in, parent_product_in, targetGen, targetKey, "image");
+                    LOG.warn("    -> No themed image found!");
+                }
+            }
             
             }
-
+            return testsrc;
         } else {
             throw new XMLException("Need to have one of 'src' XOR both 'themed-path' and 'themed-img' given!");
         }
-        
-    	} catch(Exception x) {
-    		ExtensionFunctionUtils.setExtensionFunctionError(x);
-    		throw x;
-    	}
     }
 
 
@@ -175,36 +188,6 @@ public class ImageThemedSrc {
 
     private static boolean isThemedSrc(String src, String path, String img) {
         return ((src == null || src.equals("")) && path != null && !path.equals("") && img != null && !img.equals(""));
-    }
-
-    /**
-     * Transforms a URI (with the bundle scheme) to a path, that can be used
-     * to access the resource over the web. This will only work for Pustefix 
-     * bundles and only if the resource path has been explicitly exported by 
-     * the bundle.
-     * 
-     * @param uri URI string
-     * @return path relative to servlet context path (starting with a slash)
-     */
-    public static String uriToPath(String uriString) {
-        URI uri;
-        try {
-            uri = new URI(uriString);
-        } catch (URISyntaxException e) {
-            // Invalid URI
-            return uriString;
-        }
-        if (uri.getScheme().equals("bundle")) {
-            String bundleSymbolicName = uri.getAuthority();
-            String path = uri.getPath();
-            if (path.startsWith("/PUSTEFIX-INF/")) {
-                path = path.substring(13);
-            }
-            return "/bundle/" + bundleSymbolicName + path;
-        }
-        // URI cannot be transformed for unknown scheme,
-        // thus the original string is returned
-        return uriString;
     }
 
 }

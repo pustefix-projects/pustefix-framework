@@ -169,6 +169,8 @@ public interface IncludePartThemeVariant extends Comparable<IncludePartThemeVari
      */
     String getMD5();
     
+    boolean isReadOnly();
+    
     /**
      * Returns a list containing all versions available for this part as
      * {@link String} objects. The returned strings can be used to restore a

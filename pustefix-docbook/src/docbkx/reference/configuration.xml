@@ -5,13 +5,9 @@
   <section xml:id="configuration.introduction">
     <title>Overview</title>
     <para>
-      Starting a new Pustefix project requires (besides developing
+      Developing a new Pustefix application requires (besides developing
       the business logic and the UI) that you edit a bunch of configuration files.
-    </para>
-    <para>
-      The configuration files are stored in the <filename>META-INF</filename>
-      directory of the application bundle. Within the Maven module, these 
-      resources are usually stored in <filename>src/main/resources/META-INF</filename>.
+      In general those file are located under <literal>src/main/webapp/WEB-INF</literal>.
     </para>
   </section>
   
@@ -21,7 +17,7 @@
       Virtually all configuration files used by Pustefix support a mechanism 
       called "customization". You may use this customization support to use 
       different portions of a configuration file depending on the environment
-      the software is running in. For this task, the customization 
+      within your application is running. For this task, the customization 
       tools provide a <tag>choose</tag> tag which is similar to the 
       <tag>choose</tag> tag provided by XSLT.
     </para>
@@ -52,51 +48,67 @@
         <listitem>
           <para>
             <literal>mode</literal>: Set to the property 
-            <literal>makemode</literal>. This property is usually
-            set to <literal>prod</literal>.
+            <literal>makemode</literal> specified when running Ant.
+            If no explicit <literal>makemode</literal> is specified
+            <literal>prod</literal> is used.
           </para>
         </listitem>
         <listitem>
           <para>
             <literal>uid</literal>: The name of the user that 
-            is running the application.
+            executed Ant.
           </para>
         </listitem>
         <listitem>
           <para>
             <literal>fqdn</literal>: The fully qualified domain name
-            of the machine the application is running on.
+            of the machine the build process was run on.
           </para>
         </listitem>
         <listitem>
           <para>
             <literal>machine</literal>: The host name of the machine
-            the application is running on.
+            the build process was run on.
           </para>
         </listitem>
         <listitem>
           <para>
-            All other properties defined in the file 
-            <filename>META-INF/pustefix/runtime.properties</filename> within 
-            the Pustefix Core bundle. This file is usually overwritten by
-            creating a fragment bundle for the Pustefix Core bundle.
+            You not only have access to the predefined variables. You can also reference
+            System properties and ServletContext init parameters. If you want to override
+            the values of an automatically set predefined property, you can do this by adding an
+            according context init parameter to your <literal>web.xml</literal>.
           </para>
         </listitem>
       </itemizedlist>
       It is an error to reference a variable that is not defined. Therefore you
       might use the special XPath function 
       <literal>pfx:isSet('variableName')</literal> to check if a variable with 
-      a certain name is defined. 
+      a certain name is defined.
     </para>
   </section>
-  
-  <section xml:id="configuration.general">
-    <title>General concepts about Pustefix configuration files</title>
-    
+
+  <section xml:id="configuration.project">
+    <title>Configuration files</title>
+    <para>
+      For each Pustefix application you need to create a definition file
+      that contains all the information about your application (including references to other
+      application-specific configuration files). This file has to be named 
+      <literal>project.xml</literal> and must be placed in the <literal>WEB-INF</literal>
+      directory. It can be accompanied by a Spring bean definition file
+      that must be called <literal>spring.xml</literal>. This file may contain arbitrary
+      definitions for beans that will be created within the Spring ApplicationContext 
+      automatically created for the web application.
+    </para>
+    <para>
+      All other configuration files can theoretically have arbitrary names, however 
+      we strongly recommend using the naming convention used in this reference 
+      documentation. 
+    </para>
+ 
     <section xml:id="configuration.format.props">
       <title>XML property files syntax</title>
       <para>
-        Some parts of the Pustefix frameworks are configured using Java 
+        Some parts of the Pustefix framework are configured using Java 
         properties. To ease this configuration Pustefix provides you with 
         a special XML format which is read instead of the usual Java 
         property file format. This format provides some customization 
@@ -112,13 +124,13 @@
     xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
     xsi:schemaLocation="http://www.pustefix-framework.org/2008/namespace/properties-config http://www.pustefix-framework.org/2008/namespace/properties-config.xsd">
     
-    <prop name="statuscodefactory.messagefile">common/dyntxt/statusmessages.xml</prop>
+    <prop name="a.property.name">a.property.value</prop>
   </properties>
   ]]>
         </programlisting>
         The prop tag is the most primitive way to enter a single property. 
         The example above would simply result in the java property
-        <literal>statuscodefactory.messagefile=common/dyntxt/statusmessages.xml</literal>.
+        <literal>a.property.name=a.property.value</literal>.
         Pustefix allows to customize the creation of the property files 
         using the mechanism described in <xref linkend="configuration.customization"/>.
       </para>
@@ -129,41 +141,16 @@
         domain name of the machine.
       </para>
     </section>
-    
-  </section>
-  
-
-
-  <section xml:id="configuration.project">
-    <title>Project configuration files</title>
-    <para>
-      For each Pustefix application you need to create a definition file
-      that contains all the information about your project (including references to other
-      project-specific configuration files). This file has to be named 
-      <literal>pustefix-application.xml</literal> and must be placed in the 
-      <literal>META-INF</literal> directory of the application bundle.
-      It can be accompanied by a Spring bean definition file that must be 
-      called <literal>spring.xml</literal> and which must be placed in the
-      <literal>META-INF/pustefix</literal> directory of the bundle. This file 
-      may contain arbitrary definitions for beans that will be created within 
-      the Spring ApplicationContext automatically created for the web 
-      application.
-    </para>
-    <para>
-      All other configuration files can theoretically have arbitrary names, however 
-      we strongly recommend using the naming convention used in this reference 
-      documentation. 
-    </para>
-    
+   
     <section xml:id="configuration.project.projectxml">
-      <title>Application descriptor (pustefix-application.xml)</title>
+      <title>Project descriptor (project.xml)</title>
       <para>
-        The <literal>pustefix-application.xml</literal> file contains 
-        references to all services and resources used by this project.
+        The <literal>project.xml</literal> file contains references to all services
+        and resources used by this project.
       </para>
       <programlisting language="xml">
 <![CDATA[
-<pustefix-application xmlns="http://www.pustefix-framework.org/2009/namespace/application-config">
+<project-config xmlns="http://www.pustefix-framework.org/2008/namespace/project-config">
   
   <project>
     <!-- Short project name, should equal the name 
@@ -171,98 +158,111 @@
     <name>projectname</name>
     <!-- Description shown in Pustefix CMS -->
     <description>Description for this project</description>
+    <!-- 
+      add
+    <enabled>false</enabled>
+      to make disregard this project when building the
+      server configuration 
+    -->
+    <!-- you can optionally specify which languages should be switchable at runtime -->
+    <!--
+    <lang default="true">en_UK</lang>
+    <lang>de_DE</lang>
+    -->
   </project>
   
+  <!-- You can optionally configure tenants bound to specific hosts supporting different languages.-->
+  <!--
+  <tenant name="CA_market">
+    <choose>
+      <when test="$mode='prod'">
+        <host>.*\.ca$</host>
+      </when>
+      <otherwise>
+        <host>^ca\..*</host>
+      </otherwise>
+    </choose>
+    <lang default="true">en_CA</lang>
+    <lang>fr_CA</lang>
+  </tenant>
+
+  <tenant name="US_market">
+    ...
+  </tenant>
+  -->
+
   <editor>
-    <!-- Set this to false to make the project disappear
-         in the Pustefix CMS                             -->
+    <!-- Set this to false to make the project disappear in the Pustefix CMS 
+         (can be overridden using the ServletContext init parameter 'editor.enabled') -->
     <enabled>true</enabled>
-    <!-- Location of the Pustefix CMS -->
+    <!-- Location of the Pustefix CMS, does not need to be changed usually 
+         (can be overridden using the ServletContext init parameter 'editor.location') -->
     <location>http://cms.${fqdn}/</location>
+    <!-- Authentication secret for editor communication
+         (can be overridden using the ServletContext init parameter 'editor.secret') -->
+    <secret>somevalue</secret>
   </editor>
   
   <xml-generator>
     <!-- Path to the configuration file of 
-         the XML generator for this project -->
-    <config-file>bundle:/META-INF/pustefix/depend.xml</config-file>
-    <choose>
-      <when test="$mode='prod'">
-        <!-- Set this to false if you want to skip the check for changed stylesheets on every request -->
-        <check-modtime>false</check-modtime>
-      </when>
-    </choose>
+         the TargetGenerator for this project -->
+    <config-file>docroot:/WEB-INF/depend.xml</config-file>
   </xml-generator>
   
-  <http-server>
-    
-    <!-- IP address and port Apache HTTPd (not Tomcat!) will
-         listen on for HTTP connections                      -->
-    <http-port>
-      <address>${fqdn}</address>
-    </http-port>
-    
-    <!-- IP address and port Apache HTTPd (not Tomcat!) will
-         listen on for HTTPS connections                     -->
-    <https-port>
-      <address>${fqdn}</address>
-      <ssl-key>pfixroot:/projectname/conf/server.key</ssl-key>
-      <ssl-crt>pfixroot:/projectname/conf/server.crt</ssl-crt>
-    </https-port>
-    
-    <!-- Name of the virtual host for this project -->
-    <server-name>projectname.${fqdn}</server-name>
-    <!-- Alias for the virtual host for this project -->
-    <server-alias>projectname.${machine}</server-alias>
-    
-    <apache>
-      <literal>
-        <!-- Stuff that is copied to the Apache configuration -->
-      </literal>
-    </apache>
-    
-    <tomcat>
-      <!-- Set this to true to enable extra context instances 
-           for the virtual host created for this project      -->
-      <enable-extra-webapps>false</enable-extra-webapps>
-    </tomcat>
-    
-  </http-server>
-  
+  <!-- Sets the session tracking strategy. Default is 'COOKIE'.
+       Alternatively you can set 'URL' to force session tracking
+       within the URL, even if clients support cookies. You can
+       completely leave out this element, if you go with the default. -->
+  <session-tracking-strategy>COOKIE</session-tracking-strategy>
+
+  <!-- Set an initial session timeout 'value' (in seconds) used until 
+       more than 'requestlimit' requests are made within a session.
+       This element is optional. By default no separate timeout
+       for the initial requests is used. -->
+  <initial-session-timeout value="600" requestlimit="3"/>
+
   <application>
     
     <!-- Path that static resources will be delivered from -->
-    <docroot-path>bundle:/path/to/my/docroot</docroot-path>
+    <docroot-path>docroot:/htdocs</docroot-path>
     
-    <!-- URI requests to / are redirected to -->
-    <default-path>/xml/config</default-path>
+    <!-- URI requests to / are redirected to (optional)-->
+    <default-path>/somepage</default-path>
     
     <!-- Only one context-xml-service may be specified per project -->
     <context-xml-service>
-      <!-- URI the service will be available at -->
-      <path>/xml/config</path>
       <!-- Path to the configuration file for the service -->
-      <config-file>bundle:/META-INF/pustefix/config.conf.xml</config-file>
+      <config-file>docroot:/WEB-INF/config.conf.xml</config-file>
     </context-xml-service>
     
     <direct-output-service>
-      <!-- URI the service will be available at -->
-      <path>/xml/direct</path>
       <!-- Path to the configuration file for the service -->
-      <config-file>bundle:/META-INF/pustefix/direct.conf.xml</config-file>
+      <config-file>docroot:/WEB-INF/direct.conf.xml</config-file>
     </direct-output-service>
     
-    <!-- Dereferer -->
-    <deref-service>
-      <path>/xml/deref</path>            <!-- optional: default is /xml/deref -->
-      <validtime>3600</validtime>        <!-- optional: default is 3600 (seconds) -->
-      <mustsign>false</mustsign>         <!-- optional: default is false -->
-    </deref-service>
-        
     <!-- Extra paths for static resources -->
     <static>
-      <path>sample1/img</path>
+      <path>img</path>
     </static>
-    
+   
+    <!-- Exceptions thrown by the business logic or Pustefix itself can be handled on the top layer by so-called ExceptionProcessors,
+         e.g. an ExceptionProcessor implementation can forward certain types of exceptions to error pages, log them to a file or
+         pass them to an external tool. If you don't configure an ExceptionProcessor or the ExceptionProcessor doesn't create
+         an HTTP response by itself, the default exception handling of the servlet container applies.
+         Pustefix provides a default implementation for development, which renders the exception together with some contextual
+         information as HTML. But this processor should only be used in test mode, because it would expose system internals to
+         the world. In production mode you should leave it out or register an alternative implementation.
+    -->
+    <choose>
+      <when test="$mode='test'">
+        <exception-processing>
+          <process type="java.lang.Throwable" 
+                   processor="de.schlund.pfixxml.exceptionprocessor.UniversalExceptionProcessor"/>
+          <!-- <process type="mypackage.MyException" forward="true" page="/error.html"/> -->
+        </exception-processing>
+      </when>
+    </choose>
+
     <!--  Custom Deplyment descriptor code
     <web-xml>
       <jee:web-app xmlns:jee="http://java.sun.com/xml/ns/javaee">
@@ -294,9 +294,7 @@
   <section xml:id="configuration.depend">
     <title>Page Configuration (depend.xml)</title>
     <para>
-      The depend.xml configuration file serves two purposes:
-      First, it is used to create the hierarchical page structure of the project by
-      defining a tree of pages. Then, it is used to define the internal structure of the
+      The depend.xml is used to define the internal structure of the
       pages by defining, for every single page, the tree of transformations that need to be
       applied to certain files to get the final stylesheet (which is the representation of
       the page in Pustefix). For an overview over the transformation aspect of the whole
@@ -310,17 +308,7 @@
       <title>Structure of the depend.xml</title>
       <para>
         The structure of the config file is show below:
-        <programlisting language="xml"><![CDATA[<xml-generator-config project="MyProject" lang="en" themes="ThemeA ThemeB ... default" xmlns="http://www.pustefix-framework.org/2008/namespace/xml-generator-config">
-  <navigation>
-    <page name="foo" handler="/xml/static" accesskey="F">
-      <page name="sub_foo1" handler="/xml/static"/>
-      <page name="sub_foo2" handler="/xml/static"/>
-    </page>
-    <page name="bar" handler="/xml/config">...</page>
-    
-    <!-- Configuration fragements are supported as well -->
-    <config-include file="myproject/conf/myfile.xml" section="navigation"/>
-  </navigation>
+        <programlisting language="xml"><![CDATA[<make project="MyProject" lang="en" themes="ThemeA ThemeB ... default">
 
   <!--
     The global section allows to set default values for ALL pages defined via the
@@ -335,12 +323,13 @@
     <!-- <include stylesheet="path/to/AStyleSheetFromModule" module="modulename"/> -->
   </global>
 
+  <config-include file="conf/myfile.xml" section="targets" module="mymodule"/>
+
   <!--
-    The only other tags allowed besides the navigation tag are target, global,
-    standardmaster, standardmetatags and standardpage. The latter three are only
-    convenience tags that can be expressed fully in terms of target tags
-    (Expanding those tags is one of the duties of the runtime transformation of
-    the depend.xml file mentioned above).
+    The other allowed tags are target, global, standardmaster, standardmetatags and 
+    standardpage. The latter three are only convenience tags that can be expressed 
+    fully in terms of target tags (Expanding those tags is one of the duties of the 
+    runtime transformation of the depend.xml file mentioned above).
   -->
   <target name="a_target_name.xsl" type="[xsl|xml]">...</target>
   <target name="another_target_name.xml" type="[xsl|xml]">...</target>...
@@ -349,19 +338,22 @@
   <standardpage name="a_name" master="..."
                 metatags="..." themes="..." variant="..."
                 xml="a_base_xml_file.xml">
+  <auto-standardpage lookup-path="txt/pages" lookup-module="..." 
+                     master="..." metatags="..." themes="..." variant="..."
+                     xml="a_base_xml_file.xml">
     ...
   </standardpage>
-</xml-generator-config>]]></programlisting>
+</make>]]></programlisting>
       </para>
     </section>
     <section>
-      <title>The &lt;xml-generator-config/&gt; tag</title>
+      <title>The &lt;make/&gt; tag</title>
       <para>
-       The <literal>&lt;xml-generator-config&gt;</literal> tag is the root 
-       element of the <filename>depend.xml</filename>
+       The <literal>&lt;make&gt;</literal> tag is the root element of the
+       <filename>depend.xml</filename>
       </para>
       <table rules="all" frame="box">
-        <caption>Attributes of the &lt;xml-generator-config&gt; tag</caption>
+        <caption>Attributes of the &lt;make&gt; tag</caption>
         <thead>
           <tr>
             <th>Attribute</th>
@@ -373,7 +365,7 @@
           <tr>
             <td>project</td>
             <td>mandatory</td>
-            <td>The name of the project. This is the same as the corresponding entry in the project.xml.in file.</td>
+            <td>The name of the project. This is the same as the corresponding entry in the project.xml file.</td>
           </tr>
           <tr>
             <td>lang</td>
@@ -402,40 +394,6 @@
                 The allowed characters for themes are: a-zA-Z0-9_+-
               </para>
             </td>
-          </tr>
-        </tbody>
-      </table>
-    </section>
-    <section xml:id="configuration.depend.page">
-      <title>The &lt;page/&gt; tag</title>
-      <para>
-       The <literal>&lt;page&gt;</literal> tag defines all available
-       pages.
-      </para>
-      <table rules="all" frame="box">
-        <caption>Attributes of the &lt;page&gt; tag</caption>
-        <thead>
-          <tr>
-            <th>Attribute</th>
-            <th>Mandatory?</th>
-            <th>Description</th>
-          </tr>
-        </thead>
-        <tbody>
-          <tr>
-            <td>name</td>
-            <td>mandatory</td>
-            <td>The name of the page. This name is used throughout Pustefix to reference the page (e.g. when creating internal links and in other config files). The allowed characters for page names are: a-zA-Z0-9_+-</td>
-          </tr>
-          <tr>
-            <td>handler</td>
-            <td>mandatory</td>
-            <td>This attribute tells the system which servlet is used to handle requests for this page. You can think of the handler attribute as a project wide servlet "name" as defined in the project definition</td>
-          </tr>
-          <tr>
-            <td>accesskey</td>
-            <td>optional</td>
-            <td>This attribute defines a default access key that will be used by the pfx:button tag for the links it generates.</td>
           </tr>
         </tbody>
       </table>
@@ -545,11 +503,11 @@
       <para>
         The standardpage tag is a convenience tag that encapsulates the typical definition of a complete page in the Pustefix system.
       </para>
-      <programlisting language="xml"><![CDATA[<standardpage name="BazPage" master="AName" metatags="AName" xml="MyProject/xml/FooBase.xml" themes="Theme_A Theme_B ... default" variant="foo">
+      <programlisting language="xml"><![CDATA[<standardpage name="BazPage" master="AName" metatags="AName" xml="xml/FooBase.xml" themes="Theme_A Theme_B ... default" variant="foo">
   <!--
     Note: All the child nodes are optional (and in fact usually not needed)
   -->
-  <include stylesheet="MyProject/xsl/runtime.xsl"/>
+  <include stylesheet="xsl/runtime.xsl"/>
   <!-- Stylesheets from module jars can be directly included by setting the module attribute. -->
   <!-- <include stylesheet="xsl/runtimeFromModule.xsl" module="modulename"/> -->
   <param name="fubar" value="bar"/>
@@ -604,6 +562,17 @@
           </tr>
         </tbody>
       </table>
+      <note xml:id="configuration.depend.autostandardpage">
+        <title>Page auto-configuration</title>
+         If you're configuration contains a lot of repeating standardpage definitions only differing in the page name, you can
+         alternatively use <literal>&lt;auto-standardpage&gt;</literal>, which will automatically create standardpage definitions
+         for all found pages. Pages are searched looking for XML files in the directory specified by the <literal>lookup-path</literal>  
+         attribute (and <literal>lookup-module</literal> if the pages are located in modules). The page name will be derived from the XML file 
+         name. Apart from the <literal>name</literal> attribute all <literal>standardpage</literal> attributes can be used.
+ <programlisting language="xml"><![CDATA[<auto-standardpage lookup-path="txt/pages" lookup-module="*" master="AName" metatags="AName">
+  ...
+</auto-standardpage>]]></programlisting>
+      </note>
       <para>
         After performing the transformation of the depend.xml on loading (automatically done by the runtime system system) this becomes
       </para>
@@ -638,8 +607,7 @@
     the parameter stylesheets_to_include (as a space separated list if multiple
     include tags are given). Note that the needed depaux nodes are inserted automatically.
   -->
-  <param name="stylesheets_to_include" value="MyProject/xsl/runtime.xsl"/>
-  <depaux name="/path/to/pustefix/projects/MyProject/xsl/runtime.xsl"/>
+  <param name="stylesheets_to_include" value="xsl/runtime.xsl"/>
 </target>
 
 <target name="BazPage::foo.xml" type="xml" themes="foo Themes_A Themes_B ... default">
@@ -647,7 +615,7 @@
   <!--
     If the metatags attribute has not been given, the depxsl value is metatags.xsl  
   -->  
-  <depxml name="MyProject/xml/FooBase.xml"/>
+  <depxml name="xml/FooBase.xml"/>
   <depxsl name="metatags-AName.xsl"/>
 
   <param name="fubar" value="bar"/>
@@ -662,7 +630,7 @@
       </para>
       <programlisting language="xml"><![CDATA[<standardmaster name="AName">
   <!-- The name attribute is optional -->
-  <include stylesheet="MyProject/xsl/skin.xsl"/>
+  <include stylesheet="xsl/skin.xsl"/>
   <!-- Stylesheets from module jars can be directly included by setting the module attribute. -->
   <!-- <include stylesheet="xsl/skinFromModule.xsl" module="modulename"/> -->
   <param name="AName" value="AValue"/>
@@ -676,16 +644,9 @@
     If the name attribute of the standardmaster tag has not been given,
     the value for the target's name attribute will be master.xsl.
   -->
-  <depxml name="core/xsl/master.xsl"/>
-  <depxsl name="core/xsl/customizemaster.xsl"/>
-  <depaux name="/path/to/pustefix/projects/core/xsl/default_copy.xsl"/>
-  <depaux name="/path/to/pustefix/projects/core/xsl/include.xsl"/>
-  <depaux name="/path/to/pustefix/projects/core/xsl/utils.xsl"/>
-  <depaux name="/path/to/pustefix/projects/core/xsl/navigation.xsl"/>
-  <depaux name="/path/to/pustefix/projects/core/xsl/forminput.xsl"/>
-  <depaux name="/path/to/pustefix/projects/sample1/conf/depend.xml"/>
+  <depxml name="xsl/master.xsl" module="pustefix-core"/>
+  <depxsl name="xsl/customizemaster.xsl" module="pustefix-core"/>
   <param name="AName" value="AValue"/>
-  <param name="docroot" value="/path/to/pustefix/projects"/>
   <param name="product" value="MyProject"/>
   <param name="lang" value="en"/>
 </target>]]></programlisting>
@@ -698,7 +659,7 @@
       </para>
       <programlisting language="xml"><![CDATA[<standardmetatags name="AName">
   <!-- The name attribute is optional -->
-  <include stylesheet="MyProject/xsl/metatags.xsl"/>
+  <include stylesheet="xsl/metatags.xsl"/>
   <!-- Stylesheets from module jars can be directly included by setting the module attribute. -->
   <!-- <include stylesheet="xsl/metatagsFromModule.xsl" module="modulename"/> -->
   <param name="AName" value="AValue"/>
@@ -713,32 +674,73 @@
     the value of the name attribute here becomes metatags.xsl.
   -->
 
-  <depxml name="core/xsl/metatags.xsl"/>
-  <depxsl name="core/xsl/customizemaster.xsl"/>
-  <depaux name="/path/to/pustefix/projects/core/xsl/default_copy.xsl"/>
-  <depaux name="/path/to/pustefix/projects/core/xsl/include.xsl"/>
-  <depaux name="/path/to/pustefix/projects/core/xsl/utils.xsl"/>
-  <depaux name="/path/to/pustefix/projects/MyProject/conf/depend.xml"/>
-  <depaux name="/path/to/pustefix/projects/MyProject/xsl/metatags.xsl"/>
-  <param name="stylesheets_to_include" value="MyProject/xsl/metatags.xsl "/>
+  <depxml name="xsl/metatags.xsl" module="pustefix-core"/>
+  <depxsl name="xsl/customizemaster.xsl" module="pustefix-core"/>
+  <param name="stylesheets_to_include" value="xsl/metatags.xsl "/>
   <param name="AName" value="AValue"/>
-  <param name="docroot" value="/path/to/pustefix/projects"/>
   <param name="product" value="MyProject"/>
   <param name="lang" value="en"/>
 </target>]]></programlisting>
     </section>
   </section>
+
+    <section xml:id="configuration.sitemap">
+      <title>Sitemap configuration (sitemap.xml, sitemap-aliases.xml)</title>
+      <para>
+        The optional sitemap configuration file <literal>sitemap.xml</literal> can be used to define a logical page structure, e.g.
+        for grouping pages according to a navigation or menu structure. This sitemap can be accessed during the XSL transformations
+        using the XSL parameter <literal>$sitemap</literal>.
+      </para>
+      <para>
+        The sitemap can be also used to provide page name aliases. Pustefix differentiates between logcial page names and display 
+        page names. Within the sitemap you can set a display page name by setting a so-called page alias. Thus you can rename a page
+        without having to change existing page references, i.e. internally the logical name is still used, but when Pustefix renders
+        the page, page names in links, etc., are replaced by the display names.
+      </para>
+      <para>
+        Finally the sitemap allows the definition of page alternatives. Page alternatives can be used to create different 
+        representations of a page. They base on the same logical page, but can produce different content and display names,
+        e.g. for landing pages.
+      </para>
+ <programlisting language="xml"><![CDATA[<sitemap>
+  <!-- page elements can be arbitrarily listed/nested, the name attribute relates to the logical page name -->
+  <page name="Home">
+    <page name="..."/>
+    <page name="..."/>
+  </page>
+  <!-- the alias attribute can be used to provide a page alias which should be displayed instead of the logical name -->
+  <page name="Overview" alias="Summary"/>
+  <!-- using the alt element you can add page alternatives, matching is done using the mandatory key attribute -->
+  <page name="Info">
+    <alt key="cities" name="Cities"/>
+    <alt key="nationalparks" name="NationalParks"/>
+    <alt key="mountains" name="Mountains"/>
+  </page>
+  <!-- additional parts of a sitemap can be included, e.g. from modules -->
+  <config-include file="conf/sitemap-fragment.xml" section="sitemap" module="*"/>
+</sitemap>]]></programlisting>
+      <para>
+        Internationalizing page names can be done by creating additional language specific alias mappings. These mappings are
+        defined in the <literal>sitemap-alias.xml</literal> configuration files.
+      </para>
+<programlisting language="xml"><![CDATA[<sitemap-aliases lang="de">
+  <!-- the alias elements map page names to language specific display names -->
+  <alias page="Home">Start</alias>
+  <alias page="Overview">Uebersicht</alias>
+  <alias page="Info">Information</alias>
+  <alias page="Cities">Staedte</alias>
+  <alias page="NationalParks">Nationalparks</alias>
+  <alias page="Mountains">Berge</alias>
+</sitemap-aliases>]]></programlisting>
+    </section>
     
     <section xml:id="configuration.servlet.contextxml">
       <title>ContextXMLService configuration file</title>
       <para>
         The ContextXMLService handles requests for all pages (where page means
         some content generated by an XSL transformation). The name of the
-        configuration file is usually <literal>service.conf.xml</literal>
-        where "service" is replaced by the name from the URI of the service. 
-        For example the configuration of the service available at 
-        <literal>/xml/info</literal> should use a configuration file named
-        <literal>info.conf.xml</literal>.
+        configuration file can be arbitrarily chosen and is configured in the
+        project configuration file.
        </para>
       <para>
         This service uses a configuration file that has a special 
@@ -899,29 +901,6 @@
          You can define an arbitrary number of roles, conditions and 
          authconstraints here, for details see <xref linkend="advanced.rolebasedauth"/>.
          <!-- TODO Add link here -->
-         <programlisting language="xml"><![CDATA[
-    <json-output>
-      <resource alias="MyResource" class="com.example.MyContextResource" />
-      <resource alias="MyOtherResource" bean-ref="myOtherResource" />
-    </json-output>
-         ]]></programlisting>
-         JSON resources can be used to make context resources available through 
-         the JSON protocol. Similar to the <tag>resource</tag> tag within the 
-         <tag>output</tag> tag of a page request configuration, you can 
-         specify either the class name of the context resource, which is 
-         used for legacy context resources defined in the <tag>context</tag> 
-         section of the same configuration file, or you can specify the name 
-         of a Spring bean.
-       </para>
-       <para>
-         The <tag class="attribute">alias</tag> attribute is used to specify 
-         the name which identifies the context resource in the communication 
-         with the client. This is the name which has to be passed to the 
-         <methodname>pfx.json.requestResource</methodname> or 
-         <methodname>pfx.json.requestResources</methodname> methods of the 
-         client JavaScript library.
-         For mor details on how to use the JSON resource feature see
-         <xref linkend="advanced.json_resources"/>.
          <programlisting language="xml"><![CDATA[
     <pageflow name="AName" final="APageName" stopnext="true|false">
          ]]></programlisting>
@@ -1158,24 +1137,6 @@
           </para>
         </note>
         <programlisting language="xml"><![CDATA[
-      <finalizer class="AClassName"/>
-        ]]></programlisting>
-        The whole node is optional. It may only be given for a 
-        <classname>State</classname> that is either 
-        <classname>de.schlund.pfixcore.workflow.app.DefaultIWrapperState</classname> 
-        or a descendent of it.
-        The <tag class="attribute">class</tag> attribute is mandatory 
-        and denotes a class implementing 
-        <classname>de.schlund.pfixcore.workflow.app.ResdocFinalizer</classname>.
-        <caution>
-          <para>
-            The use of finalizers is not suggested most of the time! 
-            They can completely change the result document and the logic 
-            when to trigger the next step in the current page flow. Use 
-            them at your own risk. Or better: Don't use them at all.
-          </para>
-        </caution>
-        <programlisting language="xml"><![CDATA[
       <input policy="ANY|ALL|NONE">
         ]]></programlisting>
         The whole node is optional. It may only be given for a 
@@ -1405,7 +1366,7 @@
       </properties>
     </pagerequest>
     
-    <config-include file="myproject/conf/myfile.xml" section="pagerequests"/>
+    <config-include file="conf/myfile.xml" section="pagerequests" module="mymodule"/>
         ]]></programlisting>
         Includes a part of a config fragments file at this location.
         See <xref linkend="configuration.format.fragments"/> for details on how
@@ -1447,6 +1408,13 @@
               tags and "pr" for the namespace of the 
               <classname>ContextXMLServlet</classname> configuration 
               tags.</td>
+            </tr>
+            <tr>
+              <td><literal>module</literal></td>
+              <td><emphasis>Optional</emphasis>.
+              Specifies the Pustefix module where the file is located (by default
+              the file is searched in the webapp itself). You can use simple name patterns to include all 
+              or a subset of modules availabe in the classpath (e.g. <literal>"*"</literal> or <literal>"mod-*-us"</literal>).</td>
             </tr>
           </tbody>
         </informaltable>
@@ -1506,11 +1474,8 @@
         Transformation, but e.g. deliver binary content directly to the 
         output stream instead. In this case you can use the 
         DirectOutputService. The name of the
-        configuration file is usually <literal>service.conf.xml</literal>
-        where "service" is replaced by the name from the URI of the service. 
-        For example the configuration of the service available at 
-        <literal>/xml/info</literal> should use a configuration file named
-        <literal>info.conf.xml</literal>.
+        configuration file can be arbitrarily chosen and is configured
+        in the project configuration file.
       </para>
       <para>
         The service knows about one or many 
@@ -1548,7 +1513,7 @@
          default authconstraint will be used. If no authconstraint is set at all, a
          page requires no authentication.
          <programlisting language="xml"><![CDATA[
-    <config-include file="myproject/conf/myfile.xml" section="directoutputpagerequests"/>
+    <config-include file="conf/myfile.xml" section="directoutputpagerequests" module="mymodule"/>
          ]]></programlisting>
         Includes a part of a config-fragments at this location.
         See <xref linkend="configuration.format.fragments"/> for details on how
@@ -1592,6 +1557,14 @@
               namespace of the <classname>DirectOutputService</classname> 
               configuration tags.</td>
             </tr>
+            <tr>
+              <td><literal>module</literal></td>
+              <td><emphasis>Optional</emphasis>.
+              Specifies the Pustefix module where the file is located (by default
+              the file is searched in the webapp itself). You can use simple name patterns to include all 
+              or a subset of modules availabe in the classpath (e.g. <literal>"*"</literal> or <literal>"mod-*-us"</literal>).</td>
+            </tr>
+
           </tbody>
         </informaltable>
         <emphasis>One and only one</emphasis> of the section, refid or 
@@ -1673,7 +1646,7 @@
       <tag class="attribute">id</tag> attribute has to be unique
       within the whole file.
       <programlisting language="xml"><![CDATA[
-    <page name="MyPage" handler="/xml/myhandler"/>
+    <page name="MyPage"/>
       ]]></programlisting>
       The structure here is the same as within the navigation tag of the 
       depend.xml file.
@@ -1681,7 +1654,7 @@
       <programlisting language="xml"><![CDATA[
   </fr:navigation>
   <fr:targets>
-    <standardpage name="MyPage" xml="myproject/xml/mymaster.xml"/>
+    <standardpage name="MyPage" xml="xml/mymaster.xml"/>
       ]]></programlisting>
       The tags allowed here are the same that are allowed for 
       standardpage or target definitions in the depend.xml file.
@@ -1772,15 +1745,15 @@
       Pustefix is based on Spring MVC and uses its DispatcherServlet to bootstrap the ApplicationContext on webapp startup. It configures its own ApplicationContext implementation by passing the <literal>PustefixWebApplicationContext</literal> class as <literal>contextClass</literal> init parameter in the webapp's <literal>web.xml</literal> configuration file.
     </para>
     <para>
-      The configuration file locations are passed to the DispatcherServlet using the standard <literal>contextConfigLocation</literal> init parameter. By default Pustefix passes the Pustefix configuration file <literal>myproject/conf/project.xml</literal> and, if exisiting, the file <literal>myproject/conf/spring.xml</literal>, which is intended to contain a standard Spring XML bean configuration. 
+      The configuration file locations are passed to the DispatcherServlet using the standard <literal>contextConfigLocation</literal> init parameter. By default Pustefix passes the Pustefix configuration file <literal>WEB-INF/project.xml</literal> and, if exisiting, the file <literal>WEB-INF/spring.xml</literal>, which is intended to contain a standard Spring XML bean configuration. 
     </para>
     <section xml:id="configuration.spring.custom">
       <title>Customizing the Spring configuration</title>
       <para>
-        Spring supports the externalization of property values from Spring XML configuration files into separate standard java property files. Pustefix extends this mechanism by adding support for the Pustefix XML property file format, which let's you use the <literal>choose/when</literal>-customization and buildtime property capabilities known from other Pustefix configuration files, like <literal>factory.xml</literal>, for Spring properties too.
+        Spring supports the externalization of property values from Spring XML configuration files into separate standard Java property files. Pustefix extends this mechanism by adding support for the Pustefix XML property file format, which let's you use the <literal>choose/when</literal>-customization known from other Pustefix configuration files, like <literal>factory.xml</literal>, for Spring properties too.
       </para>
       <para>
-        Therefor Pustefix by default registers a Spring <literal>PropertyPlaceholderConfigurer</literal>, which looks for a Pustefix XML property file under <literal>myproject/conf/spring-properties.xml</literal> and a <literal>PropertyOverrideConfigurer</literal>, which looks under <literal>myproject/conf/spring-properties-override.xml</literal>.
+        Therefor Pustefix by default registers a Spring <literal>PropertyPlaceholderConfigurer</literal>, which looks for a Pustefix XML property file under <literal>WEB-INF/spring-properties.xml</literal> and a <literal>PropertyOverrideConfigurer</literal>, which looks under <literal>WEB-INF/spring-properties-override.xml</literal>.
       </para>
       <para>
         The following example shows the two ways you can externalize property values:
@@ -1824,7 +1797,7 @@
 </properties>
 ]]></programlisting>
       <para>
-        The following <literal>spring-properties-override.xml</literal> file overrides the value for the second bean by using the format <literal>beanName.property</literal> as property name. It also shows how you can use the available buildtime properties (like <literal>docroot</literal>, <literal>fqdn</literal>, <literal>mode</literal>) within a property value:
+        The following <literal>spring-properties-override.xml</literal> file overrides the value for the second bean by using the format <literal>beanName.property</literal> as property name. It also shows how you can use the available environment properties (like <literal>fqdn</literal> or <literal>mode</literal>) within a property value:
       </para>
 <programlisting language="xml"><![CDATA[
 <?xml version="1.0" encoding="UTF-8"?>
@@ -1840,6 +1813,39 @@
     <para>
       If you want to register your own <literal>PropertyPlaceholderConfigurer</literal> or <literal>PropertyOverrideConfigurer</literal> capable of the Pustefix XML property format, e.g. for tests or child ApplicationContexts, you can do so by creating a <literal>PustefixPropertiesPersister</literal> bean and referencing it from the configurer's <literal>propertiesPersister</literal> property.
     </para>
+    </section>
+    <section xml:id="configuration.spring.beannames">
+      <title>Reserved Spring bean names</title>
+      <para>
+        Some Spring beans created by the core framework are intended for usage by the application, i.e. are registered with fixed/reserved bean names, which can be referred to inject them into application beans. The following table shows those beans with their associated names and aliases. 
+      </para>
+      <para>
+      <table rules="all" frame="box">
+        <caption>Reserved Spring bean names</caption>
+        <thead>
+          <tr>
+            <th>Name</th>
+            <th>Alias</th>
+            <th>Scope</th>
+            <th>Description</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td>de.schlund.pfixcore.workflow.Context</td>
+            <td>pustefixContext</td>
+            <td>Session</td>
+            <td>The context facade providing access to request-/session-state and configuration.</td>
+          </tr>
+          <tr>
+            <td>de.schlund.pfixxml.TenantInfo</td>
+            <td>pustefixTenantInfo</td>
+            <td>Singleton</td>
+            <td>Bean providing the list of available tenants.</td>
+          </tr>
+        </tbody>
+      </table>
+      </para>
     </section>
   </section>
       

@@ -43,7 +43,10 @@ import de.schlund.pfixcore.workflow.context.RequestContextImpl;
 import de.schlund.pfixxml.PfixServletRequest;
 import de.schlund.pfixxml.RequestParam;
 import de.schlund.pfixxml.ResultDocument;
+import de.schlund.pfixxml.Tenant;
 import de.schlund.pfixxml.XMLException;
+import de.schlund.pfixxml.resources.FileResource;
+import de.schlund.pfixxml.resources.ResourceUtil;
 
 /**
  * Default implementation of the <code>IWrapperContainer</code> interface.
@@ -67,6 +70,7 @@ public class IWrapperContainerImpl implements IWrapperContainer {
     private static final String       SUBMIT_WRAPPER   = "SUBWRP";
     private static final String       RETRIEVE_WRAPPER = "RETWRP";
     private static final String       SELECT_WRAPPER   = "SELWRP";
+    private static final String       WRAPPER_LOGDIR   = "interfacelogging";
 
     /**
      * This method must be called right after an instance of this class is
@@ -95,7 +99,7 @@ public class IWrapperContainerImpl implements IWrapperContainer {
         this.resdoc = resdoc;
         this.reqdata = new RequestDataImpl(context, preq);
 
-        createIWrapperGroups(stateConfig);
+        createIWrapperGroups(stateConfig, context.getTenant());
     }
 
     /**
@@ -270,8 +274,8 @@ public class IWrapperContainerImpl implements IWrapperContainer {
     // PRIVATE
     // 
 
-    private void createIWrapperGroups(StateConfig config) throws Exception {
-        Collection<? extends IWrapperConfig> confwrappers = config.getIWrappers().values();
+    private void createIWrapperGroups(StateConfig config, Tenant tenant) throws Exception {
+        Collection<? extends IWrapperConfig> confwrappers = config.getIWrappers(tenant).values();
 
         if (confwrappers.size() == 0) {
             LOG.debug("*** Found no wrappers for page '" + context.getCurrentPageRequest().getName() + "'");
@@ -285,16 +289,21 @@ public class IWrapperContainerImpl implements IWrapperContainer {
                     throw new XMLException("FATAL: you have already defined a wrapper with prefix " + prefix + " on page '" + context.getCurrentPageRequest().getName() + "'");
                 }
 
-                Class<?> thewrapper = iConfig.getWrapperClass();
+                String iface = iConfig.getWrapperClass().getName();
+
+                Class<?> thewrapper = null;
                 IWrapper wrapper = null;
                 try {
+                    thewrapper = Class.forName(iface);
                     wrapper = (IWrapper) thewrapper.newInstance();
+                } catch (ClassNotFoundException e) {
+                    throw new XMLException("unable to find class [" + iface + "] :" + e.getMessage());
                 } catch (InstantiationException e) {
-                    throw new XMLException("unable to instantiate class [" + thewrapper.getName() + "] :" + e.getMessage());
+                    throw new XMLException("unable to instantiate class [" + iface + "] :" + e.getMessage());
                 } catch (IllegalAccessException e) {
-                    throw new XMLException("unable to acces class [" + thewrapper.getName() + "] :" + e.getMessage());
+                    throw new XMLException("unable to acces class [" + iface + "] :" + e.getMessage());
                 } catch (ClassCastException e) {
-                    throw new XMLException("class [" + thewrapper.getName() + "] does not implement the interface IWrapper :" + e.getMessage());
+                    throw new XMLException("class [" + iface + "] does not implement the interface IWrapper :" + e.getMessage());
                 }
 
                 wrapper.defineOrder(order++);
@@ -305,6 +314,14 @@ public class IWrapperContainerImpl implements IWrapperContainer {
 
                 allwrappers.add(wrapper);
 
+                String logdir = context.getProperties().getProperty(WRAPPER_LOGDIR);
+                boolean dolog = iConfig.getLogging();
+                if (dolog && logdir != null && !logdir.equals("")) {
+                    FileResource dir = ResourceUtil.getFileResourceFromDocroot(logdir);
+                    if (dir.isDirectory() && dir.canWrite()) {
+                        wrapper.initLogging(dir, context.getCurrentPageRequest().getName(), context.getVisitId());
+                    }
+                }
             }
 
             ProcessActionStateConfig action = null;

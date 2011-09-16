@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="utf-8"?>
+<include_parts xmlns:ixsl="http://www.w3.org/1999/XSL/Transform" xmlns:pfx="http://www.schlund.de/pustefix/core">
+  
+  <part name="content">
+    <theme name="default">
+
+      <h1>Play Number Guess</h1>
+
+      <pfx:forminput>
+
+        <pfx:checkactive prefix="user">
+          What's your name?
+          <pfx:xinp type="text" name="user.name" size="20"/>
+          <show-error field="user.name"/><br/>
+          <pfx:xinp type="submit" value="Submit"/>
+        </pfx:checkactive>
+		<br/>
+    
+        Guess a number between 0 and 9:
+        <pfx:xinp type="text" name="guess.number" size="1"/>
+        <show-error field="guess.number"/><br/>
+        
+        <pfx:xinp type="submit" value="Guess number"/>
+        
+      </pfx:forminput>
+
+    </theme>
+  </part>
+  
+ </include_parts>

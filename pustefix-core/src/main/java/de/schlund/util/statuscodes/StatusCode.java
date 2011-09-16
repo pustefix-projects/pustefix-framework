@@ -20,27 +20,43 @@ package de.schlund.util.statuscodes;
 
 import java.net.URI;
 
-public class StatusCode {
- 
-    private final String part;
-    private final URI uri;
-    
-    public StatusCode(String part, URI uri) { 
-        this.part = part;
-        this.uri = uri;
-    }
+import de.schlund.pfixxml.resources.DocrootResource;
+import de.schlund.pfixxml.resources.Resource;
 
+public class StatusCode {
+	
+    private String part;
+    private DocrootResource path;
+    private URI uri;
+    
+    @Deprecated
+    public StatusCode(String part, DocrootResource path) { 
+        this.part = part;
+        this.path = path;
+        this.uri = path.toURI();
+    }
+    
+    public StatusCode(String part, URI uri) {
+    	this.part = part;
+    	this.uri = uri;
+    }
+    
     public String getStatusCodeId() { 
         return part;
     }
 
+    @Deprecated
+    public Resource getStatusCodePath() {
+        return path;
+    }
+    
     public URI getStatusCodeURI() {
-        return uri;
+    	return uri;
     }
 
     @Override
     public String toString() {
-        return "StatusCode:" + getStatusCodeId() + "@" + getStatusCodeURI();
+        return "StatusCode:" + getStatusCodeId() + "@" + getStatusCodeURI().toASCIIString();
     }
 
     public static String convertToFieldName(String part) {

@@ -86,6 +86,10 @@ public abstract class CommonIncludeFileImpl extends AbstractIncludeFile {
         return getIncludeFileTO().serial;
     }
     
+    public boolean isReadOnly() {
+        return getIncludeFileTO().readOnly;
+    }
+    
     protected IncludeFileTO getIncludeFileTO() {
         return getRemoteService().getIncludeFile(path);
     }

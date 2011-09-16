@@ -20,7 +20,6 @@ package org.pustefixframework.config.contextxmlservice.parser.internal;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 
-import de.schlund.pfixcore.auth.AuthConstraint;
 import de.schlund.pfixcore.auth.Condition;
 import de.schlund.pfixcore.workflow.Context;
 
@@ -31,7 +30,7 @@ import de.schlund.pfixcore.workflow.Context;
  * @author mleidig@schlund.de
  *
  */
-public class AuthConstraintRef implements AuthConstraint {
+public class AuthConstraintRef implements Condition {
     
     private String ref;
    
@@ -39,36 +38,12 @@ public class AuthConstraintRef implements AuthConstraint {
         this.ref = ref;
     }
     
-    public String getId() {
-    	throw new RuntimeException("Method not implemented");
-    }
-    
     public String getRef() {
         return ref;
     }
     
-    public boolean isDefault() {
-    	throw new RuntimeException("Method not implemented");
-    }
-    
     public boolean evaluate(Context context) {
         throw new RuntimeException("Method not implemented");
-    }
-    
-    public boolean isAuthorized(Context context) {
-    	throw new RuntimeException("Method not implemented");
-    }
-    
-    public void setCondition(Condition condition) {
-    	throw new RuntimeException("Method not implemented");	
-    }
-    
-    public Condition getCondition() {
-    	throw new RuntimeException("Method not implemented");
-    }
-    
-    public String getAuthPage() {
-    	throw new RuntimeException("Method not implemented");
     }
     
     public Element toXML(Document doc) {

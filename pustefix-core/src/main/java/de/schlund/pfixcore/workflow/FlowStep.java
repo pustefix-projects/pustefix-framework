@@ -57,14 +57,7 @@ public class FlowStep {
         for (PageFlowStepActionConditionConfig condition : config.getActionConditions()) {
             ArrayList<FlowStepAction> actionList = new ArrayList<FlowStepAction>();
             for (PageFlowStepActionConfig actionConfig : condition.getActions()) {
-                FlowStepAction action;
-                try {
-                    action = actionConfig.getActionType().newInstance();
-                } catch (InstantiationException e) {
-                    throw new RuntimeException("Could not create instance of class " + actionConfig.getActionType().getName(), e);
-                } catch (IllegalAccessException e) {
-                    throw new RuntimeException("Could not create instance of class " + actionConfig.getActionType().getName(), e);
-                }
+                FlowStepAction action = FlowStepActionFactory.getInstance().createAction(actionConfig.getActionType().getName());
                 HashMap<String, String> datamap = new HashMap<String, String>();
                 Properties params = actionConfig.getParams();
                 for (Iterator<?> k = params.keySet().iterator(); k.hasNext();) {

@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema"
-  targetNamespace="http://www.pustefix-framework.org/2009/namespace/context-xml-service-config"
-  xmlns:prop="http://www.pustefix-framework.org/2009/namespace/context-xml-service-config" 
+  targetNamespace="http://www.pustefix-framework.org/2008/namespace/context-xml-service-config"
+  xmlns:prop="http://www.pustefix-framework.org/2008/namespace/context-xml-service-config" 
   elementFormDefault="qualified" attributeFormDefault="unqualified">
 
   <xs:element name="context-xml-service-config" type="prop:context-xml-service-config-Type">
@@ -95,10 +95,13 @@
   <!--  authconstraints -->
 
   <xs:complexType name="authconstraintTopLevelType">
-    <xs:choice minOccurs="0">
-      <xs:element ref="prop:abstractcondition" minOccurs="0"/>
-      <xs:element name="authconstraint" type="prop:authconstraintRefType"/>
-    </xs:choice>
+    <xs:sequence>
+      <xs:choice minOccurs="0">
+        <xs:element ref="prop:abstractcondition" minOccurs="0"/>
+        <xs:element name="authconstraint" type="prop:authconstraintRefType"/>
+      </xs:choice>
+      <xs:element ref="prop:navigateTo" minOccurs="0" maxOccurs="unbounded"/>
+    </xs:sequence>
     <xs:attribute name="id" type="xs:ID" use="required"/>
     <xs:attribute name="authpage" type="xs:string" use="optional"/>
     <xs:attribute name="default" type="xs:boolean" use="optional"/>
@@ -156,6 +159,19 @@
     <xs:complexContent>
       <xs:extension base="prop:abstractconditionType">
          <xs:attribute name="name" type="xs:string" use="required"/>
+      </xs:extension>
+    </xs:complexContent>
+  </xs:complexType>
+  
+  <xs:element name="navigateTo" type="prop:navigateToType" />
+  <xs:complexType name="navigateToType">
+    <xs:complexContent>
+      <xs:extension base="prop:abstractconditionType">
+        <xs:choice maxOccurs="unbounded">
+          <xs:element ref="prop:abstractcondition"/>
+          <xs:element name="condition" type="prop:conditionType"/>
+        </xs:choice>
+        <xs:attribute name="page" type="xs:string" use="required" />
       </xs:extension>
     </xs:complexContent>
   </xs:complexType>
@@ -273,11 +289,15 @@
     <xs:attribute name="class" use="required"/>
     <xs:attribute name="bean-name"/>
     <xs:attribute name="scope" type="prop:springBeanScope"/>
+    <xs:attribute name="parent-bean-ref"/>
   </xs:complexType>
 
   <xs:element name="implements" type="prop:implementsType"/>
   <xs:complexType name="implementsType">
     <xs:attribute name="class" use="required"/>
+    <xs:attribute name="bean-name" use="optional" />
+    <xs:attribute name="scope" use="optional" />
+    <xs:attribute name="parent-bean-ref" use="optional"/>
   </xs:complexType>
   <!-- </context> -->
 
@@ -482,12 +502,6 @@
           </xs:complexType>
         </xs:element>
 
-        <xs:element name="finalizer" minOccurs="0">
-          <xs:complexType>
-            <xs:attribute name="class" use="required"/>
-          </xs:complexType>
-        </xs:element>
-
         <xs:element name="input"  minOccurs="0">
           <xs:complexType>
             <xs:choice>
@@ -502,16 +516,19 @@
                   </xs:complexType>
                 </xs:element>
               </xs:sequence>
-              <xs:sequence>
-                <xs:element name="wrapper" minOccurs="0" maxOccurs="unbounded">
-                  <xs:complexType>
-                    <xs:attribute name="prefix" use="required"/>
-                    <xs:attribute name="class" use="required"/>
-                    <xs:attribute name="checkactive" default="true" type="xs:boolean"/>
-                    <xs:attribute name="activeignore" default="false" type="xs:boolean"/>
-                    <xs:attribute name="logging" default="false" type="xs:boolean"/>
-                  </xs:complexType>
-                </xs:element>
+              <xs:sequence maxOccurs="unbounded" minOccurs="0">
+                <xs:choice>
+                  <xs:element name="wrapper" minOccurs="0" maxOccurs="unbounded">
+                    <xs:complexType>
+                      <xs:attribute name="prefix" use="required"/>
+                      <xs:attribute name="class" use="required"/>
+                      <xs:attribute name="checkactive" default="true" type="xs:boolean"/>
+                      <xs:attribute name="activeignore" default="false" type="xs:boolean"/>
+                      <xs:attribute name="logging" default="false" type="xs:boolean"/>
+                    </xs:complexType>
+                  </xs:element>
+                  <xs:element ref="prop:config-include"/>
+                </xs:choice>
               </xs:sequence>
             </xs:choice>
             <xs:attribute name="policy" default="ANY">
@@ -683,7 +700,6 @@
     <xs:attribute name="section" use="optional">
       <xs:simpleType>
         <xs:restriction base="xs:token">
-          <xs:enumeration value="navigation"/>
           <xs:enumeration value="targets"/>
           <xs:enumeration value="resources"/>
           <xs:enumeration value="pageflows"/>
@@ -699,6 +715,7 @@
     </xs:attribute>
     <xs:attribute name="refid" type="xs:NCName" use="optional"></xs:attribute>
     <xs:attribute name="xpath" type="xs:string" use="optional"></xs:attribute>
+    <xs:attribute name="module" type="xs:string" use="optional"></xs:attribute>
   </xs:complexType>
 
  

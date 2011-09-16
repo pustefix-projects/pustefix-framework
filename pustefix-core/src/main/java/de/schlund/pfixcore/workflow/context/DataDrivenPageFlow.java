@@ -18,9 +18,12 @@
 
 package de.schlund.pfixcore.workflow.context;
 
-import java.util.List;
+import java.util.ArrayList;
+import java.util.HashMap;
 
 import org.apache.log4j.Logger;
+import org.pustefixframework.config.contextxmlservice.PageFlowConfig;
+import org.pustefixframework.config.contextxmlservice.PageFlowStepConfig;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 
@@ -39,35 +42,37 @@ import de.schlund.pfixxml.ResultDocument;
 public class DataDrivenPageFlow implements PageFlow {
     private String    flowname;
     private String    rootname;
-    private List<? extends FlowStep> allsteps;
+    private ArrayList<FlowStep> allsteps = new ArrayList<FlowStep>();
+    private HashMap<String, FlowStep> stepmap = new HashMap<String, FlowStep>();
     private String    finalpage;
     
     private final static Logger LOG = Logger.getLogger(DataDrivenPageFlow.class);
     
-    public void setName(String name) {
-        flowname = name;
+    public DataDrivenPageFlow(PageFlowConfig config) {
+        flowname = config.getFlowName();
         if (flowname.indexOf("::") > 0) {
             rootname = flowname.substring(0, flowname.indexOf("::"));
         } else {
             rootname = flowname;
         }
-    }
-    
-    public void setFinalPage(String pageName) {
-        finalpage = pageName;
-    }
-    
-    public void setFlowSteps(List<? extends FlowStep> flowSteps) {
-        allsteps = flowSteps;
-    }
-    
-    public boolean containsPage(String pagename) {
-        for (FlowStep flowStep : allsteps) {
-            if (flowStep.getPageName().equals(pagename)) {
-                return true;
+        
+        finalpage = config.getFinalPage();
+        
+        for (PageFlowStepConfig stepConfig : config.getFlowSteps()) {
+            FlowStep step = new FlowStep(stepConfig);
+            allsteps.add(step);
+            stepmap.put(step.getPageName(), step);
+        }
+        
+        if (LOG.isDebugEnabled()) {
+            for (int i = 0; i < allsteps.size(); i++) {
+                LOG.debug(">>> Workflow '" + config.getFlowName() + "' Step #" + i + " " + allsteps.get(i));
             }
         }
-        return false;
+    }
+
+    public boolean containsPage(String pagename) {
+        return stepmap.keySet().contains(pagename);
     }
 
 
@@ -156,6 +161,7 @@ public class DataDrivenPageFlow implements PageFlow {
         
         LOG.warn("Reached end of page flow '" + getName() + "' " + "without having found a valid, accessible page");
         return null;
+        
     }
 
     public boolean precedingFlowNeedsData(PageFlowContext context, String currentpagename) throws PustefixApplicationException {
@@ -190,27 +196,18 @@ public class DataDrivenPageFlow implements PageFlow {
 
     public void hookAfterRequest(Context context, ResultDocument resdoc) throws PustefixApplicationException, PustefixCoreException {
     	String currentpagename = context.getCurrentPageRequest().getRootName();
-        FlowStep current = getFlowStepForPageName(currentpagename);
-    	if (current != null) {
+    	if (containsPage(currentpagename)) {
+            FlowStep current = stepmap.get(currentpagename);
             current.applyActionsOnContinue(context, resdoc);
         }
     }
 
     public boolean hasHookAfterRequest(String currentpagename) {
-        FlowStep current = getFlowStepForPageName(currentpagename);
-        if (current != null) {
+    	if (containsPage(currentpagename)) {
+            FlowStep current = stepmap.get(currentpagename);
             return current.hasOnContinueAction();
         }
         return false;
-    }
-    
-    private FlowStep getFlowStepForPageName(String pageName) {
-        for (FlowStep flowStep : allsteps) {
-            if (flowStep.getPageName().equals(pageName)) {
-                return flowStep;
-            }
-        }
-        return null;
     }
 
 

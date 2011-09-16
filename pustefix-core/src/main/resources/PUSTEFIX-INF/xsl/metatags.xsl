@@ -5,18 +5,16 @@
                 xmlns:cus="http://www.schlund.de/pustefix/customize"
                 xmlns:ixsl="http://www.w3.org/1999/XSL/TransformOutputAlias">
 
-  <xsl:import href="core/xsl/default_copy.xsl"/>
-  <xsl:import href="core/xsl/include.xsl"/>
-  <xsl:import href="core/xsl/utils.xsl"/>
-  <xsl:import href="core/xsl/json_resources.xsl"/>
+  <xsl:import href="module://pustefix-core/xsl/default_copy.xsl"/>
+  <xsl:import href="module://pustefix-core/xsl/include.xsl"/>
+  <xsl:import href="module://pustefix-core/xsl/utils.xsl"/>
+  <xsl:import href="module://pustefix-core/xsl/render.xsl"/>
 
   <cus:custom_xsl/>
 
   <xsl:param name="page"/>
-  <xsl:param name="bundle"/>
-  <xsl:param name="navigation"><cus:navigation/></xsl:param>
-  <xsl:param name="__navitree"/>
-  <xsl:param name="navitree" select="$__navitree"/>
+  <xsl:param name="__sitemap"/>
+  <xsl:param name="sitemap" select="$__sitemap"/>
   
   <!--
     Define __contextpath despite it's only evaluated/needed at runtime, cause Saxon2
@@ -24,6 +22,9 @@
   -->
   <xsl:param name="__contextpath">$__contextpath</xsl:param>
   
+  <xsl:param name="tenant"/>
   <xsl:param name="lang"><cus:lang/></xsl:param>
+  <xsl:param name="pageAlternative"/>
+  <xsl:variable name="product"><cus:product/></xsl:variable>
   
 </xsl:stylesheet>

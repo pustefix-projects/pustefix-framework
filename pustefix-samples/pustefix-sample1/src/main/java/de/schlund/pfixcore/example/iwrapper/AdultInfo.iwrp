@@ -1,7 +1,9 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<interface xmlns="http://pustefix.sourceforge.net/interfacewrapper200401"
+<interface xmlns="http://www.pustefix-framework.org/2008/namespace/iwrapper"
            xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-           xsi:schemaLocation="http://pustefix.sourceforge.net/interfacewrapper200401 http://pustefix.sourceforge.net/interfacewrapper200401.xsd">
+           xsi:schemaLocation="http://www.pustefix-framework.org/2008/namespace/iwrapper 
+                               http://www.pustefix-framework.org/2008/namespace/iwrapper.xsd">
+                               
   <ihandler class="de.schlund.pfixcore.example.AdultInfoHandler"/>
   
   <param name="Adult" type="java.lang.Boolean" missingscode="de.schlund.pfixcore.example.StatusCodeLib#home.AGE_MISSING">
@@ -9,7 +11,7 @@
       <cparam name="scodeCastError" value="de.schlund.pfixcore.example.StatusCodeLib#home.NO_AGE"/>
     </caster>
   </param>
-  <param name="Date" type="java.util.Date" occurance="optional">
+  <param name="Date" type="java.util.Date" occurrence="optional">
     <caster class="de.schlund.pfixcore.generator.casters.ToDate">
       <cparam name="paramFormat" value="yy/MM/dd" />
     </caster>

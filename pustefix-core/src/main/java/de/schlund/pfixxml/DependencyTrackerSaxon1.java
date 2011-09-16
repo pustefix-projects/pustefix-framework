@@ -18,13 +18,24 @@
 
 package de.schlund.pfixxml;
 
-import org.pustefixframework.resource.Resource;
-import org.pustefixframework.xmlgenerator.targets.VirtualTarget;
+import com.icl.saxon.Context;
+
+import de.schlund.pfixxml.resources.Resource;
+import de.schlund.pfixxml.targets.TargetGenerator;
+import de.schlund.pfixxml.targets.VirtualTarget;
+import de.schlund.pfixxml.util.XsltContext;
+import de.schlund.pfixxml.util.xsltimpl.XsltContextSaxon1;
 
 /**
  * @author mleidig@schlund.de
  */
 public class DependencyTrackerSaxon1 {
+
+    public static String logImage(Context context,Resource path,String parent_part_in,String parent_theme_in,
+            TargetGenerator targetGen,String targetKey,String type) throws Exception {
+        XsltContext xsltContext=new XsltContextSaxon1(context);
+        return DependencyTracker.logImage(xsltContext,path,parent_part_in,parent_theme_in,targetGen,targetKey,type);
+    }
     
     public static void logTyped(String type,Resource path,String part,String theme,
             Resource parent_path,String parent_part,String parent_theme,VirtualTarget target) {

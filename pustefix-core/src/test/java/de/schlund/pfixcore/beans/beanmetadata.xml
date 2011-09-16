@@ -1,9 +1,10 @@
 <?xml version="1.0" encoding="utf-8"?>
 <bean-metadata 
-  xmlns="http://pustefix.sourceforge.net/bean-metadata"
+  xmlns="http://www.pustefix-framework.org/2008/namespace/bean-metadata"
   xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-  xsi:schemaLocation="http://pustefix.sourceforge.net/bean-metadata http://pustefix.sourceforge.net/beanmetadata.xsd">
-  
+  xsi:schemaLocation="http://www.pustefix-framework.org/2008/namespace/bean-metadata 
+                      http://www.pustefix-framework.org/2008/namespace/bean-metadata.xsd">
+
   <bean class="de.schlund.pfixcore.beans.BeanA">
     <property name="bar" exclude="true"/>
     <property name="test" alias="mytest"/>

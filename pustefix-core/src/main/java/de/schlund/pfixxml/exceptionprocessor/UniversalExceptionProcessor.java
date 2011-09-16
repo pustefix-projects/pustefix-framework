@@ -19,7 +19,6 @@
 package de.schlund.pfixxml.exceptionprocessor;
 
 import java.io.IOException;
-import java.io.InputStream;
 import java.util.Properties;
 
 import javax.servlet.ServletContext;
@@ -39,6 +38,8 @@ import de.schlund.pfixxml.exceptionprocessor.util.ExceptionDataValue;
 import de.schlund.pfixxml.exceptionprocessor.util.ExceptionDataValueHelper;
 import de.schlund.pfixxml.exceptionprocessor.util.TextCreatorVisitor;
 import de.schlund.pfixxml.exceptionprocessor.util.XMLCreatorVisitor;
+import de.schlund.pfixxml.resources.ModuleResource;
+import de.schlund.pfixxml.resources.ResourceUtil;
 import de.schlund.pfixxml.util.Xml;
 import de.schlund.pfixxml.util.Xslt;
 import de.schlund.pfixxml.util.XsltVersion;
@@ -51,7 +52,7 @@ import de.schlund.pfixxml.util.XsltVersion;
  */
 public class UniversalExceptionProcessor implements ExceptionProcessor {
 
-    private static final String ERROR_STYLESHEET = "PUSTEFIX-INF/xsl/errorrepresentation.xsl";
+    private static final String ERROR_STYLESHEET = "module://pustefix-core/xsl/errorrepresentation.xsl";
     private static final Logger LOG = Logger.getLogger(UniversalExceptionProcessor.class);
     
     /* (non-Javadoc)
@@ -85,13 +86,13 @@ public class UniversalExceptionProcessor implements ExceptionProcessor {
         Templates stvalue;
         
         try {
-        	InputStream in = getClass().getClassLoader().getResourceAsStream(ERROR_STYLESHEET);
-            stvalue = Xslt.loadTemplates(XsltVersion.XSLT1, in);
+            stvalue = Xslt.loadTemplates(XsltVersion.XSLT1, (ModuleResource)ResourceUtil.getResource(ERROR_STYLESHEET));
         } catch (TransformerConfigurationException e) {
             throw new ServletException(e);
         }
         
         res.setContentType("text/html");
+        res.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
         
         try {
             Xslt.transform(doc, stvalue, null, new StreamResult(res.getOutputStream()));

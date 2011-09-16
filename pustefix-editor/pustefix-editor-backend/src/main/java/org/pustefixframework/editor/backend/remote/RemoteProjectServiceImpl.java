@@ -43,6 +43,7 @@ public class RemoteProjectServiceImpl implements RemoteProjectService {
         ProjectTO to = new ProjectTO();
         to.name = project.getName();
         to.comment = project.getComment();
+        to.includePartsEditableByDefault = project.isIncludePartsEditableByDefault();
         to.prefixToNamespaceMappings = project.getPrefixToNamespaceMappings();
         for (IncludeFile f : project.getDynIncludeFiles()) {
             to.dynIncludeFiles.add(f.getPath());

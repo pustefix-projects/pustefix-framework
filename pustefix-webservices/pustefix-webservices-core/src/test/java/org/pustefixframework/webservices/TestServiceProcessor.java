@@ -20,8 +20,6 @@ package org.pustefixframework.webservices;
 import java.io.IOException;
 import java.lang.reflect.Method;
 
-import org.pustefixframework.webservices.spring.WebserviceRegistration;
-
 public class TestServiceProcessor implements ServiceProcessor {
 
     private String contentType = "text/plain";
@@ -33,9 +31,9 @@ public class TestServiceProcessor implements ServiceProcessor {
             throws ServiceException {
         
         String serviceName = req.getServiceName();
-        WebserviceRegistration registration = registry.getWebserviceRegistration(serviceName);
+        runtime.getConfiguration().getServiceConfig(serviceName);
         
-        Object serviceObject = registration.getTarget();
+        Object serviceObject = registry.getServiceObject(serviceName);
         
         String reqMsg = null;
         try {

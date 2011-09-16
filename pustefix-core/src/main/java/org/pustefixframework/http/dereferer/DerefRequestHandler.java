@@ -27,7 +27,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import org.apache.log4j.Logger;
-import org.pustefixframework.config.contextxmlservice.AbstractPustefixRequestHandlerConfig;
+import org.pustefixframework.config.contextxmlservice.ServletManagerConfig;
 import org.pustefixframework.http.AbstractPustefixRequestHandler;
 
 import de.schlund.pfixxml.PfixServletRequest;
@@ -38,8 +38,8 @@ import de.schlund.pfixxml.util.Base64Utils;
 /**
  * This class implements a "Dereferer" servlet to get rid of Referer
  * headers. <b>ALL LINKS THAT GO TO AN OUTSIDE DOMAIN MUST USE THIS SERVLET!</b>
- * If this servlet is bound to e.g. /xml/deref than every outside link
- * (say to http://www.gimp.org) must be written like <a href="/xml/deref?link=http://www.gimp.org">Gimp</a>
+ * If this servlet is bound to e.g. /deref than every outside link
+ * (say to http://www.gimp.org) must be written like <a href="/deref?link=http://www.gimp.org">Gimp</a>
  *
  */
 
@@ -53,7 +53,7 @@ public class DerefRequestHandler extends AbstractPustefixRequestHandler {
     private long validTime;
     private boolean mustSign;
     
-    private AbstractPustefixRequestHandlerConfig config;
+    private ServletManagerConfig config;
     
     public void setValidTime(long validTime) {
         this.validTime = validTime;
@@ -64,12 +64,12 @@ public class DerefRequestHandler extends AbstractPustefixRequestHandler {
     }
     
     @Override
-    protected boolean allowSessionCreate() {
+    public boolean allowSessionCreate() {
         return (false);
     }
 
     @Override
-    protected boolean needsSession() {
+    public boolean needsSession() {
         return (false);
     }
 
@@ -100,7 +100,15 @@ public class DerefRequestHandler extends AbstractPustefixRequestHandler {
         LOG.debug("===> Referer: " + referer);
         
         long timeStamp = 0;
-        if(tsparam!=null && tsparam.getValue()!=null) timeStamp=Long.parseLong(tsparam.getValue());
+        if(tsparam!=null && tsparam.getValue()!=null) {
+            try {
+                timeStamp=Long.parseLong(tsparam.getValue());
+            } catch(NumberFormatException x) {
+                LOG.warn("Request contains invalid deref timestamp value: " + tsparam.getValue());
+                res.sendError(HttpServletResponse.SC_BAD_REQUEST);
+                return;
+            }
+        }
         
         if (linkparam != null && linkparam.getValue() != null) {
             LOG.debug(" ==> Handle link: " + linkparam.getValue());
@@ -233,16 +241,16 @@ public class DerefRequestHandler extends AbstractPustefixRequestHandler {
     }
     
     @Override
-    protected boolean wantsCheckSessionIdValid() {
+    public boolean wantsCheckSessionIdValid() {
         return false;
     }
 
     @Override
-    protected AbstractPustefixRequestHandlerConfig getServletManagerConfig() {
+    public ServletManagerConfig getServletManagerConfig() {
         return this.config;
     }
     
-    public void setConfiguration(AbstractPustefixRequestHandlerConfig config) {
+    public void setConfiguration(ServletManagerConfig config) {
         this.config = config;
     }
     
@@ -250,6 +258,11 @@ public class DerefRequestHandler extends AbstractPustefixRequestHandler {
         String redirectUrl = getServerURL(req) + req.getContextPath();
         res.setStatus(HttpServletResponse.SC_MOVED_PERMANENTLY);
         res.setHeader("Location", redirectUrl);
+    }
+    
+    @Override
+    public String[] getRegisteredURIs() {
+        return new String[] { handlerURI, handlerURI + "/**" };
     }
     
 }

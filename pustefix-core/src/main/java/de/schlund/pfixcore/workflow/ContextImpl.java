@@ -22,15 +22,19 @@ import java.util.List;
 import java.util.Properties;
 
 import javax.servlet.http.Cookie;
+import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSessionBindingEvent;
 import javax.servlet.http.HttpSessionBindingListener;
 
 import org.pustefixframework.config.contextxmlservice.ContextConfig;
 import org.pustefixframework.config.contextxmlservice.PageRequestConfig;
+import org.pustefixframework.config.project.ProjectInfo;
+import org.pustefixframework.http.AbstractPustefixRequestHandler;
 
 import de.schlund.pfixcore.auth.Authentication;
 import de.schlund.pfixcore.exception.PustefixApplicationException;
 import de.schlund.pfixcore.exception.PustefixCoreException;
+import de.schlund.pfixcore.exception.PustefixRuntimeException;
 import de.schlund.pfixcore.util.TokenManager;
 import de.schlund.pfixcore.workflow.context.AccessibilityChecker;
 import de.schlund.pfixcore.workflow.context.PageFlow;
@@ -39,8 +43,8 @@ import de.schlund.pfixcore.workflow.context.ServerContextImpl;
 import de.schlund.pfixcore.workflow.context.SessionContextImpl;
 import de.schlund.pfixxml.PfixServletRequest;
 import de.schlund.pfixxml.SPDocument;
+import de.schlund.pfixxml.Tenant;
 import de.schlund.pfixxml.Variant;
-import de.schlund.pfixxml.perflogging.PerfLogging;
 import de.schlund.util.statuscodes.StatusCode;
 
 public class ContextImpl implements AccessibilityChecker, ExtendedContext, TokenManager, HttpSessionBindingListener {
@@ -48,7 +52,6 @@ public class ContextImpl implements AccessibilityChecker, ExtendedContext, Token
     private SessionContextImpl              sessioncontext;
     private ServerContextImpl               servercontext;
     private ThreadLocal<RequestContextImpl> requestcontextstore = new ThreadLocal<RequestContextImpl>();
-    private PerfLogging perfLogging;
     
     public ContextImpl() {
         this.sessioncontext = new SessionContextImpl();
@@ -60,10 +63,6 @@ public class ContextImpl implements AccessibilityChecker, ExtendedContext, Token
     
     public void setContextResourceManager(ContextResourceManager crm) {
         sessioncontext.setContextResourceManager(crm);
-    }
-    
-    public void setPerfLogging(PerfLogging perfLogging) {
-        this.perfLogging = perfLogging;
     }
     
     public void addCookie(Cookie cookie) {
@@ -98,6 +97,10 @@ public class ContextImpl implements AccessibilityChecker, ExtendedContext, Token
         return getServerContext().getContextConfig();
     }
 
+    public ProjectInfo getProjectInfo() {
+        return getServerContext().getProjectInfo();
+    }
+    
     public ContextResourceManager getContextResourceManager() {
         return sessioncontext.getContextResourceManager();
     }
@@ -188,10 +191,32 @@ public class ContextImpl implements AccessibilityChecker, ExtendedContext, Token
     }
 
     public void setLanguage(String lang) {
-        getRequestContextForCurrentThreadWithError().setLanguage(lang);
-        sessioncontext.setLanguage(lang);
+        String matchingLang = null;
+        if(getTenant() == null) {
+            matchingLang = lang;
+        } else {
+            List<String> supportedLangs = getTenant().getSupportedLanguages();
+            if(supportedLangs.contains(lang)) {
+                matchingLang = lang;
+            } else if(!(lang.contains("_") || lang.contains("-"))) {
+                lang = lang + "_";
+                for(String supportedLang: supportedLangs) {
+                    if(supportedLang.startsWith(lang)) {
+                        matchingLang = supportedLang;
+                    }
+                }
+            }
+        }
+        if(matchingLang != null) {
+            getRequestContextForCurrentThreadWithError().setLanguage(matchingLang);
+            sessioncontext.setLanguage(matchingLang);
+        }
     }
 
+    public void setPageAlternative(String key) {
+        getRequestContextForCurrentThreadWithError().setPageAlternative(key);
+    }
+    
     public void setVariant(Variant variant) {
         getRequestContextForCurrentThreadWithError().setVariantForThisRequestOnly(variant);
         sessioncontext.setVariant(variant);
@@ -200,7 +225,15 @@ public class ContextImpl implements AccessibilityChecker, ExtendedContext, Token
     public void setVariantForThisRequestOnly(Variant variant) {
         getRequestContextForCurrentThreadWithError().setVariantForThisRequestOnly(variant);
     }
-
+    
+    public void setTenant(Tenant tenant) {
+        sessioncontext.setTenant(tenant);
+    }
+    
+    public Tenant getTenant() {
+        return sessioncontext.getTenant();
+    }
+        
     public boolean stateMustSupplyFullDocument() {
         return getRequestContextForCurrentThreadWithError().stateMustSupplyFullDocument();
     }
@@ -231,10 +264,34 @@ public class ContextImpl implements AccessibilityChecker, ExtendedContext, Token
         this.servercontext = servercontext;
     }
 
-    public void prepareForRequest() {
+    public void prepareForRequest(HttpServletRequest req) {
         // This allows to use OLDER servercontexts during requests
         requestcontextstore.set(new RequestContextImpl(servercontext, this));
-        if(perfLogging != null) PerfLogging.setInstanceForThread(perfLogging);
+        Tenant matchingTenant = (Tenant)req.getAttribute(AbstractPustefixRequestHandler.REQUEST_ATTR_TENANT);
+        if(matchingTenant != null) {
+            Tenant currentTenant = getTenant();
+            if(currentTenant == null) {
+                setTenant(matchingTenant);
+                setLanguage(matchingTenant.getDefaultLanguage());
+            } else {
+                if(!currentTenant.equals(matchingTenant)) {
+                    //TODO: handle this case
+                    throw new PustefixRuntimeException("Illegal tenant switch");
+                }
+            }
+        }
+        String matchingLanguage = (String)req.getAttribute(AbstractPustefixRequestHandler.REQUEST_ATTR_LANGUAGE);
+        if(matchingLanguage != null) {
+            setLanguage(matchingLanguage);
+        }
+        String pageAltKey = (String)req.getAttribute(AbstractPustefixRequestHandler.REQUEST_ATTR_PAGE_ALTERNATIVE);
+        if(pageAltKey != null) {
+            setPageAlternative(pageAltKey);
+        }
+        String langParam = req.getParameter("__language");
+        if(langParam != null && langParam.length() > 0) {
+            setLanguage(langParam);
+        }
     }
     
     public void setPfixServletRequest(PfixServletRequest pfixReq) {
@@ -253,7 +310,6 @@ public class ContextImpl implements AccessibilityChecker, ExtendedContext, Token
 
     public void cleanupAfterRequest() {
         requestcontextstore.set(null);
-        PerfLogging.setInstanceForThread(null);
     }
 
     // Used by TransformerCallback to set the right RequestContextImpl when
@@ -360,4 +416,13 @@ public class ContextImpl implements AccessibilityChecker, ExtendedContext, Token
     public PfixServletRequest getPfixServletRequest() {
         return getRequestContextForCurrentThreadWithError().getPfixServletRequest();
     }
+    
+    public PageMap getPageMap() {
+        return getServerContext().getPageMap();
+    }
+    
+    public boolean needsLastFlow(String pageName, String lastFlowName) {
+        return getRequestContextForCurrentThreadWithError().needsLastFlow(pageName, lastFlowName);
+    }
+    
 }

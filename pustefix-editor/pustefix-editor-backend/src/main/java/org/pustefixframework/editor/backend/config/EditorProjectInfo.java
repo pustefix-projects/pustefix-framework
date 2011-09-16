@@ -28,6 +28,7 @@ public class EditorProjectInfo {
     private String name;
     private String description;
     private boolean enableTargetUpdateService;
+    private boolean includePartsEditableByDefault;
     
     /**
      * Sets the name of the project.
@@ -84,5 +85,28 @@ public class EditorProjectInfo {
      */
     public boolean isEnableTargetUpdateService() {
         return enableTargetUpdateService;
+    }
+
+    /**
+     * Sets default edit permission for include parts. For details see
+     * {@link #isIncludePartsEditableByDefault()}.
+     * 
+     * @param includePartsEditableByDefault permission flag
+     */
+    public void setIncludePartsEditableByDefault(boolean includePartsEditableByDefault) {
+        this.includePartsEditableByDefault = includePartsEditableByDefault;
+    }
+
+    /**
+     * Returns <code>true</code>, if all include parts, which have not
+     * explicitly been marked as <emph>not</emph> editable, can be edited
+     * by users (having the required project permissions). If 
+     * <code>false</code>, on the parts that have been explicitly marked as 
+     * editable, can be edited.
+     * 
+     * @return flag indicating the default editable state of include parts
+     */
+    public boolean isIncludePartsEditableByDefault() {
+        return includePartsEditableByDefault;
     }
 }

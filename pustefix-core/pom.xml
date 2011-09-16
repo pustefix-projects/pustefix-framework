@@ -5,130 +5,123 @@
   <parent>
     <groupId>org.pustefixframework</groupId>
     <artifactId>pustefixframework</artifactId>
-    <version>1.0.3-SNAPSHOT</version>
+    <version>0.18.1-SNAPSHOT</version>
   </parent>
 
   <groupId>org.pustefixframework</groupId>
   <artifactId>pustefix-core</artifactId>
-  <version>1.0.3-SNAPSHOT</version>
-  <packaging>bundle</packaging>
+  <version>0.18.1-SNAPSHOT</version>
+  <packaging>jar</packaging>
 
   <name>Pustefix Core</name>
+
+  <profiles>
+    <profile><!-- see http://maven.apache.org/general.html#tools-jar-dependency -->
+      <id>sun-tools.jar</id>
+      <activation>
+        <property>
+          <name>java.vendor</name>
+          <value>Sun Microsystems Inc.</value>
+        </property>
+      </activation>
+      <dependencies>
+        <dependency>
+          <groupId>com.sun</groupId>
+          <artifactId>tools</artifactId>
+          <version>1.5.0</version>
+          <scope>system</scope>
+          <systemPath>${java.home}/../lib/tools.jar</systemPath>
+        </dependency>
+      </dependencies>
+    </profile>
+    <profile><!-- see http://maven.apache.org/general.html#tools-jar-dependency -->
+      <id>oracle-tools.jar</id>
+      <activation>
+        <property>
+          <name>java.vendor</name>
+          <value>Oracle Corporation</value>
+        </property>
+      </activation>
+      <dependencies>
+        <dependency>
+          <groupId>com.sun</groupId>
+          <artifactId>tools</artifactId>
+          <version>1.7.0</version>
+          <scope>system</scope>
+          <systemPath>${java.home}/../lib/tools.jar</systemPath>
+        </dependency>
+      </dependencies>
+    </profile>
+  </profiles>
  
   <dependencies>
     <dependency>
-      <groupId>org.osgi</groupId>
-      <artifactId>osgi_R4_core</artifactId>
-      <version>1.0</version>
-      <scope>provided</scope>
-      <optional>true</optional>
-    </dependency>
-    <dependency>
-      <groupId>org.osgi</groupId>
-      <artifactId>osgi_R4_compendium</artifactId>
-      <version>1.0</version>
-      <scope>provided</scope>
-      <optional>true</optional>
+      <groupId>org.pustefixframework</groupId>
+      <artifactId>pustefix-live</artifactId>
+      <version>${project.version}</version>
     </dependency>
 
     <dependency>
-      <groupId>org.springframework.osgi</groupId>
-      <artifactId>org.springframework.osgi.extender</artifactId>
-      <version>1.2.0</version>
+      <groupId>xml-resolver</groupId>
+      <artifactId>xml-resolver</artifactId>
+      <version>1.1</version>
     </dependency>
     <dependency>
-      <groupId>org.springframework.osgi</groupId>
-      <artifactId>org.springframework.osgi.mock</artifactId>
-      <version>1.2.0</version>
-    </dependency>
-
-    <dependency>  
-      <groupId>org.apache.xml</groupId>
-      <artifactId>com.springsource.org.apache.xml.resolver</artifactId>  
-      <version>1.2.0</version>
-    </dependency>    
-    <dependency>
-      <groupId>commons-collections</groupId>
-      <artifactId>commons-collections</artifactId>
-      <version>3.2.1</version>
+      <groupId>oro</groupId>
+      <artifactId>oro</artifactId>
+      <version>2.0.7</version>
     </dependency>
     <dependency>
-      <groupId>org.apache.oro</groupId>
-      <artifactId>com.springsource.org.apache.oro</artifactId>  
-      <version>2.0.8</version> 
-    </dependency> 
-    <dependency>
-      <groupId>org.apache.log4j</groupId>
-      <artifactId>com.springsource.org.apache.log4j</artifactId>
-      <version>1.2.15</version>
+      <groupId>log4j</groupId>
+      <artifactId>log4j</artifactId>
+      <version>1.2.13</version>
     </dependency>
     <dependency>
-      <groupId>org.apache.commons</groupId>
-      <artifactId>com.springsource.org.apache.commons.logging</artifactId>  
-      <version>1.1.1</version>
+      <groupId>commons-logging</groupId>
+      <artifactId>commons-logging</artifactId>
+      <version>1.0.4</version>
     </dependency>
     <dependency>
       <groupId>com.marsching.flexiparse</groupId>
       <artifactId>flexiparse</artifactId>
-      <version>1.0.1</version>
+      <version>0.2.1</version>
     </dependency>
-    <dependency>  
-      <groupId>net.sourceforge.cglib</groupId>
-      <artifactId>com.springsource.net.sf.cglib</artifactId>
-      <version>2.1.3</version> 
+    <dependency>
+      <groupId>cglib</groupId>
+      <artifactId>cglib-nodep</artifactId>
+      <version>2.1_3</version>
     </dependency>
 
     <dependency>
       <groupId>org.springframework</groupId>
-      <artifactId>org.springframework.core</artifactId>
-      <version>2.5.6.A</version>
-    </dependency>
-    <dependency>
-       <groupId>org.springframework</groupId>
-       <artifactId>org.springframework.beans</artifactId>
-       <version>2.5.6.A	</version>
+      <artifactId>spring-context</artifactId>
+      <version>3.0.5.RELEASE</version>
     </dependency>
     <dependency>
       <groupId>org.springframework</groupId>
-      <artifactId>org.springframework.web</artifactId>
-      <version>2.5.6.A</version>
+      <artifactId>spring-webmvc</artifactId>
+      <version>3.0.5.RELEASE</version>
     </dependency>
     <dependency>
       <groupId>org.springframework</groupId>
-      <artifactId>org.springframework.web.servlet</artifactId>
-      <version>2.5.6.A</version>
-    </dependency>
-    <dependency>
-      <groupId>org.springframework</groupId>
-      <artifactId>org.springframework.test</artifactId>
-      <version>2.5.6.A</version>
-    </dependency>
-    <dependency>
-      <groupId>org.springframework</groupId>
-      <artifactId>org.springframework.context</artifactId>
-      <version>2.5.6.A</version>
-    </dependency>
-    <dependency>
-      <groupId>org.springframework</groupId>
-      <artifactId>org.springframework.context.support</artifactId>
-      <version>2.5.6.A</version>
+      <artifactId>spring-test</artifactId>
+      <version>3.0.5.RELEASE</version>
     </dependency>
 
-
     <dependency>
-      <groupId>edu.oswego.cs.concurrent</groupId>
-      <artifactId>com.springsource.edu.oswego.cs.dl.util.concurrent</artifactId>
-      <version>1.3.4</version> 
+      <groupId>concurrent</groupId>
+      <artifactId>concurrent</artifactId>
+      <version>1.3.4</version>
     </dependency>
 
     <dependency>
       <groupId>org.aspectj</groupId>
-      <artifactId>com.springsource.org.aspectj.weaver</artifactId>
-      <version>1.6.5.RELEASE</version> 
+      <artifactId>aspectjweaver</artifactId>
+      <version>1.6.2</version>
     </dependency>
     <dependency>
       <groupId>javax.mail</groupId>
-      <artifactId>com.springsource.javax.mail</artifactId>
+      <artifactId>mail</artifactId>
       <version>1.4.1</version>
     </dependency>
     
@@ -141,27 +134,29 @@
       <version>6.5.5</version>
     </dependency>
     <dependency>
-      <groupId>net.sf.saxon</groupId>
+      <groupId>net.sourceforge.saxon</groupId>
       <artifactId>saxon</artifactId>
-      <version>8.7</version>
-    </dependency>
-    <dependency>
-      <groupId>net.sf.saxon</groupId>
-      <artifactId>saxon-dom</artifactId>
-      <version>8.7</version>
+      <version>9.1.0.8</version>
+      <classifier>dom</classifier>
       <optional>true</optional>
     </dependency>
     <dependency>
-      <groupId>net.sf.saxon</groupId>
-      <artifactId>saxon-xpath</artifactId>
-      <version>8.7</version>
+      <groupId>net.sourceforge.saxon</groupId>
+      <artifactId>saxon</artifactId>
+      <version>9.1.0.8</version>
+      <classifier>xpath</classifier>
       <optional>true</optional>
     </dependency>
-    
     <dependency>
-      <groupId>org.apache.bsf</groupId>
-      <artifactId>com.springsource.org.apache.bsf</artifactId>
-      <version>2.4.0</version> 
+      <groupId>net.sourceforge.saxon</groupId>
+      <artifactId>saxon</artifactId>
+      <version>9.1.0.8</version>
+      <optional>true</optional>
+    </dependency>
+    <dependency>
+      <groupId>bsf</groupId>
+      <artifactId>bsf</artifactId>
+      <version>2.3.0</version>
     </dependency>
 
     <dependency>
@@ -170,6 +165,19 @@
       <version>2.4</version>
       <scope>provided</scope>
     </dependency>
+    <dependency>
+      <groupId>org.mortbay.jetty</groupId>
+      <artifactId>jetty</artifactId>
+      <version>6.1.25</version>
+      <scope>test</scope>
+    </dependency>
+    <dependency>
+      <groupId>commons-httpclient</groupId>
+      <artifactId>commons-httpclient</artifactId>
+      <version>3.1</version>
+      <scope>test</scope>
+    </dependency>
+    
   </dependencies>
  
   <build>
@@ -183,23 +191,6 @@
            <goals><goal>jar</goal></goals>
           </execution>
         </executions>
-      </plugin>
- 
-      <plugin>
-        <groupId>org.apache.felix</groupId>
-        <artifactId>maven-bundle-plugin</artifactId>
-        <extensions>true</extensions>
-        <configuration>
-          <instructions>
-            <Export-Package>de.schlund.pfixcore.oxm.impl.annotation,!*.internal,!*.impl,!*.internal.*,!*.impl.*,!.,org.pustefixframework.*,de.schlund.*</Export-Package>
-            <Embed-Dependency>saxon,saxon-dom,saxon-xpath</Embed-Dependency>
-            <Import-Package>!com.saxonica.validate,!com.sun.mirror.*,org.apache.log4j,!org.apache.log4j.*,*,net.sf.cglib.core,net.sf.cglib.proxy,net.sf.cglib.reflect</Import-Package>
-<!--
-            <Private-Package>org.pustefixframework.*</Private-Package>
-            <Bundle-Activator>org.pustefixframework.osgi.internal.Activator</Bundle-Activator>
--->
-          </instructions>
-        </configuration>
       </plugin>
  
       <plugin>
@@ -228,11 +219,11 @@
       <plugin>
         <groupId>org.pustefixframework.maven.plugins</groupId>
         <artifactId>pustefix-statuscode-plugin</artifactId>
-        <version>1.0.3-SNAPSHOT</version>
+        <version>0.18.1-SNAPSHOT</version>
         <executions>
           <execution>
             <configuration>
-              <module>org.pustefixframework.pustefix-core</module>
+              <module>pustefix-core</module>
               <docRoot>${basedir}/src/main/resources/PUSTEFIX-INF</docRoot>
               <includes><include>dyntxt/statuscodeinfo.xml</include></includes>
             </configuration>
@@ -243,6 +234,7 @@
           </execution>
         </executions>
       </plugin>
+      
     </plugins>
   </build>
 

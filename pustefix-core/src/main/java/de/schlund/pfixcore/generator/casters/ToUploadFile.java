@@ -30,6 +30,7 @@ import de.schlund.pfixxml.RequestParamType;
 import de.schlund.pfixxml.multipart.FileData;
 import de.schlund.pfixxml.multipart.UploadFile;
 import de.schlund.util.statuscodes.StatusCode;
+import de.schlund.util.statuscodes.StatusCodeHelper;
 
 
 public class ToUploadFile extends SimpleCheck implements IWrapperParamCaster {
@@ -41,8 +42,8 @@ public class ToUploadFile extends SimpleCheck implements IWrapperParamCaster {
         scode = CoreStatusCodes.CASTER_ERR_TO_UPLOADFILE;
     }
 
-    public void setScodeCastError(StatusCode scode) {
-        this.scode = scode;
+    public void setScodeCastError(String fqscode) {
+        scode = StatusCodeHelper.getStatusCodeByName(fqscode);
     }
 
     public Object[] getValue() {

@@ -37,7 +37,7 @@ public class IWrapperConfigImpl implements IWrapperConfig {
     private boolean dologging = false;
     private IHandler handler;
     private String scope = "singleton";
-    
+    private String tenant;
     
     /* (non-Javadoc)
      * @see de.schlund.pfixxml.config.IWrapperConfig#getPrefix()
@@ -98,4 +98,13 @@ public class IWrapperConfigImpl implements IWrapperConfig {
     public String getScope() {
         return this.scope;
     }
+    
+    public void setTenant(String tenant) {
+        this.tenant = tenant;
+    }
+    
+    public String getTenant() {
+        return tenant;
+    }
+    
 }

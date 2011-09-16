@@ -24,6 +24,7 @@ import java.util.TimerTask;
 import javax.servlet.http.HttpSession;
 
 import org.apache.log4j.Logger;
+import org.springframework.beans.factory.DisposableBean;
 
 import de.schlund.pfixxml.util.CacheValueLRU;
 
@@ -40,7 +41,7 @@ import de.schlund.pfixxml.util.CacheValueLRU;
  * @author <a href="mailto:jtl@schlund.de">Jens Lautenbacher</a>
  * @version $Id$
  */
-public class SessionCleaner {
+public class SessionCleaner implements DisposableBean {
 
     private        Timer          timer;
     private final static Logger   LOG      = Logger.getLogger(SessionCleaner.class);
@@ -174,6 +175,15 @@ public class SessionCleaner {
         } catch(IllegalStateException x) {
             resetTimer(t);
             getTimer().schedule(new SessionInvalidateTask(session), timeout * 1000);
+        }
+    }
+    
+    public void destroy() throws Exception {
+        synchronized(this) {
+            if(timer != null) {
+                timer.cancel();
+                timer = null;
+            }
         }
     }
     

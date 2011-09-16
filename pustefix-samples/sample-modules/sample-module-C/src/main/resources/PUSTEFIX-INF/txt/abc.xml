@@ -4,7 +4,7 @@
     <theme name="default">
       <div class="part_module">
         <h3>CCC - C</h3>
-        <partinfo part="partC" theme="default" path="txt/abc.xml" module="org.pustefixframework.samples.modules.sample-module-C"/>
+        <partinfo part="partC" theme="default" path="txt/abc.xml" module="sample-module-C"/>
       </div>
     </theme>
   </part>
@@ -13,7 +13,7 @@
     <theme name="default">
       <div class="part_module">
         <h3>CCC - BC</h3>
-        <partinfo part="partBC" theme="default" path="txt/abc.xml" module="org.pustefixframework.samples.modules.sample-module-C"/>
+        <partinfo part="partBC" theme="default" path="txt/abc.xml" module="sample-module-C"/>
       </div>
     </theme>
   </part>
@@ -22,7 +22,7 @@
     <theme name="default">
       <div class="part_module">
         <h3>CCC - ABC</h3>
-        <partinfo part="partABC" theme="default" path="txt/abc.xml" module="org.pustefixframework.samples.modules.sample-module-C"/>
+        <partinfo part="partABC" theme="default" path="txt/abc.xml" module="sample-module-C"/>
       </div>
     </theme>
   </part>

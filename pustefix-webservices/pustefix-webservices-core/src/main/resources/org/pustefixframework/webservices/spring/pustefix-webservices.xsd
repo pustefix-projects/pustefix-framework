@@ -6,35 +6,9 @@
     elementFormDefault="qualified"
     attributeFormDefault="unqualified">
 
-   <xsd:import namespace="http://www.springframework.org/schema/beans"/>
-
-   <xsd:element name="extension">
-      <xsd:complexType>
-         <xsd:sequence>
-            <xsd:element ref="extends" minOccurs="1" maxOccurs="unbounded"/>
-            <xsd:choice minOccurs="0" maxOccurs="unbounded">
-               <xsd:element ref="webservice"/>
-               <xsd:element ref="extension-point"/>
-            </xsd:choice>
-         </xsd:sequence> 
-         <xsd:attribute name="id" type="xsd:ID"/>
-      </xsd:complexType>
-   </xsd:element>
-
-   <xsd:element name="extends">
-      <xsd:complexType>
-         <xsd:attribute name="extension-point" type="xsd:string"/>
-         <xsd:attribute name="version" type="xsd:string"/>
-      </xsd:complexType>
-   </xsd:element>
-   
-   <xsd:element name="extension-point">
-      <xsd:complexType>
-         <xsd:attribute name="id" type="xsd:string"/>
-         <xsd:attribute name="version" type="xsd:string"/>
-         <xsd:attribute name="cardinality" type="xsd:string"/>
-      </xsd:complexType>
-   </xsd:element>
+   <xsd:import namespace="http://www.springframework.org/schema/beans"
+      schemaLocation="http://www.springframework.org/schema/beans/spring-beans.xsd"
+   />
 
    <xsd:element name="webservice">
       <xsd:complexType>

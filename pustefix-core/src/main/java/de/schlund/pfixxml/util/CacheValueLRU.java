@@ -35,7 +35,9 @@ import org.apache.log4j.Logger;
  */
 
 public class CacheValueLRU<K,V> implements Map<K, V> {
-    private static Logger LOG = Logger.getLogger(CacheValueLRU.class);
+    
+    private final static Logger LOG = Logger.getLogger(CacheValueLRU.class);
+    
     CacheValueLRUStack valuestack;
     HashMap<K, V> keytovalue;
     HashMap<V, HashSet<K>> valuetokeys;

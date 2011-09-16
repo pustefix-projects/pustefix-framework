@@ -18,8 +18,10 @@
 
 package org.pustefixframework.config.contextxmlservice.parser;
 
+import org.pustefixframework.config.contextxmlservice.parser.internal.PageRequestConfigImpl;
 import org.pustefixframework.config.contextxmlservice.parser.internal.ProcessActionPageRequestConfigImpl;
 import org.pustefixframework.config.contextxmlservice.parser.internal.ProcessActionStateConfigImpl;
+import org.pustefixframework.config.contextxmlservice.parser.internal.StateConfigImpl;
 import org.pustefixframework.config.generic.ParsingUtils;
 import org.w3c.dom.Element;
 
@@ -40,14 +42,20 @@ public class ProcessActionParsingHandler implements ParsingHandler {
         Element element = (Element)context.getNode();
         ParsingUtils.checkAttributes(element, new String[] {"name"}, new String[] {"pageflow", "jumptopage", "jumptopageflow", "forcestop"});
          
+        PageRequestConfigImpl pageConfig = ParsingUtils.getFirstTopObject(PageRequestConfigImpl.class, context, true);
         ProcessActionPageRequestConfigImpl actionConfig = new ProcessActionPageRequestConfigImpl();
         
+        StateConfigImpl stateConfig = ParsingUtils.getFirstTopObject(StateConfigImpl.class, context, false);
         ProcessActionStateConfigImpl actionStateConfig = null;
-        actionStateConfig = new ProcessActionStateConfigImpl();
+        if (stateConfig != null) {
+            actionStateConfig = new ProcessActionStateConfigImpl();
+        }
         
         String actionname = element.getAttribute("name").trim();
         actionConfig.setName(actionname);
-        actionStateConfig.setName(actionname);
+        if (actionStateConfig != null) {
+            actionStateConfig.setName(actionname);
+        }
         
         String pageflow = element.getAttribute("pageflow").trim();
         if (pageflow.length()>0) actionConfig.setPageflow(pageflow);
@@ -69,8 +77,13 @@ public class ProcessActionParsingHandler implements ParsingHandler {
         String jumptopageflow = element.getAttribute("jumptopageflow").trim();
         if (jumptopageflow.length()>0) actionConfig.setJumpToPageflow(jumptopageflow);
         
+        pageConfig.addProcessAction(actionname, actionConfig);
         context.getObjectTreeElement().addObject(actionConfig);
-        context.getObjectTreeElement().addObject(actionStateConfig);
+        
+        if (actionStateConfig != null) {
+            stateConfig.addProcessAction(actionname, actionStateConfig);
+            context.getObjectTreeElement().addObject(actionStateConfig);
+        }
     }
 
 }

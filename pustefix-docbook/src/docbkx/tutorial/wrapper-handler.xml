@@ -14,6 +14,12 @@
     <authorgroup>
       <author>
         <personname>
+          <firstname>Martin</firstname>
+          <surname>Leidig</surname>
+        </personname>
+      </author>
+      <author>
+        <personname>
           <firstname>Stephan</firstname>
           <surname>Schmidt</surname>
         </personname>
@@ -62,194 +68,21 @@
     <title>Setting up a new project</title>
     <para>
       Before you can start developing the application, make sure that your system
-      fulfills all requirements that are mentioned in <xref linkend="gettingstarted.requirements"/>
-      and that you have build your Pustefix installation at least once, so that all necessary
-      files have been extracted from the Pustefix distribution. More information on building
-      Pustefix can be found in <xref linkend="gettingstarted.firstbuild"/>
+      fulfills all requirements that are mentioned in <xref linkend="gettingstarted.requirements"/>.
     </para>
     <para>
       If your environment is set up correctly, you may create a new Pustefix project. For this
-      tutorial, please name the project <emphasis>first-app</emphasis>. A new Pustefix project
-      can be created using the <filename>newProject.sh</filename> script, which is part of the
-      Pustefix distribution. This script will guide you to the project creation and copy and
-      create all necessary files for you new project.
+      tutorial, please name the project <emphasis>firstapp</emphasis>. A new Pustefix project
+      can be created using a Maven archetype as described in <xref linkend="gettingstarted.mavensetup"/> 
+      and <xref linkend="gettingstarted.mavenarchetypes"/>.
+      The project name corresponds to the artifactId, so you should enter <emphasis>firstapp</emphasis> when
+      you're asked by Maven. You should further choose <emphasis>org.pustefixframework.tutorial</emphasis> as
+      groupId and <emphasis>org.pustefixframework.tutorial.firstapp</emphasis> as package name
+      (you can choose other names, but you will have to replace the recommended names wherever used in this tutorial).
     </para>
     <para>
-      Please move to your installation directory and start the script:
-    </para>
-    <screen continuation="continues"><![CDATA[$ ./newproject.sh
-**************************************************
-*                                                *
-*         Pustefix ProjectGenerator 1.0          *
-*                                                *
-**************************************************
-
-Please follow the instructions to create a new project.
-You can abort the process by pressing Ctrl + C.
-
-Please type in the projects name e.g. "myproject"]]></screen>
-    <para>
-      After the <filename>newProject.sh</filename> script has been started, you will be asked for a project name.
-      Please enter <literal>first-app</literal> at the prompt and press return. The name of the project will be used
-      for several things:
-    </para>
-    <itemizedlist>
-      <listitem><para>It will be used as the name for the folder that contains all project-relevant files inside the <filename>projects</filename> directory</para></listitem>
-      <listitem><para>It will also be used as the default sub-domain name for your project.</para></listitem>
-    </itemizedlist>
-    <para>
-      After you entered the project name and pressed return, the setup script will continue:
-    </para>
-    <screen continuation="continues"><![CDATA[Please type in the projects default language (it's english if you leave the field blank).]]></screen>
-    <para>
-      As your application will be in English, just leave the default language empty and press return.
-      Again, the setup script will continue after you pressed return.
-    </para>
-    <screen continuation="continues"><![CDATA[Please type in a comment for the Project
-It will be "projectname + comment" if you leave it blank.]]></screen>
-    <para>
-      Please enter <literal>My first Pustefix application</literal> as a comment for the project. This will not be visible
-      anywhere for the users of your application.
-    </para>
-    <screen continuation="continues"><![CDATA[Please type in a name for the servlet 1]]></screen>
-    <para>
-      Every Pustefix application at least needs one servlet to process the request. Please enter <literal>app</literal> and
-      press return to assign a name to the servlet. The setup script will then continue. 
-    </para>
-    <screen continuation="continues"><![CDATA[Servlet 1 has been added!
-
-Would you like to create another servlet? [yes] [no]]]></screen>
-    <para>
-      In your first example application, all requests will be processed by the same servlet. Enter <literal>no</literal> to inform
-      the setup script, that you do not want to add another servlet. New servlets can easily be added during the development of
-      your application.> 
-    </para>
-    <para>
-      Now you provided all necessary information and the setup script will create a new project based on
-      your input.
-    </para>
-    <screen continuation="continues"><![CDATA[Creating project in "/path/to/your/installation/projects/" starts now
-
-Creating project folder: first-app
-Folder has been created successfully
-
-Creating subfolder starts now
-Creating folder conf...
-Folder has been created successfully
-Creating folder img...
-Folder has been created successfully
-Creating folder xsl...
-Folder has been created successfully
-Creating folder xml...
-Folder has been created successfully
-Creating folder txt & subfolders
-Folder has been created successfully
-Creating folder htdocs...
-Folder has been created successfully
-
-Xml files editing starts now...
-
-Try to read the dom of the given Document: /path/to/your/installation/projects/core/prjtemplates/config.tmpl
-Transforming into dom has been successfull
-Changing the attribute depend
-Changing attribute has been successfull
-Changing the attribute name
-Changing attribute has been successfull
-Changing the attribute name
-Changing attribute has been successfull
-Changing the attribute name
-Changing attribute has been successfull
-Writing the file: app.conf.xml
-Writing file has been successfull
-
-Writing the file: app.conf.xml
-Writing file has been successfull
-
-Try to read the dom of the given Document: /path/to/your/installation/projects/core/prjtemplates/depend.tmpl
-Transforming into dom has been successfull
-Changing the attribute project
-Changing attribute has been successfull
-Changing the attribute lang
-Changing attribute has been successfull
-Changing the attribute handler
-Changing attribute has been successfull
-Changing the attribute stylesheet
-Changing attribute has been successfull
-Changing the attribute stylesheet
-Changing attribute has been successfull
-Changing the attribute xml
-Changing attribute has been successfull
-Writing the file: depend.xml
-Writing file has been successfull
-
-Try to read the dom of the given Document: /path/to/your/installation/projects/core/prjtemplates/frame.tmpl
-Transforming into dom has been successfull
-Changing the attribute href
-Changing attribute has been successfull
-Writing the file: frame.xml
-Writing file has been successfull
-
-Try to read the dom of the given Document: /path/to/your/installation/projects/core/prjtemplates/project.tmpl
-Transforming into dom has been successfull
-Changing the value of the tag depend
-Changing Textnode has been successfull
-
-Changing the attribute name
-Changing attribute has been successfull
-Changing the value of the tag comment
-Changing Textnode has been successfull
-
-Changing the value of the tag servername
-Changing Textnode has been successfull
-
-Changing the value of the tag serveralias
-Changing Textnode has been successfull
-
-Changing the value of the tag defpath
-Changing Textnode has been successfull
-
-Changing the value of the tag passthrough
-Changing Textnode has been successfull
-
-Changing the value of the tag documentroot
-Changing Textnode has been successfull
-
-Writing the file: project.xml.in
-Writing file has been successfull
-
-Try to read the dom of the given Document: /path/to/your/installation/projects/core/prjtemplates/skin.tmpl
-Transforming into dom has been successfull
-Writing the file: skin.xsl
-Writing file has been successfull
-
-Try to read the dom of the given Document: /path/to/your/installation/projects/core/prjtemplates/metatags.tmpl
-Transforming into dom has been successfull
-Writing the file: metatags.xsl
-Writing file has been successfull
-
-Try to read the dom of the given Document: /path/to/your/installation/projects/core/prjtemplates/page.tmpl
-Transforming into dom has been successfull
-Changing the value of the tag theme
-Changing Textnode has been successfull
-
-Writing the file: main_home1.xml
-Writing file has been successfull
-
-Writing the file: main_home1.xml
-Writing file has been successfull
-
-
-Your project has been successfully created.
-To see how it works type in "ant".
-Afterwards restart Apache httpd and Tomcat.
-Then type in "http://first-app.HOSTNAME.DOMAIN"]]></screen>
-    <para>
-      To complete the setup process, please re-run <command>ant</command>. Now Pustefix will automatically create
-      the Apache and Tomcat configuration for your new project. Please make sure, that you restart Apache and Tomcat,
-      after <command>ant</command> has finished its work.
-    </para>
-    <para>
-      After you restarted your web server, please open a web browser and open the URL <uri>http://first-app.HOSTNAME.DOMAIN</uri>.
+      After Maven successfully created the new project, you can start it using <literal>mvn tomcat:run</literal>
+      and open it in your browser under <uri>http://localhost:8080/firstapp</uri>.
       Figure <xref linkend="wrapper-handler.first-app"/> shows the output of the new Pustefix project.
     </para>
     <figure xml:id="wrapper-handler.first-app">
@@ -264,52 +97,64 @@ Then type in "http://first-app.HOSTNAME.DOMAIN"]]></screen>
   <section xml:id="wrapper-handler.structure">
     <title>Generated files</title>
     <para>
-      The <filename>newProject.sh</filename> generated a working application for you. All relevant files have been put
-      into <filename>projects/first-app</filename>. Please take a look at the most important folders in this new project
-      directory:
+      Maven generated a working application for you. All relevant files have been put
+      into the <filename>firstapp</filename> folder within your working directory. Please take a look at the most important folders:
     </para>
     <itemizedlist>
       <listitem>
         <para>
-          The <filename>conf</filename> folder contains all configuration files for your applications. These are:
+          The <filename>src/main/webapp/WEB-INF</filename> folder contains all configuration files for your applications. These are:
         </para>
         <itemizedlist>
           <listitem>
             <para>
-              <filename>project.xml</filename> contains the information the project, like the domain name where
-              the project can be accessed, the servlets available in the project and some Apache configuration options.
+              <filename>project.xml</filename> contains general project information, framework configuration, e.g. for the
+              rendering system, exception processing, path mappings for static resources, etc.
             </para>
           </listitem>
           <listitem>
             <para>
-              <filename>app.conf.xml</filename> contains the configuration of the <literal>app</literal> servlet that
-              you created using the setup script.
+              <filename>app.xml</filename> contains the configuration concerning the Java part of the application, e.g. pagerequests and assigned Java
+              framework classes
             </para>
           </listitem>
           <listitem>
             <para>
-              <filename>depend.xml</filename> contains the configuration of the pages and XSL stylesheets used in
+              <filename>depend.xml</filename> contains the configuration concerning the XML/XSLT part of the application, e.g. pages and XSL stylesheets used in
               your project.
+            </para>
+          </listitem>
+          <listitem>
+            <para>
+              <filename>web.xml</filename> contains servlet configuration and mappings.
+            </para>
+          </listitem>
+          <listitem>
+            <para>
+              <filename>spring.xml</filename> is empty by default and can be used to configure your Spring beans.
+            </para>
+          </listitem>
+          <listitem>
+            <para>
+              <filename>pfixlog.xml</filename> contains the log4j configuration.
             </para>
           </listitem>
         </itemizedlist>
       </listitem>
       <listitem>
+          <para>
+            The <filename>src/main/webapp</filename> folder also contains resource folders. These are:
+          </para>
+          <itemizedlist>
+      <listitem>
         <para>
-          The <filename>htdocs</filename> is empty and can be used to store any resource that should be available
-          via the web server. Possible resources are JavaScript or CSS files.
+          The <filename>css</filename> and <filename>img</filename> folders contain
+          CSS files and images which should be delivered as static resources.
         </para>
       </listitem>
       <listitem>
         <para>
-          The same applies to the <filename>img</filename> folder, which apparently is used to store image files.
-        </para>
-      </listitem>
-      <listitem>
-        <para>
-          The <filename>txt</filename> folder contains the text and HTML content of your application. After the
-          setup script has finished, it contains a <filename>pages</filename> folder which stores the different
-          pages of the application. 
+          The <filename>txt</filename> folder contains the web pages, i.e. the according XML content and fragments.
         </para>
       </listitem>
       <listitem>
@@ -321,9 +166,11 @@ Then type in "http://first-app.HOSTNAME.DOMAIN"]]></screen>
       </listitem>
       <listitem>
         <para>
-          The <filename>xsl</filename> folder contains XSL stylesheets that are only used in your application.
-          XSL stylesheets provided by Pustefix are not located inside this folder but in <filename>projects/core/xsl</filename>.
+          The <filename>xsl</filename> folder contains XSL stylesheets that are only used in your application
+          (not including XSL stylesheets provided by Pustefix itself).
         </para>
+      </listitem>
+      </itemizedlist>
       </listitem>
     </itemizedlist>
   </section>
@@ -334,7 +181,7 @@ Then type in "http://first-app.HOSTNAME.DOMAIN"]]></screen>
       <literal>EnterData</literal>, <literal>ReviewData</literal> and <literal>Confirm</literal>.
     </para>
     <para>
-      New pages are added by editing the <filename>conf/depend.xml</filename> file. For each page, you
+      New pages are added by editing the <filename>src/main/webapp/WEB-INF/depend.xml</filename> file. For each page, you
       have to add two XML tags: 
     </para>
     <itemizedlist>
@@ -353,36 +200,31 @@ Then type in "http://first-app.HOSTNAME.DOMAIN"]]></screen>
         </para>
       </listitem>
     </itemizedlist>
+    <para>
+      You can just remove or alter the according tags for the predefined pages. The new configuration should look like this:
+    </para>
     <programlisting language="xml"><![CDATA[<?xml version="1.0" encoding="utf-8"?>
-<make lang="en_GB" project="first-app">
-
-  <navigation>
-      <page handler="/xml/app" name="home1"/>
-      <page handler="/xml/app" name="EnterData"/>
-      <page handler="/xml/app" name="ReviewData"/>
-      <page handler="/xml/app" name="Confirm"/>
-  </navigation>
+<make lang="en_GB" project="firstapp">
 
   <!--
     Metatags have been left out.
   -->
   
-  <standardpage name="home1" xml="first-app/xml/frame.xml"/>
-  <standardpage name="EnterData" xml="first-app/xml/frame.xml"/>
-  <standardpage name="ReviewData" xml="first-app/xml/frame.xml"/>
-  <standardpage name="Confirm" xml="first-app/xml/frame.xml"/>
+  <standardpage name="EnterData" xml="xml/frame.xml"/>
+  <standardpage name="ReviewData" xml="xml/frame.xml"/>
+  <standardpage name="Confirm" xml="xml/frame.xml"/>
   
 </make>]]></programlisting>
     <para>
-      You can now open the <literal>EnterData</literal> page by browsing to <uri>http://first-app.HOSTNAME.DOMAIN/xml/app/EnterData</uri>.
+      You can now open the <literal>EnterData</literal> page by browsing to <uri>http://localhost:8080/firstapp/xml/app/EnterData</uri>.
     </para>
     <para>
       As you did not provide any content for this page, Pustefix will display an error icon. When hovering
-      over this icon, you can see, that the content of the page in the file <filename>first-app/txt/pages/main_EnterData.xml</filename>
+      over this icon, you can see, that the content of the page in the file <filename>txt/pages/EnterData.xml</filename>
       is missing.
     </para>
     <para>
-      This problem can easily be solved by adding this file:
+      This problem can easily be solved by adding the file <filename>src/main/webapp/txt/pages/EnterData.xml</filename>:
     </para>
     <programlisting language="xml"><![CDATA[<?xml version="1.0" encoding="utf-8"?>
 <include_parts xmlns:ixsl="http://www.w3.org/1999/XSL/Transform" xmlns:pfx="http://www.schlund.de/pustefix/core">
@@ -394,53 +236,56 @@ Then type in "http://first-app.HOSTNAME.DOMAIN"]]></screen>
  </include_parts>]]></programlisting>
     <para>
       If you reload the page, you will see the <literal>Register new user</literal> headline. Now repeat this 
-      step for all three pages.
+      step for all three pages (you can remove/alter the predefined pages which are no longer used).
     </para>
   </section>
   <section xml:id="wrapper-handler.entrypage">
     <title>Setting the entry page</title>
     <para>
       If you open the application in your browser without specifying the page directly, Pustefix will redirect
-      you to <filename>xml/app/home1</filename>, which is the default page generated by the setup script. Desired behaviour would
+      you to <filename>xml/app/Home</filename>, which is the default page generated by the Maven archetype (you will get
+      an error message, if you already removed the page in the previous step). Desired behaviour would
       be, that the <literal>EnterData</literal> page is displayed, when your application is started.
-      This can be changed in the servlet configuration in <filename>conf/app.conf.xml</filename>:
+      This can be changed in the configuration in <filename>src/main/webapp/WEB-INF/app.xml</filename>:
     </para>
     <programlisting language="xml"><![CDATA[<?xml version="1.0" encoding="utf-8"?>
-<context-xml-service-config xmlns="http://www.pustefix-framework.org/2008/namespace/context-xml-service-config" 
-      xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" version="1.0" 
-      xsi:schemaLocation="http://www.pustefix-framework.org/2008/namespace/context-xml-service-config 
-      ../../core/schema/context-xml-service-config.xsd">
+<context-xml-service-config>
   
   <global-config />
 
-  <context defaultpage="EnterData" />
+  <context defaultpage="EnterData">
+    ...
+  </context>
 
-  <pagerequest name="home1"/>
+  ...
 
 </context-xml-service-config>]]></programlisting>
     <para>
       The entry page is specified using the <literal>defaultpage</literal> attribute of the
       <literal>&lt;context/&gt;</literal> tag. After you set this attribute to <literal>EnterData</literal>
-      open the URL <uri>http://first-app.HOSTNAME.DOMAIN</uri> in your browser and you will be automatically
+      open the URL <uri>http://localhost:8080/firstapp</uri> in your browser and you will be automatically
       redirected to the page to register new users.
     </para>
     <para>
-      After you changed the entry page, you can get rid of the generated entry page by executing these steps:
+      After you changed the entry page, you can get completely rid of the generated/predefined pages by
+      following these steps (if not already done before):
     </para>
     <orderedlist>
       <listitem>
         <para>
-          Delete the file <filename>main_home1.xml</filename> from the <filename>first-app/txt/pages</filename> folder.
+          Delete the XML files for the predefined pages from the <filename>src/main/webapp/txt/pages</filename> folder.
         </para>
       </listitem>
       <listitem>
         <para>
-          Remove the <literal>&lt;pagerequest/&gt;></literal> tag from the <filename>app.conf.xml</filename> file.
+          Remove the <literal>&lt;pagerequest/&gt;</literal> and <literal>&lt;pageflow&gt;</literal> tags
+          for the predefined pages from the <filename>src/main/webapp/WEB-INF/app.xml</filename> file.
         </para>
       </listitem>
       <listitem>
         <para>
-          Remove the <literal>&lt;page/&gt;></literal> and <literal>&lt;standardpage/&gt;></literal> tags from the <filename>depend.xml</filename> file.
+          Remove the <literal>&lt;page/&gt;</literal> and <literal>&lt;standardpage/&gt;</literal> tags for the
+          predefined pages from the <filename>src/main/webapp/WEB-INF/depend.xml</filename> file.
         </para>
       </listitem>
     </orderedlist>
@@ -542,12 +387,12 @@ Then type in "http://first-app.HOSTNAME.DOMAIN"]]></screen>
       <title>Implementing a wrapper</title>
       <para>
         When implementing the business logic you will always start by implementing a wrapper.
-        Wrappers in Pustefix are implemented using XML, which will then be used to generate a Java class for the
-        wrapper.
+        Wrappers in Pustefix usually are implemented using XML, which will then be used to generate a Java class for the
+        wrapper. Alternatively Wrappers can be defined using annotated Java beans (see the reference documentation). 
       </para>
       <para>
         Before you can implement a new wrapper, you will have to create a new Java package <literal>org.pustefixframework.tutorial.firstapp.wrapper</literal>
-        which will then contain the new wrapper. After the package has been created, create a new <filename>EnterUserDataWrapper.iwrp</filename> file for the wrapper
+        which will then contain the new wrapper (if you started with the Maven archetype, the package should already exist). After the package has been created, create a new <filename>EnterUserDataWrapper.iwrp</filename> file for the wrapper
         and paste the following content into this new file:
       </para>
       <programlisting language="xml"><![CDATA[<interface xmlns="http://www.pustefix-framework.org/2008/namespace/iwrapper"
@@ -600,60 +445,51 @@ Then type in "http://first-app.HOSTNAME.DOMAIN"]]></screen>
         </listitem>
       </orderedlist>
       <para>
-        After you created the <literal>iwrp</literal> definition, please run <command>ant generate-src</command> to
+        After you created the <literal>iwrp</literal> definition, please run <command>mvn generate-sources</command> to
         generate the Java class for this wrapper:
       </para>
-      <screen continuation="restarts"><![CDATA[$ ant generate-src
-Buildfile: build.xml
-
-init-dirs:
-    [mkdir] Created dir: /home/schst/workspace/pfixtutorial/build
-    [mkdir] Created dir: /home/schst/workspace/pfixtutorial/gensrc
-
-tomcat.dir.opt:
-
-tomcat.dir.missing:
-
-ant-tasks-stage1:
-
-ant-tasks-stage2:
-
-ant-tasks:
-
-skel.pre-compile:
-
-pre-compile:
-     [echo] Extend the pre-compile target with your own definitions here...
-
-generate-src:
- [pfx-iwrp] Transformed 1 of 1 file, 0 have been up to date
-
-BUILD SUCCESSFUL
-Total time: 3 seconds]]></screen>
+      <screen continuation="restarts"><![CDATA[$ mvn generate-sources
+[INFO] Scanning for projects...
+[INFO] ------------------------------------------------------------------------
+[INFO] Building Pustefix Basic Application
+[INFO]    task-segment: [generate-sources]
+[INFO] ------------------------------------------------------------------------
+...
+[INFO] [pustefix-iwrapper:generate {execution: default}]
+[INFO] Generated 1 IWrapper class
+[INFO] ------------------------------------------------------------------------
+[INFO] BUILD SUCCESSFUL
+[INFO] ------------------------------------------------------------------------
+...
+]]></screen>
       <para>
-        After <literal>ant</literal> has finished the build, you will find a new class
+        After <literal>Maven</literal> has finished the build, you will find a new class
         <literal>org.pustefixframework.tutorial.firstapp.wrapper.EnterUserDataWrapper</literal> in the
-        <filename>gensrc</filename> folder of your installation.
+        <filename>target/generated-sources/iwrapper</filename> folder of your installation.
         This file contains all information needed to extract the parameters from the request.
+      </para>
+      <para>
+        If you refresh your IDE or compile you will get an error because the generated class references an IHandler
+        class which doesn't exist and will be created later in this tutorial.
       </para>
       <section xml:id="wrapper-handler.business-logic.wrapper.conf">
         <title>Assigning the wrapper to the page</title>
         <para>
           Now that you have implemented the HTML page and the wrapper you have to connect the HTML form with
-          the wrapper. This is done using the <filename>app.conf.xml</filename> servlet configuration. If a page
+          the wrapper. This is done using the <filename>app.xml</filename> servlet configuration. If a page
           contains business logic that must be executed, you have to add a <literal>&lt;pagerequest/&gt;</literal>
           tag to the servlet configuration.
         </para>
         <para>
          Place an <literal>&lt;input/&gt;</literal> tag inside the <literal>&lt;pagerequest/&gt;</literal> tag which
          will act as a container for all wrappers on this page.
-         Each wrapper is registered using an <literal>&lt;interface/&gt;</literal> tag which requires two parameters
+         Each wrapper is registered using an <literal>&lt;wrapper/&gt;</literal> tag which requires two parameters
          to be set:
         </para>
         <orderedlist>
           <listitem>
             <para>
-              <literal>class</literal> specifies the clasname of the wrapper.
+              <literal>class</literal> specifies the classname of the wrapper.
             </para>
           </listitem>
           <listitem>
@@ -670,10 +506,7 @@ Total time: 3 seconds]]></screen>
           To add your new wrapper to the <literal>EnterData</literal> page, add these lines to the configuration:
         </para>
         <programlisting language="xml"><![CDATA[<?xml version="1.0" encoding="utf-8"?>
-  <context-xml-service-config xmlns="http://www.pustefix-framework.org/2008/namespace/context-xml-service-config" 
-        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" version="1.0" 
-        xsi:schemaLocation="http://www.pustefix-framework.org/2008/namespace/context-xml-service-config 
-        ../../core/schema/context-xml-service-config.xsd">
+  <context-xml-service-config>
   
   <!-- ... -->
 
@@ -685,13 +518,8 @@ Total time: 3 seconds]]></screen>
 
 </context-xml-service-config>]]></programlisting>
         <para>
-          If you now try to open the page again, Pustefix will respond with an <literal>IllegalStateException</literal>
-          and the following message:
-        </para>
-        <screen>unable to find class [org.pustefixframework.tutorial.firstapp.handler.EnterUserDataHandler] 
-          :org.pustefixframework.tutorial.firstapp.handler.EnterUserDataHandler</screen>
-        <para>
-          This already tells you, that implementing the handler must be your next step. But before you can go on and
+          The next step will be implementing a handler processing the wrapped data.
+          But before you can go on and
           implement the handler, there is a small task left. Up to now, you do not have a Java type that is able to
           store the data for a user. This will be done in your next step.
         </para>          
@@ -820,7 +648,7 @@ public class EnterUserDataHandler implements IHandler {
     }
 }]]></programlisting>
       <para>
-        If you now open the page again, you still get an error, that the page is still not accessible. This is because of the
+        If you now (re-)start your application and open the page again, you still get an error, that the page is still not accessible. This is because of the
         return values of the generated methods and how Pustefix processes a request.
       </para>
       <itemizedlist>
@@ -862,7 +690,7 @@ public class EnterUserDataHandler implements IHandler {
 
 }]]></programlisting>
       <para>
-        If you now open the page again, all form fields will be displayed. To test your form, fill out at least the mandatory fields:
+        If you now restart the application and open the page again, all form fields will be displayed. To test your form, fill out at least the mandatory fields:
       </para>
       <itemizedlist>
         <listitem>
@@ -1002,7 +830,7 @@ public class ContextUserImpl implements ContextUser {
       </para>
       <para>
         To make this context resource available in your application, you have to register it in the servlet configuration
-        file <filename>app.conf.xml</filename>: 
+        file <filename>app.xml</filename>: 
       </para>
       <programlisting language="xml"><![CDATA[<?xml version="1.0" encoding="utf-8"?>
 <context-xml-service-config xmlns="http://www.pustefix-framework.org/2008/namespace/context-xml-service-config" 
@@ -1242,7 +1070,7 @@ public class ContextUserImpl implements ContextUser {
 }]]></programlisting>
     <para>
       Now that the context resource is able to render its state to the XML document, you have to tell Pustefix, on which pages, the context
-      resource should be rendered. Again, this is done in the servlet configuration file <filename>app.conf.xml</filename>. This time, you will
+      resource should be rendered. Again, this is done in the servlet configuration file <filename>app.xml</filename>. This time, you will
       have to add an <literal>&lt;output/&gt;</literal> tag to the page and nest <literal>&lt;resource/&gt;</literal> tags for each
       context resource, that should be rendered on this page.
     </para>
@@ -1346,9 +1174,9 @@ public class ContextUserImpl implements ContextUser {
       contain any input fields, the new wrapper does not need any parameters:
     </para>
     <programlisting language="xml"><![CDATA[<interface xmlns="http://www.pustefix-framework.org/2008/namespace/iwrapper"
-           xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-           xsi:schemaLocation="http://www.pustefix-framework.org/2008/namespace/iwrapper 
-                               http://www.pustefix-framework.org/2008/namespace/iwrapper.xsd">
+      xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+      xsi:schemaLocation="http://www.pustefix-framework.org/2008/namespace/iwrapper 
+                          http://www.pustefix-framework.org/2008/namespace/iwrapper.xsd">
   
   <!-- This handler will process the data -->
   <ihandler class="org.pustefixframework.tutorial.firstapp.handler.SaveUserDataHandler"/>

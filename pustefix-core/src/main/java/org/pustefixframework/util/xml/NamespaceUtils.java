@@ -1,72 +1,69 @@
 package org.pustefixframework.util.xml;
 
-import java.io.IOException;
+import java.io.ByteArrayInputStream;
+import java.io.ByteArrayOutputStream;
 import java.io.InputStream;
 
-import javax.xml.parsers.ParserConfigurationException;
-import javax.xml.parsers.SAXParser;
-import javax.xml.parsers.SAXParserFactory;
+import javax.xml.parsers.DocumentBuilderFactory;
+import javax.xml.transform.Source;
+import javax.xml.transform.Templates;
+import javax.xml.transform.Transformer;
+import javax.xml.transform.TransformerException;
+import javax.xml.transform.TransformerFactory;
+import javax.xml.transform.dom.DOMSource;
+import javax.xml.transform.stream.StreamResult;
+import javax.xml.transform.stream.StreamSource;
 
-import org.xml.sax.Attributes;
-import org.xml.sax.ContentHandler;
-import org.xml.sax.InputSource;
-import org.xml.sax.Locator;
-import org.xml.sax.SAXException;
-import org.xml.sax.XMLReader;
+import org.w3c.dom.Document;
 
+/**
+ * Utitliy methods for XML namespace handling
+ * 
+ * @author mleidig@schlund.de
+ *
+ */
 public class NamespaceUtils {
 
-    public static String getNamespace(InputStream in) throws IOException, SAXException {
-        SAXParserFactory parserFactory = SAXParserFactory.newInstance();
-        parserFactory.setValidating(false);
-        parserFactory.setNamespaceAware(true);
-        SAXParser parser;
+    private static Templates setNamespaceTemplates;
+   
+    /**
+     * Set the default namespace of a document.
+     * 
+     * @param doc - the original document
+     * @param namespace - the default namespace URI
+     * @param schema - an optional schema hint/location for the default namespace
+     * @return new namespace-aware document
+     * @throws TransformerException
+     */
+    public static Document setNamespace(Document doc, String namespace, String schema) throws TransformerException {
+        Templates templates = getSetNamespacesTemplates();
+        Transformer transformer = templates.newTransformer();
+        if(namespace != null) transformer.setParameter("namespace", namespace);
+        if(schema != null) transformer.setParameter("schema", schema);
+       
+        Source src = new DOMSource(doc);
+        ByteArrayOutputStream out = new ByteArrayOutputStream();
+        //Don't use DOMResult because namespace declaration gets lost
+        StreamResult res = new StreamResult(out);
+        transformer.transform(src, res);
+        ByteArrayInputStream in = new ByteArrayInputStream(out.toByteArray());
         try {
-            parser = parserFactory.newSAXParser();
-        } catch (ParserConfigurationException e) {
-            throw new RuntimeException("Can't get SAX parser", e);
+            DocumentBuilderFactory dbf = DocumentBuilderFactory.newInstance();
+            dbf.setNamespaceAware(true);
+            return dbf.newDocumentBuilder().parse(in);
+        } catch(Exception x) {
+            throw new TransformerException("Can't create new document", x);
         }
-        XMLReader reader = parser.getXMLReader();
-        StopContentHandler contentHandler = new StopContentHandler();
-        reader.setContentHandler(contentHandler);
-        InputSource src = new InputSource(in);
-        try {
-            reader.parse(src);
-        } catch(StopException x) {}
-        in.close();
-        return contentHandler.getNamespace();
     }
     
-    private static class StopContentHandler implements ContentHandler {
-
-        private String namespace;
-        
-        public String getNamespace() {
-            return namespace;
+    private static synchronized Templates getSetNamespacesTemplates() throws TransformerException {
+        if(setNamespaceTemplates == null) {
+            TransformerFactory tf = TransformerFactory.newInstance();
+            InputStream in = NamespaceUtils.class.getResourceAsStream("set-namespace.xsl");
+            Source src = new StreamSource(in);
+            setNamespaceTemplates = tf.newTemplates(src);
         }
-        
-        public void characters(char[] ch, int start, int length) throws SAXException {}
-        public void endDocument() throws SAXException {}
-        public void endElement(String uri, String localName, String qName) throws SAXException {}
-        public void endPrefixMapping(String prefix) throws SAXException {}
-        public void ignorableWhitespace(char[] ch, int start, int length) throws SAXException {}
-        public void processingInstruction(String target, String data) throws SAXException {}
-        public void setDocumentLocator(Locator locator) {}
-        public void skippedEntity(String name) throws SAXException {}
-        public void startDocument() throws SAXException {}
-        public void startPrefixMapping(String prefix, String uri) throws SAXException {}
-        
-        public void startElement(String uri, String localName, String qName, Attributes atts) throws SAXException {
-            namespace = uri;
-            throw new StopException();
-        }
-        
-    }
-    
-    private static class StopException extends RuntimeException {
-
-        private static final long serialVersionUID = 2009602618486377774L;        
-        
+        return setNamespaceTemplates;
     }
     
 }

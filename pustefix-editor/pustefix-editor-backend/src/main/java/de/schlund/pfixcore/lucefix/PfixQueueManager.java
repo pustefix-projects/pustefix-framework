@@ -44,7 +44,7 @@ import de.schlund.pfixxml.config.GlobalConfig;
  * @author schuppi
  * @date Jun 24, 2005
  */
-public class PfixQueueManager implements Runnable {
+public class PfixQueueManager extends Thread {
 
     private static PfixQueueManager _instance = null;
     private final static Logger LOG = Logger.getLogger((PfixQueueManager.class));
@@ -65,7 +65,7 @@ public class PfixQueueManager implements Runnable {
      * @throws XMLException
      */
     public PfixQueueManager(Integer idletime) {
-
+        super("lucefix-queue");
         waitms = idletime;
         lucene_data_path = (new File(GlobalConfig.getDocroot(), ".index")).getAbsolutePath();
 
@@ -80,7 +80,7 @@ public class PfixQueueManager implements Runnable {
         long startLoop, stopLoop;
         int added, updated, removed, size;
         cache = new DocumentCache();
-        while (true) {
+        while (!isInterrupted()) {
                 startLoop = System.currentTimeMillis();
                 added = updated = removed = size = 0;
                 queueloop: while ((current = queue.poll()) != null) {
@@ -206,7 +206,9 @@ public class PfixQueueManager implements Runnable {
 //            }
             try {
                 Thread.sleep(waitms);
-            } catch (InterruptedException e) {}
+            } catch (InterruptedException e) {
+                interrupt();
+            }
         }
     }
 

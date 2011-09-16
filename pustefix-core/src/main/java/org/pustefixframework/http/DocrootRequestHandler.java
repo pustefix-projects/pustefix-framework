@@ -22,338 +22,238 @@ import java.io.BufferedOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
-import java.net.URI;
-import java.net.URISyntaxException;
-import java.net.URLConnection;
-import java.net.URLEncoder;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 import javax.servlet.ServletContext;
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
-import org.pustefixframework.config.application.parser.internal.StaticResourceExtensionPointImpl;
+import org.apache.log4j.Logger;
 import org.pustefixframework.container.spring.http.UriProvidingHttpRequestHandler;
-import org.pustefixframework.extension.StaticResourceExtension;
-import org.pustefixframework.resource.InputStreamResource;
-import org.pustefixframework.resource.LastModifiedInfoResource;
-import org.pustefixframework.resource.Resource;
-import org.pustefixframework.resource.ResourceLoader;
-import org.pustefixframework.resource.URLResource;
+import org.springframework.beans.factory.InitializingBean;
 import org.springframework.web.context.ServletContextAware;
-import org.springframework.web.servlet.mvc.LastModified;
 
+import de.schlund.pfixxml.resources.FileResource;
+import de.schlund.pfixxml.resources.Resource;
+import de.schlund.pfixxml.resources.ResourceUtil;
 import de.schlund.pfixxml.util.MD5Utils;
 
 /**
- * Request handler serving static files.   
+ * This servlet serves the static files from the docroot.   
  * 
  * @author Sebastian Marsching <sebastian.marsching@1und1.de>
  */
-public class DocrootRequestHandler implements UriProvidingHttpRequestHandler, LastModified, ServletContextAware {
+public class DocrootRequestHandler implements UriProvidingHttpRequestHandler, ServletContextAware, InitializingBean {
+    
+    private Logger LOG = Logger.getLogger(DocrootRequestHandler.class);
+    
+    private String base;
 
-    private final Log logger = LogFactory.getLog(this.getClass());
-
-    private final static URI APPLICATION_URI_PREFIX = URI.create("bundle:///PUSTEFIX-INF/");
-
-    private final static URI CORE_URI_PREFIX = URI.create("pustefixcore:///");
-
-    private ResourceLoader resourceLoader;
-
-    private List<String> applicationPathPrefixes;
-
-    private List<StaticResourceExtensionPointImpl> extensionPoints;
-
-    private String defaultPath;
-
-    private URI baseURI;
-
+    private String defaultpath = "/";
+    
+    private List<String> passthroughPaths;
+    
     private ServletContext servletContext;
 
-    public String[] getRegisteredURIs() {
-        return new String[] { "/**" };
-    }
-
-    public void handleRequest(HttpServletRequest req, HttpServletResponse res) throws ServletException, IOException {
-        // Handle redirect from root
-        if (this.defaultPath != null && (req.getPathInfo() == null || req.getPathInfo().length() == 0 || req.getPathInfo().equals("/"))) {
-            res.sendRedirect(req.getContextPath() + this.defaultPath);
-            return;
-        }
-
-        InputStreamResource resource = findResource(req, res);
-        if (resource == null) {
-            return;
-        }
-        sendResource(resource, req, res);
-    }
-
-    private InputStreamResource findResource(HttpServletRequest req, HttpServletResponse res) throws IOException {
-        String path = req.getPathInfo().trim();
-
-        if (path == null || path.endsWith("/")) {
-            if (res != null) {
-                res.sendError(HttpServletResponse.SC_FORBIDDEN, "Directory listing not allowed.");
-            }
-            return null;
-        }
-
-        if (path.contains("../")) {
-            if (res != null) {
-                res.sendError(HttpServletResponse.SC_FORBIDDEN, "Detected possible directory traversal.");
-            }
-            return null;
-        }
-
-        // Make sure path does not start with a slash
-        while (path.length() > 0 && path.charAt(0) == '/') {
-            path = path.substring(1);
-        }
-
-        path = path.trim();
-        if (path.length() == 0) {
-            if (res != null) {
-                res.sendError(HttpServletResponse.SC_FORBIDDEN, "Directory listing not allowed.");
-            }
-            return null;
-        }
-
-        // Create relative URI
-        URI pathURI;
-        try {
-            // The URI constructors assemble a string that is then parsed.
-            // Therefore a scheme in the path part will be interpreted as a 
-            // scheme if no explicit scheme is given.
-            // To avoid the construction of an absolute URI, we use the single 
-            // argument constructor here, but encode the string.
-            pathURI = new URI(URLEncoder.encode(path, "UTF-8"));
-        } catch (URISyntaxException e) {
-            if (res != null) {
-                res.sendError(HttpServletResponse.SC_BAD_REQUEST, "Invalid path.");
-            }
-            return null;
-        }
-
-        // Found resource (initially null)
-        InputStreamResource resource = null;
-
-        // Search application's configured static paths for resource
-        if (applicationPathPrefixes != null) {
-            if (isMatchingPrefix(path, applicationPathPrefixes)) {
-                // Path is starting with an allowed prefix, so try to find resource
-                // in application bundle.
-                URI resourceURI = APPLICATION_URI_PREFIX.resolve(pathURI);
-                resource = loadInputStreamResource(resourceURI);
-            }
-        }
-
-        if (resource != null) {
-            return resource;
-        }
-
-        // Search special paths from Pustefix Core
-        if (path.startsWith("core/img/") || path.startsWith("core/script/")) {
-            URI relativeURI;
-            try {
-                relativeURI = new URI(null, null, path.substring(5), null);
-            } catch (URISyntaxException e) {
-                if (res != null) {
-                    res.sendError(HttpServletResponse.SC_BAD_REQUEST, "Invalid path.");
-                }
-                return null;
-            }
-            URI resourceURI = CORE_URI_PREFIX.resolve(relativeURI);
-            resource = loadInputStreamResource(resourceURI);
-        }
-
-        if (resource != null) {
-            return resource;
-        }
-
-        for (StaticResourceExtensionPointImpl extensionPoint : extensionPoints) {
-            for (StaticResourceExtension extension : extensionPoint.getExtensions()) {
-                resource = extension.getResource(pathURI);
-                if (resource != null) {
-                    return resource;
-                }
-            }
-        }
-
-        // Search base path
-        if (baseURI != null) {
-            resource = loadInputStreamResource(baseURI.resolve(pathURI));
-        }
-
-        if (resource == null && res != null) {
-            res.sendError(HttpServletResponse.SC_NOT_FOUND, "Resource " + pathURI.toASCIIString() + " not found.");
-        }
-
-        return resource;
-    }
-
-    private void sendResource(InputStreamResource resource, HttpServletRequest req, HttpServletResponse res) throws IOException {
-        URLResource urlResource = null;
-        URLConnection urlConnection = null;
-        
-        try {
-        
-        if (resource instanceof URLResource) {
-            urlResource = (URLResource) resource;
-            urlConnection = urlResource.getURL().openConnection();
-        }
-            
-        String resourceETag;
-        if (urlResource != null) {
-            // If we have an URL resource, we use a simplified
-            // method for calculating the ETag, as this method
-            // does not require reading the whole file.
-            StringBuilder sb = new StringBuilder();
-            sb.append(urlResource.getURL().toExternalForm());
-            sb.append(";");
-            sb.append(urlConnection.getContentLength());
-            sb.append(";");
-            urlConnection.getContentType();
-            sb.append(";");
-            sb.append(urlConnection.getLastModified());
-            resourceETag = MD5Utils.hex_md5(sb.toString());
-        } else {
-            InputStream is = resource.getInputStream();
-            resourceETag = MD5Utils.hex_md5(is);
-            is.close();
-        }
-
-        String reqETag = req.getHeader("If-None-Match");
-        if (reqETag != null) {
-            if (resourceETag.equals(reqETag)) {
-                res.setStatus(HttpServletResponse.SC_NOT_MODIFIED);
-                res.flushBuffer();
-                logger.debug("ETag didn't change -> send 'not modified' for resource: " + resource);
-                return;
-            }
-        }
-
-        String mimeType = null;
-
-        if (urlResource != null) {
-            mimeType = urlConnection.getContentType();
-        }
-
-        if (mimeType == null || mimeType.equals("content/unknown")) {
-            mimeType = servletContext.getMimeType(req.getPathInfo());
-        }
-
-        if (mimeType == null) {
-            mimeType = "application/octet-stream";
-        }
-
-        res.setContentType(mimeType);
-
-        if (urlResource != null) {
-            int contentLength = urlConnection.getContentLength();
-            if (contentLength > -1) {
-                res.setContentLength(contentLength);
-            }
-        }
-
-        res.setHeader("ETag", resourceETag);
-
-        res.setHeader("Cache-Control", "max-age=3600");
-
-        OutputStream out = new BufferedOutputStream(res.getOutputStream());
-
-        InputStream is = resource.getInputStream();
-        int bytes_read;
-        byte[] buffer = new byte[1024];
-        while ((bytes_read = is.read(buffer)) != -1) {
-            out.write(buffer, 0, bytes_read);
-        }
-        out.flush();
-        is.close();
-        out.close();
-        
-        } finally {
-            //Workaround for bad FileURLConnection behaviour:
-            //calling getLastModified, etc. opens InputStream which isn't closed
-            //automatically and can cause an open file descriptor leak
-            if(urlResource != null) {
-                if("file".equals(urlResource.getURL().getProtocol())) {
-                    if(urlConnection != null) {
-                        urlConnection.getInputStream().close();
-                    }
-                }
-            }
-        }
-    }
-
-    private InputStreamResource loadInputStreamResource(URI resourceURI) {
-        Resource resource = resourceLoader.getResource(resourceURI);
-        if (resource instanceof InputStreamResource) {
-            return (InputStreamResource) resource;
-        } else {
-            return null;
-        }
-    }
-
-    private boolean isMatchingPrefix(String str, List<String> prefixes) {
-        for (String prefix : prefixes) {
-            if (prefix.startsWith("/")) {
-                prefix = prefix.substring(1);
-            }
-            if (!prefix.endsWith("/")) {
-                prefix = prefix + "/";
-            }
-            if (str.startsWith(prefix)) {
-                return true;
-            }
-        }
-        return false;
-    }
-
-    public long getLastModified(HttpServletRequest request) {
-        InputStreamResource resource;
-        try {
-            resource = findResource(request, null);
-        } catch (IOException e) {
-            return -1;
-        }
-        if (resource == null) {
-            return -1;
-        }
-        if (resource instanceof LastModifiedInfoResource) {
-            LastModifiedInfoResource lastModifiedInfoResource = (LastModifiedInfoResource) resource;
-            return lastModifiedInfoResource.lastModified();
-        } else {
-            return -1;
-        }
-    }
-
-    public void setDefaultPath(String defaultPath) {
-        this.defaultPath = defaultPath;
-    }
-
-    public void setApplicationPathPrefixes(List<String> applicationPathPrefixes) {
-        this.applicationPathPrefixes = applicationPathPrefixes;
-    }
-
-    public void setBase(String path) {
-        if (!path.endsWith("/")) {
-            path = path + "/";
-        }
-        this.baseURI = URI.create(path);
-    }
-
-    public void setStaticResourceExtensionPoints(List<StaticResourceExtensionPointImpl> extensionPoints) {
-        this.extensionPoints = extensionPoints;
-    }
-
-    public void setResourceLoader(ResourceLoader resourceLoader) {
-        this.resourceLoader = resourceLoader;
+    private String mode;
+    
+    private Set<String> extractedPaths = new HashSet<String>();
+    
+    public ServletContext getServletContext() {
+        return servletContext;
     }
 
     public void setServletContext(ServletContext servletContext) {
         this.servletContext = servletContext;
     }
+
+    public void setDefaultPath(String defaultpath) {
+        this.defaultpath = defaultpath;
+    }
+
+    public void setPassthroughPaths(List<String> passthroughPaths) {
+        this.passthroughPaths = passthroughPaths;
+    }
+    
+    public void setBase(String path) {
+        this.base = path;
+    }
+    
+    public void setMode(String mode) {
+        this.mode = mode;
+    }
+
+    public void handleRequest(HttpServletRequest req, HttpServletResponse res)
+            throws ServletException, IOException {
+        
+        String path = req.getPathInfo();
+        
+        // Handle default (root) request
+        if(path == null || path.length() == 0 || (path.equals("/") && !defaultpath.equals("/"))) {
+            StringBuilder sb = new StringBuilder();
+            sb.append(req.getScheme()).append("://").append(getServerName(req));
+            if(!(req.getServerPort() == 80 || req.getServerPort() == 443)) sb.append(":" + req.getServerPort());
+            sb.append(req.getContextPath()).append(defaultpath);
+            if(req.getQueryString() != null && !req.getQueryString().equals("")) sb.append("?" + req.getQueryString());
+            res.sendRedirect(sb.toString());
+            return;
+        }
+
+        // Avoid path traversal and access to config or source files
+        if (path.contains("..") || path.startsWith("/WEB-INF")) {
+            res.sendError(HttpServletResponse.SC_NOT_FOUND, path);
+            return;
+        }
+
+        // Directory listing is not allowed
+        if (path.endsWith("/")) {
+            res.sendError(HttpServletResponse.SC_FORBIDDEN, path);
+            return;
+        }
+
+        Resource inputResource = null;
+        if (path.startsWith("/")) {
+            path = path.substring(1);
+        }
+        if (passthroughPaths != null) {
+            for (String prefix : this.passthroughPaths) {
+                if (path.startsWith(prefix)) {
+                    Resource resource = null;
+                    if(path.startsWith("modules/") && !extractedPaths.contains(prefix)) {
+                        String moduleUri = "module://" + path.substring(8);
+                        resource = ResourceUtil.getResource(moduleUri);
+                    } else {
+                        resource = ResourceUtil.getFileResourceFromDocroot(path);
+                    }
+                    if(resource.exists()) {
+                        inputResource = resource;
+                        break;
+                    }
+                }
+            }
+            if (inputResource == null) {
+                FileResource baseResource = ResourceUtil.getFileResource(base);
+                FileResource resource = ResourceUtil.getFileResource(baseResource, path);
+                if(resource.exists()) {
+                    inputResource = resource;
+                }
+            }
+        }
+        
+        if(inputResource == null) {
+            res.sendError(HttpServletResponse.SC_NOT_FOUND, path);
+            if(LOG.isDebugEnabled()) {
+                LOG.debug("Resource doesn't exist -> send 'not found': " + path);
+            }
+            return;
+        }
+        
+        if(!inputResource.isFile()) {
+            res.sendError(HttpServletResponse.SC_FORBIDDEN, path);
+            if(LOG.isDebugEnabled()) {
+                LOG.debug("Resource isn't a normal file -> send 'forbidden': " + path);
+            }
+            return;
+        }
+        
+        long contentLength = inputResource.length();
+        long lastModified = inputResource.lastModified();
+            
+        String reqETag = req.getHeader("If-None-Match");
+        if(reqETag != null) {
+            String etag = createETag(path, contentLength, lastModified);
+            if(etag.equals(reqETag)) {
+                res.setStatus(HttpServletResponse.SC_NOT_MODIFIED);
+                res.flushBuffer();
+                if(LOG.isDebugEnabled()) {
+                    LOG.debug("ETag didn't change -> send 'not modified' for resource: " + path);
+                }
+                return;
+            }
+        }
+     
+        long reqMod = req.getDateHeader("If-Modified-Since");
+        if(reqMod != -1) {
+            if(lastModified < reqMod + 1000) {
+                res.setStatus(HttpServletResponse.SC_NOT_MODIFIED);
+                res.flushBuffer();
+                if(LOG.isDebugEnabled()) {
+                    LOG.debug("Modification time didn't change -> send 'not modified' for resource: " + path);
+                }
+                return;
+            }
+        }
+
+        String type = getServletContext().getMimeType(path);
+        if (type == null) {
+            type = "application/octet-stream";
+        }
+        res.setContentType(type);
+        if(contentLength > -1 && contentLength < Integer.MAX_VALUE) {
+            res.setContentLength((int)contentLength);
+        }
+        if(lastModified > -1) {
+            res.setDateHeader("Last-Modified", lastModified);
+        }
+                
+        String etag = MD5Utils.hex_md5(path+contentLength+lastModified);
+        res.setHeader("ETag", etag);
+            
+        if(mode==null || mode.equals("") || mode.equals("prod")) {
+            res.setHeader("Cache-Control", "max-age=3600");
+        } else {
+            res.setHeader("Cache-Control", "max-age=3, must-revalidate");
+        }
+            
+        OutputStream out = new BufferedOutputStream(res.getOutputStream());
+        InputStream in = inputResource.getInputStream();
+        int bytes_read;
+        byte[] buffer = new byte[8];
+        while ((bytes_read = in.read(buffer)) != -1) {
+            out.write(buffer, 0, bytes_read);
+        }
+        out.flush();
+        in.close();
+        out.close();
+
+    }
+
+    
+    public String[] getRegisteredURIs() {
+        String[] uris;
+        if(defaultpath.equals("/")) uris = new String[] {"/?*", "/?*/**"};
+        else uris = new String[] {"/**", "/xml/**"};
+        return uris;
+    }
+    
+    
+    private String createETag(String path, long length, long modtime) {
+        return MD5Utils.hex_md5(path + length + modtime);
+    }
+
+    
+    public void afterPropertiesSet() throws Exception {
+        for(String path: passthroughPaths) {
+            if(path.startsWith("modules/") || path.equals("modules")) {
+                String dirPath = path;
+                if(!dirPath.endsWith("/")) dirPath = dirPath + "/";
+                Resource resource = ResourceUtil.getFileResourceFromDocroot(dirPath);
+                if(resource.exists()) extractedPaths.add(path);
+            }
+        }
+    }
+    
+    public static String getServerName(HttpServletRequest req) {
+        String forward = req.getHeader("X-Forwarded-Server");
+        if (forward != null && !forward.equals("")) {
+            return forward;
+        } else {
+            return req.getServerName();
+        }
+    }
+    
+    
 }

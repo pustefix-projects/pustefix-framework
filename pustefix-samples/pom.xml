@@ -5,29 +5,26 @@
   <parent>
     <groupId>org.pustefixframework</groupId>
     <artifactId>pustefixframework</artifactId>
-    <version>1.0.3-SNAPSHOT</version>
+    <version>0.18.1-SNAPSHOT</version>
   </parent>
 
   <groupId>org.pustefixframework</groupId>
   <artifactId>pustefix-samples</artifactId>
-  <version>1.0.3-SNAPSHOT</version>
+  <version>0.18.1-SNAPSHOT</version>
 
   <packaging>pom</packaging>
   <name>Pustefix Samples</name>
   <modules>
+    <module>pustefix-hangman</module>
+    <module>pustefix-numberguess</module>
     <module>pustefix-sample-basic</module>
-    <module>pustefix-sample-modular</module>
     <module>pustefix-sample-firstapp</module>
     <module>pustefix-sample1</module>
-<!--
     <module>pustefix-samplebank</module>
--->
-    <module>pustefix-taskmanager</module>
     <module>pustefix-testsuite</module>
-<!--
     <module>pustefix-webservice</module>
--->
     <module>sample-modules</module>
     <module>moduletest</module>
+    <module>pustefix-i18n</module>
   </modules>  
 </project>

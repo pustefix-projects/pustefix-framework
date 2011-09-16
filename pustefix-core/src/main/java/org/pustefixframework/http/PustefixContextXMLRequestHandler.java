@@ -19,32 +19,32 @@
 package org.pustefixframework.http;
 
 import java.io.ByteArrayOutputStream;
-import java.util.HashMap;
-import java.util.Map;
+import java.util.List;
+import java.util.Set;
+import java.util.SortedSet;
 import java.util.TreeMap;
+import java.util.TreeSet;
 
 import javax.servlet.ServletException;
-import javax.servlet.ServletOutputStream;
+import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 
 import org.apache.log4j.Logger;
-import org.pustefixframework.config.contextxmlservice.AbstractPustefixXMLRequestHandlerConfig;
+import org.pustefixframework.config.contextxmlservice.AbstractXMLServletConfig;
+import org.pustefixframework.config.contextxmlservice.ContextXMLServletConfig;
 import org.pustefixframework.config.contextxmlservice.PageRequestConfig;
-import org.pustefixframework.config.contextxmlservice.PustefixContextXMLRequestHandlerConfig;
-import org.pustefixframework.config.contextxmlservice.ScriptedFlowProvider;
-import org.pustefixframework.util.json.JSONUtil;
-import org.w3c.dom.Element;
+import org.pustefixframework.util.LocaleUtils;
 
 import de.schlund.pfixcore.exception.PustefixApplicationException;
 import de.schlund.pfixcore.exception.PustefixCoreException;
 import de.schlund.pfixcore.exception.PustefixRuntimeException;
+import de.schlund.pfixcore.scriptedflow.ScriptedFlowConfig;
 import de.schlund.pfixcore.scriptedflow.ScriptedFlowInfo;
 import de.schlund.pfixcore.scriptedflow.compiler.CompilerException;
 import de.schlund.pfixcore.scriptedflow.vm.Script;
 import de.schlund.pfixcore.scriptedflow.vm.ScriptVM;
 import de.schlund.pfixcore.scriptedflow.vm.VirtualHttpServletRequest;
-import de.schlund.pfixcore.util.StateUtil;
 import de.schlund.pfixcore.workflow.ContextImpl;
 import de.schlund.pfixcore.workflow.ContextInterceptor;
 import de.schlund.pfixcore.workflow.ExtendedContext;
@@ -53,8 +53,9 @@ import de.schlund.pfixxml.PfixServletRequest;
 import de.schlund.pfixxml.PfixServletRequestImpl;
 import de.schlund.pfixxml.RenderOutputListener;
 import de.schlund.pfixxml.RequestParam;
-import de.schlund.pfixxml.ResultDocument;
 import de.schlund.pfixxml.SPDocument;
+import de.schlund.pfixxml.Tenant;
+import de.schlund.pfixxml.targets.PageInfo;
 
 /**
  * @author jtl
@@ -75,27 +76,27 @@ public class PustefixContextXMLRequestHandler extends AbstractPustefixXMLRequest
     
     private final static String PROP_RENDEROUTPUTLISTENER = "de.schlund.pfixxml.RenderOutputListener";
 
-    private PustefixContextXMLRequestHandlerConfig config = null;
+    private ContextXMLServletConfig config = null;
     
     private ContextImpl context = null;
     
     private RenderOutputListener renderOutputListener;
     
-    protected PustefixContextXMLRequestHandlerConfig getContextXMLServletConfig() {
+    protected ContextXMLServletConfig getContextXMLServletConfig() {
         return this.config;
     }
 
-    public void setConfiguration(PustefixContextXMLRequestHandlerConfig config) {
+    public void setConfiguration(ContextXMLServletConfig config) {
         this.config = config;
     }
     
     @Override
-    protected AbstractPustefixXMLRequestHandlerConfig getAbstractXMLServletConfig() {
+    protected AbstractXMLServletConfig getAbstractXMLServletConfig() {
         return this.config;
     }
     
     @Override
-    protected boolean needsSSL(PfixServletRequest preq) throws ServletException {
+    public boolean needsSSL(PfixServletRequest preq) throws ServletException {
         if (super.needsSSL(preq)) {
             return true;
         } else {
@@ -111,13 +112,32 @@ public class PustefixContextXMLRequestHandler extends AbstractPustefixXMLRequest
     }
 
     @Override
-    protected boolean needsSession() {
+    public boolean needsSession() {
         return true;
     }
 
     @Override
-    protected boolean allowSessionCreate() {
+    public boolean allowSessionCreate() {
         return true;
+    }
+    
+    @Override
+    protected int validateRequest(HttpServletRequest req) {
+        String path = req.getPathInfo();
+        if(path != null && !path.equals("")) {
+            // simple implementation which prevents that broken links
+            // links with relative paths (e.g. img src="foo/bar.gif"),
+            // which are interpreted relative to the servlet (as page
+            // name) can create a lot of unwanted sessions or disturb
+            // the client side session handling (problems in IE)
+            if(path.startsWith("/")) path = path.substring(1);
+            int ind = path.indexOf("/");
+            if(ind > -1) {
+                ind = path.indexOf("/", ind + 1);
+                if(ind > -1) return HttpServletResponse.SC_NOT_FOUND;
+            }
+        }
+        return 0;
     }
     
     public void init() throws ServletException {
@@ -126,78 +146,14 @@ public class PustefixContextXMLRequestHandler extends AbstractPustefixXMLRequest
     }
 
     @Override
-    protected void process(PfixServletRequest preq, HttpServletResponse res) throws Exception {
-        String pagename = preq.getPageName();
-        if (pagename != null && pagename.startsWith("__json/")) {
-            // JSON request
-            handleJSONRequest(preq, res);
-        } else {
-            // Normal request processing
-            super.process(preq, res);
-        }
-    }
-
-    private void handleJSONRequest(PfixServletRequest preq, HttpServletResponse res) throws Exception {
-        String pagename = preq.getPageName();
-        if (!pagename.startsWith("__json/")) {
-            res.sendError(HttpServletResponse.SC_BAD_REQUEST);
-            return;
-        }
-
-        HttpSession session = preq.getSession(false);
-        if (session == null || session.getAttribute(SESS_CLEANUP_FLAG_STAGE2) != null) {
-            res.sendError(HttpServletResponse.SC_FORBIDDEN);
-            return;
-        }
-
-        String resourceNamesString = pagename.substring("__json/".length());
-        String[] resourceNames = resourceNamesString.split(",");
-
-        Map<String, Object> resources = new HashMap<String, Object>();
-        for (String resourceName : resourceNames) {
-            resourceName = resourceName.trim();
-            if (resourceName.length() == 0) {
-                continue;
-            }
-            Object resource = getContextXMLServletConfig().getJSONOutputResources().get(resourceName);
-            if (resource == null) {
-                res.sendError(HttpServletResponse.SC_NOT_FOUND, "No resource for alias " + resourceName + " found");
-            }
-            resources.put(resourceName, resource);
-        }
-
-        res.setContentType("application/json");
-        ServletOutputStream out = res.getOutputStream();
-
-        ResultDocument resdoc = new ResultDocument();
-        int count = resources.size();
-        out.print('{');
-        for (String alias : resources.keySet()) {
-            Object resource = resources.get(alias);
-            StateUtil.renderContextResource(resource, resdoc, alias);
-            Element element = (Element) resdoc.getRootElement().getElementsByTagName(alias).item(0);
-            out.print("\"" + alias + "\":");
-            out.print(JSONUtil.xmlElementToJSON(element));
-
-            count--;
-            if (count > 0) {
-                out.print(',');
-            }
-        }
-        out.print('}');
-
-        out.flush();
-        out.close();
-    }
-
-    @Override
     public SPDocument getDom(PfixServletRequest preq) throws PustefixApplicationException, PustefixCoreException {
-        ExtendedContext context = getContext(preq);
-        // Prepare context for current thread
-        // Cleanup is performed in finally block
-        ((ContextImpl) context).prepareForRequest();
         
+        ExtendedContext context = getContext(preq);
         try {
+            // Prepare context for current thread
+            // Cleanup is performed in finally block
+            ((ContextImpl) context).prepareForRequest(preq.getRequest());
+            
             SPDocument spdoc;
 
             ScriptedFlowInfo info = getScriptedFlowInfo(preq);
@@ -206,7 +162,7 @@ public class PustefixContextXMLRequestHandler extends AbstractPustefixXMLRequest
                 
                 // Do a virtual request without any request parameters
                 // to get an initial SPDocument
-                PfixServletRequest vpreq = new PfixServletRequestImpl(VirtualHttpServletRequest.getVoidRequest(preq.getRequest()), this.getRegisteredURIs(), getContextXMLServletConfig().getProperties());
+                PfixServletRequest vpreq = new PfixServletRequestImpl(VirtualHttpServletRequest.getVoidRequest(preq.getRequest()), getContextXMLServletConfig().getProperties());
                 spdoc = context.handleRequest(vpreq);
 
                 // Reset current scripted flow state
@@ -273,29 +229,53 @@ public class PustefixContextXMLRequestHandler extends AbstractPustefixXMLRequest
                 spdoc = context.handleRequest(preq);
             }
             
-            if (spdoc != null && !spdoc.isRedirect() && (preq.getPageName() == null || !preq.getPageName().equals(spdoc.getPagename()))) {
-                // Make sure all requests that don't encode an explicite pagename
-                // (this normally is only the case for the first request)
-                // OR pages that have the "wrong" pagename in their request 
-                // (this applies to pages selected by stepping ahead in the page flow)
-                // are redirected to the page selected by the business logic below
-                String scheme = preq.getScheme();
-                String port = String.valueOf(preq.getServerPort());
-                String redirectURL = scheme + "://" + getServerName(preq.getRequest()) 
-                    + ":" + port + preq.getRequestBasePath() + "/" + spdoc.getPagename() 
-                    + ";jsessionid=" + preq.getSession(false).getId() + "?__reuse=" + spdoc.getTimestamp();
-                RequestParam rp = preq.getRequestParam("__frame");
-                if (rp != null) {
-                    redirectURL += "&__frame=" + rp.getValue();
+            if(spdoc != null && !spdoc.isRedirect()) {
+                String expectedPageName = null;
+                String langPrefix = null;
+                Tenant tenant = spdoc.getTenant();
+                if((tenant != null && !spdoc.getLanguage().equals(tenant.getDefaultLanguage())) ||
+                        tenant == null && projectInfo.getSupportedLanguages().size() > 1 && !spdoc.getLanguage().equals(projectInfo.getDefaultLanguage())) {
+                    langPrefix = LocaleUtils.getLanguagePart(spdoc.getLanguage());
                 }
-                rp = preq.getRequestParam("__lf");
-                if (rp != null) {
-                	redirectURL += "&__lf=" + rp.getValue();
+                if(context.getContextConfig().getDefaultPage(context.getVariant()).equals(spdoc.getPagename())) {
+                    expectedPageName = langPrefix;
+                } else {
+                    String alias = siteMap.getAlias(spdoc.getPagename(), spdoc.getLanguage(), spdoc.getPageAlternative());
+                    if(langPrefix != null) {
+                        alias = langPrefix + "/" + alias;
+                    }
+                    expectedPageName = alias;
                 }
-                spdoc.setRedirect(redirectURL);
-
+                String requestedPageName = preq.getRequestedPageName();
+                if( ( expectedPageName != null  && !expectedPageName.equals(requestedPageName)) ||
+                    ( expectedPageName == null && requestedPageName != null)) { 
+                    // Make sure all requests that don't encode an explicite pagename
+                    // (this normally is only the case for the first request)
+                    // OR pages that have the "wrong" pagename in their request 
+                    // (this applies to pages selected by stepping ahead in the page flow)
+                    // are redirected to the page selected by the business logic below
+                    String scheme = preq.getScheme();
+                    String port = String.valueOf(preq.getServerPort());
+                    String sessionIdPath = "";
+                    HttpSession session = preq.getSession(false);
+                    if(session.getAttribute(AbstractPustefixRequestHandler.SESSION_ATTR_COOKIE_SESSION) == null) {
+                        sessionIdPath = ";jsessionid=" + session.getId();
+                    }
+                    String redirectURL = scheme + "://" + getServerName(preq.getRequest()) 
+                        + ":" + port + preq.getContextPath() + preq.getServletPath() + "/" 
+                        + (expectedPageName == null ? "" : expectedPageName)
+                        + sessionIdPath + "?__reuse=" + spdoc.getTimestamp();
+                    RequestParam rp = preq.getRequestParam("__frame");
+                    if (rp != null && rp.getValue() != null && !rp.getValue().equals("")) {
+                        redirectURL += "&__frame=" + rp.getValue();
+                    }
+                    rp = preq.getRequestParam("__lf");
+                    if (rp != null) {
+                    	redirectURL += "&__lf=" + rp.getValue();
+                    }
+                    spdoc.setRedirect(redirectURL);
+                }
             }
-            
             return spdoc;
         } finally {
             ((ContextImpl) context).cleanupAfterRequest();
@@ -308,12 +288,8 @@ public class PustefixContextXMLRequestHandler extends AbstractPustefixXMLRequest
     }
 
     private Script getScriptedFlowByName(String scriptedFlowName) throws CompilerException {
-        ScriptedFlowProvider scriptedFlowProvider = getContextXMLServletConfig().getScriptedFlows().get(scriptedFlowName);
-        if (scriptedFlowProvider != null) {
-            return scriptedFlowProvider.getScript();
-        } else {
-            return null;
-        }
+        ScriptedFlowConfig config = getContextXMLServletConfig().getScriptedFlowConfig();
+        return config.getScript(scriptedFlowName);
     }
 
     private ScriptedFlowInfo getScriptedFlowInfo(PfixServletRequest preq) {
@@ -389,4 +365,62 @@ public class PustefixContextXMLRequestHandler extends AbstractPustefixXMLRequest
     public void setContext(ContextImpl context) {
         this.context = context;
     }
+    
+    @Override
+    public String[] getRegisteredURIs() {
+
+        SortedSet<String> uris = new TreeSet<String>();
+        
+        uris.add("/");
+        
+        //add path mapping for backwards compatibility
+        String[] regUris = super.getRegisteredURIs();
+        for(String regUri: regUris) uris.add(regUri);
+        
+        addPageURIs(uris);
+        
+        //add lang default page mappings
+        if(!tenantInfo.getTenants().isEmpty()) {
+            for(Tenant tenant: tenantInfo.getTenants()) {
+                for(String supportedLanguage: tenant.getSupportedLanguages()) {
+                    if(!supportedLanguage.equals(tenant.getDefaultLanguage())) {
+                        uris.add("/" + LocaleUtils.getLanguagePart(supportedLanguage));
+                    }
+                }
+            }
+        } else if(projectInfo.getSupportedLanguages().size() > 1) {
+            for(String supportedLanguage: projectInfo.getSupportedLanguages()) {
+                if(!supportedLanguage.equals(projectInfo.getDefaultLanguage())) {
+                    uris.add("/" + LocaleUtils.getLanguagePart(supportedLanguage));
+                }
+            }
+        }
+        
+        String[] uriArr = uris.toArray(new String[uris.size()]);
+        return uriArr;
+    }
+    
+
+    
+    @Override
+    public String[] getRegisteredPages() {
+
+        SortedSet<String> pages = new TreeSet<String>();
+        
+        //add pages from configured pagerequests
+        List<? extends PageRequestConfig> pageConfigs = config.getContextConfig().getPageRequestConfigs();
+        for(PageRequestConfig pageConfig: pageConfigs) {
+            pages.add(pageConfig.getPageName());
+        }
+        
+        //add page mappings for standardpages
+        Set<PageInfo> pageInfos = generator.getPageTargetTree().getPageInfos();
+        for(PageInfo pageInfo: pageInfos) {
+            pages.add(pageInfo.getName());
+        }
+        
+        String[] pageArr = pages.toArray(new String[pages.size()]);
+        return pageArr;
+    }
+    
 }

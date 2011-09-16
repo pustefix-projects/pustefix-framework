@@ -19,7 +19,6 @@ package de.schlund.pfixxml.util;
 
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
-import java.io.InputStream;
 import java.io.OutputStream;
 import java.io.StringWriter;
 import java.net.MalformedURLException;
@@ -46,16 +45,16 @@ import javax.xml.transform.stream.StreamResult;
 import javax.xml.transform.stream.StreamSource;
 
 import org.apache.log4j.Logger;
-import org.pustefixframework.resource.InputStreamResource;
-import org.pustefixframework.resource.Resource;
-import org.pustefixframework.resource.ResourceLoader;
-import org.pustefixframework.xmlgenerator.targets.LeafTarget;
-import org.pustefixframework.xmlgenerator.targets.Target;
-import org.pustefixframework.xmlgenerator.targets.TargetGenerationException;
-import org.pustefixframework.xmlgenerator.targets.TargetImpl;
 import org.w3c.dom.Document;
 import org.xml.sax.InputSource;
 
+import de.schlund.pfixxml.resources.FileResource;
+import de.schlund.pfixxml.resources.Resource;
+import de.schlund.pfixxml.resources.ResourceUtil;
+import de.schlund.pfixxml.targets.LeafTarget;
+import de.schlund.pfixxml.targets.Target;
+import de.schlund.pfixxml.targets.TargetGenerationException;
+import de.schlund.pfixxml.targets.TargetImpl;
 
 public class Xslt {
     
@@ -88,24 +87,31 @@ public class Xslt {
         return loadTemplates(XsltVersion.XSLT1, new InputSource("file://" + path.resolve().getAbsolutePath()), null);
     }
     
-    public static Templates loadTemplates(XsltVersion xsltVersion, InputStreamResource path) throws TransformerConfigurationException {
-    	return loadTemplates(xsltVersion, path, null);
+    public static Templates loadTemplates(XsltVersion xsltVersion, Resource path) throws TransformerConfigurationException {
+        return loadTemplates(xsltVersion, path, null);
+    }
+
+    public static Templates loadTemplates(XsltVersion xsltVersion, FileResource path) throws TransformerConfigurationException {
+        return loadTemplates(xsltVersion, path, null);
+    }
+
+    public static Templates loadTemplates(XsltVersion xsltVersion, Resource path, TargetImpl parent) throws TransformerConfigurationException {
+        try {
+            InputSource is = new InputSource();
+            is.setSystemId(path.toURI().toString());
+            is.setByteStream(path.getInputStream());
+            return loadTemplates(xsltVersion, is, parent);
+        } catch(IOException x) {
+            throw new TransformerConfigurationException("Can't load template", x);
+        }
     }
     
-    public static Templates loadTemplates(XsltVersion xsltVersion, InputStream in) throws TransformerConfigurationException {
-    	return loadTemplates(xsltVersion, new InputSource(in), null);
-    }
-    
-    public static Templates loadTemplates(XsltVersion xsltVersion, InputStreamResource res, TargetImpl parent) throws TransformerConfigurationException {
+    public static Templates loadTemplates(XsltVersion xsltVersion, FileResource path, TargetImpl parent) throws TransformerConfigurationException {
         InputSource input;
         try {
-            input = new InputSource();
-            input.setSystemId(res.getURI().toASCIIString());
-            input.setByteStream(res.getInputStream());
+            input = new InputSource(path.toURL().toString());
         } catch (MalformedURLException e) {
-            throw new TransformerConfigurationException("\"" + res.toString() + "\" does not respresent a valid file", e);
-        } catch(IOException x) {
-        	throw new TransformerConfigurationException("Can't read template resource: " + res.toString(), x);
+            throw new TransformerConfigurationException("\"" + path.toString() + "\" does not respresent a valid file", e);
         }
         return loadTemplates(xsltVersion, input, parent);
     }
@@ -128,7 +134,6 @@ public class Xslt {
             Templates retval = factory.newTemplates(src);
             return retval;
         } catch (TransformerConfigurationException e) {
-        	e.printStackTrace();
             StringBuffer sb = new StringBuffer();
             sb.append("TransformerConfigurationException in doLoadTemplates!\n");
             sb.append("Path: ").append(input.getSystemId()).append("\n");
@@ -274,26 +279,36 @@ public class Xslt {
             //need to have both versions installed, thus the extension functions can't be
             //referenced within the same stylesheet and we rewrite to the according 
             //version specific stylesheet here
-            if(href.equals("core/xsl/include.xsl")) {
-                if(xsltVersion==XsltVersion.XSLT2) href="core/xsl/include_xslt2.xsl";
+            if(href.equals("module://pustefix-core/xsl/include.xsl")) {
+                if(xsltVersion==XsltVersion.XSLT2) href="module://pustefix-core/xsl/include_xslt2.xsl";
+            } else if(href.equals("module://pustefix-core/xsl/render.xsl")) {
+                if(xsltVersion==XsltVersion.XSLT2) href="module://pustefix-core/xsl/render_xslt2.xsl";
             }
-            
+                
             try {
                 uri = new URI(href);
             } catch (URISyntaxException e) {
                 return new StreamSource(href);
             }
-            
+
+            if (uri.getScheme() != null && !uri.getScheme().equals("docroot") 
+                    && !uri.getScheme().equals("module") && !uri.getScheme().equals("dynamic")) {
+                // we don't handle uris with an explicit scheme
+                return new StreamSource(href);
+            }
             path = uri.getPath();
-         
-            if("bundle".equals(uri.getScheme())) {
+            if (uri.getScheme() != null && uri.getScheme().equals("docroot")) {
+                if (path.startsWith("/")) {
+                    path = path.substring(1);
+                }
+            }
+            if("module".equals(uri.getScheme()) || "dynamic".equals(uri.getScheme())) {
                 path = uri.toString();
             }
             
             if (parent != null) {
                 Target target = parent.getTargetGenerator().getTarget(path);
                 if (target == null) {
-                	if(path.equals("")) throw new IllegalArgumentException("Empty path ["+ href + "| " + base +"]");
                     target = parent.getTargetGenerator().createXMLLeafTarget(path);
                 }
                 
@@ -318,21 +333,19 @@ public class Xslt {
                     // There is a bug in Saxon 6.5.3 which causes
                     // a NullPointerException to be thrown, if systemId
                     // is not set
-                    source.setSystemId(target.getTargetGenerator().getDisccachedir().getURI().toString() + "/" + path);
+                    source.setSystemId(target.getTargetGenerator().getDisccachedir().toURI().toString() + "/" + path);
                 
                     // Register included stylesheet with target
                     parent.getAuxDependencyManager().addDependencyTarget(target.getTargetKey());
                     return source;
                 }
             }
-            
-            ResourceLoader resourceLoader = parent.getTargetGenerator().getResourceLoader();
-            resource = resourceLoader.getResource(uri);
-            if(resource == null) {
+            resource = ResourceUtil.getResource(path);
+            if(!resource.exists()) {
                 throw new TransformerException("Resource can't be found: " + uri.toString());
             }
             try {
-            	Source source = new StreamSource(((InputStreamResource)resource).getInputStream(), path);
+            	Source source = new StreamSource(resource.getInputStream(), path);
             	return source;
             } catch(IOException x) {
             	throw new TransformerException("Can't read resource: " + path);

@@ -1,92 +1,97 @@
 package de.schlund.pfixcore.util;
-
 import java.io.File;
+import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.JarURLConnection;
 import java.net.MalformedURLException;
-import java.net.URI;
-import java.net.URISyntaxException;
 import java.net.URL;
-import java.util.HashMap;
-import java.util.Map;
 import java.util.jar.JarEntry;
 import java.util.jar.JarFile;
 
 public class JarFileURLConnection extends JarURLConnection {
-
-    static Map<URI,CacheEntry> jarFileCache = new HashMap<URI,CacheEntry>();
-
-    static class CacheEntry {
-        File file;
-        JarFile jarFile;
-        long lastMod;
-    }
     
-    private static CacheEntry getCacheEntry(URI uri) throws IOException {
-        CacheEntry entry = jarFileCache.get(uri);
-        if(entry == null || (entry.file.lastModified() > entry.lastMod)) {
-            entry = new CacheEntry();
-            entry.file = new File(uri);
-            entry.jarFile = new JarFile(entry.file);
-            entry.lastMod = entry.file.lastModified();
-            jarFileCache.put(uri, entry);
-        }
-        return entry;
-    }
-    
-    
-    private URI jarFileURI;
-    private String entryPath;
-    
-    
+    private boolean doCache = true;
+    private File cachedFile;
+   
     public JarFileURLConnection(URL url) throws MalformedURLException {
         super(url);
-        if(!url.getProtocol().equals("jar")) 
-            throw new IllegalArgumentException("URL protocol not supported: " + url.toString()); 
-        String path = getURL().getPath();
-        int ind = path.indexOf("!");
-        String jarPath = path.substring(0,ind);
-        entryPath = path.substring(ind+1);
-        if(entryPath.startsWith("/")) entryPath = entryPath.substring(1);
-        try {
-            jarFileURI = new URI(jarPath);
-        } catch (URISyntaxException e) {
-            throw new RuntimeException("Can't create URI to JAR file: " + jarPath, e);
-        }
     }
 
     @Override
-    public void connect() {
-        
+    public synchronized void connect() throws IOException {
+        if(!connected) {
+            if(doCache) {
+                cachedFile = JarFileCache.getInstance().getFile(getJarFileURL(), getEntryName());
+            }
+            connected = true;
+        }
     }
     
     @Override
-    public InputStream getInputStream() throws IOException {
-        JarEntry entry = getJarEntry();
-        return getCacheEntry(jarFileURI).jarFile.getInputStream(entry);
+    public synchronized InputStream getInputStream() throws IOException {
+        connect();
+        if(doCache) {
+            return new FileInputStream(cachedFile);
+        } else {
+            return getJarFile().getInputStream(getJarEntry());
+        }
     }
     
     @Override
-    public long getLastModified() {
+    public synchronized long getLastModified() {
         try {
-            return getCacheEntry(jarFileURI).file.lastModified();
+            connect();
+            if(doCache) {
+                return cachedFile.lastModified();
+            } else {
+                long lastMod = getJarEntry().getTime();
+                if(lastMod == -1) lastMod = JarFileCache.getInstance().getLastModified(getJarFileURL());
+                return lastMod;
+            }
         } catch(IOException x) {
             return 0;
         }
     }
+    
+    @Override
+    public synchronized int getContentLength() {
+        int len = -1;
+        try {
+            connect();
+            if(doCache) {
+                len = (int)cachedFile.length();
+            } else {
+                len = (int)getJarEntry().getSize();
+            }
+        } catch(IOException x) {
+            //ignore
+        }
+        return len;
+    }
 
     @Override
-    public JarFile getJarFile() throws IOException {
-        return getCacheEntry(jarFileURI).jarFile;
+    public synchronized JarFile getJarFile() throws IOException {
+        return JarFileCache.getInstance().getJarFile(getJarFileURL());
     }
     
     @Override
-    public JarEntry getJarEntry() throws IOException {
-        JarEntry entry = getCacheEntry(jarFileURI).jarFile.getJarEntry(entryPath);
-        if(entry == null) throw new FileNotFoundException("JAR entry "+ entryPath + "not found in " + jarFileURI.getPath());
+    public synchronized JarEntry getJarEntry() throws IOException {
+        if(getEntryName() == null) return null;
+        JarEntry entry = getJarFile().getJarEntry(getEntryName());
+        if(entry == null) throw new FileNotFoundException("JAR entry "+ getEntryName() + "not found in " + getJarFileURL());
+        //Work around JDK bug: calling getJarEntry() for directory entry using name with 
+        //no trailing slash returns JarEntry object keeping this name, and calling 
+        //isDirectory() on this object checks for the slash and returns false.
+        //Therefor we additionally check entries with with size 0 and try to get
+        //an entry with a trailing slash
+        if(!entry.isDirectory() && entry.getSize() == 0) {
+            String dirPath = getEntryName() + "/";
+            JarEntry dirEntry = getJarFile().getJarEntry(dirPath);
+            if(dirEntry != null) entry = dirEntry;
+        }
         return entry;
     }
-    
+       
 }

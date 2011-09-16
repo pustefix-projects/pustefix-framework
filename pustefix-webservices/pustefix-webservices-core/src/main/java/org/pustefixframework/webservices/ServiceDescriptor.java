@@ -28,9 +28,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-import net.sf.cglib.proxy.Enhancer;
-
-import org.pustefixframework.webservices.spring.WebserviceRegistration;
+import org.pustefixframework.webservices.config.ServiceConfig;
 
 
 /**
@@ -46,14 +44,14 @@ public class ServiceDescriptor {
         serviceMethods=introspect(serviceClass);
     }
     
-	public ServiceDescriptor(WebserviceRegistration registration) throws ServiceException {
+	public ServiceDescriptor(ServiceConfig serviceConfig) throws ServiceException {
         try {
-            ClassLoader cl = registration.getTarget().getClass().getClassLoader();
+            ClassLoader cl=Thread.currentThread().getContextClassLoader();
             Class<?> itf = null;
-            if(registration.getInterface() != null) {
-                itf = Class.forName(registration.getInterface(), true, cl);
+            if(serviceConfig.getInterfaceName()!=null) {
+                itf = Class.forName(serviceConfig.getInterfaceName(),true,cl);
             }
-            Class<?> clazz = registration.getTarget().getClass();
+            Class<?> clazz=Class.forName(serviceConfig.getImplementationName(),true,cl);
             if(itf==null) serviceMethods=introspect(clazz);
             else serviceMethods=introspect(clazz,itf);
             serviceClass=itf;
@@ -95,7 +93,6 @@ public class ServiceDescriptor {
     private Map<String,List<Method>> introspect(Class<?> clazz) throws ServiceException {
         Map<String,List<Method>> methods=new HashMap<String,List<Method>>();
         Class<?> current=clazz;
-        if(Enhancer.isEnhanced(current)) current = current.getSuperclass();
         while(current!=null && !current.equals(Object.class)) {
             Method[] meths=current.getDeclaredMethods();
             for(int i=0;i<meths.length;i++) {

@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<sitemap>
+  <page name="Home"/>
+  <page name="Overview"/>
+  <page name="Info">
+    <alt key="cities" name="Cities"/>
+    <alt key="nationalparks" name="NationalParks"/>
+    <alt key="mountains" name="Mountains"/>
+  </page>
+  <!-- <config-include file="conf/sitemap-fragment.xml" section="sitemap" module="*"/> -->
+</sitemap>

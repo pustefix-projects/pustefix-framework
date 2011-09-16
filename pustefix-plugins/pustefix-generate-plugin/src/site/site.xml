@@ -1,5 +1,7 @@
 <?xml version="1.0" encoding="ISO-8859-1"?>
 <project>
+  <version position="left"/>
+
   <bannerLeft>
     <name>Pustefix</name>
     <src>http://dev.pustefix-framework.org/static/pustefix_logo.gif</src>

@@ -20,6 +20,7 @@ package de.schlund.pfixcore.workflow.app;
 
 import java.util.HashSet;
 import java.util.Iterator;
+import java.util.Properties;
 
 import org.pustefixframework.config.contextxmlservice.IWrapperConfig;
 import org.pustefixframework.config.contextxmlservice.StateConfig;
@@ -28,6 +29,7 @@ import de.schlund.pfixcore.generator.IHandler;
 import de.schlund.pfixcore.workflow.Context;
 import de.schlund.pfixxml.PfixServletRequest;
 import de.schlund.pfixxml.ResultDocument;
+import de.schlund.pfixxml.Tenant;
 
 /**
  * This class is a default implementation of the <code>IHandlerContainer</code> interface.
@@ -41,7 +43,6 @@ import de.schlund.pfixxml.ResultDocument;
  */
 
 public class IHandlerContainerImpl implements IHandlerContainer {
-
     /** Store all created handlers here*/
     private HashSet<IHandler> handlers;
     /** Store all handlers here which do not have a 'checkactive' attribute set to 'false' */
@@ -51,22 +52,26 @@ public class IHandlerContainerImpl implements IHandlerContainer {
     
     private StateConfig stateConfig;
     
-    public IHandlerContainerImpl(StateConfig stateConfig) {
-        
-        this.stateConfig = stateConfig;
-        
+    /**
+     * Initialize the IHandlers. Get the handlers from {@link IHandlerFactory}
+     * and store them.
+     * @param props the properties containing the interface names
+     * @see de.schlund.pfixcore.workflow.app.IHandlerContainer#initIHandlers(Properties)
+     */
+    public void initIHandlers(StateConfig config, Tenant tenant) {
         handlers  = new HashSet<IHandler>();
         activeset = new HashSet<IHandler>();
+        stateConfig = config;
         
-        if (stateConfig.getIWrapperPolicy() == StateConfig.Policy.ALL) {
+        if (config.getIWrapperPolicy() == StateConfig.Policy.ALL) {
             this.policy = "ALL";
-        } else if (stateConfig.getIWrapperPolicy() == StateConfig.Policy.ANY) {
+        } else if (config.getIWrapperPolicy() == StateConfig.Policy.ANY) {
             this.policy = "ANY";
         } else {
             this.policy = "NONE";
         }
         
-        for (IWrapperConfig iConfig : stateConfig.getIWrappers().values()) {
+        for (IWrapperConfig iConfig : config.getIWrappers(tenant).values()) {
             IHandler handler = iConfig.getHandler();
             handlers.add(handler);
             if (iConfig.doCheckActive()) {

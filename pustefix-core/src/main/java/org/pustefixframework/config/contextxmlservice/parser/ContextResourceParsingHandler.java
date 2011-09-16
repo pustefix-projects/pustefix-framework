@@ -24,14 +24,13 @@ import java.util.Set;
 import org.pustefixframework.config.contextxmlservice.parser.internal.ContextConfigImpl;
 import org.pustefixframework.config.contextxmlservice.parser.internal.ContextResourceConfigImpl;
 import org.pustefixframework.config.generic.ParsingUtils;
-import org.pustefixframework.container.spring.beans.support.ScopedProxyUtils;
+import org.springframework.aop.scope.ScopedProxyUtils;
 import org.springframework.beans.factory.config.BeanDefinition;
 import org.springframework.beans.factory.config.BeanDefinitionHolder;
 import org.springframework.beans.factory.support.BeanDefinitionBuilder;
 import org.springframework.beans.factory.support.BeanDefinitionRegistry;
 import org.springframework.beans.factory.support.BeanNameGenerator;
 import org.springframework.beans.factory.support.DefaultBeanNameGenerator;
-import org.springframework.osgi.context.ConfigurableOsgiBundleApplicationContext;
 import org.w3c.dom.Element;
 import org.w3c.dom.NodeList;
 
@@ -61,11 +60,10 @@ public class ContextResourceParsingHandler implements ParsingHandler {
     public void handleNode(HandlerContext context) throws ParserException {
         
         Element element = (Element)context.getNode();
-        ParsingUtils.checkAttributes(element, new String[] {"class"}, new String[] {"bean-name", "scope"});
+        ParsingUtils.checkAttributes(element, new String[] {"class"}, new String[] {"bean-name", "scope", "parent-bean-ref"});
         
         ContextConfigImpl config = ParsingUtils.getSingleTopObject(ContextConfigImpl.class, context);
         BeanDefinitionRegistry beanReg = ParsingUtils.getSingleTopObject(BeanDefinitionRegistry.class, context);
-        ConfigurableOsgiBundleApplicationContext appContext = ParsingUtils.getSingleTopObject(ConfigurableOsgiBundleApplicationContext.class, context);
         
         Set<String> registeredInterfaces = new HashSet<String>();
         
@@ -73,7 +71,7 @@ public class ContextResourceParsingHandler implements ParsingHandler {
        
         Class<?> implClass = null;
         try {
-            implClass = Class.forName(className, true, appContext.getClassLoader());
+            implClass = Class.forName(className);
         } catch (ClassNotFoundException e) {
             throw new ParserException("Could not load class \"" + className + "\"!", e);
         }
@@ -83,7 +81,7 @@ public class ContextResourceParsingHandler implements ParsingHandler {
         // name to reference this implementation...
         crConfig.addInterface(implClass);
         
-        NodeList itfNodes = element.getElementsByTagNameNS("http://www.pustefix-framework.org/2009/namespace/context-xml-service-config", "implements");
+        NodeList itfNodes = element.getElementsByTagNameNS("http://www.pustefix-framework.org/2008/namespace/context-xml-service-config", "implements");
         for(int i=0;i<itfNodes.getLength();i++) {
             Element itfElem = (Element)itfNodes.item(i);
             String itfClassName = itfElem.getAttribute("class");
@@ -96,7 +94,7 @@ public class ContextResourceParsingHandler implements ParsingHandler {
             }
             Class<?> itfClass = null;
             try {
-                itfClass = Class.forName(itfClassName, true, appContext.getClassLoader());
+                itfClass = Class.forName(itfClassName);
             } catch (ClassNotFoundException e) {
                 throw new ParserException("Could not load class \"" + itfClassName + "\"!", e);
             }
@@ -113,6 +111,10 @@ public class ContextResourceParsingHandler implements ParsingHandler {
         }
             
         BeanDefinitionBuilder beanBuilder = BeanDefinitionBuilder.genericBeanDefinition(implClass);
+        String parentBeanRef = element.getAttribute("parent-bean-ref").trim();
+        if (parentBeanRef.length() != 0) {
+            beanBuilder.setParentName(parentBeanRef);
+        }
         beanBuilder.setScope(scope);
         BeanDefinition beanDefinition = beanBuilder.getBeanDefinition();
             

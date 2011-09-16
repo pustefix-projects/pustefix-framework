@@ -4,14 +4,15 @@
 
   <groupId>org.pustefixframework</groupId>
   <artifactId>pustefixframework</artifactId>
-  <version>1.0.3-SNAPSHOT</version>
+  <version>0.18.1-SNAPSHOT</version>
   <packaging>pom</packaging>
   <name>Pustefix Framework</name>
-  <url>http://pustefixframework.org</url>
+  <url>http://pustefix-framework.org</url>
+  <description>Pustefix Web Application Framework</description>
 
   <licenses>
     <license>
-      <name>LGPL</name>
+      <name>GNU Lesser General Public License, Version 2.1</name>
       <url>http://www.gnu.org/licenses/lgpl-2.1.txt</url>
       <distribution>repo</distribution>
     </license>
@@ -22,10 +23,15 @@
     <url>http://www.unitedinternet.de/</url>
   </organization>
 
+  <issueManagement>
+    <system>trac</system>
+    <url>http://dev.pustefix-framework.org/</url>
+  </issueManagement>
+
   <scm>
-    <connection>scm:svn:https://pustefix.svn.sourceforge.net/svnroot/pustefix/trunk</connection>
-    <developerConnection>scm:svn:https://pustefix.svn.sourceforge.net/svnroot/pustefix/trunk</developerConnection>
-    <url>http://dev.pustefix-framework.org/browser/trunk</url>
+    <connection>scm:svn:https://pustefix.svn.sourceforge.net/svnroot/pustefix/branches/release-0.18.x</connection>
+    <developerConnection>scm:svn:https://pustefix.svn.sourceforge.net/svnroot/pustefix/branches/release-0.18.x</developerConnection>
+    <url>http://dev.pustefix-framework.org/browser/branches/release-0.18.x</url>
   </scm>
 
   <properties>
@@ -33,48 +39,20 @@
     <makemode>test</makemode>
   </properties>
 
-  <repositories>
-    <repository>
-      <id>org.pustefixframework.repository</id>
-      <name>Pustefix Framework Maven Repository</name>
-      <url>http://pustefix-framework.org/repository/maven</url>
-    </repository>
-    <repository>  
-      <id>com.springsource.repository.bundles.release</id>
-      <name>SpringSource Enterprise Bundle Repository - SpringSource Bundle Releases</name>
-      <url>http://repository.springsource.com/maven/bundles/release</url>
-    </repository>
-    <repository>
-      <id>com.springsource.repository.bundles.external</id>
-      <name>SpringSource Enterprise Bundle Repository - External Bundle Releases</name>
-      <url>http://repository.springsource.com/maven/bundles/external</url>
-    </repository> 
-  </repositories>
-
   <dependencies>
     <dependency>
       <groupId>junit</groupId>
       <artifactId>junit</artifactId>
-      <version>4.5</version>
+      <version>4.8.1</version>
       <scope>test</scope>
     </dependency>
   </dependencies>
 
   <developers>
     <developer>
-      <name>Jens Lautenbacher</name>
-      <id>jenstl</id>
-      <email>jenstl@users.sourceforge.net</email>
-      <organization>United Internet</organization>
-      <roles>
-        <role>Java Development</role>
-      </roles>
-      <timezone>+1</timezone>
-    </developer>
-    <developer>
       <name>Martin Leidig</name>
       <id>mtld</id>
-      <email>mtld@users.sourceforge.net</email>
+      <email>mtld@schlund.de</email>
       <organization>United Internet</organization>
       <roles>
         <role>Java Development</role>
@@ -92,9 +70,19 @@
       <timezone>+1</timezone>
     </developer>
     <developer>
+      <name>Jens Lautenbacher</name>
+      <id>jenstl</id>
+      <email>jenstl@users.sourceforge.net</email>
+      <organization>United Internet</organization>
+      <roles>
+        <role>Java Development</role>
+      </roles>
+      <timezone>+1</timezone>
+    </developer>
+    <developer>
       <name>Michael Hartmeier</name>
       <id>mlhartme</id>
-      <email>mlhartme@users.sourceforge.net</email>
+      <email>mlhartme@michael.hartmeier@1und1.de</email>
       <organization>United Internet</organization>
       <roles>
         <role>Java Development</role>
@@ -104,36 +92,91 @@
   </developers>
 
   <build>
-    <plugins>
-      <plugin>
-        <groupId>org.apache.maven.plugins</groupId>
-        <artifactId>maven-eclipse-plugin</artifactId>
-        <version>2.5.1</version>
-      </plugin>
-      <plugin>
-        <groupId>org.apache.maven.plugins</groupId>
-        <artifactId>maven-compiler-plugin</artifactId>
-        <configuration>
-          <source>1.5</source>
-          <target>1.5</target>
-        </configuration>
-      </plugin>
-      <plugin>
-        <groupId>org.apache.maven.plugins</groupId>
-        <artifactId>maven-jar-plugin</artifactId>
-        <configuration>
-          <archive>
-            <addMavenDescriptor>false</addMavenDescriptor>
-            <manifest>
-              <addDefaultImplementationEntries>true</addDefaultImplementationEntries>
-              <addDefaultSpecificationEntries>true</addDefaultSpecificationEntries>
-            </manifest>
-          </archive>
-        </configuration>
-      </plugin> 
-    </plugins>
+    <extensions>
+      <extension>
+        <groupId>org.apache.maven.wagon</groupId>
+        <artifactId>wagon-ssh-external</artifactId>
+        <version>1.0-beta-7</version>
+      </extension>
+    </extensions>
+    <pluginManagement>
+      <plugins>
+        <plugin>
+          <groupId>org.apache.maven.plugins</groupId>
+          <artifactId>maven-eclipse-plugin</artifactId>
+          <version>2.8</version>
+          <configuration>
+            <downloadSources>true</downloadSources>
+          </configuration>
+        </plugin>
+        <plugin>
+          <groupId>org.apache.maven.plugins</groupId>
+          <artifactId>maven-install-plugin</artifactId>
+          <version>2.3.1</version>
+        </plugin>
+        <plugin>
+          <groupId>org.apache.maven.plugins</groupId>
+          <artifactId>maven-surefire-plugin</artifactId>
+          <version>2.7.1</version>
+          <configuration>
+            <useFile>false</useFile>
+          </configuration>
+        </plugin>
+        <plugin>
+          <groupId>org.apache.maven.plugins</groupId>
+          <artifactId>maven-jar-plugin</artifactId>
+          <version>2.3.1</version>
+          <configuration>
+            <archive>
+              <addMavenDescriptor>false</addMavenDescriptor>
+              <manifest>
+                <addDefaultImplementationEntries>true</addDefaultImplementationEntries>
+                <addDefaultSpecificationEntries>true</addDefaultSpecificationEntries>
+              </manifest>
+            </archive>
+          </configuration>
+        </plugin>
+        <plugin>
+          <groupId>org.apache.maven.plugins</groupId>
+          <artifactId>maven-source-plugin</artifactId>
+          <version>2.1.2</version>
+        </plugin>
+        <plugin>
+          <groupId>org.apache.maven.plugins</groupId>
+          <artifactId>maven-clean-plugin</artifactId>
+          <version>2.4.1</version>
+        </plugin>
+        <plugin>
+          <groupId>org.apache.maven.plugins</groupId>
+          <artifactId>maven-deploy-plugin</artifactId>
+          <version>2.5</version>
+        </plugin>
+        <plugin>
+          <groupId>org.apache.maven.plugins</groupId>
+          <artifactId>maven-resources-plugin</artifactId>
+          <version>2.4.3</version>
+        </plugin>
+        <plugin>
+          <groupId>org.apache.maven.plugins</groupId>
+          <artifactId>maven-compiler-plugin</artifactId>
+          <version>2.3.2</version>
+          <configuration>
+            <source>1.5</source>
+            <target>1.5</target>
+          </configuration>
+        </plugin>
+        <plugin>
+           <groupId>org.apache.maven.plugins</groupId>
+           <artifactId>maven-release-plugin</artifactId>
+           <version>2.1</version>
+           <configuration>
+             <!-- Workaround for http://jira.codehaus.org/browse/MRELEASE-271 -->
+             <preparationGoals>clean install</preparationGoals>
+           </configuration>
+         </plugin>
+      </plugins>
+    </pluginManagement>
   </build>
-
   <reporting>
     <plugins>
       <plugin>
@@ -144,74 +187,108 @@
       <plugin>
         <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-javadoc-plugin</artifactId>
-        <version>2.5</version>
+        <version>2.7</version>
       </plugin>
       <plugin>
         <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-changelog-plugin</artifactId>
-        <version>2.1</version>
+        <version>2.2</version>
       </plugin>
       <plugin>
         <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-jxr-plugin</artifactId>
-        <version>2.1</version>
+        <version>2.2</version>
       </plugin>
     </plugins>
   </reporting> 
-
   <distributionManagement>
     <repository>
-      <id>pustefix</id>
-      <name>Pustefix Maven Repository</name>
-      <url>scpexe://pustefixhp.schlund.de/home/pustefix/repository/maven</url>
-      <uniqueVersion>false</uniqueVersion>
+      <id>sonatype-nexus-staging</id>
+      <name>Sonatype Nexus Staging Repository</name>
+      <url>https://oss.sonatype.org/service/local/staging/deploy/maven2/</url>
     </repository>
+<!--
     <snapshotRepository>
-      <id>pustefix-snapshots</id>
-      <name>TODO</name>
-      <url>http://todo/setup-pustefix-snapshot-depository</url>
-      <uniqueVersion>true</uniqueVersion>
+      <id>sonatype-nexus-snapshots</id>
+      <name>Sonatype Nexus Snapshots Repository</name>
+      <url>https://oss.sonatype.org/content/repositories/snapshots/</url>
     </snapshotRepository>
- 
+-->
+    <snapshotRepository>
+      <id>1und1-snapshots</id>
+      <name>1und1-snapshots</name>
+      <url>http://mavenrepo.united.domain:8081/nexus/content/repositories/1und1-snapshots</url>
+    </snapshotRepository>
     <site>
       <id>pustefix</id>
-      <url>scpexe://pustefix@pustefixhp.schlund.de/var/www/pustefix-docs/trunk</url>
+      <url>scpexe://pustefix@pustefix-hp.schlund.de/home/pustefix/www/pustefix-docs/0.18.x</url>
     </site>
   </distributionManagement>
+  
   <profiles>
     <profile>
-      <id>oneandone</id>
-      <properties>
-        <oneandone.releases>http://mavenrepo.united.domain:8081/nexus/content/repositories/1und1-stable</oneandone.releases>
-        <oneandone.snapshots>http://mavenrepo.united.domain:8081/nexus/content/repositories/1und1-snapshots</oneandone.snapshots>
-        <oneandone.tools.releases>http://mavenrepo.united.domain:8081/nexus/content/repositories/1und1-tools-releases</oneandone.tools.releases>
-        <oneandone.tools.snapshots>http://mavenrepo.united.domain:8081/nexus/content/repositories/1und1-tools-snapshots</oneandone.tools.snapshots>
-      </properties>
-      <distributionManagement>
-        <repository>
-          <id>oneandone-releases</id>
-          <url>${oneandone.releases}</url>
-        </repository>
-        <snapshotRepository>
-          <id>oneandone-snapshots</id>
-          <url>${oneandone.snapshots}</url>
-        </snapshotRepository>
-      </distributionManagement>
+      <id>release-signed-artifacts</id>
+      <activation>
+        <property>
+          <name>performRelease</name>
+          <value>true</value>
+        </property>
+      </activation>
+      <build>
+        <plugins>
+          <plugin>
+            <groupId>org.apache.maven.plugins</groupId>
+            <artifactId>maven-enforcer-plugin</artifactId>
+            <executions>
+              <execution>
+                <id>enforce-gpg-passphrase</id>
+                <goals>
+                  <goal>enforce</goal>
+                </goals>
+                <configuration>
+                  <rules>
+                    <requireProperty>
+                      <property>gpg.passphrase</property>
+                    </requireProperty>
+                  </rules>
+                  <fail>true</fail>
+                </configuration>
+              </execution>
+            </executions>
+          </plugin>
+          <plugin>
+            <groupId>org.apache.maven.plugins</groupId>
+            <artifactId>maven-gpg-plugin</artifactId>
+            <executions>
+              <execution>
+                <id>sign-artifacts</id>
+                <phase>verify</phase>
+                <configuration>
+                  <passphrase>${gpg.passphrase}</passphrase>
+                </configuration>
+                <goals>
+                  <goal>sign</goal>
+                </goals>
+              </execution>
+            </executions>
+          </plugin>
+        </plugins>
+      </build>
     </profile>
   </profiles>
- 
+
   <modules>
     <module>pustefix-libs</module>
     <module>pustefix-webservices</module>
     <module>pustefix-plugins</module>
     <module>pustefix-archetypes</module>
     <module>pustefix-core</module>
-    <module>pustefix-osgi</module>
     <module>pustefix-samples</module>
-    <module>pustefix-tools</module>
-    <!--<module>pustefix-editor</module>-->
+    <module>pustefix-editor</module>
     <module>pustefix-docbook</module>
-    <module>pustefix-url-rewrite-filter</module>
+    <module>pustefix-live</module>
+    <module>pustefix-tutorial</module>
+    <module>pustefix-agent</module>
   </modules>
 
 </project>

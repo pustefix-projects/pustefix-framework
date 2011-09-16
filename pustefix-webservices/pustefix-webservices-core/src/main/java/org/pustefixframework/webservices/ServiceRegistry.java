@@ -23,7 +23,8 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import org.pustefixframework.webservices.spring.WebserviceRegistration;
+import org.pustefixframework.webservices.config.Configuration;
+import org.pustefixframework.webservices.config.ServiceConfig;
 
 
 /**
@@ -31,51 +32,103 @@ import org.pustefixframework.webservices.spring.WebserviceRegistration;
  */
 public class ServiceRegistry {
 	
-	List<WebserviceRegistration> registrations;
-	Map<String,WebserviceRegistration> nameToRegistration;
-	Map<String,ServiceDescriptor> nameToDescriptor;
+	public enum RegistryType {APPLICATION,SESSION};
+	
+	Configuration configuration;
+    
+	RegistryType registryType;
+	Map<String,ServiceDescriptor> serviceDescriptors;
+	Map<String,Object> serviceObjects;
+    
+	public ServiceRegistry(Configuration configuration,RegistryType registryType) {
+		this.configuration=configuration;
+		this.registryType=registryType;
+        serviceDescriptors=new HashMap<String,ServiceDescriptor>();
+        serviceObjects=new HashMap<String,Object>();
+	}
 
-	public ServiceRegistry() {
-		setWebserviceRegistrations(new ArrayList<WebserviceRegistration>());
+    public void deregisterService(String serviceName) {
+        //remove serviceconfig, servicedescriptor and serviceobject
+        throw new RuntimeException("Not yet implemented!");
+    }
+    
+	public boolean isRegistered(String serviceName) {
+	    return getService(serviceName)!=null;
+	}
+
+	public ServiceConfig getService(String serviceName) {
+		ServiceConfig srvConf=configuration.getServiceConfig(serviceName);
+		if(srvConf!=null) {
+			String scope=srvConf.getScopeType();
+			if((scope.equals(Constants.SERVICE_SCOPE_APPLICATION)&&registryType==RegistryType.APPLICATION)||
+                    (scope.equals(Constants.SERVICE_SCOPE_SESSION)&&registryType==RegistryType.SESSION)||
+                    (scope.equals(Constants.SERVICE_SCOPE_REQUEST)))
+				return srvConf;
+        }
+		return null;
+	}
+    
+    public List<ServiceConfig> getServices() {
+        List<ServiceConfig> list=new ArrayList<ServiceConfig>();
+        for(ServiceConfig srvConf:configuration.getServiceConfig()) {
+            String scope=srvConf.getScopeType();
+            if((scope.equals(Constants.SERVICE_SCOPE_APPLICATION)&&registryType==RegistryType.APPLICATION)||
+                    (scope.equals(Constants.SERVICE_SCOPE_SESSION)&&registryType==RegistryType.SESSION))
+                list.add(srvConf);
+        }
+        return list;
+    }
+	
+	public ServiceDescriptor getServiceDescriptor(String serviceName) throws ServiceException {
+        ServiceDescriptor srvDesc=null;
+        synchronized(serviceDescriptors) {
+            srvDesc=serviceDescriptors.get(serviceName);
+        }
+        if(srvDesc==null) {
+            ServiceConfig srvConf=getService(serviceName);
+            if(srvConf!=null) {
+                synchronized(serviceDescriptors) {
+                    srvDesc=new ServiceDescriptor(srvConf);
+                    serviceDescriptors.put(serviceName,srvDesc);
+                }
+            }
+        }
+        return srvDesc;
 	}
 	
-	public synchronized void setWebserviceRegistrations(List<WebserviceRegistration> registrations) {
-		this.registrations = registrations;
-		nameToRegistration = buildRegistrationMap(registrations);
-		nameToDescriptor = buildServiceDescriptors(registrations);
-	}
-	
-	public synchronized WebserviceRegistration getWebserviceRegistration(String serviceName) {
-		return nameToRegistration.get(serviceName);
-	}
-	
-	public synchronized List<WebserviceRegistration> getWebserviceRegistrations() {
-		return registrations;
-	}
-  
-	public synchronized ServiceDescriptor getServiceDescriptor(String serviceName) {
-		return nameToDescriptor.get(serviceName);
-	}
-	
-	private Map<String,WebserviceRegistration> buildRegistrationMap(List<WebserviceRegistration> registrations) {
-		Map<String,WebserviceRegistration> map = new HashMap<String,WebserviceRegistration>();
-		for(WebserviceRegistration registration: registrations) {
-			map.put(registration.getServiceName(), registration);
-		}
-		return map;
-	}
-	
-	private Map<String,ServiceDescriptor> buildServiceDescriptors(List<WebserviceRegistration> registrations) {
-		Map<String, ServiceDescriptor> descriptors = new HashMap<String, ServiceDescriptor>();
-		for(WebserviceRegistration registration: registrations) {
-			try {
-				ServiceDescriptor descriptor = new ServiceDescriptor(registration);
-				nameToDescriptor.put(registration.getServiceName(), descriptor);
-			} catch(ServiceException x) {
-				throw new RuntimeException("Can't create ServiceDescriptor for service: " + registration.getServiceName());
+	public Object getServiceObject(String serviceName) throws ServiceException {
+		Object serviceObject=null;
+        synchronized(serviceObjects) {
+            serviceObject=serviceObjects.get(serviceName);
+        }
+        if(serviceObject==null) {
+            ServiceConfig srvConf=getService(serviceName);
+            if(srvConf!=null) {
+                String scope=srvConf.getScopeType();
+                if(scope.equals(Constants.SERVICE_SCOPE_REQUEST)) return createServiceObject(srvConf);
+				synchronized(serviceObjects) {
+				    serviceObject=createServiceObject(srvConf);
+				    serviceObjects.put(serviceName,serviceObject);
+				}
 			}
 		}
-		return descriptors;
+		return serviceObject;
 	}
 	
+	private Object createServiceObject(ServiceConfig srvConf) throws ServiceException {
+        try {
+            Class<?> clazz=Class.forName(srvConf.getImplementationName());
+            Object serviceObject=clazz.newInstance();
+            return serviceObject;
+		} catch(Exception x) {
+			throw new ServiceException("Can't create instance of service '"+srvConf.getName()+"'.",x);
+		}
+	}
+	
+	public void register(String serviceName, Object serviceObject) {
+	    synchronized(serviceObjects) {
+	        serviceObjects.put(serviceName, serviceObject);
+	    }
+	}
+    
 }

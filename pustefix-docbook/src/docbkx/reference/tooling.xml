@@ -1,0 +1,30 @@
+<?xml version="1.0"?>
+<chapter xml:id="tooling" xmlns="http://docbook.org/ns/docbook" xmlns:xlink="http://www.w3.org/1999/xlink"
+  xmlns:xi="http://www.w3.org/2001/XInclude" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xsi:schemaLocation="http://docbook.org/ns/docbook http://www.docbook.org/xml/5.0CR7/xsd/docbook.xsd"
+>
+  <title>Tooling</title>
+    <para>
+    </para>
+    <section xml:id="tooling.pfxinternals">
+      <title>Pustefix internals page</title>
+      <para>
+        The Pustefix internals page provides some useful information for application developers (e.g. environment properties, JVM statistics, 
+        loaded modules).
+        The page is only available at development time and can be accessed under <literal>/pfxinternals</literal> (the 
+        <literal>&lt;pfx:editconsole/&gt;</literal> contains a link too).
+      </para>
+      <para>
+        On the Pustefix internals page you can additionally find some useful links triggering actions like scheduling a webapp reload or
+        invalidating sessions.
+      </para>
+      <figure xml:id="tooling.pfxinternals.screenshot">
+        <title>Pustefix internals page</title>
+        <mediaobject>
+          <imageobject>
+            <imagedata fileref="images/reference/pfxinternals-screenshot.png" format="PNG"/>
+          </imageobject>
+        </mediaobject>
+      </figure>
+    </section>
+</chapter>

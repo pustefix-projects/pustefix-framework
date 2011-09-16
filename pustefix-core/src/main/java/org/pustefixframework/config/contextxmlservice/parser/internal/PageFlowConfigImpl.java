@@ -18,6 +18,10 @@
 
 package org.pustefixframework.config.contextxmlservice.parser.internal;
 
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
+
 import org.pustefixframework.config.contextxmlservice.PageFlowConfig;
 
 
@@ -31,6 +35,7 @@ public class PageFlowConfigImpl implements PageFlowConfig {
     private String flowName = null;
     private String finalPage = null;
     private boolean stopNext = false;
+    private ArrayList<PageFlowStepConfigImpl> flowSteps = new ArrayList<PageFlowStepConfigImpl>();
     
     public PageFlowConfigImpl(String name) {
         this.flowName = name;
@@ -63,5 +68,16 @@ public class PageFlowConfigImpl implements PageFlowConfig {
      */
     public boolean isStopNext() {
         return this.stopNext;
+    }
+    
+    public void addFlowStep(PageFlowStepConfigImpl config) {
+        this.flowSteps.add(config);
+    }
+    
+    /* (non-Javadoc)
+     * @see de.schlund.pfixxml.config.PageFlowConfig#getFlowSteps()
+     */
+    public List<PageFlowStepConfigImpl> getFlowSteps() {
+        return Collections.unmodifiableList(this.flowSteps);
     }
 }

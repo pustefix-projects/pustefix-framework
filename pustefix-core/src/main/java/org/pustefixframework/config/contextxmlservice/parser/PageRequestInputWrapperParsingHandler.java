@@ -20,8 +20,8 @@ package org.pustefixframework.config.contextxmlservice.parser;
 
 import org.pustefixframework.config.contextxmlservice.PageRequestConfig;
 import org.pustefixframework.config.contextxmlservice.parser.internal.IWrapperConfigImpl;
+import org.pustefixframework.config.contextxmlservice.parser.internal.StateConfigImpl;
 import org.pustefixframework.config.generic.ParsingUtils;
-import org.springframework.osgi.context.ConfigurableOsgiBundleApplicationContext;
 import org.w3c.dom.Element;
 
 import com.marsching.flexiparse.parser.HandlerContext;
@@ -40,11 +40,10 @@ public class PageRequestInputWrapperParsingHandler implements ParsingHandler {
     public void handleNode(HandlerContext context) throws ParserException {
        
         Element element = (Element)context.getNode();
-        ParsingUtils.checkAttributes(element, new String[] {"class", "prefix"}, new String[] {"checkactive", "activeignore", "logging"});
-
-        ConfigurableOsgiBundleApplicationContext appContext = ParsingUtils.getSingleTopObject(ConfigurableOsgiBundleApplicationContext.class, context);
+        ParsingUtils.checkAttributes(element, new String[] {"class", "prefix"}, new String[] {"checkactive", "activeignore", "logging", "tenant"});
          
-        PageRequestConfig pageConfig = ParsingUtils.getFirstTopObject(PageRequestConfig.class, context, false);
+        StateConfigImpl stateConfig = ParsingUtils.getFirstTopObject(StateConfigImpl.class, context, true);
+        PageRequestConfig pageConfig = ParsingUtils.getFirstTopObject(PageRequestConfig.class, context, true);
         IWrapperConfigImpl wrapperConfig = new IWrapperConfigImpl();
         
         String prefix = element.getAttribute("prefix").trim();
@@ -53,12 +52,12 @@ public class PageRequestInputWrapperParsingHandler implements ParsingHandler {
         String className = element.getAttribute("class").trim();
         Class<?> wrapperClass;
         try {
-            wrapperClass = Class.forName(className, true, appContext.getClassLoader());
+            wrapperClass = Class.forName(className);
         } catch (ClassNotFoundException e) {
-            throw new ParserException("Could not load wrapper class \"" + className + "\"!");
+            throw new ParserException("Could not load wrapper class \"" + className + "\"!", e);
         }
         if (!IWrapper.class.isAssignableFrom(wrapperClass)) {
-            throw new ParserException("Input wrapper class " + wrapperClass + " on page " + ((pageConfig != null) ? pageConfig.getPageName() : "[unknown]") + " does not implement " + IWrapper.class + " interface!");
+            throw new ParserException("Input wrapper class " + wrapperClass + " on page " + pageConfig.getPageName() + " does not implement " + IWrapper.class + " interface!");
         }
         wrapperConfig.setWrapperClass(wrapperClass.asSubclass(IWrapper.class));
         
@@ -88,7 +87,13 @@ public class PageRequestInputWrapperParsingHandler implements ParsingHandler {
             wrapperConfig.setLogging(false);
         }
         
-        context.getObjectTreeElement().addObject(wrapperConfig);
+        String tenant = element.getAttribute("tenant").trim();
+        if(tenant.length() > 0) {
+            wrapperConfig.setTenant(tenant);
+        }
+        
+        stateConfig.addIWrapper(wrapperConfig);
+        
     }
 
 }

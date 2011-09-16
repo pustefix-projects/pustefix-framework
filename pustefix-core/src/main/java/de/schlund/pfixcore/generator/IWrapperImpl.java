@@ -18,7 +18,10 @@
 
 package de.schlund.pfixcore.generator;
 
+import java.io.BufferedOutputStream;
 import java.io.IOException;
+import java.io.OutputStreamWriter;
+import java.io.Writer;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.Arrays;
@@ -27,8 +30,10 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.TreeSet;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.apache.log4j.Logger;
+
+import de.schlund.pfixxml.resources.FileResource;
+import de.schlund.pfixxml.resources.ResourceUtil;
 
 /**
  * IWrapperImpl.java
@@ -42,20 +47,29 @@ import org.apache.commons.logging.LogFactory;
  */
 
 public abstract class IWrapperImpl implements IWrapper {
-	
-	private Log logger = LogFactory.getLog(this.getClass());
-	private Log extraLogger = LogFactory.getLog("LOGGER_IWRAPPER");
-	
     protected RequestData req;
     protected String      prefix   = "__undef";
     protected Integer     order    = new Integer(0);
+    private   Logger      LOG      = Logger.getLogger(this.getClass());
+    private   FileResource logdir  = null; 
+    private   String      pagename = null;
+    private   String      visitid  = null;
     
     protected HashMap<String, IWrapperParam>     params   = null; // single static parameters (of the form PREFIX.NAME)
     protected HashMap<String, IWrapperParam>     errors   = null; // errors on single parameters
     protected HashMap<String, IWrapperIndexedParam>     idxprms  = null; // array like indexed parameters (of the form PREFIX.NAME.INDEX)
+    
+    public void initLogging(FileResource logdir, String pagename, String visitid) {
+        LOG.debug("*** Logging input for " + prefix + " into " + logdir + " " + pagename + " " + visitid + " ***");
+        this.logdir   = logdir;
+        this.pagename = pagename;
+        this.visitid  = visitid;
+    }
 
     public void tryErrorLogging() throws IOException {
-    	if(extraLogger.isDebugEnabled()) {
+        if (logdir != null && pagename != null && visitid != null) {
+            FileResource    log    = ResourceUtil.getFileResource(logdir, pagename + "#" + prefix);
+            Writer          out    = new OutputStreamWriter(new BufferedOutputStream(log.getOutputStream(true)));
             IWrapperParam[] tmperrors = gimmeAllParamsWithErrors();
             if (tmperrors != null && tmperrors.length > 0) {
                 StringBuffer buff = getLogBuffer("ERRORS");
@@ -66,13 +80,16 @@ public abstract class IWrapperImpl implements IWrapper {
                         appendErrorLog(param, buff);
                     }
                 }
-                extraLogger.debug(buff.toString());
+                out.write(buff.toString() + "\n");
+                out.flush();
             }
         }
     }
 
     public void tryParamLogging() throws IOException {
-        if(extraLogger.isDebugEnabled()) {
+        if (logdir != null && pagename != null && visitid != null) {
+            FileResource log = ResourceUtil.getFileResource(logdir,pagename+"#"+prefix);
+            Writer       out  = new OutputStreamWriter(new BufferedOutputStream(log.getOutputStream(true)));
             StringBuffer buff = getLogBuffer("VALUES");
             for (Iterator<IWrapperParam> iter = params.values().iterator(); iter.hasNext(); ) {
                 appendParamLog(iter.next(), buff);
@@ -84,7 +101,8 @@ public abstract class IWrapperImpl implements IWrapper {
                     appendParamLog(pinfoarr[i], buff);
                 }
             }
-            extraLogger.debug(buff.toString());
+            out.write(buff.toString() + "\n");
+            out.flush();
         }
     }
 
@@ -101,13 +119,13 @@ public abstract class IWrapperImpl implements IWrapper {
 
         for (Iterator<IWrapperParam> i = params.values().iterator(); i.hasNext();) {
             IWrapperParam pinfo = i.next();
-            if (logger.isDebugEnabled()) {
-                logger.debug("===> Doing init for Param: " + pinfo.getName());
+            if (LOG.isDebugEnabled()) {
+                LOG.debug("===> Doing init for Param: " + pinfo.getName());
             }
             pinfo.initValueFromRequest(prefix, req);
             if (pinfo.errorHappened()) {
-                if (logger.isDebugEnabled()) {
-                    logger.debug("*** ERROR happened for Param: " + pinfo.getName());
+                if (LOG.isDebugEnabled()) {
+                    LOG.debug("*** ERROR happened for Param: " + pinfo.getName());
                 }
                 synchronized (errors) {
                     errors.put(pinfo.getName(), pinfo);
@@ -116,8 +134,8 @@ public abstract class IWrapperImpl implements IWrapper {
         }
         for (Iterator<IWrapperIndexedParam> i = idxprms.values().iterator(); i.hasNext();) {
             IWrapperIndexedParam pindex = i.next();
-            if (logger.isDebugEnabled()) {
-                logger.debug("===> Doing init for IndexedParam: " + pindex.getName());
+            if (LOG.isDebugEnabled()) {
+                LOG.debug("===> Doing init for IndexedParam: " + pindex.getName());
             }
             pindex.initValueFromRequest(prefix, req);
             // error handling happens inside the IWRapperIndexedParam...
@@ -233,7 +251,7 @@ public abstract class IWrapperImpl implements IWrapper {
         StringBuffer buff = new StringBuffer(256);
         long         now  = System.currentTimeMillis();
         DateFormat   fmt  = new SimpleDateFormat("yyyy.MM.dd HH:mm:ss");
-        buff.append(fmt.format(new Date(now)) + "|" + init);
+        buff.append(fmt.format(new Date(now)) + "|" + visitid + "|" + init);
         return buff;
     }
 

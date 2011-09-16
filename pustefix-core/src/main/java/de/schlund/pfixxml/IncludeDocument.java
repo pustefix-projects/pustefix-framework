@@ -22,13 +22,10 @@ import java.io.IOException;
 
 import javax.xml.transform.TransformerException;
 
-import org.pustefixframework.resource.InputStreamResource;
-import org.pustefixframework.resource.LastModifiedInfoResource;
-import org.pustefixframework.resource.Resource;
-import org.pustefixframework.resource.support.NullResource;
 import org.w3c.dom.Document;
 import org.xml.sax.SAXException;
 
+import de.schlund.pfixxml.resources.Resource;
 import de.schlund.pfixxml.util.Xml;
 import de.schlund.pfixxml.util.XsltVersion;
 
@@ -66,15 +63,14 @@ public class IncludeDocument {
      * to modify an immutable document will cause an exception.
      */
     public void createDocument(XsltVersion xsltVersion, Resource path, boolean mutable) throws SAXException, IOException, TransformerException {
-        if(path instanceof NullResource) throw new IOException("Resource not found: "+path.getURI().toString());
-    	modTime  = ((LastModifiedInfoResource)path).lastModified();
+        modTime  = path.lastModified();
 
         if (mutable) {
-            doc = Xml.parseMutable((InputStreamResource)path);
+            doc = Xml.parseMutable(path);
         } else {
             //TODO: avoid exception by providing an appropriate method signature
             if(xsltVersion==null) throw new IllegalArgumentException("XsltVersion is required!");
-            doc = Xml.parse(xsltVersion, (InputStreamResource)path);
+            doc = Xml.parse(xsltVersion, path);
         }
     }
 

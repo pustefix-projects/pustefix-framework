@@ -38,6 +38,7 @@ import de.schlund.pfixcore.workflow.PageRequest;
 import de.schlund.pfixcore.workflow.PageRequestStatus;
 import de.schlund.pfixcore.workflow.SessionStatusListener;
 import de.schlund.pfixcore.workflow.context.PageFlow;
+import de.schlund.pfixxml.Tenant;
 import de.schlund.pfixxml.PfixServletRequest;
 import de.schlund.pfixxml.Variant;
 import de.schlund.util.statuscodes.StatusCode;
@@ -59,6 +60,8 @@ public class MockContext implements Context {
 
     private ContextResourceManager resourceManager;
     private Variant variant;
+    private Tenant tenant;
+    private List<Tenant> tenants;
     private String lang;
     private String visitId;
     private Properties properties;
@@ -308,6 +311,25 @@ public class MockContext implements Context {
 
     public void setVariantForThisRequestOnly(Variant variant) {
         this.variant = variant;
+    }
+
+    public Tenant getTenant() {
+        return tenant;
+    }
+    
+    public void setTenant(Tenant tenant) {
+        this.tenant = tenant;
+    }
+    
+    public List<Tenant> getTenants() {
+        return tenants;
+    }
+    
+    public void setTenants(List<Tenant> tenants) {
+        this.tenants = tenants;
+    }
+    
+    public void setPageAlternative(String key) {
     }
     
 }
