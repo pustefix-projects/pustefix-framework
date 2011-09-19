@@ -103,8 +103,15 @@ public class PustefixMergeMojo extends AbstractMojo {
      */
     private MavenProject project;
     
+    /**
+     * @parameter
+     */
+    private boolean merge = true;
+    
 
     public void execute() throws MojoExecutionException {
+        
+        if(merge) {
         
         File webappDir = new File(project.getBasedir(), "src/main/webapp");
         if(webappDir.exists()) {
@@ -121,6 +128,8 @@ public class PustefixMergeMojo extends AbstractMojo {
             }
             // Merge statusmessages from modules which were not extracted
             processUnextractedModules();
+        
+        }
         
         }
     }    
