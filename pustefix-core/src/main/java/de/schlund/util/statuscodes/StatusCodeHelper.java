@@ -68,7 +68,7 @@ public class StatusCodeHelper {
      */
     public static URI[] update(final URI[] uris) {
         //only apply when docroot is set (workaround for unit tests which didn't set docroot)
-        if(GlobalConfig.getDocroot() == null && GlobalConfig.getServletContext() == null) {
+        if(GlobalConfig.getDocroot() != null || GlobalConfig.getServletContext() != null) {
             for(int i=0; i<uris.length; i++) {
                 URI uri = uris[i];
                 Resource res = ResourceUtil.getResource(uri);
