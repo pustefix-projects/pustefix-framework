@@ -45,6 +45,7 @@ public class SessionCleaner implements DisposableBean {
 
     private        Timer          timer;
     private final static Logger   LOG      = Logger.getLogger(SessionCleaner.class);
+    private Logger LOGGER_SESSION = Logger.getLogger("LOGGER_SESSION");
     
     private int timeout = 300;
     
@@ -159,6 +160,7 @@ public class SessionCleaner implements DisposableBean {
         @Override
         public void run() {
             try {
+                LOGGER_SESSION.info("Invalidate session VII: " + session.getId());
                 this.session.invalidate();
             } catch (IllegalStateException e) {
                 // Ignore IllegalStateException

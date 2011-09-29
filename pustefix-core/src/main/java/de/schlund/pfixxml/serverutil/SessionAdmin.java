@@ -50,6 +50,7 @@ public class SessionAdmin implements HttpSessionBindingListener, SessionAdminMBe
     public  static String       PARENT_SESS_ID = "__PARENT_SESSION_ID__";
     public  static final String SESSION_IS_SECURE             = "__SESSION_IS_SECURE__";
     private static final Logger LOG            = Logger.getLogger(SessionAdmin.class);
+    private Logger LOGGER_SESSION = Logger.getLogger("LOGGER_SESSION");
     /** Maps session to it's id. */
     private        HashMap<HttpSession, String> sessionid = new HashMap<HttpSession, String>();
     private        HashMap<String, SessionInfoStruct> sessioninfo = new HashMap<String, SessionInfoStruct>();
@@ -231,6 +232,7 @@ public class SessionAdmin implements HttpSessionBindingListener, SessionAdminMBe
     }
     
     public void invalidateSession(String id) throws IOException {
+        LOGGER_SESSION.info("Invalidate session VIII: " + id);
         getSession(id).invalidate();
     }
     
@@ -239,7 +241,9 @@ public class SessionAdmin implements HttpSessionBindingListener, SessionAdminMBe
             List<SessionInfoStruct> sessionSnapshot = new ArrayList<SessionInfoStruct>(sessioninfo.values());
             Iterator<SessionInfoStruct> infos = sessionSnapshot.iterator();
             while(infos.hasNext()) {
-                infos.next().getSession().invalidate();
+                HttpSession s = infos.next().getSession();
+                LOGGER_SESSION.info("Invalidate session VIX: " + s.getId());
+                s.invalidate();
             }
         }
     }

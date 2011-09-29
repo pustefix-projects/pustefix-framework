@@ -257,6 +257,10 @@
     <appender-ref ref="LOGGER_JMX"/>
   </category>
 
+  <category name="LOGGER_SESSION" additivity="false">
+    <priority value="INFO"/>
+    <appender-ref ref="LOGGER_GENERAL"/>
+  </category>
 
   <!-- default category -->
 

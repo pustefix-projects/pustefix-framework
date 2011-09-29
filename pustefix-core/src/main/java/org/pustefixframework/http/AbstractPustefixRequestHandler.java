@@ -95,6 +95,7 @@ public abstract class AbstractPustefixRequestHandler implements UriProvidingHttp
     private String handlerURI;
     private SessionAdmin sessionAdmin;
     private ExceptionProcessingConfiguration exceptionProcessingConfig;
+    private Logger LOGGER_SESSION = Logger.getLogger("LOGGER_SESSION");
     
     protected abstract ServletManagerConfig getServletManagerConfig();
 
@@ -237,6 +238,7 @@ public abstract class AbstractPustefixRequestHandler implements UriProvidingHttp
                         LOG.debug("    ... during the session cookies were ENABLED, " + "but will continue because of cookie_security_not_enforced " + session.getId());
                     } else {
                         LOG.debug("    ... but during the session cookies were already ENABLED: " + "Will invalidate the session " + session.getId());
+                        LOGGER_SESSION.info("Invalidate session I: " + session.getId());
                         session.invalidate();
                         has_session = false;
                     }
@@ -278,6 +280,7 @@ public abstract class AbstractPustefixRequestHandler implements UriProvidingHttp
                                     LOG.debug("   ... but the value is WRONG!");
                                     LOG.error("*** Wrong Session-ID for running secure session from cookie. " + "IP:" + req.getRemoteAddr() + " Cookie: " + cookie.getValue()
                                             + " SessID: " + session.getId());
+                                    LOGGER_SESSION.info("Invalidate session II: " + session.getId());
                                     session.invalidate();
                                     has_session = false;
                                 }
@@ -299,6 +302,7 @@ public abstract class AbstractPustefixRequestHandler implements UriProvidingHttp
                                 // __PFIX_TST_* cookie says.  Basically we completely switch off
                                 // cookie handling for this new session.
                                 mark_session_as_no_cookies = (String) session.getAttribute(VISIT_ID);
+                                LOGGER_SESSION.info("Invalidate session III: " + session.getId());
                                 session.invalidate();
                                 has_session = false;
                             }
@@ -312,6 +316,7 @@ public abstract class AbstractPustefixRequestHandler implements UriProvidingHttp
                     }
                 } else if (secure != null && secure.booleanValue()) {
                     LOG.debug("*** Found secure session but NOT running under SSL => Destroying session.");
+                    LOGGER_SESSION.info("Invalidate session IV: " + session.getId());
                     session.invalidate();
                     has_session = false;
                 }
@@ -485,6 +490,7 @@ public abstract class AbstractPustefixRequestHandler implements UriProvidingHttp
         }
 
         LOG.debug("*** Invalidation old session (Id: " + old_id + ")");
+        LOGGER_SESSION.info("Invalidate session V: " + session.getId());
         session.invalidate();
         session = req.getSession(true);
 

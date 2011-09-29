@@ -145,6 +145,7 @@ public abstract class AbstractPustefixXMLRequestHandler extends AbstractPustefix
     protected String servletname = null;
     
     protected String editorLocation;
+    private Logger LOGGER_SESSION = Logger.getLogger("LOGGER_SESSION");
     
     @Override
     protected ServletManagerConfig getServletManagerConfig() {
@@ -432,6 +433,7 @@ public abstract class AbstractPustefixXMLRequestHandler extends AbstractPustefix
                 // Invalidate immediately
                 if (session.getAttribute(SESS_CLEANUP_FLAG_STAGE1) != null
                         && session.getAttribute(SESS_CLEANUP_FLAG_STAGE2) == null) {
+                    LOGGER_SESSION.info("Invalidate session VI: " + session.getId());
                     session.invalidate();
                 }
             }
