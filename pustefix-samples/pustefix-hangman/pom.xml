@@ -6,12 +6,12 @@
   <parent>
     <groupId>org.pustefixframework</groupId>
     <artifactId>pustefix-samples</artifactId>
-    <version>0.15.29-SNAPSHOT</version>
+    <version>0.15.29</version>
   </parent>
 
   <groupId>org.pustefixframework</groupId>
   <artifactId>pustefix-hangman</artifactId>
-  <version>0.15.29-SNAPSHOT</version>
+  <version>0.15.29</version>
   <packaging>war</packaging>
 
   <name>Pustefix Hangman Game</name>
@@ -39,7 +39,7 @@
     <dependency>
       <groupId>org.pustefixframework</groupId>
       <artifactId>pustefix-core</artifactId>
-      <version>0.15.29-SNAPSHOT</version>
+      <version>0.15.29</version>
     </dependency>
   </dependencies>
  
@@ -56,7 +56,7 @@
       <plugin>
         <groupId>org.pustefixframework.maven.plugins</groupId>
         <artifactId>pustefix-webapp-plugin</artifactId>
-        <version>0.15.29-SNAPSHOT</version>
+        <version>0.15.29</version>
         <executions>
           <execution>
             <goals>
@@ -69,7 +69,7 @@
       <plugin>
         <groupId>org.pustefixframework.maven.plugins</groupId>
         <artifactId>pustefix-statuscode-plugin</artifactId>
-        <version>0.15.29-SNAPSHOT</version>
+        <version>0.15.29</version>
         <executions>
           <execution>
             <goals>
@@ -81,7 +81,7 @@
       <plugin>
         <groupId>org.pustefixframework.maven.plugins</groupId>
         <artifactId>pustefix-iwrapper-plugin</artifactId>
-        <version>0.15.29-SNAPSHOT</version>
+        <version>0.15.29</version>
         <executions>
           <execution>
             <goals>
