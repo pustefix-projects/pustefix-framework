@@ -238,7 +238,7 @@ public abstract class AbstractPustefixRequestHandler implements UriProvidingHttp
                         LOG.debug("    ... during the session cookies were ENABLED, " + "but will continue because of cookie_security_not_enforced " + session.getId());
                     } else {
                         LOG.debug("    ... but during the session cookies were already ENABLED: " + "Will invalidate the session " + session.getId());
-                        LOGGER_SESSION.info("Invalidate session I: " + session.getId());
+                        LOGGER_SESSION.info("Invalidate session I: " + session.getId() + dumpRequest(req));
                         session.invalidate();
                         has_session = false;
                     }
@@ -280,7 +280,7 @@ public abstract class AbstractPustefixRequestHandler implements UriProvidingHttp
                                     LOG.debug("   ... but the value is WRONG!");
                                     LOG.error("*** Wrong Session-ID for running secure session from cookie. " + "IP:" + req.getRemoteAddr() + " Cookie: " + cookie.getValue()
                                             + " SessID: " + session.getId());
-                                    LOGGER_SESSION.info("Invalidate session II: " + session.getId());
+                                    LOGGER_SESSION.info("Invalidate session II: " + session.getId() + dumpRequest(req));
                                     session.invalidate();
                                     has_session = false;
                                 }
@@ -302,7 +302,7 @@ public abstract class AbstractPustefixRequestHandler implements UriProvidingHttp
                                 // __PFIX_TST_* cookie says.  Basically we completely switch off
                                 // cookie handling for this new session.
                                 mark_session_as_no_cookies = (String) session.getAttribute(VISIT_ID);
-                                LOGGER_SESSION.info("Invalidate session III: " + session.getId());
+                                LOGGER_SESSION.info("Invalidate session III: " + session.getId() + dumpRequest(req));
                                 session.invalidate();
                                 has_session = false;
                             }
@@ -316,7 +316,7 @@ public abstract class AbstractPustefixRequestHandler implements UriProvidingHttp
                     }
                 } else if (secure != null && secure.booleanValue()) {
                     LOG.debug("*** Found secure session but NOT running under SSL => Destroying session.");
-                    LOGGER_SESSION.info("Invalidate session IV: " + session.getId());
+                    LOGGER_SESSION.info("Invalidate session IV: " + session.getId() + dumpRequest(req));
                     session.invalidate();
                     has_session = false;
                 }
@@ -490,7 +490,7 @@ public abstract class AbstractPustefixRequestHandler implements UriProvidingHttp
         }
 
         LOG.debug("*** Invalidation old session (Id: " + old_id + ")");
-        LOGGER_SESSION.info("Invalidate session V: " + session.getId());
+        LOGGER_SESSION.info("Invalidate session V: " + session.getId() + dumpRequest(req));
         session.invalidate();
         session = req.getSession(true);
 
@@ -1012,6 +1012,26 @@ public abstract class AbstractPustefixRequestHandler implements UriProvidingHttp
         } else {
             cookie.setPath("/");
         }
+    }
+    
+    private static String dumpRequest(HttpServletRequest req) {
+        StringBuilder sb = new StringBuilder();
+        sb.append("\n");
+        sb.append(req.getMethod()).append("|").append(req.getRequestURI()).append("|");
+        sb.append(req.getQueryString() == null?"-":req.getQueryString()).append("|");
+        sb.append(req.getRequestedSessionId()).append("|").append(req.getProtocol()).append("|");
+        sb.append(req.getScheme()).append("|").append(req.getRemoteAddr()).append("|");
+        sb.append(req.getServerName()).append("\n");
+        Enumeration<?> headers = req.getHeaderNames();
+        while(headers.hasMoreElements()) {
+            String header = (String)headers.nextElement();
+            Enumeration<?> headerValues = req.getHeaders(header);
+            while(headerValues.hasMoreElements()) {
+                String value = (String)headerValues.nextElement();
+                sb.append(header).append(": ").append(value).append("\n");
+            }
+        }
+        return sb.toString();
     }
     
     public void setServletEncoding(String encoding) {
