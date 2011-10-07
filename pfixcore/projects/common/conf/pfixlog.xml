@@ -158,8 +158,8 @@
     <appender-ref ref="LOGGER_GENERAL"/>
   </category>
 
-  <category name="de.schlund.pfixxml.AbstractXMLServlet" additivity="false">
-    <priority value="DEBUG"/>
+  <category name="org.pustefixframework.http.AbstractPustefixRequestHandler" additivity="false">
+    <priority value="WARN"/>
     <appender-ref ref="LOGGER_GENERAL"/>
   </category>
 
@@ -281,6 +281,11 @@
     <priority value="WARN"/>
     <appender-ref ref="LOGGER_TRAIL"/>
   </category>
+
+  <category name="LOGGER_SESSION" additivity="false">
+    <priority value="INFO"/>
+    <appender-ref ref="LOGGER_GENERAL"/>
+  </category> 
 
   <category name="LOGGER_WSTRAIL" additivity="false">
     <priority value="WARN"/>

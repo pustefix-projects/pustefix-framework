@@ -244,9 +244,8 @@
 
   <config-include file="sample1/conf/fragments.xml" section="pagerequests" />
 
-  <!-- <properties> -->
-    <!-- *** some additional properties needed for this application *** -->
-    <!-- <prop name="interfacelogging">sample1/log</prop> -->
-  <!-- </properties> -->
+  <properties>
+    <prop name="some.property">some value</prop>
+  </properties>
 
 </context-xml-service-config>
