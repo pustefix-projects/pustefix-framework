@@ -230,7 +230,12 @@
     <priority value="WARN"/>
     <appender-ref ref="LOGGER_VISIT"/>
   </category>
-  
+
+  <category name="LOGGER_SESSION" additivity="false">
+    <priority value="INFO"/>
+    <appender-ref ref="LOGGER_GENERAL"/>
+  </category>
+ 
   <category name="LOGGER_TRAIL" additivity="false">
     <priority value="WARN"/>
     <appender-ref ref="LOGGER_TRAIL"/>

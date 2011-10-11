@@ -23,17 +23,32 @@ import java.util.List;
 import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletRequest;
 
+import org.apache.log4j.Logger;
+
 /**
  * @author mleidig@schlund.de
  */
 public class CookieUtils {
     
+    private static Logger LOG = Logger.getLogger(CookieUtils.class);
+    
     public static Cookie[] getCookies(HttpServletRequest request) {
+        //Workaround for cookie loss problem: 
+        //Despite receiving a non-empty request cookie header from the browser Tomcat
+        //sometimes inexplicably returns null calling HttpServletRequest.getCookies().
+        //In this case we directly parse the cookie header by calling the utility
+        //method CookieUtils.getCookies().
         Cookie[] cookies = request.getCookies();
         if(cookies == null) {
             String header = request.getHeader("Cookie");
             if(header != null) {
                 cookies=getCookies(header);
+                if(cookies != null) {
+                    String userAgent = request.getHeader("User-Agent");
+                    if (userAgent == null) userAgent = "-";
+                    String cookieHeader = request.getHeader("Cookie");
+                    LOG.warn("COOKIE_LOSS_WORKAROUND|" + userAgent + "|" + cookieHeader);
+                }
             }
         }
         return cookies;
