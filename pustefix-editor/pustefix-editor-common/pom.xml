@@ -5,14 +5,14 @@
   <parent>
     <artifactId>pustefix-editor</artifactId>
     <groupId>org.pustefixframework.editor</groupId>
-    <version>0.16.10</version>
+    <version>0.16.11-SNAPSHOT</version>
   </parent>
 
   <name>Pustefix Editor Common Code</name>
 
   <groupId>org.pustefixframework.editor</groupId>
   <artifactId>pustefix-editor-common</artifactId>
-  <version>0.16.10</version>
+  <version>0.16.11-SNAPSHOT</version>
   
 </project>
 
