@@ -21,6 +21,7 @@ import java.lang.reflect.Method;
 import java.net.URI;
 import java.net.URISyntaxException;
 
+import de.schlund.pfixxml.config.GlobalConfig;
 import de.schlund.pfixxml.resources.Resource;
 import de.schlund.pfixxml.resources.ResourceUtil;
 
@@ -66,19 +67,22 @@ public class StatusCodeHelper {
      * language module override mechanism, can be supported in parallel.
      */
     public static URI[] update(final URI[] uris) {
-        for(int i=0; i<uris.length; i++) {
-            URI uri = uris[i];
-            Resource res = ResourceUtil.getResource(uri);
-            if(!res.exists() && uri.getScheme().equals("docroot") && uri.getPath().startsWith("/modules-override/")) {
-                String path = uri.getPath().substring(18);
-                int ind = path.indexOf('/');
-                String module = path.substring(0, ind);
-                path = path.substring(ind + 1);
-                path = path.replaceAll("-merged", "");
-                try {
-                    uris[i] = new URI("dynamic://" + module + "/" + path);
-                } catch (URISyntaxException e) {
-                    throw new RuntimeException("Error updating statusmessage URI: " + uris[i], e);
+        //only apply when docroot is set (workaround for unit tests which didn't set docroot)
+        if(GlobalConfig.getDocroot() != null || GlobalConfig.getServletContext() != null) {
+            for(int i=0; i<uris.length; i++) {
+                URI uri = uris[i];
+                Resource res = ResourceUtil.getResource(uri);
+                if(!res.exists() && uri.getScheme().equals("docroot") && uri.getPath().startsWith("/modules-override/")) {
+                    String path = uri.getPath().substring(18);
+                    int ind = path.indexOf('/');
+                    String module = path.substring(0, ind);
+                    path = path.substring(ind + 1);
+                    path = path.replaceAll("-merged", "");
+                    try {
+                        uris[i] = new URI("dynamic://" + module + "/" + path);
+                    } catch (URISyntaxException e) {
+                        throw new RuntimeException("Error updating statusmessage URI: " + uris[i], e);
+                    }
                 }
             }
         }

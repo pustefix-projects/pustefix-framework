@@ -27,12 +27,14 @@ import de.schlund.pfixxml.util.CookieUtils;
 public class CookieSessionTrackingStrategy implements SessionTrackingStrategy {
 
     private Logger LOG = Logger.getLogger(CookieSessionTrackingStrategy.class);
+    private Logger LOGGER_SESSION = Logger.getLogger("LOGGER_SESSION");
     
     private static final String CHECK_FOR_RUNNING_SSL_SESSION = "__CHECK_FOR_RUNNING_SSL_SESSION__";
     private static final String PARAM_FORCELOCAL = "__forcelocal";
     private static final String STORED_REQUEST = "__STORED_PFIXSERVLETREQUEST__";
     private static final String INITIAL_SESSION_CHECK = "__INITIAL_SESSION_CHECK__";
     private static final String COOKIE_SESSION_RESET = "__PFIX_RST_";
+    private static final String COOKIE_SESSION_SSL = "__PFIX_SSL_";
     public static final String VISIT_ID = "__VISIT_ID__";
     
     private int INC_ID = 0;
@@ -53,6 +55,10 @@ public class CookieSessionTrackingStrategy implements SessionTrackingStrategy {
         boolean force_jump_back_to_ssl = false;
         boolean force_reuse_visit_id = false;
         boolean does_cookies = false;
+        boolean used_ssl = false;
+        
+        Cookie[] cookies = CookieUtils.getCookies(req);
+        used_ssl = (getCookie(cookies, COOKIE_SESSION_SSL) != null);
         
         if (req.isRequestedSessionIdValid()) {
             session = req.getSession(false);
@@ -80,6 +86,8 @@ public class CookieSessionTrackingStrategy implements SessionTrackingStrategy {
                     }
                 } else if (secure != null && secure.booleanValue()) {
                     LOG.debug("*** Found secure session but NOT running under SSL => Destroying session.");
+                    LOGGER_SESSION.info("Invalidate session I: " + session.getId());
+                    if(LOGGER_SESSION.isDebugEnabled()) LOGGER_SESSION.debug(dumpRequest(req));
                     session.invalidate();
                     has_session = false;
                 }
@@ -96,7 +104,7 @@ public class CookieSessionTrackingStrategy implements SessionTrackingStrategy {
                 LOG.debug("    ... but this session was the parent of a currently running secure session.");
                 HttpSession secure_session = context.getSessionAdmin().getChildSessionForParentId(req.getRequestedSessionId());
                 if (secure_session != null) {
-                    does_cookies = doCookieTest(req, res, secure_session);
+                    does_cookies = (cookies != null);
                 }
                 // We'll try to get back there securely by first jumping back to a new (insecure) SSL session,
                 // and after that the the jump to the secure SSL session will not create a new one, but reuse
@@ -123,13 +131,9 @@ public class CookieSessionTrackingStrategy implements SessionTrackingStrategy {
                     LOG.debug("    ... but found __forcelocal parameter to be set.");
                 } else {
                     boolean resetTry = false;
-                    Cookie[] cookies = CookieUtils.getCookies(req);
                     if(cookies != null) {
-                        for(Cookie cookie: cookies) {
-                            if(cookie.getName().equals(COOKIE_SESSION_RESET)) {
-                                if(cookie.getValue().equals(req.getRequestedSessionId())) resetTry = true;
-                            }
-                        }
+                        Cookie cookie = getCookie(cookies, COOKIE_SESSION_RESET);
+                        if(cookie != null && cookie.getValue().equals(req.getRequestedSessionId())) resetTry = true;
                     }
                     if(!resetTry) {
                         LOG.debug("    ... and __forcelocal is NOT set.");
@@ -178,7 +182,11 @@ public class CookieSessionTrackingStrategy implements SessionTrackingStrategy {
             return;
             // End of request cycle.
         }
-        
+        if (!has_session && used_ssl && !req.isSecure()) {
+            LOG.debug("=> VII");
+            redirectToSSL(req, res);
+            return;
+        }
         if (context.needsSession() && context.allowSessionCreate() && context.needsSSL(preq) && !has_ssl_session_secure) {  
             if(req.isSecure()) {
                 LOG.debug("=> IVa");
@@ -227,6 +235,8 @@ public class CookieSessionTrackingStrategy implements SessionTrackingStrategy {
                     }
                 }
                 LOG.warn(sb.toString());
+                LOGGER_SESSION.info("Invalidate session II: " + session.getId());
+                if(LOGGER_SESSION.isDebugEnabled()) LOGGER_SESSION.debug(dumpRequest(req));
                 session.invalidate();
                 redirectToClearedRequest(req, res);
                 return;
@@ -235,43 +245,7 @@ public class CookieSessionTrackingStrategy implements SessionTrackingStrategy {
         
         context.callProcess(preq, req, res);
     }
-   
-    private boolean doCookieTest(HttpServletRequest req, HttpServletResponse res, HttpSession sess) {
-        //TODO: replace calls
-        if (sess == null) {
-            sess = req.getSession(false);
-        }
-        // If in this session the client has been found to do cookies already, don't check the test
-        // cookie value again.  We still have to check if there are any cookies at all (a
-        // test cookie should be there, but maybe the wrong value because another session is
-        // opened in parallel), because we need to guard against clients which supply cookies over
-        // the whole redirect chain, but don't supply cookies on the following request, and we want
-        // to correctly react on people who turn off cookies during the session.
-        if (sess != null) {
-            LOG.debug("*** Testing for marked session...");
-            Cookie[] cookies = req.getCookies();
-            if(cookies == null) {
-                //Workaround for cookie loss problem: 
-                //Despite receiving a non-empty request cookie header from the browser Tomcat
-                //sometimes inexplicably returns null calling HttpServletRequest.getCookies().
-                //In this case we directly parse the cookie header by calling the utility
-                //method CookieUtils.getCookies().
-                cookies = CookieUtils.getCookies(req);
-                if (cookies != null) {
-                    String sessionId = sess.getId();
-                    String userAgent = req.getHeader("User-Agent");
-                    if (userAgent == null) userAgent = "-";
-                    String cookieHeader = req.getHeader("Cookie");
-                    LOG.warn("COOKIE_LOSS_WORKAROUND|" + sessionId + "|" + userAgent + "|" + cookieHeader);
-                    return true;
-                }
-            } else return true;
-        }
-        return false;
-    }
-    
 
-    
     private void redirectToClearedRequest(HttpServletRequest req, HttpServletResponse res) {
         LOG.debug("===> Redirecting to cleared Request URL");
         String redirect_uri = SessionHelper.getClearedURL(req.getScheme(), AbstractPustefixRequestHandler.getServerName(req), req, context.getServletManagerConfig().getProperties());
@@ -301,7 +275,7 @@ public class CookieSessionTrackingStrategy implements SessionTrackingStrategy {
             LOG.debug("*** reusing existing session for jump http=>https");
         }
         HttpSession session = req.getSession(true);
-        LOG.warn("SESSION1|" + session.getId());
+        LOGGER_SESSION.info("Get session I: " + session.getId());
         if (!reuse_session) {
             registerSession(req, session);
         }
@@ -317,7 +291,7 @@ public class CookieSessionTrackingStrategy implements SessionTrackingStrategy {
     
     private void redirectToSession(PfixServletRequest preq, HttpServletRequest req, HttpServletResponse res) {
         HttpSession session = req.getSession(true);
-        LOG.warn("GETSESSION2|" + session.getId());
+        LOGGER_SESSION.info("Get session II: " + session.getId());
         registerSession(req, session);
         LOG.debug("===> Redirecting to URL with session (Id: " + session.getId() + ")");
         session.setAttribute(STORED_REQUEST, preq);
@@ -328,13 +302,14 @@ public class CookieSessionTrackingStrategy implements SessionTrackingStrategy {
     
     private void redirectToSSLSession(PfixServletRequest preq, HttpServletRequest req, HttpServletResponse res) {
         HttpSession session = req.getSession(true);
-        LOG.warn("GETSESSION3|" + session.getId());
+        LOGGER_SESSION.info("Get session III: " + session.getId());
         registerSession(req, session);
 
         LOG.debug("===> Redirecting to URL with session (Id: " + session.getId() + ")");
         session.setAttribute(STORED_REQUEST, preq);
         session.setAttribute(INITIAL_SESSION_CHECK, session.getId());
         session.setAttribute(SessionAdmin.SESSION_IS_SECURE, Boolean.TRUE);
+        addSSLCookie(req, res);
         String redirect_uri = SessionHelper.encodeURL("https", AbstractPustefixRequestHandler.getServerName(req), req, context.getServletManagerConfig().getProperties());
         AbstractPustefixRequestHandler.relocate(res, redirect_uri);
     }
@@ -357,9 +332,11 @@ public class CookieSessionTrackingStrategy implements SessionTrackingStrategy {
         }
 
         LOG.debug("*** Invalidation old session (Id: " + old_id + ")");
+        LOGGER_SESSION.info("Invalidate session III: " + session.getId());
+        if(LOGGER_SESSION.isDebugEnabled()) LOGGER_SESSION.debug(dumpRequest(req));
         session.invalidate();
         session = req.getSession(true);
-        LOG.warn("GETSESSION4|" + session.getId());
+        LOGGER_SESSION.info("Get session IV: " + session.getId());
 
         // First of all we put the old session id into the new session (__PARENT_SESSION_ID__)
         session.setAttribute(SessionAdmin.PARENT_SESS_ID, old_id);
@@ -376,6 +353,7 @@ public class CookieSessionTrackingStrategy implements SessionTrackingStrategy {
         SessionHelper.copySessionData(map, session);
         LOG.debug("*** Setting SECURE flag");
         session.setAttribute(SessionAdmin.SESSION_IS_SECURE, Boolean.TRUE);
+        addSSLCookie(req, res);
         session.setAttribute(STORED_REQUEST, preq);
         session.setAttribute(INITIAL_SESSION_CHECK, session.getId());
 
@@ -428,7 +406,7 @@ public class CookieSessionTrackingStrategy implements SessionTrackingStrategy {
         // only used for the jump to SSL so we can get the cookie to check the identity of the caller.
         String parentid = req.getRequestedSessionId();
         HttpSession session = req.getSession(true);
-        LOG.warn("GETSESSION5|" + session.getId());
+        LOGGER_SESSION.info("Get session V: " + session.getId());
         session.setAttribute(CHECK_FOR_RUNNING_SSL_SESSION, parentid);
         LOG.debug("*** Setting INSECURE flag in session (Id: " + session.getId() + ")");
         session.setAttribute(SessionAdmin.SESSION_IS_SECURE, Boolean.FALSE);
@@ -448,7 +426,7 @@ public class CookieSessionTrackingStrategy implements SessionTrackingStrategy {
         HttpSession child = context.getSessionAdmin().getChildSessionForParentId(parentid);
         String curr_visit_id = (String) child.getAttribute(VISIT_ID);
         HttpSession session = req.getSession(true);
-        LOG.warn("GETSESSION6|" + session.getId());
+        LOGGER_SESSION.info("Get session VI: " + session.getId());
 
         LinkedList<TrailElement> traillog = context.getSessionAdmin().getInfo(child).getTraillog();
         session.setAttribute(VISIT_ID, curr_visit_id);
@@ -457,6 +435,44 @@ public class CookieSessionTrackingStrategy implements SessionTrackingStrategy {
         session.setAttribute(STORED_REQUEST, preq);
         String redirect_uri = SessionHelper.encodeURL(req.getScheme(), AbstractPustefixRequestHandler.getServerName(req), req, context.getServletManagerConfig().getProperties());
         AbstractPustefixRequestHandler.relocate(res, redirect_uri);
+    }
+    
+    private static void addSSLCookie(HttpServletRequest req, HttpServletResponse res) {
+        Cookie resetCookie = new Cookie(COOKIE_SESSION_SSL, "true");
+        resetCookie.setMaxAge(-1);
+        resetCookie.setPath((req.getContextPath().equals("")) ? "/" : req.getContextPath());
+        res.addCookie(resetCookie);
+    }
+    
+    private static Cookie getCookie(Cookie[] cookies, String name) {
+        if(cookies != null) {
+            for(Cookie cookie: cookies) {
+                if(cookie.getName().equals(name)) {
+                    return cookie;
+                }
+            }
+        }
+        return null;
+    }
+    
+    private static String dumpRequest(HttpServletRequest req) {
+        StringBuilder sb = new StringBuilder();
+        sb.append("\n");
+        sb.append(req.getMethod()).append("|").append(req.getRequestURI()).append("|");
+        sb.append(req.getQueryString() == null?"-":req.getQueryString()).append("|");
+        sb.append(req.getRequestedSessionId()).append("|").append(req.getProtocol()).append("|");
+        sb.append(req.getScheme()).append("|").append(req.getRemoteAddr()).append("|");
+        sb.append(req.getServerName()).append("\n");
+        Enumeration<?> headers = req.getHeaderNames();
+        while(headers.hasMoreElements()) {
+            String header = (String)headers.nextElement();
+            Enumeration<?> headerValues = req.getHeaders(header);
+            while(headerValues.hasMoreElements()) {
+                String value = (String)headerValues.nextElement();
+                sb.append(header).append(": ").append(value).append("\n");
+            }
+        }
+        return sb.toString();
     }
     
 }
