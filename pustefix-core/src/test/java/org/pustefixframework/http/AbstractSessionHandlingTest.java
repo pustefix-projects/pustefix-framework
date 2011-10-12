@@ -5,6 +5,8 @@ import java.net.ServerSocket;
 import java.util.Properties;
 import java.util.regex.Pattern;
 
+import junit.framework.TestCase;
+
 import org.apache.commons.httpclient.protocol.Protocol;
 import org.apache.commons.httpclient.protocol.ProtocolSocketFactory;
 import org.apache.log4j.ConsoleAppender;
@@ -16,8 +18,6 @@ import org.mortbay.jetty.security.SslSocketConnector;
 import org.mortbay.jetty.servlet.AbstractSessionManager;
 import org.mortbay.jetty.servlet.Context;
 import org.mortbay.jetty.servlet.ServletHolder;
-
-import junit.framework.TestCase;
 
 public abstract class AbstractSessionHandlingTest extends TestCase {
 
@@ -40,7 +40,7 @@ public abstract class AbstractSessionHandlingTest extends TestCase {
         logger = Logger.getLogger("org.pustefixframework");
         logger.setLevel((Level)Level.WARN);
         logger.addAppender(appender);
-            
+        
         //Start embedded Jetty
         Server server = new Server(httpPort);
         SslSocketConnector connector = new SslSocketConnector();
@@ -49,12 +49,14 @@ public abstract class AbstractSessionHandlingTest extends TestCase {
         connector.setPassword("password");
         connector.setKeystore("src/test/resources/org/pustefixframework/http/keystore");
         server.addConnector(connector);
+        
         Context root = new Context(server,"/",Context.SESSIONS);
         Properties properties = new Properties();
         properties.setProperty("pfixcore.ssl_redirect_port.for." + httpPort, "" + httpsPort);
         properties.setProperty("servlet.encoding", "utf-8");
         root.addServlet(new ServletHolder(new SessionHandlingTestServlet(sessionTrackingStrategy, properties)), "/*");
-            
+           
+        ((AbstractSessionManager)root.getSessionHandler().getSessionManager()).setSecureCookies(true);
         if(cookieSessionHandlingDisabled) ((AbstractSessionManager)root.getSessionHandler().getSessionManager()).setUsingCookies(false);
             
         server.start();

@@ -95,6 +95,8 @@ public abstract class AbstractPustefixXMLRequestHandler extends AbstractPustefix
     // how to write xml to the result stream
     private enum RENDERMODE { RENDER_NORMAL, RENDER_EXTERNAL, RENDER_FONTIFY, RENDER_XMLONLY };
 
+    private Logger LOGGER_SESSION = Logger.getLogger("LOGGER_SESSION");
+    
     public static final String DEF_PROP_TMPDIR = "java.io.tmpdir";
     private static final String FONTIFY_SSHEET        = "module://pustefix-core/xsl/xmlfontify.xsl";
     public  static final String PARAM_XMLONLY         = "__xmlonly";
@@ -427,6 +429,7 @@ public abstract class AbstractPustefixXMLRequestHandler extends AbstractPustefix
                 // Invalidate immediately
                 if (session.getAttribute(SESS_CLEANUP_FLAG_STAGE1) != null
                         && session.getAttribute(SESS_CLEANUP_FLAG_STAGE2) == null) {
+                    LOGGER_SESSION.info("Invalidate session IV: " + session.getId());
                     session.invalidate();
                 }
             }
