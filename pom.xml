@@ -281,6 +281,7 @@
     <module>pustefix-docbook</module>
     <module>pustefix-live</module>
     <module>pustefix-tutorial</module>
+    <module>pustefix-agent</module>
   </modules>
 
 </project>
