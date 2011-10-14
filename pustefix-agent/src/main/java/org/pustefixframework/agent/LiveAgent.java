@@ -75,6 +75,10 @@ public class LiveAgent implements LiveAgentMBean {
         }
     }
         
+    public static void agentmain(String args, Instrumentation inst) throws Exception {
+        premain(args, inst);
+    }
+    
     private static void fail(String msg) {
         System.err.println("ERROR: " + msg);
         System.exit(1);
