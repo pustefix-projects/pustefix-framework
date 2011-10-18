@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="utf-8"?>
+<context-xml-service-config 
+    xmlns="http://www.pustefix-framework.org/2008/namespace/context-xml-service-config" 
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xsi:schemaLocation="http://www.pustefix-framework.org/2008/namespace/context-xml-service-config ../../core/schema/context-xml-service-config.xsd"
+    version="1.0">
+  
+  <global-config />
+
+  <context defaultpage="register">
+    <!--
+    <resource bean-name="userContext" class="org.pustefixframework.example.numberguess.context.UserContext"/>
+    -->
+  </context>
+
+  <pageflow name="main" final="register">
+    <flowstep name="register"/>
+    <flowstep name="success"/>
+  </pageflow>
+
+  <pagerequest name="register">
+    <input policy="NONE">
+      <wrapper prefix="register" class="org.pustefixframework.example.cditest.Registration"/>
+    </input>
+    <output>
+      <resource node="user" bean-ref="user"/>
+    </output>
+  </pagerequest>
+
+  <pagerequest name="success">
+    <state class="org.pustefixframework.example.cditest.ResultState"/>
+    <output>
+      <resource node="user" bean-ref="user"/>
+    </output>
+  </pagerequest>
+
+</context-xml-service-config>
