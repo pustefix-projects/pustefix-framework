@@ -17,10 +17,7 @@
  */
 package org.pustefixframework.cdi;
 
-import javax.enterprise.inject.spi.BeanManager;
-import javax.naming.InitialContext;
-import javax.naming.NamingException;
-
+import org.apache.log4j.Logger;
 import org.springframework.beans.factory.config.BeanDefinition;
 import org.springframework.beans.factory.config.BeanDefinitionHolder;
 import org.springframework.beans.factory.support.BeanDefinitionBuilder;
@@ -30,22 +27,24 @@ import com.marsching.flexiparse.parser.ParsingHandler;
 import com.marsching.flexiparse.parser.exception.ParserException;
 
 /**
+ * Initialize the Spring part of the CDI/Spring-bridge
+ * by registering an according BeanFactoryPostProcessor.
  * 
- * @author mleidig
+ * @author mleidig@schlund.de
  *
  */
 public class InitParsingHandler implements ParsingHandler {
     
+    private Logger LOG = Logger.getLogger(InitParsingHandler.class);
+    
     public void handleNode(HandlerContext context) throws ParserException {
 
-        System.out.println("!!!!!!!!!! INIT CDI BRIDGE");
+        LOG.info("Initialize CDI/Spring-bridge");
         
-       
-        
-        BeanDefinitionBuilder beanBuilder = BeanDefinitionBuilder.genericBeanDefinition(DependencyRegisteringPostProcessor.class);
+        BeanDefinitionBuilder beanBuilder = BeanDefinitionBuilder.genericBeanDefinition(CDIPostProcessor.class);
         beanBuilder.setScope("singleton");
         BeanDefinition beanDefinition = beanBuilder.getBeanDefinition();
-        BeanDefinitionHolder beanHolder = new BeanDefinitionHolder(beanDefinition, DependencyRegisteringPostProcessor.class.getName());
+        BeanDefinitionHolder beanHolder = new BeanDefinitionHolder(beanDefinition, CDIPostProcessor.class.getName());
         context.getObjectTreeElement().addObject(beanHolder);
         
     }
