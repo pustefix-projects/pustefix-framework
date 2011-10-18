@@ -22,7 +22,7 @@ import java.net.URL;
 import java.util.HashMap;
 import java.util.Map;
 
-import net.sf.cglib.proxy.Enhancer;
+import org.pustefixframework.util.BytecodeAPIUtils;
 
 import de.schlund.pfixcore.beans.metadata.Beans;
 import de.schlund.pfixcore.beans.metadata.DOMInit;
@@ -57,7 +57,7 @@ public class BeanDescriptorFactory {
     
     @SuppressWarnings("unchecked")
     public synchronized <T> BeanDescriptor getBeanDescriptor(Class<T> clazz) {
-        if(Enhancer.isEnhanced(clazz)) {
+        if(BytecodeAPIUtils.isProxy(clazz)) {
             clazz = (Class<T>)clazz.getSuperclass();
         }
         BeanDescriptor desc=descriptors.get(clazz);
