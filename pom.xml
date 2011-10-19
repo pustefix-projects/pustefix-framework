@@ -289,6 +289,7 @@
     <module>pustefix-live</module>
     <module>pustefix-tutorial</module>
     <module>pustefix-agent</module>
+    <module>pustefix-cdi</module>
   </modules>
 
 </project>
