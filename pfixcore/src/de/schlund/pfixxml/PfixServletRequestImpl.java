@@ -277,7 +277,12 @@ public class PfixServletRequestImpl implements PfixServletRequest {
      * @see de.schlund.pfixxml.PfixServletRequest#getRemoteAddr()
      */
     public String getRemoteAddr() {
-        return request.getRemoteAddr();
+        String forward = request.getHeader("X-Forwarded-For");
+        if (forward != null && !forward.equals("")) {
+            return forward;
+        } else {
+            return request.getRemoteAddr();
+        }
     }
 
     /* (non-Javadoc)
@@ -305,9 +310,13 @@ public class PfixServletRequestImpl implements PfixServletRequest {
      * @see de.schlund.pfixxml.PfixServletRequest#getServerName()
      */
     public String getServerName() {
-        return request.getServerName();
+        String forward = request.getHeader("X-Forwarded-Server");
+        if (forward != null && !forward.equals("")) {
+            return forward;
+        } else {
+            return request.getServerName();
+        }
     }
-
 
     /* (non-Javadoc)
      * @see de.schlund.pfixxml.PfixServletRequest#getServletName()
