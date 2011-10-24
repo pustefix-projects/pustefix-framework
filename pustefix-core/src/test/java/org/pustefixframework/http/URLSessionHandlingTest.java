@@ -59,7 +59,12 @@ public class URLSessionHandlingTest extends AbstractSessionHandlingTest {
         assertTrue(method.getResponseBodyAsString().contains("<body>test</body>"));
         assertEquals(1, getCount(method.getResponseBodyAsString()));
         if(!cookieSessionHandlingDisabled) {
-            assertEquals("JSESSIONID=" + session + ";Path=/;Expires=Thu, 01-Jan-1970 00:00:00 GMT", method.getResponseHeader("Set-Cookie").getValue());
+            Header[] headers = method.getResponseHeaders("Set-Cookie");
+            for(Header header: headers) {
+                if(header.getValue().contains("JSESSIONID")) {
+                    assertEquals("JSESSIONID=" + session + ";Path=/;Expires=Thu, 01-Jan-1970 00:00:00 GMT", header.getValue());
+                }
+            }
         }
 
     }
