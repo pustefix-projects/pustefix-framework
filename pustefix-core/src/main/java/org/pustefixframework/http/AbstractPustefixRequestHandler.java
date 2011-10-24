@@ -124,6 +124,15 @@ public abstract class AbstractPustefixRequestHandler implements SessionTrackingS
         }
     }
     
+    public static String getRemoteAddr(HttpServletRequest req) {
+        String forward = req.getHeader("X-Forwarded-For");
+        if (forward != null && !forward.equals("")) {
+            return forward;
+        } else {
+            return req.getRemoteAddr();
+        }
+    }
+    
     public void setHandlerURI(String uri) {
         this.handlerURI = uri;
     }
