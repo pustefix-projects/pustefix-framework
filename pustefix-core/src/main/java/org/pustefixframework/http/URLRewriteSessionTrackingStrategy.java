@@ -74,8 +74,21 @@ public class URLRewriteSessionTrackingStrategy implements SessionTrackingStrateg
                 Cookie cookie = cookies[i];
                 if (cookie.getName().equalsIgnoreCase("JSESSIONID")) {
                     cookie.setMaxAge(0);
-                    cookie.setPath((req.getContextPath().equals("")) ? "/" : req.getContextPath());
+                    cookie.setPath("/");
                     res.addCookie(cookie);
+                    String path = req.getContextPath() + req.getServletPath();
+                    if(req.getPathInfo() != null) path += req.getPathInfo();
+                    int ind = 0;
+                    while((ind = path.indexOf('/', ind + 1)) > -1) {
+                        cookie = (Cookie)cookie.clone();
+                        cookie.setPath(path.substring(0, ind));
+                        res.addCookie(cookie);
+                    }
+                    if(path.length() > 0) {
+                        cookie = (Cookie)cookie.clone();
+                        cookie.setPath(path);
+                        res.addCookie(cookie);
+                    }
                 }
             }
         }
