@@ -14,7 +14,7 @@
   <artifactId>pustefix-iwrpgenerate-plugin</artifactId>
   <packaging>maven-plugin</packaging>
   <name>Pustefix IWrapper class generation plugin</name>
-  <version>0.1.1</version>
+  <version>0.1.3</version>
   <url>http://pustefixframework.org</url>
   <dependencies>
     <dependency>
@@ -49,5 +49,12 @@
       <scope>test</scope>
     </dependency>
   </dependencies>
+ <distributionManagement>
+    <repository>
+      <id>nexus</id>
+      <name>nexus</name>
+      <url>http://mavenrepo.united.domain:8081/nexus/content/repositories/1und1-tools-releases</url>
+    </repository>
+  </distributionManagement>
 
 </project>
