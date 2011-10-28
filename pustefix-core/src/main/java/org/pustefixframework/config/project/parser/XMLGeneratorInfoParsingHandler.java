@@ -109,10 +109,15 @@ public class XMLGeneratorInfoParsingHandler extends CustomizationAwareParsingHan
             beanRegistry.registerBeanDefinition(beanName, beanDefinition);
             
         } else if(root.getLocalName().equals("check-modtime")) {
-            
+
             boolean checkModtime = Boolean.parseBoolean(root.getTextContent().trim());
             targetBeanBuilder.addPropertyValue("isGetModTimeMaybeUpdateSkipped", !checkModtime);
         
+        } else if(root.getLocalName().equals("tooling-extensions")) {
+
+            boolean toolingExtensions = Boolean.parseBoolean(root.getTextContent().trim());
+            targetBeanBuilder.addPropertyValue("toolingExtensions", toolingExtensions);
+            
         } else if(root.getLocalName().equals("include-cache")) {
         	
         	String className = root.getAttribute("class").trim();

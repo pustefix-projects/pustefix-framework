@@ -121,6 +121,7 @@ public class TargetGenerator implements ResourceVisitor, ServletContextAware, In
     private HashMap<String, Target> alltargets = new HashMap<String, Target>();
 
     private boolean isGetModTimeMaybeUpdateSkipped = false;
+    private boolean toolingExtensions = true;
 
     private long config_mtime = 0;
 
@@ -194,6 +195,10 @@ public class TargetGenerator implements ResourceVisitor, ServletContextAware, In
     }
     
     public void afterPropertiesSet() throws Exception {
+        //ensure tooling is disabled in production mode
+        if("prod".equals(EnvironmentProperties.getProperties().getProperty("mode"))) {
+            setToolingExtensions(false);
+        }
         includeDocumentFactory = new IncludeDocumentFactory(cacheFactory);
         targetDependencyRelation = new TargetDependencyRelation();
         auxDependencyFactory = new AuxDependencyFactory(targetDependencyRelation);
@@ -563,10 +568,10 @@ public class TargetGenerator implements ResourceVisitor, ServletContextAware, In
             xreader.parse(new InputSource(new StringReader(fullXml)));
             try {
                 Transformer trans = SimpleResolver.configure(tf, "/pustefix/xsl/depend.xsl");
-                if (EnvironmentProperties.getProperties().getProperty("mode").equals("prod")) {
-                    trans.setParameter("prohibitEdit", "yes");
-                } else {
+                if (getToolingExtensions()) {
                     trans.setParameter("prohibitEdit", "no");
+                } else {
+                    trans.setParameter("prohibitEdit", "yes");
                 }
                 trans.transform(new DOMSource(dr.getNode()), dr2);
                 Node tempNode = dr2.getNode();
@@ -1207,6 +1212,14 @@ public class TargetGenerator implements ResourceVisitor, ServletContextAware, In
         this.isGetModTimeMaybeUpdateSkipped = isGetModTimeMaybeUpdateSkipped;
     }
 
+    public boolean getToolingExtensions() {
+        return toolingExtensions;
+    }
+    
+    public void setToolingExtensions(boolean enabled) {
+        this.toolingExtensions = enabled;
+    }
+    
     /**
      * @return report containing sensilbe information after {@link #generateAll()}, not null
      */

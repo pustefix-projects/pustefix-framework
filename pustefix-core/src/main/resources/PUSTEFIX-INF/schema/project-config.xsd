@@ -41,6 +41,7 @@
     <xsd:sequence>
       <xsd:element name="name" type="xsd:string"/>
       <xsd:element name="description" type="xsd:string"/>
+      <xsd:element name="lang" type="lang-type" minOccurs="0" maxOccurs="unbounded"/>
     </xsd:sequence>
   </xsd:complexType>
 
@@ -103,7 +104,8 @@
 
   <xsd:group name="xml-generator-choose-group">
     <xsd:choice>
-      <xsd:element name="check-modtime" type="xsd:boolean"/>
+      <xsd:element name="check-modtime" type="xsd:boolean" />
+      <xsd:element name="tooling-extensions" type="xsd:boolean" />
       <xsd:element name="include-cache">
         <xsd:complexType>
           <xsd:attribute name="capacity" type="xsd:int" use="required"/>
@@ -111,6 +113,12 @@
         </xsd:complexType>
       </xsd:element>
       <xsd:element name="target-cache">
+        <xsd:complexType>
+          <xsd:attribute name="capacity" type="xsd:int" use="required"/>
+          <xsd:attribute name="class" type="xsd:string"/>
+        </xsd:complexType>
+      </xsd:element>
+      <xsd:element name="render-cache">
         <xsd:complexType>
           <xsd:attribute name="capacity" type="xsd:int" use="required"/>
           <xsd:attribute name="class" type="xsd:string"/>
@@ -269,6 +277,14 @@
         </xsd:complexType>
       </xsd:element>
     </xsd:sequence>
+  </xsd:complexType>
+  
+  <xsd:complexType name="lang-type">
+    <xsd:simpleContent>
+      <xsd:extension base="xsd:string">
+        <xsd:attribute name="default" type="xsd:boolean" use="optional"/>
+      </xsd:extension>
+    </xsd:simpleContent>
   </xsd:complexType>
 
 </xsd:schema>

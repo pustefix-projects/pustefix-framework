@@ -183,6 +183,7 @@ public class PustefixContextXMLRequestHandlerParsingHandler extends Customizatio
         beanBuilder.addPropertyValue("sessionAdmin", new RuntimeBeanReference(SessionAdmin.class.getName()));
         if(editorInfo != null && editorInfo.getLocation() != null) {
             beanBuilder.addPropertyValue("editorLocation", editorInfo.getLocation());
+            beanBuilder.addPropertyValue("includePartsEditableByDefault", editorInfo.isIncludePartsEditableByDefault());
         }
         beanBuilder.addPropertyValue("sessionCleaner", new RuntimeBeanReference(SessionCleaner.class.getName()));
         beanBuilder.addPropertyValue("renderExternal", renderExternal);
@@ -190,10 +191,6 @@ public class PustefixContextXMLRequestHandlerParsingHandler extends Customizatio
             beanBuilder.addPropertyValue("additionalTrailInfo", new RuntimeBeanReference(additionalTrailInfoRef));
         beanBuilder.addPropertyValue("maxStoredDoms", maxStoredDoms);
         beanBuilder.addPropertyValue("exceptionProcessingConfiguration", new RuntimeBeanReference(ExceptionProcessingConfiguration.class.getName()));
-        if(editorInfo != null) {
-            beanBuilder.addPropertyValue("editModeAllowed", editorInfo.isEnabled());
-            beanBuilder.addPropertyValue("includePartsEditableByDefault", editorInfo.isIncludePartsEditableByDefault());
-        }
         beanBuilder.addPropertyValue("sessionTrackingStrategy", strategyInfo.getSessionTrackingStrategyInstance());
         if(timeoutInfo != null) {
             beanBuilder.addPropertyValue("sessionTimeoutInfo", timeoutInfo);

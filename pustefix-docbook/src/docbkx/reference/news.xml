@@ -90,4 +90,31 @@
   
   </section>
 
+  <section xml:id="news.0_18_2">
+    <title>What's new in Pustefix 0.18.2</title>
+
+    <section xml:id="news.0_18_2.xslterrors">
+      <title>Context information for XSLT errors</title>
+      <para>
+        The default error page for XSLT errors now provides additional contextual information. The error line from the XML file causing the
+        error is cut out (including some surrounding lines) and added to the error page.
+      </para>
+    </section>
+ 
+    <section xml:id="news.0_18_2.xslttooling">
+      <title>Switchable XSLT tooling extensions</title>
+      <para>
+        In prior versions the XSLT tooling extensions (dynamic include information, console, etc.) were always enabled if not running
+        in production mode. Now you can selectively enable/disable the tooling extensions in all modes (except production mode). Therefore
+        Pustefix introduced the configuration element <literal>&lt;tooling-extensions&gt;</literal> (see 
+        <xref linkend="configuration.project.projectxml"/>).
+      </para>
+      <para>
+        Besides the XSLT tooling has been decoupled from the editor settings, i.e. you can use the include information tooling without
+        having the editor enabled.
+      </para>
+    </section>
+
+  </section>
+
 </chapter>

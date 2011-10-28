@@ -207,6 +207,27 @@
     <!-- Path to the configuration file of 
          the TargetGenerator for this project -->
     <config-file>docroot:/WEB-INF/depend.xml</config-file>
+    <choose>
+      <when test="$mode='prod'">
+        <!-- Set this to false if you want to skip the check for changed stylesheets on every request.
+             By default Pustefix will all dependant files for changes. -->
+        <check-modtime>false</check-modtime>
+        <!-- Set capacity and implementation class of the in-memory caches for includes and targets.
+             Defaults (if you leave out the elements):
+             <include-cache capacity="30" class="de.schlund.pfixxml.targets.LRUCache"/>
+        -->
+        <include-cache capacity="50"/>
+        <target-cache capacity="50"/>
+        <render-cache capacity="50"/>
+      </when>
+      <when test="$mode='prelive'">
+        <!-- Enable/disable development tooling extensions (dynamic include info, console, etc.) 
+             By default tooling is enabled if not in production mode. So this option is basically
+             meant for non-production modes where you nevertheless want to disable tooling. 
+        -->
+        <tooling-extensions>false</tooling-extensions>
+      </when>
+    </choose>
   </xml-generator>
   
   <!-- Sets the session tracking strategy. Default is 'COOKIE'.

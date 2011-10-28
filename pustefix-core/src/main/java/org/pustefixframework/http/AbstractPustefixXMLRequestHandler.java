@@ -160,9 +160,8 @@ public abstract class AbstractPustefixXMLRequestHandler extends AbstractPustefix
     
     protected abstract AbstractXMLServletConfig getAbstractXMLServletConfig();
     
-    private boolean      renderExternal            = false;
-    private boolean      editmodeAllowed            = false;
-    private boolean      includePartsEditableByDefault = true;
+    private boolean renderExternal = false;
+    private boolean includePartsEditableByDefault = true;
     private boolean xmlOnlyAllowed = false;
     
     private final static Logger LOGGER_TRAIL = Logger.getLogger("LOGGER_TRAIL");
@@ -209,7 +208,6 @@ public abstract class AbstractPustefixXMLRequestHandler extends AbstractPustefix
             StringBuffer sb = new StringBuffer(255);
             sb.append("\n").append("AbstractXMLServlet properties after initValues(): \n");
             sb.append("               servletname = ").append(servletname).append("\n");
-            sb.append("           editModeAllowed = ").append(editmodeAllowed).append("\n");
             sb.append("            xmlOnlyAllowed = ").append(xmlOnlyAllowed).append("\n");
             sb.append("             maxStoredDoms = ").append(maxStoredDoms).append("\n");
             sb.append("                   timeout = ").append(sessionCleaner.getTimeout()).append("\n");
@@ -335,12 +333,15 @@ public abstract class AbstractPustefixXMLRequestHandler extends AbstractPustefix
             // Stylesheet params.
             if ((value = preq.getRequestParam(PARAM_EDITMODE)) != null) {
                 if (value.getValue() != null) {
-                    session.setAttribute(PARAM_EDITMODE, value.getValue());
+                    if(value.getValue().equals("admin")) {
+                        session.setAttribute(PARAM_EDITMODE, value.getValue());
+                    } else {
+                        session.setAttribute(PARAM_EDITMODE, "none");
+                    }
                 }
             }
-            if (session.getAttribute(PARAM_EDITMODE) != null) {
-                // first we check if the properties prohibit editmode
-                if (editmodeAllowed) {
+            if (generator.getToolingExtensions()) {
+                if (session.getAttribute(PARAM_EDITMODE) != null) {
                     params.put(PARAM_EDITMODE, session.getAttribute(PARAM_EDITMODE));
                 }
             }
@@ -1068,10 +1069,6 @@ public abstract class AbstractPustefixXMLRequestHandler extends AbstractPustefix
         this.maxStoredDoms = maxStoredDoms;
     }
     
-    public void setEditModeAllowed(boolean editModeAllowed) {
-        this.editmodeAllowed = editModeAllowed;
-    }
-
     public void setIncludePartsEditableByDefault(boolean includePartsEditableByDefault) {
         this.includePartsEditableByDefault = includePartsEditableByDefault;
     }
