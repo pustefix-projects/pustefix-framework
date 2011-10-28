@@ -19,7 +19,6 @@
 package de.schlund.pfixxml.exceptionprocessor.util;
 
 import java.io.BufferedReader;
-import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
@@ -132,14 +131,14 @@ public class XMLCreatorVisitor implements ExceptionDataValueVisitor {
 	                xsltInfo.setAttribute("publicId", locator.getPublicId());
 	                xsltInfo.setAttribute("systemId", locator.getSystemId());
 	                String systemId = locator.getSystemId();
-	                if(systemId.startsWith("file:") || systemId.startsWith("module:")) {
+	                if(systemId.matches("^\\w+:.*")) {
 	                    try {
 	                        URI uri = new URI(systemId);
                             Resource res = ResourceUtil.getResource(uri);
 	                        String context = cut(res, "utf-8", locator.getLineNumber(), locator.getColumnNumber(), 10, 10, 160);
 	                        xsltInfo.setAttribute("context", context);
 	                    } catch(Exception x) {
-	                        x.printStackTrace();
+	                        //ignore
 	                    }
 	                }
 	            }
@@ -153,14 +152,14 @@ public class XMLCreatorVisitor implements ExceptionDataValueVisitor {
                 xsltInfo.setAttribute("systemId", spe.getSystemId());
                 if(spe.getLineNumber() > -1) {
                     String systemId = spe.getSystemId();
-                    if(systemId.startsWith("file:") || systemId.startsWith("module:")) {
+                    if(systemId.matches("^\\w+:.*")) {
                         try {
                             URI uri = new URI(systemId);
                             Resource res = ResourceUtil.getResource(uri);
                             String context = cut(res, "utf-8", spe.getLineNumber(), spe.getColumnNumber(),10, 10, 160);
                             xsltInfo.setAttribute("context", context);
                         } catch(Exception x) {
-                            x.printStackTrace();
+                            //ignore
                         }
                     }
                 }
