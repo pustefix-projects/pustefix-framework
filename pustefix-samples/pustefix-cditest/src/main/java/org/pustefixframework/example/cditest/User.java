@@ -20,6 +20,7 @@ package org.pustefixframework.example.cditest;
 import java.io.Serializable;
 
 import javax.enterprise.context.SessionScoped;
+import javax.inject.Inject;
 import javax.inject.Named;
 
 @Named
@@ -27,10 +28,14 @@ import javax.inject.Named;
 public class User implements Serializable {
     
     private static final long serialVersionUID = -5836404564337831979L;
+
+    @Inject
+    private UserRegistry userRegistry;
     
     private String name;
     private String password;
-
+    private boolean registered;
+    
     public String getName() {
         return name;
     }
@@ -46,5 +51,14 @@ public class User implements Serializable {
     public void setPassword(String password) {
         this.password = password;
     }
-
+    
+    public boolean register() {
+        registered = userRegistry.register(this);
+        return registered;
+    }
+    
+    public boolean isRegistered() {
+        return registered;
+    }
+    
 }

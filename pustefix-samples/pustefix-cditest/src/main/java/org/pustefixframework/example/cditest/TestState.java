@@ -1,12 +1,10 @@
 package org.pustefixframework.example.cditest;
 
-import javax.inject.Inject;
-
 import de.schlund.pfixcore.workflow.Context;
 import de.schlund.pfixcore.workflow.app.StaticState;
 import de.schlund.pfixxml.PfixServletRequest;
 
-public class ResultState extends StaticState {
+public class TestState extends StaticState {
 
     private User user;
   
@@ -15,9 +13,6 @@ public class ResultState extends StaticState {
         return user.getName() != null;
     }
  
-    @Inject
-    public void setUser(User user) {
-        this.user = user;
-    }
+  
     
 }

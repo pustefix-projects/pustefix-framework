@@ -17,7 +17,7 @@
  */
 package org.pustefixframework.example.cditest;
 
-import org.springframework.beans.factory.annotation.Autowired;
+import javax.inject.Inject;
 
 import de.schlund.pfixcore.generator.IHandler;
 import de.schlund.pfixcore.generator.IWrapper;
@@ -30,14 +30,20 @@ public class RegistrationHandler implements IHandler {
     public void handleSubmittedData(Context context, IWrapper wrapper) throws Exception {
         Registration registration = (Registration)wrapper;
         user.setName(registration.getUsername());
+        user.setPassword(registration.getPassword());
+        boolean ok = user.register();
+        System.out.println("OK: "+ok);
+        if(!ok) {
+            registration.addSCodeUsername(StatusCodes.FAILURE);
+        }
     }
 
     public boolean isActive(Context context) throws Exception {
-        return user.getName() == null;
+        return !user.isRegistered();
     }
 
     public boolean needsData(Context context) throws Exception {
-        return user.getName() == null;
+        return !user.isRegistered();
     }
 
     public boolean prerequisitesMet(Context context) throws Exception {
@@ -49,7 +55,7 @@ public class RegistrationHandler implements IHandler {
         registration.setUsername("your name");
     }
     
-    @Autowired
+    @Inject
     public void setUser(User user) {
         this.user = user;
     }

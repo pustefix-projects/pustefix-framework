@@ -8,4 +8,9 @@
 
   <context:annotation-config/>
 
+   
+  <bean id="pwdcheck" class="org.pustefixframework.example.PasswordCheckService">
+    <property name="strength" value="1"/>
+  </bean>
+  
 </beans>

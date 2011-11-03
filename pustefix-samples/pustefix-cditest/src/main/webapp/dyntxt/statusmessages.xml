@@ -3,13 +3,13 @@
   
   <part name="success">
     <theme name="default">
-      Congratulations, you guessed right!!!
+      Registration succeeded.
     </theme>
   </part>
   
   <part name="failure">
     <theme name="default">
-      Sorry, that's wrong, expected number was <pfx:argref pos="1"/>.
+      Registration failed.
     </theme>
   </part>
   
