@@ -26,18 +26,6 @@
     <plugins> 
       <plugin>
         <groupId>org.pustefixframework.maven.plugins</groupId>
-        <artifactId>pustefix-webapp-plugin</artifactId>
-        <version>0.18.2-SNAPSHOT</version>
-        <executions>
-          <execution>
-            <goals>
-              <goal>generate</goal>
-            </goals>
-          </execution>
-        </executions>
-      </plugin>
-      <plugin>
-        <groupId>org.pustefixframework.maven.plugins</groupId>
         <artifactId>pustefix-statuscode-plugin</artifactId>
         <version>0.18.2-SNAPSHOT</version>
         <executions>

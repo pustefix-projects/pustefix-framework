@@ -17,7 +17,7 @@
   <name>Pustefix i18n sample webapp</name>
 
   <properties>
-    <pustefix.version>0.18.1</pustefix.version>
+    <pustefix.version>0.18.2-SNAPSHOT</pustefix.version>
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
   </properties>
 
@@ -60,18 +60,6 @@
           <path>/</path>
           <uriEncoding>UTF-8</uriEncoding>
         </configuration>
-      </plugin>
-      <plugin>
-        <groupId>org.pustefixframework.maven.plugins</groupId>
-        <artifactId>pustefix-webapp-plugin</artifactId>
-        <version>0.18.2-SNAPSHOT</version>
-        <executions>
-          <execution>
-            <goals>
-              <goal>generate</goal>
-            </goals>
-          </execution>
-        </executions>
       </plugin>
     </plugins>
   </build>

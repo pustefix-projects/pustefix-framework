@@ -57,7 +57,8 @@
   </dependencies>
  
   <build>
-    <plugins> 
+    <plugins>
+<!--
       <plugin>
         <groupId>org.pustefixframework.maven.plugins</groupId>
         <artifactId>pustefix-webapp-plugin</artifactId>
@@ -70,6 +71,7 @@
           </execution>
         </executions>
       </plugin>
+-->
       <plugin>
         <groupId>org.pustefixframework.maven.plugins</groupId>
         <artifactId>pustefix-statuscode-plugin</artifactId>
