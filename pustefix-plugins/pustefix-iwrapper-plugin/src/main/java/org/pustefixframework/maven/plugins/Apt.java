@@ -89,15 +89,18 @@ public class Apt implements DiagnosticListener<JavaFileObject> {
         if (!srcDir.exists()) throw new MojoExecutionException("Source directory doesn't exist: " + srcDir.getAbsolutePath());
         List<File> newFiles = fileScanner.getChangedFiles(srcDir, destDir, lastAptRun);
         modList.addAll(newFiles);
-        if (fileScanner.getScanCount() > 0) System.out.println(fileScanner.printStatistics());
+        if(log.isDebugEnabled()) {
+            if (fileScanner.getScanCount() > 0) log.debug(fileScanner.printStatistics());
+        }
         return modList;
     }
 
     private void callApt(List<File> files, String classpath) throws MojoExecutionException {
         File filelist;
         PrintWriter out;
-
-        log.info("Processing " + files.size() + " source file" + (files.size() > 1 ? "s" : ""));
+        if(log.isDebugEnabled()) {
+            log.debug("Processing " + files.size() + " source file" + (files.size() > 1 ? "s" : ""));
+        }
         try {
             filelist = File.createTempFile("pfx-aptfiles-", ".tmp", null);
             filelist.deleteOnExit();

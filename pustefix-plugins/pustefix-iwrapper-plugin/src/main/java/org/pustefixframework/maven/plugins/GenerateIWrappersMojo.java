@@ -24,6 +24,9 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.OutputStreamWriter;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.List;
 
 import javax.xml.transform.Templates;
 import javax.xml.transform.Transformer;
@@ -46,6 +49,7 @@ import org.codehaus.plexus.util.DirectoryScanner;
  *
  * @goal generate
  * @phase generate-sources
+ * @requiresDependencyResolution compile
  */
 public class GenerateIWrappersMojo extends AbstractMojo {
     
@@ -62,6 +66,13 @@ public class GenerateIWrappersMojo extends AbstractMojo {
     private File srcDir;
     
     /**
+     * Where to place apt-generated classes.
+     * 
+     * @parameter default-value="${project.build.directory}/generated-sources/apt"
+     */
+    private File aptdir;
+    
+    /**
      * @parameter expression="${project}"
      * @required
      */
@@ -70,8 +81,18 @@ public class GenerateIWrappersMojo extends AbstractMojo {
     /** @parameter expression="${plugin.artifacts}" */
     private java.util.List<Artifact> pluginArtifacts;
 
+    /**
+     * @parameter expression="${plugin.artifacts}"
+     * @required
+     * @readonly
+     */
+    private List<Artifact> pluginClasspath;
     
     public void execute() throws MojoExecutionException {
+        
+        if ("pom".equals(project.getPackaging())) {
+            return;
+        }
         
         if(!srcDir.exists()) return;
         
@@ -142,7 +163,7 @@ public class GenerateIWrappersMojo extends AbstractMojo {
         }
         
         if(iwrpGenCount>0) {
-            getLog().info("Generated "+iwrpGenCount+" IWrapper class"+(iwrpGenCount>1?"es":""));
+            getLog().info("Generated "+iwrpGenCount+" IWrapper class"+(iwrpGenCount>1?"es":"") + " from .iwrp file" + (iwrpGenCount>1?"s":"") + ".");
         }
         
         if(iwrpFileCount>0) {
@@ -153,6 +174,17 @@ public class GenerateIWrappersMojo extends AbstractMojo {
                 throw new MojoExecutionException("Can't save Pustefix version for this build.",x);
             }
         }
+        
+        //Annotation based IWrapper generation
+        File basedir = project.getBasedir();
+        int result = new Apt(basedir, aptdir, getLog(), project).execute(getPluginClasspath());
+        if(result>0) {
+            getLog().info("Generated "+result+" IWrapper class"+(result>1?"es":"") + " from annotated file" + (result>1?"s":"") + ".");
+        }
+        if(aptdir.exists()) {
+            project.addCompileSourceRoot(aptdir.getAbsolutePath());
+        }
+        
     }
     
     private String getPustefixVersion() {
@@ -185,6 +217,32 @@ public class GenerateIWrappersMojo extends AbstractMojo {
         writer.write(version);
         writer.close();
         out.close();
+    }
+    
+    private String getPluginClasspath() {
+        StringBuilder result;
+        
+        result = new StringBuilder();
+        for (String path : pathStrings(pluginClasspath)) {
+            if (result.length() > 0) {
+                result.append(':');
+            } 
+            result.append(path);
+        }
+        return result.toString();
+    }
+    
+    private static List<String> pathStrings(Collection<Artifact> artifacts) {
+        List<String> lst;
+        
+        lst = new ArrayList<String>();
+        if (artifacts != null) {
+            for (Artifact a : artifacts) {
+                lst.add(a.getFile().getPath());
+            }
+        }
+
+        return lst;
     }
   
 }
