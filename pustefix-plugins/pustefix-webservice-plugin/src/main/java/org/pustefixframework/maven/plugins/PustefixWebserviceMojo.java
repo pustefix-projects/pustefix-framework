@@ -171,7 +171,7 @@ public class PustefixWebserviceMojo extends AbstractMojo {
                         }
                     }
                     // Setup WSDL repository
-                    if (!webappdir.exists()) throw new MojoExecutionException("Web application directory of project '" + projectName + "' doesn't exist: " + webappdir.getAbsolutePath());
+                    if (!webappdir.exists()) webappdir.mkdirs();
                     File wsdlDir = tmpDir;
                     if (globConf.getWSDLSupportEnabled()) {
                         String wsdlRepo = globConf.getWSDLRepository();
@@ -195,8 +195,7 @@ public class PustefixWebserviceMojo extends AbstractMojo {
                     }
                     // Check if WEB-INF exists
                     File webInfDir = new File(webappdir, "WEB-INF");
-                    if (!webInfDir.exists())
-                        throw new MojoExecutionException("Web application WEB-INF subdirectory of project '" + projectName + "' doesn't exist");
+                    if (!webInfDir.exists()) webInfDir.mkdirs();
                     
                     // Iterate over services
                     for (ServiceConfig conf : srvConf.getServiceConfig()) {

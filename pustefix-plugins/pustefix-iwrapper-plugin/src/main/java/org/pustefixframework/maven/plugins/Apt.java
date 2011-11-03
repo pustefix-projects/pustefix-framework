@@ -76,9 +76,10 @@ public class Apt implements DiagnosticListener<JavaFileObject> {
         }
         lastRunFile.delete();
         try {
+            if(!lastRunFile.getParentFile().exists()) lastRunFile.getParentFile().mkdirs();
             lastRunFile.createNewFile();
         } catch (IOException x) {
-            throw new MojoExecutionException("cannot create " + lastRun);
+            throw new MojoExecutionException("cannot create " + lastRun, x);
         }
         return modified.size();
     }
