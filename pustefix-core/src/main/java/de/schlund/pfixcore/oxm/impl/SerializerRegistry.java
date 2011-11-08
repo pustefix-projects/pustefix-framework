@@ -18,6 +18,8 @@
 package de.schlund.pfixcore.oxm.impl;
 
 import java.io.File;
+import java.math.BigDecimal;
+import java.math.BigInteger;
 import java.net.URI;
 import java.net.URL;
 import java.util.Currency;
@@ -88,6 +90,8 @@ public class SerializerRegistry {
         simpleSerializers.put(Long.class, ser);
         simpleSerializers.put(Float.class, ser);
         simpleSerializers.put(Double.class, ser);
+        simpleSerializers.put(BigDecimal.class, ser);
+        simpleSerializers.put(BigInteger.class, ser);
         simpleSerializers.put(Currency.class, ser);
         simpleSerializers.put(URL.class, ser);
         simpleSerializers.put(URI.class, ser);
