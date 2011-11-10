@@ -15,7 +15,10 @@
       <xsd:sequence>
         <xsd:element name="project" type="project-type"/>
         <xsd:element name="editor" type="editor-type" minOccurs="0"/>
+        <xsd:element ref="config-include"/>
+        <xsd:element ref="tenant" minOccurs="0" maxOccurs="unbounded"/>
         <xsd:element name="xml-generator" type="xml-generator-type"/>
+        <xsd:element name="searchengine-sitemap" minOccurs="0"/>
         <xsd:element name="session-tracking-strategy" minOccurs="0">
           <xsd:simpleType>
             <xsd:restriction base="xsd:string">
@@ -285,6 +288,55 @@
         <xsd:attribute name="default" type="xsd:boolean" use="optional"/>
       </xsd:extension>
     </xsd:simpleContent>
+  </xsd:complexType>
+
+  <xsd:element name="config-include" type="configIncludeType"/>
+ 
+  <xsd:complexType name="configIncludeType">
+    <xsd:attribute name="file" type="xsd:string" use="required"></xsd:attribute>
+    <xsd:attribute name="section" use="optional">
+      <xsd:simpleType>
+        <xsd:restriction base="xsd:token">
+          <xsd:enumeration value="tenants"/>
+        </xsd:restriction>
+      </xsd:simpleType>
+    </xsd:attribute>
+    <xsd:attribute name="refid" type="xsd:NCName" use="optional"></xsd:attribute>
+    <xsd:attribute name="xpath" type="xsd:string" use="optional"></xsd:attribute>
+    <xsd:attribute name="module" type="xsd:string" use="optional"></xsd:attribute>
+  </xsd:complexType>
+
+  <xsd:element name="tenant" type="tenantType"/>
+
+  <xsd:complexType name="tenantType">
+    <xsd:sequence>
+      <xsd:choice>
+        <xsd:element name="choose">
+          <xsd:complexType>
+            <xsd:sequence>
+              <xsd:element name="when" maxOccurs="unbounded">
+                <xsd:complexType>
+                  <xsd:sequence>
+                    <xsd:element name="host" type="xsd:string"/>
+                  </xsd:sequence>
+                  <xsd:attribute name="test" type="xsd:string" use="required"/>
+                </xsd:complexType>
+              </xsd:element>
+              <xsd:element name="otherwise" minOccurs="0">
+                <xsd:complexType>
+                  <xsd:sequence>
+                    <xsd:element name="host" type="xsd:string"/>
+                  </xsd:sequence>
+                </xsd:complexType>
+              </xsd:element>
+            </xsd:sequence>
+          </xsd:complexType>
+        </xsd:element>
+        <xsd:element name="host" type="xsd:string"/>
+      </xsd:choice>
+      <xsd:element name="lang" type="xsd:string"/>
+    </xsd:sequence>
+    <xsd:attribute name="name" type="xsd:string" use="required"/>
   </xsd:complexType>
 
 </xsd:schema>
