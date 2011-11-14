@@ -81,7 +81,7 @@ public class MockContext implements Context {
     private Map<Object,Properties> contextResourceProps = new HashMap<Object,Properties>();
     private Set<String> pageNeedsDataSet = new HashSet<String>();
     private Set<String> pageAccessibleSet = new HashSet<String>();
-    
+    private String pageAltKey;
     
     public void addCookie(Cookie cookie) {
         //do nothing
@@ -330,6 +330,11 @@ public class MockContext implements Context {
     }
     
     public void setPageAlternative(String key) {
+        this.pageAltKey = key;
+    }
+    
+    public String getPageAlternative() {
+        return pageAltKey;
     }
     
 }

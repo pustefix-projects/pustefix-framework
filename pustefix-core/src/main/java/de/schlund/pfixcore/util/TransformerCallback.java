@@ -408,7 +408,7 @@ public class TransformerCallback {
         }
     }
     
-    public static String omitPage(RequestContextImpl requestContext, TargetGenerator gen, String pageName, String lang) throws Exception {
+    public static String omitPage(RequestContextImpl requestContext, TargetGenerator gen, String pageName, String lang, String altKey) throws Exception {
         try {
             ContextImpl context = requestContext.getParentContext();
             String langPrefix = "";
@@ -422,7 +422,7 @@ public class TransformerCallback {
             if(defaultPage.equals(pageName)) {
                 return langPrefix;
             } else {
-                String alias = gen.getSiteMap().getAlias(pageName, lang);
+                String alias = gen.getSiteMap().getAlias(pageName, lang, altKey);
                 if(langPrefix.length() > 0) {
                     alias = langPrefix + "/" + alias;
                 }

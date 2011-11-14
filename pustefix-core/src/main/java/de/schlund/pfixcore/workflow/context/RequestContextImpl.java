@@ -253,6 +253,10 @@ public class RequestContextImpl implements Cloneable, AuthorizationInterceptor {
         pageAlternativeKey = key;
     }
     
+    public String getPageAlternative() {
+        return pageAlternativeKey;
+    }
+    
     public Variant getVariant() {
         return variant;
     }

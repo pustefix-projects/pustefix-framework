@@ -11,6 +11,7 @@
   <xsl:template match="pfx:active"/>
   <xsl:template match="pfx:normal"/>
   <xsl:template match="pfx:argument"/>
+  <xsl:template match="pfx:altkey"/>
   
   <xsl:template match="pfx:command">
 
@@ -156,6 +157,18 @@
       <xsl:with-param name="popupheight" select="@popupheight"/>
       <xsl:with-param name="popupfeatures" select="@popupfeatures"/>
       <xsl:with-param name="popupid" select="@popupid"/>
+      <xsl:with-param name="altkey">
+        <xsl:choose>
+          <xsl:when test="./pfx:altkey">
+            <xsl:apply-templates select="./pfx:altkey/node()">
+              <xsl:with-param name="thepagename" select="@page"/>
+            </xsl:apply-templates>
+          </xsl:when>
+          <xsl:when test="@altkey">
+            <xsl:value-of select="@altkey"/>
+          </xsl:when>
+        </xsl:choose>
+      </xsl:with-param>
     </xsl:call-template>
   </xsl:template>
 
@@ -206,6 +219,7 @@
     <xsl:param name="popupheight"/>
     <xsl:param name="popupfeatures"/>
     <xsl:param name="popupid"/>
+    <xsl:param name="altkey"/>
     <xsl:param name="nodata"/>
     <xsl:param name="args"/>
     <xsl:param name="cmds"/>
@@ -244,7 +258,10 @@
       </xsl:choose>
     </xsl:variable>
     <xsl:variable name="fulllink">
-      <ixsl:value-of select="$__contextpath"/>/<ixsl:value-of select="pfx:__omitPage({$mypage})"/><ixsl:value-of select="$__sessionIdPath"/>
+      <ixsl:variable name="tmpaltkey">
+        <xsl:if test="$altkey"><xsl:copy-of select="$altkey"/></xsl:if>
+      </ixsl:variable>
+      <ixsl:value-of select="$__contextpath"/>/<ixsl:value-of select="pfx:__omitPage({$mypage}, $lang, $tmpaltkey)"/><ixsl:value-of select="$__sessionIdPath"/>
       <ixsl:variable name="params">
       <xsl:if test="not($frame_impl='')">__frame=<xsl:value-of select="$frame_impl"/></xsl:if>
       <ixsl:if test="not($__lf = '') and pfx:__needsLastFlow({$mypage},$__lf)">&amp;__lf=<ixsl:value-of select="$__lf"/></ixsl:if>

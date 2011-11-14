@@ -217,6 +217,10 @@ public class ContextImpl implements AccessibilityChecker, ExtendedContext, Token
         getRequestContextForCurrentThreadWithError().setPageAlternative(key);
     }
     
+    public String getPageAlternative() {
+        return getRequestContextForCurrentThreadWithError().getPageAlternative();
+    }
+    
     public void setVariant(Variant variant) {
         getRequestContextForCurrentThreadWithError().setVariantForThisRequestOnly(variant);
         sessioncontext.setVariant(variant);

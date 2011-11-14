@@ -39,11 +39,10 @@
   </handler>
   
   <!-- Creates request handler for search engine sitemaps -->
-  <!--
   <handler class="org.pustefixframework.config.project.parser.SiteMapRequestHandlerParsingHandler">
-    <match>/p:project-config/p:application/p:sitemaps-protocol-generator</match>
+    <match>/p:project-config/p:searchengine-sitemap</match>
   </handler>
-  -->
+  
   <handler class="org.pustefixframework.config.project.parser.StaticPathParsingHandler">
     <match>/p:project-config/p:application/p:static//p:path</match>
   </handler>
@@ -71,12 +70,6 @@
     <match>/p:project-config/p:application</match>
   </handler>
   
-  <!-- Adds Statistics bean -->
-  <!--
-  <handler class="org.pustefixframework.config.project.parser.StatisticsParsingHandler">
-    <match>/p:project-config/p:application</match>
-  </handler>
-  -->
   <!-- Reads path to depend.xml file -->
   <handler class="org.pustefixframework.config.project.parser.XMLGeneratorInfoParsingHandler">
     <match>/p:project-config/p:xml-generator</match>
