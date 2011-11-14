@@ -10,6 +10,7 @@
     <lang default="true">en_UK</lang>
     <lang>de_DE</lang>
   </project>
+  
   <!-- 
   <editor>
     <choose>
@@ -21,6 +22,7 @@
     <secret>foobar</secret> 
   </editor>
   -->
+  
   <xml-generator>
     <config-file>docroot:/WEB-INF/depend.xml</config-file>
     <choose>
