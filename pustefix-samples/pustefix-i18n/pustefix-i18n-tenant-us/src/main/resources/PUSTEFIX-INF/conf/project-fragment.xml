@@ -1,6 +1,9 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <fr:config-fragments xmlns:fr="http://www.pustefix-framework.org/2008/namespace/config-fragments"
-                     xmlns="http://www.pustefix-framework.org/2008/namespace/project-config">
+                     xmlns="http://www.pustefix-framework.org/2008/namespace/project-config"
+                     xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+                     xsi:schemaLocation="http://www.pustefix-framework.org/2008/namespace/config-fragments 
+                                         http://www.pustefix-framework.org/2008/namespace/config-fragments-0_18.xsd">
 
   <fr:tenants>
     <tenant name="US_market">

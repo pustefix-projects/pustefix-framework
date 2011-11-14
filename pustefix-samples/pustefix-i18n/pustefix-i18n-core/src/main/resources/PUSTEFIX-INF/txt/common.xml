@@ -15,7 +15,7 @@
       	        <pfx:include href="txt/common.xml" part="langdesc"/>
       	      </ixsl:when>
       	      <ixsl:otherwise>
-      	          <a href="{$__contextpath}/{pfx:__omitPage($page,text())}{$__sessionIdPath}">
+      	          <a href="{$__contextpath}/{pfx:__omitPage($page,text(),$pageAlternative)}{$__sessionIdPath}">
       	          <pfx:include href="txt/common.xml" part="langdesc"/>
       	        </a>
       	      </ixsl:otherwise>

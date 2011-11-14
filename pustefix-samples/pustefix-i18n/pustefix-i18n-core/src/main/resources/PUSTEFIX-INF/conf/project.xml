@@ -2,7 +2,7 @@
 <project-config xmlns="http://www.pustefix-framework.org/2008/namespace/project-config"
                 xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
                 xsi:schemaLocation="http://www.pustefix-framework.org/2008/namespace/project-config 
-                                    http://www.pustefix-framework.org/2008/namespace/project-config-0._16.xsd">
+                                    http://www.pustefix-framework.org/2008/namespace/project-config-0_18.xsd">
 
   <project>
     <name>pustefix-i18n-sample</name>
@@ -26,6 +26,10 @@
       </when>
     </choose>
   </xml-generator>
+  
+  <!-- automatically generate searchengine sitemap file sitemaps.xml 
+       (according to sitemaps protocol from http://www.sitemaps.org) -->
+  <searchengine-sitemap/>
 
   <application>
 
