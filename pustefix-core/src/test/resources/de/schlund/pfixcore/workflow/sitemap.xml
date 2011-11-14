@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<sitemap xmlns="http://www.pustefix-framework.org/2011/namespace/sitemap"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://www.pustefix-framework.org/2011/namespace/sitemap 
+                             http://www.pustefix-framework.org/2011/namespace/sitemap.xsd">
+
+  <page name="Home"/>
+  <page name="Overview" internal="true" alias="TOC"/>
+  <page name="Info">
+    <alt key="cities" name="Cities"/>
+    <alt key="nationalparks" name="NationalParks"/>
+    <alt key="mountains" name="Mountains"/>
+  </page>
+  <page name="Test"/>
+
+</sitemap>
