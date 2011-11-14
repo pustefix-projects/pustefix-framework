@@ -421,6 +421,7 @@ public class PustefixInternalsRequestHandler implements UriProvidingHttpRequestH
             throw new RuntimeException(e);
         }
         MBeanServer mbeanServer = ManagementFactory.getPlatformMBeanServer();
+        boolean checkLiveClasses = mbeanServer.isRegistered(name);
         String[] signature = new String[] {"java.lang.String"};
         
         for(String module: sortedModules) {
@@ -438,8 +439,10 @@ public class PustefixInternalsRequestHandler implements UriProvidingHttpRequestH
                 String jarPath = desc.getURL().getPath();
                 int ind = jarPath.lastIndexOf('!');
                 if(ind > -1) jarPath = jarPath.substring(0, ind);
-                String result = (String)mbeanServer.invoke(name, "getLiveLocation", new Object[] {jarPath}, signature);
-                if(result != null) elem.setAttribute("classurl", result);
+                if(checkLiveClasses) {
+                    String result = (String)mbeanServer.invoke(name, "getLiveLocation", new Object[] {jarPath}, signature);
+                    if(result != null) elem.setAttribute("classurl", result);
+                }
             } catch(Exception x) {
                 LOG.warn("Error while getting live location", x);
             }
