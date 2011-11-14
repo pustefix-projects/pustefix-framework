@@ -1,5 +1,9 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<sitemap>
+<sitemap xmlns="http://www.pustefix-framework.org/2011/namespace/sitemap"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://www.pustefix-framework.org/2011/namespace/sitemap 
+                             http://www.pustefix-framework.org/2011/namespace/sitemap.xsd">
+                             
     <page name="home" alias="Home">
       <page name="order" alias="Order"/>
       <page name="phantom"/>

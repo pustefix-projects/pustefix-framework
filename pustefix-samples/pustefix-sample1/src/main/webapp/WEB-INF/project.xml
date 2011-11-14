@@ -45,6 +45,10 @@
     </choose>
   </xml-generator>
 
+  <!-- automatically generate searchengine sitemap file sitemaps.xml 
+       (according to sitemaps protocol from http://www.sitemaps.org) -->
+  <searchengine-sitemap/>
+
   <!-- Supported Session tracking strategies are:
        - URL: always use URL rewriting 
        - COOKIE: use cookies if supported by client and server
