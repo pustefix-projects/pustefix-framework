@@ -265,7 +265,7 @@
       <ixsl:variable name="params">
       <xsl:if test="not($frame_impl='')">__frame=<xsl:value-of select="$frame_impl"/></xsl:if>
       <ixsl:if test="not($__lf = '') and pfx:__needsLastFlow({$mypage},$__lf)">&amp;__lf=<ixsl:value-of select="$__lf"/></ixsl:if>
-      <xsl:if test="$args and not($nodata) and not($startwithflow = 'true')">&amp;__sendingdata=1</xsl:if>
+      <xsl:if test="($args or $cmds) and not($nodata) and not($startwithflow = 'true')">&amp;__sendingdata=1</xsl:if>
       <xsl:for-each select="$args">&amp;<xsl:value-of select="./@name"/>=<ixsl:call-template name="__enc"><ixsl:with-param name="in"><xsl:apply-templates select="./node()"/></ixsl:with-param></ixsl:call-template></xsl:for-each>
       <xsl:if test="$jumptopage">&amp;__jumptopage=<xsl:value-of select="$jumptopage"/></xsl:if>
       <xsl:if test="$jumptopageflow">&amp;__jumptopageflow=<xsl:value-of select="$jumptopageflow"/></xsl:if>
