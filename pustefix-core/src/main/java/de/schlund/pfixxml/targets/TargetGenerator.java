@@ -60,7 +60,6 @@ import org.xml.sax.XMLReader;
 import org.xml.sax.helpers.DefaultHandler;
 import org.xml.sax.helpers.XMLReaderFactory;
 
-import de.schlund.pfixcore.exception.PustefixRuntimeException;
 import de.schlund.pfixcore.util.Meminfo;
 import de.schlund.pfixcore.workflow.SiteMap;
 import de.schlund.pfixxml.IncludeDocumentFactory;
@@ -772,11 +771,11 @@ public class TargetGenerator implements ResourceVisitor, ServletContextAware, In
     }
 
     public void visit(Resource resource) {
-        IncludePartsInfo info;
+        IncludePartsInfo info = null;
         try {
             info = includePartsInfo.getIncludePartsInfo(resource);
         } catch (IncludePartsInfoParsingException e) {
-            throw new PustefixRuntimeException("Error while trying to parse include parts " +
+            LOG.error("Error while trying to parse include parts " +
                     "in " + "resource '" + resource.toURI() + "'.", e);
         }
         if(info != null) {
