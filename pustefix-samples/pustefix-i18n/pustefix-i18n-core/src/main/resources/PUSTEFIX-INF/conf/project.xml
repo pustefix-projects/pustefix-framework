@@ -9,11 +9,13 @@
     <description>Pustefix i18n sample webapp</description>
   </project>
 
+  <!-- 
   <editor>
     <enabled>true</enabled>
     <location>http://cms.${fqdn}/</location>
     <secret>foobar</secret>
   </editor>
+  -->
   
   <config-include file="conf/project-fragment.xml" section="tenants" module="*"/>
 
