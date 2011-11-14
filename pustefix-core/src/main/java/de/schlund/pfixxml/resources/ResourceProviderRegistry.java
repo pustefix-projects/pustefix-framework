@@ -18,7 +18,9 @@
 package de.schlund.pfixxml.resources;
 
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.Map;
+import java.util.ServiceLoader;
 
 import org.apache.log4j.Logger;
 
@@ -39,8 +41,12 @@ public class ResourceProviderRegistry {
     
     private static void registerDefaultResourceProviders() {
         //DocrootResourceProvider gets dynamically registered by GlobalConfig
-        register(new ModuleResourceProvider());
-        register(new DynamicResourceProvider());
+        ServiceLoader<ResourceProvider> loader = ServiceLoader.load(ResourceProvider.class);
+        Iterator<ResourceProvider> resourceProviders = loader.iterator();
+        while(resourceProviders.hasNext()) {
+            ResourceProvider resourceProvider = resourceProviders.next();
+            register(resourceProvider);
+        }
     }
     
     public static void reset() {
