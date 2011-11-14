@@ -115,6 +115,37 @@
       </para>
     </section>
 
+    <section xml:id="news.0_18_2.sitemap">
+      <title>Search-engine sitemap generation</title>
+      <para>
+        Pustefix now supports generating search-engine sitemaps according to the sitemaps protocol (see
+        <link xlink:href="http://www.sitemaps.org/protocol.html">Sitemaps protocol specification</link>).
+        Sitemap generation can be enabled by adding the <literal>&lt;searchengine-sitemap/&gt;</literal> element to the
+        project configuration (see <xref linkend="configuration.project.projectxml"/>).
+      </para>
+    </section>
+
+    <section xml:id="news.0_18_2.pagealts">
+      <title>Direct page alternative linking</title>
+      <para>
+        In prior Pustefix versions links to page alternatives created with <literal>&lt;pfx:button&gt;</literal> referenced the logical page
+        and the application logic was responsible for detecting/setting the page alternative and thus triggering a redirect to the 
+        according page alternative by Pustefix. 
+      </para>
+      <para>
+        Now <literal>&lt;pfx:button&gt;</literal> supports directly setting the page alternative key using the <literal>altkey</literal>
+        attribute or <literal>&lt;pfx:altkey&gt;</literal> element. Thus Pustefix can directly reference the according page alternative
+        name without having to do a redirect (see <xref linkend="xslt.pfx.button"/>).
+      </para>
+    </section>
+
+   <section xml:id="news.0_18_2.oxm">
+      <title>OXM support for BigDecimal and BigInteger</title>
+      <para>
+        Pustefix's object-to-XML mapping mechanism now can serialize BigDecimal and BigInteger objects.
+      </para>
+   </section>
+
   </section>
 
 </chapter>

@@ -218,13 +218,18 @@
         The template takes care of constructing the correct url with session information embedded
         and builds up valid, url encoded query strings.
       </para>
-      <programlisting language="xml"><![CDATA[<pfx:button page="APage" pageflow="AFlow" jumptopage="APage" jumptopageflow="AFlow" forcestop="true|false|step" startwithflow="true|false">
-  <!--
-    Control the submit commands
-  -->
+      <programlisting language="xml"><![CDATA[<pfx:button page="APage" pageflow="AFlow" jumptopage="APage" jumptopageflow="AFlow" 
+            forcestop="true|false|step" startwithflow="true|false" altkey="pageAlternativeKey">
+  <!-- Control the submit commands -->
   <pfx:command page="APage" name="SUBWRP">prefix</pfx:command>
+
+  <!-- Supply additional parameters -->
   <pfx:argument name="AName">AValue</pfx:argument>
+  
   <pfx:anchor frame="AFrame">AnAnchor</pfx:anchor>
+  
+  <!-- Select a page alternative by key --> 
+  <pfx:altkey>pageAlternativeKey</pfx:altkey>
 
   <!--
     These three optional child nodes can be used to display different
@@ -265,6 +270,11 @@
             <td>pageflow / jumptopage / jumptopageflow / forcestop</td>
             <td>optional</td>
             <td>These attributes work the same as for form submit controls</td>
+          </tr>
+          <tr>
+            <td>altkey</td>
+            <td>optional</td>
+            <td>Select page alternative by key</td>
           </tr>
           <tr>
             <td>startwithflow</td>

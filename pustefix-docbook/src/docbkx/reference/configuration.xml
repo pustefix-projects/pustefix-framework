@@ -230,6 +230,10 @@
     </choose>
   </xml-generator>
   
+  <!-- automatically generate searchengine sitemap file sitemaps.xml 
+       (according to sitemaps protocol from http://www.sitemaps.org) -->
+  <searchengine-sitemap/>
+
   <!-- Sets the session tracking strategy. Default is 'COOKIE'.
        Alternatively you can set 'URL' to force session tracking
        within the URL, even if clients support cookies. You can
