@@ -4,12 +4,12 @@
   <parent>
     <artifactId>pustefix-i18n</artifactId>
     <groupId>org.pustefixframework.samples</groupId>
-    <version>0.18.2</version>
+    <version>0.18.3-SNAPSHOT</version>
   </parent>
 
   <groupId>org.pustefixframework.samples</groupId>
   <artifactId>pustefix-i18n-tenant-ca</artifactId>
-  <version>0.18.2</version>
+  <version>0.18.3-SNAPSHOT</version>
   <packaging>jar</packaging>
   <name>Pustefix i18n sample tenant module CA</name>
 
@@ -34,12 +34,12 @@
     <dependency>
       <groupId>org.pustefixframework.samples</groupId>
       <artifactId>pustefix-i18n-lang-en</artifactId>
-      <version>0.18.2</version>
+      <version>0.18.3-SNAPSHOT</version>
     </dependency>
      <dependency>
       <groupId>org.pustefixframework.samples</groupId>
       <artifactId>pustefix-i18n-lang-fr</artifactId>
-      <version>0.18.2</version>
+      <version>0.18.3-SNAPSHOT</version>
     </dependency>
   </dependencies>
   <build>
