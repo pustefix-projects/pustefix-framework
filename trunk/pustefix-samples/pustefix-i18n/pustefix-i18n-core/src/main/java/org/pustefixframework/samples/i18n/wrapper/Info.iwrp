@@ -1,0 +1,12 @@
+<interface xmlns="http://www.pustefix-framework.org/2008/namespace/iwrapper"
+           xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+           xsi:schemaLocation="http://www.pustefix-framework.org/2008/namespace/iwrapper 
+                               http://www.pustefix-framework.org/2008/namespace/iwrapper.xsd">
+  
+  <ihandler class="org.pustefixframework.samples.i18n.handler.InfoHandler"/>
+
+  <param name="accepted" type="java.lang.Boolean" occurrence="mandatory">
+    <default><value>false</value></default>
+  </param>
+
+</interface>

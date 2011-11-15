@@ -1,0 +1,76 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema"
+           targetNamespace="http://www.pustefix-framework.org/2008/namespace/properties-config"
+           xmlns:prop="http://www.pustefix-framework.org/2008/namespace/properties-config" 
+           elementFormDefault="qualified" 
+           attributeFormDefault="unqualified">
+  
+  <xs:element name="properties" type="prop:propertiesType">
+    <xs:unique name="uniquePropName">
+      <xs:selector xpath="prop:prop|prop:property"/>
+      <xs:field xpath="@name"/>
+    </xs:unique>
+  </xs:element>
+  
+  <xs:complexType name="propertiesType">
+    <xs:sequence>
+      <xs:choice maxOccurs="unbounded">
+        <xs:group ref="prop:propGroup"/>
+        <xs:element ref="prop:choose"/>
+      </xs:choice>
+    </xs:sequence>
+  </xs:complexType>
+  
+  <xs:group name="propGroup">
+    <xs:sequence>
+      <xs:choice maxOccurs="unbounded">
+        <xs:element ref="prop:prop"/>
+        <xs:element ref="prop:property"/>
+      </xs:choice>
+    </xs:sequence>
+  </xs:group>
+  
+  <xs:element name="prop" type="prop:propertyType"/>
+  <xs:element name="property" type="prop:propertyType"/>
+  
+  <xs:complexType name="propertyType">
+    <xs:simpleContent>
+      <xs:extension base="xs:string">
+        <xs:attribute name="name" use="required" type="xs:string"/>
+      </xs:extension>
+    </xs:simpleContent>
+  </xs:complexType>
+  
+  <xs:element name="choose">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element ref="prop:when" maxOccurs="unbounded"/>
+        <xs:element ref="prop:otherwise" minOccurs="0"/>
+      </xs:sequence>
+    </xs:complexType>
+  </xs:element>
+  
+  <xs:element name="when" type="prop:whenType">
+    <xs:unique name="uniqueWhenPropNames">
+      <xs:selector xpath="prop:prop|prop:property"/>
+      <xs:field xpath="@name"/>
+    </xs:unique>
+  </xs:element>
+  
+  <xs:complexType name="whenType">    
+    <xs:group ref="prop:propGroup"/>
+    <xs:attribute name="test" use="required" type="xs:string"/>
+  </xs:complexType>
+  
+  <xs:element name="otherwise" type="prop:otherwiseType">
+    <xs:unique name="uniqueOtherwisePropNames">
+      <xs:selector xpath="prop:prop|prop:property"/>
+      <xs:field xpath="@name"/>
+    </xs:unique>
+  </xs:element>
+  
+  <xs:complexType name="otherwiseType">
+    <xs:group ref="prop:propGroup"/>
+  </xs:complexType>  
+
+</xs:schema>

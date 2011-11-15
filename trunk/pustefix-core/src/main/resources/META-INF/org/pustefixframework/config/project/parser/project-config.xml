@@ -1,0 +1,155 @@
+<?xml version="1.0"?>
+<configuration
+  xmlns="http://www.marsching.com/2008/flexiparse/configurationNS"
+  xmlns:p="http://www.pustefix-framework.org/2008/namespace/project-config"
+>
+  
+  <handler class="org.pustefixframework.config.project.parser.ProjectParsingHandler" run-order="both">
+    <match>/p:project-config</match>
+  </handler>
+  
+  <handler class="org.pustefixframework.config.project.parser.ProjectInfoParsingHandler">
+    <match>/p:project-config/p:project</match>
+  </handler>
+  
+  <handler class="org.pustefixframework.config.project.parser.TenantParsingHandler">
+    <match>/p:project-config/p:tenant</match>
+  </handler>
+  
+  <handler class="org.pustefixframework.config.project.parser.TenantHostParsingHandler">
+    <match>/p:project-config/p:tenant//p:host</match>
+  </handler>
+  
+  <handler class="org.pustefixframework.config.project.parser.SessionInfoParsingHandler">
+    <match>/p:project-config</match>
+  </handler>
+  
+  <handler class="org.pustefixframework.config.project.parser.EditorInfoParsingHandler">
+    <match>/p:project-config/p:application</match>
+  </handler>
+  
+  <!-- Adds handler mapping bean -->
+  <handler class="org.pustefixframework.config.project.parser.PustefixHandlerMappingParsingHandler">
+    <match>/p:project-config/p:application</match>
+  </handler>
+  
+  <!-- Creates request handler for static resources -->
+  <handler class="org.pustefixframework.config.project.parser.DocrootRequestHandlerParsingHandler" run-order="both">
+    <match>/p:project-config/p:application</match>
+  </handler>
+  
+  <!-- Creates request handler for search engine sitemaps -->
+  <handler class="org.pustefixframework.config.project.parser.SiteMapRequestHandlerParsingHandler">
+    <match>/p:project-config/p:searchengine-sitemap</match>
+  </handler>
+  
+  <handler class="org.pustefixframework.config.project.parser.StaticPathParsingHandler">
+    <match>/p:project-config/p:application/p:static//p:path</match>
+  </handler>
+  
+  <!-- Adds the SessionCleaner bean -->
+  <handler class="org.pustefixframework.config.project.parser.SessionCleanerParsingHandler">
+    <match>/p:project-config/p:application//p:context-xml-service</match>
+    <match>/p:project-config/p:application//p:context-xml-service//p:session-cleaner-timeout</match>
+  </handler>
+  
+ <!-- Creates dereferer request handler -->
+  <handler class="org.pustefixframework.config.project.parser.DerefRequestHandlerParsingHandler">
+    <match>/p:project-config/p:application</match>
+    <match>/p:project-config/p:application/p:deref-service</match>
+  </handler>
+  
+  <!-- Creates ExceptionProcessors -->
+  <handler class="org.pustefixframework.config.project.parser.ExceptionProcessingParsingHandler">
+    <match>/p:project-config/p:application</match>
+    <match>/p:project-config/p:application//p:exception-processing</match>
+  </handler>
+  
+  <!-- Adds SessionAdmin bean -->
+  <handler class="org.pustefixframework.config.project.parser.SessionAdminParsingHandler">
+    <match>/p:project-config/p:application</match>
+  </handler>
+  
+  <!-- Reads path to depend.xml file -->
+  <handler class="org.pustefixframework.config.project.parser.XMLGeneratorInfoParsingHandler">
+    <match>/p:project-config/p:xml-generator</match>
+    <match>/p:project-config/p:xml-generator//p:config-file</match>
+    <match>/p:project-config/p:xml-generator//p:check-modtime</match>
+    <match>/p:project-config/p:xml-generator//p:tooling-extensions</match>
+    <match>/p:project-config/p:xml-generator//p:include-cache</match>
+    <match>/p:project-config/p:xml-generator//p:target-cache</match>
+    <match>/p:project-config/p:xml-generator//p:render-cache</match>
+    <match>/p:project-config/p:xml-generator//p:cache-statistic</match>
+  </handler>
+  
+  <handler class="org.pustefixframework.config.project.parser.DynamicIncludesParsingHandler">
+    <match>/p:project-config/p:dynamic-includes</match>
+  </handler>
+  
+  <!-- Creates context xml request handler -->
+  <handler class="org.pustefixframework.config.project.parser.PustefixContextXMLRequestHandlerParsingHandler">
+    <match>/p:project-config/p:application//p:context-xml-service</match>
+  </handler>
+
+  <!-- Creates context xml request handler -->
+  <handler class="org.pustefixframework.config.project.parser.PustefixContextDirectOutputRequestHandlerParsingHandler">
+    <match>/p:project-config/p:application//p:direct-output-service</match>
+  </handler>
+  
+  
+  <!-- Saves path with editor location -->
+  <handler class="org.pustefixframework.config.project.parser.EditorLocationParsingHandler">
+    <match>//p:project-config/p:editor//p:location</match>
+  </handler>
+  
+  <!-- Saves editor info -->
+  <handler class="org.pustefixframework.config.project.parser.EditorInfoParsingHandler" run-order="both">
+    <match>/p:project-config/p:editor</match>
+  </handler>
+  
+  <handler class="org.pustefixframework.config.project.parser.EditorInfoEnabledParsingHandler">
+    <match>/p:project-config/p:editor//p:enabled</match>
+  </handler>
+  
+  <handler class="org.pustefixframework.config.project.parser.EditorInfoIncludePartsParsingHandler">
+    <match>/p:project-config/p:editor//p:include-parts-editable-by-default</match>
+  </handler>
+  
+  
+  <handler class="org.pustefixframework.config.generic.PropertiesParsingHandler">
+    <match>/p:project-config/p:properties</match>
+  </handler>
+  
+  <handler class="org.pustefixframework.config.generic.PropertyParsingHandler">
+    <match>/p:project-config/p:properties//p:prop</match>
+  </handler>
+
+  <handler class="org.pustefixframework.config.project.parser.RegisterProjectPropertiesParsingHandler" run-order="end">
+    <preceding-handler>org.pustefixframework.config.generic.PropertiesParsingHandler</preceding-handler>
+    <match>/p:project-config/p:properties</match>
+  </handler>
+  
+  
+  <handler id="org.pustefixframework.config.customization.WhenParsingHandler" class="org.pustefixframework.config.customization.CustomizationWhenParsingHandler">
+    <match>/p:project-config/p:choose/p:when</match>
+    <match>/p:project-config/p:application/p:choose/p:when</match>
+    <match>/p:project-config/p:tenant/p:choose/p:when</match>
+    <match>/p:project-config/p:xml-generator/p:choose/p:when</match>
+    <match>/p:project-config//p:context-xml-service/p:choose/p:when[p:session-cleaner-timeout]</match>
+    <match>/p:project-config/p:editor/p:choose/p:when</match>
+    <match>/p:project-config/p:properties/p:choose/p:when</match>
+    <match>/p:project-config/p:application/p:static/p:choose/p:when</match>
+  </handler>
+  
+  <handler id="org.pustefixframework.config.customization.OtherwiseParsingHandler" class="org.pustefixframework.config.customization.CustomizationOtherwiseParsingHandler">
+    <match>/p:project-config/p:choose/p:otherwise</match>
+    <match>/p:project-config/p:application/p:choose/p:otherwise</match>
+    <match>/p:project-config/p:tenant/p:choose/p:otherwise</match>
+    <match>/p:project-config/p:xml-generator/p:choose/p:otherwise</match>
+    <match>/p:project-config//p:context-xml-service/p:choose/p:otherwise[p:session-cleaner-timeout]</match>
+    <match>/p:project-config/p:editor/p:choose/p:otherwise</match>
+    <match>/p:project-config/p:properties/p:choose/p:otherwise</match>
+    <match>/p:project-config/p:application/p:static/p:choose/p:otherwise</match>
+  </handler>
+  
+</configuration>

@@ -1,0 +1,151 @@
+<?xml version="1.0"?>
+<chapter xml:id="news" xmlns="http://docbook.org/ns/docbook" xmlns:xlink="http://www.w3.org/1999/xlink"
+  xmlns:xi="http://www.w3.org/2001/XInclude" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xsi:schemaLocation="http://docbook.org/ns/docbook http://www.docbook.org/xml/5.0CR7/xsd/docbook.xsd"
+>
+  <title>What's new in Pustefix 0.18.x</title>    
+  
+  <para>This section lists the new features and enhancements of the current Pustefix release line. 
+        If you're interested in new features which already became available with the prior Pustefix release line,
+        you can take a look at <xref linkend="newsarchive"/>.</para>
+
+  <para>If you're migrating an existing appliation to the new Pustefix version, you should have a look at <xref linkend="upgrade"/>.</para>
+
+  <section xml:id="news.0_18_0">
+    <title>What's new in Pustefix 0.18.0</title>
+  
+    <para>Pustefix 0.18.0 focuses on new internationalization features. It brings multi-tenancy on the view layer, supporting
+          different views for different tenants (like countries or markets) within a single application instance, along with
+	  runtime-switchable multi-language support, including internationalized page names.
+    </para>
+
+    <section xml:id="news.0_18_0.multitenancy">
+      <title>Multi-tenancy</title>
+      <para>
+        Pustefix 0.18 provides multi-tenancy support on the view layer, i.e. it can create and deliver alternative versions of a page
+        depending on a selected tenant. Tenants are automatically selected by matching host name patterns against the requested
+        host name. Alternative page versions are created by applying filters to the dynamic include mechanism, thus overriding
+        and extending the core page content with tenant- and/or language-specific content from according tenant/language modules
+        (see <xref linkend="advanced.multitenancy"/>).
+      </para>
+    </section>
+
+    <section xml:id="news.0_18_0.multilanguage">
+      <title>Multi-language</title>
+      <para>
+        Up to Pustefix 0.17 the only way to make the language of your application switchable at runtime was using
+        the <literal>&lt;pfx:langselect&gt;</literal> tags to directly embed all language dependent content into the same
+        part and theme side by side. With Pustefix 0.18 it's possible to automatically create different versions of a page serving
+        different languages using the dynamic override mechanism, e.g. you can source out all language dependent content
+        into own modules (language packs) which override a language independent core module (see <xref linkend="advanced.i18n"/>).
+      </para>
+    </section>
+
+    <section xml:id="news.0_18_0.sitemap">
+      <title>Sitemap and i18n pagenames</title>
+      <para>
+        Pustefix 0.18 differentiates between logical page names and display page names. Thus you can rename pages or provide
+        internationalized page names without having to change existing page references (to the logical page name). Such page aliases
+        are configured in a file called <literal>sitemap.xml</literal> which is replacing the <literal>navigation</literal> configuration
+        from <literal>depend.xml</literal> (see <xref linkend="configuration.sitemap"/>).
+      </para>
+    </section>
+
+    <section xml:id="news.0_18_0.pagealt">
+      <title>Page alternatives</title>
+      <para>
+        Page alternatives are a new concept for creating different representations of a page (including possible variants). Page
+        alternatives are internally used to create different versions for languages/tenants, but can be also used for
+        pages which are based on a common page, assigned to the same logical page, but with different content and display pagename, e.g.
+        landing pages (see <xref linkend="advanced.pagealternatives"/>).
+      </para>
+    </section>
+
+    <section xml:id="news.0_18_0.modules">
+      <title>Pustefix modules</title>
+      <para>
+        The module mechanism has been extended to support sourcing out every kind of resource into modules, e.g. you
+        can put arbitrary configuration files into modules (like <literal>project.xml</literal>, <literal>depend.xml</literal> or
+        <literal>spring.xml</literal>). The Pustefix resource loading mechanism has been extended and now additionally 
+        implements Spring's Resource abstraction layer. Thus you can use module URIs within the Spring configuration, e.g.
+        for injecting module resources into beans.
+      </para>
+      <para>
+        The dynamic search mechanism now supports adding modules to the default search chain. This is declaratively done
+        in the module descriptor <literal>pustefix-module.xml</literal>. You can additionally set a search priority to define
+        a search order. Using filter attributes you can define a dynamic search filter allowing to include/exclude certain
+        modules from searching/overriding, which is useful for multi-tenant/language applications to filter by tenant or language
+        (see <xref linkend="modulessupport.types.new"/>).
+      </para>
+    </section>
+
+    <section xml:id="news.0_18_0.autoconfig">
+      <title>Automatic configuration</title>
+      <para>
+        Pustefix 0.18 extends the <literal>depend.xml</literal> configuration by providing a <literal>&lt;auto-standardpage&gt;</literal>
+        element which can be used as template, which automatically creates standardpage definitions for pages found in a specified
+        folder (see <xref linkend="configuration.depend.autostandardpage"/>).
+      </para>
+    </section>
+  
+  </section>
+
+  <section xml:id="news.0_18_2">
+    <title>What's new in Pustefix 0.18.2</title>
+
+    <section xml:id="news.0_18_2.xslterrors">
+      <title>Context information for XSLT errors</title>
+      <para>
+        The default error page for XSLT errors now provides additional contextual information. The error line from the XML file causing the
+        error is cut out (including some surrounding lines) and added to the error page.
+      </para>
+    </section>
+ 
+    <section xml:id="news.0_18_2.xslttooling">
+      <title>Switchable XSLT tooling extensions</title>
+      <para>
+        In prior versions the XSLT tooling extensions (dynamic include information, console, etc.) were always enabled if not running
+        in production mode. Now you can selectively enable/disable the tooling extensions in all modes (except production mode). Therefore
+        Pustefix introduced the configuration element <literal>&lt;tooling-extensions&gt;</literal> (see 
+        <xref linkend="configuration.project.projectxml"/>).
+      </para>
+      <para>
+        Besides the XSLT tooling has been decoupled from the editor settings, i.e. you can use the include information tooling without
+        having the editor enabled.
+      </para>
+    </section>
+
+    <section xml:id="news.0_18_2.sitemap">
+      <title>Search-engine sitemap generation</title>
+      <para>
+        Pustefix now supports generating search-engine sitemaps according to the sitemaps protocol (see
+        <link xlink:href="http://www.sitemaps.org/protocol.html">Sitemaps protocol specification</link>).
+        Sitemap generation can be enabled by adding the <literal>&lt;searchengine-sitemap/&gt;</literal> element to the
+        project configuration (see <xref linkend="configuration.project.projectxml"/>).
+      </para>
+    </section>
+
+    <section xml:id="news.0_18_2.pagealts">
+      <title>Direct page alternative linking</title>
+      <para>
+        In prior Pustefix versions links to page alternatives created with <literal>&lt;pfx:button&gt;</literal> referenced the logical page
+        and the application logic was responsible for detecting/setting the page alternative and thus triggering a redirect to the 
+        according page alternative by Pustefix. 
+      </para>
+      <para>
+        Now <literal>&lt;pfx:button&gt;</literal> supports directly setting the page alternative key using the <literal>altkey</literal>
+        attribute or <literal>&lt;pfx:altkey&gt;</literal> element. Thus Pustefix can directly reference the according page alternative
+        name without having to do a redirect (see <xref linkend="xslt.pfx.button"/>).
+      </para>
+    </section>
+
+   <section xml:id="news.0_18_2.oxm">
+      <title>OXM support for BigDecimal and BigInteger</title>
+      <para>
+        Pustefix's object-to-XML mapping mechanism now can serialize BigDecimal and BigInteger objects.
+      </para>
+   </section>
+
+  </section>
+
+</chapter>

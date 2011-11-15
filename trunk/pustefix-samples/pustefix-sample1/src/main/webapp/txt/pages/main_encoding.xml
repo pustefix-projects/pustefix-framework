@@ -1,0 +1,129 @@
+<?xml version="1.0" encoding="UTF-8"?><include_parts xmlns:ixsl="http://www.w3.org/1999/XSL/Transform" xmlns:pfx="http://www.schlund.de/pustefix/core">
+
+  <part name="content">
+    <theme name="default">
+
+      <pfx:script>
+        var base='<ixsl:value-of select="$__uri"/>?__frame=bottom&amp;__sendingdata=1&amp;text.Text=';
+        var href=base+'<ixsl:value-of select="/formresult/text/original"/>';
+        function setDynHref(text) {
+        href=base+text;
+        }
+        function callDynHref() {
+        window.location.href=href;
+        }
+      </pfx:script>
+      <center>
+      <table width="100%"><tr>
+       <td align="center" valign="top" width="100" style="background:#EEEEEE">
+        <ixsl:value-of select="/formresult/text/alphabet/@description"/>:<br/><br/>
+        <ixsl:for-each select="/formresult/text/alphabet/characters/string">
+          <span style="font-size:140%"><ixsl:value-of select="."/></span><br/>
+        </ixsl:for-each>
+       </td>
+       <td align="center" valign="top">
+        <br/>
+        <h2>Page encoding: <span style="font-weight:normal"><ixsl:value-of select="/formresult/text/encoding"/></span></h2>
+        <br/>
+        <h3>Test parameter value: <span style="font-weight:normal"><ixsl:value-of select="/formresult/text/original"/></span></h3>
+        <table cellspacing="5">
+          <tr>
+            <td><a href="{$__uri}?__frame=bottom&amp;__sendingdata=1&amp;text.Text={/formresult/text/urlenc-iso}">GET-Request (ISO-8859-1 by Java):</a></td>
+            <td><ixsl:value-of select="/formresult/text/urlenc-iso"/></td>
+          </tr>
+          <tr>
+            <td><a href="{$__uri}?__frame=bottom&amp;__sendingdata=1&amp;text.Text={/formresult/text/original}">GET-Request (UTF-8 by Saxon):</a></td>
+            <td><ixsl:value-of select="/formresult/text/urlenc-utf"/></td>
+          </tr>
+        </table>
+        <br/>
+        <table>
+          <tr>
+            <td align="left" valign="middle">
+              <pfx:forminput method="get" target="_top">
+                <pfx:xinp default="abcdäöüß" id="text" name="text.Text" onchange="setDynHref(this.value)" type="text"/>
+                <ixsl:text> </ixsl:text>
+                <pfx:xinp type="submit" value="Send via GET-method">
+                  <pfx:command name="SUBWRP">text</pfx:command>
+                </pfx:xinp>
+              </pfx:forminput>
+            </td>
+          </tr>
+          <tr>
+            <td align="left" valign="middle">
+              <pfx:forminput method="post" target="_top">
+                <pfx:xinp default="abcdäöüß" name="text.Text" onchange="setDynHref(this.value)" type="text"/>
+                <ixsl:text> </ixsl:text>
+                <pfx:xinp type="submit" value="Send via POST-method">
+                  <pfx:command name="SUBWRP">text</pfx:command>
+                </pfx:xinp>
+              </pfx:forminput>
+            </td>
+          </tr>
+          <tr>
+            <td align="center">
+              <span onclick="callDynHref()" style="text-decoration:underline;cursor:pointer;">
+                Dynamic GET-Request built from form value by JavaScript
+              </span>
+            </td>
+          </tr>
+        </table>
+        <br/><br/>
+        <h3>Send via GET-method with serverside special decoding:</h3>
+        <pfx:forminput method="get" target="_top">
+          <pfx:xinp default="abcdäöüß" id="text" name="text.Text" onchange="setDynHref(this.value)" type="text"/>
+          <ixsl:text> </ixsl:text>
+          <pfx:xinp name="text.Encoding" type="select">
+            <pfx:option value="UTF-8">Decode as UTF-8</pfx:option>
+            <pfx:option value="ISO-8859-1">Decode as ISO-8859-1</pfx:option>
+            <pfx:option value="none">No special decoding</pfx:option>
+          </pfx:xinp>
+          <ixsl:text> </ixsl:text>
+          <pfx:xinp type="submit" value="Send via GET-method">
+            <pfx:command name="SUBWRP">text</pfx:command>
+          </pfx:xinp>
+        </pfx:forminput>
+      
+        <table cellspacing="5">
+          <tr>
+            <td><a href="{$__uri}?__frame=bottom&amp;__sendingdata=1&amp;text.Encoding=ISO-8859-1&amp;text.Text={/formresult/text/urlenc-iso}">GET-Request (ISO-8859-1 by Java - special decoding):</a></td>
+            <td><ixsl:value-of select="/formresult/text/urlenc-iso"/></td>
+          </tr>
+          <tr>
+            <td><a href="{$__uri}?__frame=bottom&amp;__sendingdata=1&amp;text.Encoding=UTF-8&amp;text.Text={/formresult/text/original}">GET-Request (UTF-8 by Saxon - special decoding):</a></td>
+            <td><ixsl:value-of select="/formresult/text/urlenc-utf"/></td>
+          </tr>
+        </table>
+      
+        <h3>Multipart form test</h3>
+      
+      
+        <ixsl:if test="/formresult/text/file">
+          <p>
+            <code><ixsl:value-of select="/formresult/text/file"/></code>
+          </p>
+        </ixsl:if>
+        <pfx:forminput enctype="multipart/form-data" target="_top">
+          <table>
+            <tr><td>
+          <pfx:xinp id="uploadtext" name="upload.Text" size="20" type="text"/><br/>
+            </td></tr>
+            <tr><td>
+          <input id="uploadfile" name="upload.File" onChange="document.getElementById('uploadtext').value=this.value;" size="20" type="file"/><br/>
+            </td></tr>
+            <tr><td>
+          <pfx:xinp type="submit" value="Submit">
+            <pfx:command name="SUBWRP">upload</pfx:command>
+          </pfx:xinp>
+            </td></tr>
+          </table>
+        </pfx:forminput>
+       </td>
+      </tr></table>
+       
+      </center>
+    
+    </theme>
+  </part>
+  
+</include_parts>

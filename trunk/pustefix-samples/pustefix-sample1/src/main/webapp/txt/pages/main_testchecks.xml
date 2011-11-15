@@ -1,0 +1,95 @@
+<?xml version="1.0" encoding="UTF-8"?><include_parts xmlns:ixsl="http://www.w3.org/1999/XSL/Transform" xmlns:pfx="http://www.schlund.de/pustefix/core">
+  <part name="content">
+    <theme name="default">
+      <pfx:forminput  enctype="multipart/form-data">
+
+        Date: <pfx:xinp type="text" name="checks.Date" />
+        <pfx:checkfield name="checks.Date">
+          <pfx:error><pfx:scode/></pfx:error>
+        </pfx:checkfield>
+        <br/>
+
+        Integer: <pfx:xinp type="text" name="checks.Integer" />
+        <pfx:checkfield name="checks.Integer">
+          <pfx:error><pfx:scode/></pfx:error>
+        </pfx:checkfield>
+        <br/>
+
+        Boolean: <pfx:xinp type="text" name="checks.Boolean" />
+        <pfx:checkfield name="checks.Boolean">
+          <pfx:error><pfx:scode/></pfx:error>
+        </pfx:checkfield>
+        <br/>
+
+        Byte: <pfx:xinp type="text" name="checks.Byte" />
+        <pfx:checkfield name="checks.Byte">
+          <pfx:error><pfx:scode/></pfx:error>
+        </pfx:checkfield>
+        <br/>
+
+        Long: <pfx:xinp type="text" name="checks.Long" />
+        <pfx:checkfield name="checks.Long">
+          <pfx:error><pfx:scode/></pfx:error>
+        </pfx:checkfield>
+        <br/>
+
+        Float: <pfx:xinp type="text" name="checks.Float" />
+        <pfx:checkfield name="checks.Float">
+          <pfx:error><pfx:scode/></pfx:error>
+        </pfx:checkfield>
+        <br/>
+
+        Double: <pfx:xinp type="text" name="checks.Double" />
+        <pfx:checkfield name="checks.Double">
+          <pfx:error><pfx:scode/></pfx:error>
+        </pfx:checkfield>
+        <br/>
+
+        FloatRange: <pfx:xinp type="text" name="checks.FloatRange" />
+        <pfx:checkfield name="checks.FloatRange">
+          <pfx:error><pfx:scode/></pfx:error>
+        </pfx:checkfield>
+        <br/>
+
+        IntegerRange: <pfx:xinp type="text" name="checks.IntegerRange" />
+        <pfx:checkfield name="checks.IntegerRange">
+          <pfx:error><pfx:scode/></pfx:error>
+        </pfx:checkfield>
+        <br/>
+
+        StringLength: <pfx:xinp type="text" name="checks.StringLength" />
+        <pfx:checkfield name="checks.StringLength">
+          <pfx:error><pfx:scode/></pfx:error>
+        </pfx:checkfield>
+        <br/>
+
+        Regexp: <pfx:xinp type="text" name="checks.RegExp" />
+        <pfx:checkfield name="checks.RegExp">
+          <pfx:error><pfx:scode/></pfx:error>
+        </pfx:checkfield>
+        <br/>
+
+        Perl5Pattern: <pfx:xinp type="text" name="checks.Perl5Pattern" />
+        <pfx:checkfield name="checks.Perl5Pattern">
+          <pfx:error><pfx:scode/></pfx:error>
+        </pfx:checkfield>
+        <br/>
+        
+        File: <input type="file" name="checks.File" />
+        <pfx:checkfield name="checks.File">
+          <pfx:error><pfx:scode/></pfx:error>
+        </pfx:checkfield>
+        <br/>
+        
+        UploadFile: <input type="file" name="checks.UploadFile" />
+        <pfx:checkfield name="checks.UploadFile">
+          <pfx:error><pfx:scode/></pfx:error>
+        </pfx:checkfield>
+        <br/>
+        
+        <br/><br/>
+        <pfx:xinp type="submit" value="submit"/>
+      </pfx:forminput>
+    </theme>
+  </part>
+</include_parts>

@@ -1,0 +1,21 @@
+<?xml version="1.0"?>
+<chapter xml:id="pageflows" xmlns="http://docbook.org/ns/docbook" xmlns:xlink="http://www.w3.org/1999/xlink" xmlns:xi="http://www.w3.org/2001/XInclude" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://docbook.org/ns/docbook http://www.docbook.org/xml/5.0CR7/xsd/docbook.xsd">
+  <title>Pageflows</title>
+
+  <qandaset>
+    <qandaentry xml:id="pageflows.final">
+      <question>
+        <para>
+          The page that is specified as final must be declared as a flowstep in the pageflow that uses it?
+        </para>
+      </question>
+      <answer>
+        <para>
+          No, you can declare any arbitrary page as final, it doesn't have to be in the same pageflow
+          where it is used.
+        </para>
+      </answer>
+    </qandaentry>
+  </qandaset>
+
+</chapter>

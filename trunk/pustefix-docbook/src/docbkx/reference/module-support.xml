@@ -1,0 +1,147 @@
+<?xml version="1.0"?>
+<chapter xml:id="modulessupport" xmlns="http://docbook.org/ns/docbook" xmlns:xlink="http://www.w3.org/1999/xlink"
+  xmlns:xi="http://www.w3.org/2001/XInclude" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xsi:schemaLocation="http://docbook.org/ns/docbook http://www.docbook.org/xml/5.0CR7/xsd/docbook.xsd"
+>
+  <title>Module Support</title>
+    <para>
+      Modules allow you to share functionality, configuration options and view elements
+      between different Pustefix applications.
+    </para>
+      <section xml:id="modulessupport.types.new">
+        <title>Resources within library JARs</title>
+        <para>
+          You can put resources into JAR files and make them available via the classpath.
+          Such Pustefix modules can be normal JAR files, but must contain a special deployment descriptor,
+          which has to be named <filename>META-INF/pustefix-module.xml</filename> in
+          order to be recognized by Pustefix at build- and runtime. This deployment descriptor
+          is a XML file with the following format:
+        </para>
+        <programlisting language="xml"><![CDATA[<module-descriptor 
+  xmlns="http://www.pustefix-framework.org/2008/namespace/module-descriptor"
+  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xsi:schemaLocation="http://www.pustefix-framework.org/2008/namespace/module-descriptor
+                      http://www.pustefix-framework.org/2008/namespace/module-descriptor.xsd">
+
+  <!--
+    The module name is used to construct the path the resources will be extracted to.
+    In this example the path would be modules/mytest/.
+  -->  
+  <module-name>mytest</module-name>
+
+  <!--
+    Controls if module resources are editable via the CMS (if the module is loaded using
+    the live mechanism). By default module resources are readonly.
+  -->
+  <content-editable>true</content-editable>
+
+  <!-- Here you can define which folders under PUSTEFIX-INF contain static webapp resources 
+       and should be publicly available. The resources then can be accessed under the URL 
+       path '/modules/[module-name]/[static-path]'. If you only want to grant access depending 
+       on the application using the module, you can alternatively configure the static module 
+       path in the project configuration.
+  -->
+  <static>
+    <path>css</path>
+    <path>img</path>
+  </static>
+
+  <!--
+    Here you can define if your module should be part of the dynamic search chain.
+    Using the priority attribute you can influence the search order (lower value 
+    means higher priority, leaving out the attribute the default priority is 10)
+  -->
+  <default-search priority="5">
+    <!-- you can restrict dynamic search participation depending on a specific market 
+         or language by specifying according filter-attributes -->
+    <!--
+    <filter-attribute name="tenant" value="DE_market"/>
+    <filter-attribute name="lang" value="de"/>
+    -->
+  </default-search>
+
+  <!--
+    Here you can configure which resources from which other module should be
+    overridden by your module (see "Dynamic resource resolution").
+  -->
+  <override-modules>
+    <!-- you can restrict overriding depending on a specific market or language 
+         by specifying according filter-attributes -->
+    <!--
+    <filter-attribute name="tenant" value="US_market"/>
+    <filter-attribute name="lang" value="en"/>
+    -->
+    <module name="modulename">
+      <resource path="path/to/resource"/>
+      ...
+    </module>
+    ...
+  </override-modules>
+
+</module-descriptor>]]></programlisting>
+  <para>
+    Resources placed in module jar files not only can be accessed via the classpath, but Pustefix also supports
+    loading them using its resource abstraction layer. Therefor you have to place the resources in the <literal>PUSTEFIX-INF</literal> folder.
+  </para>
+  <para>
+    Referencing such module resources is done by specifying the originating module using the <literal>module</literal> attribute, which is supported
+    by all according tags used on configuration or view level, e.g. <literal>&lt;config-include/&gt;</literal>, <literal>&lt;pfx:include/&gt;</literal>
+    and <literal>&lt;pfx:image/&gt;</literal>.
+    For details on how to reference module resources and how to override modules, see <xref linkend="advanced.dyninclude"/>.
+  </para>
+  <para>
+    Statusmessages placed under <literal>PUSTEFIX-INF/dyntxt</literal> within a module jar are automatically merged to <literal>src/main/webapp/modules-override/MODULENAME/dyntxt</literal> (see also <xref linkend="concepts.statuscodes"/>). You optionally can disable merging in the according plugin configuration and use dynamic resource lookup instead.
+  </para>
+  <para>
+    Static resources which should be publicly available/delivered by the server (e.g. resources referenced by HTML pages, like images, CSS or Javascript)
+    can be made accessible by adding according <literal>&lt;path/&gt;</literal> entries to the <literal>&lt;static/&gt;</literal> section of the
+    module descriptor. This is just a kind of whitelist saying which directories under <literal>PUSTEFIX-INF</literal> should be publicly available.
+  </para>
+      </section>
+    <section xml:id="modulessupport.maven">
+      <title>Creating new modules using the Maven archetype</title>
+      <para>
+        Pustefix provides a Maven archetype, which can be used to create new modules. It sets up
+        a maven project with pre-configured POM, deployment descriptor and statusmessage support.
+      </para>
+      <screen>
+mvn archetype:create \
+-DarchetypeGroupId=org.pustefixframework.maven.archetypes \
+-DarchetypeArtifactId=pustefix-archetype-module \
+-DarchetypeVersion=0.16.5 \
+-DgroupId=mytld.myorg.mysection \
+-DartifactId=mymodule \
+-Dversion=1.0  
+      </screen>
+      <para>
+        You have to supply your own values for the <option>groupId</option>, <option>artifactId</option>
+        and <option>version</option> parameters. The chosen <option>artifactId</option> will be used as 
+	default module and target folder name, the <option>groupId</option> as Java package name. 
+        The <literal>archetypeVersion</literal> should be replaced by the Pustefix version you're
+        currently using.
+        Executing the above command creates the following directory structure and artifacts: 
+      </para>
+      <screen>
+mymodule
+mymodule/src
+mymodule/src/main
+mymodule/src/main/java
+mymodule/src/main/java/mytld
+mymodule/src/main/java/mytld/myorg
+mymodule/src/main/java/mytld/myorg/mysection
+mymodule/src/main/java/mytld/myorg/mysection/mymodule
+mymodule/src/main/resources
+mymodule/src/main/resources/META-INF
+mymodule/src/main/resources/META-INF/pustefix-module.xml
+mymodule/src/main/resources/PUSTEFIX-INF
+mymodule/src/main/resources/PUSTEFIX-INF/dyntxt
+mymodule/src/main/resources/PUSTEFIX-INF/dyntxt/statuscodeinfo.xml
+mymodule/src/main/resources/PUSTEFIX-INF/dyntxt/statusmessages.xml
+mymodule/pom.xml
+      </screen>
+      <para>
+        Building with <literal>mvn clean package</literal> creates a deployable Pustfix module. At the moment
+        the only addition to the Maven standard build is the generation of StatusCode constant classes.
+      </para>
+    </section>
+</chapter>

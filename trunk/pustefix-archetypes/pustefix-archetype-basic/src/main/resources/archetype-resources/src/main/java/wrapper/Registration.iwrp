@@ -1,0 +1,15 @@
+<interface xmlns="http://www.pustefix-framework.org/2008/namespace/iwrapper"
+           xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+           xsi:schemaLocation="http://www.pustefix-framework.org/2008/namespace/iwrapper 
+                               http://www.pustefix-framework.org/2008/namespace/iwrapper.xsd">
+  
+  <ihandler class="${package}.handler.RegistrationHandler"/>
+
+  <param name="name" type="java.lang.String" occurrence="mandatory">
+    <precheck class="de.schlund.pfixcore.generator.prechecks.RegexpCheck">
+      <cparam name="regexp" value="/.{3,}/"/>
+      <cparam name="scodeNoMatch" value="${package}.StatusCodes#INVALID_NAME" />
+    </precheck>
+  </param>
+
+</interface>

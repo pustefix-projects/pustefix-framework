@@ -1,0 +1,78 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<context-xml-service-config xmlns="http://www.pustefix-framework.org/2008/namespace/context-xml-service-config"
+  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xsi:schemaLocation="http://www.pustefix-framework.org/2008/namespace/context-xml-service-config ../../core/schema/context-xml-service-config.xsd"
+  version="1.0">
+  
+  <context defaultpage="Start"/>
+
+  <pageflow name="Test2Flow1">
+    <flowstep name="Test2">
+      <oncontinue>
+        <when>
+          <action type="jumpto" page="Test2Succeeded"/>
+        </when>
+      </oncontinue>
+    </flowstep>
+    <flowstep name="Test2Failed"/>
+  </pageflow>
+  
+  <pageflow name="Test3Flow">
+    <default>
+      <flowstep name="Test3SetVariant"/>
+      <flowstep name="Test3Default"/>
+    </default>
+    <variant name="Test3VariantA">
+      <flowstep name="Test3SetVariant"/>
+      <flowstep name="Test3VariantA"/>
+    </variant>
+  </pageflow>
+  
+  <pageflow name="Test4Flow1">
+    <flowstep name="Test4"/>
+    <flowstep name="Test4Failed"/>
+  </pageflow>
+  
+  <pageflow name="Test5Flow">
+    <flowstep name="Test5"/>
+    <flowstep name="Test5Failed"/>
+  </pageflow>
+  
+  <pagerequest name="Start"/>
+  
+  <pagerequest name="Test1"/>
+  
+  <pagerequest name="Test2">
+    <input>
+      <wrapper prefix="test" class="de.schlund.pfixcore.testsuite.wrapper.NoInputNoError"/>
+    </input>
+  </pagerequest>
+  <pagerequest name="Test2Failed"/>
+  <pagerequest name="Test2Succeeded"/>
+  
+  <pagerequest name="Test3"/>
+  <pagerequest name="Test3SetVariant">
+    <input>
+      <wrapper prefix="variant" class="de.schlund.pfixcore.testsuite.wrapper.Test3SetVariant"/>
+    </input>
+  </pagerequest>
+  <pagerequest name="Test3Default"/>
+  <pagerequest name="Test3VariantA"/>
+  
+  <pagerequest name="Test4">
+    <input>
+      <wrapper prefix="test" class="de.schlund.pfixcore.testsuite.wrapper.NoInputNoError"/>
+    </input>
+  </pagerequest>
+  <pagerequest name="Test4Failed"/>
+  <pagerequest name="Test4Succeeded"/>
+  
+  <pagerequest name="Test5"/>
+  <pagerequest name="Test5Form">
+    <input>
+      <wrapper prefix="test" class="de.schlund.pfixcore.testsuite.wrapper.Test5PageMessage"/>
+    </input>
+  </pagerequest>
+  <pagerequest name="Test5Failed"/>
+
+</context-xml-service-config>

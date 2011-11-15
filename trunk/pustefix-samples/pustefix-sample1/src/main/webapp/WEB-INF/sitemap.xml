@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<sitemap xmlns="http://www.pustefix-framework.org/2011/namespace/sitemap"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://www.pustefix-framework.org/2011/namespace/sitemap 
+                             http://www.pustefix-framework.org/2011/namespace/sitemap.xsd">
+                             
+    <page name="home" alias="Home">
+      <page name="order" alias="Order"/>
+      <page name="phantom"/>
+      <page name="overview" alias="Overview"/>
+    </page>
+    <page name="scripting"/>
+    <page name="scriptingstate"/>
+    <page name="encoding" alias="Encoding-Test"/>
+    <page name="upload"/>
+    <page name="test"/>
+    <page name="tokenerror"/>
+    <page name="iwrapperinfo"/>
+    <page name="frames"/>
+    
+    <page name="install"/>
+    
+    <page name="geninc"/>
+    <page name="invalidate"/>
+
+    <page name="A"/>
+    <page name="B"/>
+    <page name="C"/>
+
+    <page name="testchecks"/>
+    
+    <page name="moduletest"/>
+
+    <config-include file="WEB-INF/fragments.xml" section="sitemap"/>
+    <config-include file="conf/fragments.xml" section="sitemap" module="animal-module"/>
+
+</sitemap>

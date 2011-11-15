@@ -1,0 +1,193 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema" 
+           targetNamespace="http://www.pustefix-framework.org/2008/namespace/iwrapper" 
+           xmlns="http://www.pustefix-framework.org/2008/namespace/iwrapper" 
+           elementFormDefault="qualified" attributeFormDefault="unqualified">
+           
+  <xs:complexType name="cparamType" mixed="true">
+    <xs:attribute name="name" use="required"/>
+    <xs:attribute name="value" use="required"/>
+  </xs:complexType>
+  <xs:simpleType name="fqcnType" >
+    <!-- We do not resitrict at all (yet), 
+         this type is just for tagging and nifty help popups within cool xml editors -->
+    <xs:annotation><xs:documentation xml:lang="en">fully qualified class name</xs:documentation></xs:annotation>
+    <xs:restriction base="xs:string"></xs:restriction>
+  </xs:simpleType>
+  <xs:simpleType name="cnType" >
+    <!-- We do not resitrict at all (yet), 
+         this type is just for tagging and nifty help popups within cool xml editors -->
+    <xs:annotation><xs:documentation xml:lang="en">relative class name</xs:documentation></xs:annotation>
+    <xs:restriction base="fqcnType"></xs:restriction>
+  </xs:simpleType>
+  <xs:simpleType name="iwrapperType" >
+    <!-- We do not resitrict at all (yet), 
+         this type is just for tagging and nifty help popups within cool xml editors -->
+    <xs:annotation><xs:documentation xml:lang="en">class extending de.schlund.pfixcore.generator.IWrapper</xs:documentation></xs:annotation>
+    <xs:restriction base="cnType"></xs:restriction>
+  </xs:simpleType>
+  <xs:element name="interface">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element name="ihandler" minOccurs="0" maxOccurs="1">
+          <xs:complexType>
+            <xs:attribute name="class" use="optional">
+              <xs:annotation>
+                <xs:documentation xml:lang="en">a class implementing de.schlund.pfixcore.generator.IWrapperParamCheck</xs:documentation>
+              </xs:annotation>
+            </xs:attribute>
+            <xs:attribute name="bean-ref" use="optional"/>
+          </xs:complexType>
+        </xs:element>
+        <xs:element name="param" minOccurs="0" maxOccurs="unbounded">
+          <xs:annotation>
+            <xs:documentation xml:lang="en">// TODO_DOC Documentation</xs:documentation>
+          </xs:annotation>
+          <xs:complexType>
+
+            <xs:all>
+
+              <xs:element name="caster" minOccurs="0">
+                <xs:annotation>
+                  <xs:documentation xml:lang="en">Each parameter must be casted from a String to the specific type (unless the type is java.lang.String itself, in this case, no caster need to be supplied). This is done by means of a class implementing de.schlund.pfixcore.generator.IWrapperParamCaster. For the usual simple types you can use a caster from the package de.schlund.pfixcore.generator.casters.</xs:documentation>
+                </xs:annotation>
+                <xs:complexType>
+                  <xs:sequence>
+                    <xs:element name="cparam" type="cparamType" minOccurs="0" maxOccurs="unbounded"/>
+                  </xs:sequence>
+                  <xs:attribute name="class" use="required">
+                    <xs:annotation>
+                      <xs:documentation xml:lang="en">a class implementing de.schlund.pfixcore.generator.IWrapperParamCaster. See package 
+                        de.schlund.pfixcore.generator.casters for a set of pre-defined casters.</xs:documentation>
+                    </xs:annotation>
+                  </xs:attribute>
+                </xs:complexType>
+              </xs:element>
+
+              <xs:element name="default" minOccurs="0">
+                <xs:complexType>
+                  <xs:sequence>
+	                  <xs:element name="value" minOccurs="1" maxOccurs="unbounded" type="xs:string"/>
+                  </xs:sequence>
+                </xs:complexType>
+	            </xs:element>
+
+	            <xs:element name="precheck" minOccurs="0">
+                <xs:annotation>
+                  <xs:documentation xml:lang="en">// TODO_DOC Documentation</xs:documentation>
+                </xs:annotation>
+                <xs:complexType>
+                  <xs:sequence>
+                    <xs:element name="cparam" type="cparamType" minOccurs="0" maxOccurs="unbounded"/>
+                  </xs:sequence>
+                  <xs:attribute name="class" use="required">
+                    <xs:annotation>
+                      <xs:documentation xml:lang="en">a class implementing de.schlund.pfixcore.generator.IWrapperParamPreCheck. See package 
+                        de.schlund.pfixcore.generator.prechecks for a set of pre-defined pre-checkers.</xs:documentation>
+                    </xs:annotation>
+                  </xs:attribute>
+                </xs:complexType>
+              </xs:element>
+              <xs:element name="postcheck" minOccurs="0">
+                <xs:annotation>
+                  <xs:documentation xml:lang="en">// TODO_DOC Documentation</xs:documentation>
+                </xs:annotation>
+                <xs:complexType>
+                  <xs:sequence>
+                    <xs:element name="cparam" type="cparamType" minOccurs="0" maxOccurs="unbounded"/>
+                  </xs:sequence>
+                  <xs:attribute name="class" use="required">
+                    <xs:annotation>
+                      <xs:documentation xml:lang="en">a class implementing de.schlund.pfixcore.generator.IWrapperParamPostCheck. See package 
+                        de.schlund.pfixcore.generator.postchecks for a set of pre-defined post-checkers.</xs:documentation>
+                    </xs:annotation>
+                  </xs:attribute>
+                </xs:complexType>
+              </xs:element>
+
+            </xs:all>
+
+            <xs:attribute name="name" use="required"/>
+            <xs:attribute name="type" use="required"/>
+            <xs:attribute name="frequency" use="optional" default="single">
+              <xs:annotation>
+                <xs:documentation xml:lang="de">Defines whether multiple values or only one single value is to be accepted for this parameter. For multiple, 
+                  array accessors - for single, regular accessors will be generated. Default: single.</xs:documentation>
+              </xs:annotation>
+              <xs:simpleType>
+                <xs:restriction base="xs:string">
+                  <xs:enumeration value="single"/>
+                  <xs:enumeration value="multiple"/>
+                </xs:restriction>
+              </xs:simpleType>
+            </xs:attribute>
+            <xs:attribute name="occurrence" use="optional" default="mandatory">
+              <xs:annotation>
+                <xs:documentation xml:lang="de">mandatory: the formsubmit won't complete if the value for the parameter is missing or empty, that is IHandler.handleSubmittedData(Context,IWrapper) won't be called unless a value is supplied by the user or a default value is supplied via the &lt;default&gt; element.
+                  optional: parameter does not have to be submitted.
+                  indexed: The html-form submits 0 or more values whose names are in the form "parametername.key". "key" is an arbitrary string. Example: the value of &lt;input name="Paramname.3"/&gt; can be retrieved as getParamname("3").</xs:documentation>
+              </xs:annotation>
+              <xs:simpleType>
+                <xs:restriction base="xs:string">
+                  <xs:enumeration value="mandatory"/>
+                  <xs:enumeration value="optional"/>
+                  <xs:enumeration value="indexed"/>
+                </xs:restriction>
+              </xs:simpleType>
+            </xs:attribute>
+            <xs:attribute name="occurence" use="optional" default="mandatory">
+              <xs:annotation>
+                <xs:documentation xml:lang="de">DEPRECATED use occu_rr_ence instead. mandatory: the formsubmit won't complete if the value for the parameter is missing or empty, that is IHandler.handleSubmittedData(Context,IWrapper) won't be called unless a value is supplied by the user or a default value is supplied via the &lt;default&gt; element.
+                  optional: parameter does not have to be submitted.
+                  indexed: The html-form submits 0 or more values whose names are in the form "parametername.key". "key" is an arbitrary string. Example: the value of &lt;input name="Paramname.3"/&gt; can be retrieved as getParamname("3").</xs:documentation>
+              </xs:annotation>
+              <xs:simpleType>
+                <xs:restriction base="xs:string">
+                  <xs:enumeration value="mandatory"/>
+                  <xs:enumeration value="optional"/>
+                  <xs:enumeration value="indexed"/>
+                </xs:restriction>
+              </xs:simpleType>
+            </xs:attribute>
+            <xs:attribute name="occurance" use="optional" default="mandatory">
+              <xs:annotation>
+                <xs:documentation xml:lang="de">DEPRECATED use occu_rre_nce instead. mandatory: the formsubmit won't complete if the value for the parameter is missing or empty, that is IHandler.handleSubmittedData(Context,IWrapper) won't be called unless a value is supplied by the user or a default value is supplied via the &lt;default&gt; element.
+                  optional: parameter does not have to be submitted. // TODO_DOC(what does the get method of the iwrapper supply empty strings? null? i suppose null.) 
+                  indexed: The html-form submits 0 or more values whose names are in the form "parametername.key". "key" is an arbitrary string. Example: the value of &lt;input name="Paramname.3"/&gt; can be retrieved as getParamname("3").</xs:documentation>
+              </xs:annotation>
+              <xs:simpleType>
+                <xs:restriction base="xs:string">
+                  <xs:enumeration value="mandatory"/>
+                  <xs:enumeration value="optional"/>
+                  <xs:enumeration value="indexed"/>
+                </xs:restriction>
+              </xs:simpleType>
+            </xs:attribute>
+            <xs:attribute name="missingscode">
+              <xs:annotation>
+                <xs:documentation xml:lang="en">pfixcore.example.home.AGE_MISSING</xs:documentation>
+              </xs:annotation>
+            </xs:attribute>
+            <xs:attribute name="trim" use="optional" type="xs:boolean" default="true">
+              <xs:annotation>
+                <xs:documentation xml:lang="de">Optional (Default is 'true'). Defines if submitted parameters should be trimmed.</xs:documentation>
+              </xs:annotation>
+            </xs:attribute>
+          </xs:complexType>
+        </xs:element>
+      </xs:sequence>
+      <xs:attribute name="extends" type="iwrapperType"><xs:annotation><xs:documentation xml:lang="en">class extending de.schlund.pfixcore.generator.IWrapper</xs:documentation></xs:annotation></xs:attribute>
+      <xs:attribute name="implements" type="xs:string"/>
+    </xs:complexType>
+  </xs:element>
+
+	<!--
+  <xs:simpleType name="frequencyType" >
+    <xs:restriction base="xs:string">
+      <xs:enumeration value="multiple"/>
+      <xs:enumeration value="single"/>
+    </xs:restriction>
+  </xs:simpleType>
+  drei umlaute äää
+  -->
+</xs:schema>

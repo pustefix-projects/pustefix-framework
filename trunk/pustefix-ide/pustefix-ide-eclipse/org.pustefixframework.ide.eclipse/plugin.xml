@@ -1,0 +1,195 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<?eclipse version="3.2"?>
+<plugin>
+
+   <extension id="org.pustefixframework.ide.eclipse.plugin.builder.pustefixbuilder"
+              name="Pustefix Builder"
+              point="org.eclipse.core.resources.builders">
+      <builder hasNature="true">
+         <run class="org.pustefixframework.ide.eclipse.plugin.builder.PustefixBuilder"/>
+      </builder>
+   </extension>
+   
+   <extension id="org.pustefixframework.ide.eclipse.plugin.builder.pustefixpostbuilder"
+              name="Pustefix Post-Java Builder"
+              point="org.eclipse.core.resources.builders">
+      <builder hasNature="true">
+         <run class="org.pustefixframework.ide.eclipse.plugin.builder.PustefixPostBuilder"/>
+      </builder>
+   </extension>
+   
+   <extension id="org.pustefixframework.ide.eclipse.plugin.pustefixnature"
+              name="Pustefix Nature"
+              point="org.eclipse.core.resources.natures">
+      <runtime>
+         <run class="org.pustefixframework.ide.eclipse.plugin.PustefixNature"/>
+      </runtime>
+      <builder id="org.pustefixframework.ide.eclipse.plugin.builder.pustefixbuilder"/>
+      <builder id="org.pustefixframework.ide.eclipse.plugin.builder.pustefixpostbuilder"/>
+   </extension>
+   
+   <extension
+         point="org.eclipse.ui.popupMenus">
+      <objectContribution
+            adaptable="true"
+            objectClass="org.eclipse.core.resources.IProject"
+            nameFilter="*"
+            id="org.pustefixframework.ide.eclipse.plugin.contribution2">
+         <visibility>
+         	<and>
+         	<objectState 
+         			name="projectNature" 
+         			value="org.eclipse.jdt.core.javanature"/>	
+         	<not>
+            	<objectState
+            		name="projectNature"
+               		value="org.pustefixframework.ide.eclipse.plugin.pustefixnature"/>
+            </not>
+            </and>
+         	</visibility>
+      
+         <action
+               class="org.pustefixframework.ide.eclipse.plugin.builder.ToggleNatureAction"
+               enablesFor="+"
+               id="org.pustefixframework.ide.eclipse.plugin.addRemoveNatureAction"
+               label="Set Pustefix Nature"
+               menubarPath="additions">
+         </action>
+      </objectContribution>
+      <objectContribution
+            adaptable="true"
+            objectClass="org.eclipse.core.resources.IProject"
+            nameFilter="*"
+            id="org.pustefixframework.ide.eclipse.plugin.contribution3">
+            <visibility>
+            <and>
+            <objectState 
+         			name="projectNature" 
+         			value="org.eclipse.jdt.core.javanature"/>	
+            	<objectState
+            		name="projectNature"
+               		value="org.pustefixframework.ide.eclipse.plugin.pustefixnature"/>
+               	
+            </and>
+         	</visibility>
+         <action
+               class="org.pustefixframework.ide.eclipse.plugin.builder.ToggleNatureAction"
+               enablesFor="+"
+               id="org.pustefixframework.ide.eclipse.plugin.addRemoveNatureAction"
+               label="Remove Pustefix Nature"
+               menubarPath="additions">
+         </action>
+      </objectContribution>
+   </extension>
+   <extension
+         point="org.eclipse.ui.propertyPages">
+		<page
+            adaptable="true"
+            class="org.pustefixframework.ide.eclipse.plugin.ui.properties.GeneralPropertyPage"
+            id="org.pustefixframework.ide.eclipse.plugin.properties.general"
+            name="Pustefix"
+            objectClass="org.eclipse.core.resources.IProject">
+            <filter
+               name="projectNature"
+               value="org.pustefixframework.ide.eclipse.plugin.pustefixnature"/>
+     </page>
+     <page
+            adaptable="true"
+            class="org.pustefixframework.ide.eclipse.plugin.ui.properties.IWrapperPropertyPage"
+            id="org.pustefixframework.ide.eclipse.plugin.properties.iwrapper"
+            name="IWrapper"
+            category="org.pustefixframework.ide.eclipse.plugin.properties.general"
+            objectClass="org.eclipse.core.resources.IProject">
+            <filter
+               name="projectNature"
+               value="org.pustefixframework.ide.eclipse.plugin.pustefixnature"/>
+     </page>
+     <page
+            adaptable="true"
+            class="org.pustefixframework.ide.eclipse.plugin.ui.properties.StatusCodesPropertyPage"
+            id="org.pustefixframework.ide.eclipse.plugin.properties.statuscodes"
+            name="StatusCodes"
+            category="org.pustefixframework.ide.eclipse.plugin.properties.general"
+            objectClass="org.eclipse.core.resources.IProject">
+            <filter
+               name="projectNature"
+               value="org.pustefixframework.ide.eclipse.plugin.pustefixnature"/>
+     </page>
+   </extension>
+   <extension
+         point="org.eclipse.ui.preferencePages">
+      <page
+            class="org.pustefixframework.ide.eclipse.plugin.ui.preferences.GeneralPreferencePage"
+            id="org.pustefixframework.ide.eclipse.plugin.preferences.general"
+            name="Pustefix"/>
+      <page
+            class="org.pustefixframework.ide.eclipse.plugin.ui.preferences.IWrapperPreferencePage"
+            id="org.pustefixframework.ide.eclipse.plugin.preferences.iwrapper"
+            name="IWrapper"
+            category="org.pustefixframework.ide.eclipse.plugin.preferences.general"/>
+      <page
+            class="org.pustefixframework.ide.eclipse.plugin.ui.preferences.StatusCodesPreferencePage"
+            id="org.pustefixframework.ide.eclipse.plugin.preferences.statuscodes"
+            name="StatusCodes"
+            category="org.pustefixframework.ide.eclipse.plugin.preferences.general"/>
+   </extension>
+   <extension
+         point="org.eclipse.core.runtime.preferences">
+      <initializer class="org.pustefixframework.ide.eclipse.plugin.ui.preferences.PreferenceInitializer"/>
+   </extension>
+   <extension
+         point="org.eclipse.ui.newWizards">
+      <category
+            id="org.pustefixframework.ide.eclipse.plugin.wizards"
+            name="Pustefix">
+      </category>
+      <wizard
+            category="org.pustefixframework.ide.eclipse.plugin.wizards"
+            class="org.pustefixframework.ide.eclipse.plugin.ui.wizards.ProjectWizard"
+            icon="icons/project.png"
+            id="org.pustefixframework.ide.eclipse.plugin.wizards.ProjectWizard"
+            name="Project">
+      </wizard>
+      <wizard
+            category="org.pustefixframework.ide.eclipse.plugin.wizards"
+            class="org.pustefixframework.ide.eclipse.plugin.ui.wizards.PageWizard"
+            icon="icons/page.png"
+            id="org.pustefixframework.ide.eclipse.plugin.wizards.PageWizard"
+            name="Page">
+      </wizard>
+   </extension>
+   <extension
+         point="org.eclipse.jdt.core.annotationProcessorManager">
+      <annotationProcessorManager
+            class="org.pustefixframework.ide.eclipse.plugin.AbstractAnnotationProcessorManager1"
+            id="org.pustefixframework.ide.eclipse.plugin.annotationProcessorManager1">
+      </annotationProcessorManager>
+   </extension>
+   <extension
+         id="org.pustefixframework.ide.eclipse.plugin.marker"
+         name="Generic marker"
+         point="org.eclipse.core.resources.markers">
+      <super
+            type="org.eclipse.core.resources.marker">
+      </super>
+      <persistent
+            value="true">
+      </persistent>
+   </extension>
+   <extension
+         id="org.pustefixframework.ide.eclipse.plugin.problemmarker"
+         name="Problem marker"
+         point="org.eclipse.core.resources.markers">
+      <super
+            type="org.pustefixframework.ide.eclipse.plugin.marker">
+      </super>
+      <super
+            type="org.eclipse.core.resources.problemmarker">
+      </super>
+      <persistent
+            value="true">
+      </persistent>
+   </extension>
+   
+
+</plugin>

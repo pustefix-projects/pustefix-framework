@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="utf-8"?>
+<scriptedflow xmlns="http://www.pustefix-framework.org/bar" 
+              version="1.0">
+  <!-- namespace setting test -->
+  <virtual-request page="home">
+    <param name="__sendingdata">1</param>
+    <param name="info.Adult">true</param>
+  </virtual-request>
+</scriptedflow>

@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="ISO-8859-1"?>
+<include_parts xmlns:ixsl="http://www.w3.org/1999/XSL/Transform" xmlns:pfx="http://www.schlund.de/pustefix/core">
+
+ <part name="INVALID_NAME">
+    <theme name="default">
+      Der Name ist ungültig, da mindestens 3 Zeichen erforderlich sind.
+    </theme>
+  </part>
+  
+</include_parts>

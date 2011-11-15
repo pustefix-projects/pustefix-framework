@@ -1,0 +1,44 @@
+<?xml version="1.0" encoding="utf-8"?>
+<context-xml-service-config 
+    xmlns="http://www.pustefix-framework.org/2008/namespace/context-xml-service-config" 
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xsi:schemaLocation="http://www.pustefix-framework.org/2008/namespace/context-xml-service-config ../../core/schema/context-xml-service-config.xsd"
+    version="1.0">
+  
+  <global-config />
+
+  <context defaultpage="Welcome">
+    <resource bean-name="guessContext" scope="request" class="org.pustefixframework.example.numberguess.context.GuessContext"/>
+    <resource bean-name="statisticsContext" class="org.pustefixframework.example.numberguess.context.StatisticsContext"/>
+    <resource bean-name="userContext" class="org.pustefixframework.example.numberguess.context.UserContext"/>
+  </context>
+
+  <pageflow name="Main" final="Welcome">
+    <flowstep name="Welcome"/>
+    <flowstep name="Guess"/>
+    <flowstep name="Result"/>
+  </pageflow>
+
+  <pagerequest name="Welcome">
+    <input policy="NONE">
+      <wrapper prefix="user" class="org.pustefixframework.example.numberguess.wrapper.UserDataWrapper" />
+    </input>
+    <output>
+      <resource node="user" bean-ref="userContext"/>
+    </output>
+  </pagerequest>
+
+  <pagerequest name="Guess">
+    <input>
+      <wrapper prefix="guess" class="org.pustefixframework.example.numberguess.wrapper.GuessDataWrapper" />
+    </input>
+  </pagerequest>
+  
+  <pagerequest name="Result">
+    <state class="org.pustefixframework.example.numberguess.state.ResultState" />
+    <output>
+      <resource node="statistics" bean-ref="statisticsContext"/>
+    </output>
+  </pagerequest>
+
+</context-xml-service-config>
