@@ -1,9 +1,0 @@
-<?xml version="1.0" encoding="UTF-8"?>
-<sitemap-aliases lang="fr">
-  <alias page="Home">Depart</alias>
-  <alias page="Overview">Apercu</alias>
-  <alias page="Info">Information</alias>
-  <alias page="Cities">Cites</alias>
-  <alias page="Mountains">Monts</alias>
-  <alias page="NationalParks">Parcs_nationaux</alias>
-</sitemap-aliases>
