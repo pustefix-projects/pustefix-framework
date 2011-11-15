@@ -4,17 +4,17 @@
   <parent>
     <artifactId>pustefix-i18n</artifactId>
     <groupId>org.pustefixframework.samples</groupId>
-    <version>0.18.2-SNAPSHOT</version>
+    <version>0.18.2</version>
   </parent>
 
   <groupId>org.pustefixframework.samples</groupId>
   <artifactId>pustefix-i18n-lang-fr</artifactId>
-  <version>0.18.2-SNAPSHOT</version>
+  <version>0.18.2</version>
   <packaging>jar</packaging>
   <name>Pustefix i18n sample language module fr</name>
 
   <properties>
-    <pustefix.version>0.18.2-SNAPSHOT</pustefix.version>
+    <pustefix.version>0.18.2</pustefix.version>
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
   </properties>
 
