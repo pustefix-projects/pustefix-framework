@@ -1249,7 +1249,7 @@
         <title>Creating a hidden field</title>
         <para>
           Hidden fields are created the same way as text input fields (see <xref linkend="xslt.forms.elements.text"/>),
-          you only have to set the <literal>type</literal> attribute to <literal>password</literal>.
+          you only have to set the <literal>type</literal> attribute to <literal>hidden</literal>.
         </para>
         <para>
           Basically the same attributes as for <literal>&lt;pfx:xinp type="text"&gt;</literal>. Of course no special class attribute handling, as the result is invisible anyway.
