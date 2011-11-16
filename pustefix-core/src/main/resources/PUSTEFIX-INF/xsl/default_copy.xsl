@@ -8,14 +8,35 @@
 <!--  introduce a dynamically scoped variable into XSLT. Of course this -->
 <!--  works only when the default rule actually is called... -->
 
-  <xsl:template match="*|/">
+  <xsl:template match="/">
     <xsl:param name="__env"/>
     <xsl:copy>
-      <xsl:copy-of select="./@*"/>
       <xsl:apply-templates>
         <xsl:with-param name="__env" select="$__env"/>
       </xsl:apply-templates>
     </xsl:copy>
+  </xsl:template>
+  
+  <xsl:template match="*">
+    <xsl:param name="__env"/>
+    <xsl:choose>
+      <xsl:when test="$__target_key = '__NONE__'">
+        <xsl:element name="{local-name()}">
+          <xsl:copy-of select="./@*"/>
+          <xsl:apply-templates>
+            <xsl:with-param name="__env" select="$__env"/>
+          </xsl:apply-templates>
+        </xsl:element>
+      </xsl:when>
+      <xsl:otherwise>
+        <xsl:copy>
+          <xsl:copy-of select="./@*"/>
+          <xsl:apply-templates>
+            <xsl:with-param name="__env" select="$__env"/>
+          </xsl:apply-templates>
+        </xsl:copy>
+      </xsl:otherwise>
+    </xsl:choose>
   </xsl:template>
 
 </xsl:stylesheet>
