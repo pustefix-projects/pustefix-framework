@@ -172,6 +172,7 @@ public class PfixServletRequestImpl implements PfixServletRequest {
     public void updateRequest(HttpServletRequest req) {
         this.request = req;
         this.session = req.getSession(false);
+        internalPageName = null;
     }
 
     /* (non-Javadoc)

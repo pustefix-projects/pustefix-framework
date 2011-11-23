@@ -455,6 +455,13 @@ public abstract class AbstractPustefixRequestHandler implements SessionTrackingS
                             }
                         }
                     }
+                } else {
+                    List<String> pageAltAliases = siteMap.getPageAlternativeAliases(registeredPage, null);
+                    if(pageAltAliases != null) {
+                        for(String pageAltAlias: pageAltAliases) {
+                            uris.add("/" + pageAltAlias);
+                        }
+                    }
                 }
             }
         }

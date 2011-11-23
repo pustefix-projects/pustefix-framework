@@ -192,6 +192,8 @@
     </target>
     <xsl:variable name="node" select="."/>
     <xsl:if test="$rec='true'">
+     <xsl:choose>
+     <xsl:when test="/make/standardpage-alternative">
       <xsl:for-each select="/make/standardpage-alternative">
         <xsl:apply-templates select="$node">
           <xsl:with-param name="variant">
@@ -228,6 +230,26 @@
           </xsl:apply-templates>
         </xsl:for-each>
       </xsl:for-each>
+     </xsl:when>
+     <xsl:otherwise>
+       <xsl:for-each select="$node/standardpage-alternative">
+          <xsl:apply-templates select="$node">
+            <xsl:with-param name="variant">
+              <xsl:choose>
+                <xsl:when test="$node/@variant">
+                  <xsl:value-of select="concat($node/@variant, ':', .)"/>
+                </xsl:when>
+                <xsl:otherwise>
+                  <xsl:value-of select="."/>
+                </xsl:otherwise>
+              </xsl:choose>
+            </xsl:with-param>
+            <xsl:with-param name="rec">false</xsl:with-param>
+            <xsl:with-param name="pageAlternative" select="."/>
+          </xsl:apply-templates>
+        </xsl:for-each>
+     </xsl:otherwise>
+     </xsl:choose>
     </xsl:if>
   </xsl:template>
 

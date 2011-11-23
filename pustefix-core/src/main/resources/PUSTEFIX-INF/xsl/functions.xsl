@@ -122,7 +122,7 @@
   <func:function name="pfx:__omitPage">
     <xsl:param name="pageName"/>
     <xsl:param name="language"><xsl:value-of select="$lang"/></xsl:param>
-    <xsl:param name="altKey"/>
+    <xsl:param name="altKey"><xsl:if test="$page=$pageName and $pageAlternative"><xsl:value-of select="$pageAlternative"/></xsl:if></xsl:param>
     <func:result select="callback:omitPage($__context__,$__target_gen,$pageName,$language,$altKey)"/>
   </func:function>
   
