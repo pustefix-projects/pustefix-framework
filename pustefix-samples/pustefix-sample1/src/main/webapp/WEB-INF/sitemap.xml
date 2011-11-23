@@ -4,14 +4,16 @@
          xsi:schemaLocation="http://www.pustefix-framework.org/2011/namespace/sitemap 
                              http://www.pustefix-framework.org/2011/namespace/sitemap.xsd">
                              
-    <page name="home" alias="Home">
-      <page name="order" alias="Order"/>
+    <page name="home">
+      <page name="order"/>
       <page name="phantom"/>
-      <page name="overview" alias="Overview"/>
+      <page name="overview"/>
     </page>
     <page name="scripting"/>
     <page name="scriptingstate"/>
-    <page name="encoding" alias="Encoding-Test"/>
+    <page name="encoding" alias="encodingpage">
+       <alt key="xencoding" name="xencodingpage"/>
+    </page>
     <page name="upload"/>
     <page name="test"/>
     <page name="tokenerror"/>
