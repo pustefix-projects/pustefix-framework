@@ -49,6 +49,12 @@ public class GenerateMojo extends AbstractMojo {
     private File docroot;
 
     /**
+     * Webapp deployment directory.
+     * @parameter default-value="${basedir}/target/${project.artifactId}-${project.version}/"
+     */
+    private File webappdir;
+    
+    /**
      * @parameter default-value="error"
      * @required
      */
@@ -64,12 +70,9 @@ public class GenerateMojo extends AbstractMojo {
             return;
         }
 
-        File warDir = getWarDir();
-        if (warDir == null) {
-            throw new MojoExecutionException("Can't find project WAR directory in target folder");
-        }
+        if(!webappdir.exists()) webappdir.mkdirs();
         
-        File cache = new File(warDir, ".cache");
+        File cache = new File(webappdir, ".cache");
 
         URLClassLoader loader = getProjectRuntimeClassLoader();
         ClassLoader contextLoader = Thread.currentThread().getContextClassLoader();
@@ -106,19 +109,6 @@ public class GenerateMojo extends AbstractMojo {
         } catch (Exception x) {
             throw new MojoExecutionException("Can't create project runtime classloader", x);
         }
-    }
-
-    private File getWarDir() {
-        File targetDir = new File(mavenProject.getBasedir(), "target");
-        File[] files = targetDir.listFiles();
-        for (File file : files) {
-            if (file.isDirectory()) {
-                File webInfDir = new File(file, "WEB-INF");
-                if (webInfDir.exists() && webInfDir.isDirectory())
-                    return file;
-            }
-        }
-        return null;
     }
 
 }
