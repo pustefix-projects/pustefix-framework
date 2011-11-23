@@ -1755,4 +1755,49 @@
     </section>
   </section>
 
+  <section xml:id="xslt.extensions">
+    <title>XSLT extensions</title>
+
+  <section xml:id="xslt.extensions.xpathfunctions">
+    <title>XPath functions</title>
+    <para>In addition to the standard XPath functions supplied by the XSLT/XPath implementation Pustefix provides some additional framework specific
+          XPath functions in the <literal>xmlns:pfx="http://www.schlund.de/pustefix/core"</literal> namespace:</para>
+    <para>
+    <para>Example:
+    <programlisting language="xml"><![CDATA[<ixsl:if test="pfx:isVisible('mypage')=1">
+  Display if page 'mypage' is accessible 
+</ixsl:test>]]></programlisting>
+    </para>
+      <emphasis role="strong">Function:</emphasis> <emphasis>number</emphasis> <emphasis role="strong">pfx:isVisible</emphasis>(<emphasis>string</emphasis>)
+    </para>
+    <para>
+      The <emphasis role="strong">pfx:isVisible</emphasis> function checks if a page is accessible. The page name is passed as argument.
+      The function returns:
+      <itemizedlist>
+          <listitem><literal>1</literal>, if the page is accessible</listitem>
+          <listitem><literal>0</literal>, if the page isn't accessible</listitem>
+          <listitem><literal>-1</literal>, if the page doesn't exist</listitem>
+      </itemizedlist>
+    </para>
+    <para>
+      <emphasis role="strong">Function:</emphasis> <emphasis>number</emphasis> <emphasis role="strong">pfx:isVisited</emphasis>(<emphasis>string</emphasis>)
+    </para>
+    <para>
+       The <emphasis role="strong">pfx:isVisited</emphasis> function checks if a page has already been visited within the session. The page name is passed as argument.
+      The function returns:
+      <itemizedlist>
+          <listitem><literal>1</literal>, if the page has already been visited</listitem>
+          <listitem><literal>0</literal>, if the page hasn't been visited yet</listitem>
+          <listitem><literal>-1</literal>, if the page isn't configured</listitem>
+      </itemizedlist>
+    </para>
+     <note>
+        <para>
+          You should be aware that doing a boolean check on results of type <literal>number</literal>, <literal>1</literal> and 
+          <literal>-1</literal> both are evaluated as <literal>true</literal>, <literal>0</literal> as <literal>false</literal>.
+        </para>
+     </note>
+  </section>
+  </section>
+
 </chapter>
