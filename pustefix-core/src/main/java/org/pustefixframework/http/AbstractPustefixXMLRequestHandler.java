@@ -603,6 +603,7 @@ public abstract class AbstractPustefixXMLRequestHandler extends AbstractPustefix
                     }
                 }
                 writer.write(" -->");
+                writer.flush();
             } catch (Exception e) {
                 LOGGER.warn("Error adding info data to page", e);
             }
