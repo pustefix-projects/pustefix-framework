@@ -328,9 +328,11 @@ public class SiteMap {
     }
     
     public Set<String> getPageAlternativeKeys(String pageName) {
-        Page page = pageNameToPage.get(pageName);
-        if(page != null && page.pageAltKeyToName.size() > 0) {
-            return page.pageAltKeyToName.keySet();
+        if(pageName != null) {
+            Page page = pageNameToPage.get(pageName);
+            if(page != null && page.pageAltKeyToName.size() > 0) {
+                return page.pageAltKeyToName.keySet();
+            }
         }
         return null;
     }
