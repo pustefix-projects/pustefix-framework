@@ -50,6 +50,7 @@ import javax.xml.transform.stream.StreamResult;
 import org.apache.log4j.Logger;
 import org.pustefixframework.config.contextxmlservice.AbstractXMLServletConfig;
 import org.pustefixframework.config.contextxmlservice.ServletManagerConfig;
+import org.pustefixframework.container.spring.http.PustefixHandlerMapping;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.ApplicationContextAware;
 import org.w3c.dom.Document;
@@ -492,6 +493,20 @@ public abstract class AbstractPustefixXMLRequestHandler extends AbstractPustefix
             String reqId = preq.getRequest().getHeader("Request-Id");
             if(reqId != null) {
                 res.addHeader("Request-Id", reqId);
+            }
+        }
+        
+        if(!generator.isGetModTimeMaybeUpdateSkipped()) {
+            synchronized(this) {
+                try {
+                    boolean reloaded = generator.tryReinit();
+                    if(reloaded) {
+                        PustefixHandlerMapping handlerMapping = (PustefixHandlerMapping)applicationContext.getBean(PustefixHandlerMapping.class.getName());
+                        handlerMapping.reload();
+                    }
+                } catch(Exception x) {
+                    throw new PustefixCoreException(x);
+                }
             }
         }
         

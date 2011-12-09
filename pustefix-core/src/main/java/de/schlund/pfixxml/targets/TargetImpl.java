@@ -126,14 +126,16 @@ public abstract class TargetImpl implements TargetRW, Comparable<Target> {
     /**
      * @see de.schlund.pfixxml.targets.Target#getValue()
      */
-    public Object getValue() throws TargetGenerationException {
+    public synchronized Object getValue() throws TargetGenerationException {
         // Idea: if skip_getmodtimemaybeupdate is set we do not need to call getModeTimeMaybeUpdate
         // but: if the target is not in disk-cache (has not been generated) we must call
         // getModTimeMaybeUpdate once to generate it. After that, it can be loaded in getCurrValue()
         // which sets onceLoaded to true so we don't have to make this check again.
         if (generator.isGetModTimeMaybeUpdateSkipped()) {
             // skip getModTimeMaybeUpdate!
-            LOG.debug("skip_getmodtimemaybeupdate is true. Trying to skip getModTimeMaybeUpdate...");
+            if(LOG.isDebugEnabled()) {
+                LOG.debug("skip_getmodtimemaybeupdate is true. Trying to skip getModTimeMaybeUpdate...");
+            }
             if (!onceLoaded) {
                 // do test for exists here!
                 FileResource thefile = null;
@@ -141,8 +143,10 @@ public abstract class TargetImpl implements TargetRW, Comparable<Target> {
                     thefile = ResourceUtil.getFileResource(getTargetGenerator().getDisccachedir(), getTargetKey());
                 }
                 if (thefile==null || !thefile.exists()) { // Target has not been loaded once and it doesn't exist in disk cache
-                    LOG.debug("Cant't skip getModTimeMaybeUpdated because it has not been loaded " +
-                              "and doesn't even exist in disk cache! Generating now !!");
+                    if(LOG.isDebugEnabled()) {
+                        LOG.debug("Cant't skip getModTimeMaybeUpdated because it has not been loaded " +
+                                "and doesn't even exist in disk cache! Generating now !!");
+                    }
                     try {
                         getModTimeMaybeUpdate();
                         // FIXME FIXME ! Do we really handle the exception here, if getmodtimemaybeupdate is slipped????
@@ -152,13 +156,19 @@ public abstract class TargetImpl implements TargetRW, Comparable<Target> {
                         throw new TargetGenerationException(e2.getClass().getName()+ " in getModTimeMaybeUpdate()", e2);
                     }
                 } else {
-                    LOG.debug("Target exists in disc cache, using it...");
+                    if(LOG.isDebugEnabled()) {
+                        LOG.debug("Target exists in disc cache, using it...");
+                    }
                 }
-            } else { // target generated -> nop 
-                LOG.debug("Target has already been loaded, reusing it...");
+            } else { // target generated -> nop
+                if(LOG.isDebugEnabled()) {
+                    LOG.debug("Target has already been loaded, reusing it...");
+                }
             }
         } else { // do not skip getModTimeMaybeUpdate 
-            LOG.debug("Skipping getModTimeMaybeUpdate disabled in TargetGenerator!");
+            if(LOG.isDebugEnabled()) {
+                LOG.debug("Skipping getModTimeMaybeUpdate disabled in TargetGenerator!");
+            }
             try {
                 getModTimeMaybeUpdate();
             } catch(IOException e1) {
@@ -214,11 +224,9 @@ public abstract class TargetImpl implements TargetRW, Comparable<Target> {
             synchronized (this) {   // TODO: double-checked locking is broken ...
                 obj = getValueFromSPCache();
                 if (obj == null || isDiskCacheNewerThenMemCache()) {
-                    if (LOG.isDebugEnabled()) {
-                        if (LOG.isDebugEnabled() && isDiskCacheNewerThenMemCache()) {
-                            LOG.debug(
+                    if (LOG.isDebugEnabled() && isDiskCacheNewerThenMemCache()) {
+                        LOG.debug(
                                 "File in disk cache is newer then in memory cache. Rereading target from disk...");
-                        }
                     }
                     
                     obj = getValueFromDiscCache();

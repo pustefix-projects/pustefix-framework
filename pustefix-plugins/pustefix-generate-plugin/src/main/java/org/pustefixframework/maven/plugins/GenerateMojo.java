@@ -18,12 +18,12 @@
 package org.pustefixframework.maven.plugins;
 
 import java.io.File;
-import java.io.StringWriter;
-import java.io.Writer;
 import java.lang.reflect.Method;
 import java.net.URL;
 import java.net.URLClassLoader;
 import java.util.List;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 import org.apache.maven.plugin.AbstractMojo;
 import org.apache.maven.plugin.MojoExecutionException;
@@ -55,10 +55,10 @@ public class GenerateMojo extends AbstractMojo {
     private File webappdir;
     
     /**
-     * @parameter default-value="error"
+     * @parameter default-value=true
      * @required
      */
-    private String loglevel;
+    private boolean parallel;
 
     /** @parameter default-value="${project}" */
     private MavenProject mavenProject;
@@ -73,20 +73,26 @@ public class GenerateMojo extends AbstractMojo {
         if(!webappdir.exists()) webappdir.mkdirs();
         
         File cache = new File(webappdir, ".cache");
-
+        
+        Logger reportLogger = new GenerateReportLogger(getLog());
+        if(getLog().isDebugEnabled()) {
+            reportLogger.setLevel(Level.FINE);
+        } else if(getLog().isInfoEnabled()) {
+            reportLogger.setLevel(Level.INFO);
+        } else if(getLog().isWarnEnabled()) {
+            reportLogger.setLevel(Level.WARNING);
+        } else if(getLog().isErrorEnabled()) {
+            reportLogger.setLevel(Level.SEVERE);
+        }
+        
         URLClassLoader loader = getProjectRuntimeClassLoader();
         ClassLoader contextLoader = Thread.currentThread().getContextClassLoader();
         try {
             Class<?> generator = Class.forName("de.schlund.pfixxml.targets.TargetGeneratorRunner", true, loader);
-            Method meth =
-                    generator.getMethod("run", File.class, File.class, String.class,
-                            Writer.class, String.class);
+            Method meth = generator.getMethod("run", File.class, File.class, String.class, boolean.class, Logger.class);
             Object instance = generator.newInstance();
-            StringWriter output = new StringWriter();
             Thread.currentThread().setContextClassLoader(loader);
-            boolean ok =
-                    (Boolean) meth.invoke(instance, docroot, cache, "prod", output, loglevel);
-            getLog().info(output.toString());
+            boolean ok = (Boolean) meth.invoke(instance, docroot, cache, "prod", parallel, reportLogger);
             if (!ok)
                 throw new MojoExecutionException("Target generation errors occurred.");
         } catch (Exception x) {

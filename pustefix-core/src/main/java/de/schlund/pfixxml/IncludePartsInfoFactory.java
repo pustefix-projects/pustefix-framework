@@ -35,4 +35,8 @@ public class IncludePartsInfoFactory {
         return info;
     }
     
+    public void reset() {
+        urisToInfo.clear();
+    }
+    
 }

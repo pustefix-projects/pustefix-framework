@@ -127,7 +127,7 @@ public abstract class VirtualTarget extends TargetImpl {
      * @see de.schlund.pfixxml.targets.Target#needsUpdate()
      */
     @Override
-    public boolean needsUpdate() throws Exception {
+    public synchronized boolean needsUpdate() throws Exception {
         long mymodtime = getModTime();
         long xmlmod;
         long xslmod;
@@ -227,7 +227,9 @@ public abstract class VirtualTarget extends TargetImpl {
         long maxmodtime = 0;
         long tmpmodtime;
         NDC.push("    ");
-        TREE.debug("> " + getTargetKey());
+        if(TREE.isDebugEnabled()) {
+            TREE.debug("> " + getTargetKey());
+        }
         maxmodtime = ((TargetImpl) getXMLSource()).getModTimeMaybeUpdate();
         // if (maxmodtime > currmodtime) {
         //     CAT.warn("### XMLSource of "  + getTargetKey() + " is newer! " + maxmodtime + ">" + currmodtime);
@@ -275,7 +277,9 @@ public abstract class VirtualTarget extends TargetImpl {
                 if ((maxmodtime > getModTime()) || forceupdate) {
                     try {
                         generateValue();
-                        TREE.debug("  [" + getTargetKey() + ": generated...]");
+                        if(TREE.isDebugEnabled()) {
+                            TREE.debug("  [" + getTargetKey() + ": generated...]");
+                        }
                     } catch (TransformerException e) {
                         LOG.error("Error when generating: " + getTargetKey()
                                 + " from " + getXMLSource().getTargetKey()
@@ -308,7 +312,9 @@ public abstract class VirtualTarget extends TargetImpl {
                 }
             }
         } else {
-            TREE.debug("  [" + getTargetKey() + ": skipping...]");
+            if(TREE.isDebugEnabled()) {
+                TREE.debug("  [" + getTargetKey() + ": skipping...]");
+            }
         }
         NDC.pop();
         return getModTime();

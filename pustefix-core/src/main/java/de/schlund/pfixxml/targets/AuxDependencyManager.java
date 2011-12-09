@@ -116,7 +116,9 @@ public class AuxDependencyManager {
             parent_theme = null;
 
         if (parent_path != null && parent_part != null && parent_theme != null) {
-            LOG.debug("*** Found another AuxDependency as Parent...");
+            if(LOG.isDebugEnabled()) {
+                LOG.debug("*** Found another AuxDependency as Parent...");
+            }
             parent = auxFactory.getAuxDependencyInclude(parent_path, parent_part,
                             parent_theme);
         } else if (parent_path == null && parent_part == null
@@ -142,10 +144,12 @@ public class AuxDependencyManager {
         
         if (part != null && part.equals("")) part = null;
         if (theme != null && theme.equals("")) theme = null;
-        LOG.info("Adding Dependency of type 'text' to Target '" + target.getTargetKey() + "':");
-        LOG.info("*** [" + path.toURI().toString() + "][" + part + "][" + theme + "][" +
-                 ((parent_path == null)? "null" : parent_path.toURI().toString()) + "][" + parent_part + "][" + parent_theme + "]");
-
+        if(LOG.isInfoEnabled()) {
+            LOG.info("Adding Dependency of type 'text' to Target '" + target.getTargetKey() + "':");
+            LOG.info("*** [" + path.toURI().toString() + "][" + part + "][" + theme + "][" +
+                    ((parent_path == null)? "null" : parent_path.toURI().toString()) + "][" + parent_part + "][" + parent_theme + "]");
+        }
+        
         child = auxFactory.getAuxDependencyInclude(path, part, theme);
         parent = getParentDependency(parent_path, parent_part, parent_theme);
         
@@ -160,10 +164,12 @@ public class AuxDependencyManager {
         AuxDependency child  = null;
         AuxDependency parent = null;
 
-        LOG.info("Adding Dependency of type 'text' to Target '" + target.getTargetKey() + "':");
-        LOG.info("*** [" + path.toURI().toString() + "][" +
-                 ((parent_path == null)? "null" : parent_path.toURI().toString()) + "][" + parent_part + "][" + parent_theme + "]");
-
+        if(LOG.isInfoEnabled()) {
+            LOG.info("Adding Dependency of type 'text' to Target '" + target.getTargetKey() + "':");
+            LOG.info("*** [" + path.toURI().toString() + "][" +
+                    ((parent_path == null)? "null" : parent_path.toURI().toString()) + "][" + parent_part + "][" + parent_theme + "]");
+        }
+        
         child = auxFactory.getAuxDependencyImage(path);
         parent = getParentDependency(parent_path, parent_part, parent_theme);
         
@@ -177,9 +183,11 @@ public class AuxDependencyManager {
         
         AuxDependency child  = null;
 
-        LOG.info("Adding Dependency of type 'text' to Target '" + target.getTargetKey() + "':");
-        LOG.info("*** [" + path.toURI().toString() + "]");
-
+        if(LOG.isInfoEnabled()) {
+            LOG.info("Adding Dependency of type 'text' to Target '" + target.getTargetKey() + "':");
+            LOG.info("*** [" + path.toURI().toString() + "]");
+        }
+        
         child = auxFactory.getAuxDependencyFile(path);
         
         relation.addRelation(root, child, target);
@@ -192,9 +200,11 @@ public class AuxDependencyManager {
         
         AuxDependency child  = null;
 
-        LOG.info("Adding Dependency of type 'text' to Target '" + target.getTargetKey() + "':");
-        LOG.info("*** [" + target.getTargetKey() + "]");
-
+        if(LOG.isInfoEnabled()) {
+            LOG.info("Adding Dependency of type 'text' to Target '" + target.getTargetKey() + "':");
+            LOG.info("*** [" + target.getTargetKey() + "]");
+        }
+        
         child = auxFactory.getAuxDependencyTarget(target.getTargetGenerator(), targetkey);
         
         relation.addRelation(root, child, target);
@@ -228,8 +238,10 @@ public class AuxDependencyManager {
     
 
     public synchronized void saveAuxdepend() throws IOException  {
-        LOG.info("===> Trying to save aux info of Target '" + target.getTargetKey() + "'");
-
+        if(LOG.isInfoEnabled()) {
+            LOG.info("===> Trying to save aux info of Target '" + target.getTargetKey() + "'");
+        }
+        
         FileResource       path   = getAuxFile();
         FileResource       dir    = path.getParentAsFileResource();
         

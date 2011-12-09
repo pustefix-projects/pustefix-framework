@@ -2,7 +2,6 @@ package de.schlund.pfixxml.targets;
 
 import java.io.File;
 import java.io.FileInputStream;
-import java.io.Writer;
 import java.net.URI;
 import java.util.ArrayList;
 import java.util.List;
@@ -47,8 +46,8 @@ public class TargetGeneratorRunner {
     
     private TenantInfo tenantInfo;
     private Resource confFile;
-    
-    public boolean run(File docroot, File cache, String mode, Writer output, String logLevel) throws Exception {
+        
+    public boolean run(File docroot, File cache, String mode, boolean parallel, java.util.logging.Logger reportLogger) throws Exception {
         
         if(!docroot.exists()) throw new Exception("TargetGenerator docroot " + docroot.getAbsolutePath() + " doesn't exist");
         
@@ -58,10 +57,10 @@ public class TargetGeneratorRunner {
         String projectConfigLocation = getProjectConfigLocation(webXml);
         if(projectConfigLocation == null) throw new Exception("Can't get project config location from web.xml");
         
-        ConsoleAppender appender = new ConsoleAppender(new PatternLayout("[%p] %c - %m\n"));
-        Logger logger=Logger.getRootLogger();
-        logger.setLevel(Level.toLevel(logLevel));
-        logger.addAppender(appender);
+        Logger rootLogger = Logger.getRootLogger();
+        rootLogger.setLevel(Level.toLevel("error"));
+        ConsoleAppender rootAppender = new ConsoleAppender(new PatternLayout("[%p] %c - %m\n"));
+        rootLogger.addAppender(rootAppender);
         
         Properties props = new Properties();
         props.setProperty("mode", mode);
@@ -84,14 +83,15 @@ public class TargetGeneratorRunner {
         if(!cache.exists()) cache.mkdirs();
         FileResource cacheDir = ResourceUtil.getFileResource(cache.toURI());
         
-        try { 
-            TargetGenerator gen = new TargetGenerator(confFile, cacheDir, true);
-            gen.setIsGetModTimeMaybeUpdateSkipped(false);
+        try {
+            TargetGenerator gen = new TargetGenerator(confFile, cacheDir, true, parallel);
+            gen.setIsGetModTimeMaybeUpdateSkipped(true);
             gen.setTenantInfo(tenantInfo);
             gen.afterPropertiesSet();
+            TargetGenerationReport report = new TargetGenerationReport(reportLogger);
+            gen.addListener(report);
             gen.generateAll();
-            output.write(gen.getReportAsString());
-            return !gen.errorsReported();
+            return !report.hasError();
         } catch(Exception x) {
             throw new Exception("Generating targets failed", x);
         }

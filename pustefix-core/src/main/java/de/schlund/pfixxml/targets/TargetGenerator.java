@@ -21,6 +21,7 @@ package de.schlund.pfixxml.targets;
 import java.io.File;
 import java.io.IOException;
 import java.io.StringReader;
+import java.lang.management.ManagementFactory;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.util.ArrayList;
@@ -113,8 +114,6 @@ public class TargetGenerator implements ResourceVisitor, ServletContextAware, In
     
     private static final Logger LOG = Logger.getLogger(TargetGenerator.class);
 
-    private TargetGenerationReport report = new TargetGenerationReport();
-
     private PageTargetTree pagetree = new PageTargetTree();
 
     private HashMap<String, Target> alltargets = new HashMap<String, Target>();
@@ -156,6 +155,7 @@ public class TargetGenerator implements ResourceVisitor, ServletContextAware, In
     private PageInfoFactory pageInfoFactory;
     private IncludePartsInfoFactory includePartsInfo;
     private boolean parseIncludes = true;
+    private boolean parallel = false;
 
     private Map<String, String> renderParams;
     private ServletContext servletContext;
@@ -166,19 +166,24 @@ public class TargetGenerator implements ResourceVisitor, ServletContextAware, In
     //--
 
     public TargetGenerator(final Resource confile, final FileResource cacheDir, final boolean parseIncludes) throws IOException, SAXException, XMLException {
-        this(confile, cacheDir, new SPCacheFactory().init(), new SiteMap(confile), parseIncludes);   
+        this(confile, cacheDir, new SPCacheFactory().init(), new SiteMap(confile), parseIncludes, false);   
+    }
+    
+    public TargetGenerator(final Resource confile, final FileResource cacheDir, final boolean parseIncludes, final boolean parallel) throws IOException, SAXException, XMLException {
+        this(confile, cacheDir, new SPCacheFactory().init(), new SiteMap(confile), parseIncludes, parallel);   
     }
     
     public TargetGenerator(final Resource confile, final FileResource cacheDir, final SPCacheFactory cacheFactory, final SiteMap siteMap) throws IOException, SAXException, XMLException {
-        this(confile, cacheDir, cacheFactory, siteMap, true);
+        this(confile, cacheDir, cacheFactory, siteMap, true, false);
     }
         
-    public TargetGenerator(final Resource confile, final FileResource cacheDir, final SPCacheFactory cacheFactory, final SiteMap siteMap, final boolean parseIncludes) throws IOException, SAXException, XMLException {
+    public TargetGenerator(final Resource confile, final FileResource cacheDir, final SPCacheFactory cacheFactory, final SiteMap siteMap, final boolean parseIncludes, final boolean parallel) throws IOException, SAXException, XMLException {
         this.config_path = confile;
         this.cacheDir = cacheDir;
         this.cacheFactory = cacheFactory;
         this.siteMap = siteMap;
         this.parseIncludes = parseIncludes;
+        this.parallel = parallel;
     }
         
     public TargetGenerator(Resource confile) throws IOException, SAXException, XMLException {
@@ -205,11 +210,23 @@ public class TargetGenerator implements ResourceVisitor, ServletContextAware, In
         sharedLeafFactory = new SharedLeafFactory();
         pageInfoFactory = new PageInfoFactory();
         includePartsInfo = new IncludePartsInfoFactory();
-        //TODO: factory init on reload
         Meminfo meminfo = new Meminfo();
         meminfo.print("TG: Before loading " + config_path.toString());
         loadConfig(config_path);
         meminfo.print("TG: after loading targets for " + config_path.toString());
+    }
+    
+    private void reload() throws Exception {
+        pagetree = new PageTargetTree();
+        alltargets.clear();
+        includeDocumentFactory.reset();
+        targetDependencyRelation.reset();
+        auxDependencyFactory.reset();
+        targetFactory.reset();
+        sharedLeafFactory.reset();
+        pageInfoFactory.reset();
+        includePartsInfo.reset();
+        loadConfig(config_path);
     }
     
     //-- attributes
@@ -378,9 +395,7 @@ public class TargetGenerator implements ResourceVisitor, ServletContextAware, In
                     targetDependencyRelation.resetAllRelations((Collection<Target>) alltargets.values());
                 }
             }
-            pagetree = new PageTargetTree();
-            alltargets = new HashMap<String, Target>();
-            loadConfig(this.config_path);
+            reload();
             this.fireConfigurationChangeEvent();
             return true;
         } else {
@@ -1094,7 +1109,6 @@ public class TargetGenerator implements ResourceVisitor, ServletContextAware, In
                         System.out.println("---------- Doing " + args[i] + "...");
                         gen.generateAll();
                         System.out.println("---------- ...done [" + args[i] + "]");
-                        report.append(gen.getReportAsString());
                     } else {
                         LOG.error("Couldn't read configfile '" + args[i] + "'");
                         throw (new XMLException("Oops!"));
@@ -1113,85 +1127,83 @@ public class TargetGenerator implements ResourceVisitor, ServletContextAware, In
     }
 
     public void generateAll() throws Exception {
+        notifyListenerStart();
+        if(parallel) {
+            generateAllParallel();
+        } else {
+            generateAllSerial();
+        }
+        notifyListenerEnd();
+    }
+    
+    private void generateAllSerial() throws Exception {
         for (Iterator<String> e = getAllTargets().keySet().iterator(); e.hasNext();) {
             Target current = getTarget(e.next());
             generateTarget(current);
-            /* if all listeners want to stop, 
-             * there is no point in continuing ... */
-            if (needsToStop()) {
-                break;
-            }
+        }
+    }
+    
+    private void generateAllParallel() throws Exception {
+        int processors = ManagementFactory.getOperatingSystemMXBean().getAvailableProcessors();
+        List<Target> genTargets = new ArrayList<Target>();
+        for (Iterator<String> e = getAllTargets().keySet().iterator(); e.hasNext();) {
+            Target current = getTarget(e.next());
+            genTargets.add(current);
+        }
+        Thread[] genThreads = new Thread[processors];
+        for(int i=0; i<processors; i++) {
+            Thread genThread = new GenThread(genTargets);
+            genThread.start();
+            genThreads[i] = genThread;
+        }
+        for(int i=0; i<processors; i++) {
+            genThreads[i].join();
         }
     }
 
     public void generateTarget(Target target) throws Exception {
         if (target.getType() != TargetType.XML_LEAF && target.getType() != TargetType.XSL_LEAF) {
-            String path = getDisccachedir().toURI().toString();
-            System.out.println(">>>>> Generating " + path + File.separator + target.getTargetKey() + " from " + target.getXMLSource().getTargetKey() + " and " + target.getXSLSource().getTargetKey());
-
             boolean needs_update = false;
             needs_update = target.needsUpdate();
             if (needs_update) {
                 try {
+                    notifyListenerStart(target);
                     target.getValue();
-                    notifyListenerTargetDone(target);
-                } catch (TargetGenerationException tgex) {
-                    notifyListenerTargetException(target, tgex);
-                    report.addError(tgex);
-                    tgex.printStackTrace();
-                }
-            } else {
-                notifyListenerTargetDone(target);
-            }
-            System.out.println("done.");
-        } else {
-            notifyListenerTargetDone(target);
-        }
-    }
-
-    /**
-     * This method checks, if a TargetGeneratorListener wants to stop,
-     * if so he will get kicked out of the listener set. 
-     * 
-     * @return true if all listeners want to stop
-     */
-    private boolean needsToStop() {
-        boolean result = false;
-        if (generationListeners.size() > 0) {
-            result = true;
-            for (Iterator<TargetGeneratorListener> it = generationListeners.iterator(); it.hasNext();) {
-                TargetGeneratorListener listener = it.next();
-                if (listener.needsStop()) {
-                    result = result && true;
-                    it.remove();
-                } else {
-                    result = false;
+                    notifyListenerEnd(target);
+                } catch (TargetGenerationException e) {
+                    notifyListenerError(target, e);
                 }
             }
         }
-        return result;
     }
 
-    /**
-     * This calls the finishedTarget method of all registered listeners
-     * @param target the finished target
-     */
-    private void notifyListenerTargetDone(Target target) {
-        for (Iterator<TargetGeneratorListener> it = generationListeners.iterator(); it.hasNext();) {
-            TargetGeneratorListener listener = it.next();
-            listener.finishedTarget(target);
+    private void notifyListenerStart() {
+        for(TargetGeneratorListener listener: generationListeners) {
+            listener.start(this);
+        }
+    }
+    
+    private void notifyListenerEnd() {
+        for(TargetGeneratorListener listener: generationListeners) {
+            listener.end(this);
+        }
+    }
+    
+    private void notifyListenerStart(Target target) {
+        for(TargetGeneratorListener listener: generationListeners) {
+            listener.start(target);
+        }
+    }
+    
+    private void notifyListenerEnd(Target target) {
+        for(TargetGeneratorListener listener: generationListeners) {
+            listener.end(target);
         }
     }
 
-    /**
-     * This calls the generationException method of all registered listeners
-     * @param target the finished target
-     * @param tgex the exception!
-     */
-    private void notifyListenerTargetException(Target target, TargetGenerationException tgex) {
-        for (Iterator<TargetGeneratorListener> it = generationListeners.iterator(); it.hasNext();) {
-            TargetGeneratorListener listener = it.next();
-            listener.generationException(target, tgex);
+    private void notifyListenerError(Target target, TargetGenerationException e) {
+        for(TargetGeneratorListener listener: generationListeners) {
+            listener.error(target, e);
         }
     }
 
@@ -1219,21 +1231,6 @@ public class TargetGenerator implements ResourceVisitor, ServletContextAware, In
         this.toolingExtensions = enabled;
     }
     
-    /**
-     * @return report containing sensilbe information after {@link #generateAll()}, not null
-     */
-    public String getReportAsString() {
-        return report.toString();
-    }
-
-    public boolean errorsReported() {
-        return report.hasError();
-    }
-    
-    public void resetGenerationReport() {
-        report = new TargetGenerationReport();
-    }
-
     //--
 
     private static String getAttribute(Element node, String name) throws XMLException {
@@ -1286,4 +1283,37 @@ public class TargetGenerator implements ResourceVisitor, ServletContextAware, In
         return str;
     }
 
+    
+    private class GenThread extends Thread {
+        
+        private List<Target> genTargets;
+        
+        GenThread(List<Target> genTargets) {
+            this.genTargets = genTargets;
+        }
+        
+        @Override
+        public void run() {
+            Target genTarget = null;
+            do {
+            synchronized(genTargets) {
+                if(!genTargets.isEmpty()) {
+                    genTarget = genTargets.remove(0);
+                } else {
+                    genTarget = null;
+                }
+            }
+            if(genTarget != null) {
+                try {
+                    generateTarget(genTarget);
+                } catch(Exception x) {
+                    throw new RuntimeException("Error generating target " + genTarget.getTargetKey(), x);
+                }
+            } else {
+                break;
+            }
+            } while(genTarget != null);
+        }
+        
+    }
 }

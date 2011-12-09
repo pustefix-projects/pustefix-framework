@@ -176,9 +176,9 @@ public class TargetDependencyRelation {
             throw new RuntimeException("*** FATAL *** Adding " + aux + " to Parent " + parent
                                        + " for target " + target.getTargetKey() + " would result in a LOOP!");
         }
-
-        LOG.debug("+++ Adding relations " + target.getTargetKey() + " <-> " + aux.toString() + " / " + parent.toString());
-
+        if(LOG.isDebugEnabled()) {
+            LOG.debug("+++ Adding relations " + target.getTargetKey() + " <-> " + aux.toString() + " / " + parent.toString());
+        }
         if (allauxs.get(aux) == null) {
             allauxs.put(aux, new TreeSet<Target>());
         }
@@ -217,8 +217,9 @@ public class TargetDependencyRelation {
     }
 
     public synchronized void resetRelation(Target target) {
-        LOG.debug("--- Removing all relations for " + target.getTargetKey());
-
+        if(LOG.isDebugEnabled()) {
+            LOG.debug("--- Removing all relations for " + target.getTargetKey());
+        }
         TreeSet<AuxDependency> auxsForTarget = alltargets.get(target);
 
         if (auxsForTarget == null) {

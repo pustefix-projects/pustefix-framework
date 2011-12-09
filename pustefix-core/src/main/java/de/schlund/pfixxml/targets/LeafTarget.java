@@ -146,7 +146,9 @@ public abstract class LeafTarget extends TargetImpl {
         long mymodtime = getModTime();
         long maxmodtime = ResourceUtil.getResource(getTargetKey()).lastModified();
         NDC.push("    ");
-        TREE.debug("> " + getTargetKey());
+        if(TREE.isDebugEnabled()) {
+            TREE.debug("> " + getTargetKey());
+        }
 
         for (Iterator<AuxDependency> i = this.getAuxDependencyManager().getChildren()
                 .iterator(); i.hasNext();) {
@@ -168,13 +170,17 @@ public abstract class LeafTarget extends TargetImpl {
             try {
                 // invalidate Memcache:
                 storeValue(null);
-                TREE.debug("  [" + getTargetKey() + ": updated leaf node...]");
+                if(TREE.isDebugEnabled()) {
+                    TREE.debug("  [" + getTargetKey() + ": updated leaf node...]");
+                }
                 setModTime(maxmodtime);
             } catch (Exception e) {
                 LOG.error("Error when updating", e);
             }
         } else {
-            TREE.debug("  [" + getTargetKey() + ": leaf node...]");
+            if(TREE.isDebugEnabled()) {
+                TREE.debug("  [" + getTargetKey() + ": leaf node...]");
+            }
         }
         NDC.pop();
         return getModTime();
