@@ -26,17 +26,12 @@ import java.util.Set;
 
 import org.pustefixframework.container.annotations.ImplementedBy;
 import org.pustefixframework.container.annotations.Inject;
-import org.pustefixframework.container.annotations.Scope;
-import org.springframework.aop.scope.ScopedProxyUtils;
 import org.springframework.beans.PropertyValue;
 import org.springframework.beans.factory.BeanInitializationException;
-import org.springframework.beans.factory.NoSuchBeanDefinitionException;
 import org.springframework.beans.factory.config.BeanDefinition;
-import org.springframework.beans.factory.config.BeanDefinitionHolder;
 import org.springframework.beans.factory.config.BeanFactoryPostProcessor;
 import org.springframework.beans.factory.config.ConfigurableListableBeanFactory;
 import org.springframework.beans.factory.config.RuntimeBeanReference;
-import org.springframework.beans.factory.support.BeanDefinitionBuilder;
 import org.springframework.beans.factory.support.BeanDefinitionRegistry;
 import org.springframework.beans.factory.support.BeanDefinitionValidationException;
 import org.springframework.beans.factory.support.DefaultListableBeanFactory;
@@ -156,17 +151,6 @@ public class AnnotationBeanDefinitionPostProcessor implements BeanFactoryPostPro
     }
     
     /**
-     * Generates the bean name for a bean that is created by this tool.
-     * 
-     * @param beanClassName name of the bean class
-     * @return a bean name that is always that is unique for different types 
-     * but always the same for the same type
-     */
-    private String generateAutoBeanName(String beanClassName) {
-        return this.getClass().getName() + "#" + beanClassName;
-    }
-    
-    /**
      * Checks wether the bean name represents a bean that was automatically
      * created by this tool.
      * 
@@ -229,70 +213,14 @@ public class AnnotationBeanDefinitionPostProcessor implements BeanFactoryPostPro
         }
         
         if (matchingBeanName == null) {
-            Class<?> beanClass = findClassName(wantedType);
-            matchingBeanName = generateAutoBeanName(beanClass.getName());
-            try {
-                beanFactory.getBeanDefinition(matchingBeanName);
-            } catch (NoSuchBeanDefinitionException e) {
-                if(!(beanFactory instanceof BeanDefinitionRegistry)) {
-                    throw new BeanFactoryImplNotSupportedException("Automatically creating bean definitions for " +
-                    		"beans injected using the @Inject annotation requires a BeanFactory which implements " +
-                    		"the BeanDefinitionRegistry interface.");
-                }
-                BeanDefinitionRegistry beanRegistry = (BeanDefinitionRegistry)beanFactory;
-                Scope annotation = beanClass.getAnnotation(Scope.class);
-                BeanDefinitionBuilder builder = BeanDefinitionBuilder.rootBeanDefinition(beanClass);
-                String scopeName = null;
-                if (annotation != null) {
-                    scopeName = annotation.value();
-                    builder.setScope(scopeName);
-                }
-                BeanDefinition beanDefinition = builder.getBeanDefinition();
-                processBeanDefinition(matchingBeanName, beanDefinition, beanFactory);
-                BeanDefinitionHolder beanHolder = new BeanDefinitionHolder(beanDefinition, matchingBeanName);
-                if (scopeName != null && !(scopeName.equals("singleton") || scopeName.equals("prototype"))) {
-                    beanHolder = ScopedProxyUtils.createScopedProxy(beanHolder, beanRegistry, true);
-                }
-                beanRegistry.registerBeanDefinition(beanHolder.getBeanName(), beanHolder.getBeanDefinition());
-            }
+            throw new BeanInitializationException("No Spring bean of type '" + wantedType.getName() + "' found for injection.");
+            //Disabled automatic creation of Spring bean definitions as first step to
+            //getting rid of the @Inject annotation at all in the future
         }
         
         beanRef = new RuntimeBeanReference(matchingBeanName);
         beanRefCache.put(wantedType, beanRef);
         return beanRef;
-    }
-    
-    /**
-     * Inspects wether the supplied type can be used as a bean class and 
-     * returns the right type, when the supplied type is an interface with
-     * an {@link ImplementedBy} annotation.
-     * 
-     * @param wantedType type that is to be inspected
-     * @return type that can be used as a bean class
-     * @throws BeanInitializationException if no type suited for usage as a
-     * bean class could be found
-     */
-    private Class<?> findClassName(Class<?> wantedType) {
-        if (wantedType.isInterface()) {
-            ImplementedBy annotation = wantedType.getAnnotation(ImplementedBy.class);
-            if (annotation != null) {
-                if (annotation.value().isInterface()) {
-                    throw new BeanInitializationException("Type \"" + annotation.value().getName() + "\" referenced by ImplementedBy annotation on type \"" + wantedType.getName() + "\" is an interface.");
-                } else {
-                    wantedType = annotation.value();
-                }
-            }
-        }
-        
-        try {
-            wantedType.getConstructor(new Class<?>[] {});
-        } catch (SecurityException e) {
-            throw new BeanInitializationException("Type \"" + wantedType.getName() + "\" does not have a public default constructor.");
-        } catch (NoSuchMethodException e) {
-            throw new BeanInitializationException("Type \"" + wantedType.getName() + "\" does not have a public default constructor.");
-        }
-        
-        return wantedType;
     }
     
     /**
