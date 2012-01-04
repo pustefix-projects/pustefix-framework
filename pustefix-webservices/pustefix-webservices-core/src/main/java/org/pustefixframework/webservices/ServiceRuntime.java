@@ -20,9 +20,12 @@ package org.pustefixframework.webservices;
 
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
+import java.io.OutputStream;
+import java.lang.reflect.Method;
 import java.util.HashMap;
 import java.util.Map;
 
+import javax.servlet.ServletContext;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
@@ -38,6 +41,8 @@ import org.pustefixframework.webservices.utils.FileCacheData;
 import org.pustefixframework.webservices.utils.RecordingRequestWrapper;
 import org.pustefixframework.webservices.utils.RecordingResponseWrapper;
 import org.springframework.aop.framework.Advised;
+import org.springframework.beans.factory.DisposableBean;
+import org.springframework.web.context.ServletContextAware;
 
 import de.schlund.pfixcore.auth.AuthConstraint;
 import de.schlund.pfixcore.workflow.ContextImpl;
@@ -47,7 +52,7 @@ import de.schlund.pfixxml.serverutil.SessionAdmin;
 /**
  * @author mleidig@schlund.de
  */
-public class ServiceRuntime {
+public class ServiceRuntime implements ServletContextAware, DisposableBean {
 	
     private final static Logger LOG=Logger.getLogger(ServiceRuntime.class);
     private final static Logger LOGGER_WSTRAIL=Logger.getLogger("LOGGER_WSTRAIL");
@@ -69,6 +74,9 @@ public class ServiceRuntime {
     private ServerContextImpl serverContext;
     private ContextImpl context;
     
+    private ServiceStubProvider serviceStubProvider;
+    private ServletContext servletContext;
+    
     public ServiceRuntime() {
         srvDescCache=new ServiceDescriptorCache();
         processors=new HashMap<String,ServiceProcessor>();
@@ -76,6 +84,17 @@ public class ServiceRuntime {
         stubCache=new FileCache(100);
     }	
 	
+    public void setServletContext(ServletContext servletContext) {
+        this.servletContext = servletContext;
+        //make ServiceStubProvider available to external consumers via ServletContext
+        this.serviceStubProvider = new ServiceStubProvider(this);
+        servletContext.setAttribute(ServiceStubProvider.class.getName(), serviceStubProvider);
+    }
+    
+    public void destroy() throws Exception {
+        servletContext.removeAttribute(ServiceStubProvider.class.getName());
+    }
+    
     public ServiceDescriptorCache getServiceDescriptorCache() {
         return srvDescCache;
     }
@@ -293,8 +312,6 @@ public class ServiceRuntime {
     
     public void getStub(HttpServletRequest req,HttpServletResponse res) throws ServiceException, IOException {
         
-        long t1=System.currentTimeMillis();
-        
         String nameParam=req.getParameter("name");
         if(nameParam==null) throw new ServiceException("Missing parameter: name");
         String typeParam=req.getParameter("type");
@@ -323,9 +340,25 @@ public class ServiceRuntime {
             services[i]=service;
         }
         
+        FileCacheData data = generateStub(services, serviceType, req.getContextPath());
+        
+        String etag=req.getHeader("If-None-Match");
+        if(etag!=null && etag.equals(data.getMD5())) {
+            res.setStatus(HttpServletResponse.SC_NOT_MODIFIED);
+        } else {
+            res.setContentType("text/plain");    
+            res.setContentLength(data.getBytes().length);
+            res.setHeader("ETag",data.getMD5());
+            res.getOutputStream().write(data.getBytes());
+            res.getOutputStream().close();
+        }
+    }
+    
+    private FileCacheData generateStub(ServiceConfig[] services, String serviceType, String contextPath) throws ServiceException, IOException {
+        
         StringBuilder sb=new StringBuilder();
-        for(String serviceName:serviceNames) {
-            sb.append(serviceName);
+        for(ServiceConfig service:services) {
+            sb.append(service.getName());
             sb.append(" ");
         }
         sb.append("#");
@@ -339,7 +372,7 @@ public class ServiceRuntime {
                 long tt1=System.currentTimeMillis();
                 ByteArrayOutputStream bout=new ByteArrayOutputStream();
                 for(int i=0;i<services.length;i++) {
-                    String requestPath = req.getContextPath() + services[i].getGlobalServiceConfig().getRequestPath();
+                    String requestPath = contextPath + services[i].getGlobalServiceConfig().getRequestPath();
                     stubGen.generateStub(services[i], requestPath, bout);
                     if(i<services.length-1) bout.write("\n\n".getBytes());
                 }
@@ -352,19 +385,34 @@ public class ServiceRuntime {
             } else throw new ServiceException("No stub generator found for protocol: "+serviceType);
         }
         
-        long t2=System.currentTimeMillis();
-        if(LOG.isDebugEnabled()) LOG.debug("Retrieved stub for '"+cacheKey+"' (Time: "+(t2-t1)+"ms)");
+        return data;
+    }
+    
+    public void generateStub(String[] serviceNames, String serviceType, OutputStream out) throws ServiceException, IOException {
         
-        String etag=req.getHeader("If-None-Match");
-        if(etag!=null && etag.equals(data.getMD5())) {
-            res.setStatus(HttpServletResponse.SC_NOT_MODIFIED);
-        } else {
-            res.setContentType("text/plain");    
-            res.setContentLength(data.getBytes().length);
-            res.setHeader("ETag",data.getMD5());
-            res.getOutputStream().write(data.getBytes());
-            res.getOutputStream().close();
+        serviceType = serviceType.toUpperCase();
+        
+        String contextPath;
+        //try to get context path from ServletContext, which is only directly supported since Servlet API 2.5
+        //this workaround uses reflection utilizing that Tomcat since 5.5.16 already implements this method internally 
+        try {
+            Method meth = servletContext.getClass().getMethod("getContextPath");
+            contextPath = (String)meth.invoke(servletContext);
+        } catch(Exception x) {
+            throw new RuntimeException("Your servlet container doesn't support getting the context path from the ServletContext. " +
+                    "You should upgrade to a version supporting Servlet API 2.5 or newer - or at least a container internally " +
+                    "implementing ServletContext.getContextPath().");
         }
+        
+        ServiceConfig[] services=new ServiceConfig[serviceNames.length];
+        for(int i=0;i<serviceNames.length;i++) {
+            ServiceConfig service=appServiceRegistry.getService(serviceNames[i]);
+            if(service==null) throw new ServiceException("Service not found: "+serviceNames[i]);
+            services[i]=service;
+        }
+        
+        FileCacheData data = generateStub(services, serviceType, contextPath);
+        out.write(data.getBytes());
     }
 
     public ServiceRegistry getAppServiceRegistry() {
