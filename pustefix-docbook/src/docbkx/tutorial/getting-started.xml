@@ -133,7 +133,7 @@
     The source code used in the tutorials is available for public checkout. To test the tutorials on
     your local development machine, execute the following commands:
   </para>
-  <screen>$ svn co https://pustefix.svn.sourceforge.net/svnroot/pustefix/branches/release-0.15.x/pustefix-tutorial
+  <screen>$ svn co https://pustefix.svn.sourceforge.net/svnroot/pustefix/tags/pustefixframework-0.18.x/pustefix-tutorial
 $ cd pustefix-tutorial/ajax-calculator (or first-app, usermanagement)
 $ mvn tomcat:run</screen>
   </section>
