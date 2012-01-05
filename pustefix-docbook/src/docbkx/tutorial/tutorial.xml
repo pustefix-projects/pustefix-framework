@@ -13,6 +13,7 @@
       <year>2008</year>
       <year>2009</year>
       <year>2010</year>
+      <year>2011</year>
       <holder>1&amp;1 Internet AG</holder>
     </copyright>
     <authorgroup>
@@ -32,6 +33,12 @@
         <personname>
           <firstname>Stephan</firstname>
           <surname>Schmidt</surname>
+        </personname>
+      </author>
+      <author>
+        <personname>
+          <firstname>Felix</firstname>
+          <surname>Firgau</surname>
         </personname>
       </author>
     </authorgroup>
