@@ -13,11 +13,11 @@
         Admin: <ixsl:value-of select="./@admin"/><br/>
         <br/>        
         <pfx:button jumptopage="userform">edit
-          <pfx:command name="SELWRP">edit</pfx:command>
+          <pfx:command name="SUBWRP">edit</pfx:command>
           <pfx:argument name="edit.id"><ixsl:value-of select="./@id"/></pfx:argument>
         </pfx:button>
         <pfx:button>delete
-          <pfx:command name="SELWRP">delete</pfx:command>
+          <pfx:command name="SUBWRP">delete</pfx:command>
           <pfx:argument name="delete.id"><ixsl:value-of select="./@id"/></pfx:argument>
         </pfx:button>
         <br/><br/><br/>

@@ -31,10 +31,8 @@
   <application>
 
     <docroot-path>docroot:/htdocs</docroot-path>
-    <default-path>/xml/app</default-path>
 
     <context-xml-service>
-      <path>/xml/app</path>
       <config-file>docroot:/WEB-INF/app.conf.xml</config-file>
       <choose>
         <when test="$mode='prod'">

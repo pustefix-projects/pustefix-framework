@@ -31,10 +31,8 @@
   <application>
 
     <docroot-path>docroot:/htdocs</docroot-path>
-    <default-path>/xml/calc</default-path>
 
     <context-xml-service>
-      <path>/xml/calc</path>
       <config-file>docroot:/WEB-INF/calc.conf.xml</config-file>
       <choose>
         <when test="$mode='prod'">
@@ -47,7 +45,7 @@
     </context-xml-service>
 
     <webservice-service>
-      <path>/xml/webservice</path>
+      <path>/webservice</path>
       <config-file>docroot:/WEB-INF/webservice.conf.xml</config-file>
     </webservice-service>
 

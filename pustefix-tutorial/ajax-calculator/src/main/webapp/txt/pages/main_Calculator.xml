@@ -20,8 +20,8 @@
   
   <part name="javascript-includes">
     <theme name="default">
-      <script type="text/javascript" src="{$__contextpath}/core/script/httpRequest.js"></script>
-      <script type="text/javascript" src="{$__contextpath}/core/script/webservice_json.js"></script>
+      <script type="text/javascript" src="{$__contextpath}/modules/pustefix-core/script/httpRequest.js"></script>
+      <script type="text/javascript" src="{$__contextpath}/modules/pustefix-webservices-jsonws/script/webservice_json.js"></script>
       <pfx:wsscript name="Calculator"/>
     </theme>
   </part>

@@ -4,7 +4,7 @@
   xsi:schemaLocation="http://www.pustefix-framework.org/2008/namespace/webservice-config ../../core/schema/webservice-config.xsd">
   
   <webservice-global>
-    <requestpath>/xml/webservice</requestpath>
+    <requestpath>/webservice</requestpath>
     <wsdlsupport enabled="false"/>
     <stubgeneration enabled="false"/>
     <protocol type="JSONWS"/>
