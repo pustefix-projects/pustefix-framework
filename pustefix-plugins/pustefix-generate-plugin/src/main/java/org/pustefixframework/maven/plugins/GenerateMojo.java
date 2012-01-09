@@ -55,7 +55,7 @@ public class GenerateMojo extends AbstractMojo {
     private File webappdir;
     
     /**
-     * @parameter default-value=true
+     * @parameter default-value=false
      * @required
      */
     private boolean parallel;
