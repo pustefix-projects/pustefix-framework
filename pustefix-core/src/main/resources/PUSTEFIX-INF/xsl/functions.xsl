@@ -132,4 +132,8 @@
     <func:result select="callback:getPageAlias($__target_gen,$pageName,$language)"/>
   </func:function>
   
+  <func:function name="pfx:getDisplayPageName">
+    <func:result select="callback:omitPage($__context__,$__target_gen,$page,$lang,$pageAlternative)"/>
+  </func:function>
+  
 </xsl:stylesheet>
