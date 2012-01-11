@@ -5,20 +5,20 @@
   <parent>
     <groupId>org.pustefixframework</groupId>
     <artifactId>pustefixframework</artifactId>
-    <version>0.18.5-SNAPSHOT</version>
+    <version>0.18.5</version>
   </parent>
 
   <groupId>org.pustefixframework.webservices</groupId>
   <artifactId>pustefix-webservices</artifactId>
   <packaging>pom</packaging>
-  <version>0.18.5-SNAPSHOT</version>
+  <version>0.18.5</version>
   <name>Pustefix Webservices</name>
 
   <dependencies>
     <dependency>
       <groupId>org.pustefixframework</groupId>
       <artifactId>pustefix-core</artifactId>
-      <version>0.18.5-SNAPSHOT</version>
+      <version>0.18.5</version>
     </dependency>
     <dependency>
       <groupId>log4j</groupId>
