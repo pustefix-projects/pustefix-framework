@@ -180,7 +180,7 @@
         <ixsl:value-of select="$__contextpath"/>
         <xsl:choose>
           <xsl:when test="$send-to-page">
-            <xsl:value-of select="concat('/', pfx:__omitPage($send-to-page))"/><ixsl:value-of select="$__sessionIdPath"/><xsl:if test="not($theframe = '')">?__frame=<xsl:value-of select="$theframe"/></xsl:if>
+            <ixsl:value-of select="concat('/', pfx:__omitPage('{$send-to-page}'))"/><ixsl:value-of select="$__sessionIdPath"/><xsl:if test="not($theframe = '')">?__frame=<xsl:value-of select="$theframe"/></xsl:if>
           </xsl:when>
           <xsl:otherwise>
             <xsl:choose>
