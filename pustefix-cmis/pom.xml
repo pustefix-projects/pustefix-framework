@@ -12,7 +12,7 @@
   <groupId>org.pustefixframework</groupId>
   <artifactId>pustefix-cmis</artifactId>
   <version>0.18.5-SNAPSHOT</version>
-  <name>pustefix-jcr</name>
+  <name>pustefix-cmis</name>
   <url>http://maven.apache.org</url>
   
   <properties>
