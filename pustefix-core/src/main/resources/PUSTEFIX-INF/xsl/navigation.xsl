@@ -279,7 +279,7 @@
       <ixsl:value-of select="pfx:__addParams($params)"/>
       <xsl:if test="$anchors[not(@frame) or @frame = '']">#<xsl:apply-templates select="$anchors[not(@frame) or @frame = ''][1]/node()"/></xsl:if>
     </xsl:variable>
-    <xsl:variable name="excluded_button_attrs">|action|activeclass|buttpage|forcestop|frame|invisibleclass|jumptopage|jumptopageflow|mode|nodata|normalclass|page|pageflow|popup|popupfeatures|popupheight|popupid|popupwidth|startwithflow|target|</xsl:variable>
+    <xsl:variable name="excluded_button_attrs">|action|activeclass|altkey|buttpage|forcestop|frame|invisibleclass|jumptopage|jumptopageflow|mode|nodata|normalclass|page|pageflow|popup|popupfeatures|popupheight|popupid|popupwidth|startwithflow|target|</xsl:variable>
     <xsl:variable name="excluded_button_span_attrs"><xsl:value-of select="$excluded_button_attrs"/>charset|type|name|href|hreflang|rel|rev|accesskey|shape|coords|tabindex|onfocus|onblur|</xsl:variable>
     <xsl:choose>
       <xsl:when test="string($urlonly) = 'true'">
