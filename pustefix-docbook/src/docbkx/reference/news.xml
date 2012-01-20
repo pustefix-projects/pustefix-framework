@@ -148,4 +148,34 @@
 
   </section>
 
+  <section xml:id="news.0_18_5">
+    <title>What's new in Pustefix 0.18.5</title>
+
+    <section xml:id="news.0_18_5.cmis">
+      <title>CMIS support</title>
+      <para>
+        Added basic support for loading resources from content management systems using CMIS/AtomPub. 
+      </para>
+    </section>
+   <section xml:id="news.0_18_5.pagealiases">
+      <title>Page aliases</title>
+      <para>
+        Added XPath function to get current display page name during rendering (see <xref linkend="xslt.extensions.xpathfunctions.getdisplaypagename"/>).
+      </para>
+    </section>
+
+  </section>
+
+  <section xml:id="news.0_18_6">
+    <title>What's new in Pustefix 0.18.6</title>
+
+    <section xml:id="news.0_18_.xslt">
+      <title>Include part existence check</title>
+      <para>
+        Pustefix added support for checking the existence of an include part during rendering, e.g. for displaying an include part depending on the existence of another include part (see <xref linkend="xslt.pfx.checkinclude"/>).
+      </para>
+    </section>
+
+  </section>
+
 </chapter>

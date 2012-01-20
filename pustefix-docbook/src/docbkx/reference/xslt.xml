@@ -787,7 +787,27 @@
    }
 </script>]]></programlisting>
     </section>
+    <section xml:id="xslt.pfx.checkinclude">
+      <title>Checking include part existence (&lt;pfx:checkinclude&gt;)</title>
+      <para>
+        The <literal>&lt;pfx:checkinclude&gt;</literal> and <literal>&lt;pfx:checknoinclude&gt;</literal> tags can be used to display content
+        depending on the existence of an include part.
+      </para>
+<programlisting language="xml"><![CDATA[<pfx:checkinclude part="foo" href="txt/afile.xml">
+  Display if part exists
+</pfx:checkinclude>
 
+<pfx:checknoinclude part="bar" href="txt/afile.xml">
+  Display if part not exists
+</pfx:checknoinclude
+
+<pfx:checkinclude href="txt/afile.xml" module="amodule" search="dynamic" level="runtime">
+  <pfx:part><ixsl:value-of select="/formresult/displaypart/@name"/></pfx:part>
+  Display if part exists
+</pfx:checkinclude>
+]]></programlisting>
+      <para>Supported attributes and usage comply with the <literal>&lt;pfx:include&gt;</literal> element (see <xref linkend="xslt.pfx.include"/>).</para>
+    </section>
   </section>
 
   <section xml:id="xslt.forms">
@@ -1797,6 +1817,24 @@
           <literal>-1</literal> both are evaluated as <literal>true</literal>, <literal>0</literal> as <literal>false</literal>.
         </para>
      </note>
+    <para xml:id="xslt.extensions.xpathfunctions.getdisplaypagename">
+      <emphasis role="strong">Function:</emphasis> <emphasis>string</emphasis> <emphasis role="strong">pfx:getDisplayPageName</emphasis>()
+    </para>
+    <para>
+       The <emphasis role="strong">pfx:getDisplayPageName</emphasis> function returns the display name of the current page.
+    </para>
+     <para></para>
+     <para>
+      <emphasis role="strong">Function:</emphasis> <emphasis>boolean</emphasis> <emphasis role="strong">pfx:checkInclude</emphasis>(<emphasis>string, string, string, string</emphasis>)
+    </para>
+    <para>
+       The <emphasis role="strong">pfx:checkInclude</emphasis> function checks if an include part exists. The function expects four string arguments: href, part, module, search (same semantics as <xref linkend="xslt.pfx.checkinclude"/>).
+      The function returns:
+      <itemizedlist>
+          <listitem><literal>true</literal>, if the include part can be found</listitem>
+          <listitem><literal>false</literal>, if the include part can't be found</listitem>
+      </itemizedlist>
+    </para>
   </section>
   </section>
 
