@@ -8,13 +8,13 @@ import de.schlund.pfixxml.resources.Resource;
 
 public class IncludePartsInfoFactory {
     
-    private Map<String, IncludePartsInfo> urisToInfo;
-    private boolean reloadable;
+    private final Map<String, IncludePartsInfo> urisToInfo;
+    private final boolean reloadable;
     
     public IncludePartsInfoFactory() {
         urisToInfo = new HashMap<String, IncludePartsInfo>();
         String mode = EnvironmentProperties.getProperties().getProperty("mode");
-        if(mode != null && !mode.equals("prod")) reloadable = true;
+        reloadable = !"prod".equals(mode);
     }
     
     public boolean containsPart(Resource resource, String part) throws IncludePartsInfoParsingException {
@@ -27,16 +27,23 @@ public class IncludePartsInfoFactory {
     
     public IncludePartsInfo getIncludePartsInfo(Resource resource) throws IncludePartsInfoParsingException {
         String uri = resource.toURI().toString();
-        IncludePartsInfo info = urisToInfo.get(uri);
+        IncludePartsInfo info = null;
+        synchronized(urisToInfo) {
+            info = urisToInfo.get(uri);
+        }
         if(info == null || (reloadable && (info.getLastMod() < resource.lastModified()))) {
             info = IncludePartsInfoParser.parse(resource);
-            urisToInfo.put(uri, info);
+            synchronized(urisToInfo) {
+                urisToInfo.put(uri, info);
+            }
         }
         return info;
     }
     
     public void reset() {
-        urisToInfo.clear();
+        synchronized(urisToInfo) {
+            urisToInfo.clear();
+        }
     }
     
 }

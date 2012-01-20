@@ -225,4 +225,8 @@ public class DynamicResourceProvider implements ResourceProvider {
         }
     }
     
+    public IncludePartsInfoFactory getIncludePartsInfoFactory() {
+        return incInfo;
+    }
+    
 }

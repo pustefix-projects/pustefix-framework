@@ -45,6 +45,18 @@ public class IncludeDocumentExtensionSaxon2 {
         }
     }
     
+    public static boolean exists(XPathContext context,String path_str,String part,TargetGenerator targetgen,String targetkey,
+            String module,String search, String tenant, String language) throws Exception {    
+        try {
+            XsltContext xsltContext=new XsltContextSaxon2(context);
+            return IncludeDocumentExtension.exists(xsltContext,path_str,part,targetgen,targetkey,
+                                                   module,search, tenant, language);
+        } catch(Exception x) {
+            ExtensionFunctionUtils.setExtensionFunctionError(x);
+            throw x;
+        }
+    }
+    
     public static String getSystemId(XPathContext context) {
         XsltContext xsltContext=new XsltContextSaxon2(context);
         return IncludeDocumentExtension.getSystemId(xsltContext);
@@ -53,6 +65,11 @@ public class IncludeDocumentExtensionSaxon2 {
     public static String getRelativePathFromSystemId(XPathContext context) {
         XsltContext xsltContext=new XsltContextSaxon2(context);
         return IncludeDocumentExtension.getRelativePathFromSystemId(xsltContext);
+    }
+    
+    public static final String getModuleFromSystemId(XPathContext context) {
+        XsltContext xsltContext = new XsltContextSaxon2(context);
+        return IncludeDocumentExtension.getModuleFromSystemId(xsltContext);
     }
     
     public static boolean isIncludeDocument(XPathContext context) {

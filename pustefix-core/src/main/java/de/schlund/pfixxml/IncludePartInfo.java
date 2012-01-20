@@ -1,17 +1,20 @@
 package de.schlund.pfixxml;
 
+import java.util.HashSet;
 import java.util.Set;
 
 public class IncludePartInfo {
 
-    private String name;
-    private boolean render;
-    private Set<String> renderVariants;
+    private final String name;
+    private final boolean render;
+    private final Set<String> renderVariants;
+    private final Set<String> themes;
     
     public IncludePartInfo(String name, boolean render, Set<String> renderVariants) {
         this.name = name;
         this.render = render;
         this.renderVariants = renderVariants;
+        this.themes = new HashSet<String>();
     }
     
     public String getName() {
@@ -26,4 +29,21 @@ public class IncludePartInfo {
         return renderVariants;
     }
     
+    public Set<String> getThemes() {
+        return themes;
+    }
+    
+    void addTheme(String theme) {
+        themes.add(theme);
+    }
+    
+    public String getMatchingTheme(String[] themeList) {
+        for(String theme: themeList) {
+            if(themes.contains(theme)) {
+                return theme;
+            }
+        }
+        return null;
+    }
+
 }

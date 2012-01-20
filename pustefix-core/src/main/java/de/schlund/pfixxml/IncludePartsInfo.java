@@ -1,26 +1,31 @@
 package de.schlund.pfixxml;
 
+import java.util.Collections;
 import java.util.Map;
 
 public class IncludePartsInfo {
     
-    private Map<String, IncludePartInfo> parts;
+    private final Map<String, IncludePartInfo> parts;
     private long lastMod;
     
-    public void setParts(Map<String, IncludePartInfo> parts) {
-        this.parts = parts;
+    public IncludePartsInfo(Map<String, IncludePartInfo> parts) {
+        this.parts = Collections.unmodifiableMap(parts);
     }
     
     public Map<String, IncludePartInfo> getParts() {
         return parts;
     }
     
-    public void setLastMod(long lastMod) {
-        this.lastMod = lastMod;
+    public IncludePartInfo getPart(String partName) {
+        return parts.get(partName);
     }
     
     public long getLastMod() {
         return lastMod;
+    }
+    
+    void setLastMod(long lastMod) {
+        this.lastMod = lastMod;
     }
     
 }

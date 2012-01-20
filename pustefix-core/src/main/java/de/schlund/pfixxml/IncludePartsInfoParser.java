@@ -43,15 +43,16 @@ public class IncludePartsInfoParser {
         } catch(SAXException x) {
             throw new IncludePartsInfoParsingException(source.getSystemId(), x);
         }
-        IncludePartsInfo info = new IncludePartsInfo();
-        info.setParts(handler.getParts());
-        return info;
+        return new IncludePartsInfo(handler.getParts());
     }
     
     static class Handler extends DefaultHandler {
         
         private int level;
         private boolean isIncludeParts;
+        
+        private IncludePartInfo currentInfo;
+        
         private Map<String, IncludePartInfo> includePartInfos = new HashMap<String, IncludePartInfo>();
         
         public Map<String, IncludePartInfo> getParts() {
@@ -65,28 +66,38 @@ public class IncludePartsInfoParser {
                 if(localName.equals("include_parts")) {
                     isIncludeParts = true;
                 }
-            } else if(level == 2 && isIncludeParts) {
-                if(localName.equals("part")) {
-                    String partName = attributes.getValue("name");
-                    if(partName != null) {
-                        partName = partName.trim();
-                        boolean render = false;
-                        String val = attributes.getValue("render");
-                        if(val != null) {
-                            render = Boolean.parseBoolean(val);
+            } else if(isIncludeParts) {
+                if(level == 2) {
+                    if(localName.equals("part")) {
+                        String partName = attributes.getValue("name");
+                        if(partName != null) {
+                            partName = partName.trim();
+                            boolean render = false;
+                            String val = attributes.getValue("render");
+                            if(val != null) {
+                                render = Boolean.parseBoolean(val);
+                            }
+                            String[] variants = null;
+                            val = attributes.getValue("render-variants");
+                            if(val != null) {
+                                val = val.trim();
+                                variants = val.split("\\s+");
+                            }
+                            Set<String> variantSet = new HashSet<String>();
+                            if(variants != null) {
+                                for(String variant: variants) variantSet.add(variant);
+                            }
+                            currentInfo = new IncludePartInfo(partName, render, variantSet);
+                            includePartInfos.put(partName, currentInfo);
                         }
-                        String[] variants = null;
-                        val = attributes.getValue("render-variants");
-                        if(val != null) {
-                            val = val.trim();
-                            variants = val.split("\\s+");
+                    }
+                } else if(level == 3) {
+                    if(localName.equals("theme")) {
+                        String themeName = attributes.getValue("name");
+                        if(themeName != null) {
+                            themeName = themeName.trim();
+                            currentInfo.addTheme(themeName);
                         }
-                        Set<String> variantSet = new HashSet<String>();
-                        if(variants != null) {
-                            for(String variant: variants) variantSet.add(variant);
-                        }
-                        IncludePartInfo info = new IncludePartInfo(partName, render, variantSet);
-                        includePartInfos.put(partName, info);
                     }
                 }
             }

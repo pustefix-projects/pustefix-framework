@@ -470,14 +470,166 @@
           </xsl:otherwise>
         </xsl:choose>
       </ixsl:with-param>
-      <xsl:if test="@module">
-        <ixsl:with-param name="module"><xsl:value-of select="@module"/></ixsl:with-param>
-      </xsl:if>
+      <ixsl:with-param name="module">
+        <xsl:choose>
+          <xsl:when test="@module">
+            <xsl:value-of select="@module"/>
+          </xsl:when>
+          <xsl:otherwise>
+            <xsl:value-of select="include:getModuleFromSystemId()"/>
+          </xsl:otherwise>
+        </xsl:choose>
+      </ixsl:with-param>
       <xsl:if test="@search">
         <ixsl:with-param name="search"><xsl:value-of select="@search"/></ixsl:with-param>
       </xsl:if>
     </ixsl:call-template>
   </xsl:template>
+
+  <xsl:template match="pfx:checkinclude">
+    <xsl:param name="part"><xsl:value-of select="@part"/></xsl:param>
+    <xsl:param name="href"><xsl:value-of select="@href"/></xsl:param>
+    <xsl:param name="module"><xsl:value-of select="@module"/></xsl:param>
+    <xsl:param name="search"><xsl:value-of select="@search"/></xsl:param>
+    <xsl:variable name="module_name">
+      <xsl:choose>
+        <xsl:when test="@module='PAGEDEF' or @module='pagedef'">
+          <xsl:value-of select="$__defining_module"/>
+        </xsl:when>
+        <xsl:otherwise>
+          <xsl:value-of select="$module"/>
+        </xsl:otherwise>
+      </xsl:choose>
+    </xsl:variable>
+    <xsl:variable name="realpath">
+      <xsl:choose>
+        <xsl:when test="not($href='')">
+          <xsl:value-of select="$href"/>
+        </xsl:when>
+        <xsl:otherwise>
+          <xsl:value-of select="include:getRelativePathFromSystemId()"/>
+        </xsl:otherwise>
+      </xsl:choose>
+    </xsl:variable>
+    <xsl:if test="include:exists($realpath, $part, $__target_gen, $__target_key, $module, $search, $tenant, $lang)">
+      <xsl:apply-templates/>
+    </xsl:if>
+  </xsl:template>
+
+  <xsl:template match="pfx:checkinclude[@level='runtime']">
+    <ixsl:if test="true()">
+      <ixsl:variable name="_href_">
+        <xsl:choose>
+          <xsl:when test="pfx:href">
+            <xsl:apply-templates select="pfx:href/node()"/>
+          </xsl:when>
+          <xsl:when test="@href">
+            <xsl:value-of select="@href"/>
+          </xsl:when>
+          <xsl:otherwise>
+            <xsl:value-of select="include:getRelativePathFromSystemId()"/>
+          </xsl:otherwise>
+        </xsl:choose>
+      </ixsl:variable>
+      <ixsl:variable name="_part_">
+        <xsl:choose>
+          <xsl:when test="pfx:part">
+            <xsl:apply-templates select="pfx:part/node()"/>
+          </xsl:when>
+          <xsl:otherwise>
+            <xsl:value-of select="@part"/>
+          </xsl:otherwise>
+        </xsl:choose>
+      </ixsl:variable>
+      <ixsl:variable name="_module_">
+        <xsl:choose>
+          <xsl:when test="@module">
+            <xsl:value-of select="module"/>
+          </xsl:when>
+          <xsl:otherwise>
+            <xsl:value-of select="include:getModuleFromSystemId()"/>
+          </xsl:otherwise>
+        </xsl:choose>
+      </ixsl:variable>
+      <ixsl:if test="pfx:checkInclude($_href_, $_part_, $_module_, '{@search}')">
+        <xsl:apply-templates/>
+      </ixsl:if>
+    </ixsl:if>
+  </xsl:template>
+
+  <xsl:template match="pfx:checknoinclude">
+    <xsl:param name="part"><xsl:value-of select="@part"/></xsl:param>
+    <xsl:param name="href"><xsl:value-of select="@href"/></xsl:param>
+    <xsl:param name="module"><xsl:value-of select="@module"/></xsl:param>
+    <xsl:param name="search"><xsl:value-of select="@search"/></xsl:param>
+    <xsl:variable name="module_name">
+      <xsl:choose>
+        <xsl:when test="@module='PAGEDEF' or @module='pagedef'">
+          <xsl:value-of select="$__defining_module"/>
+        </xsl:when>
+        <xsl:otherwise>
+          <xsl:value-of select="$module"/>
+        </xsl:otherwise>
+      </xsl:choose>
+    </xsl:variable>
+    <xsl:variable name="realpath">
+      <xsl:choose>
+        <xsl:when test="not($href='')">
+          <xsl:value-of select="$href"/>
+        </xsl:when>
+        <xsl:otherwise>
+          <xsl:value-of select="include:getRelativePathFromSystemId()"/>
+        </xsl:otherwise>
+      </xsl:choose>
+    </xsl:variable>
+    <xsl:if test="not(include:exists($realpath, $part, $__target_gen, $__target_key, $module, $search, $tenant, $lang))">
+      <xsl:apply-templates/>
+    </xsl:if>
+  </xsl:template>
+
+  <xsl:template match="pfx:checknoinclude[@level='runtime']">
+    <ixsl:if test="true()">
+      <ixsl:variable name="_href_">
+        <xsl:choose>
+          <xsl:when test="pfx:href">
+            <xsl:apply-templates select="pfx:href/node()"/>
+          </xsl:when>
+          <xsl:when test="@href">
+            <xsl:value-of select="@href"/>
+          </xsl:when>
+          <xsl:otherwise>
+            <xsl:value-of select="include:getRelativePathFromSystemId()"/>
+          </xsl:otherwise>
+        </xsl:choose>
+      </ixsl:variable>
+      <ixsl:variable name="_part_">
+        <xsl:choose>
+          <xsl:when test="pfx:part">
+            <xsl:apply-templates select="pfx:part/node()"/>
+          </xsl:when>
+          <xsl:otherwise>
+            <xsl:value-of select="@part"/>
+          </xsl:otherwise>
+        </xsl:choose>
+      </ixsl:variable>
+      <ixsl:variable name="_module_">
+        <xsl:choose>
+          <xsl:when test="@module">
+            <xsl:value-of select="module"/>
+          </xsl:when>
+          <xsl:otherwise>
+            <xsl:value-of select="include:getModuleFromSystemId()"/>
+          </xsl:otherwise>
+        </xsl:choose>
+      </ixsl:variable>
+      <ixsl:if test="not(pfx:checkInclude($_href_, $_part_, $_module_, '{@search}'))">
+        <xsl:apply-templates/>
+      </ixsl:if>
+    </ixsl:if>
+  </xsl:template>
+  
+  <xsl:template match="pfx:href"/>
+  <xsl:template match="pfx:part"/>
 
   <xsl:template name="pfx:image_register_src">
     <xsl:param name="src"/>
@@ -679,6 +831,14 @@
     <xsl:param name="tenant"/>
     <xsl:param name="lang"/>
     <func:result select="include:getDynIncInfo($part, $theme, $path, $resolved_module, $requested_module, $tenant, $lang)"/>
+  </func:function>
+ 
+  <func:function name="pfx:checkInclude">
+    <xsl:param name="href"/>
+    <xsl:param name="part"/>
+    <xsl:param name="module"/>
+    <xsl:param name="search"/>
+    <func:result select="include:exists($href, $part, $__target_gen, $__target_key, $module, $search, $tenant, $lang)"/>
   </func:function>
  
 </xsl:stylesheet>
