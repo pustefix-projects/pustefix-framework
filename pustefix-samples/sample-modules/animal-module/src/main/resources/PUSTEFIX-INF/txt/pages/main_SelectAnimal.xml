@@ -21,24 +21,23 @@
           </pfx:checkfield>
           <pfx:xinp type="submit" value="Submit"/>
           
-         
-          
         </pfx:forminput>
-        QQQQQQQQ<pfx:render part="foo"/>
+        <br/> 
+        <div>
+          <pfx:checkinclude level="runtime">
+            <pfx:part><ixsl:value-of select="/formresult/animals/@selectedAnimal"/></pfx:part>
+            <pfx:include level="runtime">
+              <pfx:part><ixsl:value-of select="/formresult/animals/@selectedAnimal"/></pfx:part>
+            </pfx:include>
+          </pfx:checkinclude>
+        </div>
     </theme>
   </part>
 
-  <part name="foo" render="true">
+  <part name="Tiger">
     <theme name="default">
-      fooo
+      Three cheers and a tiger!!!
     </theme>
   </part>
-
-  <part name="bar">
-    <theme name="default">
-      baaar
-    </theme>
-  </part>
-
 
 </include_parts>
