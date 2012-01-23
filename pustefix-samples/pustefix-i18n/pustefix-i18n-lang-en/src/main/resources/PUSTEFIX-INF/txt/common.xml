@@ -25,6 +25,12 @@
     </theme>
   </part>
   
+  <part name="slogan">
+    <theme name="default">
+      Let's have some fun!
+    </theme>
+  </part>
+  
   <part name="namequery">
     <theme name="default">
       Please enter your name

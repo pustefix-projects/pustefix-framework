@@ -10,8 +10,13 @@
 
       <div class="rightcol">
         <h3>
-        <pfx:include href="txt/common.xml" part="greeting" search="dynamic"/>
-      </h3>
+          <pfx:include href="txt/common.xml" part="greeting" search="dynamic"/>
+        </h3>
+        <h4>
+          <pfx:checkinclude href="/txt/common.xml" part="slogan" search="dynamic">
+            <pfx:include href="txt/common.xml" part="slogan" search="dynamic"/>
+          </pfx:checkinclude>
+        </h4>
       <div class="form">
       <pfx:forminput>
         <pfx:include href="txt/common.xml" part="namequery" search="dynamic"/>:
@@ -26,7 +31,7 @@
       </div>
       <br/>
       </div>
-      
+    
     </theme>
   </part>
   
