@@ -172,7 +172,7 @@
     <section xml:id="news.0_18_.xslt">
       <title>Include part existence check</title>
       <para>
-        Pustefix added support for checking the existence of an include part during rendering, e.g. for displaying an include part depending on the existence of another include part (see <xref linkend="xslt.pfx.checkinclude"/>).
+        Added support for checking the existence of an include part during rendering, e.g. for displaying an include part depending on the existence of another include part (see <xref linkend="xslt.pfx.checkinclude"/>).
       </para>
     </section>
 
