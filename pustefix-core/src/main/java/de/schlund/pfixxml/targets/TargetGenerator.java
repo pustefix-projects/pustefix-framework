@@ -968,8 +968,6 @@ public class TargetGenerator implements ResourceVisitor, ServletContextAware, In
             //create no doctype declaration
             xslTarget.removeParam("outputdoctype-public");
             xslTarget.removeParam("outputdoctype-system");
-         
-            alltargets.put(renderKey, xslTarget);
             target = xslTarget;
         }
         return target;
