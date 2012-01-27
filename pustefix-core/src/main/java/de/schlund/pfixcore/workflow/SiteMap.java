@@ -40,6 +40,8 @@ import javax.xml.transform.sax.TransformerHandler;
 import org.pustefixframework.util.xml.DOMUtils;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
+import org.w3c.dom.NamedNodeMap;
+import org.w3c.dom.Node;
 import org.xml.sax.InputSource;
 import org.xml.sax.SAXException;
 import org.xml.sax.XMLReader;
@@ -178,6 +180,16 @@ public class SiteMap {
         if(internal.length() > 0) {
             page.internal = Boolean.valueOf(internal);
         }
+        NamedNodeMap map = pageElem.getAttributes();
+        if(map != null) {
+            for(int i=0; i<map.getLength(); i++) {
+                Node attrNode = map.item(i);
+                String attrName = attrNode.getNodeName();
+                if(!("name".equals(attrName)||("internal").equals(attrName))) {
+                    page.customAttributes.put(attrName, attrNode.getNodeValue());
+                }
+            }
+        }
         pageNameToPage.put(page.name, page);
         String alias = pageElem.getAttribute("alias").trim();
         if(alias.length() > 0) {
@@ -230,6 +242,13 @@ public class SiteMap {
     private void addPage(Page page, Element parent, String lang) {
         Element elem = parent.getOwnerDocument().createElement("page");
         elem.setAttribute("name", page.name);
+        Map<String, String> cusAttrs = page.customAttributes;
+        Iterator<String> it = cusAttrs.keySet().iterator();
+        while(it.hasNext()) {
+            String attrName = it.next();
+            String attrVal = cusAttrs.get(attrName);
+            elem.setAttribute(attrName, attrVal);
+        }
         String alias = getAlias(page.name, lang);
         if(!page.name.equals(alias)) elem.setAttribute("alias", alias);
         parent.appendChild(elem);
