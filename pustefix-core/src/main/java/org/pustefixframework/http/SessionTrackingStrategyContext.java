@@ -5,6 +5,7 @@ import java.io.IOException;
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import javax.servlet.http.HttpSession;
 
 import org.pustefixframework.config.contextxmlservice.ServletManagerConfig;
 
@@ -21,5 +22,6 @@ public interface SessionTrackingStrategyContext extends PageAliasResolver {
     public ServletManagerConfig getServletManagerConfig();
     public void callProcess(PfixServletRequest preq, HttpServletRequest req, HttpServletResponse res) throws ServletException, IOException;
     public SessionAdmin getSessionAdmin();
+    public void registerSession(HttpServletRequest req, HttpSession session);
     
 }

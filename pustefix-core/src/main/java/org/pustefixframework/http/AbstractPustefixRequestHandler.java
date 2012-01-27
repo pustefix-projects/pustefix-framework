@@ -24,7 +24,10 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.net.URL;
 import java.nio.charset.Charset;
+import java.text.NumberFormat;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.Enumeration;
 import java.util.HashSet;
 import java.util.List;
@@ -86,6 +89,9 @@ public abstract class AbstractPustefixRequestHandler implements SessionTrackingS
     public static final String REQUEST_ATTR_TENANT = "__PFX_TENANT__";
     public static final String REQUEST_ATTR_LANGUAGE = "__PFX_LANGUAGE__";
     public static final String REQUEST_ATTR_PAGE_ALTERNATIVE = "__PFX_PAGE_ALTERNATIVE__";
+    
+    private int INC_ID = 0;
+    private String TIMESTAMP_ID = "";
     
     public static final Logger LOGGER_VISIT = Logger.getLogger("LOGGER_VISIT");
     private static final Logger LOG = Logger.getLogger(AbstractPustefixRequestHandler.class);
@@ -378,6 +384,45 @@ public abstract class AbstractPustefixRequestHandler implements SessionTrackingS
      */
     public boolean wantsCheckSessionIdValid() {
         return true;
+    }
+    
+    public void registerSession(HttpServletRequest req, HttpSession session) {
+        if (session != null) {
+            synchronized (TIMESTAMP_ID) {
+                SimpleDateFormat sdf = new SimpleDateFormat("yyyyMMddHHmmss");
+                String timestamp = sdf.format(new Date());
+                NumberFormat nf = NumberFormat.getInstance();
+                nf.setMinimumIntegerDigits(3);
+
+                if (timestamp.equals(TIMESTAMP_ID)) {
+                    INC_ID++;
+                } else {
+                    TIMESTAMP_ID = timestamp;
+                    INC_ID = 0;
+                }
+                if (INC_ID >= 1000) {
+                    LOG.warn("*** More than 999 connects/sec! ***");
+                }
+                String sessid = session.getId();
+                String mach = "";
+                if (sessid.lastIndexOf(".") > 0) {
+                    mach = sessid.substring(sessid.lastIndexOf("."));
+                }
+                session.setAttribute(VISIT_ID, TIMESTAMP_ID + "-" + nf.format(INC_ID) + mach);
+            }
+            StringBuffer logbuff = new StringBuffer();
+            logbuff.append(session.getAttribute(VISIT_ID) + "|" + session.getId() + "|");
+            logbuff.append(getServerName(req) + "|" + req.getRemoteAddr() + "|" + req.getHeader("user-agent") + "|");
+            if (req.getHeader("referer") != null) {
+                logbuff.append(req.getHeader("referer"));
+            }
+            logbuff.append("|");
+            if (req.getHeader("accept-language") != null) {
+                logbuff.append(req.getHeader("accept-language"));
+            }
+            LOGGER_VISIT.warn(logbuff.toString());
+            getSessionAdmin().registerSession(session, getServerName(req), req.getRemoteAddr());
+        }
     }
 
     public static void relocate(HttpServletResponse res, String reloc_url) {
