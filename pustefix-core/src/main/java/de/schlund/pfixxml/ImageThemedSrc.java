@@ -20,13 +20,17 @@ package de.schlund.pfixxml;
 import java.net.URI;
 import java.net.URLEncoder;
 
+import javax.xml.transform.URIResolver;
+
 import org.apache.log4j.Logger;
 
 import de.schlund.pfixxml.resources.Resource;
 import de.schlund.pfixxml.resources.ResourceUtil;
+import de.schlund.pfixxml.targets.Target;
 import de.schlund.pfixxml.targets.TargetGenerator;
 import de.schlund.pfixxml.targets.VirtualTarget;
 import de.schlund.pfixxml.util.XsltContext;
+import de.schlund.pfixxml.util.Xslt.ResourceResolver;
     
 /**
  * Describe class ImageThemedSrc here.
@@ -75,6 +79,11 @@ public class ImageThemedSrc {
         if (!targetKey.equals("__NONE__")) {
             target = (VirtualTarget) targetGen.getTarget(targetKey);
             themes               = target.getThemes().getThemesArr();
+        } else {
+            Target parentTarget = getParentTarget(context);
+            if(parentTarget != null && parentTarget.getThemes() != null && !parentTarget.getThemes().isEmpty()) {
+                themes = parentTarget.getThemes().getThemesArr();
+            }
         }
         if (themes == null) {
             themes = targetGen.getGlobalThemes().getThemesArr();
@@ -188,6 +197,15 @@ public class ImageThemedSrc {
 
     private static boolean isThemedSrc(String src, String path, String img) {
         return ((src == null || src.equals("")) && path != null && !path.equals("") && img != null && !img.equals(""));
+    }
+    
+    private static Target getParentTarget(XsltContext context) {
+        URIResolver resolver = context.getURIResolver();
+        if(resolver != null && resolver instanceof ResourceResolver) {
+            ResourceResolver resResolver = (ResourceResolver)resolver;
+            return resResolver.getParentTarget();
+        }
+        return null;
     }
 
 }
