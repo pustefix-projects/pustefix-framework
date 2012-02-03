@@ -73,7 +73,8 @@ public class ImageThemedSrc {
             }
         }
         
-        String[]        themes    = null;
+        boolean dolog = !targetKey.equals("__NONE__");
+        String[] themes = null;
           
         VirtualTarget target = null;
         if (!targetKey.equals("__NONE__")) {
@@ -119,7 +120,9 @@ public class ImageThemedSrc {
                 }
                 res = ResourceUtil.getResource(uri);
             }
-            DependencyTracker.logImage(context, res, parent_part_in, parent_product_in, targetGen, targetKey, "image");
+            if(dolog) {
+                DependencyTracker.logImage(context, res, parent_part_in, parent_product_in, targetGen, targetKey, "image");
+            }
             return src;
         } else if (isThemedSrc(src, themed_path, themed_img)) {
             if (themed_path.startsWith("/")) {
@@ -150,8 +153,9 @@ public class ImageThemedSrc {
                 }
                 String parent_path = IncludeDocumentExtension.getSystemId(context);
                 Resource relativeParent = parent_path.equals("") ? null : ResourceUtil.getResource(parent_path);
-                DependencyTracker.logTyped("image", res, "", "", relativeParent, parent_part_in, parent_product_in, target);
-                //DependencyTracker.logImage(context, testsrc, parent_part_in, parent_product_in, targetGen, targetKey, "image");
+                if(dolog) {
+                    DependencyTracker.logTyped("image", res, "", "", relativeParent, parent_part_in, parent_product_in, target);
+                }
             } else {
             
             for (int i = 0; i < themes.length; i++) {
@@ -168,17 +172,23 @@ public class ImageThemedSrc {
                 LOG.info("  -> Trying to find image src '" + testsrc + "'");
                 if (res.exists()) {
                     LOG.info("    -> Found src '" + testsrc + "'");
-                    DependencyTracker.logImage(context, res, parent_part_in, parent_product_in, targetGen, targetKey, "image");
+                    if(dolog) {
+                        DependencyTracker.logImage(context, res, parent_part_in, parent_product_in, targetGen, targetKey, "image");
+                    }
                     return testsrc;
                 }
                 if (i < (themes.length - 1)) {
                     // FIXME: the next commented line should be used sometime so we can discriminate between
                     // "real" missing and "missing, but we found a better version" -- but make sure editor copes with it.
                     //DependencyTracker.logImage(context, testsrc, parent_part_in, parent_product_in, targetGen, targetKey, "shadow");
-                    DependencyTracker.logImage(context, res, parent_part_in, parent_product_in, targetGen, targetKey, "image");
+                    if(dolog) {
+                        DependencyTracker.logImage(context, res, parent_part_in, parent_product_in, targetGen, targetKey, "image");
+                    }
                     LOG.info("    -> Image src '" + testsrc + "' not found, trying next theme");
                 } else {
-                    DependencyTracker.logImage(context, res, parent_part_in, parent_product_in, targetGen, targetKey, "image");
+                    if(dolog) {
+                        DependencyTracker.logImage(context, res, parent_part_in, parent_product_in, targetGen, targetKey, "image");
+                    }
                     LOG.warn("    -> No themed image found!");
                 }
             }
