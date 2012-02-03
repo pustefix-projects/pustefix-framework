@@ -27,6 +27,7 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import javax.xml.transform.TransformerException;
+import javax.xml.transform.URIResolver;
 
 import org.apache.log4j.Logger;
 import org.w3c.dom.Document;
@@ -39,12 +40,14 @@ import de.schlund.pfixxml.resources.DynamicResourceProvider;
 import de.schlund.pfixxml.resources.Resource;
 import de.schlund.pfixxml.resources.ResourceProviderRegistry;
 import de.schlund.pfixxml.resources.ResourceUtil;
+import de.schlund.pfixxml.targets.Target;
 import de.schlund.pfixxml.targets.TargetGenerator;
 import de.schlund.pfixxml.targets.VirtualTarget;
 import de.schlund.pfixxml.util.ExtensionFunctionUtils;
 import de.schlund.pfixxml.util.URIParameters;
 import de.schlund.pfixxml.util.XPath;
 import de.schlund.pfixxml.util.Xml;
+import de.schlund.pfixxml.util.Xslt.ResourceResolver;
 import de.schlund.pfixxml.util.XsltContext;
 
 /**
@@ -138,7 +141,12 @@ public final class IncludeDocumentExtension {
             VirtualTarget target = (VirtualTarget) targetgen.getTarget(targetkey);
 
             String[] themes = targetgen.getGlobalThemes().getThemesArr();
-            if (!targetkey.equals(NOTARGET)) {
+            if(targetkey.equals(NOTARGET)) {
+                Target parentTarget = getParentTarget(context);
+                if(parentTarget != null && parentTarget.getThemes() != null && !parentTarget.getThemes().isEmpty()) {
+                    themes = parentTarget.getThemes().getThemesArr();
+                }
+            } else {
                 themes = target.getThemes().getThemesArr();
             }
             if (themes == null) {
@@ -355,7 +363,12 @@ public final class IncludeDocumentExtension {
             VirtualTarget target = (VirtualTarget) targetgen.getTarget(targetkey);
 
             String[] themes = targetgen.getGlobalThemes().getThemesArr();
-            if (!targetkey.equals(NOTARGET)) {
+            if(targetkey.equals(NOTARGET)) {
+                Target parentTarget = getParentTarget(context);
+                if(parentTarget != null && parentTarget.getThemes() != null && !parentTarget.getThemes().isEmpty()) {
+                    themes = parentTarget.getThemes().getThemesArr();
+                }
+            } else {
                 themes = target.getThemes().getThemesArr();
             }
             if (themes == null) {
@@ -448,6 +461,15 @@ public final class IncludeDocumentExtension {
             return module;
         }
         return "";
+    }
+    
+    private static Target getParentTarget(XsltContext context) {
+        URIResolver resolver = context.getURIResolver();
+        if(resolver != null && resolver instanceof ResourceResolver) {
+            ResourceResolver resResolver = (ResourceResolver)resolver;
+            return resResolver.getParentTarget();
+        }
+        return null;
     }
 
     public static boolean isIncludeDocument(XsltContext context) {

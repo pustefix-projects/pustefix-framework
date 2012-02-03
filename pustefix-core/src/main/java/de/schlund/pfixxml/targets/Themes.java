@@ -32,6 +32,7 @@ import java.util.StringTokenizer;
  * @version 1.0
  */
 public class Themes {
+    
     ArrayList<String> themes;
     String id;
     
@@ -80,6 +81,10 @@ public class Themes {
 
     public String[] getThemesArr() {
         return (String[]) themes.toArray(new String[]{});
+    }
+    
+    public boolean isEmpty() {
+        return themes.isEmpty();
     }
 
     @Override

@@ -18,6 +18,8 @@
 
 package de.schlund.pfixxml.util;
 
+import javax.xml.transform.URIResolver;
+
 /**
  * @author mleidig@schlund.de
  */
@@ -26,5 +28,5 @@ public interface XsltContext {
     public String getSystemId();
     public String getDocumentElementName();
     public XsltVersion getXsltVersion();
-    
+    public URIResolver getURIResolver();
 }

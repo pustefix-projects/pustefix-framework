@@ -251,7 +251,7 @@ public class Xslt {
     }
     
     
-    static class ResourceResolver implements URIResolver {
+    public static class ResourceResolver implements URIResolver {
         
         private TargetImpl parent;
         private XsltVersion xsltVersion;
@@ -263,6 +263,10 @@ public class Xslt {
             this.debug = debug;
         }
 
+        public Target getParentTarget() {
+            return parent;
+        }
+        
         /**
          * Resolve file url relative to root. Before searching the file system, check
          * if there is a XML Target defined and use this instead.

@@ -18,6 +18,8 @@
 
 package de.schlund.pfixxml.util.xsltimpl;
 
+import javax.xml.transform.URIResolver;
+
 import net.sf.saxon.expr.XPathContext;
 import net.sf.saxon.om.NodeInfo;
 import de.schlund.pfixxml.util.XsltContext;
@@ -46,6 +48,10 @@ public class XsltContextSaxon2 implements XsltContext {
     
     public XsltVersion getXsltVersion() {
         return XsltVersion.XSLT2;
+    }
+    
+    public URIResolver getURIResolver() {
+        return context.getController().getURIResolver();
     }
     
 }
