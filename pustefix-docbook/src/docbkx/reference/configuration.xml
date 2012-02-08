@@ -1080,6 +1080,12 @@
           </tbody>
         </informaltable>
         <programlisting language="xml"><![CDATA[
+      <defaultflow flow="FlowName"/>
+        ]]></programlisting>
+        This node is optional. If a page is part of multiple pageflows,
+        here you can set the default pageflow, which should be chosen
+        if no other pageflow is specified.
+        <programlisting language="xml"><![CDATA[
       <force-ssl>true|false</force-ssl>
         ]]></programlisting>
         The node is optional. If given, and the content is set to
