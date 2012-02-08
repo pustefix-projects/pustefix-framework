@@ -193,7 +193,6 @@ public class CustomizationHandler extends DefaultHandler {
         this.docroot = docroot;
         this.logroot = props.getProperty("logroot");
         if(logroot != null && logroot.length() > 1 && !logroot.endsWith("/")) logroot += "/";
-        System.out.println("LOGROOT: "+logroot);
         this.fqdn = props.getProperty("fqdn");
         this.machine = props.getProperty("machine");
         this.uid = props.getProperty("uid");
