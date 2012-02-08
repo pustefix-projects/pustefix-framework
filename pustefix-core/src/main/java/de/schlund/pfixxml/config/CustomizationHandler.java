@@ -51,6 +51,8 @@ public class CustomizationHandler extends DefaultHandler {
     private final static String DEFAULT_CHOOSE_ELEMENTNAME = "choose";
 
     private final static String DEFAULT_DOCROOT_ELEMENTNAME = "docroot";
+    
+    private final static String DEFAULT_LOGROOT_ELEMENTNAME = "logroot";
 
     private final static String DEFAULT_FQDN_ELEMENTNAME = "fqdn";
 
@@ -84,6 +86,8 @@ public class CustomizationHandler extends DefaultHandler {
     private ArrayList<ParsingInfo> stack;
 
     private String docroot;
+    
+    private String logroot;
 
     private String fqdn;
 
@@ -98,6 +102,8 @@ public class CustomizationHandler extends DefaultHandler {
     private String elementChoose = DEFAULT_CHOOSE_ELEMENTNAME;
 
     private String elementDocroot = DEFAULT_DOCROOT_ELEMENTNAME;
+    
+    private String elementLogroot = DEFAULT_LOGROOT_ELEMENTNAME;
 
     private String elementFqdn = DEFAULT_FQDN_ELEMENTNAME;
 
@@ -185,6 +191,9 @@ public class CustomizationHandler extends DefaultHandler {
             props.setProperty("docroot", docroot);
         }
         this.docroot = docroot;
+        this.logroot = props.getProperty("logroot");
+        if(logroot != null && logroot.length() > 1 && !logroot.endsWith("/")) logroot += "/";
+        System.out.println("LOGROOT: "+logroot);
         this.fqdn = props.getProperty("fqdn");
         this.machine = props.getProperty("machine");
         this.uid = props.getProperty("uid");
@@ -312,6 +321,12 @@ public class CustomizationHandler extends DefaultHandler {
                     targetHandler.characters(docroot.toCharArray(), 0, docroot.length());
                 } else {
                     throw new SAXException("Element \"" + qName + "\" is not allowed in packed WAR mode. Please change your configuration to use relative paths instead.");
+                }
+            } else if (this.namespaceContent != null
+                    && localName.equals(this.elementLogroot)
+                    && uri.equals(this.namespaceContent)) {
+                if (logroot != null) {
+                    targetHandler.characters(logroot.toCharArray(), 0, logroot.length());
                 }
             } else if (this.namespaceContent != null
                     && localName.equals(this.elementFqdn)

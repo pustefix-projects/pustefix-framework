@@ -7,6 +7,7 @@
   <!-- NOTE: this stylesheet is included by other stylesheets using this functionality. Don't use it on it's own. -->
   
   <xsl:param name="docroot"/>
+  <xsl:param name="logroot"/>
   <xsl:param name="uid"/>
   <xsl:param name="machine"/>
   <xsl:param name="fqdn"/>
@@ -19,6 +20,7 @@
 
   <!-- replace the docroot-tag with the docroot-parameter-value -->
   <xsl:template match="cus:docroot"><xsl:value-of select="$docroot"/><xsl:text>/</xsl:text></xsl:template>
+  <xsl:template match="cus:logroot"><xsl:value-of select="$logroot"/><xsl:text>/</xsl:text></xsl:template>
 
   <xsl:template match="cus:uid"><xsl:value-of select="$uid"/></xsl:template>
   <xsl:template match="cus:machine"><xsl:value-of select="$machine"/></xsl:template>

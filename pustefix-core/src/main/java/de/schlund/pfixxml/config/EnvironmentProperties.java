@@ -38,6 +38,7 @@ public class EnvironmentProperties extends Properties {
         AUTODETECT_PROPERTIES.add("machine");
         AUTODETECT_PROPERTIES.add("mode");
         AUTODETECT_PROPERTIES.add("uid");
+        AUTODETECT_PROPERTIES.add("logroot");
     }
     
     private static Properties props = new EnvironmentProperties();
@@ -62,6 +63,8 @@ public class EnvironmentProperties extends Properties {
                 value = getMode();
             } else if(name.equals("uid")) {
                 value = getUID();
+            } else if(name.equals("logroot")) {
+                value = getLogroot();
             }
             setProperty(name, value);
         }
@@ -122,6 +125,18 @@ public class EnvironmentProperties extends Properties {
         String uid = System.getProperty("user.name");
         if(uid == null || uid.trim().equals("")) uid = "servlet";
         return uid;
+    }
+    
+    private static String getLogroot() {
+        String logroot = System.getProperty("catalina.base");
+        if(logroot == null) {
+            logroot = "applogs";
+        } else {
+            logroot = logroot.trim();
+            if(!logroot.endsWith("/") && logroot.length()>1) logroot += "/";
+            logroot += "applogs";
+        }
+        return logroot;
     }
     
 }

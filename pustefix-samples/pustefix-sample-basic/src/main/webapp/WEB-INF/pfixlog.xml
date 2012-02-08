@@ -4,7 +4,7 @@
                      xmlns:cus="http://www.schlund.de/pustefix/customize">
 
   <appender name="LOGGER_GENERAL" class="org.apache.log4j.RollingFileAppender">
-    <param name="File"><cus:docroot/>log/pustefix-servlet.log</param>
+    <param name="File"><cus:logroot/>pustefix-servlet.log</param>
     <param name="MaxFileSize" value="10MB"/>
     <layout class="org.apache.log4j.PatternLayout">
       <param name="ConversionPattern" value="%d{ISO8601} [%t] %-5p %c [%M():%L] %x - %m\n"/>
@@ -12,7 +12,7 @@
   </appender>
   
   <appender name="LOGGER_TRAIL" class="org.apache.log4j.RollingFileAppender">
-    <param name="File"><cus:docroot/>log/pustefix-trail.log</param>
+    <param name="File"><cus:logroot/>pustefix-trail.log</param>
     <param name="MaxFileSize" value="10MB"/>
     <layout class="org.apache.log4j.PatternLayout">
       <param name="ConversionPattern" value="%d{ISO8601}|%m\n"/>
@@ -20,7 +20,7 @@
   </appender>
   
   <appender name="LOGGER_VISIT" class="org.apache.log4j.RollingFileAppender">
-    <param name="File"><cus:docroot/>log/pustefix-visit.log</param>
+    <param name="File"><cus:logroot/>pustefix-visit.log</param>
     <param name="MaxFileSize" value="10MB"/>
     <layout class="org.apache.log4j.PatternLayout">
       <param name="ConversionPattern" value="%d{ISO8601}|%m\n"/>
@@ -28,7 +28,7 @@
   </appender>
 
   <appender name="LOGGER_TARGET_UPDATER" class="org.apache.log4j.RollingFileAppender">
-    <param name="File"><cus:docroot/>log/pustefix-target-updater.log</param>
+    <param name="File"><cus:logroot/>pustefix-target-updater.log</param>
     <param name="MaxFileSize" value="10MB"/>
     <layout class="org.apache.log4j.PatternLayout">
       <param name="ConversionPattern" value="%d{ISO8601} %m\n"/>
@@ -36,7 +36,7 @@
   </appender>
 
   <appender name="LOGGER_SERIALIZER" class="org.apache.log4j.RollingFileAppender">
-    <param name="File"><cus:docroot/>log/pustefix-serializer.log</param>
+    <param name="File"><cus:logroot/>pustefix-serializer.log</param>
     <param name="MaxFileSize" value="10MB"/>
     <layout class="org.apache.log4j.PatternLayout">
       <param name="ConversionPattern" value="%d{ISO8601} %m\n"/>
@@ -44,18 +44,10 @@
   </appender>
 
   <appender name="LOGGER_DEREF" class="org.apache.log4j.RollingFileAppender">
-    <param name="File"><cus:docroot/>log/pustefix-deref.log</param>
+    <param name="File"><cus:logroot/>pustefix-deref.log</param>
     <param name="MaxFileSize" value="10MB"/>
     <layout class="org.apache.log4j.PatternLayout">
       <param name="ConversionPattern" value="%d{ISO8601}|%m\n"/>
-    </layout>
-  </appender>
-
-  <appender name="LOGGER_APPLOADER" class="org.apache.log4j.RollingFileAppender">
-    <param name="File"><cus:docroot/>log/pustefix-apploader.log</param>
-    <param name="MaxFileSize" value="10MB"/>
-    <layout class="org.apache.log4j.PatternLayout">
-      <param name="ConversionPattern" value="%d{ISO8601} %m\n"/>
     </layout>
   </appender>
  
@@ -150,11 +142,6 @@
   <category name="de.schlund.pfixxml.targets.TraxXSLTProcessor" additivity="false">
     <priority value="WARN"/>
     <appender-ref ref="LOGGER_GENERAL"/>
-  </category>
-  
-  <category name="de.schlund.pfixxml.loader" additivity="false">
-    <priority value="INFO"/>
-    <appender-ref ref="LOGGER_APPLOADER"/>
   </category>
   
   <category name="de.schlund.pfixxml.DependencyTracker" additivity="false">
