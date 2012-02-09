@@ -74,6 +74,7 @@
 
   <category name="de.schlund.pfixxml" additivity="false">
     <priority value="WARN"/>
+    <appender-ref ref="LOGGER_GENERAL"/>
   </category>
 
   <category name="de.schlund.pfixxml.PfixServletRequestImpl" additivity="false">
@@ -86,6 +87,7 @@
 
   <category name="org.pustefixframework" additivity="false">
     <priority value="WARN"/>
+    <appender-ref ref="LOGGER_GENERAL"/>
   </category>
  
   <category name="org.pustefixframework.http" additivity="false">
