@@ -1,21 +1,20 @@
-<?xml version="1.0" encoding="ISO-8859-1" ?>
-
+<?xml version="1.0" encoding="UTF-8" ?>
 <log4j:configuration xmlns:log4j="http://jakarta.apache.org/log4j/"
                      xmlns:cus="http://www.schlund.de/pustefix/customize">
-
-  <appender name="PFXPERF" class="org.apache.log4j.RollingFileAppender">
-    <param name="File"><cus:logroot/>pustefix-pfxperf.log</param>
-    <param name="MaxFileSize" value="10MB"/>
-    <layout class="org.apache.log4j.PatternLayout">
-      <param name="ConversionPattern" value="%d{ISO8601}|%m\n"/>
-    </layout>
-  </appender>
 
   <appender name="LOGGER_GENERAL" class="org.apache.log4j.RollingFileAppender">
     <param name="File"><cus:logroot/>pustefix-servlet.log</param>
     <param name="MaxFileSize" value="10MB"/>
     <layout class="org.apache.log4j.PatternLayout">
       <param name="ConversionPattern" value="%d{ISO8601} [%t] %-5p %c [%M():%L] %x - %m\n"/>
+    </layout>
+  </appender>
+
+  <appender name="LOGGER_VISIT" class="org.apache.log4j.RollingFileAppender">
+    <param name="File"><cus:logroot/>pustefix-visit.log</param>
+    <param name="MaxFileSize" value="10MB"/>
+    <layout class="org.apache.log4j.PatternLayout">
+      <param name="ConversionPattern" value="%d{ISO8601}|%m\n"/>
     </layout>
   </appender>
   
@@ -27,27 +26,11 @@
     </layout>
   </appender>
   
-  <appender name="LOGGER_VISIT" class="org.apache.log4j.RollingFileAppender">
-    <param name="File"><cus:logroot/>pustefix-visit.log</param>
+  <appender name="LOGGER_WSTRAIL" class="org.apache.log4j.RollingFileAppender">
+    <param name="File"><cus:logroot/>pustefix-wstrail.log</param>
     <param name="MaxFileSize" value="10MB"/>
     <layout class="org.apache.log4j.PatternLayout">
       <param name="ConversionPattern" value="%d{ISO8601}|%m\n"/>
-    </layout>
-  </appender>
-
-  <appender name="LOGGER_EDITOR" class="org.apache.log4j.RollingFileAppender">
-    <param name="File"><cus:logroot/>pustefix-editor.log</param>
-    <param name="MaxFileSize" value="10MB"/>
-    <layout class="org.apache.log4j.PatternLayout">
-      <param name="ConversionPattern" value="%d{ISO8601} %m\n"/>
-    </layout>
-  </appender>
-
-  <appender name="LOGGER_PROFILER" class="org.apache.log4j.RollingFileAppender">
-    <param name="File"><cus:logroot/>pustefix-profiling.log</param>
-    <param name="MaxFileSize" value="10MB"/>
-    <layout class="org.apache.log4j.PatternLayout">
-      <param name="ConversionPattern" value="%m|%d{ISO8601}\n"/>
     </layout>
   </appender>
 
@@ -58,15 +41,24 @@
       <param name="ConversionPattern" value="%d{ISO8601}|%m\n"/>
     </layout>
   </appender>
-
-  <appender name="LOGGER_EDITOR_PERF" class="org.apache.log4j.RollingFileAppender">
-    <param name="File"><cus:logroot/>pustefix-editor-perf.log</param>
+  
+  <appender name="LOGGER_SESSION" class="org.apache.log4j.RollingFileAppender">
+    <param name="File"><cus:logroot/>pustefix-session.log</param>
+    <param name="MaxFileSize" value="10MB"/>
+    <layout class="org.apache.log4j.PatternLayout">
+      <param name="ConversionPattern" value="%d{ISO8601}|%m\n"/>
+    </layout>
+  </appender>
+  
+  <appender name="LOGGER_EDITOR" class="org.apache.log4j.RollingFileAppender">
+    <param name="File"><cus:logroot/>pustefix-editor.log</param>
     <param name="MaxFileSize" value="10MB"/>
     <layout class="org.apache.log4j.PatternLayout">
       <param name="ConversionPattern" value="%d{ISO8601} %m\n"/>
     </layout>
   </appender>
- 
+  
+
   <!-- Categories -->
 
   <!-- make some classes quiet by default --> 
@@ -80,63 +72,45 @@
     <appender-ref ref="LOGGER_GENERAL"/>
   </category>
 
-  <category name="PFXPERF" additivity="false">
-    <priority value="DEBUG"/>
-    <appender-ref ref="PFXPERF"/>
+  <category name="de.schlund.pfixxml" additivity="false">
+    <priority value="WARN"/>
   </category>
 
-  <category name="EDITOR_PERF" additivity="false">
-    <priority value="WARN"/>
-    <appender-ref ref="LOGGER_EDITOR_PERF"/>
-  </category>
-  
-  <category name="de.schlund.pfixcore.workflow.app.RequestDataImpl" additivity="false">
-    <priority value="WARN"/>
+  <category name="de.schlund.pfixxml.PfixServletRequestImpl" additivity="false">
+    <cus:choose>
+      <cus:when test="$mode = 'prod'"><priority value="WARN"/></cus:when>
+      <cus:otherwise><priority value="DEBUG"/></cus:otherwise>
+    </cus:choose>
     <appender-ref ref="LOGGER_GENERAL"/>
   </category>
 
-  <category name="de.schlund.pfixxml.targets" additivity="false">
+  <category name="org.pustefixframework" additivity="false">
     <priority value="WARN"/>
+  </category>
+ 
+  <category name="org.pustefixframework.http" additivity="false">
+    <cus:choose>
+      <cus:when test="$mode = 'prod'"><priority value="WARN"/></cus:when>
+      <cus:otherwise><priority value="DEBUG"/></cus:otherwise>
+    </cus:choose>
     <appender-ref ref="LOGGER_GENERAL"/>
   </category>
-
-  <category name="de.schlund.pfixcore.workflow.Context" additivity="false">
-    <priority value="DEBUG"/>
-    <appender-ref ref="LOGGER_GENERAL"/>
-  </category>
-
-  <category name="de.schlund.pfixxml.SessionCleaner" additivity="false">
-    <priority value="WARN"/>
-    <appender-ref ref="LOGGER_GENERAL"/>
-  </category>
-
-  <category name="de.schlund.pfixxml.PfixServletRequest" additivity="false">
-    <priority value="WARN"/>
-    <appender-ref ref="LOGGER_GENERAL"/>
-  </category>
-
-  <category name="de.schlund.pfixxml.IncludeDocument" additivity="false">
+ 
+  <category name="de.schlund.pfixcore" additivity="false">
     <priority value="WARN"/>
     <appender-ref ref="LOGGER_GENERAL"/>
   </category>
   
-  <category name="de.schlund.pfixxml.IncludeDocumentExtension" additivity="false">
-    <priority value="WARN"/>
-    <appender-ref ref="LOGGER_GENERAL"/>
-  </category>
-
-  <category name="de.schlund.pfixxml.DependencyTracker" additivity="false">
-    <priority value="WARN"/>
+  <category name="de.schlund.pfixcore.workflow" additivity="false">
+    <cus:choose>
+      <cus:when test="$mode = 'prod'"><priority value="WARN"/></cus:when>
+      <cus:otherwise><priority value="DEBUG"/></cus:otherwise>
+    </cus:choose>
     <appender-ref ref="LOGGER_GENERAL"/>
   </category>
   
   <!-- special categories for additional logfiles -->
   
-  <category name="LOGGER_EDITOR" additivity="false">
-    <priority value="WARN"/>
-    <appender-ref ref="LOGGER_EDITOR"/>
-  </category>
-
   <category name="LOGGER_VISIT" additivity="false">
     <priority value="WARN"/>
     <appender-ref ref="LOGGER_VISIT"/>
@@ -146,15 +120,25 @@
     <priority value="WARN"/>
     <appender-ref ref="LOGGER_TRAIL"/>
   </category>
-
-  <category name="LOGGER_PROFILER" additivity="false">
-    <priority value="ERROR"/>
-    <appender-ref ref="LOGGER_PROFILER"/>
+  
+  <category name="LOGGER_WSTRAIL" additivity="false">
+    <priority value="WARN"/>
+    <appender-ref ref="LOGGER_WSTRAIL"/>
   </category>
 
   <category name="LOGGER_DEREF" additivity="false">
     <priority value="WARN"/>
     <appender-ref ref="LOGGER_DEREF"/>
+  </category>
+
+  <category name="LOGGER_SESSION" additivity="false">
+    <priority value="INFO"/>
+    <appender-ref ref="LOGGER_SESSION"/>
+  </category>
+  
+  <category name="LOGGER_EDITOR" additivity="false">
+    <priority value="WARN"/>
+    <appender-ref ref="LOGGER_EDITOR"/>
   </category>
 
   <!-- default category -->
@@ -172,9 +156,3 @@
   </root>
   
 </log4j:configuration>
-
-<!--
-Local Variables:
-mode: xml
-End:
--->

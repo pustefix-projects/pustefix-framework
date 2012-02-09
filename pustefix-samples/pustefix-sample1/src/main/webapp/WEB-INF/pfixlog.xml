@@ -1,5 +1,4 @@
 <?xml version="1.0" encoding="UTF-8" ?>
-
 <log4j:configuration xmlns:log4j="http://jakarta.apache.org/log4j/"
                      xmlns:cus="http://www.schlund.de/pustefix/customize">
 
@@ -11,6 +10,14 @@
     </layout>
   </appender>
 
+  <appender name="LOGGER_VISIT" class="org.apache.log4j.RollingFileAppender">
+    <param name="File"><cus:logroot/>pustefix-visit.log</param>
+    <param name="MaxFileSize" value="10MB"/>
+    <layout class="org.apache.log4j.PatternLayout">
+      <param name="ConversionPattern" value="%d{ISO8601}|%m\n"/>
+    </layout>
+  </appender>
+  
   <appender name="LOGGER_TRAIL" class="org.apache.log4j.RollingFileAppender">
     <param name="File"><cus:logroot/>pustefix-trail.log</param>
     <param name="MaxFileSize" value="10MB"/>
@@ -26,14 +33,6 @@
       <param name="ConversionPattern" value="%d{ISO8601}|%m\n"/>
     </layout>
   </appender>
-  
-  <appender name="LOGGER_VISIT" class="org.apache.log4j.RollingFileAppender">
-    <param name="File"><cus:logroot/>pustefix-visit.log</param>
-    <param name="MaxFileSize" value="10MB"/>
-    <layout class="org.apache.log4j.PatternLayout">
-      <param name="ConversionPattern" value="%d{ISO8601}|%m\n"/>
-    </layout>
-  </appender>
 
   <appender name="LOGGER_DEREF" class="org.apache.log4j.RollingFileAppender">
     <param name="File"><cus:logroot/>pustefix-deref.log</param>
@@ -42,18 +41,27 @@
       <param name="ConversionPattern" value="%d{ISO8601}|%m\n"/>
     </layout>
   </appender>
-
-  <appender name="LOGGER_WEBSERVICE" class="org.apache.log4j.RollingFileAppender">
-    <param name="File"><cus:logroot/>pustefix-webservice.log</param>
+  
+  <appender name="LOGGER_SESSION" class="org.apache.log4j.RollingFileAppender">
+    <param name="File"><cus:logroot/>pustefix-session.log</param>
+    <param name="MaxFileSize" value="10MB"/>
+    <layout class="org.apache.log4j.PatternLayout">
+      <param name="ConversionPattern" value="%d{ISO8601}|%m\n"/>
+    </layout>
+  </appender>
+  
+  <appender name="LOGGER_EDITOR" class="org.apache.log4j.RollingFileAppender">
+    <param name="File"><cus:logroot/>pustefix-editor.log</param>
     <param name="MaxFileSize" value="10MB"/>
     <layout class="org.apache.log4j.PatternLayout">
       <param name="ConversionPattern" value="%d{ISO8601} %m\n"/>
     </layout>
   </appender>
+  
 
- 
   <!-- Categories -->
 
+  <!-- make some classes quiet by default --> 
   <category name="org.apache" additivity="false">
      <priority value="WARN"/>
     <appender-ref ref="LOGGER_GENERAL"/>
@@ -64,81 +72,43 @@
     <appender-ref ref="LOGGER_GENERAL"/>
   </category>
 
-  <category name="de.schlund.pfixcore.workflow.app.RequestDataImpl" additivity="false">
+  <category name="de.schlund.pfixxml" additivity="false">
     <priority value="WARN"/>
-    <appender-ref ref="LOGGER_GENERAL"/>
-  </category>
-
-  <category name="de.schlund.pfixxml.targets" additivity="false">
-    <priority value="WARN"/>
-    <appender-ref ref="LOGGER_GENERAL"/>
-  </category>
-
-  <category name="de.schlund.pfixcore.workflow.ContextResourceManagerImpl" additivity="false">
-    <priority value="WARN"/>
-    <appender-ref ref="LOGGER_GENERAL"/>
-  </category>
-
-  <category name="de.schlund.pfixcore.workflow.Context" additivity="false">
-    <priority value="DEBUG"/>
-    <appender-ref ref="LOGGER_GENERAL"/>
-  </category>
-
-  <category name="de.schlund.pfixxml.SessionCleaner" additivity="false">
-    <priority value="INFO"/>
-    <appender-ref ref="LOGGER_GENERAL"/>
   </category>
 
   <category name="de.schlund.pfixxml.PfixServletRequestImpl" additivity="false">
-    <priority value="WARN"/>
-    <appender-ref ref="LOGGER_GENERAL"/>
-  </category>
-
-  <category name="de.schlund.pfixxml.IncludeDocument" additivity="false">
-    <priority value="WARN"/>
-    <appender-ref ref="LOGGER_GENERAL"/>
-  </category>
-  
-  <category name="de.schlund.pfixxml.IncludeDocumentExtension" additivity="false">
-    <priority value="DEBUG"/>
-    <appender-ref ref="LOGGER_GENERAL"/>
-  </category>
-
-  <category name="de.schlund.pfixxml.resources.internal" additivity="false">
-    <priority value="INFO"/>
-  </category>
-
-  <category name="org.pustefixframework.live" additivity="false">
-    <priority value="INFO"/>
-  </category>
-
-  <category name="org.pustefixframework.webservices" additivity="false">
     <cus:choose>
-      <cus:when test="$mode = 'prod'">
-        <priority value="WARN"/>
-      </cus:when>
-      <cus:otherwise>
-        <priority value="DEBUG"/>
-      </cus:otherwise>
+      <cus:when test="$mode = 'prod'"><priority value="WARN"/></cus:when>
+      <cus:otherwise><priority value="DEBUG"/></cus:otherwise>
     </cus:choose>
-    <appender-ref ref="LOGGER_WEBSERVICE"/>
-  </category>
-  
-  <category name="de.schlund.pfixxml.DependencyTracker" additivity="false">
-    <priority value="WARN"/>
-    <appender-ref ref="LOGGER_GENERAL"/>
-  </category>
-  
-  <category name="de.schlund.pfixxml.util.CacheValueLRU" additivity="false">
-    <priority value="INFO"/>
-    <appender-ref ref="LOGGER_GENERAL"/>
-  </category>
-  
-  <category name="de.schlund.pfixcore.generator" additivity="false">
-    <priority value="WARN"/>
     <appender-ref ref="LOGGER_GENERAL"/>
   </category>
 
+  <category name="org.pustefixframework" additivity="false">
+    <priority value="WARN"/>
+  </category>
+ 
+  <category name="org.pustefixframework.http" additivity="false">
+    <cus:choose>
+      <cus:when test="$mode = 'prod'"><priority value="WARN"/></cus:when>
+      <cus:otherwise><priority value="DEBUG"/></cus:otherwise>
+    </cus:choose>
+    <appender-ref ref="LOGGER_GENERAL"/>
+  </category>
+ 
+  <category name="de.schlund.pfixcore" additivity="false">
+    <priority value="WARN"/>
+    <appender-ref ref="LOGGER_GENERAL"/>
+  </category>
+  
+  <category name="de.schlund.pfixcore.workflow" additivity="false">
+    <cus:choose>
+      <cus:when test="$mode = 'prod'"><priority value="WARN"/></cus:when>
+      <cus:otherwise><priority value="DEBUG"/></cus:otherwise>
+    </cus:choose>
+    <appender-ref ref="LOGGER_GENERAL"/>
+  </category>
+  
   <!-- special categories for additional logfiles -->
   
   <category name="LOGGER_VISIT" additivity="false">
@@ -150,17 +120,26 @@
     <priority value="WARN"/>
     <appender-ref ref="LOGGER_TRAIL"/>
   </category>
-
+  
   <category name="LOGGER_WSTRAIL" additivity="false">
     <priority value="WARN"/>
     <appender-ref ref="LOGGER_WSTRAIL"/>
   </category>
-  
+
   <category name="LOGGER_DEREF" additivity="false">
-    <priority value="INFO"/>
+    <priority value="WARN"/>
     <appender-ref ref="LOGGER_DEREF"/>
   </category>
 
+  <category name="LOGGER_SESSION" additivity="false">
+    <priority value="INFO"/>
+    <appender-ref ref="LOGGER_SESSION"/>
+  </category>
+  
+  <category name="LOGGER_EDITOR" additivity="false">
+    <priority value="WARN"/>
+    <appender-ref ref="LOGGER_EDITOR"/>
+  </category>
 
   <!-- default category -->
 
