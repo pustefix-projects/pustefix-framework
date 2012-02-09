@@ -7,25 +7,10 @@
     <param name="File"><cus:logroot/>pustefix-servlet.log</param>
     <param name="MaxFileSize" value="10MB"/>
     <layout class="org.apache.log4j.PatternLayout">
-      <cus:choose>
-        <cus:when test="$uid = 'jtl'">
-          <param name="ConversionPattern" value="%-5p %c [%M():%L] %m\n"/>
-        </cus:when>
-        <cus:otherwise>
-          <param name="ConversionPattern" value="%d{ISO8601} [%t] %-5p %c [%M():%L] %x - %m\n"/>
-        </cus:otherwise>
-      </cus:choose>
-    </layout>
-  </appender>
-
-  <appender name="LOGGER_JMX" class="org.apache.log4j.RollingFileAppender">
-    <param name="File"><cus:logroot/>pustefix-jmx.log</param>
-    <param name="MaxFileSize" value="10MB"/>
-    <layout class="org.apache.log4j.PatternLayout">
       <param name="ConversionPattern" value="%d{ISO8601} [%t] %-5p %c [%M():%L] %x - %m\n"/>
     </layout>
   </appender>
-  
+
   <appender name="LOGGER_TRAIL" class="org.apache.log4j.RollingFileAppender">
     <param name="File"><cus:logroot/>pustefix-trail.log</param>
     <param name="MaxFileSize" value="10MB"/>
@@ -47,22 +32,6 @@
     <param name="MaxFileSize" value="10MB"/>
     <layout class="org.apache.log4j.PatternLayout">
       <param name="ConversionPattern" value="%d{ISO8601}|%m\n"/>
-    </layout>
-  </appender>
-
-  <appender name="LOGGER_TARGET_UPDATER" class="org.apache.log4j.RollingFileAppender">
-    <param name="File"><cus:logroot/>pustefix-target-updater.log</param>
-    <param name="MaxFileSize" value="10MB"/>
-    <layout class="org.apache.log4j.PatternLayout">
-      <param name="ConversionPattern" value="%d{ISO8601} %m\n"/>
-    </layout>
-  </appender>
-
-  <appender name="LOGGER_SERIALIZER" class="org.apache.log4j.RollingFileAppender">
-    <param name="File"><cus:logroot/>pustefix-serializer.log</param>
-    <param name="MaxFileSize" value="10MB"/>
-    <layout class="org.apache.log4j.PatternLayout">
-      <param name="ConversionPattern" value="%d{ISO8601} %m\n"/>
     </layout>
   </appender>
 
@@ -100,28 +69,8 @@
     <appender-ref ref="LOGGER_GENERAL"/>
   </category>
 
-  <category name="de.schlund.util.statuscodes.StatusCodeFactory" additivity="false">
-    <priority value="WARN"/>
-    <appender-ref ref="LOGGER_GENERAL"/>
-  </category>
-
-  <category name="de.schlund.pfixxml.FactoryInitServlet" additivity="false">
-    <priority value="DEBUG"/>
-    <appender-ref ref="LOGGER_GENERAL"/>
-  </category>
-
   <category name="de.schlund.pfixxml.targets" additivity="false">
     <priority value="WARN"/>
-    <appender-ref ref="LOGGER_GENERAL"/>
-  </category>
-
-  <category name="de.schlund.pfixxml.ServletManager" additivity="false">
-    <priority value="WARN"/>
-    <appender-ref ref="LOGGER_GENERAL"/>
-  </category>
-
-  <category name="de.schlund.pfixxml.AbstractXMLServlet" additivity="false">
-    <priority value="DEBUG"/>
     <appender-ref ref="LOGGER_GENERAL"/>
   </category>
 
@@ -131,11 +80,6 @@
   </category>
 
   <category name="de.schlund.pfixcore.workflow.Context" additivity="false">
-    <priority value="DEBUG"/>
-    <appender-ref ref="LOGGER_GENERAL"/>
-  </category>
-
-  <category name="de.schlund.pfixcore.workflow.AuthContext" additivity="false">
     <priority value="DEBUG"/>
     <appender-ref ref="LOGGER_GENERAL"/>
   </category>
@@ -150,11 +94,6 @@
     <appender-ref ref="LOGGER_GENERAL"/>
   </category>
 
-  <category name="de.schlund.pfixxml.XMLServer" additivity="false">
-    <priority value="WARN"/>
-    <appender-ref ref="LOGGER_GENERAL"/>
-  </category>
-
   <category name="de.schlund.pfixxml.IncludeDocument" additivity="false">
     <priority value="WARN"/>
     <appender-ref ref="LOGGER_GENERAL"/>
@@ -165,16 +104,6 @@
     <appender-ref ref="LOGGER_GENERAL"/>
   </category>
 
-  <category name="de.schlund.pfixxml.exceptionhandler" additivity="false">
-    <priority value="INFO"/>
-    <appender-ref ref="LOGGER_GENERAL"/>
-  </category>
-  
-  <category name="de.schlund.pfixxml.targets.TraxXSLTProcessor" additivity="false">
-    <priority value="WARN"/>
-    <appender-ref ref="LOGGER_GENERAL"/>
-  </category>
-  
   <category name="org.pustefixframework.webservices" additivity="false">
     <cus:choose>
       <cus:when test="$mode = 'prod'">
@@ -187,20 +116,6 @@
     <appender-ref ref="LOGGER_WEBSERVICE"/>
   </category>
   
-  <category name="org.apache.axis" additivity="false">
-    <priority value="WARN"/>
-    <appender-ref ref="LOGGER_GENERAL"/>
-  </category>
- 
-  <!-- Newer commons-logging versions might slow down tomcat startup enormously due to excessive
-       Digester logging while reading XML configurations - to be on the safe side the priority is
-       set to ERROR here
-  -->
-  <category name="org.apache.commons.digester.Digester" additivity="false">
-    <priority value="ERROR"/>
-    <appender-ref ref="LOGGER_GENERAL"/>
-  </category>
-
   <category name="de.schlund.pfixxml.DependencyTracker" additivity="false">
     <priority value="WARN"/>
     <appender-ref ref="LOGGER_GENERAL"/>
@@ -233,30 +148,15 @@
     <appender-ref ref="LOGGER_WSTRAIL"/>
   </category>
   
-
-  <category name="LOGGER_SERIALIZER" additivity="false">
-    <priority value="DEBUG"/>
-    <appender-ref ref="LOGGER_SERIALIZER"/>
-  </category>
-
   <category name="LOGGER_DEREF" additivity="false">
     <priority value="INFO"/>
     <appender-ref ref="LOGGER_DEREF"/>
   </category>
 
-  <category name="de.schlund.pfixxml.jmx" additivity="false">
-    <priority value="DEBUG"/>
-    <appender-ref ref="LOGGER_JMX"/>
-  </category>
-
-
   <!-- default category -->
 
   <root>
     <cus:choose>
-      <cus:when test="$uid = 'jtl'">
-        <priority value="DEBUG"/>
-      </cus:when>
       <cus:when test="$mode = 'prod'">
         <priority value="WARN"/>
       </cus:when>

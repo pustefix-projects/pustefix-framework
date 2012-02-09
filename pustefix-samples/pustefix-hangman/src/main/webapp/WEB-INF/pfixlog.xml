@@ -53,42 +53,12 @@
     <appender-ref ref="LOGGER_GENERAL"/>
   </category>
 
-  <category name="de.schlund.util.statuscodes.StatusCodeFactory" additivity="false">
-    <priority value="WARN"/>
-    <appender-ref ref="LOGGER_GENERAL"/>
-  </category>
-
-  <category name="de.schlund.pfixxml.FactoryInitServlet" additivity="false">
-    <priority value="DEBUG"/>
-    <appender-ref ref="LOGGER_GENERAL"/>
-  </category>
-
-  <category name="de.schlund.pfixxml.jmx.Server" additivity="false">
-    <priority value="INFO"/>
-    <appender-ref ref="LOGGER_GENERAL"/>
-  </category>
-
   <category name="de.schlund.pfixxml.targets" additivity="false">
     <priority value="WARN"/>
     <appender-ref ref="LOGGER_GENERAL"/>
   </category>
 
-  <category name="de.schlund.pfixxml.ServletManager" additivity="false">
-    <priority value="WARN"/>
-    <appender-ref ref="LOGGER_GENERAL"/>
-  </category>
-
-  <category name="de.schlund.pfixxml.AbstractXMLServlet" additivity="false">
-    <priority value="WARN"/>
-    <appender-ref ref="LOGGER_GENERAL"/>
-  </category>
-
   <category name="de.schlund.pfixcore.workflow.Context" additivity="false">
-    <priority value="DEBUG"/>
-    <appender-ref ref="LOGGER_GENERAL"/>
-  </category>
-
-  <category name="de.schlund.pfixcore.workflow.AuthContext" additivity="false">
     <priority value="DEBUG"/>
     <appender-ref ref="LOGGER_GENERAL"/>
   </category>
@@ -103,11 +73,6 @@
     <appender-ref ref="LOGGER_GENERAL"/>
   </category>
 
-  <category name="de.schlund.pfixxml.XMLServer" additivity="false">
-    <priority value="WARN"/>
-    <appender-ref ref="LOGGER_GENERAL"/>
-  </category>
-
   <category name="de.schlund.pfixxml.IncludeDocument" additivity="false">
     <priority value="WARN"/>
     <appender-ref ref="LOGGER_GENERAL"/>
@@ -118,16 +83,6 @@
     <appender-ref ref="LOGGER_GENERAL"/>
   </category>
 
-  <category name="de.schlund.pfixxml.exceptionhandler" additivity="false">
-    <priority value="INFO"/>
-    <appender-ref ref="LOGGER_GENERAL"/>
-  </category>
-  
-  <category name="de.schlund.pfixxml.targets.TraxXSLTProcessor" additivity="false">
-    <priority value="WARN"/>
-    <appender-ref ref="LOGGER_GENERAL"/>
-  </category>
-  
   <category name="de.schlund.pfixxml.DependencyTracker" additivity="false">
     <priority value="WARN"/>
     <appender-ref ref="LOGGER_GENERAL"/>

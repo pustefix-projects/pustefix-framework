@@ -30,22 +30,6 @@
     </layout>
   </appender>
 
-  <appender name="LOGGER_TARGET_UPDATER" class="org.apache.log4j.RollingFileAppender">
-    <param name="File"><cus:logroot/>pustefix-target-updater.log</param>
-    <param name="MaxFileSize" value="10MB"/>
-    <layout class="org.apache.log4j.PatternLayout">
-      <param name="ConversionPattern" value="%d{ISO8601} %m${symbol_escape}n"/>
-    </layout>
-  </appender>
-
-  <appender name="LOGGER_SERIALIZER" class="org.apache.log4j.RollingFileAppender">
-    <param name="File"><cus:logroot/>pustefix-serializer.log</param>
-    <param name="MaxFileSize" value="10MB"/>
-    <layout class="org.apache.log4j.PatternLayout">
-      <param name="ConversionPattern" value="%d{ISO8601} %m${symbol_escape}n"/>
-    </layout>
-  </appender>
-
   <appender name="LOGGER_DEREF" class="org.apache.log4j.RollingFileAppender">
     <param name="File"><cus:logroot/>pustefix-deref.log</param>
     <param name="MaxFileSize" value="10MB"/>
@@ -72,42 +56,12 @@
     <appender-ref ref="LOGGER_GENERAL"/>
   </category>
 
-  <category name="de.schlund.util.statuscodes.StatusCodeFactory" additivity="false">
-    <priority value="WARN"/>
-    <appender-ref ref="LOGGER_GENERAL"/>
-  </category>
-
-  <category name="de.schlund.pfixxml.FactoryInitServlet" additivity="false">
-    <priority value="DEBUG"/>
-    <appender-ref ref="LOGGER_GENERAL"/>
-  </category>
-
-  <category name="de.schlund.pfixxml.jmx.Server" additivity="false">
-    <priority value="INFO"/>
-    <appender-ref ref="LOGGER_GENERAL"/>
-  </category>
-
   <category name="de.schlund.pfixxml.targets" additivity="false">
     <priority value="WARN"/>
     <appender-ref ref="LOGGER_GENERAL"/>
   </category>
 
-  <category name="de.schlund.pfixxml.ServletManager" additivity="false">
-    <priority value="WARN"/>
-    <appender-ref ref="LOGGER_GENERAL"/>
-  </category>
-
-  <category name="de.schlund.pfixxml.AbstractXMLServlet" additivity="false">
-    <priority value="WARN"/>
-    <appender-ref ref="LOGGER_GENERAL"/>
-  </category>
-
   <category name="de.schlund.pfixcore.workflow.Context" additivity="false">
-    <priority value="DEBUG"/>
-    <appender-ref ref="LOGGER_GENERAL"/>
-  </category>
-
-  <category name="de.schlund.pfixcore.workflow.AuthContext" additivity="false">
     <priority value="DEBUG"/>
     <appender-ref ref="LOGGER_GENERAL"/>
   </category>
@@ -122,11 +76,6 @@
     <appender-ref ref="LOGGER_GENERAL"/>
   </category>
 
-  <category name="de.schlund.pfixxml.XMLServer" additivity="false">
-    <priority value="WARN"/>
-    <appender-ref ref="LOGGER_GENERAL"/>
-  </category>
-
   <category name="de.schlund.pfixxml.IncludeDocument" additivity="false">
     <priority value="WARN"/>
     <appender-ref ref="LOGGER_GENERAL"/>
@@ -137,16 +86,6 @@
     <appender-ref ref="LOGGER_GENERAL"/>
   </category>
 
-  <category name="de.schlund.pfixxml.exceptionhandler" additivity="false">
-    <priority value="INFO"/>
-    <appender-ref ref="LOGGER_GENERAL"/>
-  </category>
-  
-  <category name="de.schlund.pfixxml.targets.TraxXSLTProcessor" additivity="false">
-    <priority value="WARN"/>
-    <appender-ref ref="LOGGER_GENERAL"/>
-  </category>
-  
   <category name="de.schlund.pfixxml.DependencyTracker" additivity="false">
     <priority value="WARN"/>
     <appender-ref ref="LOGGER_GENERAL"/>
@@ -162,11 +101,6 @@
   <category name="LOGGER_TRAIL" additivity="false">
     <priority value="WARN"/>
     <appender-ref ref="LOGGER_TRAIL"/>
-  </category>
-
-  <category name="LOGGER_SERIALIZER" additivity="false">
-    <priority value="DEBUG"/>
-    <appender-ref ref="LOGGER_SERIALIZER"/>
   </category>
 
   <category name="LOGGER_DEREF" additivity="false">
