@@ -22,6 +22,7 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.io.InputStream;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.io.OutputStream;
@@ -33,6 +34,7 @@ import java.lang.management.ManagementFactory;
 import java.lang.management.MemoryMXBean;
 import java.lang.management.MemoryPoolMXBean;
 import java.lang.management.MemoryUsage;
+import java.lang.management.RuntimeMXBean;
 import java.net.Socket;
 import java.net.URL;
 import java.text.SimpleDateFormat;
@@ -40,6 +42,8 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.Dictionary;
 import java.util.HashMap;
+import java.util.HashSet;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Properties;
@@ -63,6 +67,10 @@ import org.pustefixframework.admin.mbeans.Admin;
 import org.pustefixframework.container.spring.http.UriProvidingHttpRequestHandler;
 import org.pustefixframework.live.LiveResolver;
 import org.pustefixframework.util.FrameworkInfo;
+import org.pustefixframework.xml.tools.XSLInfo;
+import org.pustefixframework.xml.tools.XSLInfoFactory;
+import org.pustefixframework.xml.tools.XSLInfoParsingException;
+import org.pustefixframework.xml.tools.XSLTemplateInfo;
 import org.springframework.beans.factory.DisposableBean;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.web.context.ServletContextAware;
@@ -75,8 +83,20 @@ import de.schlund.pfixcore.util.ModuleInfo;
 import de.schlund.pfixxml.FilterHelper;
 import de.schlund.pfixxml.config.EnvironmentProperties;
 import de.schlund.pfixxml.resources.ModuleResource;
+import de.schlund.pfixxml.resources.Resource;
 import de.schlund.pfixxml.resources.ResourceUtil;
 import de.schlund.pfixxml.serverutil.SessionAdmin;
+import de.schlund.pfixxml.targets.AuxDependency;
+import de.schlund.pfixxml.targets.AuxDependencyFile;
+import de.schlund.pfixxml.targets.AuxDependencyImage;
+import de.schlund.pfixxml.targets.AuxDependencyInclude;
+import de.schlund.pfixxml.targets.AuxDependencyTarget;
+import de.schlund.pfixxml.targets.LeafTarget;
+import de.schlund.pfixxml.targets.Target;
+import de.schlund.pfixxml.targets.TargetGenerationException;
+import de.schlund.pfixxml.targets.TargetGenerator;
+import de.schlund.pfixxml.targets.TargetImpl;
+import de.schlund.pfixxml.targets.VirtualTarget;
 import de.schlund.pfixxml.targets.cachestat.CacheStatistic;
 import de.schlund.pfixxml.util.Xml;
 import de.schlund.pfixxml.util.Xslt;
@@ -99,6 +119,8 @@ public class PustefixInternalsRequestHandler implements UriProvidingHttpRequestH
     private ServletContext servletContext;
     private SessionAdmin sessionAdmin;
     private CacheStatistic cacheStatistic;
+    private TargetGenerator targetGenerator;
+    private XSLInfoFactory xslInfoFactory = new XSLInfoFactory();
     private long startTime;
     private long reloadTimeout = 1000 * 5;
     
@@ -118,6 +140,10 @@ public class PustefixInternalsRequestHandler implements UriProvidingHttpRequestH
     
     public void setCacheStatistic(CacheStatistic cacheStatistic) {
         this.cacheStatistic = cacheStatistic;
+    }
+    
+    public void setTargetGenerator(TargetGenerator targetGenerator) {
+        this.targetGenerator = targetGenerator;
     }
     
     public void afterPropertiesSet() throws Exception {
@@ -208,6 +234,15 @@ public class PustefixInternalsRequestHandler implements UriProvidingHttpRequestH
                        res.sendRedirect(url.toString());
                    }
                    return;
+               } else if(action.equals("download")) {
+                   String resourceParam = req.getParameter("resource");
+                   if(resourceParam != null) {
+                       Resource resource = ResourceUtil.getResource(resourceParam);
+                       deliver(resource, res);
+                       return;
+                   } else {
+                       res.sendError(HttpServletResponse.SC_NOT_FOUND, "Missing resource parameter");
+                   }
                }
            }
            
@@ -223,12 +258,16 @@ public class PustefixInternalsRequestHandler implements UriProvidingHttpRequestH
                    addJVMInfo(root);
                } else if(category.equals("system")) {
                    addSystemInfo(root);
+               } else if(category.equals("targets")) {
+                   addTargets(root, req);
                } else if(category.equals("modules")) {
                    addModuleInfo(root);
                } else if(category.equals("cache")) {
                    addCacheStatistics(root);
                } else if(category.equals("messages")) {
                    messageList.toXML(root);
+               } else {
+                   
                }
            }
            doc = Xml.parse(XsltVersion.XSLT1, doc);
@@ -313,6 +352,22 @@ public class PustefixInternalsRequestHandler implements UriProvidingHttpRequestH
         elem.setAttribute("name", "uid");
         elem.setTextContent(props.getProperty("uid"));
         propsElem.appendChild(elem);
+        elem = parent.getOwnerDocument().createElement("property");
+        elem.setAttribute("name", "logroot");
+        elem.setTextContent(props.getProperty("logroot"));
+        propsElem.appendChild(elem);
+        
+        Element sysPropsElem = parent.getOwnerDocument().createElement("system-properties");
+        parent.appendChild(sysPropsElem);
+        RuntimeMXBean mbean = ManagementFactory.getRuntimeMXBean();
+        Map<String, String> sysProps = mbean.getSystemProperties();
+        for(String sysPropKey: sysProps.keySet()) {
+            String sysPropVal = sysProps.get(sysPropKey);
+            Element sysPropElem = parent.getOwnerDocument().createElement("property");
+            sysPropElem.setAttribute("name", sysPropKey);
+            sysPropElem.setTextContent(sysPropVal);
+            sysPropsElem.appendChild(sysPropElem);
+        }
         
     }
     
@@ -324,6 +379,18 @@ public class PustefixInternalsRequestHandler implements UriProvidingHttpRequestH
         parent.appendChild(root);
         root.setAttribute("version", System.getProperty("java.version"));
         root.setAttribute("home", System.getProperty("java.home"));
+        
+        RuntimeMXBean runtimeMBean = ManagementFactory.getRuntimeMXBean();
+        List<String> arguments = runtimeMBean.getInputArguments();
+        if(arguments != null) {
+            Element argsElem = parent.getOwnerDocument().createElement("arguments");
+            root.appendChild(argsElem);
+            for(String argument: arguments) {
+                Element argElem = parent.getOwnerDocument().createElement("argument");
+                argsElem.appendChild(argElem);
+                argElem.setTextContent(argument);
+            }
+        }
         
         Element elem = parent.getOwnerDocument().createElement("memory");
         root.appendChild(elem);
@@ -353,6 +420,7 @@ public class PustefixInternalsRequestHandler implements UriProvidingHttpRequestH
             elem.setAttribute("count", String.valueOf(gcbean.getCollectionCount()));
             elem.setAttribute("time", String.valueOf(gcbean.getCollectionTime()));
         }
+        
     }
     
     private void addSystemInfo(Element parent) {
@@ -474,6 +542,187 @@ public class PustefixInternalsRequestHandler implements UriProvidingHttpRequestH
         parent.appendChild(imported);
     }
     
+    private void addTargets(Element parent, HttpServletRequest req) {
+        Element targetsElem = parent.getOwnerDocument().createElement("targets");
+        parent.appendChild(targetsElem);
+        addTargetList(targetsElem);
+        
+        String targetKey = req.getParameter("target");
+        if(targetKey == null) {
+            targetKey = "metatags.xsl";
+        }
+        if(!targetGenerator.getAllTargets().containsKey(targetKey)) {
+            if(targetGenerator.getAllTargets().size() > 0) {
+                targetKey = targetGenerator.getAllTargets().firstKey();
+            } else {
+                targetKey = null;
+            }
+        }
+        Target target = null;
+        if(targetKey != null) {
+            target = (TargetImpl)targetGenerator.getTarget(targetKey);
+            try {
+                target.getValue();
+            } catch(TargetGenerationException x) {
+                //ignore as we can still provide the static target information
+            }
+        }
+        dumpTarget(target, targetsElem, new HashSet<String>(), true);
+    }
+    
+    private void addTargetList(Element root) {
+        Element targetsElem = root.getOwnerDocument().createElement("targetlist");
+        root.appendChild(targetsElem);
+        Map<String, Target> targets = targetGenerator.getAllTargets();
+        Iterator<String> it = targets.keySet().iterator();
+        while(it.hasNext()) {
+            String key = it.next();
+            Target target = targets.get(key);
+            Element targetElem = root.getOwnerDocument().createElement("target");
+            targetElem.setAttribute("key", target.getTargetKey());
+            targetsElem.appendChild(targetElem);
+        }
+    }
+    
+    private void dumpTarget(Target target, Element root, Set<String> templates, boolean templateInfo) {
+        
+        Element targetElem = root.getOwnerDocument().createElement("target");
+        root.appendChild(targetElem);
+        targetElem.setAttribute("key", target.getTargetKey());
+        targetElem.setAttribute("type", target.getType().getTag());
+        if(target instanceof LeafTarget) {
+            targetElem.setAttribute("resource", target.getTargetKey());
+        } else {
+            targetElem.setAttribute("resource", targetGenerator.getDisccachedir() + "/" + target.getTargetKey());
+        }
+        if(target instanceof VirtualTarget) {
+            VirtualTarget virtual = (VirtualTarget)target;
+            Target xmlTarget = virtual.getXMLSource();
+            dumpTarget(xmlTarget, targetElem, templates, false);
+            Target xslTarget = virtual.getXSLSource();
+            dumpTarget(xslTarget, targetElem, templates, false);
+        }
+        
+        if(target.getTargetKey().endsWith(".xsl") && templateInfo) {
+            System.out.println("IIIIIIIII: "+target.getTargetKey() + " " +templateInfo);
+            addTemplateInfo(target, targetElem, templates);
+        }
+        
+        Element depsElem = root.getOwnerDocument().createElement("dependencies");
+        targetElem.appendChild(depsElem);
+        TreeSet<AuxDependency> deps = targetGenerator.getTargetDependencyRelation().getDependenciesForTarget(target);
+        if(deps != null) {
+        for(AuxDependency aux: deps) {
+            if(aux instanceof AuxDependencyTarget) {
+                AuxDependencyTarget auxDepTarget = (AuxDependencyTarget)aux;
+                Target auxTarget = auxDepTarget.getTarget();
+                dumpTarget(auxTarget, depsElem, templates, templateInfo);
+            } else if(aux instanceof AuxDependencyInclude) {
+                Element incElem = root.getOwnerDocument().createElement("include");
+                depsElem.appendChild(incElem);
+                AuxDependencyInclude auxDepInc = (AuxDependencyInclude)aux;
+                incElem.setAttribute("path",auxDepInc.getPath().toString());
+                incElem.setAttribute("part", auxDepInc.getPart());
+                incElem.setAttribute("theme", auxDepInc.getTheme());
+            } else if(aux instanceof AuxDependencyImage) {
+                Element imgElem = root.getOwnerDocument().createElement("image");
+                depsElem.appendChild(imgElem);
+                AuxDependencyImage auxDepImg = (AuxDependencyImage)aux;
+                imgElem.setAttribute("path",auxDepImg.getPath().toString());
+            }  else if(aux instanceof AuxDependencyFile) {
+                Element fileElem = root.getOwnerDocument().createElement("file");
+                depsElem.appendChild(fileElem);
+                AuxDependencyFile auxDepFile = (AuxDependencyFile)aux;
+                fileElem.setAttribute("path", auxDepFile.getPath().toString());
+            } 
+        }
+        } 
+    }
+    
+    private void addTemplateInfo(Target target, Element root, Set<String> templates) {
+        
+        Resource res;
+        if(target instanceof LeafTarget) {
+            res = ResourceUtil.getResource(target.getTargetKey());
+        } else {
+            res = ResourceUtil.getFileResource(targetGenerator.getDisccachedir(), target.getTargetKey());
+        }
+        if(res.exists()) {
+            root.setAttribute("url", res.toURI().toASCIIString());
+            if(!templates.contains(target.getTargetKey())) {
+                try {
+                    XSLInfo info = xslInfoFactory.getXSLInfo(res);
+                    Element templatesElem = root.getOwnerDocument().createElement("templates");
+                    templatesElem.setAttribute("url", res.toURI().toASCIIString());
+                    templatesElem.setAttribute("targetKey", target.getTargetKey());
+                    root.getOwnerDocument().getDocumentElement().getElementsByTagName("targets").item(0).appendChild(templatesElem);
+                    for(String include: info.getIncludes()) {
+                        Element includeElem = root.getOwnerDocument().createElement("include");
+                        templatesElem.appendChild(includeElem);
+                        includeElem.setAttribute("href", include);
+                        
+                    }
+                    for(String imp: info.getImports()) {
+                        Element importElem = root.getOwnerDocument().createElement("import");
+                        templatesElem.appendChild(importElem);
+                        importElem.setAttribute("href", imp);
+                    }
+                    for(XSLTemplateInfo xi: info.getTemplates()) {
+                        Element templateElem = root.getOwnerDocument().createElement("template");
+                        templatesElem.appendChild(templateElem);
+                        if(xi.getName() != null && !xi.getName().equals("")) templateElem.setAttribute("name", xi.getName());
+                        if(xi.getMatch() != null && !xi.getMatch().equals("")) templateElem.setAttribute("match", xi.getMatch());
+                    }
+                } catch(XSLInfoParsingException x) {
+                    x.printStackTrace();
+                }
+                templates.add(target.getTargetKey());
+            }
+            
+        }
+        
+    }
+    
+    private void deliver(Resource res, HttpServletResponse response) throws IOException {
+        if("test".equals(EnvironmentProperties.getProperties().get("mode"))) {
+            if(res.exists()) {
+                OutputStream out = response.getOutputStream();
+        
+                String type = servletContext.getMimeType(res.getFilename());
+                if (type == null) {
+                    type = "application/octet-stream";
+                }
+                response.setContentType(type);
+                response.setHeader("Content-Disposition", "inline;filename="+res.getFilename());
+                
+                long contentLength = res.length();
+                if(contentLength > -1 && contentLength < Integer.MAX_VALUE) {
+                    response.setContentLength((int)contentLength);
+                }
+                
+                long lastModified = res.lastModified();
+                if(lastModified > -1) {
+                    response.setDateHeader("Last-Modified", lastModified);
+                }
+                
+                InputStream in = res.getInputStream();
+                byte[] buffer = new byte[4096];
+                int no = 0;
+                try {
+                    while ((no = in.read(buffer)) != -1)
+                        out.write(buffer, 0, no);
+                } finally {
+                    in.close();
+                    out.close();
+                }
+            } else {
+                response.sendError(HttpServletResponse.SC_NOT_FOUND, res.toString());
+            }
+        } else {
+            response.sendError(HttpServletResponse.SC_FORBIDDEN, res.toString());
+        }
+        
+    }
     
     public String[] getRegisteredURIs() {
         return new String[] {handlerURI, handlerURI+"/**"};

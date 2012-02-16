@@ -206,6 +206,7 @@ public class PustefixContextXMLRequestHandlerParsingHandler extends Customizatio
         beanBuilder.setScope("singleton");
         beanBuilder.addPropertyValue("sessionAdmin", new RuntimeBeanReference(SessionAdmin.class.getName()));
         beanBuilder.addPropertyValue("cacheStatistic", new RuntimeBeanReference(CacheStatistic.class.getName()));
+        beanBuilder.addPropertyValue("targetGenerator", new RuntimeBeanReference(TargetGenerator.class.getName()));
         beanDefinition = beanBuilder.getBeanDefinition();
         beanHolder = new BeanDefinitionHolder(beanDefinition, PustefixInternalsRequestHandler.class.getName());
         context.getObjectTreeElement().addObject(beanHolder);

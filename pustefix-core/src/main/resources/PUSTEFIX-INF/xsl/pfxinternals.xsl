@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<xsl:stylesheet xmlns:xsl="http://www.w3.org/1999/XSL/Transform" version="1.0">
+<xsl:stylesheet xmlns:xsl="http://www.w3.org/1999/XSL/Transform" xmlns:enc="java.net.URLEncoder" version="1.0">
 
   <xsl:param name="__contextpath"/>
   <xsl:param name="category"/>
@@ -7,6 +7,7 @@
   <xsl:key name="priokey" match="/pfxinternals/modules/defaultsearch/module" use="@priority"/>
 
   <xsl:template match="/">
+  <xsl:message><xsl:copy-of select="/"/></xsl:message>
     <html>
       <head>
         <title>Pustefix internals</title>
@@ -20,6 +21,7 @@
           div.header {
 	        clear: both;
 	        font-family: sans-serif;
+	        min-width: 1024px;
           }
           div.header div.pagetitle {
             float: left;
@@ -33,9 +35,14 @@
             float: left;
             padding-left: 10px;
           }
+          
+          
           div.content {
             clear: both;
-            padding: 10px;
+           margin-left: 20px;
+             margin-right: 20px;
+             padding-top: 10px;
+             min-width: 1024px;
           }
           a:link {
             color: #000;
@@ -52,6 +59,7 @@
           a:focus {
             color: #666;
           }
+         
           div.section {
             background: #fff;
             padding: 15px;
@@ -64,7 +72,7 @@
             padding:6px;
             padding-left:0px;
             line-height: 150%;
-            overflow: auto;
+            min-width: 1024px;
             font-family: sans-serif;
           }
           div.navi span {
@@ -120,6 +128,30 @@
             color: #666;
             padding-bottom: 5px;
           }
+          table.props {
+            border-spacing: 0px;
+            border: 0px solid #aaa;
+            margin-bottom: 15px;
+          }
+          table.props th.caption {
+            font-weight: bold;
+            color: #222;
+            border:0px;
+            padding-left: 0px;
+            padding-bottom: 6px;
+          }
+          table.props td, table.props th {
+            text-align: left;
+     		padding: 4px;
+     		font-weight: normal;
+     		border-top: 1px solid #ddd;
+          }
+          table.props tr.odd {
+            background: #ededed;
+          }
+          table.props tr.even {
+            background: #f3f3f3;
+          }
           div.info {
             padding-left: 15px; 
             padding-top: 2px; 
@@ -156,16 +188,9 @@
             padding-top: 10px;
             padding-left: 10px;
           }
-          span.liveclasses {
-            color: green;
-            font-size: 150%;
-            padding-left: 3px;
-            padding-right: 20px;
-          }
-          span.liveresources {
-            color: green;
-           	font-size: 150%;
-           	padding-left: 10px;
+          img.live {
+            vertical-align: middle;
+            margin-left: 8px;
           }
           td.mod {
             border: 1px solid #ccc;
@@ -185,6 +210,87 @@
             font-size: 85%;
           }
           table.defsearch td {padding-right: 0px;}
+          
+          <xsl:if test="$category='targets'">
+          ul.targets {
+            list-style-type: none; margin: 20px;
+            border-left: 1px dotted black; margin:10px; padding:5px; margin-left:40px;
+          }
+          ul.targets li {
+            margin: 10px;
+          }
+          span.target {
+            
+          }
+          span.virtual {
+            border: 1px solid black; border-radius: 10px; padding: 4px; margin: 6px;
+          }
+          span.leaf {
+            border: 1px solid black; border-radius: 2px; padding: 4px; margin: 6px;
+          }
+          span.xml {
+            border-color: #cc6666;
+            background: #cc6666;
+          }
+          span.xsl {
+            border-color: #9ecd9a;
+            background: #9ecd9a;
+          }
+          span.xml_leaf{
+            border-color: #cc6666;
+            background: #cc6666;
+          }
+          span.xsl_leaf {
+            border-color: #9ecd9a;
+            background: #9ecd9a;
+          }
+          a.target {
+            color:black;
+            text-decoration:none;
+          }
+            span.inc {
+            border-color: #bbb;
+            background: #bbb;
+            border: 1px solid #bbb; border-radius: 2px; padding-top: 3px; padding-bottom: 3px; margin: 0;
+            margin-right: 5px;
+          }
+          span.inc_path {
+            background: #bbb;
+            padding: 3px;
+            padding-right: 5px;
+          }
+          span.inc_part {
+            background: #ddd;
+            padding: 3px;
+            padding-left: 5px;
+          }
+          div.deps {border: 1px dashed #aaa; border-radius: 5px; margin-top:20px;}
+          table.targets tr td {
+            vertical-align: top;
+          }
+          table.templates {
+            border-spacing: 1px;
+            border: 0px solid #bbb;
+            font-size: 80%;
+            padding-left: 40px;
+          }
+          table.templates th {
+            background: #d2d2d2;
+            font-weight: normal;
+          }
+          table.templates tr.odd {
+            background: #ededed;
+          }
+          table.templates tr.even {
+            background: #f3f3f3;
+          }
+          table.templates td, table.templates th {
+            padding: 3px;
+            padding-left: 5px;
+            padding-right: 5px;
+            border-top: 1px solid #ddd;
+          }
+          </xsl:if>
           
         </style>
         <script type="text/javascript">
@@ -211,30 +317,40 @@
             alert("Removed " + d + " cookie" + (d==1 ? "" : "s"));
           }
           
+         <xsl:if test="$category='targets'">
+         function viewTarget(value) {
+           var url = window.location.href;
+           var ind = url.indexOf('?');
+           if(ind > 0) url = url.substring(0, ind);
+           url = url + "?target=" + encodeURIComponent(value);
+           window.location.href = url;
+         }
+         </xsl:if>
+          
         </script>
       </head>
       <body>
       
-       <div class="header">
-        <div class="logo"><img class="logo" src="{$__contextpath}/modules/pustefix-core/img/logo.png"/></div>
-        <div class="pagetitle">Pustefix internals</div>
+        <div class="header">
+          <div class="logo"><img class="logo" src="{$__contextpath}/modules/pustefix-core/img/logo.png"/></div>
+          <div class="pagetitle">Pustefix internals</div>
         </div>
     
         <div class="content">
-        <div class="navi">
-          <nobr>
-          <span><xsl:if test="$category='framework'"><xsl:attribute name="class">active</xsl:attribute></xsl:if><a href="framework">Framework information</a></span>
-          <span><xsl:if test="$category='environment'"><xsl:attribute name="class">active</xsl:attribute></xsl:if><a href="environment">Environment properties</a></span>
-          <span><xsl:if test="$category='jvm'"><xsl:attribute name="class">active</xsl:attribute></xsl:if><a href="jvm">JVM information</a></span>
-          <span><xsl:if test="$category='system'"><xsl:attribute name="class">active</xsl:attribute></xsl:if><a href="system">System information</a></span>
-          <span><xsl:if test="$category='cache'"><xsl:attribute name="class">active</xsl:attribute></xsl:if><a href="cache">Cache statistics</a></span>
-          <span><xsl:if test="$category='modules'"><xsl:attribute name="class">active</xsl:attribute></xsl:if><a href="modules">Loaded modules</a></span>
-          <span><xsl:if test="$category='actions'"><xsl:attribute name="class">active</xsl:attribute></xsl:if><a href="actions">Actions</a></span>
-          <span><xsl:if test="$category='messages'"><xsl:attribute name="class">active</xsl:attribute></xsl:if><a href="messages">Messages</a></span>
-          </nobr>
-        </div>
+          <div class="navi">
+            <span><xsl:if test="$category='framework'"><xsl:attribute name="class">active</xsl:attribute></xsl:if><a href="framework">Framework</a></span>
+            <span><xsl:if test="$category='environment'"><xsl:attribute name="class">active</xsl:attribute></xsl:if><a href="environment">Environment</a></span>
+            <span><xsl:if test="$category='jvm'"><xsl:attribute name="class">active</xsl:attribute></xsl:if><a href="jvm">JVM</a></span>
+            <span><xsl:if test="$category='system'"><xsl:attribute name="class">active</xsl:attribute></xsl:if><a href="system">System</a></span>
+            <span><xsl:if test="$category='cache'"><xsl:attribute name="class">active</xsl:attribute></xsl:if><a href="cache">Cache</a></span>
+            <span><xsl:if test="$category='modules'"><xsl:attribute name="class">active</xsl:attribute></xsl:if><a href="modules">Modules</a></span>
+            <span><xsl:if test="$category='targets'"><xsl:attribute name="class">active</xsl:attribute></xsl:if><a href="targets">Targets</a></span>
+            <span><xsl:if test="$category='actions'"><xsl:attribute name="class">active</xsl:attribute></xsl:if><a href="actions">Actions</a></span>
+            <span><xsl:if test="$category='messages'"><xsl:attribute name="class">active</xsl:attribute></xsl:if><a href="messages">Messages</a></span>
+          </div>
+          
       
-        <xsl:if test="not($category) or $category='framework'">
+          <xsl:if test="not($category) or $category='framework'">
         <div class="section">
           <table class="info">
             <tr>
@@ -255,23 +371,31 @@
       
         <xsl:if test="not($category) or $category='environment'">
         <div class="section">
-          <table class="info">
+          <table class="props">
             <tr>
-              <th>fqdn:</th>
-              <td><xsl:value-of select="/pfxinternals/environment/properties/property[@name='fqdn']"/></td>
+              <th class="caption" colspan="2">Pustefix environment properties:</th>
             </tr>
+            <xsl:for-each select="/pfxinternals/environment/properties/property">
+              <xsl:sort select="@name"/>
+              <tr>
+                <xsl:attribute name="class"><xsl:choose><xsl:when test="position() mod 2 = 1">odd</xsl:when><xsl:otherwise>even</xsl:otherwise></xsl:choose></xsl:attribute>
+                <th><xsl:value-of select="@name"/></th>
+                <td><xsl:value-of select="."/>&#160;</td>
+              </tr>
+            </xsl:for-each>
+          </table>
+          <table class="props">
             <tr>
-              <th>machine:</th>
-              <td><xsl:value-of select="/pfxinternals/environment/properties/property[@name='machine']"/></td>
+              <th class="caption" colspan="2">System properties:</th>
             </tr>
-            <tr>
-              <th>mode:</th>
-              <td><xsl:value-of select="/pfxinternals/environment/properties/property[@name='mode']"/></td>
-            </tr>
-            <tr>
-              <th>uid:</th>
-              <td><xsl:value-of select="/pfxinternals/environment/properties/property[@name='uid']"/></td>
-            </tr>
+            <xsl:for-each select="/pfxinternals/system-properties/property">
+              <xsl:sort select="@name"/>
+              <tr>
+                <xsl:attribute name="class"><xsl:choose><xsl:when test="position() mod 2 = 1">odd</xsl:when><xsl:otherwise>even</xsl:otherwise></xsl:choose></xsl:attribute>
+                <th><xsl:value-of select="@name"/></th>
+                <td><xsl:value-of select="."/>&#160;</td>
+              </tr>
+            </xsl:for-each>
           </table>
         </div>
         </xsl:if>
@@ -286,6 +410,14 @@
             <tr>
               <th>Jave home:</th>
               <td><xsl:value-of select="/pfxinternals/jvm/@home"/></td>
+            </tr>
+            <tr>
+              <th>VM arguments:</th>
+              <td>
+                <xsl:for-each select="/pfxinternals/jvm/arguments/argument">
+                  <xsl:value-of select="."/><xsl:text> </xsl:text>
+                </xsl:for-each>
+              </td>
             </tr>
           </table>
           <br/>
@@ -447,6 +579,12 @@
         <xsl:if test="not($category) or $category='modules'">
         <div class="section">
           <xsl:apply-templates select="/pfxinternals/modules"/>
+        </div>
+        </xsl:if>
+        
+        <xsl:if test="not($category) or $category='targets'">
+        <div class="section">
+          <xsl:apply-templates select="/pfxinternals/targets"/>
         </div>
         </xsl:if>
         
@@ -619,18 +757,18 @@
     <xsl:value-of select="@name"/>
     <xsl:choose>
       <xsl:when test="@url">
-        <span class="liveresources" title="Live resources in {@url}">&#11089;</span>
+        <img class="live" src="{$__contextpath}/modules/pustefix-core/img/changes-allow.png" title="Live resources in {@url}"/>
       </xsl:when>
       <xsl:otherwise>
-        <span class="liveresources" title="No live resources">&#11090;</span>
+        <img class="live" src="{$__contextpath}/modules/pustefix-core/img/changes-prevent.png" title="No live resources"/>
       </xsl:otherwise>
     </xsl:choose>
     <xsl:choose>
       <xsl:when test="@classurl">
-        <span class="liveclasses" title="Live classes in {@classurl}">&#11089;</span>
+        <img class="live" src="{$__contextpath}/modules/pustefix-core/img/changes-allow-grey.png" title="Live classes in {@classurl}"/>
       </xsl:when>
       <xsl:otherwise>
-        <span class="liveclasses" title="No live classes">&#11090;</span>
+        <img class="live" src="{$__contextpath}/modules/pustefix-core/img/changes-prevent-grey.png" title="No live classes"/>
       </xsl:otherwise>
     </xsl:choose>
   </xsl:template>
@@ -655,5 +793,120 @@
       <td><xsl:apply-templates/></td>
     </tr>
   </xsl:template>
+  
+  <xsl:template match="targets">
+      <div>
+        <xsl:apply-templates select="targetlist"/>
+      </div>
+      <table>
+       <tr>
+       <td valign="top">
+        <ul>
+            <xsl:apply-templates select="/pfxinternals/targets/target"/>
+          </ul>
+      </td>
+      <td valign="top">
+        <xsl:if test="/pfxinternals/targets/templates/template">
+          <table class="templates" >
+               <tr>
+                <th align="left">Match pattern</th>
+                <th align="left">Template name</th>
+                <th align="left">System ID</th>
+              </tr>
+    	 	  <xsl:for-each select="/pfxinternals/targets/templates/template[@match and not(@match='*' or starts-with(@match, '/'))]">
+                <xsl:sort select="@match"/>
+                <xsl:sort select="@name"/>
+                <xsl:sort select="../@url"/>
+                <tr>
+                  <xsl:attribute name="class"><xsl:choose><xsl:when test="position() mod 2 = 1">odd</xsl:when><xsl:otherwise>even</xsl:otherwise></xsl:choose></xsl:attribute>
+                  <td><xsl:value-of select="@match"/>&#160;</td>
+                  <td><xsl:value-of select="@name"/>&#160;</td>
+                  <td><xsl:value-of select="../@url"/></td>
+                </tr>
+              </xsl:for-each>
+              <xsl:variable name="tmpcnt" select="count(/pfxinternals/targets/templates/template[@match and not(@match='*' or starts-with(@match, '/'))])"/>
+              <xsl:for-each select="/pfxinternals/targets/templates/template[not(@match)]">
+                <xsl:sort select="@match"/>
+                <xsl:sort select="@name"/>
+                <xsl:sort select="../@url"/>
+                <tr>
+                  <xsl:attribute name="class"><xsl:choose><xsl:when test="($tmpcnt + position()) mod 2 = 1">odd</xsl:when><xsl:otherwise>even</xsl:otherwise></xsl:choose></xsl:attribute>
+                  <td><xsl:value-of select="@match"/>&#160;</td>
+                  <td><xsl:value-of select="@name"/>&#160;</td>
+                  <td><xsl:value-of select="../@url"/></td>
+                </tr>
+              </xsl:for-each>
+    	    </table>
+    	    </xsl:if>
+          </td></tr>
+        </table>
+         
+  </xsl:template>
 
+  <xsl:template match="targetlist">
+    <select name="target" size="1" onChange="viewTarget(this.value)">
+      <xsl:for-each select="target">
+        <option><xsl:if test="@key = /pfxinternals/targets/target/@key"><xsl:attribute name="selected">true</xsl:attribute></xsl:if><xsl:value-of select="@key"/></option>
+      </xsl:for-each>
+    </select>
+  </xsl:template>
+  
+  <xsl:template match="target">
+    <li style="padding:3px;">
+      <div class="target">
+      <span class="target">
+        <xsl:choose>
+          <xsl:when test="target"><xsl:attribute name="class">virtual <xsl:value-of select="@type"/></xsl:attribute></xsl:when>
+          <xsl:otherwise><xsl:attribute name="class">leaf <xsl:value-of select="@type"/></xsl:attribute></xsl:otherwise>
+        </xsl:choose>
+        <a class="target" href="?target={@key}"><xsl:value-of select="@key"/></a>
+      </span>
+      <a href="{$__contextpath}/pfxinternals?action=download&amp;resource={enc:encode(@resource,'utf-8')}">
+      <img class="download" src="{$__contextpath}/modules/pustefix-core/img/download.png" title="Download/Open"/>
+      </a>
+      </div>
+      <xsl:if test="target">
+        <xsl:if test="@type='xsl'">
+      		
+      	</xsl:if>
+        <ul class="targets">
+          <xsl:apply-templates/>
+        </ul>
+      </xsl:if>
+      
+      
+    </li>
+  </xsl:template>
+  
+    <xsl:template match="dependencies">
+     <div class="deps">
+     <xsl:apply-templates/>
+     </div>
+     
+  </xsl:template>
+  
+  <xsl:template match="file">
+    <li class="dep file">
+      <xsl:value-of select="@path"/>
+    </li>
+  </xsl:template>
+  
+  <xsl:template match="include">
+    <li class="dep include">
+    <span class="inc"><span class="inc_path"><xsl:value-of select="@path"/></span><span class="inc_part"><xsl:value-of select="@part"/></span></span>
+     <a href="{$__contextpath}/pfxinternals?action=download&amp;resource={enc:encode(@path,'utf-8')}">
+      <img class="download" src="{$__contextpath}/modules/pustefix-core/img/download.png" title="Download/Open"/>
+      </a>
+    </li>
+  </xsl:template>
+  
+  <xsl:template match="image">
+    <li class="dep image">
+      <span class="inc"><span class="inc_path"><xsl:value-of select="@path"/></span></span>
+      <a href="{$__contextpath}/pfxinternals?action=download&amp;resource={enc:encode(@path,'utf-8')}">
+        <img class="download" src="{$__contextpath}/modules/pustefix-core/img/download.png" title="Download/Open"/>
+      </a>
+    </li>
+  </xsl:template>
+  
 </xsl:stylesheet>
