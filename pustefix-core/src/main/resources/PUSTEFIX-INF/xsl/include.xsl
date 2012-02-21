@@ -204,7 +204,7 @@
     <xsl:param name="parent_theme"><xsl:value-of select="ancestor::theme[position() = 1]/@name"/></xsl:param>
     <xsl:param name="noerror"><xsl:value-of select="@noerror"/></xsl:param>
     <xsl:param name="noedit"><xsl:value-of select="@noedit"/></xsl:param>
-    <xsl:param name="part"><xsl:value-of select="@part"/></xsl:param>
+    <xsl:param name="part"><xsl:call-template name="pfx:replaceincludeparams"><xsl:with-param name="__env" select="$__env"/><xsl:with-param name="str" select="@part"/></xsl:call-template></xsl:param>
     <xsl:param name="href"><xsl:value-of select="@href"/></xsl:param>
     <xsl:param name="module"><xsl:value-of select="@module"/></xsl:param>
     <xsl:param name="search"><xsl:value-of select="@search"/></xsl:param>
@@ -440,6 +440,7 @@
   </xsl:template>
 
   <xsl:template match="pfx:include[@level='runtime']">
+  <xsl:param name="__env"/>
     <ixsl:call-template name="pfx:include">
       <xsl:if test="@noerror">
         <ixsl:with-param name="noerror"><xsl:value-of select="@noerror"/></ixsl:with-param>
@@ -487,7 +488,8 @@
   </xsl:template>
 
   <xsl:template match="pfx:checkinclude">
-    <xsl:param name="part"><xsl:value-of select="@part"/></xsl:param>
+    <xsl:param name="__env"/>
+    <xsl:param name="part"><xsl:call-template name="pfx:replaceincludeparams"><xsl:with-param name="__env" select="$__env"/><xsl:with-param name="str" select="@part"/></xsl:call-template></xsl:param>
     <xsl:param name="href"><xsl:value-of select="@href"/></xsl:param>
     <xsl:param name="module"><xsl:value-of select="@module"/></xsl:param>
     <xsl:param name="search"><xsl:value-of select="@search"/></xsl:param>
@@ -512,7 +514,9 @@
       </xsl:choose>
     </xsl:variable>
     <xsl:if test="include:exists($realpath, $part, $__target_gen, $__target_key, $module, $search, $tenant, $lang)">
-      <xsl:apply-templates/>
+      <xsl:apply-templates>
+        <xsl:with-param name="__env" select="$__env"/>
+      </xsl:apply-templates>
     </xsl:if>
   </xsl:template>
 
@@ -583,7 +587,9 @@
       </xsl:choose>
     </xsl:variable>
     <xsl:if test="not(include:exists($realpath, $part, $__target_gen, $__target_key, $module, $search, $tenant, $lang))">
-      <xsl:apply-templates/>
+      <xsl:apply-templates>
+        <xsl:with-param name="__env" select="$__env"/>
+	  </xsl:apply-templates>
     </xsl:if>
   </xsl:template>
 
@@ -841,4 +847,76 @@
     <func:result select="include:exists($href, $part, $__target_gen, $__target_key, $module, $search, $tenant, $lang)"/>
   </func:function>
  
+  <xsl:template match="pfx:checkincludeparam">
+    <xsl:param name="__env"/>
+    <xsl:choose>
+      <xsl:when test="@name">
+        <xsl:variable name="incparam" select="$__env/pfx:includeparam[@name=current()/@name]"/>
+        <xsl:if test="$incparam and (not(@value) or @value=$incparam/@value)">
+          <xsl:apply-templates>
+            <xsl:with-param name="__env" select="$__env"/>
+          </xsl:apply-templates>
+        </xsl:if>
+      </xsl:when>
+      <xsl:when test="$__env/pfx:includeparam">
+        <xsl:apply-templates>
+          <xsl:with-param name="__env" select="$__env"/>
+        </xsl:apply-templates>
+      </xsl:when>
+    </xsl:choose>
+  </xsl:template>
+  
+  <xsl:template match="pfx:checknoincludeparam">
+    <xsl:param name="__env"/>
+    <xsl:choose>
+      <xsl:when test="@name">
+        <xsl:variable name="incparam" select="$__env/pfx:includeparam[@name=current()/@name]"/>
+        <xsl:if test="not($incparam) or (@value and not($incparam/@value=@value))">
+          <xsl:apply-templates>
+            <xsl:with-param name="__env" select="$__env"/>
+          </xsl:apply-templates>
+        </xsl:if>
+      </xsl:when>
+      <xsl:when test="not($__env/pfx:includeparam)">
+        <xsl:apply-templates>
+          <xsl:with-param name="__env" select="$__env"/>
+        </xsl:apply-templates>
+      </xsl:when>
+    </xsl:choose>
+  </xsl:template>
+  
+  <xsl:template name="pfx:replaceincludeparams">
+    <xsl:param name="str"/>
+    <xsl:param name="__env"/>
+    <xsl:choose>
+      <xsl:when test="contains($str,'#')">
+        <xsl:variable name="start" select="substring-before($str,'#')"/>
+        <xsl:variable name="rest" select="substring-after($str,'#')"/>
+        <xsl:choose>
+          <xsl:when test="contains($rest,'#')">
+            <xsl:variable name="incparam" select="substring-before($rest,'#')"/>
+            <xsl:variable name="incparamval" select="$__env/pfx:includeparam[@name=$incparam]/@value"/>
+            <xsl:choose>
+              <xsl:when test="$incparamval">
+                <xsl:call-template name="pfx:replaceincludeparams">
+                  <xsl:with-param name="str" select="concat($start,$incparamval,substring-after($rest,'#'))"/>
+                  <xsl:with-param name="__env" select="$__env"/>
+                </xsl:call-template>
+              </xsl:when>
+              <xsl:otherwise>
+                <xsl:value-of select="$str"/>
+              </xsl:otherwise>
+            </xsl:choose>
+          </xsl:when>
+          <xsl:otherwise>
+            <xsl:value-of select="$str"/>
+          </xsl:otherwise>
+        </xsl:choose>
+      </xsl:when>
+      <xsl:otherwise>
+        <xsl:value-of select="$str"/>
+      </xsl:otherwise>
+    </xsl:choose>
+  </xsl:template>
+  
 </xsl:stylesheet>

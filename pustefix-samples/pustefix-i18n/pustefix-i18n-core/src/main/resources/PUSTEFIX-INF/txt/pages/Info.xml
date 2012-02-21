@@ -1,10 +1,63 @@
 <?xml version="1.0" encoding="utf-8"?>
 <include_parts xmlns:ixsl="http://www.w3.org/1999/XSL/Transform" xmlns:pfx="http://www.schlund.de/pustefix/core">
+
   <part name="content">
     <theme name="default">
       <div class="info">
       <pfx:include href="txt/common.xml" part="info" search="dynamic"/>
+      
+      <pfx:include part="infomodule">
+        <pfx:includeparam name="index" value="1"/>
+      </pfx:include>
+      <pfx:include part="infomodule">
+        <pfx:includeparam name="index" value="2"/>
+      </pfx:include>
+      <pfx:include part="infomodule">
+        <pfx:includeparam name="index" value="3"/>
+      </pfx:include>
+      <pfx:include part="infomodule">
+        <pfx:includeparam name="index" value="4"/>
+      </pfx:include>
+      
       </div>
+    </theme>
+  </part>
+  
+  <part name="infomodule">
+    <theme name="default">
+      
+      <h3>
+      <pfx:checkinclude part="content#index#.headline">
+        <pfx:include part="content#index#.headline"/>
+      </pfx:checkinclude>
+      </h3>
+                  
+       <div> 
+          
+       <pfx:checkincludeparam>HAS INCLUDE PARAMETER</pfx:checkincludeparam><br/>
+       <pfx:checknoincludeparam>HAS NO INCLUDE PARAMETER</pfx:checknoincludeparam><br/>
+       
+       <pfx:checkincludeparam name="index">HAS INCLUDE PARAMETER 'index'</pfx:checkincludeparam><br/>
+       <pfx:checknoincludeparam name="index">HAS NO INCLUDE PARAMETER 'index'</pfx:checknoincludeparam><br/>
+       
+       <pfx:checkincludeparam name="index" value="2">HAS INCLUDE PARAMETER 'index' with value '2'</pfx:checkincludeparam><br/>
+       <pfx:checknoincludeparam name="index" value="2">HAS NO INCLUDE PARAMETER 'index' with value '2'</pfx:checknoincludeparam><br/>
+       
+       
+       </div>
+       
+    </theme>
+  </part>
+  
+  <part name="content1.headline">
+    <theme name="default">
+      HEADLINE1
+    </theme>
+  </part>
+  
+  <part name="content3.headline">
+    <theme name="default">
+      HEADLINE3
     </theme>
   </part>
  
