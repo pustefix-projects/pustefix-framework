@@ -65,6 +65,7 @@ public class LiveJarInfo {
 
     public static String PROP_LIVEROOT = "pustefix.liveroot";
     public static String PROP_LIVEROOT_MAXDEPTH = "pustefix.liveroot.maxdepth";
+    public static String PROP_LIVE_FORCE_VERSION = "pustefix.live.forceversion";
     
     private static int DEFAULT_LIVEROOT_MAXDEPTH = 4;
     
@@ -75,12 +76,16 @@ public class LiveJarInfo {
     private int liveRootMaxDepth = DEFAULT_LIVEROOT_MAXDEPTH;
     
     private long lastReadTimestamp;
+    
+    private boolean forceVersion = true;
 
     /** The jar entries */
     private Map<String, Entry> jarEntries;
+    private Map<String, Entry> jarEntriesNoVersion;
 
     /** The war entry */
     private Map<String, Entry> warEntries;
+    private Map<String, Entry> warEntriesNoVersion;
 
     private Map<String, File> rootToLocation;
     private Set<String> rootsWithNoLocation;
@@ -90,6 +95,11 @@ public class LiveJarInfo {
      */
     public LiveJarInfo() {
 
+        String forceVersionProp = System.getProperty(PROP_LIVE_FORCE_VERSION);
+        if(forceVersionProp != null) {
+            forceVersion = Boolean.parseBoolean(forceVersionProp);
+        }
+        
         String liveRoot = System.getProperty(PROP_LIVEROOT);
         if(liveRoot != null) {
             
@@ -156,7 +166,9 @@ public class LiveJarInfo {
 
     private void init() {
         jarEntries = new HashMap<String, Entry>();
+        jarEntriesNoVersion = new HashMap<String, Entry>();
         warEntries = new HashMap<String, Entry>();
+        warEntriesNoVersion = new HashMap<String, Entry>();
         rootToLocation = new HashMap<String, File>();
         rootsWithNoLocation = new HashSet<String>();
 
@@ -189,10 +201,12 @@ public class LiveJarInfo {
                 for (Element jarElem : LiveUtils.getChildElements(root, "jar")) {
                     Entry entry = readEntry(jarElem);
                     jarEntries.put(entry.getId(), entry);
+                    jarEntriesNoVersion.put(entry.getGroupId() + "+" + entry.getArtifactId(), entry);
                 }
                 for (Element warElem : LiveUtils.getChildElements(root, "war")) {
                     Entry entry = readEntry(warElem);
                     warEntries.put(entry.getId(), entry);
+                    warEntriesNoVersion.put(entry.getGroupId() + "+" + entry.getArtifactId(), entry);
                 }
             }
         } else {
@@ -347,6 +361,7 @@ public class LiveJarInfo {
             String entryKey = groupId + "+" + artifactId + "+" + version;
 
             Entry warEntry = warEntries.get(entryKey);
+            if (warEntry == null && !forceVersion) warEntry = warEntriesNoVersion.get(groupId + "+" + artifactId);
             if (warEntry != null) {
                 for (File dir : warEntry.directories) {
                     // if (dir.getName().equals("webapp")) {
@@ -356,7 +371,7 @@ public class LiveJarInfo {
                     rootToLocation.put(docroot.toString(), dir);
                     return dir;
                     // }
-                }
+                }   
             }
         }
 
@@ -420,6 +435,7 @@ public class LiveJarInfo {
                                 String artifactId = jarFileName.substring(0, endInd - 1);
                                 String entryKey = groupId + "+" + artifactId + "+" + version;
                                 entry = jarEntries.get(entryKey);
+                                if(entry == null && !forceVersion) entry = jarEntriesNoVersion.get(groupId + "+" + artifactId);
                                 if (entry != null) {
                                     for (File dir : entry.directories) {
                                         if (LOG.isDebugEnabled()) {
@@ -450,8 +466,8 @@ public class LiveJarInfo {
                         LOG.debug("Found pom.xml: " + pomFile);
                     }
                     String entryKey = LiveUtils.getKeyFromPom(pomFile);
-
                     Entry jarEntry = jarEntries.get(entryKey);
+                    if(jarEntry == null && !forceVersion) jarEntry = jarEntriesNoVersion.get(entryKey.substring(0, entryKey.lastIndexOf('+')));
                     if (jarEntry != null) {
                         for (File dir : jarEntry.directories) {
                             if (LOG.isDebugEnabled()) {
@@ -505,6 +521,7 @@ public class LiveJarInfo {
                         resDirs.add(resDir);
                         entry.setDirectories(resDirs);
                         jarEntries.put(entry.getId(), entry);
+                        jarEntriesNoVersion.put(entry.getGroupId() + "+" + entry.getArtifactId(), entry);
                     } else {
                         resDir = new File(file.getParentFile(), "src/main/webapp");
                         if(resDir.exists()) {
@@ -512,6 +529,7 @@ public class LiveJarInfo {
                             resDirs.add(resDir);
                             entry.setDirectories(resDirs);
                             warEntries.put(entry.getId(), entry);
+                            warEntriesNoVersion.put(entry.getGroupId() + "+" + entry.getArtifactId(), entry);
                         }
                     }
                 }
