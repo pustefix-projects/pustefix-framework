@@ -7,7 +7,6 @@
   <xsl:key name="priokey" match="/pfxinternals/modules/defaultsearch/module" use="@priority"/>
 
   <xsl:template match="/">
-  <xsl:message><xsl:copy-of select="/"/></xsl:message>
     <html>
       <head>
         <title>Pustefix internals</title>
