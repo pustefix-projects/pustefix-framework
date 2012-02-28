@@ -604,7 +604,6 @@ public class PustefixInternalsRequestHandler implements UriProvidingHttpRequestH
         }
         
         if(target.getTargetKey().endsWith(".xsl") && templateInfo) {
-            System.out.println("IIIIIIIII: "+target.getTargetKey() + " " +templateInfo);
             addTemplateInfo(target, targetElem, templates);
         }
         
