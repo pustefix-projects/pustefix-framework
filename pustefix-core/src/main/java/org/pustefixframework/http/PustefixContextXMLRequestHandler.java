@@ -162,7 +162,7 @@ public class PustefixContextXMLRequestHandler extends AbstractPustefixXMLRequest
                 
                 // Do a virtual request without any request parameters
                 // to get an initial SPDocument
-                PfixServletRequest vpreq = new PfixServletRequestImpl(VirtualHttpServletRequest.getVoidRequest(preq.getRequest()), getContextXMLServletConfig().getProperties());
+                PfixServletRequest vpreq = new PfixServletRequestImpl(VirtualHttpServletRequest.getVoidRequest(preq.getRequest()), getContextXMLServletConfig().getProperties(), this);
                 spdoc = context.handleRequest(vpreq);
 
                 // Reset current scripted flow state
@@ -193,6 +193,7 @@ public class PustefixContextXMLRequestHandler extends AbstractPustefixXMLRequest
 
                     // Create VM and run script
                     ScriptVM vm = new ScriptVM();
+                    vm.setPageAliasResolver(this);
                     vm.setScript(script);
                     try {
                         spdoc = vm.run(preq, spdoc, context, info.getParams());
