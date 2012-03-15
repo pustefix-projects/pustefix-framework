@@ -391,18 +391,22 @@ public class TargetGenerator implements ResourceVisitor, ServletContextAware, In
 
     public synchronized boolean tryReinit() throws Exception {
         if (needsReload()) {
-            LOG.info("\n\n###############################\n" + "#### Reloading depend file: " + this.config_path.toString() + "\n" + "###############################\n");
-            synchronized (alltargets) {
-                if (alltargets != null && !alltargets.isEmpty()) {
-                    targetDependencyRelation.resetAllRelations((Collection<Target>) alltargets.values());
-                }
-            }
-            reload();
-            this.fireConfigurationChangeEvent();
-            return true;
+            return forceReinit();
         } else {
             return false;
         }
+    }
+    
+    public synchronized boolean forceReinit() throws Exception {
+        LOG.info("\n\n###############################\n" + "#### Reloading depend file: " + this.config_path.toString() + "\n" + "###############################\n");
+        synchronized (alltargets) {
+            if (alltargets != null && !alltargets.isEmpty()) {
+                targetDependencyRelation.resetAllRelations((Collection<Target>) alltargets.values());
+            }
+        }
+        reload();
+        this.fireConfigurationChangeEvent();
+        return true;
     }
 
     private boolean needsReload() {

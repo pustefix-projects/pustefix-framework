@@ -37,6 +37,7 @@ import javax.xml.transform.dom.DOMResult;
 import javax.xml.transform.sax.SAXTransformerFactory;
 import javax.xml.transform.sax.TransformerHandler;
 
+import org.apache.log4j.Logger;
 import org.pustefixframework.util.xml.DOMUtils;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
@@ -62,7 +63,12 @@ import de.schlund.pfixxml.util.XsltVersion;
 
 public class SiteMap {
     
+    private Logger LOG = Logger.getLogger(SiteMap.class);
+    
+    private Resource siteMapFile;
+    
     private Set<Resource> fileDependencies = new HashSet<Resource>();
+    private long lastFileModTime;
     private Map<String, Document> langToDoc = new HashMap<String, Document>();
     private List<Page> pageList = new ArrayList<Page>();
     private Map<String, Page> pageNameToPage = new LinkedHashMap<String, Page>();
@@ -84,14 +90,19 @@ public class SiteMap {
     }
     
     public SiteMap(Resource siteMapFile) throws IOException, SAXException, XMLException {
-       
-        URI uri = siteMapFile.toURI();
-        String uriStr = uri.toString();
-        if(uriStr.endsWith("depend.xml")) uriStr = uriStr.substring(0, uriStr.length() -10) + "sitemap.xml";
-        siteMapFile = ResourceUtil.getResource(uriStr);
-        
+        init(siteMapFile);
+    }
+    
+    private void init(Resource file) throws IOException, SAXException, XMLException {
+        if(siteMapFile == null) {
+            URI uri = file.toURI();
+            String uriStr = uri.toString();
+            if(uriStr.endsWith("depend.xml")) uriStr = uriStr.substring(0, uriStr.length() -10) + "sitemap.xml";
+            siteMapFile = ResourceUtil.getResource(uriStr);
+        }
         if(siteMapFile.exists()) {
             
+            lastFileModTime = siteMapFile.lastModified();
             Document siteMapDoc = Xml.parseMutable(siteMapFile);
             
             IncludesResolver iresolver = new IncludesResolver(null, "config-include");
@@ -156,9 +167,45 @@ public class SiteMap {
                 }
             }
         
+            for(Resource fileDependency: fileDependencies) {
+                long lastMod = fileDependency.lastModified();
+                if(lastMod > lastFileModTime) lastFileModTime = lastMod;
+            }
+            
             provided = true;
         }
-        
+    }
+    
+    public synchronized boolean tryReinit() throws Exception {
+        if (needsReload()) {
+            LOG.info("##### Reloading sitemap #####");
+            reload();
+            return true;
+        } else {
+            return false;
+        }
+    }
+    
+    private boolean needsReload() {
+        for (Resource file : fileDependencies) {
+            if (file.lastModified() > lastFileModTime) {
+                return true;
+            }
+        }
+        return false;
+    }
+    
+    private void reload() throws IOException, SAXException, XMLException  {
+        fileDependencies.clear();
+        lastFileModTime = 0;
+        langToDoc.clear();
+        pageList.clear();
+        pageNameToPage.clear();
+        aliasMaps.clear();
+        pageMaps.clear();
+        pageAlternativeToPage.clear();
+        pageAliasToPage.clear();
+        init(siteMapFile);
     }
     
     public boolean isProvided() {

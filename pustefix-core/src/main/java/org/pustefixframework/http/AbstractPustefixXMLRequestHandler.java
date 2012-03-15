@@ -499,7 +499,12 @@ public abstract class AbstractPustefixXMLRequestHandler extends AbstractPustefix
         if(!generator.isGetModTimeMaybeUpdateSkipped()) {
             synchronized(this) {
                 try {
-                    boolean reloaded = generator.tryReinit();
+                    boolean reloaded = siteMap.tryReinit();
+                    if(reloaded) {
+                        generator.forceReinit();
+                    } else {
+                        reloaded = generator.tryReinit();
+                    }
                     if(reloaded) {
                         PustefixHandlerMapping handlerMapping = (PustefixHandlerMapping)applicationContext.getBean(PustefixHandlerMapping.class.getName());
                         handlerMapping.reload();
