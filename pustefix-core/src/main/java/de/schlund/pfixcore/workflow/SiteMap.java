@@ -164,6 +164,7 @@ public class SiteMap {
                 res = ResourceUtil.getResource("module://" + it.next() + "/conf/sitemap-aliases.xml");
                 if(res.exists()) {
                     readSiteMapAliases(Xml.parseMutable(res));
+                    fileDependencies.add(res);
                 }
             }
         
