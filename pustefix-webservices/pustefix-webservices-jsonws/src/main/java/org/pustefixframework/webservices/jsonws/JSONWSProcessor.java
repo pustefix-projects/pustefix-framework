@@ -115,7 +115,11 @@ public class JSONWSProcessor implements ServiceProcessor {
                     long t2 = System.currentTimeMillis();
                     if (LOG.isDebugEnabled()) LOG.debug("Parsing: "+(t2-t1)+"ms");
                 } catch(Throwable t) {
-                    error=new ServiceException("Error during parsing",t);
+                    String payLoad = jsonData;
+                    if(payLoad != null && payLoad.length() > 255) {
+                        payLoad = payLoad.substring(0, 250) + " ...";
+                    }
+                    error=new ServiceException("Error during parsing of request to service '" + serviceName + "': " + payLoad, t);
                 }
 
                 if(error==null) {
