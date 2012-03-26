@@ -1835,6 +1835,12 @@
           <listitem><literal>false</literal>, if the include part can't be found</listitem>
       </itemizedlist>
     </para>
+    <para>
+      <emphasis role="strong">Function:</emphasis> <emphasis>string</emphasis> <emphasis role="strong">pfx:getEnvProperty</emphasis>(<emphasis>string</emphasis>)
+    </para>
+    <para>
+       The <emphasis role="strong">pfx:getEnvProperty</emphasis> function returns then environment property denoted by the passed argument.
+    </para>
   </section>
   </section>
 

@@ -60,6 +60,7 @@ import de.schlund.pfixcore.workflow.context.AccessibilityChecker;
 import de.schlund.pfixcore.workflow.context.RequestContextImpl;
 import de.schlund.pfixxml.ResultDocument;
 import de.schlund.pfixxml.Tenant;
+import de.schlund.pfixxml.config.EnvironmentProperties;
 import de.schlund.pfixxml.targets.TargetGenerator;
 import de.schlund.pfixxml.util.ExtensionFunctionUtils;
 import de.schlund.pfixxml.util.Xml;
@@ -441,6 +442,10 @@ public class TransformerCallback {
             ExtensionFunctionUtils.setExtensionFunctionError(x);
             throw x;
         }
+    }
+    
+    public static String getEnvProperty(String propertyName) {
+        return EnvironmentProperties.getProperties().getProperty(propertyName);
     }
     
 }

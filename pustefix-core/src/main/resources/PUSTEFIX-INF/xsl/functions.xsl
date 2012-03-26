@@ -136,4 +136,9 @@
     <func:result select="callback:omitPage($__context__,$__target_gen,$page,$lang,$pageAlternative)"/>
   </func:function>
   
+  <func:function name="pfx:getEnvProperty">
+    <xsl:param name="prop"/>
+    <func:result select="callback:getEnvProperty($prop)"/>
+  </func:function>
+  
 </xsl:stylesheet>
