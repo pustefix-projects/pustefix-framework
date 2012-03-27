@@ -124,6 +124,8 @@ public class CookieSessionTrackingStrategy implements SessionTrackingStrategy {
                 String forcelocal = req.getParameter(PARAM_FORCELOCAL);
                 if (forcelocal != null && (forcelocal.equals("1") || forcelocal.equals("true") || forcelocal.equals("yes"))) {
                     LOG.debug("    ... but found __forcelocal parameter to be set.");
+                } else if(req.getMethod().equals("POST")) {
+                    LOG.debug("    ... but is POST.");
                 } else {
                     boolean resetTry = false;
                     if(cookies != null) {
