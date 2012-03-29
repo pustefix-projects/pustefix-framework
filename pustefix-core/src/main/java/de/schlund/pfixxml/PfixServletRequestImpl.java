@@ -34,6 +34,7 @@ import javax.servlet.http.HttpSession;
 
 import org.apache.log4j.Logger;
 import org.pustefixframework.http.AbstractPustefixXMLRequestHandler;
+import org.pustefixframework.util.NetUtils;
 
 import de.schlund.pfixxml.multipart.MultipartHandler;
 import de.schlund.pfixxml.multipart.PartData;
@@ -281,10 +282,14 @@ public class PfixServletRequestImpl implements PfixServletRequest {
     public String getRemoteAddr() {
         String forward = request.getHeader("X-Forwarded-For");
         if (forward != null && !forward.equals("")) {
-            return forward;
-        } else {
-            return request.getRemoteAddr();
-        }
+            int ind = forward.lastIndexOf(',');
+            if(ind > -1) forward = forward.substring(ind + 1);
+            forward = forward.trim();
+            if(NetUtils.checkIP(forward)) {
+                return forward;
+            }
+        } 
+        return request.getRemoteAddr();
     }
 
     /* (non-Javadoc)
