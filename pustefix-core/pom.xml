@@ -53,7 +53,7 @@
       </dependencies>
     </profile>
   </profiles>
- 
+
   <dependencies>
     <dependency>
       <groupId>org.pustefixframework</groupId>
@@ -124,7 +124,7 @@
       <artifactId>mail</artifactId>
       <version>1.4.1</version>
     </dependency>
-    
+
 
     <!-- We need both to compile the our extensions. Our default is saxon 6 (that's why saxon 8 is optional) because
          only some xsl files have been adjusted, and we want to avoid "the xsl 1 sheet ond xsl 2 processor" warning -->
@@ -177,11 +177,11 @@
       <version>3.1</version>
       <scope>test</scope>
     </dependency>
-    
+
   </dependencies>
- 
+
   <build>
-    <plugins> 
+    <plugins>
       <!-- do not add to root pom because it forks a new lifecycle: -->
       <plugin>
         <groupId>org.apache.maven.plugins</groupId>
@@ -192,7 +192,7 @@
           </execution>
         </executions>
       </plugin>
- 
+
       <plugin>
         <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-antrun-plugin</artifactId>
@@ -208,6 +208,15 @@
                 <exec executable="svn" output="${svnrevision}">
                   <arg line="info" />
                 </exec>
+                <echo file="${basedir}/target/classes/META-INF/wsd.properties">
+                  groupId = ${project.groupId}
+                  artifactId = ${project.artifactId}
+                  version = ${project.version}
+                  name = ${project.name}
+                  url = ${project.url}
+                  site = ${project.distributionManagement.site.url}
+                  scmConnection = ${project.scm.connection}
+                </echo>
               </tasks>
             </configuration>
             <goals>
@@ -234,7 +243,7 @@
           </execution>
         </executions>
       </plugin>
-      
+
     </plugins>
   </build>
 
