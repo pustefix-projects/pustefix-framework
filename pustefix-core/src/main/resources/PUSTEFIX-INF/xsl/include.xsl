@@ -517,8 +517,7 @@
   </xsl:template>
 
   <xsl:template match="pfx:checkinclude[@level='runtime']">
-    <ixsl:if test="true()">
-      <ixsl:variable name="_href_">
+      <ixsl:variable name="href_{generate-id()}">
         <xsl:choose>
           <xsl:when test="pfx:href">
             <xsl:apply-templates select="pfx:href/node()"/>
@@ -531,7 +530,7 @@
           </xsl:otherwise>
         </xsl:choose>
       </ixsl:variable>
-      <ixsl:variable name="_part_">
+      <ixsl:variable name="part_{generate-id()}">
         <xsl:choose>
           <xsl:when test="pfx:part">
             <xsl:apply-templates select="pfx:part/node()"/>
@@ -541,7 +540,7 @@
           </xsl:otherwise>
         </xsl:choose>
       </ixsl:variable>
-      <ixsl:variable name="_module_">
+      <ixsl:variable name="module_{generate-id()}">
         <xsl:choose>
           <xsl:when test="@module">
             <xsl:value-of select="module"/>
@@ -551,10 +550,9 @@
           </xsl:otherwise>
         </xsl:choose>
       </ixsl:variable>
-      <ixsl:if test="pfx:checkInclude($_href_, $_part_, $_module_, '{@search}')">
+      <ixsl:if test="pfx:checkInclude($href_{generate-id()}, $part_{generate-id()}, $module_{generate-id()}, '{@search}')">
         <xsl:apply-templates/>
       </ixsl:if>
-    </ixsl:if>
   </xsl:template>
 
   <xsl:template match="pfx:checknoinclude">
@@ -588,8 +586,7 @@
   </xsl:template>
 
   <xsl:template match="pfx:checknoinclude[@level='runtime']">
-    <ixsl:if test="true()">
-      <ixsl:variable name="_href_">
+      <ixsl:variable name="href_{generate-id()}">
         <xsl:choose>
           <xsl:when test="pfx:href">
             <xsl:apply-templates select="pfx:href/node()"/>
@@ -602,7 +599,7 @@
           </xsl:otherwise>
         </xsl:choose>
       </ixsl:variable>
-      <ixsl:variable name="_part_">
+      <ixsl:variable name="part_{generate-id()}">
         <xsl:choose>
           <xsl:when test="pfx:part">
             <xsl:apply-templates select="pfx:part/node()"/>
@@ -612,7 +609,7 @@
           </xsl:otherwise>
         </xsl:choose>
       </ixsl:variable>
-      <ixsl:variable name="_module_">
+      <ixsl:variable name="module_{generate-id()}">
         <xsl:choose>
           <xsl:when test="@module">
             <xsl:value-of select="module"/>
@@ -622,10 +619,9 @@
           </xsl:otherwise>
         </xsl:choose>
       </ixsl:variable>
-      <ixsl:if test="not(pfx:checkInclude($_href_, $_part_, $_module_, '{@search}'))">
+      <ixsl:if test="not(pfx:checkInclude($href_{generate-id()}, $part_{generate-id()}, $module_{generate-id()}, '{@search}'))">
         <xsl:apply-templates/>
       </ixsl:if>
-    </ixsl:if>
   </xsl:template>
   
   <xsl:template match="pfx:href"/>
