@@ -733,8 +733,10 @@
     <page name="..."/>
     <page name="..."/>
   </page>
-  <!-- the alias attribute can be used to provide a page alias which should be displayed instead of the logical name -->
-  <page name="Overview" alias="Summary"/>
+  <!-- the 'alias' attribute can be used to provide a page alias which should be displayed instead of the logical name,
+       you can optionally add the 'internal' attribute to exclude a page from the generated search engine sitemap,
+       you're also allowed to use arbitrary custom attributes -->
+  <page name="Overview" alias="Summary" internal="true" foo="bar"/>
   <!-- using the alt element you can add page alternatives, matching is done using the mandatory key attribute -->
   <page name="Info">
     <alt key="cities" name="Cities"/>

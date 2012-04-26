@@ -169,10 +169,62 @@
   <section xml:id="news.0_18_6">
     <title>What's new in Pustefix 0.18.6</title>
 
-    <section xml:id="news.0_18_.xslt">
+    <section xml:id="news.0_18_6.xslt">
       <title>Include part existence check</title>
       <para>
         Added support for checking the existence of an include part during rendering, e.g. for displaying an include part depending on the existence of another include part (see <xref linkend="xslt.pfx.checkinclude"/>).
+      </para>
+    </section>
+
+  </section>
+
+  <section xml:id="news.0_18_7">
+    <title>What's new in Pustefix 0.18.7</title>
+
+    <section xml:id="news.0_18_7.sitemap">
+      <title>Custom sitemap attributes</title>
+      <para>
+        Added support for using custom XML attributes at page elements within the sitemap configuration (see <xref linkend="configuration.sitemap"/>).
+      </para>
+    </section>
+
+  </section>
+
+  <section xml:id="news.0_18_9">
+    <title>What's new in Pustefix 0.18.9</title>
+
+    <section xml:id="news.0_18_9.logging">
+      <title>Log directory configuration</title>
+      <para>
+        Added support for setting the log directory using the context init parameter <literal>logroot</literal>. 
+        The directory can be referenced in the log configuration file <literal>pfixlog.xml</literal> using the custom tag <literal>&lt;cus:logroot/&gt;</literal>.
+      </para>
+    </section>
+
+  </section>
+
+  <section xml:id="news.0_18_13">
+    <title>What's new in Pustefix 0.18.13</title>
+
+    <section xml:id="news.0_18_13.xslt">
+      <title>Getting environment properties from within XSLT</title>
+      <para>
+        Added support for getting environment from within XSLT using the XPath function <literal>pfx:getEnvProperty</literal> (see <xref linkend="xslt.extensions.xpathfunctions"/>).
+      </para>
+    </section>
+
+  </section>
+
+  <section xml:id="news.0_18_14">
+    <title>What's new in Pustefix 0.18.14</title>
+
+    <section xml:id="news.0_18_14.session">
+      <title>External session invalidation synchronization support</title>
+      <para>
+        Invalidating sessions outside of Pustefix, e.g. within a ServletFilter or Spring WebRequestInterceptor, can break concurrently running requests operating on the same session.
+        Pustefix now can block such a session invalidation until all requests using this session are processed. Therefor Pustefix provides the new utility method 
+        <literal>SessionUtils.invalidate(session)</literal>, which can be used instead of directly calling <literal>invalidate()</literal> at the <literal>HttpSession</literal>
+        object.
       </para>
     </section>
 
