@@ -21,16 +21,20 @@ package org.pustefixframework.webservices.spring;
 import java.io.IOException;
 import java.lang.reflect.Method;
 import java.net.URL;
+import java.util.concurrent.locks.Lock;
+import java.util.concurrent.locks.ReadWriteLock;
 
 import javax.servlet.ServletContext;
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import javax.servlet.http.HttpSession;
 
 import net.sf.cglib.proxy.Enhancer;
 
 import org.apache.log4j.Logger;
 import org.pustefixframework.container.spring.http.UriProvidingHttpRequestHandler;
+import org.pustefixframework.http.SessionUtils;
 import org.pustefixframework.webservices.AdminWebapp;
 import org.pustefixframework.webservices.Constants;
 import org.pustefixframework.webservices.ServiceProcessor;
@@ -54,8 +58,6 @@ import de.schlund.pfixxml.resources.ResourceUtil;
  * @author mleidig
  */
 public class WebServiceHttpRequestHandler implements UriProvidingHttpRequestHandler, InitializingBean, ServletContextAware, ApplicationContextAware {
-
-    private static final long serialVersionUID = -5686011510105975584L;
 
     private Logger LOG = Logger.getLogger(WebServiceHttpRequestHandler.class.getName());
 
@@ -186,6 +188,20 @@ public class WebServiceHttpRequestHandler implements UriProvidingHttpRequestHand
     public void handleRequest(HttpServletRequest req, HttpServletResponse res) throws ServletException, IOException {
         try {
             if(req.getMethod().equals("POST")) {
+            	HttpSession session = req.getSession(false);
+            	if(session != null) {
+            		ReadWriteLock lock = (ReadWriteLock)session.getAttribute(SessionUtils.SESSION_ATTR_LOCK);
+     				if(lock != null) {
+     					Lock readLock = lock.readLock();
+     					readLock.lock();
+     					try {
+     						runtime.process(req, res);
+     						return;
+     					} finally {
+     						readLock.unlock();
+     					}
+     				}
+            	}
                 runtime.process(req, res);
             } else if(req.getMethod().equals("GET")) {
                 adminWebapp.doGet(req, res);

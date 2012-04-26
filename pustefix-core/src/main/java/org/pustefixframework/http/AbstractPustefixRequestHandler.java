@@ -33,6 +33,9 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 import java.util.SortedSet;
+import java.util.concurrent.locks.Lock;
+import java.util.concurrent.locks.ReadWriteLock;
+import java.util.concurrent.locks.ReentrantReadWriteLock;
 import java.util.regex.Pattern;
 
 import javax.servlet.ServletContext;
@@ -255,8 +258,8 @@ public abstract class AbstractPustefixRequestHandler implements SessionTrackingS
 
     public void callProcess(PfixServletRequest preq, HttpServletRequest req, HttpServletResponse res) throws ServletException, IOException {
         
+    	HttpSession session = req.getSession(false);
         if(sessionTimeoutInfo != null) {
-            HttpSession session = req.getSession(false);
             if(session != null) {
                 Integer count = (Integer)session.getAttribute(SESSION_ATTR_REQUEST_COUNT);
                 if(count == null) {
@@ -278,6 +281,19 @@ public abstract class AbstractPustefixRequestHandler implements SessionTrackingS
         
         try {
             res.setContentType(DEF_CONTENT_TYPE);
+            if(needsSession() && session != null) {
+				ReadWriteLock lock = (ReadWriteLock)session.getAttribute(SessionUtils.SESSION_ATTR_LOCK);
+				if(lock != null) {
+					Lock readLock = lock.readLock();
+					readLock.lock();
+					try {
+						process(preq, res);
+						return;
+					} finally {
+						readLock.unlock();
+					}
+				}
+            }
             process(preq, res);
         } catch (Throwable e) {
             if((e instanceof IOException) &&
@@ -410,6 +426,7 @@ public abstract class AbstractPustefixRequestHandler implements SessionTrackingS
                 }
                 session.setAttribute(VISIT_ID, TIMESTAMP_ID + "-" + nf.format(INC_ID) + mach);
             }
+            session.setAttribute(SessionUtils.SESSION_ATTR_LOCK, new ReentrantReadWriteLock());
             StringBuffer logbuff = new StringBuffer();
             logbuff.append(session.getAttribute(VISIT_ID) + "|" + session.getId() + "|");
             logbuff.append(getServerName(req) + "|" + req.getRemoteAddr() + "|" + req.getHeader("user-agent") + "|");

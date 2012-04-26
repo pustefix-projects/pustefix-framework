@@ -130,8 +130,11 @@
         <pfx:elink href="ftp://ftp.scc.kit.edu/" target="_popup">
         Goto FTP UniKa!</pfx:elink>
         <br/>
-        <pfx:button page="geninc">Test generated runtime stylesheet include</pfx:button>  
-        <pfx:button page="invalidate">Invalidate this session</pfx:button>  
+        <pfx:button page="geninc">Test generated runtime stylesheet include</pfx:button>&#160;&#160;
+        <pfx:button page="invalidate" target="_top">Invalidate this session</pfx:button>&#160;&#160;
+        <ixsl:if test="/formresult/adultinfo/@adult">
+        <pfx:button page="home" nodata="true" mode="force"><pfx:argument name="invalidate">true</pfx:argument>Directly invalidate session</pfx:button>&#160;&#160; 
+        </ixsl:if>
         <pfx:button page="frames">Goto frames test</pfx:button> 
         <br/>
         <pfx:button page="upload">Test upload mechanism</pfx:button>&#160;&#160;

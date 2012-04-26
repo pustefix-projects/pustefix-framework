@@ -92,21 +92,25 @@ public class ExceptionDataValueHelper {
 		}
 	    
 	    HashMap<String,String> sessdata = new HashMap<String, String>();
-        Enumeration<?> enm = session.getAttributeNames();
-        while (enm.hasMoreElements()) {
-            String key = (String) enm.nextElement();
-            Object value = session.getAttribute(key);
-            String strvalue = null;
-            try {
-                strvalue = value.toString();
-            } catch(Exception e) {
-                // Catch all exceptions here. If an exception occurs in context.toString
-                // we definitly want the exception-info to be generated.
-                LOG.error("Exception while dumping session!", e);
-                strvalue = e.getMessage() == null ? e.toString() : e.getMessage();
-            }
-            sessdata.put(key, strvalue);
-        }
+	    try {
+	        Enumeration<?> enm = session.getAttributeNames();
+	        while (enm.hasMoreElements()) {
+	            String key = (String) enm.nextElement();
+	            Object value = session.getAttribute(key);
+	            String strvalue = null;
+	            try {
+	                strvalue = value.toString();
+	            } catch(Exception e) {
+	                // Catch all exceptions here. If an exception occurs in context.toString
+	                // we definitly want the exception-info to be generated.
+	                LOG.error("Exception while dumping session!", e);
+	                strvalue = e.getMessage() == null ? e.toString() : e.getMessage();
+	            }
+	            sessdata.put(key, strvalue);
+	        }
+	    } catch(IllegalStateException x) {
+	    	//Session is already invalidated
+	    }
 	    
         exdata.setSessionKeysAndValues(sessdata);
 		return exdata;
