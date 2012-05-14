@@ -19,6 +19,7 @@
     <!-- FIXME: We need to decide how to add this stuff to master.xsl -->
     <!-- <param name="additional_custom_namespaces" value='xmlns:foo="http://foo.bar.baz"'/> -->
     <!-- <param name="exclude_custom_ns_prefixes" value="foo"/> -->
+    <param name="compress-inline-javascript" value="true"/>
   </global>
 
   <standardmaster>

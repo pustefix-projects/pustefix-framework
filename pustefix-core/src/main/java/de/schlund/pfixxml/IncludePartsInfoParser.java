@@ -87,7 +87,12 @@ public class IncludePartsInfoParser {
                             if(variants != null) {
                                 for(String variant: variants) variantSet.add(variant);
                             }
-                            currentInfo = new IncludePartInfo(partName, render, variantSet);
+                            String contentType = null;
+                            contentType = attributes.getValue("content-type");
+                            if(contentType != null) {
+                            	contentType = contentType.trim();
+                            }
+                            currentInfo = new IncludePartInfo(partName, render, variantSet, contentType);
                             includePartInfos.put(partName, currentInfo);
                         }
                     }

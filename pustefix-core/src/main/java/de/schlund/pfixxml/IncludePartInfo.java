@@ -9,12 +9,14 @@ public class IncludePartInfo {
     private final boolean render;
     private final Set<String> renderVariants;
     private final Set<String> themes;
+    private final String contentType;
     
-    public IncludePartInfo(String name, boolean render, Set<String> renderVariants) {
+    public IncludePartInfo(String name, boolean render, Set<String> renderVariants, String contentType) {
         this.name = name;
         this.render = render;
         this.renderVariants = renderVariants;
         this.themes = new HashSet<String>();
+        this.contentType = contentType;
     }
     
     public String getName() {
@@ -44,6 +46,10 @@ public class IncludePartInfo {
             }
         }
         return null;
+    }
+    
+    public String getContentType() {
+    	return contentType;
     }
 
 }

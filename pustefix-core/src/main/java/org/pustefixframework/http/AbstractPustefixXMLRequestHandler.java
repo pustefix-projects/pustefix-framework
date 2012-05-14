@@ -516,7 +516,7 @@ public abstract class AbstractPustefixXMLRequestHandler extends AbstractPustefix
         }
         
         if (spdoc.getResponseError() == HttpServletResponse.SC_NOT_FOUND && spdoc.getDocument() != null) {
-            String stylesheet = extractStylesheetFromSPDoc(spdoc, preq);
+            String stylesheet = extractStylesheetFromSPDoc(spdoc, preq, null);
             if (generator.getTarget(stylesheet) != null) {
                 spdoc.setResponseError(0);
                 spdoc.setResponseErrorText(null);
@@ -532,7 +532,7 @@ public abstract class AbstractPustefixXMLRequestHandler extends AbstractPustefix
         // So no error happened, let's go on with normal processing.
         HttpSession   session    = preq.getSession(false);
         TreeMap<String, Object> paramhash  = constructParameters(spdoc, params, session);
-        String        stylesheet = extractStylesheetFromSPDoc(spdoc, preq);
+        String        stylesheet = extractStylesheetFromSPDoc(spdoc, preq, res);
         if (stylesheet == null) {
         	if(spdoc.getPagename()!=null && !isPageDefined(spdoc.getPagename())) {
         		spdoc.setResponseError(HttpServletResponse.SC_NOT_FOUND);
@@ -867,7 +867,7 @@ public abstract class AbstractPustefixXMLRequestHandler extends AbstractPustefix
     
     
 
-    private String extractStylesheetFromSPDoc(SPDocument spdoc, PfixServletRequest preq) {
+    private String extractStylesheetFromSPDoc(SPDocument spdoc, PfixServletRequest preq, HttpServletResponse res) {
         // First look if the pagename is set
         String pagename             = spdoc.getPagename();
         if (pagename != null) {
@@ -884,7 +884,14 @@ public abstract class AbstractPustefixXMLRequestHandler extends AbstractPustefix
                 if(param != null) search = param.getValue();
                 try {
                     Target target = generator.getRenderTarget(href, part, module, search, spdoc.getVariant());
-                    if(target != null) return target.getTargetKey();
+                    if(target != null && res != null) {
+                    	String contentType = (String)target.getParams().get("content-type");
+                    	if(contentType != null) {
+                    		res.setContentType(contentType);
+                    		spdoc.setResponseContentType(contentType);
+                    	}
+                    	return target.getTargetKey();
+                    }
                     return null;
                 } catch (IncludePartsInfoParsingException e) {
                     throw new PustefixRuntimeException("Can't get render target", e);

@@ -218,6 +218,7 @@
         <ixsl:value-of select="$enclink"/>&amp;__sign=<ixsl:value-of select="$sign"/>&amp;__ts=<ixsl:value-of select="$ts"/>
       </ixsl:template>
 
+ <xsl:if test="not($outputmethod='text')">
       <ixsl:template name="__formwarn">
         <xsl:choose>
           <xsl:when test="$prohibitEdit = 'no'">
@@ -337,6 +338,14 @@
           </xsl:otherwise>
         </xsl:choose>
       </ixsl:template>
+</xsl:if>
+<xsl:if test="$outputmethod='text'">
+      <ixsl:template match="/">
+        <ixsl:call-template name="__render_start__"/>
+        <xsl:apply-templates select="/pfx:document/node()"/>
+      </ixsl:template>
+</xsl:if>
+
       <!-- <xsl:text disable-output-escaping="yes"> -->
       <!-- &lt;/ixsl:stylesheet> -->
       <!-- </xsl:text> -->
@@ -372,6 +381,20 @@
         </xsl:choose>
 	//</ixsl:comment>
     </script>
+  </xsl:template>
+  
+  <xsl:template match="pfx:compress">
+    <xsl:choose>
+      <xsl:when test="@type='javascript' and $compress-inline-javascript='true'">
+        <ixsl:variable name="__script">
+          <xsl:copy-of select="./node()"/>
+        </ixsl:variable>
+        <ixsl:value-of select="compress:compressJavascript($__script)"/>
+      </xsl:when>
+      <xsl:otherwise>
+        <xsl:copy-of select="./node()"/>
+      </xsl:otherwise>
+    </xsl:choose>
   </xsl:template>
   
   <xsl:template match="pfx:frameset">

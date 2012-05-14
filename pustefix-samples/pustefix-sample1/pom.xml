@@ -26,7 +26,6 @@
       <version>0.18.15-SNAPSHOT</version>      
     </dependency>
 
-
     <dependency>
       <groupId>rhino</groupId>
       <artifactId>js</artifactId>
@@ -59,6 +58,13 @@
       <groupId>org.tuckey</groupId>
       <artifactId>urlrewritefilter</artifactId>
       <version>3.1.0</version>
+    </dependency>
+    
+    <!-- Inline javascript compression -->
+    <dependency>
+      <groupId>com.yahoo.platform.yui</groupId>
+      <artifactId>yuicompressor</artifactId>
+      <version>2.3.6</version>
     </dependency>
 
   </dependencies>

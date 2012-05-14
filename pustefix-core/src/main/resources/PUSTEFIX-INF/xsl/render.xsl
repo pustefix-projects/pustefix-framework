@@ -11,17 +11,32 @@
   <xsl:param name="render_href"/>
   <xsl:param name="render_part"/>
   <xsl:param name="render_module"/>
+  <xsl:param name="render_ctype"/>
 
   <xsl:template name="__render_start__">
     <xsl:if test="rex:renderStart($__rendercontext__)"/>
   </xsl:template>
 
   <xsl:template match="pfx:rendercontent">
-    <xsl:call-template name="pfx:include">
-      <xsl:with-param name="href"><xsl:value-of select="$render_href"/></xsl:with-param>
-      <xsl:with-param name="part"><xsl:value-of select="$render_part"/></xsl:with-param>
-      <xsl:with-param name="module"><xsl:value-of select="$render_module"/></xsl:with-param>
-    </xsl:call-template>
+    <xsl:choose>
+      <xsl:when test="$render_ctype='text/javascript'">
+        <pfx:compress type="javascript">
+          <xsl:call-template name="pfx:include">
+            <xsl:with-param name="href"><xsl:value-of select="$render_href"/></xsl:with-param>
+            <xsl:with-param name="part"><xsl:value-of select="$render_part"/></xsl:with-param>
+            <xsl:with-param name="module"><xsl:value-of select="$render_module"/></xsl:with-param>
+            <xsl:with-param name="noedit">true</xsl:with-param>
+          </xsl:call-template>
+        </pfx:compress>
+      </xsl:when>
+      <xsl:otherwise>
+        <xsl:call-template name="pfx:include">
+          <xsl:with-param name="href"><xsl:value-of select="$render_href"/></xsl:with-param>
+          <xsl:with-param name="part"><xsl:value-of select="$render_part"/></xsl:with-param>
+          <xsl:with-param name="module"><xsl:value-of select="$render_module"/></xsl:with-param>
+        </xsl:call-template>
+      </xsl:otherwise>
+    </xsl:choose>
   </xsl:template>
 
   <xsl:template match="pfx:render">

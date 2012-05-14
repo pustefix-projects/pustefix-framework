@@ -7,6 +7,9 @@
       <script type="text/javascript" src="{$__contextpath}/modules/pustefix-core/script/httpRequest.js"></script>
       <script type="text/javascript" src="{$__contextpath}/modules/pustefix-core/script/render.js"></script>
       <script type="text/javascript" src="{$__contextpath}/script.js"></script>
+      <ixsl:if test="$page='home'">
+        <script type="text/javascript" src="{$__contextpath}/{pfx:__omitPage($page)}{$__sessionIdPath}?__render_href=txt/common.xml&amp;__render_part=rexjstest"></script>
+      </ixsl:if>
     </head>
     <body>
       <pfx:render href="txt/common.xml" part="header"/>

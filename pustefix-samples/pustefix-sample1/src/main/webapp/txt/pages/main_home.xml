@@ -111,8 +111,9 @@
          Test of render extensions:<br/>
          <input type="button" name="test" onclick="rexTest()" value="test"/>
          <span id="rexresult"/>
+         <span id="rexjsresult"/>
        </div>
-        
+       
       </center>
     </theme>
   </part>

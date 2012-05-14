@@ -54,5 +54,14 @@
       </div>
     </theme>
   </part>
+  
+  <part name="rexjstest" render="true" content-type="text/javascript">
+    <theme name="default">
+      //a comment to see compression work
+      function getSerial() {
+        return 'Serial id of script render include result tree: <ixsl:value-of select="/formresult/@serial"/>';
+      }
+     </theme>
+  </part>
 
 </include_parts>

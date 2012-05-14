@@ -113,7 +113,7 @@ public class TargetGenerator implements ResourceVisitor, ServletContextAware, In
     public static final String CACHEDIR = ".cache";
     
     private static final char RENDER_KEY_SEPARATOR = '#';
-    
+       
     private static final Logger LOG = Logger.getLogger(TargetGenerator.class);
 
     private PageTargetTree pagetree = new PageTargetTree();
@@ -351,7 +351,7 @@ public class TargetGenerator implements ResourceVisitor, ServletContextAware, In
                     }
                 }
                 if(module == null || module.equals("")) module = "WEBAPP";
-                return createTargetForRender(href, part, module, selectedVariant);
+                return createTargetForRender(href, part, module, selectedVariant, partInfo.getContentType());
             } else throw new RuntimeException("Part '" + part + "' in '" + res.toURI() + "' is not marked as render part");
         } else throw new RuntimeException("Render part '" + part + "' in '" + res.toURI() + "' not found.");
     }
@@ -822,9 +822,9 @@ public class TargetGenerator implements ResourceVisitor, ServletContextAware, In
                     }
                     if(href.startsWith("/")) href = href.substring(1);
                     String part = partInfo.getName();
-                    createTargetForRender(href, part, module, null);
+                    createTargetForRender(href, part, module, null, partInfo.getContentType());
                     for(String variant: partInfo.getRenderVariants()) {
-                        createTargetForRender(href, part, module, variant);
+                        createTargetForRender(href, part, module, variant, partInfo.getContentType());
                     }
                 }
             }
@@ -928,7 +928,7 @@ public class TargetGenerator implements ResourceVisitor, ServletContextAware, In
 
     // *******************************************************************************************
     
-    private Target createTargetForRender(String href, String part, String module, String variantId) {
+    private Target createTargetForRender(String href, String part, String module, String variantId, String contentType) {
         
         Themes themes = global_themes;
         if(variantId != null) {
@@ -956,6 +956,9 @@ public class TargetGenerator implements ResourceVisitor, ServletContextAware, In
             xmlTarget.addParam("render_href", href);
             xmlTarget.addParam("render_part", part);
             xmlTarget.addParam("render_module", module);
+            if(contentType != null) {
+            	xmlTarget.addParam("render_ctype", contentType);
+            }
             
             XSLVirtualTarget xslTarget = (XSLVirtualTarget)createTarget(TargetType.XSL_VIRTUAL, renderKey + ".xsl", themes);
             xmlSource = xmlTarget;
@@ -972,6 +975,19 @@ public class TargetGenerator implements ResourceVisitor, ServletContextAware, In
             //create no doctype declaration
             xslTarget.removeParam("outputdoctype-public");
             xslTarget.removeParam("outputdoctype-system");
+            
+            if(contentType != null) {
+            	xslTarget.addParam("content-type", contentType);
+            	String outMethod;
+            	if(contentType.equals("text/html")) {
+            		outMethod = "html";
+            	} else if(contentType.equals("text/xml") || contentType.equals("application/xml")) {
+            		outMethod = "xml";
+            	} else {
+            		outMethod = "text";
+            	}
+            	xslTarget.addParam("outputmethod", outMethod);
+            }
             target = xslTarget;
         }
         return target;
