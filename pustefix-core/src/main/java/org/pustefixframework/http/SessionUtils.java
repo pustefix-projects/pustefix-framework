@@ -12,12 +12,16 @@ public class SessionUtils {
 	
 	public static void invalidate(HttpSession session) {
 		ReadWriteLock lock = (ReadWriteLock)session.getAttribute(SessionUtils.SESSION_ATTR_LOCK);
-		Lock writeLock = lock.writeLock();
-		writeLock.lock();
-		try {
+		if(lock != null) {
+			Lock writeLock = lock.writeLock();
+			writeLock.lock();
+			try {
+				session.invalidate();
+			} finally {
+				writeLock.unlock();
+			}
+		} else {
 			session.invalidate();
-		} finally {
-			writeLock.unlock();
 		}
 	}
 
