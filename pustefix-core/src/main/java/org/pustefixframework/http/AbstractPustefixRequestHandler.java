@@ -258,6 +258,9 @@ public abstract class AbstractPustefixRequestHandler implements SessionTrackingS
 
     public void callProcess(PfixServletRequest preq, HttpServletRequest req, HttpServletResponse res) throws ServletException, IOException {
         
+    	//trigger initialization of page alternative name if not already done
+    	preq.getPageName();
+    	
     	HttpSession session = req.getSession(false);
         if(sessionTimeoutInfo != null) {
             if(session != null) {
