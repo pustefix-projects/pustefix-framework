@@ -56,6 +56,8 @@ public class SiteMapRequestHandler implements UriProvidingHttpRequestHandler, Se
 
     private Logger LOG = Logger.getLogger(SiteMapRequestHandler.class);
     
+    private final static int DEFAULT_PORT = 80;
+    
     private String[] registeredURIs = new String[] {"/sitemap.xml"};
     private SiteMap siteMap;
     private TenantInfo tenantInfo;
@@ -93,7 +95,8 @@ public class SiteMapRequestHandler implements UriProvidingHttpRequestHandler, Se
             entry.file = new File(tempDir, "sitemap" + (tenant == null?"":"-"+tenant.getName()) + ".xml");
             try {
                 String host = AbstractPustefixRequestHandler.getServerName(request);
-                Document doc = getSearchEngineSitemap(tenant, host);
+                int port = request.getServerPort();
+                Document doc = getSearchEngineSitemap(tenant, host, port);
                 Transformer trf = TransformerFactory.newInstance().newTransformer();
                 trf.setOutputProperty(OutputKeys.INDENT, "yes");
                 FileOutputStream out = new FileOutputStream(entry.file);
@@ -194,7 +197,7 @@ public class SiteMapRequestHandler implements UriProvidingHttpRequestHandler, Se
         return accPages;
     }
     
-    public Document getSearchEngineSitemap(Tenant tenant, String host) throws Exception {
+    public Document getSearchEngineSitemap(Tenant tenant, String host, int port) throws Exception {
         String ns = "http://www.sitemaps.org/schemas/sitemap/0.9";
         DocumentBuilderFactory dbf = DocumentBuilderFactory.newInstance();
         dbf.setNamespaceAware(true);
@@ -208,26 +211,26 @@ public class SiteMapRequestHandler implements UriProvidingHttpRequestHandler, Se
                 for(String language: projectInfo.getSupportedLanguages()) {
                     boolean defaultLanguage = language.equals(projectInfo.getDefaultLanguage());
                     for(String page: accPages) {
-                        addURL(page, root, language, defaultLanguage, host);
+                        addURL(page, root, language, defaultLanguage, host, port);
                     }
                 }
             } else {
                 for(String page: accPages) {
-                    addURL(page, root, null, true, host);
+                    addURL(page, root, null, true, host, port);
                 }
             }
         } else {
             for(String language: tenant.getSupportedLanguages()) {
                 boolean defaultLanguage = language.equals(tenant.getDefaultLanguage());
                 for(String page: accPages) {
-                    addURL(page, root, language, defaultLanguage, host);
+                    addURL(page, root, language, defaultLanguage, host, port);
                 }
             }
         }
         return doc;
     }
     
-    private void addURL(String page, Element parent, String lang, boolean defaultLang, String host) {
+    private void addURL(String page, Element parent, String lang, boolean defaultLang, String host, int port) {
         Element urlElem = parent.getOwnerDocument().createElement("url");
         parent.appendChild(urlElem);
         Element locElem = parent.getOwnerDocument().createElement("loc");
@@ -240,7 +243,7 @@ public class SiteMapRequestHandler implements UriProvidingHttpRequestHandler, Se
             alias = siteMap.getAlias(page, lang);
             if(!defaultLang) langPrefix = LocaleUtils.getLanguagePart(lang) + "/";
         }
-        locElem.setTextContent("http://" + host + "/" + langPrefix + alias);
+        locElem.setTextContent("http://" + host + (port==DEFAULT_PORT?"":":"+port) + "/" + langPrefix + alias);
         Element cfElem = parent.getOwnerDocument().createElement("changefreq");
         urlElem.appendChild(cfElem);
         cfElem.setTextContent("weekly");
@@ -252,7 +255,7 @@ public class SiteMapRequestHandler implements UriProvidingHttpRequestHandler, Se
             for(String pageAltKey: pageAlts) {
                 Element cloned = (Element)urlElem.cloneNode(true);
                 alias = siteMap.getAlias(page, lang, pageAltKey);
-                ((Element)cloned.getFirstChild()).setTextContent("http://" + host + "/" + langPrefix + alias);
+                ((Element)cloned.getFirstChild()).setTextContent("http://" + host + (port==DEFAULT_PORT?"":":"+port) + "/" + langPrefix + alias);
                 parent.appendChild(cloned);
             }
         }
