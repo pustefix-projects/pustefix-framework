@@ -206,31 +206,32 @@ public class SiteMapRequestHandler implements UriProvidingHttpRequestHandler, Se
         root.setAttribute("xmlns", ns);
         doc.appendChild(root);
         Set<String> accPages = getAccessiblePages();
+        String defaultPage = pustefixContext.getContextConfig().getDefaultPage(null);
         if(tenant == null) {
             if(!projectInfo.getSupportedLanguages().isEmpty()) {
                 for(String language: projectInfo.getSupportedLanguages()) {
                     boolean defaultLanguage = language.equals(projectInfo.getDefaultLanguage());
                     for(String page: accPages) {
-                        addURL(page, root, language, defaultLanguage, host, port);
+                        addURL(page, root, language, defaultLanguage, host, port, defaultPage);
                     }
                 }
             } else {
                 for(String page: accPages) {
-                    addURL(page, root, null, true, host, port);
+                    addURL(page, root, null, true, host, port, defaultPage);
                 }
             }
         } else {
             for(String language: tenant.getSupportedLanguages()) {
                 boolean defaultLanguage = language.equals(tenant.getDefaultLanguage());
                 for(String page: accPages) {
-                    addURL(page, root, language, defaultLanguage, host, port);
+                    addURL(page, root, language, defaultLanguage, host, port, defaultPage);
                 }
             }
         }
         return doc;
     }
     
-    private void addURL(String page, Element parent, String lang, boolean defaultLang, String host, int port) {
+    private void addURL(String page, Element parent, String lang, boolean defaultLang, String host, int port, String defaultPage) {
         Element urlElem = parent.getOwnerDocument().createElement("url");
         parent.appendChild(urlElem);
         Element locElem = parent.getOwnerDocument().createElement("loc");
@@ -238,9 +239,17 @@ public class SiteMapRequestHandler implements UriProvidingHttpRequestHandler, Se
         String alias;
         String langPrefix = "";
         if(lang == null) {
-            alias = page;
+        	if(page.equals(defaultPage)) {
+        		alias="";
+        	} else {
+        		alias = siteMap.getAlias(page, null);
+        	}
         } else {
-            alias = siteMap.getAlias(page, lang);
+        	if(page.equals(defaultPage)) {
+        		alias="";
+        	} else {
+        		alias = siteMap.getAlias(page, lang);
+        	}
             if(!defaultLang) langPrefix = LocaleUtils.getLanguagePart(lang) + "/";
         }
         locElem.setTextContent("http://" + host + (port==DEFAULT_PORT?"":":"+port) + "/" + langPrefix + alias);
