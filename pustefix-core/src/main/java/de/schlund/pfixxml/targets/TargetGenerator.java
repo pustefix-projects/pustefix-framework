@@ -959,6 +959,11 @@ public class TargetGenerator implements ResourceVisitor, ServletContextAware, In
             if(contentType != null) {
             	xmlTarget.addParam("render_ctype", contentType);
             }
+            Iterator<String> it = renderParams.keySet().iterator();
+            while(it.hasNext()) {
+                String name = it.next();
+                xmlTarget.addParam(name, renderParams.get(name));
+            }
             
             XSLVirtualTarget xslTarget = (XSLVirtualTarget)createTarget(TargetType.XSL_VIRTUAL, renderKey + ".xsl", themes);
             xmlSource = xmlTarget;
@@ -967,7 +972,7 @@ public class TargetGenerator implements ResourceVisitor, ServletContextAware, In
             xslTarget.setXSLSource(xslSource);
             xslTarget.addParam(XSLPARAM_TG, this);
             xslTarget.addParam(XSLPARAM_TKEY, renderKey + ".xsl");
-            Iterator<String> it = renderParams.keySet().iterator();
+            it = renderParams.keySet().iterator();
             while(it.hasNext()) {
                 String name = it.next();
                 xslTarget.addParam(name, renderParams.get(name));
