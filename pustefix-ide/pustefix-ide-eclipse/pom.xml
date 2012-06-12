@@ -8,7 +8,7 @@
   <parent>
     <groupId>org.pustefixframework</groupId>
     <artifactId>pustefix-ide</artifactId>
-    <version>0.18.17-SNAPSHOT</version>
+    <version>0.18.18-SNAPSHOT</version>
   </parent>
 
   <groupId>org.pustefixframework</groupId>
