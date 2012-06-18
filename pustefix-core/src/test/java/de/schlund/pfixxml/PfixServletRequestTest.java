@@ -21,13 +21,18 @@ public class PfixServletRequestTest extends TestCase {
         
         httpReq = new MockHttpServletRequest();
         httpReq.setRemoteAddr("1.2.3.4");
+        req = new PfixServletRequestImpl(httpReq, props);
+        assertEquals("1.2.3.4", req.getRemoteAddr());
+        
+        httpReq = new MockHttpServletRequest();
+        httpReq.setRemoteAddr("1.2.3.4");
         httpReq.addHeader("X-Forwarded-For", "unknown");
         req = new PfixServletRequestImpl(httpReq, props);
         assertEquals("1.2.3.4", req.getRemoteAddr());
         
         httpReq = new MockHttpServletRequest();
         httpReq.setRemoteAddr("1.2.3.4");
-        httpReq.addHeader("X-Forwarded-For", "unknown, 127.0.0.1");
+        httpReq.addHeader("X-Forwarded-For", "127.0.0.1, unknown");
         req = new PfixServletRequestImpl(httpReq, props);
         assertEquals("127.0.0.1", req.getRemoteAddr());
         
@@ -39,7 +44,7 @@ public class PfixServletRequestTest extends TestCase {
         
         httpReq = new MockHttpServletRequest();
         httpReq.setRemoteAddr("1.2.3.4");
-        httpReq.addHeader("X-Forwarded-For", "1.2.3.4, 2001:cdba:0:0:0:0:3257:9652");
+        httpReq.addHeader("X-Forwarded-For", "2001:cdba:0:0:0:0:3257:9652, 1.2.3.4");
         req = new PfixServletRequestImpl(httpReq, props);
         assertEquals("2001:cdba:0:0:0:0:3257:9652", req.getRemoteAddr());
         

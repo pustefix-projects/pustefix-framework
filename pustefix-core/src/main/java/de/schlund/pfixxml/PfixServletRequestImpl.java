@@ -280,10 +280,11 @@ public class PfixServletRequestImpl implements PfixServletRequest {
      * @see de.schlund.pfixxml.PfixServletRequest#getRemoteAddr()
      */
     public String getRemoteAddr() {
+    	//TODO: make configurable
         String forward = request.getHeader("X-Forwarded-For");
         if (forward != null && !forward.equals("")) {
-            int ind = forward.lastIndexOf(',');
-            if(ind > -1) forward = forward.substring(ind + 1);
+            int ind = forward.indexOf(',');
+            if(ind > -1) forward = forward.substring(0, ind);
             forward = forward.trim();
             if(NetUtils.checkIP(forward)) {
                 return forward;
