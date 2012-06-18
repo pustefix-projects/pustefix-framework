@@ -4,12 +4,12 @@
   <parent>
     <groupId>org.pustefixframework.samples.modules</groupId>
     <artifactId>sample-modules</artifactId>
-    <version>0.18.19</version>
+    <version>0.18.20-SNAPSHOT</version>
   </parent>
 
   <groupId>org.pustefixframework.samples.modules</groupId>
   <artifactId>common-module</artifactId>
-  <version>0.18.19</version>
+  <version>0.18.20-SNAPSHOT</version>
   <packaging>jar</packaging>
   <name>Pustefix Common Sample Module</name>
 
