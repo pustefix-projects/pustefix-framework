@@ -27,11 +27,8 @@ import java.util.StringTokenizer;
 
 import org.apache.log4j.Logger;
 
-import de.schlund.pfixcore.exception.PustefixRuntimeException;
-import de.schlund.pfixxml.config.EnvironmentProperties;
 import de.schlund.pfixxml.resources.Resource;
 import de.schlund.pfixxml.resources.ResourceUtil;
-import de.schlund.pfixxml.util.ExtensionFunctionUtils;
 
 
 /**
@@ -50,8 +47,6 @@ public class ImageGeometry {
     private static Map<String, ImageGeometryData> imageinfo = new HashMap<String, ImageGeometryData>();
     private final static Logger LOG = Logger.getLogger(ImageGeometry.class); 
     
-    private static boolean permissive = "prod".equals(EnvironmentProperties.getProperties().get("mode"));
-    
     public static int getHeight(String path) {
     	try {
 	        ImageGeometryData data = getImageGeometryData(path);
@@ -62,14 +57,8 @@ public class ImageGeometry {
 	        }
     	} catch(Exception x) {
     		String msg = "Error while getting height of image: " + path;
-    		if(permissive) { 
-    			LOG.warn(msg, x);
-    			return -1;
-    		} else {
-    			RuntimeException exception = new PustefixRuntimeException(msg, x);
-    			ExtensionFunctionUtils.setExtensionFunctionError(exception);
-    			throw exception;
-    		}
+    		LOG.warn(msg, x);
+    		return -1;
     	}
     }
     
@@ -83,14 +72,8 @@ public class ImageGeometry {
     		}
     	} catch(Exception x) {
     		String msg = "Error while getting width of image: " + path;
-    		if(permissive) {
-    			LOG.warn(msg, x);
-    			return -1;
-    		} else {
-    			RuntimeException exception = new PustefixRuntimeException(msg, x);
-    			ExtensionFunctionUtils.setExtensionFunctionError(exception);
-    			throw exception;
-    		}
+    		LOG.warn(msg, x);
+    		return -1;
     	}
     }
 
@@ -104,14 +87,8 @@ public class ImageGeometry {
 	        }
     	} catch(Exception x) {
     		String msg = "Error while getting type of image: " + path;
-    		if(permissive) {
-    			LOG.warn(msg, x);
-    			return null;
-    		} else {
-    			RuntimeException exception = new PustefixRuntimeException(msg, x);
-    			ExtensionFunctionUtils.setExtensionFunctionError(exception);
-    			throw exception;
-    		}
+    		LOG.warn(msg, x);
+    		return null;
     	}
     }
     
@@ -194,14 +171,8 @@ public class ImageGeometry {
 	        return genStyle.toString();
         } catch(Exception x) {
         	String msg = "Error while getting size of image: " + path;
-    		if(permissive) {
-    			LOG.warn(msg, x);
-    			return userStyle;
-    		} else {
-    			RuntimeException exception = new PustefixRuntimeException(msg, x);
-    			ExtensionFunctionUtils.setExtensionFunctionError(exception);
-    			throw exception;
-    		}
+        	LOG.warn(msg, x);
+        	return userStyle;
     	}
     }
 
