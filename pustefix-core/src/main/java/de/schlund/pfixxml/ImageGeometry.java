@@ -18,15 +18,20 @@
 
 package de.schlund.pfixxml;
 
-import java.io.IOException;
+import java.io.FileNotFoundException;
+import java.net.HttpURLConnection;
+import java.net.URL;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.StringTokenizer;
 
 import org.apache.log4j.Logger;
 
+import de.schlund.pfixcore.exception.PustefixRuntimeException;
+import de.schlund.pfixxml.config.EnvironmentProperties;
 import de.schlund.pfixxml.resources.Resource;
 import de.schlund.pfixxml.resources.ResourceUtil;
+import de.schlund.pfixxml.util.ExtensionFunctionUtils;
 
 
 /**
@@ -41,116 +46,169 @@ import de.schlund.pfixxml.resources.ResourceUtil;
  */
 
 public class ImageGeometry {
+	
     private static Map<String, ImageGeometryData> imageinfo = new HashMap<String, ImageGeometryData>();
-    private final static Logger                         LOG       = Logger.getLogger(ImageGeometry.class); 
+    private final static Logger LOG = Logger.getLogger(ImageGeometry.class); 
     
+    private static boolean permissive = "prod".equals(EnvironmentProperties.getProperties().get("mode"));
     
     public static int getHeight(String path) {
-        ImageGeometryData data = getImageGeometryData(path);
-        if (data == null) {
-            return -1;
-        } else {
-            return data.getHeight();
-        }
+    	try {
+	        ImageGeometryData data = getImageGeometryData(path);
+	        if (data == null) {
+	            return -1;
+	        } else {
+	            return data.getHeight();
+	        }
+    	} catch(Exception x) {
+    		String msg = "Error while getting height of image: " + path;
+    		if(permissive) { 
+    			LOG.warn(msg, x);
+    			return -1;
+    		} else {
+    			RuntimeException exception = new PustefixRuntimeException(msg, x);
+    			ExtensionFunctionUtils.setExtensionFunctionError(exception);
+    			throw exception;
+    		}
+    	}
     }
     
     public static int getWidth(String path) {
-        ImageGeometryData data = getImageGeometryData(path);
-        if (data == null) {
-            return -1;
-        } else {
-            return data.getWidth();
-        }
+    	try {
+    		ImageGeometryData data = getImageGeometryData(path);
+    		if (data == null) {
+    			return -1;
+    		} else {
+    			return data.getWidth();
+    		}
+    	} catch(Exception x) {
+    		String msg = "Error while getting width of image: " + path;
+    		if(permissive) {
+    			LOG.warn(msg, x);
+    			return -1;
+    		} else {
+    			RuntimeException exception = new PustefixRuntimeException(msg, x);
+    			ExtensionFunctionUtils.setExtensionFunctionError(exception);
+    			throw exception;
+    		}
+    	}
     }
 
     public static String getType(String path) {
-        ImageGeometryData data = getImageGeometryData(path);
-        if (data == null) {
-            return null;
-        } else {
-            return data.getType();
-        }
+    	try {
+	        ImageGeometryData data = getImageGeometryData(path);
+	        if (data == null) {
+	            return null;
+	        } else {
+	            return data.getType();
+	        }
+    	} catch(Exception x) {
+    		String msg = "Error while getting type of image: " + path;
+    		if(permissive) {
+    			LOG.warn(msg, x);
+    			return null;
+    		} else {
+    			RuntimeException exception = new PustefixRuntimeException(msg, x);
+    			ExtensionFunctionUtils.setExtensionFunctionError(exception);
+    			throw exception;
+    		}
+    	}
     }
     
     public static String getStyleStringForImage(String path, String userStyle, String userWidth, String userHeight) {
-        ImageGeometryData data = getImageGeometryData(path);
-        int targetWidth=-1;
-        int targetHeight=-1;
-        String targetWidthUnit = "px";
-        String targetHeightUnit = "px";
-
-        if (userWidth != null && userWidth.length() > 0) {
-            userWidth = userWidth.trim();
-            if (userWidth.endsWith("%")) {
-                targetWidthUnit = "%";
-                userWidth = userWidth.substring(0, userWidth.length() - 1);
-            }
-            try {
-                targetWidth = Integer.parseInt(userWidth);
-            } catch (NumberFormatException e) {
-                LOG.error("*** Image " + path + " supplied invalid data for width parameter: " + userWidth);
-                targetWidth = -1;
-            }
-        } else {
-            if (data != null) targetWidth = data.getWidth();
-        }
-        if (userHeight != null && userHeight.length() > 0) {
-            userHeight = userHeight.trim();
-            if (userHeight.endsWith("%")) {
-                targetHeightUnit = "%";
-                userHeight = userHeight.substring(0, userHeight.length() - 1);
-            }
-            try {
-                targetHeight = Integer.parseInt(userHeight);
-            } catch (NumberFormatException e) {
-                LOG.error("*** Image " + path + " supplied invalid data for height parameter: " + userHeight);
-                targetHeight = -1;
-            }
-        } else {
-            if (data != null) targetHeight = data.getHeight();
-        }
-        
-        boolean haveWidth = false, haveHeight = false;
-        
-        if (userStyle == null) {
-            userStyle = "";
-        }
-        StringBuffer genStyle = new StringBuffer(userStyle.trim());
-        
-        StringTokenizer st = new StringTokenizer(userStyle, ";");
-        while (st.hasMoreTokens()) {
-            String token = st.nextToken();
-            String propName = token.substring(0, token.indexOf(':'));
-            propName = propName.trim().toLowerCase();
-            if (propName.equals("width")) {
-                haveWidth = true;
-            } else if (propName.equals("height")) {
-                haveHeight = true;
-            }
-        }
-        
-        if (!haveWidth && targetWidth != -1) {
-            if (genStyle.length() > 0 && genStyle.charAt(genStyle.length()-1) != ';') {
-                genStyle.append(';');
-            }
-            genStyle.append("width:");
-            genStyle.append(targetWidth);
-            genStyle.append(targetWidthUnit + ";");
-        }
-        
-        if (!haveHeight && targetHeight != -1) {
-            if (genStyle.length() > 0 && genStyle.charAt(genStyle.length()-1) != ';') {
-                genStyle.append(';');
-            }
-            genStyle.append("height:");
-            genStyle.append(targetHeight);
-            genStyle.append(targetHeightUnit + ";");
-        }
-        
-        return genStyle.toString();
+        try {
+	    	ImageGeometryData data = getImageGeometryData(path);
+	        int targetWidth=-1;
+	        int targetHeight=-1;
+	        String targetWidthUnit = "px";
+	        String targetHeightUnit = "px";
+	
+	        if (userWidth != null && userWidth.length() > 0) {
+	            userWidth = userWidth.trim();
+	            if (userWidth.endsWith("%")) {
+	                targetWidthUnit = "%";
+	                userWidth = userWidth.substring(0, userWidth.length() - 1);
+	            }
+	            try {
+	                targetWidth = Integer.parseInt(userWidth);
+	            } catch (NumberFormatException e) {
+	                LOG.error("*** Image " + path + " supplied invalid data for width parameter: " + userWidth);
+	                targetWidth = -1;
+	            }
+	        } else {
+	            if (data != null) targetWidth = data.getWidth();
+	        }
+	        if (userHeight != null && userHeight.length() > 0) {
+	            userHeight = userHeight.trim();
+	            if (userHeight.endsWith("%")) {
+	                targetHeightUnit = "%";
+	                userHeight = userHeight.substring(0, userHeight.length() - 1);
+	            }
+	            try {
+	                targetHeight = Integer.parseInt(userHeight);
+	            } catch (NumberFormatException e) {
+	                LOG.error("*** Image " + path + " supplied invalid data for height parameter: " + userHeight);
+	                targetHeight = -1;
+	            }
+	        } else {
+	            if (data != null) targetHeight = data.getHeight();
+	        }
+	        
+	        boolean haveWidth = false, haveHeight = false;
+	        
+	        if (userStyle == null) {
+	            userStyle = "";
+	        }
+	        StringBuffer genStyle = new StringBuffer(userStyle.trim());
+	        
+	        StringTokenizer st = new StringTokenizer(userStyle, ";");
+	        while (st.hasMoreTokens()) {
+	            String token = st.nextToken();
+	            String propName = token.substring(0, token.indexOf(':'));
+	            propName = propName.trim().toLowerCase();
+	            if (propName.equals("width")) {
+	                haveWidth = true;
+	            } else if (propName.equals("height")) {
+	                haveHeight = true;
+	            }
+	        }
+	        
+	        if (!haveWidth && targetWidth != -1) {
+	            if (genStyle.length() > 0 && genStyle.charAt(genStyle.length()-1) != ';') {
+	                genStyle.append(';');
+	            }
+	            genStyle.append("width:");
+	            genStyle.append(targetWidth);
+	            genStyle.append(targetWidthUnit + ";");
+	        }
+	        
+	        if (!haveHeight && targetHeight != -1) {
+	            if (genStyle.length() > 0 && genStyle.charAt(genStyle.length()-1) != ';') {
+	                genStyle.append(';');
+	            }
+	            genStyle.append("height:");
+	            genStyle.append(targetHeight);
+	            genStyle.append(targetHeightUnit + ";");
+	        }
+	        
+	        return genStyle.toString();
+        } catch(Exception x) {
+        	String msg = "Error while getting size of image: " + path;
+    		if(permissive) {
+    			LOG.warn(msg, x);
+    			return userStyle;
+    		} else {
+    			RuntimeException exception = new PustefixRuntimeException(msg, x);
+    			ExtensionFunctionUtils.setExtensionFunctionError(exception);
+    			throw exception;
+    		}
+    	}
     }
 
-    private static ImageGeometryData getImageGeometryData(String path) {
+    private static ImageGeometryData getImageGeometryData(String path) throws Exception {
+    	if(path.startsWith("http") || path.startsWith("//")) {
+    		return getRemoteImageGeometryData(path);
+    	}
         synchronized (imageinfo) {
             if(path.startsWith("modules/")) path = "module://" + path.substring(8);
             Resource img = ResourceUtil.getResource(path);
@@ -159,12 +217,7 @@ public class ImageGeometry {
                 ImageGeometryData tmp = imageinfo.get(path);
                 if (tmp == null || mtime > tmp.lastModified()) {
                     // LOG.debug("Cache miss or outdated for: " + path);
-                    try {
-                        tmp = new ImageGeometryData(img);
-                    } catch (IOException e) {
-                        LOG.error("*** Couldn't get geometry for " + path, e);
-                        return null;
-                    }
+                	tmp = new ImageGeometryData(img);
                     if (!tmp.isOK()) {
                         LOG.error("*** Image data wasn't recognized for " + path);
                         return null;
@@ -174,9 +227,30 @@ public class ImageGeometry {
                     // CAT.debug("Cache hit and uptodate for: " + path);
                 }
                 return tmp;
+            } else {
+            	throw new FileNotFoundException("Can't read image: " + path);
             }
-            return null;
         }
     }
     
-}// ImageGeometry
+    private static ImageGeometryData getRemoteImageGeometryData(String path) throws Exception {
+    	synchronized (imageinfo) {
+    		ImageGeometryData geom = imageinfo.get(path);
+    		if(geom != null) return geom; 
+    	}
+    	String urlStr = path;
+    	if(urlStr.startsWith("https")) urlStr = "http" + urlStr.substring(5);
+    	else if(urlStr.startsWith("//")) urlStr = "http:" + urlStr;
+    	URL url = new URL(urlStr);
+    	HttpURLConnection con=(HttpURLConnection)url.openConnection();
+    	con.setConnectTimeout(2000);
+    	con.setReadTimeout(2000);
+    	ImageGeometryData geom = new ImageGeometryData(con);
+    	//TODO: notice HTTP caching headers
+    	synchronized (imageinfo) {
+    		imageinfo.put(path, geom);
+    	}
+    	return geom;
+    }
+    
+}
