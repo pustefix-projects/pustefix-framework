@@ -163,6 +163,8 @@ public class TargetGenerator implements ResourceVisitor, ServletContextAware, In
     private ServletContext servletContext;
     private TenantInfo tenantInfo;
     
+    private Map<String, String> pageToDefiningModule;
+    
     private Document dependXmlDoc;
     
     //--
@@ -364,6 +366,14 @@ public class TargetGenerator implements ResourceVisitor, ServletContextAware, In
         return createTarget(TargetType.XSL_LEAF, key, null);
     }
 
+    public String getDefiningModule(String page) {
+    	String definingModule = null;
+    	if(page != null) {
+    		definingModule = pageToDefiningModule.get(page);
+    	}
+    	return definingModule;
+    }
+    
     //-- misc
 
     public void addListener(TargetGeneratorListener listener) {
@@ -700,7 +710,8 @@ public class TargetGenerator implements ResourceVisitor, ServletContextAware, In
         HashSet<String> depxmls = new HashSet<String>();
         HashSet<String> depxsls = new HashSet<String>();
         HashMap<String, TargetStruct> allstructs = new HashMap<String, TargetStruct>();
-
+        pageToDefiningModule = new HashMap<String, String>();
+        
         long start = System.currentTimeMillis();
         for (int i = 0; i < targetnodes.getLength(); i++) {
             Element node = (Element) targetnodes.item(i);
@@ -761,6 +772,9 @@ public class TargetGenerator implements ResourceVisitor, ServletContextAware, In
             String defModule = node.getAttribute("defining-module");
             if(!defModule.equals("")) {
                 params.put("__defining_module", defModule);
+                if(pagename.length() > 0) {
+                	pageToDefiningModule.put(pagename, defModule);
+                }
             }
             // TODO Check that docroot really is not needed by targets
             // params.put("docroot", confile.getBase().getPath());

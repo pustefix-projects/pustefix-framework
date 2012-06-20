@@ -728,6 +728,10 @@ public abstract class AbstractPustefixXMLRequestHandler extends AbstractPustefix
                      ((spdoc != null) ? ("pagename=" +  spdoc.getPagename()) : "spdoc==null")); 
         }
         paramhash.put("page", spdoc.getPagename());
+        String definingModule = generator.getDefiningModule(spdoc.getPagename());
+        if(definingModule != null) {
+        	paramhash.put("__defining_module", definingModule);
+        }
         RenderContext renderContext = RenderContext.create(generator.getXsltVersion());
         paramhash.put("__rendercontext__", renderContext);
         renderContext.setParameters(Collections.unmodifiableMap(paramhash));
