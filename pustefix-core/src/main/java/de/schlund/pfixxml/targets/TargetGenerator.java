@@ -354,8 +354,13 @@ public class TargetGenerator implements ResourceVisitor, ServletContextAware, In
                 }
                 if(module == null || module.equals("")) module = "WEBAPP";
                 return createTargetForRender(href, part, module, selectedVariant, partInfo.getContentType());
-            } else throw new RuntimeException("Part '" + part + "' in '" + res.toURI() + "' is not marked as render part");
-        } else throw new RuntimeException("Render part '" + part + "' in '" + res.toURI() + "' not found.");
+            } else {
+            	LOG.warn("Part '" + part + "' in '" + res.toURI() + "' is not marked as render part");
+            }
+        } else {
+        	LOG.warn("Render part '" + part + "' in '" + res.toURI() + "' not found.");
+        }
+        return null;
     }
 
     public Target createXMLLeafTarget(String key) {
