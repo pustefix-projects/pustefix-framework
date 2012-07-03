@@ -547,6 +547,7 @@ public abstract class AbstractPustefixXMLRequestHandler extends AbstractPustefix
         		}
         		spdoc.setResponseErrorText(null);
         		sendError(spdoc, res);
+        		return;
         	} else {
         		throw new PustefixCoreException("Wasn't able to extract any stylesheet specification from page '" +
                                    spdoc.getPagename() + "' ... bailing out.");
