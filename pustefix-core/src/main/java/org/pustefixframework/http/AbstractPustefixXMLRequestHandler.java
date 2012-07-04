@@ -741,6 +741,9 @@ public abstract class AbstractPustefixXMLRequestHandler extends AbstractPustefix
         if(definingModule != null) {
         	paramhash.put("__defining_module", definingModule);
         }
+        if(spdoc.getPageAlternative() != null) {
+        	paramhash.put("pageAlternative", spdoc.getPageAlternative());
+        }
         RenderContext renderContext = RenderContext.create(generator.getXsltVersion());
         paramhash.put("__rendercontext__", renderContext);
         renderContext.setParameters(Collections.unmodifiableMap(paramhash));
