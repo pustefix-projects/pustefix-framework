@@ -334,31 +334,35 @@ public class TargetGenerator implements ResourceVisitor, ServletContextAware, In
         }
         Resource res = ResourceUtil.getResource(uri);
         IncludePartsInfo info = includePartsInfo.getIncludePartsInfo(res);
-        IncludePartInfo partInfo = info.getParts().get(part);
-        if(partInfo != null) {
-            if(partInfo.isRender()) {
-                String selectedVariant = null;
-                if(variant != null) {
-                    String[] variants = variant.getVariantFallbackArray();
-                    for (int i = 0; i < variants.length; i++) {
-                        if(partInfo.getRenderVariants().contains(variants[i])) {
-                            selectedVariant = variants[i];
-                            break;
-                        }
-                    }
-                }
-                if("dynamic".equals(search)) {
-                    if(res instanceof ModuleResource) {
-                        module = res.toURI().getAuthority();
-                    }
-                }
-                if(module == null || module.equals("")) module = "WEBAPP";
-                return createTargetForRender(href, part, module, selectedVariant, partInfo.getContentType());
-            } else {
-            	LOG.warn("Part '" + part + "' in '" + res.toURI() + "' is not marked as render part");
-            }
+        if(info != null) {
+        	IncludePartInfo partInfo = info.getParts().get(part);
+        	if(partInfo != null) {
+        		if(partInfo.isRender()) {
+        			String selectedVariant = null;
+        			if(variant != null) {
+        				String[] variants = variant.getVariantFallbackArray();
+        				for (int i = 0; i < variants.length; i++) {
+        					if(partInfo.getRenderVariants().contains(variants[i])) {
+        						selectedVariant = variants[i];
+        						break;
+        					}
+        				}
+        			}
+        			if("dynamic".equals(search)) {
+        				if(res instanceof ModuleResource) {
+        					module = res.toURI().getAuthority();
+        				}
+        			}
+        			if(module == null || module.equals("")) module = "WEBAPP";
+        			return createTargetForRender(href, part, module, selectedVariant, partInfo.getContentType());
+        		} else {
+        			LOG.warn("Part '" + part + "' in '" + res.toURI() + "' is not marked as render part");
+        		}
+        	} else {
+        		LOG.warn("Render part '" + part + "' in '" + res.toURI() + "' not found.");
+        	}
         } else {
-        	LOG.warn("Render part '" + part + "' in '" + res.toURI() + "' not found.");
+        	LOG.warn("Render part resource '" + res.toURI() +"' not found.");
         }
         return null;
     }
