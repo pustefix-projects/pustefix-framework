@@ -3,7 +3,9 @@
                 xmlns:xsl="http://www.w3.org/1999/XSL/Transform"
                 xmlns:pfx="http://www.schlund.de/pustefix/core"
                 xmlns:func="http://exslt.org/functions"
-                xmlns:callback="xalan://de.schlund.pfixcore.util.TransformerCallback">
+                xmlns:callback="xalan://de.schlund.pfixcore.util.TransformerCallback"
+                xmlns:rfh="java:org.pustefixframework.http.AbstractPustefixXMLRequestHandler$RegisterFrameHelper"
+                exclude-result-prefixes="pfx func callback rfh">
   
   <func:function name="pfx:isVisible">
     <xsl:param name="pagename"></xsl:param>
@@ -139,6 +141,15 @@
   <func:function name="pfx:getEnvProperty">
     <xsl:param name="prop"/>
     <func:result select="callback:getEnvProperty($prop)"/>
+  </func:function>
+  
+  <func:function name="pfx:reuseDOM">
+    <xsl:if test="rfh:registerFrame($__register_frame_helper__,'__renderinclude__')"/>
+    <func:result select="concat($__reusestamp,'.__renderinclude__')"/>
+  </func:function>
+  
+  <func:function name="pfx:freeDOM">
+    <func:result select="rfh:unregisterFrame($__register_frame_helper__,'__renderinclude__')"/>
   </func:function>
   
 </xsl:stylesheet>
