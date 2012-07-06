@@ -5,12 +5,12 @@
   <parent>
     <artifactId>pustefixframework</artifactId>
     <groupId>org.pustefixframework</groupId>
-    <version>0.18.24-SNAPSHOT</version>
+    <version>0.18.24</version>
   </parent>
 
   <groupId>org.pustefixframework</groupId>
   <artifactId>pustefix-cmis</artifactId>
-  <version>0.18.24-SNAPSHOT</version>
+  <version>0.18.24</version>
   <name>pustefix-cmis</name>
   <url>http://maven.apache.org</url>
   
@@ -22,7 +22,7 @@
     <dependency>
       <groupId>org.pustefixframework</groupId>
       <artifactId>pustefix-core</artifactId>
-      <version>0.18.24-SNAPSHOT</version>
+      <version>0.18.24</version>
     </dependency>
     <dependency>
       <groupId>junit</groupId>
