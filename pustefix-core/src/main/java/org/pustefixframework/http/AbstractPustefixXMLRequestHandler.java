@@ -904,7 +904,6 @@ public abstract class AbstractPustefixXMLRequestHandler extends AbstractPustefix
                     	String contentType = (String)target.getParams().get("content-type");
                     	if(contentType != null) {
                     		res.setContentType(contentType);
-                    		spdoc.setResponseContentType(contentType);
                     	}
                     	return target.getTargetKey();
                     }
