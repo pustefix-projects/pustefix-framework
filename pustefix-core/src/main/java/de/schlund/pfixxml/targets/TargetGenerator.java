@@ -987,6 +987,12 @@ public class TargetGenerator implements ResourceVisitor, ServletContextAware, In
                 String name = it.next();
                 xmlTarget.addParam(name, renderParams.get(name));
             }
+            if (getToolingExtensions()) {
+                xmlTarget.addParam("prohibitEdit", "no");
+            } else {
+                xmlTarget.addParam("prohibitEdit", "yes");
+            }
+            
             
             XSLVirtualTarget xslTarget = (XSLVirtualTarget)createTarget(TargetType.XSL_VIRTUAL, renderKey + ".xsl", themes);
             xmlSource = xmlTarget;
