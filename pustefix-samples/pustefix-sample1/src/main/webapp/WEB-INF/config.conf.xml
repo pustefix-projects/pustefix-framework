@@ -219,22 +219,6 @@
     </output>
   </pagerequest>
 
-  <pagerequest name="scriptingstate">
-    <state class="script:script/ScriptingState.bsh" />
-    <output>
-      <resource node="tshirt" class="de.schlund.pfixcore.example.ContextTShirt" />
-    </output>
-  </pagerequest>
-
-  <pagerequest name="scripting">
-    <input>
-      <wrapper prefix="shirt" class="de.schlund.pfixcore.example.iwrapper.ScriptingTShirt" />
-    </input>
-    <output>
-      <resource node="tshirt" class="de.schlund.pfixcore.example.ContextTShirt" />
-    </output>
-  </pagerequest>
-
   <pagerequest name="invalidate">
     <state class="de.schlund.pfixcore.example.InvalidateSessionState" />
   </pagerequest>
