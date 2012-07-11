@@ -28,7 +28,6 @@ import org.pustefixframework.config.contextxmlservice.parser.internal.ContextCon
 import org.pustefixframework.config.contextxmlservice.parser.internal.ContextXMLServletConfigImpl;
 import org.pustefixframework.config.contextxmlservice.parser.internal.IWrapperConfigImpl;
 import org.pustefixframework.config.contextxmlservice.parser.internal.PageRequestConfigImpl;
-import org.pustefixframework.config.contextxmlservice.parser.internal.ScriptingStatePathInfo;
 import org.pustefixframework.config.contextxmlservice.parser.internal.StateConfigImpl;
 import org.pustefixframework.config.generic.ParsingUtils;
 import org.springframework.aop.scope.ScopedProxyUtils;
@@ -51,8 +50,6 @@ import de.schlund.pfixcore.generator.IHandler;
 import de.schlund.pfixcore.generator.IWrapper;
 import de.schlund.pfixcore.generator.UseHandlerBeanRef;
 import de.schlund.pfixcore.generator.UseHandlerClass;
-import de.schlund.pfixcore.generator.UseHandlerScript;
-import de.schlund.pfixcore.scripting.ScriptingIHandler;
 
 
 public class PageRequestParsingHandler implements ParsingHandler {
@@ -156,9 +153,7 @@ public class PageRequestParsingHandler implements ParsingHandler {
                     Class<? extends IWrapper> wrapperClass = wrapperConfig.getWrapperClass();
                     
                     Class<? extends IHandler> handlerClass = null;
-                    String handlerScriptPath = null;
                     UseHandlerClass handlerClassAnnotation = wrapperClass.getAnnotation(UseHandlerClass.class);
-                    UseHandlerScript handlerScriptAnnotation = wrapperClass.getAnnotation(UseHandlerScript.class);
                     UseHandlerBeanRef handlerBeanRefAnnotation = wrapperClass.getAnnotation(UseHandlerBeanRef.class);
                     
                     String handlerBeanName = null;
@@ -168,18 +163,12 @@ public class PageRequestParsingHandler implements ParsingHandler {
                         
                         if (handlerClassAnnotation != null) {
                             handlerClass = handlerClassAnnotation.value();
-                        } else if (handlerScriptAnnotation != null) {
-                            handlerClass = ScriptingIHandler.class;
-                            handlerScriptPath = handlerScriptAnnotation.value();
                         } else {
                             throw new ParserException("Wrapper class " + wrapperClass.getName() + " has no handler annotation.");
                         }
                         
                         beanBuilder = BeanDefinitionBuilder.genericBeanDefinition(handlerClass);
                         beanBuilder.setScope(wrapperConfig.getScope());
-                        if (handlerScriptPath != null) {
-                            beanBuilder.addPropertyValue("scriptPath", handlerScriptPath);
-                        }
                         beanDefinition = beanBuilder.getBeanDefinition();
                         handlerBeanName = nameGenerator.generateBeanName(beanDefinition, beanRegistry);
                         String handlerBeanAlias = handlerClass.getName()+"#"+pageConfig.getPageName()+"#"+wrapperConfig.getPrefix();
@@ -228,16 +217,12 @@ public class PageRequestParsingHandler implements ParsingHandler {
                 configBeanName = nameGenerator.generateBeanName(beanDefinition, beanRegistry);
                 beanRegistry.registerBeanDefinition(configBeanName, beanDefinition);
                 
-                Collection<ScriptingStatePathInfo> scriptPathInfoCollection = context.getObjectTreeElement().getObjectsOfTypeFromSubTree(ScriptingStatePathInfo.class);
                 beanBuilder = BeanDefinitionBuilder.genericBeanDefinition(stateConfig.getState());
                 if(stateConfig.getParentBeanName()!=null) {
                     beanBuilder.setParentName(stateConfig.getParentBeanName());
                 }
                 beanBuilder.setScope(stateConfig.getScope());
                 beanBuilder.addPropertyReference("config", configBeanName);
-                if (scriptPathInfoCollection.iterator().hasNext()) {
-                    beanBuilder.addPropertyValue("scriptPath", scriptPathInfoCollection.iterator().next().getScriptPath());
-                }
                 beanDefinition = beanBuilder.getBeanDefinition();
                 if (pageConfig.getBeanName() != null && pageConfig.getBeanName().length() > 0) {
                     stateBeanName = pageConfig.getBeanName();
