@@ -207,7 +207,11 @@ public class DocrootRequestHandler implements UriProvidingHttpRequestHandler, Se
         } else {
             res.setHeader("Cache-Control", "max-age=3, must-revalidate");
         }
-            
+         
+        if(req.getMethod().equals("HEAD")) {
+        	return;
+        }
+        
         OutputStream out = new BufferedOutputStream(res.getOutputStream());
         InputStream in = inputResource.getInputStream();
         int bytes_read;
