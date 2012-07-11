@@ -53,8 +53,6 @@
   
   <standardpage name="order"    xml="xml/one_frame_navi.xml"/>
   <standardpage name="overview" xml="xml/one_frame_navi.xml"/>
-  <standardpage name="scripting" xml="xml/one_frame_navi.xml"/>
-  <standardpage name="scriptingstate" xml="xml/one_frame_navi.xml"/>
 
   <standardpage name="phantom" xml="xml/one_frame.xml"/>
   
