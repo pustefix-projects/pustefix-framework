@@ -59,6 +59,11 @@ public class SiteMapRequestHandler implements UriProvidingHttpRequestHandler, Se
     private final static int DEFAULT_HTTP_PORT = 80;
     private final static int DEFAULT_HTTPS_PORT = 443;
     
+    private final static String NS_SITEMAP = "http://www.sitemaps.org/schemas/sitemap/0.9";
+    private final static String NS_SITEMAP_MOBILE = "http://www.google.com/schemas/sitemap-mobile/1.0";
+    
+    public enum SiteMapType {DEFAULT, MOBILE};
+    
     private String[] registeredURIs = new String[] {"/sitemap.xml"};
     private SiteMap siteMap;
     private TenantInfo tenantInfo;
@@ -69,6 +74,8 @@ public class SiteMapRequestHandler implements UriProvidingHttpRequestHandler, Se
     private Map<String, CacheEntry> cacheEntries = new HashMap<String, CacheEntry>();
     
     private Context pustefixContext;
+    
+    private SiteMapType siteMapType;
     
     public synchronized void handleRequest(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
         
@@ -101,7 +108,8 @@ public class SiteMapRequestHandler implements UriProvidingHttpRequestHandler, Se
             entry = new CacheEntry();
             entry.file = new File(tempDir, cacheKey + ".xml");
             try {
-                Document doc = getSearchEngineSitemap(tenant, scheme, host, port);
+            	boolean mobile = (siteMapType == SiteMapType.MOBILE);
+                Document doc = getSearchEngineSitemap(tenant, scheme, host, port, mobile);
                 Transformer trf = TransformerFactory.newInstance().newTransformer();
                 trf.setOutputProperty(OutputKeys.INDENT, "yes");
                 FileOutputStream out = new FileOutputStream(entry.file);
@@ -203,13 +211,16 @@ public class SiteMapRequestHandler implements UriProvidingHttpRequestHandler, Se
         return accPages;
     }
     
-    public Document getSearchEngineSitemap(Tenant tenant, String scheme, String host, int port) throws Exception {
-        String ns = "http://www.sitemaps.org/schemas/sitemap/0.9";
+    public Document getSearchEngineSitemap(Tenant tenant, String scheme, String host, int port, boolean mobile) throws Exception {
+        
         DocumentBuilderFactory dbf = DocumentBuilderFactory.newInstance();
         dbf.setNamespaceAware(true);
         Document doc = dbf.newDocumentBuilder().newDocument();
-        Element root = doc.createElementNS(ns, "urlset");
-        root.setAttribute("xmlns", ns);
+        Element root = doc.createElementNS(NS_SITEMAP, "urlset");
+        root.setAttribute("xmlns", NS_SITEMAP);
+        if(mobile) {
+        	root.setAttribute("xmlns:mobile", NS_SITEMAP_MOBILE);
+        }
         doc.appendChild(root);
         Set<String> accPages = getAccessiblePages();
         String defaultPage = pustefixContext.getContextConfig().getDefaultPage(null);
@@ -222,26 +233,26 @@ public class SiteMapRequestHandler implements UriProvidingHttpRequestHandler, Se
                 for(String language: projectInfo.getSupportedLanguages()) {
                     boolean defaultLanguage = language.equals(projectInfo.getDefaultLanguage());
                     for(String page: accPages) {
-                        addURL(page, root, language, defaultLanguage, baseUrl, defaultPage);
+                        addURL(page, root, language, defaultLanguage, baseUrl, defaultPage, mobile);
                     }
                 }
             } else {
                 for(String page: accPages) {
-                    addURL(page, root, null, true, baseUrl, defaultPage);
+                    addURL(page, root, null, true, baseUrl, defaultPage, mobile);
                 }
             }
         } else {
             for(String language: tenant.getSupportedLanguages()) {
                 boolean defaultLanguage = language.equals(tenant.getDefaultLanguage());
                 for(String page: accPages) {
-                    addURL(page, root, language, defaultLanguage, baseUrl, defaultPage);
+                    addURL(page, root, language, defaultLanguage, baseUrl, defaultPage, mobile);
                 }
             }
         }
         return doc;
     }
     
-    private void addURL(String page, Element parent, String lang, boolean defaultLang, String baseUrl, String defaultPage) {
+    private void addURL(String page, Element parent, String lang, boolean defaultLang, String baseUrl, String defaultPage, boolean mobile) {
         Element urlElem = parent.getOwnerDocument().createElement("url");
         parent.appendChild(urlElem);
         Element locElem = parent.getOwnerDocument().createElement("loc");
@@ -270,6 +281,10 @@ public class SiteMapRequestHandler implements UriProvidingHttpRequestHandler, Se
         Element prioElem = parent.getOwnerDocument().createElement("priority");
         urlElem.appendChild(prioElem);
         prioElem.setTextContent("0.5");
+        if(mobile) {
+        	Element mobileElem = parent.getOwnerDocument().createElementNS(NS_SITEMAP_MOBILE, "mobile:mobile");
+        	urlElem.appendChild(mobileElem);
+        }
         Set<String> pageAlts = siteMap.getPageAlternativeKeys(page);
         if(pageAlts != null) {
             for(String pageAltKey: pageAlts) {
@@ -307,6 +322,10 @@ public class SiteMapRequestHandler implements UriProvidingHttpRequestHandler, Se
     
     public void setApplicationContext(ApplicationContext applicationContext) {
         this.applicationContext = applicationContext;
+    }
+    
+    public void setSiteMapType(SiteMapType siteMapType) {
+    	this.siteMapType = siteMapType;
     }
     
     class CacheEntry {

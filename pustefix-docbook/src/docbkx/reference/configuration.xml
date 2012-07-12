@@ -231,7 +231,8 @@
   </xml-generator>
   
   <!-- automatically generate searchengine sitemap file sitemaps.xml 
-       (according to sitemaps protocol from http://www.sitemaps.org) -->
+       (according to sitemaps protocol from http://www.sitemaps.org), 
+       set the attribute "type" to "mobile" to generate a mobile sitemap-->
   <searchengine-sitemap/>
 
   <!-- Sets the session tracking strategy. Default is 'COOKIE'.

@@ -18,7 +18,11 @@
         <xsd:element ref="config-include" minOccurs="0"/>
         <xsd:element ref="tenant" minOccurs="0" maxOccurs="unbounded"/>
         <xsd:element name="xml-generator" type="xml-generator-type"/>
-        <xsd:element name="searchengine-sitemap" minOccurs="0"/>
+        <xsd:element name="searchengine-sitemap" minOccurs="0">
+          <xsd:complexType>
+            <xsd:attribute name="type" type="xsd:string" use="optional"/>
+          </xsd:complexType>
+        </xsd:element>
         <xsd:element name="session-tracking-strategy" minOccurs="0">
           <xsd:simpleType>
             <xsd:restriction base="xsd:string">
