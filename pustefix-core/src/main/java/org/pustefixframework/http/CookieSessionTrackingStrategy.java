@@ -33,6 +33,8 @@ public class CookieSessionTrackingStrategy implements SessionTrackingStrategy {
     private static final String STORED_REQUEST = "__STORED_PFIXSERVLETREQUEST__";
     private static final String INITIAL_SESSION_CHECK = "__INITIAL_SESSION_CHECK__";
     private static final String COOKIE_SESSION_RESET = "__PFIX_RST_";
+    //Cookie indicates that session under HTTPS exists. That's necessary because HTTPS sessions have secure flag set
+    //and going back in the browser to a non-HTTPS session won't send the session cookie
     private static final String COOKIE_SESSION_SSL = "__PFIX_SSL_";
     
     private SessionTrackingStrategyContext context;
@@ -134,7 +136,7 @@ public class CookieSessionTrackingStrategy implements SessionTrackingStrategy {
                     }
                     if(!resetTry) {
                         LOG.debug("    ... and __forcelocal is NOT set.");
-                        redirectToClearedRequest(req, res);
+                        redirectToClearedRequest(req, res, used_ssl);
                         return;
                     }
                     // End of request cycle.
@@ -197,7 +199,11 @@ public class CookieSessionTrackingStrategy implements SessionTrackingStrategy {
         }
         if (!has_session && context.needsSession() && context.allowSessionCreate() && !context.needsSSL(preq)) {
             LOG.debug("=> V");
-            redirectToSession(preq, req, res);
+            if(req.isSecure()) {
+            	redirectToSSLSession(preq, req, res);
+            } else {
+            	redirectToSession(preq, req, res);
+            }
             return;
             // End of request cycle.
         }
@@ -235,7 +241,7 @@ public class CookieSessionTrackingStrategy implements SessionTrackingStrategy {
                 LOGGER_SESSION.info("Invalidate session II: " + session.getId());
                 if(LOGGER_SESSION.isDebugEnabled()) LOGGER_SESSION.debug(dumpRequest(req));
                 session.invalidate();
-                redirectToClearedRequest(req, res);
+                redirectToClearedRequest(req, res, used_ssl);
                 return;
             }
         }
@@ -243,7 +249,7 @@ public class CookieSessionTrackingStrategy implements SessionTrackingStrategy {
         context.callProcess(preq, req, res);
     }
 
-    private void redirectToClearedRequest(HttpServletRequest req, HttpServletResponse res) {
+    private void redirectToClearedRequest(HttpServletRequest req, HttpServletResponse res, boolean usedSSL) {
         LOG.debug("===> Redirecting to cleared Request URL");
         String redirect_uri = SessionHelper.getClearedURL(req.getScheme(), AbstractPustefixRequestHandler.getServerName(req), req, context.getServletManagerConfig().getProperties());
         if(req.isRequestedSessionIdFromCookie()) {
@@ -255,6 +261,12 @@ public class CookieSessionTrackingStrategy implements SessionTrackingStrategy {
             resetCookie.setMaxAge(60);
             resetCookie.setPath((req.getContextPath().equals("")) ? "/" : req.getContextPath());
             res.addCookie(resetCookie);
+            if(usedSSL) {
+	            Cookie sslCookie = new Cookie(COOKIE_SESSION_SSL, "");
+	            sslCookie.setMaxAge(0);
+	            sslCookie.setPath((req.getContextPath().equals("")) ? "/" : req.getContextPath());
+	            res.addCookie(sslCookie);
+            }
         }
         AbstractPustefixRequestHandler.relocate(res, HttpServletResponse.SC_MOVED_PERMANENTLY, redirect_uri);
     }
