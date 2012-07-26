@@ -7,7 +7,9 @@
                 xmlns:image="xalan://de.schlund.pfixxml.ImageThemedSrcSaxon1"
                 xmlns:geometry="xalan://de.schlund.pfixxml.ImageGeometry"
                 xmlns:func="http://exslt.org/functions"
-                exclude-result-prefixes="include image geometry">
+                xmlns:java="java:java.lang.String"
+                xmlns:ic="java:de.schlund.pfixxml.IncludeContextController"
+                exclude-result-prefixes="include image geometry java ic">
 
   <!-- The needed parameters must be set in the including stylesheet! -->
 
@@ -278,9 +280,12 @@
         </xsl:variable>
         <xsl:choose>
           <xsl:when test="$incnodes and $incnodes[name() = 'theme']">
+            <xsl:if test="ic:pushInclude($__include_context, ., $incnodes[1])"/>
+            <xsl:apply-templates select="pfx:includeparam"/>
             <xsl:apply-templates select="$incnodes/node()">
               <xsl:with-param name="__env" select="."/>
             </xsl:apply-templates>
+            <xsl:if test="ic:popInclude($__include_context)"/>
           </xsl:when>
           <xsl:when test="not($noerror = 'true')">
             <xsl:call-template name="pfx:missinc">
@@ -836,5 +841,74 @@
     <xsl:param name="search"/>
     <func:result select="include:exists($href, $part, $__target_gen, $__target_key, $module, $search, $tenant, $lang)"/>
   </func:function>
+  
+ 
+  <!-- include parameter stuff -->
+
+  <xsl:variable name="__include_context" select="ic:create(.)"/>
+
+  <func:function name="pfx:__incparam">
+    <xsl:param name="name"/>
+    <xsl:variable name="incparam" select="ic:getIncludeParam($__include_context, $name)"/>
+  	<func:result select="$incparam"/>
+  </func:function>
+  
+  <func:function name="pfx:__eval">
+    <xsl:param name="expr"/>
+   	<func:result select="ic:evaluate($__include_context, $expr)"/>
+  </func:function>
+
+  <xsl:template match="pfx:include[@select-part]">
+    <xsl:variable name="part">
+      <xsl:value-of select="pfx:__eval(@select-part)"/>
+    </xsl:variable>
+    <xsl:call-template name="pfx:include">
+      <xsl:with-param name="part" select="$part"/>
+    </xsl:call-template>
+  </xsl:template>
+  
+  <xsl:template match="pfx:value-of">
+    <xsl:value-of select="pfx:__eval(@select)"/>
+  </xsl:template>
+  
+  <xsl:template match="pfx:if">
+    <xsl:if test="pfx:__eval(@test)">
+      <xsl:apply-templates select="./node()"/>
+    </xsl:if>
+  </xsl:template>
+  
+  <xsl:template match="pfx:choose">
+    <xsl:variable name="res" select="pfx:when[pfx:__eval(@test)][1]"/>
+    <xsl:choose>
+      <xsl:when test="$res">
+        <xsl:apply-templates select="$res/node()"/>
+      </xsl:when>
+      <xsl:when test="pfx:otherwise">
+        <xsl:apply-templates select="pfx:otherwise/node()"/>
+      </xsl:when>
+    </xsl:choose>
+  </xsl:template>
+  
+  <xsl:template match="pfx:when"/>
+  <xsl:template match="pfx:otherwise"/>
+  
+  <xsl:template match="pfx:for-each">
+    <xsl:variable name="__context" select="."/>
+    <xsl:variable name="__parent_repeat_context" select="ic:getContextNode($__include_context)"/>
+    <xsl:for-each select="pfx:__eval(@select)">
+      <xsl:if test="ic:setContextNode($__include_context, .)"/>
+      <xsl:apply-templates select="$__context/node()"/>
+    </xsl:for-each>
+    <xsl:if test="ic:setContextNode($__include_context, $__parent_repeat_context)"/>
+  </xsl:template>
+  
+  <xsl:template match="pfx:includeparam"/>
+  
+  <xsl:template match="pfx:includeparam[@apply='true']">
+   <xsl:variable name="value">
+     <xsl:apply-templates/>
+   </xsl:variable>
+   <xsl:if test="ic:setAppliedParameter($__include_context, @name, $value)"/>
+  </xsl:template>
  
 </xsl:stylesheet>
