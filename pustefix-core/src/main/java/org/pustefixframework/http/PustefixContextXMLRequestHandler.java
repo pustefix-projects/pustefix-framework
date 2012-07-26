@@ -238,6 +238,7 @@ public class PustefixContextXMLRequestHandler extends AbstractPustefixXMLRequest
                     }
                 }
                 String expectedPageName = null;
+                boolean isAlias = false;
                 String langPrefix = null;
                 Tenant tenant = spdoc.getTenant();
                 if((tenant != null && !spdoc.getLanguage().equals(tenant.getDefaultLanguage())) ||
@@ -252,6 +253,7 @@ public class PustefixContextXMLRequestHandler extends AbstractPustefixXMLRequest
                         alias = langPrefix + "/" + alias;
                     }
                     expectedPageName = alias;
+                    isAlias = true;
                 }
                 String requestedPageName = preq.getRequestedPageName();
                 if( ( expectedPageName != null  && !expectedPageName.equals(requestedPageName)) ||
@@ -280,7 +282,7 @@ public class PustefixContextXMLRequestHandler extends AbstractPustefixXMLRequest
                     if (rp != null) {
                     	redirectURL += "&__lf=" + rp.getValue();
                     }
-                    spdoc.setRedirect(redirectURL);
+                    spdoc.setRedirect(redirectURL, isAlias);
                 }
             }
             return spdoc;
