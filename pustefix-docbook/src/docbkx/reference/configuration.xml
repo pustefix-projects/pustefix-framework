@@ -903,6 +903,47 @@
       </resource>
     </context>
     
+    <global-output>
+ ]]></programlisting>
+        The whole section is optional. You can list an arbitrary number of resources here.
+        The <literal>node</literal> attribute value has to be unique within this section and the <literal>output</literal> section of all <literal>pagerequest</literal> elements.
+        <programlisting language="xml"><![CDATA[
+        <resource node="AName" bean-ref="aBeanName"/>
+        ]]></programlisting>
+        <informaltable rules="all" frame="box">
+          <thead align="left">
+            <tr>
+              <th>Attribute</th>
+              <th>Description</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td><literal>class</literal></td>
+              <td><emphasis>Mandatory (if <literal>bean-ref</literal> is not present)</emphasis>. 
+              <tag class="attribute">class</tag> is one of the 
+              <classname>ContextResources</classname> defined via 
+              implements above.</td>
+            </tr>
+            <tr>
+              <td><literal>bean-ref</literal></td>
+              <td><emphasis>Mandatory (if <literal>class</literal> is not present)</emphasis>. 
+              Specifies the bean name of the resource that should be
+              included in the output tree.</td>
+            </tr>
+            <tr>
+              <td><literal>node</literal></td>
+              <td><emphasis>Mandatory</emphasis>. 
+              <tag class="attribute">node</tag> is the node in the 
+              output tree ("<literal>/formresult/AName</literal>") under 
+              which the <classname>ContextResource</classname> inserts 
+              it's data.</td>
+            </tr>
+          </tbody>
+        </informaltable>
+        <programlisting language="xml"><![CDATA[
+    </global-output>
+
     <interceptors>
       <start>
         <interceptor class="mypackage.MyInterceptor"/>

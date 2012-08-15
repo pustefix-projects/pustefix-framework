@@ -230,4 +230,19 @@
 
   </section>
 
+  <section xml:id="news.0_18_27">
+    <title>What's new in Pustefix 0.18.27</title>
+
+    <section xml:id="news.0_18_27.contextresources">
+      <title>Global output resources</title>
+      <para>
+        Added support for global output resources, i.e. output resources/ContextResources can be globally declared, thus being automatically added as output resources to all pagerequests.
+        That's an alternative solution for adding global data and could replace the necessity of doing this programmatically via a basic <literal>State</literal> implementation.
+        Global resources can be added to the new <literal>&lt;global-output/&gt;</literal> section of the context configuration
+        (see <xref linkend="configuration.servlet.contextxml"/>).
+      </para>
+    </section>
+
+  </section>
+
 </chapter>
