@@ -1841,6 +1841,13 @@
     <para>
        The <emphasis role="strong">pfx:getEnvProperty</emphasis> function returns then environment property denoted by the passed argument.
     </para>
+ <para></para>
+    <para>
+      <emphasis role="strong">Function:</emphasis> <emphasis>string</emphasis> <emphasis role="strong">pfx:escapeJS</emphasis>(<emphasis>string</emphasis>)
+    </para>
+    <para>
+       The <emphasis role="strong">pfx:escapeJS</emphasis> function escapes Javascript data by replacing non-alphanumeric characters by the according \xHH and \uHHHH escape sequences.
+    </para>
   </section>
   </section>
 

@@ -152,4 +152,9 @@
     <func:result select="rfh:unregisterFrame($__register_frame_helper__,'__renderinclude__')"/>
   </func:function>
   
+  <func:function name="pfx:escapeJS">
+    <xsl:param name="text"/>
+    <func:result select="callback:escapeJS($text)"/>
+  </func:function>
+  
 </xsl:stylesheet>

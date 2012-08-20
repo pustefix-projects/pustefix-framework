@@ -40,6 +40,7 @@ import org.pustefixframework.config.project.ProjectInfo;
 import org.pustefixframework.http.BotDetector;
 import org.pustefixframework.util.FrameworkInfo;
 import org.pustefixframework.util.LocaleUtils;
+import org.pustefixframework.util.javascript.JSUtils;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.Node;
@@ -446,6 +447,10 @@ public class TransformerCallback {
     
     public static String getEnvProperty(String propertyName) {
         return EnvironmentProperties.getProperties().getProperty(propertyName);
+    }
+    
+    public static String escapeJS(String text) {
+    	return JSUtils.escape(text);
     }
     
 }
