@@ -416,6 +416,8 @@ public class PustefixContextXMLRequestHandler extends AbstractPustefixXMLRequest
 
         SortedSet<String> pages = new TreeSet<String>();
         
+        pages.add("pfxsession");
+        
         //add pages from configured pagerequests
         List<? extends PageRequestConfig> pageConfigs = config.getContextConfig().getPageRequestConfigs();
         for(PageRequestConfig pageConfig: pageConfigs) {

@@ -81,6 +81,7 @@ public abstract class AbstractPustefixRequestHandler implements SessionTrackingS
     public static final String           PROP_COOKIE_SEC_NOT_ENFORCED  = "servletmanager.cookie_security_not_enforced";
     public static final String           PROP_P3PHEADER                = "servletmanager.p3p";
     public static final String           PROP_SSL_REDIRECT_PORT        = "pfixcore.ssl_redirect_port.for.";
+    public static final String           PROP_NONSSL_REDIRECT_PORT     = "pfixcore.nonssl_redirect_port.for.";
     protected static final String        DEF_CONTENT_TYPE              = "text/html";
     private static final String          DEFAULT_ENCODING              = "UTF-8";
     private static final String          SERVLET_ENCODING              = "servlet.encoding";

@@ -10,6 +10,7 @@ import javax.servlet.http.HttpSession;
 import org.pustefixframework.config.contextxmlservice.ServletManagerConfig;
 
 import de.schlund.pfixxml.PfixServletRequest;
+import de.schlund.pfixxml.RequestParam;
 
 public class SessionHandlingTestHandler extends AbstractPustefixRequestHandler {
 
@@ -54,7 +55,10 @@ public class SessionHandlingTestHandler extends AbstractPustefixRequestHandler {
             session.setAttribute("COUNTER", counter);
             count = counter;
         }
-        writer.write("<html><head><title>test</title></head><body>test</body><!--" + count + "--></html>");
+        String paramVal = "";
+        RequestParam param = preq.getRequestParam("foo");
+        if(param != null) paramVal = param.getValue();
+        writer.write("<html><head><title>test</title></head><body>test</body><!--" + count + "-->" + "<!--foo=" + paramVal + "--></html>");
         writer.close();
     }
     

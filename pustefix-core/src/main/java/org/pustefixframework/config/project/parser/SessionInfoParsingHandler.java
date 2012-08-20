@@ -22,6 +22,7 @@ import org.pustefixframework.config.Constants;
 import org.pustefixframework.config.project.SessionTimeoutInfo;
 import org.pustefixframework.config.project.SessionTrackingStrategyInfo;
 import org.pustefixframework.http.BotSessionTrackingStrategy;
+import org.pustefixframework.http.CookieOnlySessionTrackingStrategy;
 import org.pustefixframework.http.CookieSessionTrackingStrategy;
 import org.pustefixframework.http.SessionTrackingStrategy;
 import org.pustefixframework.http.URLRewriteSessionTrackingStrategy;
@@ -57,6 +58,8 @@ public class SessionInfoParsingHandler implements ParsingHandler {
                 clazz = URLRewriteSessionTrackingStrategy.class;
             } else if(content.equals("BOT")) {
                 clazz = BotSessionTrackingStrategy.class;
+            } else if(content.equals("COOKIEONLY")) {
+            	clazz = CookieOnlySessionTrackingStrategy.class;
             } else {
                 throw new ParserException("Session tracking strategy '" + content + "' not supported.");
             }

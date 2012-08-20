@@ -19,6 +19,7 @@
 package de.schlund.pfixxml.serverutil;
 
 import java.util.Enumeration;
+import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
 import java.util.Properties;
@@ -36,6 +37,8 @@ public class SessionHelper {
     private final static Logger LOG = Logger.getLogger(SessionHelper.class);
 
     private static final String ENC_STR = "jsessionid";
+    
+    private static Map<String, String> portMap = new HashMap<String, String>();
 
     public static void saveSessionData(Map<String, Object> store, HttpSession session) {
         try {
@@ -189,13 +192,23 @@ public class SessionHelper {
                     }
                     rcBuf.append(redirectPort);
                 }
+            } else if("http".equals(scheme) && req.isSecure()) {
+            	if (props != null) {
+            		String redirectPort = getHTTPRedirectPort(props, req.getServerPort());
+            		if(redirectPort == null || redirectPort.equals("")) {
+            			redirectPort = "";
+            		} else {
+            			redirectPort = ":" + redirectPort;
+            		}
+            		rcBuf.append(redirectPort);
+            	}
             } else {
                 rcBuf.append(":").append(req.getServerPort());
             }
         }
         return rcBuf;
     }
-
+    
     protected static String stripUriSessionId(String oldSessionId, String uri, StringBuffer rcUri) {
         String rc = oldSessionId;
         try {
@@ -223,6 +236,32 @@ public class SessionHelper {
             LOG.warn("Caught NP-Exception: " + e.getMessage());
         }
         return rc;
+    }
+     
+    private static String getHTTPRedirectPort(Properties props, int port) {
+    	String portStr = String.valueOf(port);
+    	String redirectPort = props.getProperty(AbstractPustefixRequestHandler.PROP_NONSSL_REDIRECT_PORT + portStr);
+    	if(redirectPort == null) {
+    		Enumeration<?> propNames = props.propertyNames();
+    		String mappedPort = null;
+    		while(propNames.hasMoreElements() && mappedPort == null) {
+    			String propName = (String)propNames.nextElement();
+    			if(propName.startsWith(AbstractPustefixRequestHandler.PROP_SSL_REDIRECT_PORT)) {
+    				int ind = propName.lastIndexOf('.');
+    				if(ind > -1) {
+    					String portKey = propName.substring(ind + 1);
+    					String portVal = props.getProperty(propName);
+    					if(portVal.equals(portStr)) {
+    						mappedPort = portKey;
+    					}
+    		    	}
+    			}
+    		}
+    		if(mappedPort == null) mappedPort = "";
+    		props.setProperty(AbstractPustefixRequestHandler.PROP_NONSSL_REDIRECT_PORT + portStr, mappedPort);
+    		redirectPort = mappedPort;
+    	}
+    	return redirectPort;
     }
 
 }
