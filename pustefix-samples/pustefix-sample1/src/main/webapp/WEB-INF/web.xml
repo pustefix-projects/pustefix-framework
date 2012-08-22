@@ -7,6 +7,14 @@
    </context-param>
    -->
    <filter>
+     <filter-name>CharacterEncodingFilter</filter-name>
+     <filter-class>org.springframework.web.filter.CharacterEncodingFilter</filter-class>
+     <init-param>
+       <param-name>encoding</param-name>
+       <param-value>UTF-8</param-value>
+     </init-param>
+   </filter>
+   <filter>
       <filter-name>UrlRewriteFilter</filter-name>
       <filter-class>org.tuckey.web.filters.urlrewrite.UrlRewriteFilter</filter-class>
    </filter>
@@ -15,6 +23,10 @@
       <url-pattern>/xml/main/*</url-pattern>
       <dispatcher>REQUEST</dispatcher>
       <dispatcher>FORWARD</dispatcher>
+   </filter-mapping>
+   <filter-mapping>
+     <filter-name>CharacterEncodingFilter</filter-name>
+     <url-pattern>/*</url-pattern>
    </filter-mapping>
    <servlet>
       <servlet-name>dispatcher</servlet-name>
