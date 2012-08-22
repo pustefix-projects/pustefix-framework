@@ -243,6 +243,15 @@
       </para>
     </section>
 
+    <section xml:id="news.0_18_27.sessiontracking">
+      <title>Cookie-only session tracking</title>
+      <para>
+        Added new sessiontracking strategy which forces cookie-based session tracking without falling back to URL rewriting when the browser has cookies disabled.
+        The new strategy can be enabled by setting <literal>&lt;session-tracking-strategy&gt;</literal> to <literal>COOKIEONLY</literal> in the project configuration
+        (see <xref linkend="configuration.project.projectxml"/>).
+      </para>
+    </section>
+
   </section>
 
 </chapter>

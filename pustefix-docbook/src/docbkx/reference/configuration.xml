@@ -237,7 +237,8 @@
 
   <!-- Sets the session tracking strategy. Default is 'COOKIE'.
        Alternatively you can set 'URL' to force session tracking
-       within the URL, even if clients support cookies. You can
+       within the URL, even if clients support cookies. You can completely
+       disable URL based session tracking by setting 'COOKIEONLY'. You can
        completely leave out this element, if you go with the default. -->
   <session-tracking-strategy>COOKIE</session-tracking-strategy>
 
