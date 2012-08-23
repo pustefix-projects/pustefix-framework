@@ -20,10 +20,12 @@ package org.pustefixframework.config.contextxmlservice.parser;
 
 import java.util.Collection;
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Properties;
 
+import org.pustefixframework.config.contextxmlservice.GlobalOutputConfig;
 import org.pustefixframework.config.contextxmlservice.IWrapperConfig;
 import org.pustefixframework.config.contextxmlservice.PageFlowHolder;
 import org.pustefixframework.config.contextxmlservice.PageRequestConfig;
@@ -131,10 +133,17 @@ public class ContextXMLParsingHandler implements ParsingHandler {
             }
             if (ConfigurableState.class.isAssignableFrom(defaultStateType)) {
                 final Class<? extends ConfigurableState> stateType = defaultStateType.asSubclass(ConfigurableState.class);
+                //add global output resources
+                final GlobalOutputConfig globalOutputConfig = ParsingUtils.getFirstTopObject(GlobalOutputConfig.class, context, false);
+                Map<String, ?> globalResources = new HashMap<String, Object>();
+                if(globalOutputConfig != null) {
+                    globalResources = globalOutputConfig.getContextResources();
+                }
+                final Map<String, ?> resources = globalResources;
                 StateConfig config = new StateConfig() {
                     
                     public Map<String, ?> getContextResources() {
-                        return Collections.emptyMap();
+                        return resources;
                     }
             
                     public Policy getIWrapperPolicy() {

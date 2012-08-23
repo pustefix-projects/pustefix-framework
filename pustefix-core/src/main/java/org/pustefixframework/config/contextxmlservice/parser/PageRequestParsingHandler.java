@@ -19,10 +19,12 @@
 package org.pustefixframework.config.contextxmlservice.parser;
 
 import java.util.Collection;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
 import org.pustefixframework.config.Constants;
+import org.pustefixframework.config.contextxmlservice.GlobalOutputConfig;
 import org.pustefixframework.config.contextxmlservice.IWrapperConfig;
 import org.pustefixframework.config.contextxmlservice.parser.internal.ContextConfigImpl;
 import org.pustefixframework.config.contextxmlservice.parser.internal.ContextXMLServletConfigImpl;
@@ -123,6 +125,18 @@ public class PageRequestParsingHandler implements ParsingHandler {
                 stateConfig.setDefaultIHandlerState(config.getDefaultIHandlerState());
                 stateConfig.setDefaultIHandlerStateParentBeanName(config.getDefaultIHandlerStateParentBeanName());
                 ctxConfig.addPageRequest(pageConfig);
+                
+                //add global output resources
+                GlobalOutputConfig globalOutputConfig = ParsingUtils.getFirstTopObject(GlobalOutputConfig.class, context, false);
+                if(globalOutputConfig != null) {
+                    Map<String, ?> globalResources = globalOutputConfig.getContextResources();
+                    Iterator<String> it = globalResources.keySet().iterator();
+                    while(it.hasNext()) {
+                        String prefix = it.next();
+                        Object resource = globalResources.get(prefix);
+                        stateConfig.addContextResource(prefix, resource);
+                    }
+                }
                 
                 context.getObjectTreeElement().addObject(pageConfig);
                 context.getObjectTreeElement().addObject(stateConfig);

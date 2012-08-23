@@ -18,9 +18,6 @@
 
 package org.pustefixframework.config.contextxmlservice.parser;
 
-import java.util.Iterator;
-import java.util.Map;
-
 import org.pustefixframework.config.contextxmlservice.ContextConfig;
 import org.pustefixframework.config.contextxmlservice.ContextResourceConfig;
 import org.pustefixframework.config.contextxmlservice.ContextXMLServletConfig;
@@ -43,31 +40,17 @@ public class PageRequestOutputResourceParsingHandler implements ParsingHandler {
         ParsingUtils.checkAttributes(element, new String[] {"node"}, new String[] {"class","bean-ref"});
         
         StateConfigImpl stateConfig = ParsingUtils.getFirstTopObject(StateConfigImpl.class, context, true);
-        
-        //add global ContextResources first
-        if(stateConfig.getContextResources().isEmpty()) {
-        	GlobalOutputConfig globalOutputConfig = ParsingUtils.getFirstTopObject(GlobalOutputConfig.class, context, false);
-            if(globalOutputConfig != null) {
-            	Map<String, Object> globalResources = globalOutputConfig.getContextResources();
-            	Iterator<String> it = globalResources.keySet().iterator();
-            	while(it.hasNext()) {
-            		String prefix = it.next();
-            		Object resource = globalResources.get(prefix);
-            		stateConfig.addContextResource(prefix, resource);
-            	}
-            }
-        }
        
         String node = element.getAttribute("node").trim();
         if(stateConfig.getContextResources().containsKey(node)) {
-        	GlobalOutputConfig globalOutputConfig = ParsingUtils.getFirstTopObject(GlobalOutputConfig.class, context, false);
+            GlobalOutputConfig globalOutputConfig = ParsingUtils.getFirstTopObject(GlobalOutputConfig.class, context, false);
             if(globalOutputConfig != null && globalOutputConfig.containsNode(node)) {
-            	throw new ParserException("ContextResource output node '" + node + "' already used within <global-output>");
+                throw new ParserException("ContextResource output node '" + node + "' already used within <global-output>");
             } else {
-            	throw new ParserException("Multiple ContextResources with node '" + node + "' found in <output>");
+                throw new ParserException("Multiple ContextResources with node '" + node + "' found in <output>");
             }
         }
-        	
+            
         String className = element.getAttribute("class").trim();
         String beanRef = element.getAttribute("bean-ref").trim();
         if (className.length() == 0 && beanRef.length() == 0) {
