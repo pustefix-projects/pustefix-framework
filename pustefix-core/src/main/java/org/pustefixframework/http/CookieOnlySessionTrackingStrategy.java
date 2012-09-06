@@ -40,11 +40,24 @@ public class CookieOnlySessionTrackingStrategy implements SessionTrackingStrateg
     public void handleRequest(HttpServletRequest req, HttpServletResponse res) throws ServletException, IOException {
 
         if("/pfxsession".equals(req.getPathInfo())) {
-            String msg = "false";
-            if(req.isRequestedSessionIdValid()) {
-                msg = "true";
+            
+            int cookiesEnabled = 0;
+            if(req.getParameter("nocookies") != null) {
+            	cookiesEnabled = 1;
             }
-            sendInfo(res, msg);
+            int sessionValidity;
+            String sessionId = "-";
+            if(req.isRequestedSessionIdValid()) { //valid session id
+                sessionValidity = 0;
+                sessionId = req.getRequestedSessionId();
+            } else if(req.getRequestedSessionId() == null) { //no session id
+            	sessionValidity = 1;
+            } else { //invalid session
+            	sessionValidity = 2;
+            	sessionId = req.getRequestedSessionId();
+            }
+            LOGGER_SESSION.info("SESSION_COOKIE_CHECK|" + AbstractPustefixRequestHandler.getRemoteAddr(req) + "|" + cookiesEnabled + "|" + sessionValidity + "|" + sessionId);
+            sendInfo(res, "" + sessionValidity);
             return;
         }
         
