@@ -351,7 +351,9 @@ public class TargetGenerator implements ResourceVisitor, ServletContextAware, In
         			if("dynamic".equals(search)) {
         				if(res instanceof ModuleResource) {
         					module = res.toURI().getAuthority();
-        				}
+        				} else {
+                                                module = null;
+                                        }
         			}
         			if(module == null || module.equals("")) module = "WEBAPP";
         			return createTargetForRender(href, part, module, selectedVariant, partInfo.getContentType());
