@@ -323,6 +323,8 @@ public class CookieOnlySessionTrackingStrategy implements SessionTrackingStrateg
     
     public static void sendInfo(HttpServletResponse res, String msg) throws IOException {
         res.setContentType("text/plain");
+        res.setHeader("Cache-Control", "no-store, no-cache");
+        res.setHeader("Pragma", "no-cache");
         PrintWriter writer = res.getWriter();
         writer.print(msg);
         writer.close();
