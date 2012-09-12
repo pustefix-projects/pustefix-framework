@@ -39,7 +39,10 @@ import de.schlund.pfixcore.workflow.Context;
  * method to implement the actual filter code.
  * 
  * @author Sebastian Marsching <sebastian.marsching@1und1.de>
+ * 
+ * @deprecated you should use javax.servlet.Filter directly instead
  */
+@Deprecated
 public abstract class AbstractContextServletFilter implements Filter {
     
     private String contextIdentifier;
