@@ -683,7 +683,7 @@ public class PustefixInternalsRequestHandler implements UriProvidingHttpRequestH
     }
     
     private void deliver(Resource res, HttpServletResponse response) throws IOException {
-        if("test".equals(EnvironmentProperties.getProperties().get("mode"))) {
+        if(!"prod".equals(EnvironmentProperties.getProperties().get("mode"))) {
             if(res.exists()) {
                 OutputStream out = response.getOutputStream();
         
