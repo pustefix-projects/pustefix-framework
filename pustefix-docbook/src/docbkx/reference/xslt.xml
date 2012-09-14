@@ -715,16 +715,18 @@
        Thus you can include parts dynamically, e.g. you can include a part based on information from the result tree, which
        isn't available on the former transformation levels. This can also help to keep your stylesheets small, but it also has
        some drawbacks: standalone rendering of a part costs more time than doing a regular include and the XML source context
-       node is not defined (at least if a part isn't rendered within a main transformation, but standalone, e.g. triggered by an AJAX call).
+       node can only be relative if the part is rendered within the main transformation, and not standalone, e.g. triggered by an AJAX call.
       </para>    
       <para>
          Render includes are done using the <literal>&lt;pfx:render&gt;</literal> tag. Its syntax is similar to <literal>&lt;pfx:include&gt;</literal>.
          But referenced parts additionally have to be marked as render parts using the <literal>render</literal> attribute.
          You can optionally specify in which variants a render part should be available. All this is necessary
-         to know which parts can be invoked dynamically when pre-generating all pages for production environments. 
+         to know which parts can be invoked dynamically when pre-generating all pages for production environments.
+         Setting the <literal>contextual</literal> attribute to <literal>true</literal> you can specify that a part is context-dependent,
+         meaning that the initial context node for the transformation will be set to the current context node of the main transformation.
       </para>
       <programlisting language="xml"><![CDATA[<include_parts>
-  <part name="Foo" render="true" render-variants="foo foo:bar:baz">
+  <part name="Foo" render="true" render-variants="foo foo:bar:baz" contextual="true">
     <theme name="default">
       ...
     </theme>

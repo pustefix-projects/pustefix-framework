@@ -254,4 +254,25 @@
 
   </section>
 
+  <section xml:id="news.0_18_29">
+    <title>What's new in Pustefix 0.18.29</title>
+
+    <section xml:id="news.0_18_29.renderextensions">
+      <title>Contextual render includes</title>
+      <para>
+        Added support for setting the context node of the main transformation as the context node of a render include sub-transformation by specifying 
+        render parts as <literal>contextual</literal>.
+        (see <xref linkend="xslt.renderextensions"/>).
+      </para>
+    </section>
+
+    <section xml:id="news.0_18_29.xslt">
+      <title>XSL parameters within include parameter XPath expressions</title>
+      <para>
+        Added support for using XSL parameters within include parameter XPath expressions, e.g. you can access the page and sitemap parameters to dynamically create include part names. 
+      </para>
+    </section>
+
+  </section>
+
 </chapter>
