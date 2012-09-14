@@ -356,7 +356,7 @@ public class TargetGenerator implements ResourceVisitor, ServletContextAware, In
                                         }
         			}
         			if(module == null || module.equals("")) module = "WEBAPP";
-        			return createTargetForRender(href, part, module, selectedVariant, partInfo.getContentType());
+        			return createTargetForRender(href, part, module, selectedVariant, partInfo.getContentType(), partInfo.isContextual());
         		} else {
         			LOG.warn("Part '" + part + "' in '" + res.toURI() + "' is not marked as render part");
         		}
@@ -847,9 +847,9 @@ public class TargetGenerator implements ResourceVisitor, ServletContextAware, In
                     }
                     if(href.startsWith("/")) href = href.substring(1);
                     String part = partInfo.getName();
-                    createTargetForRender(href, part, module, null, partInfo.getContentType());
+                    createTargetForRender(href, part, module, null, partInfo.getContentType(), partInfo.isContextual());
                     for(String variant: partInfo.getRenderVariants()) {
-                        createTargetForRender(href, part, module, variant, partInfo.getContentType());
+                        createTargetForRender(href, part, module, variant, partInfo.getContentType(), partInfo.isContextual());
                     }
                 }
             }
@@ -953,7 +953,7 @@ public class TargetGenerator implements ResourceVisitor, ServletContextAware, In
 
     // *******************************************************************************************
     
-    private Target createTargetForRender(String href, String part, String module, String variantId, String contentType) {
+    private Target createTargetForRender(String href, String part, String module, String variantId, String contentType, boolean isContextual) {
         
         Themes themes = global_themes;
         if(variantId != null) {
@@ -1024,6 +1024,7 @@ public class TargetGenerator implements ResourceVisitor, ServletContextAware, In
             	}
             	xslTarget.addParam("outputmethod", outMethod);
             }
+            xslTarget.addParam("render_contextual", isContextual);
             target = xslTarget;
         }
         return target;

@@ -44,8 +44,6 @@ import de.schlund.pfixxml.util.Base64Utils;
  */
 
 public class DerefRequestHandler extends AbstractPustefixRequestHandler {
-   
-    private static final long serialVersionUID = 4003807093421866709L;
     
     protected final static Logger   DEREFLOG        = Logger.getLogger("LOGGER_DEREF");
     protected final static Logger   LOG             = Logger.getLogger(DerefRequestHandler.class);

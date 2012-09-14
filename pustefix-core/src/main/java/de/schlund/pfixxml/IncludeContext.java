@@ -63,6 +63,9 @@ public class IncludeContext {
 	public Value getIncludePartParam(String name) {
 		return includePartParams.get(name);
 	}
+	public boolean hasIncludePartParam(String name) {
+		return includePartParams.containsKey(name);
+	}
 	public void addIncludePartParam(String name, Value value) {
 		includePartParams.put(name, value);
 	}

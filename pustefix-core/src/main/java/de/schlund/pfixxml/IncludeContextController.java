@@ -3,6 +3,8 @@ package de.schlund.pfixxml;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Stack;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import org.w3c.dom.Element;
 import org.w3c.dom.Node;
@@ -138,15 +140,26 @@ public class IncludeContextController {
 	
 	public Value getIncludeParam(Context parentContext, String name) throws Exception {
 		try {
-			IncludeContext includeContext = includeContextStack.peek();
-			Value value = includeContext.getIncludePartParam(name);
-			if(value == null) throw new XPathException("Include parameter '" + name + "' not found.");
-			return value;
+			if(!includeContextStack.isEmpty()) { 
+				IncludeContext includeContext = includeContextStack.peek();
+				Value value = includeContext.getIncludePartParam(name);
+				if(value != null) {
+					return value;
+				}
+			}
+			throw new XPathException("Include parameter '" + name + "' not found.");
 		} catch (Exception x) {
-			x.printStackTrace();
 			ExtensionFunctionUtils.setExtensionFunctionError(x);
 			throw x;
 		}
+	}
+	
+	private boolean isIncludeParam(String name) {
+		if(!includeContextStack.isEmpty()) {
+			IncludeContext includeContext = includeContextStack.peek();
+			return includeContext.hasIncludePartParam(name);
+		}
+		return false;
 	}
 	
 	public void setAppliedParameter(String name, Value value) {
@@ -157,11 +170,26 @@ public class IncludeContextController {
 	
 	public Value evaluate (Context parentContext, String expr) throws Exception {
 		try {
-			expr = expr.replaceAll("\\$(\\w+)", "pfx:__incparam('$1')");
+			StringBuffer sb = new StringBuffer();
+			Pattern pattern = Pattern.compile("\\$(\\w+)");
+			Matcher matcher = pattern.matcher(expr);
+			while(matcher.find()) {
+				String match = matcher.group(1);
+				if(isIncludeParam(match)) {
+					matcher.appendReplacement(sb, "pfx:__incparam('" + match + "')");
+				} else {
+					matcher.appendReplacement(sb, "\\$" + match);
+				}
+			}
+			matcher.appendTail(sb);
+			
+			expr = sb.toString();
+			
 			Context context = parentContext.newContext();
 			context.setContextNode((NodeInfo)contextNode);
 			context.setPosition(1);
 	        context.setLast(1);
+	        
 	        return Extensions.evaluate(context, expr);
 		} catch (Exception x) {
 			ExtensionFunctionUtils.setExtensionFunctionError(x);
@@ -175,7 +203,7 @@ public class IncludeContextController {
 	
 	public static IncludeContextController create(Object contextNode) throws Exception {
 		try {
-		return new IncludeContextController(getNodeInfo(contextNode));
+			return new IncludeContextController(getNodeInfo(contextNode));
 		} catch(Exception x) {
 			ExtensionFunctionUtils.setExtensionFunctionError(x);
 			throw x;

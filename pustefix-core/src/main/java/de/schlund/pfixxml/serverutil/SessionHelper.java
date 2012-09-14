@@ -19,7 +19,6 @@
 package de.schlund.pfixxml.serverutil;
 
 import java.util.Enumeration;
-import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
 import java.util.Properties;
@@ -38,8 +37,6 @@ public class SessionHelper {
 
     private static final String ENC_STR = "jsessionid";
     
-    private static Map<String, String> portMap = new HashMap<String, String>();
-
     public static void saveSessionData(Map<String, Object> store, HttpSession session) {
         try {
             Enumeration<?> enm = session.getAttributeNames();

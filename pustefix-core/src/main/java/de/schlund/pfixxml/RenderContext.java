@@ -1,8 +1,12 @@
 package de.schlund.pfixxml;
 
+import java.util.HashMap;
 import java.util.Map;
+import java.util.Stack;
 
 import javax.xml.transform.Templates;
+
+import org.w3c.dom.Node;
 
 import de.schlund.pfixcore.exception.PustefixRuntimeException;
 import de.schlund.pfixxml.util.SimpleCacheLRU;
@@ -13,24 +17,18 @@ public abstract class RenderContext {
     private final static String SAXON1_IMPL = "de.schlund.pfixxml.RenderContextSaxon1";
     private final static String SAXON2_IMPL = "de.schlund.pfixxml.RenderContextSaxon2";
     
-    private RenderContext parent;
     private Map<String, Object> parameters;
     
     //Second-level template cache only available within the current transformation
     private SimpleCacheLRU<String, Templates> templatesCache = new SimpleCacheLRU<String, Templates>(10);
+    private Map<String, Boolean> templateToContextual = new HashMap<String, Boolean>();
     
     private long templateCreationTime;
     private long transformationTime;
     
+    private Stack<Node> contextNodes = new Stack<Node>();
+    
     public RenderContext() {
-    }
-    
-    public void setParent(RenderContext parent) {
-        this.parent = parent;
-    }
-    
-    public RenderContext getParent() {
-        return parent;
     }
     
     public Map<String, Object> getParameters() {
@@ -45,8 +43,13 @@ public abstract class RenderContext {
         return templatesCache.get(templatesId);
     }
     
-    public void setTemplates(String templatesId, Templates templates) {
+    public void setTemplates(String templatesId, Templates templates, boolean contextual) {
         templatesCache.put(templatesId, templates);
+        templateToContextual.put(templatesId, contextual);
+    }
+    
+    public boolean isContextual(String templatesId) {
+    	return templateToContextual.get(templatesId);
     }
     
     public void profile(long templateCreationTime, long transformationTime) {
@@ -60,6 +63,19 @@ public abstract class RenderContext {
     
     public long getTransformationTime() {
         return transformationTime;
+    }
+    
+    public void pushContext(Node node) {
+    	contextNodes.push(node);
+    }
+    
+    public Node popContext() {
+    	return contextNodes.pop();
+    }
+    
+    public Node getContextNode() {
+    	if(contextNodes.empty()) return null;
+    	return contextNodes.peek();
     }
     
     public static RenderContext create(XsltVersion xsltVersion) {

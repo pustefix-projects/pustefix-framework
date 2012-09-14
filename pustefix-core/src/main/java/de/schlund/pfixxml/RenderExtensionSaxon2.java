@@ -14,7 +14,7 @@ import de.schlund.pfixxml.util.xsltimpl.XsltContextSaxon2;
 
 public class RenderExtensionSaxon2 {
 
-    public static void render(XPathContext saxonContext, TargetGenerator targetGenerator, String href, 
+    public static boolean render(XPathContext saxonContext, TargetGenerator targetGenerator, String href, 
             String part, String module, String search, Node node, RequestContextImpl requestContext, 
             RenderContext renderContext) throws Exception {
 
@@ -26,7 +26,7 @@ public class RenderExtensionSaxon2 {
                 saxonRenderContext.setProperties(saxonContext.getController().getOutputProperties());
             }
            
-            RenderExtension.render(targetGenerator, href, part, module, search,
+            return RenderExtension.render(targetGenerator, href, part, module, search,
                     node, requestContext, saxonRenderContext);
            
         } catch(Exception x) {

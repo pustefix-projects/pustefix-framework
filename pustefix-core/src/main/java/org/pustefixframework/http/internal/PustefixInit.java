@@ -77,11 +77,6 @@ import de.schlund.pfixxml.util.logging.ProxyLogUtil;
  */
 public class PustefixInit {
 
-    /**
-     * 
-     */
-    private static final long serialVersionUID = 3072991705791635451L;
-
     // ~ Instance/static variables
     // ..................................................................
 

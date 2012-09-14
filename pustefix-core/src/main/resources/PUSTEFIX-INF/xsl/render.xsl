@@ -87,7 +87,18 @@
     <xsl:param name="part"/>
     <xsl:param name="module"/>
     <xsl:param name="search"/>
-    <xsl:if test="rex:render($__target_gen, $href, $part, $module, $search, node(), $__context__, $__rendercontext__)"/>
+    <xsl:variable name="result" select="rex:render($__target_gen, $href, $part, $module, $search, ., $__context__, $__rendercontext__)"/>
+    <xsl:if test="not($result)">
+      <xsl:variable name="text">Missing render include: '<xsl:value-of select="$part"/>' in resource '<xsl:value-of select="$href"/>'
+        <xsl:if test="$search='dynamic'"> dynamically searched </xsl:if><xsl:if test="$module">from '<xsl:value-of select="$module"/>'</xsl:if>
+      </xsl:variable>
+      <img src="{$__contextpath}/modules/pustefix-core/img/warning.gif" alt="{$text}" title="{$text}"/>
+      <xsl:message>*** Render include not found:
+        href = <xsl:value-of select="$href"/>
+        module = <xsl:value-of select="$module"/>
+        search = <xsl:value-of select="$search"/> 
+        part = <xsl:value-of select="$part"/> ***</xsl:message>
+    </xsl:if>
   </xsl:template>
 
 </xsl:stylesheet>

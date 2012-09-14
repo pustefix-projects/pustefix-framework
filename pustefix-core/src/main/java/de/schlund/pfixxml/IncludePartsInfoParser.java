@@ -96,7 +96,12 @@ public class IncludePartsInfoParser {
                             if(contentType != null) {
                             	contentType = contentType.trim();
                             }
-                            currentInfo = new IncludePartInfo(partName, render, variantSet, contentType);
+                            boolean contextual = false;
+                            val = attributes.getValue("contextual");
+                            if(val != null) {
+                                contextual = Boolean.parseBoolean(val);
+                            }
+                            currentInfo = new IncludePartInfo(partName, render, variantSet, contentType, contextual);
                             includePartInfos.put(partName, currentInfo);
                         }
                     }
