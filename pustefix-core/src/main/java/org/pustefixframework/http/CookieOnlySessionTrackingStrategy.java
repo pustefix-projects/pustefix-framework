@@ -97,7 +97,6 @@ public class CookieOnlySessionTrackingStrategy implements SessionTrackingStrateg
                             
                             //copy existing session data into new secure session
                             session = copySession(session, req);
-                            session.setAttribute(SessionAdmin.SESSION_IS_SECURE, Boolean.TRUE);
                             addCookie(COOKIE_SESSION_SSL, "true", req, res);
                             
                         }
@@ -260,6 +259,9 @@ public class CookieOnlySessionTrackingStrategy implements SessionTrackingStrateg
              HttpSession session = req.getSession(true);
              LOGGER_SESSION.info("Create session: " + session.getId());
              session.setAttribute(AbstractPustefixRequestHandler.SESSION_ATTR_COOKIE_SESSION, true);
+             if(req.isSecure()) {
+            	 session.setAttribute(SessionAdmin.SESSION_IS_SECURE, Boolean.TRUE);
+             }
              context.registerSession(req, session);
              return session;
         } else {
@@ -285,6 +287,9 @@ public class CookieOnlySessionTrackingStrategy implements SessionTrackingStrateg
             HttpSession newSession = req.getSession(true);
             LOGGER_SESSION.info("Create session: " + newSession.getId());
             newSession.setAttribute(AbstractPustefixRequestHandler.SESSION_ATTR_COOKIE_SESSION, true);
+            if(req.isSecure()) {
+           	 	newSession.setAttribute(SessionAdmin.SESSION_IS_SECURE, Boolean.TRUE);
+            }
             
             context.getSessionAdmin().registerSession(newSession, traillog, infostruct.getData().getServerName(), infostruct.getData().getRemoteAddr());
          
