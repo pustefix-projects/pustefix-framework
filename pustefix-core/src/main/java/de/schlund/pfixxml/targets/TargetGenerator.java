@@ -994,6 +994,7 @@ public class TargetGenerator implements ResourceVisitor, ServletContextAware, In
             } else {
                 xmlTarget.addParam("prohibitEdit", "yes");
             }
+            xmlTarget.addParam(XSLPARAM_SITEMAP, siteMap.getSiteMapXMLElement(getXsltVersion(), renderParams.get("lang")));
             
             
             XSLVirtualTarget xslTarget = (XSLVirtualTarget)createTarget(TargetType.XSL_VIRTUAL, renderKey + ".xsl", themes);
@@ -1025,6 +1026,7 @@ public class TargetGenerator implements ResourceVisitor, ServletContextAware, In
             	xslTarget.addParam("outputmethod", outMethod);
             }
             xslTarget.addParam("render_contextual", isContextual);
+            xslTarget.addParam(XSLPARAM_SITEMAP, siteMap.getSiteMapXMLElement(getXsltVersion(), renderParams.get("lang")));
             target = xslTarget;
         }
         return target;
