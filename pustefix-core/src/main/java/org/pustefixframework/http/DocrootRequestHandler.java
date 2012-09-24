@@ -104,13 +104,13 @@ public class DocrootRequestHandler implements UriProvidingHttpRequestHandler, Se
 
         // Avoid path traversal and access to config or source files
         if (path.contains("..") || path.startsWith("/WEB-INF")) {
-            res.sendError(HttpServletResponse.SC_NOT_FOUND, path);
+            res.sendError(HttpServletResponse.SC_NOT_FOUND);
             return;
         }
 
         // Directory listing is not allowed
         if (path.endsWith("/")) {
-            res.sendError(HttpServletResponse.SC_FORBIDDEN, path);
+            res.sendError(HttpServletResponse.SC_FORBIDDEN);
             return;
         }
 
@@ -144,7 +144,7 @@ public class DocrootRequestHandler implements UriProvidingHttpRequestHandler, Se
         }
         
         if(inputResource == null) {
-            res.sendError(HttpServletResponse.SC_NOT_FOUND, path);
+            res.sendError(HttpServletResponse.SC_NOT_FOUND);
             if(LOG.isDebugEnabled()) {
                 LOG.debug("Resource doesn't exist -> send 'not found': " + path);
             }
@@ -152,7 +152,7 @@ public class DocrootRequestHandler implements UriProvidingHttpRequestHandler, Se
         }
         
         if(!inputResource.isFile()) {
-            res.sendError(HttpServletResponse.SC_FORBIDDEN, path);
+            res.sendError(HttpServletResponse.SC_FORBIDDEN);
             if(LOG.isDebugEnabled()) {
                 LOG.debug("Resource isn't a normal file -> send 'forbidden': " + path);
             }
