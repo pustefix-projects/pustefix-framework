@@ -1830,6 +1830,31 @@ public @interface CustomerSerializer {}]]></programlisting>
   ...
 </formresult>]]></programlisting>
     </section>
+    <section xml:id="advanced.object2xml.jaxb">
+      <title>Using JAXB serialization</title>
+      <para>As an alternative to the builtin XML marshalling you can use JAXB. Pustefix checks if the class definition of an object is annotated with the JAXB annotation 
+            <literal>javax.xml.bind.annotation.XmlRootElement</literal> and, if so, hands over the serialization to JAXB.
+      </para>
+	  <programlisting language="java"><![CDATA[...
+	 
+@XmlRootElement 
+public class Account {
+  
+    private long accountNo;
+  
+    @XmlAttribute
+    public long getAccountNo() {
+        return accountNo;
+    }
+
+    public void setAccountNo(long accountNo) {
+        this.accountNo = accountNo;
+    }
+
+    ...
+
+}]]></programlisting>
+    </section>
   </section>
   
   <section xml:id="advanced.iwrapperannotations">

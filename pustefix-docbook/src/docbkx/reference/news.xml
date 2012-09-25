@@ -275,4 +275,17 @@
 
   </section>
 
+  <section xml:id="news.0_18_30">
+    <title>What's new in Pustefix 0.18.30</title>
+
+    <section xml:id="news.0_18_30.oxm">
+      <title>Object-to-XML mapping with JAXB</title>
+      <para>
+        Pustefix's object-to-XML mapping layer now alternatively supports marshalling via JAXB, e.g. <literal>ContextResources</literal> annotated with the according JAXB annotation 
+        now are automatically serialized to the DOM tree via <literal>JAXB</literal> instead of the builtin serialization mechanism (see <xref linkend="advanced.object2xml.jaxb"/>).
+      </para>
+    </section>
+
+  </section>
+
 </chapter>
