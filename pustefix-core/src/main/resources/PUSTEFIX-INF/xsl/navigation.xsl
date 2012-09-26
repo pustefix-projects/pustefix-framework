@@ -226,6 +226,7 @@
     <xsl:param name="anchors"/>
     <xsl:param name="mypage">
       <xsl:choose>
+        <xsl:when test="string($buttpage) = '/'">pfx:getHomePage()</xsl:when>
         <xsl:when test="not(string($buttpage) = '')">'<xsl:value-of select="$buttpage"/>'</xsl:when>
         <xsl:otherwise>$page</xsl:otherwise>
       </xsl:choose>

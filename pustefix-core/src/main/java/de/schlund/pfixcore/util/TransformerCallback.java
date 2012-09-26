@@ -445,6 +445,17 @@ public class TransformerCallback {
         }
     }
     
+    public static String getHomePage(RequestContextImpl requestContext, TargetGenerator gen) throws Exception {
+        try {
+            ContextImpl context = requestContext.getParentContext();
+            String defaultPage = context.getContextConfig().getDefaultPage(context.getVariant());
+            return defaultPage;
+        } catch (Exception x) {
+            ExtensionFunctionUtils.setExtensionFunctionError(x);
+            throw x;
+        }
+    }
+    
     public static String getEnvProperty(String propertyName) {
         return EnvironmentProperties.getProperties().getProperty(propertyName);
     }

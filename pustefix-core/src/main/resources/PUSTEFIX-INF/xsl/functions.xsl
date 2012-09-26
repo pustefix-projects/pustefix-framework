@@ -128,6 +128,10 @@
     <func:result select="callback:omitPage($__context__,$__target_gen,$pageName,$language,$altKey)"/>
   </func:function>
   
+  <func:function name="pfx:getHomePage">
+    <func:result select="callback:getHomePage($__context__,$__target_gen)"/>
+  </func:function>
+  
   <func:function name="pfx:getPageAlias">
     <xsl:param name="pageName"/>
     <xsl:param name="language"><xsl:value-of select="$lang"/></xsl:param>
