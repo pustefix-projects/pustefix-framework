@@ -243,6 +243,30 @@ public class PustefixInternalsRequestHandler implements UriProvidingHttpRequestH
                    } else {
                        res.sendError(HttpServletResponse.SC_NOT_FOUND, "Missing resource parameter");
                    }
+               } else if(action.equals("toolext")) {
+            	   boolean toolExtEnabled = targetGenerator.getToolingExtensions();
+            	   targetGenerator.setToolingExtensions(!toolExtEnabled);
+            	   targetGenerator.forceReinit();
+            	   messageList.addMessage(Message.Level.INFO, (toolExtEnabled?"Disabled":"Enabled") + " TargetGenerator tooling extensions.");
+            	   String referer = req.getHeader("Referer");
+            	   if(referer != null && !referer.contains("pfxinternals")) {
+            		   res.sendRedirect(referer);
+            		   return;
+            	   } else {
+            		   res.sendRedirect(req.getContextPath()+ handlerURI + "/messages");
+            		   return;
+            	   }
+               } else if(action.equals("retarget")) {
+            	   targetGenerator.forceReinit();
+            	   messageList.addMessage(Message.Level.INFO, "Reloaded TargetGenerator with cleared cache.");
+            	   String referer = req.getHeader("Referer");
+            	   if(referer != null && !referer.contains("pfxinternals")) {
+            		   res.sendRedirect(referer);
+            		   return;
+            	   } else {
+            		   res.sendRedirect(req.getContextPath()+ handlerURI + "/messages");
+            		   return;
+            	   }
                }
            }
            

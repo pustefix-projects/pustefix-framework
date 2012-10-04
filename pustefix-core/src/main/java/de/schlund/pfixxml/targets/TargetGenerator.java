@@ -223,6 +223,7 @@ public class TargetGenerator implements ResourceVisitor, ServletContextAware, In
     private void reload() throws Exception {
         pagetree = new PageTargetTree();
         alltargets.clear();
+        cacheFactory.reset();
         includeDocumentFactory.reset();
         targetDependencyRelation.reset();
         auxDependencyFactory.reset();
@@ -230,6 +231,10 @@ public class TargetGenerator implements ResourceVisitor, ServletContextAware, In
         sharedLeafFactory.reset();
         pageInfoFactory.reset();
         includePartsInfo.reset();
+        File[] files = cacheDir.getFile().listFiles();
+        for(File file:files) {
+        	FileUtils.delete(file);
+        }
         loadConfig(config_path);
     }
     

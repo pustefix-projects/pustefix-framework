@@ -95,11 +95,19 @@
             color: white;
             font-family: sans-serif;
           }
-          table.actions {
-            border-spacing: 0px;
+          div.actions {
           }
-          table.actions td {
-            padding-right: 20px;
+          div.actiongroup {
+            padding: 10pt;
+          }
+          div.actiongroup div {
+            padding-left: 10pt;
+            padding-bottom: 8pt;
+          }
+          div.actiongroup div.actiongrouptitle {
+            padding-left: 0pt;
+            padding-bottom: 10pt;
+            font-weight: bold;
           }
           table.info {
             border-spacing:0px;
@@ -589,15 +597,19 @@
         
         <xsl:if test="not($category) or $category='actions'">
         <div class="section">
-          <table class="actions">
-            <tr>
-              <td><a href="{$__contextpath}/pfxinternals?action=reload">Schedule webapp reload</a></td>
-              <td><a href="javascript:removeCookies()">Remove cookies</a></td>
-            </tr>
-            <tr>   
-              <td><a href="{$__contextpath}/pfxinternals?action=invalidate">Invalidate all running sessions</a></td>
-            </tr>
-          </table>
+          <div class="actions">
+            <div class="actiongroup">
+              <div class="actiongrouptitle">General</div>
+              <div><a href="{$__contextpath}/pfxinternals?action=reload">Schedule webapp reload</a></div>
+              <div><a href="javascript:removeCookies()">Remove cookies</a></div>
+              <div><a href="{$__contextpath}/pfxinternals?action=invalidate">Invalidate all running sessions</a></div>
+            </div>
+            <div class="actiongroup">
+              <div class="actiongrouptitle">Target generator</div>
+              <div><a href="{$__contextpath}/pfxinternals?action=toolext">Toggle tooling extensions</a></div>
+              <div><a href="{$__contextpath}/pfxinternals?action=retarget">Reload with cleared cache</a></div>
+            </div>
+          </div>
         </div>
         </xsl:if>
         

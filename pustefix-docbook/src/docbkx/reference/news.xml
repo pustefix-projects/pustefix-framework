@@ -288,4 +288,19 @@
 
   </section>
 
+  <section xml:id="news.0_18_31">
+    <title>What's new in Pustefix 0.18.31</title>
+
+    <section xml:id="news.0_18_31.pfxinternals">
+      <title>TargetGenerator tooling extensions toggle</title>
+      <para>
+        Pustefix now supports toggling of the XSL tooling extensions at runtime. Thus you can generate pages in development mode being fully identical with the production version, which
+        can be very helpful if you're debugging problems caused by the additional markup from the XSL tooling (like whitespace differences). The toggle can be found as action on the
+        Pustefix internals page (see <xref linkend="tooling.pfxinternals"/>).
+      </para>
+    </section>
+
+  </section>
+
+
 </chapter>
