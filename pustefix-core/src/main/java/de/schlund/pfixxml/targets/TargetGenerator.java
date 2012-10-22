@@ -337,7 +337,18 @@ public class TargetGenerator implements ResourceVisitor, ServletContextAware, In
                 uri = "docroot:/" + href;
             }
         }
-        Resource res = ResourceUtil.getResource(uri);
+        Resource res;
+        try {
+            res = ResourceUtil.getResource(uri);
+        } catch(IllegalArgumentException x) {
+            Throwable cause = x.getCause();
+            if(cause != null && cause instanceof URISyntaxException) {
+                LOG.warn("Invalid render href '" + uri +"'.");
+                return null;
+            } else {
+                throw x;
+            }
+        }
         IncludePartsInfo info = includePartsInfo.getIncludePartsInfo(res);
         if(info != null) {
         	IncludePartInfo partInfo = info.getParts().get(part);
