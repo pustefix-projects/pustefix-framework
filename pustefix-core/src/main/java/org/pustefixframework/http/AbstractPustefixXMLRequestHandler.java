@@ -51,6 +51,7 @@ import org.apache.log4j.Logger;
 import org.pustefixframework.config.contextxmlservice.AbstractXMLServletConfig;
 import org.pustefixframework.config.contextxmlservice.ServletManagerConfig;
 import org.pustefixframework.container.spring.http.PustefixHandlerMapping;
+import org.pustefixframework.util.LogUtils;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.ApplicationContextAware;
 import org.w3c.dom.Document;
@@ -594,20 +595,20 @@ public abstract class AbstractPustefixXMLRequestHandler extends AbstractPustefix
             StringBuffer logbuff = new StringBuffer();
             logbuff.append(session.getAttribute(VISIT_ID) + "|");
             logbuff.append(session.getId() + "|");
-            logbuff.append(preq.getRemoteAddr() + "|");
-            logbuff.append(preq.getServerName() + "|");
-            logbuff.append(stylesheet + "|");
-            logbuff.append(preq.getOriginalRequestURI());
+            logbuff.append(LogUtils.makeLogSafe(preq.getRemoteAddr()) + "|");
+            logbuff.append(LogUtils.makeLogSafe(preq.getServerName()) + "|");
+            logbuff.append(LogUtils.makeLogSafe(stylesheet) + "|");
+            logbuff.append(LogUtils.makeLogSafe(preq.getOriginalRequestURI()));
             if (preq.getQueryString() != null) {
-                logbuff.append("?" + preq.getQueryString());
+                logbuff.append("?" + LogUtils.makeLogSafe(preq.getQueryString()));
             }
             String flow = (String) paramhash.get("pageflow");
             if (flow != null) {
-                logbuff.append("|" + flow);
+                logbuff.append("|" + LogUtils.makeLogSafe(flow));
             }
             if(addinfo!=null) {
                 for (Iterator<String> keys = addinfo.keySet().iterator(); keys.hasNext(); ) {
-                    logbuff.append("|" + addinfo.get(keys.next()));
+                    logbuff.append("|" + LogUtils.makeLogSafe(""+addinfo.get(keys.next())));
                 }
             }
             LOGGER_TRAIL.warn(logbuff.toString());

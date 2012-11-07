@@ -50,6 +50,7 @@ import org.pustefixframework.config.project.ProjectInfo;
 import org.pustefixframework.config.project.SessionTimeoutInfo;
 import org.pustefixframework.container.spring.http.UriProvidingHttpRequestHandler;
 import org.pustefixframework.util.LocaleUtils;
+import org.pustefixframework.util.LogUtils;
 import org.pustefixframework.util.URLUtils;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.web.context.ServletContextAware;
@@ -433,13 +434,14 @@ public abstract class AbstractPustefixRequestHandler implements SessionTrackingS
             session.setAttribute(SessionUtils.SESSION_ATTR_LOCK, new ReentrantReadWriteLock());
             StringBuffer logbuff = new StringBuffer();
             logbuff.append(session.getAttribute(VISIT_ID) + "|" + session.getId() + "|");
-            logbuff.append(getServerName(req) + "|" + req.getRemoteAddr() + "|" + req.getHeader("user-agent") + "|");
+            logbuff.append(LogUtils.makeLogSafe(getServerName(req)) + "|" + LogUtils.makeLogSafe(req.getRemoteAddr()) + "|");
+            logbuff.append(LogUtils.makeLogSafe(req.getHeader("user-agent")) + "|");
             if (req.getHeader("referer") != null) {
-                logbuff.append(req.getHeader("referer"));
+                logbuff.append(LogUtils.makeLogSafe(req.getHeader("referer")));
             }
             logbuff.append("|");
             if (req.getHeader("accept-language") != null) {
-                logbuff.append(req.getHeader("accept-language"));
+                logbuff.append(LogUtils.makeLogSafe(req.getHeader("accept-language")));
             }
             LOGGER_VISIT.warn(logbuff.toString());
             getSessionAdmin().registerSession(session, getServerName(req), req.getRemoteAddr());
