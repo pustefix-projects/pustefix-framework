@@ -581,7 +581,7 @@ public abstract class AbstractPustefixXMLRequestHandler extends AbstractPustefix
             setCookies(spdoc,res);
         }
         
-        ByteArrayOutputStream output = new ByteArrayOutputStream(4096);
+        ByteArrayOutputStream output = new SkippingByteArrayOutputStream(4096);
         
         boolean modified_or_no_etag = doHandleDocument(spdoc, stylesheet, paramhash, preq, res, session, output);
 
@@ -1119,6 +1119,28 @@ public abstract class AbstractPustefixXMLRequestHandler extends AbstractPustefix
     
     public void setApplicationContext(ApplicationContext applicationContext) {
         this.applicationContext = applicationContext;
+    }
+    
+    
+    class SkippingByteArrayOutputStream extends ByteArrayOutputStream {
+        
+        public SkippingByteArrayOutputStream(int size) {
+            super(size);
+        }
+        
+        @Override
+        public synchronized void writeTo(OutputStream out) throws IOException {
+            
+            //Leading-linebreak workaround for Saxon:
+            //Saxon outputs a leading linebreak when output is written without a xml declaration
+            int offset = 0;
+            if(buf[0] == '\n') {
+                offset = 1;
+            }
+            out.write(buf, offset, count);
+            
+        }
+        
     }
     
 }
