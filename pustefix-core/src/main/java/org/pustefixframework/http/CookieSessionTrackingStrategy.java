@@ -90,7 +90,8 @@ public class CookieSessionTrackingStrategy implements SessionTrackingStrategy {
                 }
             }
         } else if (req.getRequestedSessionId() != null && context.wantsCheckSessionIdValid()) {
-            LOG.debug("*** Found old and invalid session in request");
+            LOG.debug("*** Found old and invalid session in request: " + req.getRequestedSessionId());
+            if(LOG.isDebugEnabled()) LOG.debug(dumpRequest(req));
             // We have no valid session, but the request contained an invalid session id.
             // case a) This may be an invalid id because we invalidated the session when jumping
             // into the secure SSL session (see redirectToSecureSSLSession below). by using the back button
