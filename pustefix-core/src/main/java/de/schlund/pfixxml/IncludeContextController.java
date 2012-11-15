@@ -21,6 +21,8 @@ import de.schlund.pfixxml.util.ExtensionFunctionUtils;
 
 public class IncludeContextController {
 	
+	private static Pattern PARAM_PATTERN = Pattern.compile("\\$([a-zA-Z_][a-zA-Z_0-9\\-\\.]*)");
+	
 	private NodeInfo contextNode;
 	
 	private Stack<IncludeContext> includeContextStack = new Stack<IncludeContext>();
@@ -171,8 +173,7 @@ public class IncludeContextController {
 	public Value evaluate (Context parentContext, String expr) throws Exception {
 		try {
 			StringBuffer sb = new StringBuffer();
-			Pattern pattern = Pattern.compile("\\$(\\w+)");
-			Matcher matcher = pattern.matcher(expr);
+			Matcher matcher = PARAM_PATTERN.matcher(expr);
 			while(matcher.find()) {
 				String match = matcher.group(1);
 				if(isIncludeParam(match)) {
