@@ -1133,12 +1133,11 @@ public abstract class AbstractPustefixXMLRequestHandler extends AbstractPustefix
             
             //Leading-linebreak workaround for Saxon:
             //Saxon outputs a leading linebreak when output is written without a xml declaration
-            int offset = 0;
             if(buf[0] == '\n') {
-                offset = 1;
+                out.write(buf, 1, count -1);
+            } else {
+            	super.writeTo(out);
             }
-            out.write(buf, offset, count);
-            
         }
         
     }
