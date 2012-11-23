@@ -25,6 +25,7 @@ public class IncludeContextController {
 	
 	private NodeInfo contextNode;
 	private int contextNodePosition;
+	private int contextNodeLast;
 	
 	private Stack<IncludeContext> includeContextStack = new Stack<IncludeContext>();
 	
@@ -32,10 +33,11 @@ public class IncludeContextController {
 		this.contextNode = contextNode;
 	}
 	
-	public void setContextNode(Object contextNode, int contextNodePosition) throws Exception {
+	public void setContextNode(Object contextNode, int contextNodePosition, int contextNodeLast) throws Exception {
 		try {
 			this.contextNode = getNodeInfo(contextNode);
 			this.contextNodePosition = contextNodePosition;
+			this.contextNodeLast = contextNodeLast;
 		} catch(Exception x) {
 			ExtensionFunctionUtils.setExtensionFunctionError(x);
 			throw x;
@@ -54,6 +56,15 @@ public class IncludeContextController {
 	public int getContextNodePosition() throws Exception {
 		try {
 			return contextNodePosition;
+		} catch(Exception x) {
+			ExtensionFunctionUtils.setExtensionFunctionError(x);
+			throw x;
+		}
+	}
+	
+	public int getContextNodeLast() throws Exception {
+		try {
+			return contextNodeLast;
 		} catch(Exception x) {
 			ExtensionFunctionUtils.setExtensionFunctionError(x);
 			throw x;
@@ -201,7 +212,7 @@ public class IncludeContextController {
 			context.setContextNode((NodeInfo)contextNode);
 			context.setPosition(contextNodePosition);
 			context.setCurrentNode((NodeInfo)contextNode);
-	        context.setLast(1);
+	        context.setLast(contextNodeLast);
 	        
 	        return Extensions.evaluate(context, expr);
 		} catch (Exception x) {

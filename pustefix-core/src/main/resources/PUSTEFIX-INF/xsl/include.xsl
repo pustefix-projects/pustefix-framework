@@ -896,11 +896,12 @@
     <xsl:variable name="__context" select="."/>
     <xsl:variable name="__parent_repeat_context" select="ic:getContextNode($__include_context)"/>
     <xsl:variable name="__parent_repeat_context_pos" select="ic:getContextNodePosition($__include_context)"/>
+    <xsl:variable name="__parent_repeat_context_last" select="ic:getContextNodeLast($__include_context)"/>
     <xsl:for-each select="pfx:__eval(@select)">
-      <xsl:if test="ic:setContextNode($__include_context, ., position())"/>
+      <xsl:if test="ic:setContextNode($__include_context, ., position(), last())"/>
       <xsl:apply-templates select="$__context/node()"/>
     </xsl:for-each>
-    <xsl:if test="ic:setContextNode($__include_context, $__parent_repeat_context, $__parent_repeat_context_pos)"/>
+    <xsl:if test="ic:setContextNode($__include_context, $__parent_repeat_context, $__parent_repeat_context_pos, $__parent_repeat_context_last)"/>
   </xsl:template>
   
   <xsl:template match="pfx:includeparam"/>
