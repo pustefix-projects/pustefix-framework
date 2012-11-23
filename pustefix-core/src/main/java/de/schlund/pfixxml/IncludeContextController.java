@@ -24,6 +24,7 @@ public class IncludeContextController {
 	private static Pattern PARAM_PATTERN = Pattern.compile("\\$([a-zA-Z_][a-zA-Z_0-9\\-\\.]*)");
 	
 	private NodeInfo contextNode;
+	private int contextNodePosition;
 	
 	private Stack<IncludeContext> includeContextStack = new Stack<IncludeContext>();
 	
@@ -31,9 +32,10 @@ public class IncludeContextController {
 		this.contextNode = contextNode;
 	}
 	
-	public void setContextNode(Object contextNode) throws Exception {
+	public void setContextNode(Object contextNode, int contextNodePosition) throws Exception {
 		try {
 			this.contextNode = getNodeInfo(contextNode);
+			this.contextNodePosition = contextNodePosition;
 		} catch(Exception x) {
 			ExtensionFunctionUtils.setExtensionFunctionError(x);
 			throw x;
@@ -43,6 +45,15 @@ public class IncludeContextController {
 	public Object getContextNode() throws Exception {
 		try {
 			return contextNode;
+		} catch(Exception x) {
+			ExtensionFunctionUtils.setExtensionFunctionError(x);
+			throw x;
+		}
+	}
+	
+	public int getContextNodePosition() throws Exception {
+		try {
+			return contextNodePosition;
 		} catch(Exception x) {
 			ExtensionFunctionUtils.setExtensionFunctionError(x);
 			throw x;
@@ -188,7 +199,8 @@ public class IncludeContextController {
 			
 			Context context = parentContext.newContext();
 			context.setContextNode((NodeInfo)contextNode);
-			context.setPosition(1);
+			context.setPosition(contextNodePosition);
+			context.setCurrentNode((NodeInfo)contextNode);
 	        context.setLast(1);
 	        
 	        return Extensions.evaluate(context, expr);
