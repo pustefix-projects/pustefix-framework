@@ -1,0 +1,318 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<include_parts xmlns:ixsl="http://www.w3.org/1999/XSL/Transform"
+  xmlns:pfx="http://www.schlund.de/pustefix/core"
+>
+
+  <part name="test">
+    <theme name="default">
+      <pfx:includeparam name="foo"/>
+      <pfx:includeparam name="ttt" apply="true"><pfx:include part="testnodes" noedit="true"/></pfx:includeparam>
+      
+     
+      <!-- Passing include parameters -->
+      
+      <pfx:include part="data_table">
+        <pfx:includeparam name="categories">
+          <category id="image"/>
+          <category id="topspeed"/>
+          <category id="maxage"/>
+        </pfx:includeparam>
+        <pfx:includeparam name="xyz" value="xxyyzz"/>
+        <pfx:includeparam name="abc">aabbcc</pfx:includeparam>
+        <pfx:includeparam name="foo" select="concat('XXX',$foo)"/>
+      </pfx:include>
+      
+    </theme>
+  </part>
+  
+  <part name="testnodes">
+    <theme name="default">
+      <a/>
+      <b/>
+      <c/>
+    </theme>
+  </part>
+  
+  <part name="part_a">
+    <theme name="default">a</theme>
+  </part>
+  <part name="part_b">
+    <theme name="default">b</theme>
+  </part>
+  <part name="part_c">
+    <theme name="default">c</theme>
+  </part>
+  
+  <part name="data_table">
+    <theme name="default">
+      <!-- Declaring include parameters -->
+      <pfx:includeparam name="categories"/>
+      <pfx:includeparam name="hey">
+        <ha/>
+        <he/>
+        <hi/>
+      </pfx:includeparam>
+      <pfx:includeparam name="xyz" value="xxyyzz"/>
+      <pfx:includeparam name="abc">asdfafasd</pfx:includeparam>
+      
+      <div>
+        <pfx:if test="not($hey/ho)">
+          no ho
+        </pfx:if>
+      </div>
+      
+      <div>
+        <pfx:choose>
+          <pfx:when test="not($hey/ha)">
+            no ha
+          </pfx:when>
+          <pfx:when test="not($hey/hi)">
+            no hi
+          </pfx:when>
+          <pfx:otherwise>
+            no ho
+          </pfx:otherwise>
+        </pfx:choose>
+      </div>
+      
+      <div>
+        <pfx:for-each select="$hey/*">
+          <pfx:value-of select="name()"/>
+        </pfx:for-each>
+      </div>
+      
+      <div>
+        <test name="abc"/>
+      </div>
+      
+      X: <pfx:include part="tunnel0"/>
+      
+      
+      <table>
+        <tr>
+          <th align="left">Name</th>
+          <ixsl:for-each select="/formresult/animals/supportedAnimals/string">
+            <td>
+              <ixsl:value-of select="."/>
+            </td>
+          </ixsl:for-each>
+        </tr>
+        
+        <pfx:for-each select="$categories/category">
+          <tr>
+            <th align="left">
+              <pfx:include select-part="concat('cat_',@id)"/>
+           </th>
+           <ixsl:for-each select="/formresult/animals/supportedAnimals/string">
+             <td>
+               <pfx:checkinclude level="runtime">
+                 <pfx:part>cat_<pfx:value-of select="@id"/>_<ixsl:value-of select="."/></pfx:part>
+                 <pfx:include level="runtime">
+                   <pfx:part>cat_<pfx:value-of select="@id"/>_<ixsl:value-of select="."/></pfx:part>
+                 </pfx:include>
+               </pfx:checkinclude>
+             </td>
+           </ixsl:for-each>
+          </tr>
+        </pfx:for-each>
+      </table>
+      
+      
+    </theme>
+  </part>
+  
+  <part name="cat_name">
+    <theme name="default">
+      Name
+    </theme>
+  </part>
+  
+  <part name="cat_image">
+    <theme name="default">
+      Picture
+    </theme>
+  </part>
+  
+  <part name="cat_topspeed">
+    <theme name="default">
+      Top speed
+    </theme>
+  </part>
+  
+  <part name="cat_maxage">
+    <theme name="default">
+      Max age
+    </theme>
+  </part>
+  
+  <part name="cat_image_Tiger">
+    <theme name="default">
+      <pfx:image class="small" src="img/tiger-small.jpg" width="125" height="94"/>
+    </theme>
+  </part>
+  
+  <part name="cat_image_Elephant">
+    <theme name="default">
+      <pfx:image class="small" src="img/elephant-small.jpg" width="125" height="94"/>
+    </theme>
+  </part>
+  
+  <part name="cat_image_Giraffe">
+    <theme name="default">
+      <pfx:image class="small" src="img/giraffe-small.jpg" width="125" height="94"/>
+    </theme>
+  </part>
+  
+  <part name="cat_image_Lion">
+    <theme name="default">
+      <pfx:image class="small" src="img/lion-small.jpg" width="125" height="94"/>
+    </theme>
+  </part>
+  
+  <part name="cat_image_Rhino">
+    <theme name="default">
+      <pfx:image class="small" src="img/rhino-small.jpg" width="125" height="94"/>
+    </theme>
+  </part>
+  
+  <part name="cat_image_Zebra">
+    <theme name="default">
+      <pfx:image class="small" src="img/zebra-small.jpg" width="125" height="94"/>
+    </theme>
+  </part>
+
+  <part name="cat_topspeed_Zebra">
+    <theme name="default">
+      35 km/h
+    </theme>
+  </part>
+  
+  <part name="cat_topspeed_Tiger">
+    <theme name="default">
+      45 km/h
+    </theme>
+  </part>
+  
+  <part name="cat_maxage_Elephant">
+    <theme name="default">
+      70 years
+    </theme>
+  </part>
+  
+  <part name="cat_maxage_Giraffe">
+    <theme name="default">
+      30 years
+    </theme>
+  </part>
+  
+  <part name="cat_maxage_Lion">
+    <theme name="default">
+      25 years
+    </theme>
+  </part>
+  
+  <part name="cat_maxage_Rhino">
+    <theme name="default">
+      35 years
+    </theme>
+  </part>
+  
+  <part name="switch">
+    <theme name="default">
+    <pfx:includeparam name="test"><foo>fadfadf</foo></pfx:includeparam>
+   
+      <pfx:for-each select="/foo">
+        SWITCH
+        <div>
+   
+        <pfx:for-each select="bar">
+          FOO
+        </pfx:for-each>
+        
+        </div>
+      </pfx:for-each>
+     
+    </theme>
+  </part>
+  
+  <part name="rt">
+    <theme name="default">
+      <pfx:includeparam name="abc">dafdfsd</pfx:includeparam>
+    RRRRRRRRRRRRRRRTTTTTTTTTTTTTTT: <pfx:value-of select="$abc"/>
+    </theme>
+  </part>
+  
+  <part name="tunnel0">
+    <theme name="default">
+      !!!!!!!
+      <pfx:include part="tunnel1">
+        <pfx:includeparam name="test" tunnel="yes">a</pfx:includeparam>
+      </pfx:include>
+      
+      <pfx:include part="rt" level="runtime">
+        <pfx:includeparam name="abc">aabbcc</pfx:includeparam>
+        <pfx:includeparam name="fadfa"><ixsl:value-of select="/formresult/@serial"/></pfx:includeparam>
+      </pfx:include>
+    </theme>
+  </part>
+  
+  <part name="tunnel1">
+    <theme name="default">
+      
+     
+      <pfx:include part="tunnel2">
+       
+      </pfx:include>
+    </theme>
+  </part>
+  
+  <part name="tunnel2">
+    <theme name="default">
+      <pfx:includeparam name="test">dfsdf</pfx:includeparam>
+      <pfx:value-of select="$test"/>
+      <pfx:include part="tunnel3"/>
+    </theme>
+  </part>
+  
+  <part name="tunnel3">
+    <theme name="default">
+      <pfx:includeparam name="test">i</pfx:includeparam>
+      <pfx:value-of select="$test"/>
+      <pfx:include part="tunnel4">
+        <pfx:includeparam name="test" select="'m'"/>
+      </pfx:include>
+    </theme>
+  </part>
+  
+  <part name="tunnel4">
+    <theme name="default">
+      <pfx:includeparam name="test">x</pfx:includeparam>
+      <pfx:value-of select="$test"/>
+      <pfx:include part="tunnel5"/>
+    </theme>
+  </part>
+  
+  <part name="tunnel5">
+    <theme name="default">
+      <pfx:includeparam name="test" tunnel="yes">x</pfx:includeparam>
+      <pfx:value-of select="$test"/>
+      <pfx:include part="tunnel6">
+        <pfx:includeparam name="test" tunnel="yes">l</pfx:includeparam>
+      </pfx:include>
+    </theme>
+  </part>
+  
+  <part name="tunnel6">
+    <theme name="default">
+      <pfx:include part="tunnel7"/>
+    </theme>
+  </part>
+  
+  <part name="tunnel7">
+    <theme name="default">
+      <pfx:includeparam name="test" tunnel="yes"/>
+      <pfx:value-of select="$test"/>
+    </theme>
+  </part>
+
+</include_parts>

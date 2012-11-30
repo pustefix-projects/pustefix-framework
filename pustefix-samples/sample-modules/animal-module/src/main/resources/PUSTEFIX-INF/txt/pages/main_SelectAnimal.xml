@@ -31,6 +31,8 @@
             </pfx:include>
           </pfx:checkinclude>
         </div>
+        
+        <pfx:include href="txt/animals.xml" part="test"/>
     </theme>
   </part>
 

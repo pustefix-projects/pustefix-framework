@@ -4,6 +4,16 @@
                 xmlns:ixsl="http://www.w3.org/1999/XSL/TransformOutputAlias" version="1.0">
 
 
+  <xsl:strip-space elements="*"/>
+  <xsl:template match="foo">
+    <div>
+      
+      foo 
+      
+      bar
+    </div>
+  </xsl:template>
+
   <xsl:template match="pagemsgs">
     <pfx:checkmessage>
       <br/>

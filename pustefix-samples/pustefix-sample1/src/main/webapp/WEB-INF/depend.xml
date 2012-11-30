@@ -83,5 +83,54 @@
     <depxml name="xsl/generatedruntime.xsl"/>
     <depxsl name="metatags.xsl"/>
   </target>
+<!-- 
+  <target name="mypage.xsl" type="xsl" page="mypage">
+    <depxml name="mypage.xml"/>
+    <depxsl name="master.xsl"/>
+    <param name="outputencoding" value="UTF-8"/>
+    <param name="outputdoctype-public" value="-//W3C//DTD HTML 4.01//EN"/>
+    <param name="outputdoctype-system" value="http://www.w3.org/TR/html40/strict.dtd"/>
+    <param name="compress-inline-javascript" value="true"/>
+    <param name="page" value="mypage"/>
+  </target>
+  
+  <target name="mypage.xml" type="xml">
+    <depxml name="xml/one_frame_navi.xml"/>
+    <depxsl name="metatags.xsl"/>
+    <param name="outputencoding" value="UTF-8"/>
+    <param name="outputdoctype-public" value="-//W3C//DTD HTML 4.01//EN"/>
+    <param name="outputdoctype-system" value="http://www.w3.org/TR/html40/strict.dtd"/>
+    <param name="compress-inline-javascript" value="true"/>
+    <param name="page" value="mypage"/>
+  </target>
+  -->
+  
+  
+  <target name="mypage.xsl" type="xsl" page="mypage">
+    <depxml name="xsl/mypage.xsl"/>
+    <depxsl name="xsl/identity.xsl"/>
+    <param name="page" value="mypage"/>
+  </target>
+  
+  
+  <!-- 
+  <target name="mypage.xsl" type="xsl" page="mypage">
+    <depxml name="xsl/mypage.xml"/>
+    <depxsl name="xsl/mymaster.xsl"/>
+    <param name="page" value="mypage"/>
+  </target>
+  -->
+  <!--
+  <target name="mypage.xsl" type="xsl" page="mypage">
+    <depxml name="mypage.xml"/>
+    <depxsl name="xsl/mymaster.xsl"/>
+    <param name="page" value="mypage"/>
+  </target>
+  <target name="mypage.xml" type="xml">
+    <depxml name="xsl/mypage.xml"/>
+    <depxsl name="xsl/mymetatags.xsl"/>
+    <param name="page" value="mypage"/>
+  </target>
+  -->
 
 </make>
