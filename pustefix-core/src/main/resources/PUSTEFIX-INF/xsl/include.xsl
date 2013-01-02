@@ -492,8 +492,8 @@
   </xsl:template>
 
   <xsl:template match="pfx:checkinclude">
-    <xsl:param name="part"><xsl:value-of select="@part"/></xsl:param>
-    <xsl:param name="href"><xsl:value-of select="@href"/></xsl:param>
+    <xsl:param name="part"><xsl:choose><xsl:when test="@select-part"><xsl:value-of select="pfx:__eval(@select-part)"/></xsl:when><xsl:otherwise><xsl:value-of select="@part"/></xsl:otherwise></xsl:choose></xsl:param>
+    <xsl:param name="href"><xsl:choose><xsl:when test="@select-href"><xsl:value-of select="pfx:__eval(@select-href)"/></xsl:when><xsl:otherwise><xsl:value-of select="@href"/></xsl:otherwise></xsl:choose></xsl:param>
     <xsl:param name="module"><xsl:value-of select="@module"/></xsl:param>
     <xsl:param name="search"><xsl:value-of select="@search"/></xsl:param>
     <xsl:variable name="module_name">
@@ -561,8 +561,8 @@
   </xsl:template>
 
   <xsl:template match="pfx:checknoinclude">
-    <xsl:param name="part"><xsl:value-of select="@part"/></xsl:param>
-    <xsl:param name="href"><xsl:value-of select="@href"/></xsl:param>
+    <xsl:param name="part"><xsl:choose><xsl:when test="@select-part"><xsl:value-of select="pfx:__eval(@select-part)"/></xsl:when><xsl:otherwise><xsl:value-of select="@part"/></xsl:otherwise></xsl:choose></xsl:param>
+    <xsl:param name="href"><xsl:choose><xsl:when test="@select-href"><xsl:value-of select="pfx:__eval(@select-href)"/></xsl:when><xsl:otherwise><xsl:value-of select="@href"/></xsl:otherwise></xsl:choose></xsl:param>
     <xsl:param name="module"><xsl:value-of select="@module"/></xsl:param>
     <xsl:param name="search"><xsl:value-of select="@search"/></xsl:param>
     <xsl:variable name="module_name">
