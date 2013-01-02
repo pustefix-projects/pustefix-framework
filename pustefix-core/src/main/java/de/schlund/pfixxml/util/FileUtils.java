@@ -19,6 +19,7 @@ package de.schlund.pfixxml.util;
 
 import java.io.File;
 import java.io.FileInputStream;
+import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStreamReader;
@@ -162,6 +163,44 @@ public class FileUtils {
             }
         }
         return file.delete();
+        
     }
     
+    /**
+     * Create new temporary directory relative to parent directory (or java.io.tmpdir if not specified) 
+     * and register it for deletion on JVM exit.
+     * 
+     * @param parentDir parent directory or null for java.io.tmpdir
+     * @return temporary directory
+     */
+    public static File createTemporaryDirectory(File parentDir) throws IOException {
+    	if(parentDir == null) {
+    		String tmp = System.getProperty("java.io.tmpdir");
+    		if(tmp != null) {
+    			parentDir = new File(tmp);
+    		} else {
+    			parentDir = new File(".");
+    		}
+    	}
+    	if(parentDir.exists()) {
+    		String suffix = "-" + System.nanoTime(); 
+    		File tmpDir = new File(parentDir, "tmp" + suffix);
+    		if(tmpDir.exists()) {
+    			int index = 0;
+    			do {
+					tmpDir = new File(parentDir, "tmp" + suffix + index);
+					index++;
+				} while (index < 10 && tmpDir.exists());
+    			if(tmpDir.exists()) {
+    				throw new IOException("Temporary directory " + tmpDir.getAbsolutePath() + " already exists.");
+    			}
+    		}
+    		tmpDir.mkdir();
+    		tmpDir.deleteOnExit();
+    		return tmpDir;
+    	} else {
+    		throw new FileNotFoundException("Parent directory " + parentDir.getAbsolutePath() + " doesn't exist.");
+    	} 
+    }
+
 }
