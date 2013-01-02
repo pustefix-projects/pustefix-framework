@@ -666,14 +666,14 @@
   </xsl:template>
   
   <xsl:template match="pfx:image" name="pfx:image">
-    <xsl:param name="src"   select="@src"/>
-    <xsl:param name="alt"   select="@alt"/>
+    <xsl:param name="src"><xsl:choose><xsl:when test="@select-src"><xsl:value-of select="pfx:__eval(@select-src)"/></xsl:when><xsl:otherwise><xsl:value-of select="@src"/></xsl:otherwise></xsl:choose></xsl:param>
+    <xsl:param name="alt"><xsl:choose><xsl:when test="@select-alt"><xsl:value-of select="pfx:__eval(@select-alt)"/></xsl:when><xsl:otherwise><xsl:value-of select="@alt"/></xsl:otherwise></xsl:choose></xsl:param>
     <xsl:param name="themed-path" select="@themed-path"/> 
     <xsl:param name="themed-img"  select="@themed-img"/>
     <xsl:param name="exclude-attributes"/>
     <xsl:param name="module" select="@module"/>
     <xsl:param name="search" select="@search"/>
-    <xsl:variable name="always-exclude-attributes" select="'src|alt|themed-path|themed-img|module|search'"/>
+    <xsl:variable name="always-exclude-attributes" select="'src|alt|themed-path|themed-img|module|search|select-src|select-alt'"/>
     <xsl:variable name="real_src">
       <xsl:call-template name="pfx:image_register_src">
         <xsl:with-param name="src" select="$src"/>
