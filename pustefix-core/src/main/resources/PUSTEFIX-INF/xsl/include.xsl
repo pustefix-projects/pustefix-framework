@@ -206,8 +206,8 @@
     <xsl:param name="parent_theme"><xsl:value-of select="ancestor::theme[position() = 1]/@name"/></xsl:param>
     <xsl:param name="noerror"><xsl:value-of select="@noerror"/></xsl:param>
     <xsl:param name="noedit"><xsl:value-of select="@noedit"/></xsl:param>
-    <xsl:param name="part"><xsl:value-of select="@part"/></xsl:param>
-    <xsl:param name="href"><xsl:value-of select="@href"/></xsl:param>
+    <xsl:param name="part"><xsl:choose><xsl:when test="@select-part"><xsl:value-of select="pfx:__eval(@select-part)"/></xsl:when><xsl:otherwise><xsl:value-of select="@part"/></xsl:otherwise></xsl:choose></xsl:param>
+    <xsl:param name="href"><xsl:choose><xsl:when test="@select-href"><xsl:value-of select="pfx:__eval(@select-href)"/></xsl:when><xsl:otherwise><xsl:value-of select="@href"/></xsl:otherwise></xsl:choose></xsl:param>
     <xsl:param name="module"><xsl:value-of select="@module"/></xsl:param>
     <xsl:param name="search"><xsl:value-of select="@search"/></xsl:param>
     <xsl:variable name="module_name">
@@ -857,15 +857,6 @@
     <xsl:param name="expr"/>
    	<func:result select="ic:evaluate($__include_context, $expr)"/>
   </func:function>
-
-  <xsl:template match="pfx:include[@select-part]">
-    <xsl:variable name="part">
-      <xsl:value-of select="pfx:__eval(@select-part)"/>
-    </xsl:variable>
-    <xsl:call-template name="pfx:include">
-      <xsl:with-param name="part" select="$part"/>
-    </xsl:call-template>
-  </xsl:template>
   
   <xsl:template match="pfx:value-of">
     <xsl:value-of select="pfx:__eval(@select)"/>
