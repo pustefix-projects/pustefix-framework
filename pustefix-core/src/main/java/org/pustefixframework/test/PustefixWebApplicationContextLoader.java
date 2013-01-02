@@ -18,6 +18,7 @@
 package org.pustefixframework.test;
 
 import java.io.File;
+import java.io.IOException;
 import java.net.MalformedURLException;
 
 import javax.servlet.ServletContext;
@@ -33,6 +34,7 @@ import de.schlund.pfixcore.exception.PustefixCoreException;
 import de.schlund.pfixxml.config.GlobalConfig;
 import de.schlund.pfixxml.resources.FileResource;
 import de.schlund.pfixxml.resources.ResourceUtil;
+import de.schlund.pfixxml.util.FileUtils;
 
 /**
  * ContextLoader strategy implementation for PustefixWebApplicationContext loading.
@@ -79,6 +81,13 @@ public class PustefixWebApplicationContextLoader implements ContextLoader {
         
         if(servletContext == null) {
         	servletContext = new MockServletContext(docroot.toURI().toString());
+        	try {
+        		File tmpDir = FileUtils.createTemporaryDirectory(null);
+        		((MockServletContext)servletContext).addInitParameter("logroot", tmpDir.getCanonicalPath());
+        	} catch(IOException x) {
+        		throw new RuntimeException("Error creating temporary log directory", x);
+        	}
+        	
         }
         
         PustefixInit pustefixInit;
