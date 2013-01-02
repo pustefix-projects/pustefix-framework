@@ -728,6 +728,7 @@ public abstract class AbstractPustefixXMLRequestHandler extends AbstractPustefix
     }
 
     private void renderXmlonly(SPDocument spdoc, HttpServletResponse res) throws IOException {
+        res.setContentType("text/xml");
         Xml.serialize(spdoc.getDocument(), res.getOutputStream(), true, true);
     }
 
