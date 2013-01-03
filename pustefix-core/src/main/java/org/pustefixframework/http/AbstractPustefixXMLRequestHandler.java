@@ -273,10 +273,6 @@ public abstract class AbstractPustefixXMLRequestHandler extends AbstractPustefix
         boolean    doreuse = false;
         if (spdoc != null) {
             doreuse = true;
-        } else if(preq.getRequestParam("__render_href") != null && preq.getRequestParam("__reuse") != null) {
-        	//TODO: sticky session loss workaround for render includes
-        	res.sendError(HttpServletResponse.SC_GONE);
-        	return;
         }
         
         // Check if session has been scheduled for invalidation

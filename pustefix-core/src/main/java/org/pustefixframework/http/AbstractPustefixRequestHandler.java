@@ -224,12 +224,6 @@ public abstract class AbstractPustefixRequestHandler implements SessionTrackingS
             req.setAttribute(REQUEST_ATTR_LANGUAGE, matchingLanguage);
         }
             
-        //TODO: sticky session loss workaround for render includes
-        if(req.getParameter("__render_href") != null && req.getParameter("__reuse") != null && req.getSession(false) == null) {
-        	res.sendError(HttpServletResponse.SC_GONE);
-        	return;
-        }
-        
         if(BotDetector.isBot(req)) {
             botSessionTrackingStrategy.handleRequest(req, res);
         } else {
