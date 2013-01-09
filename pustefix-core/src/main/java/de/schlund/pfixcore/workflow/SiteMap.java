@@ -251,6 +251,22 @@ public class SiteMap {
             page.pageAltKeyToName.put(altKey, altName);
             page.pageNameToAltKey.put(altName, altKey);
             pageAlternativeToPage.put(altName, page);
+            
+            PageAlternative pageAlt = new PageAlternative();
+            pageAlt.key = altKey;
+            pageAlt.name = altName;
+            page.pageAltKeyMap.put(altKey, pageAlt);
+            NamedNodeMap altMap = childAlt.getAttributes();
+            if(altMap != null) {
+                for(int i=0; i<altMap.getLength(); i++) {
+                    Node attrNode = altMap.item(i);
+                    String attrName = attrNode.getNodeName();
+                    if(!("name".equals(attrName)||("key").equals(attrName))) {
+                        pageAlt.customAttributes.put(attrName, attrNode.getNodeValue());
+                    }
+                }
+            }
+            
         }
         List<Element> childPages = DOMUtils.getChildElementsByTagName(pageElem, "page");
         for(Element childPage: childPages) {
@@ -303,6 +319,12 @@ public class SiteMap {
         for(String pageAltKey: page.pageAltKeyToName.keySet()) {
             Element altElem = parent.getOwnerDocument().createElement("alt");
             altElem.setAttribute("name", getAlias(page.pageAltKeyToName.get(pageAltKey), lang));
+            altElem.setAttribute("key", pageAltKey);
+            PageAlternative pageAlt = page.pageAltKeyMap.get(pageAltKey);
+            for(String attrName: pageAlt.customAttributes.keySet()) {
+                String attrVal = pageAlt.customAttributes.get(attrName);
+                altElem.setAttribute(attrName, attrVal);
+            }
             elem.appendChild(altElem);
         }
         for(Page child: page.pages) {
@@ -471,12 +493,23 @@ public class SiteMap {
         List<Page> pages = new ArrayList<Page>();
         Map<String, String> pageAltKeyToName = new LinkedHashMap<String, String>();
         Map<String, String> pageNameToAltKey = new HashMap<String, String>();
+        Map<String, PageAlternative> pageAltKeyMap = new LinkedHashMap<String, PageAlternative>();
         
         Page(String name) {
             this.name = name;
         }
         
     }
+    
+    public class PageAlternative {
+    	
+    	String key;
+    	String name;
+    	
+    	Map<String, String> customAttributes = new HashMap<String, String>();
+    	
+    }
+    
     
     public class PageLookupResult {
         
