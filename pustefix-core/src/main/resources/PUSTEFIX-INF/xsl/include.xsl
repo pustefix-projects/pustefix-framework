@@ -7,9 +7,8 @@
                 xmlns:image="xalan://de.schlund.pfixxml.ImageThemedSrcSaxon1"
                 xmlns:geometry="xalan://de.schlund.pfixxml.ImageGeometry"
                 xmlns:func="http://exslt.org/functions"
-                xmlns:java="java:java.lang.String"
                 xmlns:ic="java:de.schlund.pfixxml.IncludeContextController"
-                exclude-result-prefixes="include image geometry java ic">
+                exclude-result-prefixes="include image geometry ic">
 
   <!-- The needed parameters must be set in the including stylesheet! -->
 
@@ -666,8 +665,8 @@
   </xsl:template>
   
   <xsl:template match="pfx:image" name="pfx:image">
-    <xsl:param name="src"><xsl:choose><xsl:when test="@select-src"><xsl:value-of select="pfx:__eval(@select-src)"/></xsl:when><xsl:otherwise><xsl:value-of select="@src"/></xsl:otherwise></xsl:choose></xsl:param>
-    <xsl:param name="alt"><xsl:choose><xsl:when test="@select-alt"><xsl:value-of select="pfx:__eval(@select-alt)"/></xsl:when><xsl:otherwise><xsl:value-of select="@alt"/></xsl:otherwise></xsl:choose></xsl:param>
+    <xsl:param name="src"><xsl:choose><xsl:when test="pfx:src"><xsl:apply-templates select="pfx:src/node()"/></xsl:when><xsl:when test="@select-src"><xsl:value-of select="pfx:__eval(@select-src)"/></xsl:when><xsl:otherwise><xsl:value-of select="@src"/></xsl:otherwise></xsl:choose></xsl:param>
+    <xsl:param name="alt"><xsl:choose><xsl:when test="pfx:alt"><xsl:apply-templates select="pfx:alt/node()"/></xsl:when><xsl:when test="@select-alt"><xsl:value-of select="pfx:__eval(@select-alt)"/></xsl:when><xsl:otherwise><xsl:value-of select="@alt"/></xsl:otherwise></xsl:choose></xsl:param>
     <xsl:param name="themed-path" select="@themed-path"/> 
     <xsl:param name="themed-img"  select="@themed-img"/>
     <xsl:param name="exclude-attributes"/>
@@ -693,6 +692,9 @@
     </img>
     
   </xsl:template>
+  
+  <xsl:template match="pfx:src"/>
+  <xsl:template match="pfx:alt"/>
   
   <xsl:template match="pfx:image[@level='runtime']">
     <img>
@@ -903,5 +905,12 @@
    </xsl:variable>
    <xsl:if test="ic:setAppliedParameter($__include_context, @name, $value)"/>
   </xsl:template>
- 
+
+  <xsl:template match="pfx:trim">
+    <xsl:variable name="tmp">
+      <xsl:apply-templates/>
+    </xsl:variable>
+    <xsl:value-of xmlns:string="java:java.lang.String" select="string:trim($tmp)"/>
+  </xsl:template>
+
 </xsl:stylesheet>
