@@ -302,5 +302,17 @@
 
   </section>
 
+  <section xml:id="news.0_18_34">
+    <title>What's new in Pustefix 0.18.34</title>
+
+    <section xml:id="news.0_18_34.includeparams">
+      <title>Extended include parameter support</title>
+      <para>
+        More Pustefix templates now support using include parameter expressions in attribute values (see <xref linkend="xslt.pfx.includeparams"/>).
+      </para>
+    </section>
+
+  </section>
+
 
 </chapter>

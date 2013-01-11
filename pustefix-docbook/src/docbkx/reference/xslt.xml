@@ -810,6 +810,70 @@
 ]]></programlisting>
       <para>Supported attributes and usage comply with the <literal>&lt;pfx:include&gt;</literal> element (see <xref linkend="xslt.pfx.include"/>).</para>
     </section>
+    <section xml:id="xslt.pfx.includeparams">
+      <title>Include parameters (&lt;pfx:includeparam&gt;)</title>
+      <para>
+        When including a part using <literal>&lt;pfx:include&gt;</literal>, you can pass parameters, which will be available within the templates
+        applied during the current XSL transformation.
+      </para>
+      <para>
+        An include parameter can be passed by adding an according <literal>&lt;pfx:includeparam&gt;</literal> child element to the <literal>&lt;pfx:include&gt;</literal> element.
+        The syntax is similar to XSL template parameters.
+      </para> 
+<programlisting language="xml"><![CDATA[<pfx:include part="foo">
+  <pfx:includeparam name="myparam">myvalue</pfx:includeparam>
+  <pfx:includeparam name="another" select="/xpath/expression"/>
+  <pfx:includeparam name="xmlparam" tunnel="yes">
+     <item id="foo"/>
+     <item id="bar"/>
+  </pfx:include>
+</pfx:include>
+]]></programlisting>
+      <para>Include parameter values can be simple strings, nodesets or evaluation results of XPath expressions. Include parameters can be tunneled, i.e.
+            you can pass parameters to nested includes without having to newly declare the parameter on each include level.
+      </para>
+      <para>
+        Within the included part you can access passed include parameters by declaring them at the top of the part. Like with XSL parameters, you can just declare empty
+        parameters, set default values or mark a parameter as tunneled (without marking it, it will be overlaid). 
+      </para>
+<programlisting language="xml"><![CDATA[<part name="hey">
+  <theme name="default">
+    <pfx:includeparam name="myparam"/>
+    <pfx:includeparam name="another">default</pfx:include-param>
+    <pfx:includeparam name="xmlparam" tunnel="yes"/>
+]]></programlisting>
+      <para>
+        Having declared an include parameter, you can use one of Pustefix's builtin templates to operate on this parameter, e.g. write its value, iterate over its value
+        or check a condition against it. You can not only reference the parameter itself, but write complex XPath expressions.
+      </para>
+<programlisting language="xml"><![CDATA[<pfx:value-of select="$myparam"/>
+<pfx:value-of select="concat($myparam,'xyz')"/>
+
+<pfx:for-each select="$xmlparam/item">
+  <pfx:value-of select="@id"/>
+</pfx:for-each>
+
+<pfx:if test="$another='...'">...</pfx:if>
+
+<pfx:choose>
+  <pfx:when test="$another='...'">...</pfx:when
+  <pfx:otherwise>...</pfx:otherwise>
+</pfx:choose>
+]]></programlisting>
+      <para>
+        Besides these special templates some of Pustefix's core templates also have support for include parameters, i.e. the according elements provide
+        attributes which support include parameters or XPath expressions. Usually these attributes are prefixed with <literal>select-</literal>.
+      </para>
+<programlisting language="xml"><![CDATA[<pfx:include select-href="$myparam" select-part="concat($anotherparam,'xyz')"/>
+
+<pfx:checkinclude select-part="$myparam" select-href="..."/> 
+
+<pfx:checknoinclude select-part="$myparam" select-href="..."/> 
+
+<pfx:image select-src="$myparam" select-alt="..."/>
+]]></programlisting>
+
+    </section>
   </section>
 
   <section xml:id="xslt.forms">
@@ -894,6 +958,15 @@
           </tbody>
         </table>
       </para>
+      <para>
+        Pustefix usually by default generates some hidden fields which are placed directly under the HTML <literal>form</literal> tag, but you
+        can explicitely control where Pustefix should place the fields using the <literal>&lt;pfx:hiddenfields/&gt;</literal> element.
+      </para>
+<programlisting language="xml"><![CDATA[<pfx:forminput>
+  <div>
+    <pfx:hiddenfields/>
+  </div>
+</pfx:forminput>]]></programlisting>
     </section>      
     <section xml:id="xslt.forms.submit">
       <title>Submitting forms</title>
