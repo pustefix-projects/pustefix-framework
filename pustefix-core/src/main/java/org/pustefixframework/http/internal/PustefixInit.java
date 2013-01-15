@@ -66,7 +66,6 @@ import de.schlund.pfixxml.resources.FileResource;
 import de.schlund.pfixxml.resources.ResourceUtil;
 import de.schlund.pfixxml.util.SimpleResolver;
 import de.schlund.pfixxml.util.TransformerHandlerAdapter;
-import de.schlund.pfixxml.util.logging.ProxyLogUtil;
 
 /**
  * This Servlet is just there to have it's init method called on startup of the
@@ -165,23 +164,16 @@ public class PustefixInit {
         
     	FileResource l4jfile = ResourceUtil.getFileResourceFromDocroot(log4jconfig);
     	
-        if(!l4jfile.exists()) {
-            ProxyLogUtil.getInstance().configureLog4jProxy();
-            ProxyLogUtil.getInstance().setServletContext(servletContext);
-        } else {
-        	
-            try {
-                configureLog4j(l4jfile);
-            } catch (FileNotFoundException e) {
-                throw new PustefixCoreException(l4jfile + ": file for log4j configuration not found!", e);
-            } catch (SAXException e) {
-                throw new PustefixCoreException(l4jfile + ": error on parsing log4j configuration file", e);
-            } catch (IOException e) {
-                throw new PustefixCoreException(l4jfile + ": error on reading log4j configuration file!", e);
-            }
+    	try {
+    		configureLog4j(l4jfile);
+    	} catch (FileNotFoundException e) {
+    		throw new PustefixCoreException(l4jfile + ": file for log4j configuration not found!", e);
+    	} catch (SAXException e) {
+    		throw new PustefixCoreException(l4jfile + ": error on parsing log4j configuration file", e);
+    	} catch (IOException e) {
+    		throw new PustefixCoreException(l4jfile + ": error on reading log4j configuration file!", e);
+    	}
 
-        }
-        
     }
 
     private void configureLog4j(FileResource configFile) throws SAXException, FileNotFoundException, IOException {
