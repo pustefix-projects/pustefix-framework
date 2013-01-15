@@ -715,22 +715,31 @@ public class TargetGenerator implements ResourceVisitor, ServletContextAware, In
 
         if(cacheDir == null) {
             cacheDir = ResourceUtil.getFileResourceFromDocroot(CACHEDIR);
-            if (!cacheDir.exists()) {
-                cacheDir.mkdirs();
-            } else if (!cacheDir.isDirectory() || !cacheDir.canRead()) {
-                throw new XMLException("Directory " + cacheDir + " is not readeable or is no directory");
-            } else if (!cacheDir.canWrite()) {
-                // When running in WAR mode this is okay
-                LOG.warn("Directory " + cacheDir + " is not writable!");
-                if(servletContext.getRealPath("/") == null) {
-                    File tmpDir = (File)servletContext.getAttribute("javax.servlet.context.tempdir");
-                    File dir = new File(tmpDir, "pustefix-xsl-cache");
-                    if(dir.exists()) {
-                        FileUtils.delete(dir);
-                        dir.mkdir();
+            if(cacheDir.exists()) {
+            	if(!cacheDir.isDirectory()) {
+            		throw new XMLException("File " + cacheDir + " is is no directory");
+            	}
+            	if(!cacheDir.canRead()) {
+                    throw new XMLException("Directory " + cacheDir + " is not readeable");
+            	}
+            	if(!cacheDir.canWrite()) {
+            		LOG.warn("Directory " + cacheDir + " is not writable!");
+            	}
+            } else {
+            	boolean ok = cacheDir.mkdirs();
+            	if(!ok) {
+            		if(servletContext.getRealPath("/") == null) {
+                        File tmpDir = (File)servletContext.getAttribute("javax.servlet.context.tempdir");
+                        File dir = new File(tmpDir, "pustefix-xsl-cache");
+                        if(dir.exists()) {
+                            FileUtils.delete(dir);
+                            dir.mkdir();
+                        }
+                        cacheDir = ResourceUtil.getFileResource(dir.toURI());
+                    } else {
+                    	throw new XMLException("Can't create cache directory: "+ cacheDir);
                     }
-                    cacheDir = ResourceUtil.getFileResource(dir.toURI());
-                }
+            	}
             }
         }
 
