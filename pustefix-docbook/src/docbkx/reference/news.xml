@@ -314,5 +314,18 @@
 
   </section>
 
+  <section xml:id="news.0_18_35">
+    <title>What's new in Pustefix 0.18.35</title>
+
+    <section xml:id="news.0_18_35.logging">
+      <title>Early logging configuration</title>
+      <para>
+        Pustefix now supports setting up Log4j at early application startup time using a ServletContextListener, thus being able to log errors/messages occurring
+        before the Spring application context is started (see <xref linkend="configuration.logging"/>).
+      </para>
+    </section>
+
+  </section>
+
 
 </chapter>

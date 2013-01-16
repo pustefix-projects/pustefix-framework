@@ -1924,5 +1924,61 @@
       </para>
     </section>
   </section>
+
+  <section xml:id="configuration.logging">
+    <title>Logging configuration </title>
+    <para>
+      The default logging framework used by Pustefix is Log4j. If you want to stay with this default, Pustefix helps you setting up your logging. By default it reads the Log4j configuration
+      from <literal>WEB-INF/pfixlog.xml</literal>. Within this file you can make use of the Pustefix customization tags (see <xref linkend="configuration.customization"/>).
+    </para>
+    <para>
+      Often you have to configure different file paths depending on your runtime environment, e.g. for development or production mode. Therefor you can use the customization tag
+      <literal>&lt;cus:logroot/&gt;</literal> as a placeholder for the <literal>logroot</literal> ServletContext init parameter, which can be set when deploying your application
+      in the target environment.
+    </para>
+<programlisting language="xml"><![CDATA[<?xml version="1.0" encoding="UTF-8" ?>
+<log4j:configuration xmlns:log4j="http://jakarta.apache.org/log4j/"
+                     xmlns:cus="http://www.schlund.de/pustefix/customize">
+
+  <appender name="LOGGER_GENERAL" class="org.apache.log4j.RollingFileAppender">
+    <param name="File"><cus:logroot/>pustefix-servlet.log</param>
+    <param name="MaxFileSize" value="10MB"/>
+    <layout class="org.apache.log4j.PatternLayout">
+      <param name="ConversionPattern" value="%d{ISO8601} [%t] %-5p %c [%M():%L] %x - %m\n"/>
+    </layout>
+  </appender>
+  ...
+</log4j:configuration>
+]]></programlisting>
+    <para>
+      Alternatively you can make use of Pustefix's <literal>&lt;cus:choose&gt;|&lt;cus:when&gt;|&lt;cus:otherwise&gt;</literal> customization tags, to branch the configuration depending on the predefined variables, 
+      like <literal>mode</literal>, <literal>fdqn</literal> or <literal>machine</literal>, e.g. you can set different log levels for different environments.
+    </para>
+<programlisting language="xml"><![CDATA[  <root>
+    <cus:choose>
+      <cus:when test="$mode = 'prod'">
+        <priority value="WARN"/>
+      </cus:when>
+      <cus:otherwise>
+        <priority value="DEBUG"/>
+      </cus:otherwise>
+    </cus:choose>
+    <appender-ref ref="LOGGER_GENERAL"/>
+  </root>
+]]></programlisting>
+    <para>
+       By default Log4j is configured at the beginning of the Spring ApplicationContext creation. But it's better to set up logging at the very beginning of the webapp startup to
+       be able to log errors or messages that occurred before this phase, e.g. errors from other servlets or filters. Therefor Pustefix provides a ServletContextListener, which
+       should be configured as the first listener in the webapp's <literal>web.xml</literal>.  
+    </para>
+<programlisting language="xml"><![CDATA[<web-app xmlns="http://java.sun.com/xml/ns/javaee" xmlns:jee="http://java.sun.com/xml/ns/javaee">
+   <listener>
+     <listener-class>org.pustefixframework.http.Log4jConfigListener</listener-class>
+   </listener>
+   ...
+</web-app>
+]]></programlisting>
+  </section>
+  
       
 </chapter>
