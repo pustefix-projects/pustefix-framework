@@ -69,10 +69,13 @@ public class PustefixWebApplicationContext extends AbstractRefreshableWebApplica
     protected void loadBeanDefinitions(DefaultListableBeanFactory beanFactory) throws IOException, BeansException {
     	
         if(pustefixInit == null) {
-            try {
-                pustefixInit = new PustefixInit(getServletContext());
-            } catch(PustefixCoreException x) {
-                throw new PustefixRuntimeException("Pustefix initialization failed", x);
+        	pustefixInit = (PustefixInit)getServletContext().getAttribute(PustefixInit.SERVLET_CONTEXT_ATTRIBUTE_NAME);
+            if(pustefixInit == null) {
+	        	try {
+	                pustefixInit = new PustefixInit(getServletContext());
+	            } catch(PustefixCoreException x) {
+	                throw new PustefixRuntimeException("Pustefix initialization failed", x);
+	            }
             }
         }
     	

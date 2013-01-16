@@ -82,6 +82,7 @@ public class PustefixInit {
     private final static Logger LOG = Logger.getLogger(PustefixInit.class);
     
     private final static String log4jconfig = "/WEB-INF/pfixlog.xml";
+    public final static String SERVLET_CONTEXT_ATTRIBUTE_NAME = "___PUSTEFIX_INIT___";
 
     private long log4jmtime = -1;
     private boolean initDone;
