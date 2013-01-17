@@ -196,7 +196,12 @@ public class XMLCreatorVisitor implements ExceptionDataValueVisitor {
 	                if(extCause != null) {
 	                    if(extCause instanceof TransformerException || 
 	                            extCause instanceof SAXParseException) {
-	                        return true;
+	                    	String msg = extCause.getMessage();
+	                    	if(msg != null && msg.startsWith("Exception in extension function")) {
+	                    		return false;
+	                    	} else {
+	                    		return true;
+	                    	}
 	                    }
 	                }
 	                return false;

@@ -46,6 +46,7 @@ import javax.xml.transform.stream.StreamSource;
 
 import org.apache.log4j.Logger;
 import org.w3c.dom.Document;
+import org.w3c.dom.Element;
 import org.xml.sax.InputSource;
 
 import de.schlund.pfixxml.resources.FileResource;
@@ -215,12 +216,30 @@ public class Xslt {
             trafo.setErrorListener(new PFErrorListener());
             trafo.transform(new DOMSource(Xml.parse(xsltVersion,xml)), result);
         } catch(TransformerException x) {
-            Throwable t=ExtensionFunctionUtils.getExtensionFunctionError();
-            if(t!=null) {
-                ExtensionFunctionUtils.setExtensionFunctionError(null);
-                throw new XsltExtensionFunctionException(t);
-            }
-            throw x;
+        	
+        	String msg = x.getMessage();
+        	Throwable extFuncError = ExtensionFunctionUtils.getExtensionFunctionError();
+        	if(extFuncError != null || (msg != null && msg.startsWith("Exception in extension function"))) {
+        		if(extFuncError == null) {
+        			extFuncError = x;
+        		} else {
+        			ExtensionFunctionUtils.setExtensionFunctionError(null);
+        		}
+        		String extFuncMsg = x.getMessageAndLocation();
+        		if(extFuncMsg != null && extFuncMsg.startsWith("Exception in extension function") && x.getLocator() instanceof Element) {
+        			Element element = (Element)x.getLocator();
+            		String val = element.getAttribute("select");
+            		if(val.length() > 0) {
+            			extFuncMsg += " (Expression: \"" + val + "\")";
+            		}
+        		}
+        		TransformerException xsltEx = new XsltExtensionFunctionException(extFuncMsg, extFuncError);
+        		xsltEx.setLocator(x.getLocator());
+        		throw xsltEx;
+        	} else {
+        		throw x;
+        	}
+            
         } finally {
            if(trace) {
               String traceStr=traceWriter.toString();
