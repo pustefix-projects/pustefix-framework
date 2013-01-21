@@ -1,5 +1,7 @@
 package org.pustefixframework.security;
 
+import java.io.IOException;
+
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpServletResponseWrapper;
 
@@ -17,6 +19,11 @@ public class SecureResponseWrapper extends HttpServletResponseWrapper {
     @Override
     public void setHeader(String name, String value) {
         super.setHeader(purgeHeader(name), purgeHeader(value));
+    }
+    
+    @Override
+    public void sendRedirect(String location) throws IOException {
+    	super.sendRedirect(purgeHeader(location));
     }
     
     private static String purgeHeader(String nameOrValue) {
