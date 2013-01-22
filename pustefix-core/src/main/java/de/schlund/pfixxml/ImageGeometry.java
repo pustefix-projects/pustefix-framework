@@ -56,8 +56,8 @@ public class ImageGeometry {
 	            return data.getHeight();
 	        }
     	} catch(Exception x) {
-    		String msg = "Error while getting height of image: " + path;
-    		LOG.warn(msg, x);
+    		String msg = "Error while getting height of image: " + path + " [" + x.getMessage() + "]";
+    		LOG.warn(msg);
     		return -1;
     	}
     }
@@ -71,8 +71,8 @@ public class ImageGeometry {
     			return data.getWidth();
     		}
     	} catch(Exception x) {
-    		String msg = "Error while getting width of image: " + path;
-    		LOG.warn(msg, x);
+    		String msg = "Error while getting width of image: " + path + " [" + x.getMessage() + "]";
+    		LOG.warn(msg);
     		return -1;
     	}
     }
@@ -86,8 +86,8 @@ public class ImageGeometry {
 	            return data.getType();
 	        }
     	} catch(Exception x) {
-    		String msg = "Error while getting type of image: " + path;
-    		LOG.warn(msg, x);
+    		String msg = "Error while getting type of image: " + path + " [" + x.getMessage() + "]";
+    		LOG.warn(msg);
     		return null;
     	}
     }
@@ -170,8 +170,8 @@ public class ImageGeometry {
 	        
 	        return genStyle.toString();
         } catch(Exception x) {
-        	String msg = "Error while getting size of image: " + path;
-        	LOG.warn(msg, x);
+        	String msg = "Error while getting size of image: " + path + " [" + x.getMessage() + "]";
+        	LOG.warn(msg);
         	return userStyle;
     	}
     }
