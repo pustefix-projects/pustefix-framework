@@ -83,7 +83,7 @@
                 <pfx:checkfield>
                   <pfx:name>prefix.Value.<ixsl:value-of select="position()"/></pfx:name>
                   <td class="{$pfx_class}" nowrap="nowrap">
-                    <pfx:error><pfx:image src="/core/img/error.gif" style="vertical-align: middle;"/></pfx:error>
+                    <pfx:error><pfx:image src="/img/error.gif" module="pustefix-core" style="vertical-align: middle;"/></pfx:error>
                     FooBar No. <ixsl:value-of select="position()"/>
                   </td>
                 </pfx:checkfield>
