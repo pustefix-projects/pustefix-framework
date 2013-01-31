@@ -1,12 +1,15 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<xsl:stylesheet xmlns:xsl="http://www.w3.org/1999/XSL/Transform" xmlns:enc="java.net.URLEncoder" version="1.0">
+<xsl:stylesheet xmlns:xsl="http://www.w3.org/1999/XSL/Transform" xmlns:enc="java.net.URLEncoder" exclude-result-prefixes="enc" version="1.0">
 
   <xsl:param name="__contextpath"/>
   <xsl:param name="category"/>
   
   <xsl:key name="priokey" match="/pfxinternals/modules/defaultsearch/module" use="@priority"/>
 
+  <xsl:output method="html"/>
+
   <xsl:template match="/">
+    <xsl:text disable-output-escaping="yes">&lt;!DOCTYPE html&gt;&#xa;</xsl:text>
     <html>
       <head>
         <title>Pustefix internals</title>
