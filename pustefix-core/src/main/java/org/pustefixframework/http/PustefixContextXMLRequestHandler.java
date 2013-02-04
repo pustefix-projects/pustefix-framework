@@ -230,7 +230,7 @@ public class PustefixContextXMLRequestHandler extends AbstractPustefixXMLRequest
                 spdoc = context.handleRequest(preq);
             }
             
-            if(spdoc != null) {
+            if(spdoc != null && !spdoc.isRedirect()) {
                 if(spdoc.getPageAlternative() != null) {
                     Set<String> pageAltKeys = siteMap.getPageAlternativeKeys(spdoc.getPagename());
                     if(pageAltKeys == null || !pageAltKeys.contains(spdoc.getPageAlternative())) {
