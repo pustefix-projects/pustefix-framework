@@ -60,6 +60,15 @@
                   site = ${project.distributionManagement.site.url}
                   scmConnection = ${project.scm.connection}
                 </echo>
+                <echo file="${basedir}/target/classes/META-INF/pominfo.properties">
+                  groupId = ${project.groupId}
+                  artifactId = ${project.artifactId}
+                  version = ${project.version}
+                  name = ${project.name}
+                  url = ${project.url}
+                  site = ${project.distributionManagement.site.url}
+                  scmConnection = ${project.scm.connection}
+                </echo>
               </tasks>
             </configuration>
             <goals>
