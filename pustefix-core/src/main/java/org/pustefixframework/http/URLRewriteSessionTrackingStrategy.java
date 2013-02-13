@@ -110,7 +110,7 @@ public class URLRewriteSessionTrackingStrategy implements SessionTrackingStrateg
                 if (need_cookies != null && need_cookies.booleanValue()) {
                     LOG.debug("    ... but during the session cookies were already ENABLED: " + "Will invalidate the session " + session.getId());
                     LOGGER_SESSION.info("Invalidate session I: " + session.getId() + dumpRequest(req));
-                    session.invalidate();
+                    SessionUtils.invalidate(session);
                     has_session = false;
                 } else {
                     LOG.debug("    ... and during the session cookies were DISABLED, too: Let's hope everything is OK...");
@@ -148,7 +148,7 @@ public class URLRewriteSessionTrackingStrategy implements SessionTrackingStrateg
                                     LOG.error("*** Wrong Session-ID for running secure session from cookie. " + "IP:" + req.getRemoteAddr() + " Cookie: " + cookie.getValue()
                                             + " SessID: " + session.getId());
                                     LOGGER_SESSION.info("Invalidate session II: " + session.getId() + dumpRequest(req));
-                                    session.invalidate();
+                                    SessionUtils.invalidate(session);
                                     has_session = false;
                                 }
                             } else {
@@ -169,7 +169,7 @@ public class URLRewriteSessionTrackingStrategy implements SessionTrackingStrateg
                                 // __PFIX_TST_* cookie says.  Basically we completely switch off
                                 // cookie handling for this new session.
                                 LOGGER_SESSION.info("Invalidate session III: " + session.getId() + dumpRequest(req));
-                                session.invalidate();
+                                SessionUtils.invalidate(session);
                                 has_session = false;
                             }
                         } else {
@@ -179,7 +179,7 @@ public class URLRewriteSessionTrackingStrategy implements SessionTrackingStrateg
                             if(!ok) {
                                 LOG.warn("Invalidate session " + session.getId() + " because client identity changed!");
                                 LOGGER_SESSION.info("Invalidate session IV: " + session.getId() + dumpRequest(req));
-                                session.invalidate();
+                                SessionUtils.invalidate(session);
                                 has_session = false;
                             } else {
                                 has_ssl_session_secure = true;
@@ -192,7 +192,7 @@ public class URLRewriteSessionTrackingStrategy implements SessionTrackingStrateg
                 } else if (secure != null && secure.booleanValue()) {
                     LOG.debug("*** Found secure session but NOT running under SSL => Destroying session.");
                     LOGGER_SESSION.info("Invalidate session V: " + session.getId() + dumpRequest(req));
-                    session.invalidate();
+                    SessionUtils.invalidate(session);
                     has_session = false;
                 }
             }
@@ -466,7 +466,7 @@ public class URLRewriteSessionTrackingStrategy implements SessionTrackingStrateg
 
         LOG.debug("*** Invalidation old session (Id: " + old_id + ")");
         LOGGER_SESSION.info("Invalidate session VI: " + session.getId() + dumpRequest(req));
-        session.invalidate();
+        SessionUtils.invalidate(session);
         session = req.getSession(true);
         storeClientIdentity(req);
 

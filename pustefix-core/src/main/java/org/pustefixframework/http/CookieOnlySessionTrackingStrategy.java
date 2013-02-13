@@ -282,7 +282,7 @@ public class CookieOnlySessionTrackingStrategy implements SessionTrackingStrateg
                 traillog = context.getSessionAdmin().getInfo(oldSession).getTraillog();
             }
     
-            oldSession.invalidate();
+            SessionUtils.invalidate(oldSession);
             
             HttpSession newSession = req.getSession(true);
             LOGGER_SESSION.info("Create session: " + newSession.getId());

@@ -85,7 +85,7 @@ public class CookieSessionTrackingStrategy implements SessionTrackingStrategy {
                     LOG.debug("*** Found secure session but NOT running under SSL => Destroying session.");
                     LOGGER_SESSION.info("Invalidate session I: " + session.getId());
                     if(LOGGER_SESSION.isDebugEnabled()) LOGGER_SESSION.debug(dumpRequest(req));
-                    session.invalidate();
+                    SessionUtils.invalidate(session);
                     has_session = false;
                 }
             }
@@ -241,7 +241,7 @@ public class CookieSessionTrackingStrategy implements SessionTrackingStrategy {
                 LOG.warn(sb.toString());
                 LOGGER_SESSION.info("Invalidate session II: " + session.getId());
                 if(LOGGER_SESSION.isDebugEnabled()) LOGGER_SESSION.debug(dumpRequest(req));
-                session.invalidate();
+                SessionUtils.invalidate(session);
                 redirectToClearedRequest(req, res, used_ssl);
                 return;
             }
@@ -344,7 +344,7 @@ public class CookieSessionTrackingStrategy implements SessionTrackingStrategy {
         LOG.debug("*** Invalidation old session (Id: " + old_id + ")");
         LOGGER_SESSION.info("Invalidate session III: " + session.getId());
         if(LOGGER_SESSION.isDebugEnabled()) LOGGER_SESSION.debug(dumpRequest(req));
-        session.invalidate();
+        SessionUtils.invalidate(session);
         session = req.getSession(true);
         LOGGER_SESSION.info("Get session IV: " + session.getId());
 
