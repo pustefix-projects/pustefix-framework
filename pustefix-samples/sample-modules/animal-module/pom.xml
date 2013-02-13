@@ -4,12 +4,12 @@
   <parent>
     <groupId>org.pustefixframework.samples.modules</groupId>
     <artifactId>sample-modules</artifactId>
-    <version>0.18.37-SNAPSHOT</version>
+    <version>0.18.37</version>
   </parent>
 
   <groupId>org.pustefixframework.samples.modules</groupId>
   <artifactId>animal-module</artifactId>
-  <version>0.18.37-SNAPSHOT</version>
+  <version>0.18.37</version>
   <packaging>jar</packaging>
   <name>Pustefix Animal Sample Module</name>
 
@@ -17,7 +17,7 @@
     <dependency>
       <groupId>org.pustefixframework</groupId>
       <artifactId>pustefix-core</artifactId>
-      <version>0.18.37-SNAPSHOT</version>
+      <version>0.18.37</version>
     </dependency>
   </dependencies>
   
@@ -26,7 +26,7 @@
       <plugin>
         <groupId>org.pustefixframework.maven.plugins</groupId>
         <artifactId>pustefix-iwrapper-plugin</artifactId>
-        <version>0.18.37-SNAPSHOT</version>
+        <version>0.18.37</version>
         <executions>
           <execution>
             <goals>
@@ -38,7 +38,7 @@
       <plugin>
         <groupId>org.pustefixframework.maven.plugins</groupId>
         <artifactId>pustefix-statuscode-plugin</artifactId>
-        <version>0.18.37-SNAPSHOT</version>
+        <version>0.18.37</version>
         <executions>
           <execution>
             <goals>
