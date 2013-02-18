@@ -3,7 +3,9 @@ package org.pustefixframework.util;
 public class LogUtils {
       
    public static String makeLogSafe(String str) {
-      if(str != null) {
+	  if(str == null) {
+	     str = "";
+	  } else {
          if(str.length() >= 100) {
             str = str.substring(0, 100);
          }
