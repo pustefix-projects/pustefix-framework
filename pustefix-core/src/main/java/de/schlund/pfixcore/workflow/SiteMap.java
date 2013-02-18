@@ -248,6 +248,7 @@ public class SiteMap {
         for(Element childAlt: childAlts) {
             String altKey = childAlt.getAttribute("key");
             String altName = childAlt.getAttribute("name");
+            boolean defaultAlt = Boolean.valueOf(childAlt.getAttribute("default"));
             page.pageAltKeyToName.put(altKey, altName);
             page.pageNameToAltKey.put(altName, altKey);
             pageAlternativeToPage.put(altName, page);
@@ -256,12 +257,15 @@ public class SiteMap {
             pageAlt.key = altKey;
             pageAlt.name = altName;
             page.pageAltKeyMap.put(altKey, pageAlt);
+            if(defaultAlt) {
+            	page.defaultPageAlt = pageAlt;
+            }
             NamedNodeMap altMap = childAlt.getAttributes();
             if(altMap != null) {
                 for(int i=0; i<altMap.getLength(); i++) {
                     Node attrNode = altMap.item(i);
                     String attrName = attrNode.getNodeName();
-                    if(!("name".equals(attrName)||("key").equals(attrName))) {
+                    if(!("name".equals(attrName)||("key").equals(attrName)||"default".equals(attrName))) {
                         pageAlt.customAttributes.put(attrName, attrNode.getNodeValue());
                     }
                 }
@@ -385,15 +389,19 @@ public class SiteMap {
     
     public String getAlias(String name, String lang, String pageAlternativeKey) {
         if(pageAlternativeKey == null || pageAlternativeKey.equals("")) {
-            return getAlias(name, lang);
-        } else {
-            String pageName = name;
-            String altPageName = getPageAlternative(name, pageAlternativeKey);
-            if(altPageName != null) {
-                pageName = altPageName;
-            }
-            return getAlias(pageName, lang);
+        	Page page = pageNameToPage.get(name);
+        	if(page.defaultPageAlt == null) {
+        		return getAlias(name, lang);
+        	} else {
+        		pageAlternativeKey = page.defaultPageAlt.key;
+        	}
         }
+        String pageName = name;
+        String altPageName = getPageAlternative(name, pageAlternativeKey);
+        if(altPageName != null) {
+        	pageName = altPageName;
+        }
+        return getAlias(pageName, lang);
     }
     
     private String getPageAlternative(String pageName, String pageAlternativeKey) {
@@ -463,6 +471,11 @@ public class SiteMap {
             if(pageAlt != null) {
                 aliasKey = pageAlt.pageNameToAltKey.get(page);
                 page = pageAlt.name;
+            } else {
+            	Page p = pageNameToPage.get(page);
+            	if(p != null && p.defaultPageAlt != null) {
+            		aliasKey = p.defaultPageAlt.key;
+            	}
             }
         }
         return new PageLookupResult(page, aliasKey);
@@ -494,6 +507,7 @@ public class SiteMap {
         Map<String, String> pageAltKeyToName = new LinkedHashMap<String, String>();
         Map<String, String> pageNameToAltKey = new HashMap<String, String>();
         Map<String, PageAlternative> pageAltKeyMap = new LinkedHashMap<String, PageAlternative>();
+        PageAlternative defaultPageAlt;
         
         Page(String name) {
             this.name = name;
