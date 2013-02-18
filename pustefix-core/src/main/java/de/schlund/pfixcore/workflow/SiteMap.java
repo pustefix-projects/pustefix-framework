@@ -390,7 +390,7 @@ public class SiteMap {
     public String getAlias(String name, String lang, String pageAlternativeKey) {
         if(pageAlternativeKey == null || pageAlternativeKey.equals("")) {
         	Page page = pageNameToPage.get(name);
-        	if(page.defaultPageAlt == null) {
+        	if(page == null || page.defaultPageAlt == null) {
         		return getAlias(name, lang);
         	} else {
         		pageAlternativeKey = page.defaultPageAlt.key;
