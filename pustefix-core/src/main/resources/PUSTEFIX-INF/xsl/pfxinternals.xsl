@@ -61,7 +61,10 @@
           a:focus {
             color: #666;
           }
-         
+          img.download {
+            vertical-align:top;
+            margin-left: 7px;
+          }
           div.section {
             background: #fff;
             padding: 15px;
@@ -220,7 +223,47 @@
             font-size: 85%;
           }
           table.defsearch td {padding-right: 0px;}
-          
+          <xsl:if test="$category='search'">
+          span.fielderror {
+            color: red;
+          }
+          table.searchform {
+            padding:0px;
+            padding-top: 20px;
+            border-spacing:0px;
+          }
+          table.searchform td {
+            padding:0px;
+          }
+          table.searchform th {
+            padding-bottom: 5px;
+            text-align:left;
+          }
+          table.searchform {
+            padding-bottom: 15px;
+          }
+          div.searchresult div.match {
+            padding-bottom: 5px;
+            padding-top: 5px;
+          }
+          div.searchresult span.line {
+            color: #aaa;
+            padding-right: 20px;
+          }
+          div.searchresult div.path {
+            font-weight: bold;
+            padding-bottom: 5px;
+            padding-top: 5px;
+          }
+          input.searchbutton {
+            padding:7px;
+          }
+          hr.searchresult {
+            border: 0px;
+            border-top: 1px solid #ccc;
+            color:red;
+          }
+          </xsl:if>
           <xsl:if test="$category='targets'">
           ul.targets {
             list-style-type: none; margin: 20px;
@@ -355,6 +398,7 @@
             <span><xsl:if test="$category='cache'"><xsl:attribute name="class">active</xsl:attribute></xsl:if><a href="cache">Cache</a></span>
             <span><xsl:if test="$category='modules'"><xsl:attribute name="class">active</xsl:attribute></xsl:if><a href="modules">Modules</a></span>
             <span><xsl:if test="$category='targets'"><xsl:attribute name="class">active</xsl:attribute></xsl:if><a href="targets">Targets</a></span>
+            <span><xsl:if test="$category='search'"><xsl:attribute name="class">active</xsl:attribute></xsl:if><a href="search">Search</a></span>
             <span><xsl:if test="$category='actions'"><xsl:attribute name="class">active</xsl:attribute></xsl:if><a href="actions">Actions</a></span>
             <span><xsl:if test="$category='messages'"><xsl:attribute name="class">active</xsl:attribute></xsl:if><a href="messages">Messages</a></span>
           </div>
@@ -595,6 +639,92 @@
         <xsl:if test="not($category) or $category='targets'">
         <div class="section">
           <xsl:apply-templates select="/pfxinternals/targets"/>
+        </div>
+        </xsl:if>
+        
+        <xsl:if test="not($category) or $category='search'">
+        <div class="section">
+         <form action="{$__contextpath}/pfxinternals/search">
+          <table class="searchform"><tr>
+            <td valign="top">
+              <fieldset><legend>File name patterns</legend>
+                <xsl:if test="/pfxinternals/search/@filepatternerror">
+                  <span class="fielderror"><xsl:value-of select="/pfxinternals/search/@filepatternerror"/></span><br/>
+                </xsl:if>
+                <input type="text" size="38" name="filepattern" value="*.xml">
+                  <xsl:if test="/pfxinternals/search/@filepattern"><xsl:attribute name="value"><xsl:value-of select="/pfxinternals/search/@filepattern"/></xsl:attribute></xsl:if>
+                </input>
+                <br/>
+                  <span style="font-size:75%">Patterns are separated by a comma (* = any string, ? = any character)</span>
+                  <input style="visibility:hidden" type="checkbox"/>
+              </fieldset>
+            </td>
+            <td valign="top">
+              <fieldset><legend>Containing text</legend>
+                <xsl:if test="/pfxinternals/search/@textpatternerror">
+                  <span class="fielderror"><xsl:value-of select="/pfxinternals/search/@textpatternerror"/></span><br/>
+                </xsl:if>
+                <input type="text" size="40" name="textpattern" value="">
+                  <xsl:if test="/pfxinternals/search/@textpattern"><xsl:attribute name="value"><xsl:value-of select="/pfxinternals/search/@textpattern"/></xsl:attribute></xsl:if>
+                </input>
+                <br/>
+                
+                <input type="checkbox" name="textpatterncase" value="true" style="vertical-align:middle;font-size:75%;">
+                  <xsl:if test="/pfxinternals/search/@textpatterncase='true'"><xsl:attribute name="checked">checked</xsl:attribute></xsl:if>
+                </input><span>Case sensitive</span>
+                <input type="checkbox" name="textpatternregex" value="true" style="vertical-align:middle;font-size:75%;">
+                  <xsl:if test="/pfxinternals/search/@textpatternregex='true'"><xsl:attribute name="checked">checked</xsl:attribute></xsl:if>
+                </input><span>Regular expression</span>
+                
+              </fieldset>
+            </td>
+            <td valign="top">
+	          <fieldset>
+	            <legend>Search scope</legend>
+	            
+	            <input type="checkbox" name="searchwebapp" value="true">
+                  <xsl:if test="not(/pfxinternals/search/@searchwebapp='false')"><xsl:attribute name="checked">checked</xsl:attribute></xsl:if>
+                </input>Webapp
+                <input type="checkbox" name="searchclasspath" value="true">
+                  <xsl:if test="/pfxinternals/search/@searchclasspath='true'"><xsl:attribute name="checked">checked</xsl:attribute></xsl:if>
+                </input>Classpath<br/>
+                <input type="checkbox" name="searchmodules" value="true">
+                  <xsl:if test="not(/pfxinternals/search/@searchmodules='false')"><xsl:attribute name="checked">checked</xsl:attribute></xsl:if>
+                </input>Modules
+                <select name="searchmodule">
+                  <option>All modules</option>
+                  <xsl:for-each select="/pfxinternals/search/modules/module">
+                    <option><xsl:if test="@name = /pfxinternals/search/@searchmodule"><xsl:attribute name="selected">selected</xsl:attribute></xsl:if><xsl:value-of select="@name"/></option>
+                  </xsl:for-each>
+                </select>
+                <br/>
+	          </fieldset>
+            </td>
+            <td>
+              <input type="hidden" name="action" value="search"/>
+              <input class="searchbutton" type="submit" value="Search"/><br/>
+            </td>
+          </tr></table>
+         </form>
+          <xsl:for-each select="/pfxinternals/search/result/resource">
+            <hr class="searchresult"/>
+            <div class="searchresult">
+              <div class="path">
+                <xsl:call-template name="compactPath"><xsl:with-param name="path" select="@path"/></xsl:call-template>
+                <a href="{$__contextpath}/pfxinternals?action=download&amp;resource={enc:encode(@path,'utf-8')}">
+                  <img class="download" src="{$__contextpath}/modules/pustefix-core/img/download.png" title="Download '{@path}'"/>
+                </a>
+              </div>
+              <xsl:for-each select="match">
+                <div class="match">
+                  <span class="line">[<xsl:value-of select="@line"/>]<xsl:if test="@cut='true'"> ...</xsl:if></span>       
+                  <pre style="display:inline;white-space: pre-wrap;"><xsl:value-of select="."/></pre>
+                  <span class="line"><xsl:if test="@cut='true'"> ...</xsl:if></span>
+                </div>
+              </xsl:for-each>
+            </div>
+            
+          </xsl:for-each>
         </div>
         </xsl:if>
         
@@ -921,6 +1051,44 @@
         <img class="download" src="{$__contextpath}/modules/pustefix-core/img/download.png" title="Download/Open"/>
       </a>
     </li>
+  </xsl:template>
+  
+  <xsl:template name="compactPath">
+    <xsl:param name="path"/>
+    <xsl:choose>
+      <xsl:when test="starts-with($path,'jar:') and contains($path,'!')">
+        <xsl:variable name="jarpath" select="substring-before($path,'!')"/>
+        <xsl:choose>
+          <xsl:when test="contains($jarpath,'/')">
+            <xsl:text>jar:file:/.../</xsl:text>
+            <xsl:call-template name="lastPathComponent">
+              <xsl:with-param name="path" select="$jarpath"/>
+            </xsl:call-template>
+            <xsl:value-of select="substring-after($path,'!')"/>
+          </xsl:when>
+          <xsl:otherwise>
+            <xsl:value-of select="$path"/>
+          </xsl:otherwise>
+        </xsl:choose>  
+      </xsl:when>
+      <xsl:otherwise>
+        <xsl:value-of select="$path"/>
+      </xsl:otherwise>
+    </xsl:choose>
+  </xsl:template>
+  
+  <xsl:template name="lastPathComponent">
+    <xsl:param name="path"/>
+    <xsl:choose>
+      <xsl:when test="contains($path,'/')">
+        <xsl:call-template name="lastPathComponent">
+          <xsl:with-param name="path" select="substring-after($path,'/')"/>
+        </xsl:call-template>
+      </xsl:when>
+      <xsl:otherwise>
+        <xsl:value-of select="$path"/>
+      </xsl:otherwise>
+    </xsl:choose>
   </xsl:template>
   
 </xsl:stylesheet>
