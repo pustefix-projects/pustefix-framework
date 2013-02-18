@@ -706,6 +706,9 @@
             </td>
           </tr></table>
          </form>
+          <xsl:if test="not(/pfxinternals/search/result/resource)">
+            <div style="color:#666; padding-left: 5px;">Your search did not match!</div>
+          </xsl:if>
           <xsl:for-each select="/pfxinternals/search/result/resource">
             <hr class="searchresult"/>
             <div class="searchresult">
