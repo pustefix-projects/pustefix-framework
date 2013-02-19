@@ -12,5 +12,9 @@
     <alt key="mountains" name="Mountains"/>
   </page>
   <page name="Test"/>
+  <page name="foo">
+    <alt key="1" name="bar"/>
+    <alt key="2" name="baz" default="true"/>
+  </page>
 
 </sitemap>
