@@ -744,6 +744,8 @@
     <alt key="cities" name="Cities"/>
     <alt key="nationalparks" name="NationalParks"/>
     <alt key="mountains" name="Mountains"/>
+    <!-- Optionally you can set one page alternative to be the default one used when no page alternative is explicitly requested -->
+    <!-- <alt key="mountains" name="Mountains" default="true"/> -->
   </page>
   <!-- additional parts of a sitemap can be included, e.g. from modules -->
   <config-include file="conf/sitemap-fragment.xml" section="sitemap" module="*"/>

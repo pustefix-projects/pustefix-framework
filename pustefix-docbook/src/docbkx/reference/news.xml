@@ -327,5 +327,25 @@
 
   </section>
 
+  <section xml:id="news.0_18_38">
+    <title>What's new in Pustefix 0.18.38</title>
+
+    <section xml:id="news.0_18_38.pfxinternals">
+      <title>Full text search</title>
+      <para>
+        Pustefix's development tooling now offers a full text search (at runtime). The search can be found on the <literal>pfxinternals</literal> page and supports searching the webapp, modules and the classpath using file name patterns and regular expressions (see <xref linkend="tooling.pfxinternals.search"/>).
+      </para>
+    </section>
+
+    <section xml:id="news.0_18_38.sitemap">
+      <title>Default page alternatives</title>
+      <para>
+        Now you can choose a page alternative to be the default page alternative for a page. Thus linking or directly calling the logical page will trigger the according default page alternative
+        (see <xref linkend="configuration.sitemap"/>).
+      </para>
+    </section>
+
+  </section>
+
 
 </chapter>

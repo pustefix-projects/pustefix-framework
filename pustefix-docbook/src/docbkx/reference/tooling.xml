@@ -54,6 +54,17 @@
           </imageobject>
         </mediaobject>
       </figure>
+      <itemizedlist>
+          <listitem><emphasis>Search:</emphasis> Full text search of files within webapp, modules and classpath</listitem>
+      </itemizedlist>
+      <figure xml:id="tooling.pfxinternals.search">
+        <title>Pustefix internals - Full text search</title>
+        <mediaobject>
+          <imageobject>
+            <imagedata fileref="images/reference/pfxinternals-search.png" format="PNG"/>
+          </imageobject>
+        </mediaobject>
+      </figure>
      <itemizedlist>
           <listitem><emphasis>Actions:</emphasis> List of available actions, e.g. webapp or target generator reload, session invalidation, etc.</listitem>
           <listitem><emphasis>Message:</emphasis> Message board showing results of last triggered actions</listitem>
