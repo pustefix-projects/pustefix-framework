@@ -97,7 +97,7 @@ public class EnvironmentProperties extends Properties {
     }
     
     private static String getMachine() {
-        String machine = System.getenv("MACHINE");
+        String machine = System.getProperty("pustefix.machine");
         if(machine == null || machine.trim().equals("")) {
             try {
                 String hostAddress = InetAddress.getLocalHost().getHostAddress();
@@ -116,7 +116,7 @@ public class EnvironmentProperties extends Properties {
     }
     
     private static String getMode() {
-        String mode = System.getenv("MAKE_MODE");
+        String mode = System.getProperty("pustefix.mode");
         if(mode == null || mode.trim().equals("")) mode = "prod";
         return mode;
     }
