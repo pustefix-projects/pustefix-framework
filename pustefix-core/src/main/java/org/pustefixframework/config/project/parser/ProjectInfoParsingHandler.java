@@ -25,11 +25,16 @@ import org.pustefixframework.config.customization.CustomizationAwareParsingHandl
 import org.pustefixframework.config.generic.ParsingUtils;
 import org.pustefixframework.config.project.ProjectInfo;
 import org.pustefixframework.util.xml.DOMUtils;
+import org.springframework.beans.factory.config.BeanDefinition;
+import org.springframework.beans.factory.support.BeanDefinitionBuilder;
+import org.springframework.beans.factory.support.BeanDefinitionRegistry;
 import org.w3c.dom.Element;
 import org.w3c.dom.NodeList;
 
 import com.marsching.flexiparse.parser.HandlerContext;
 import com.marsching.flexiparse.parser.exception.ParserException;
+
+import de.schlund.pfixxml.LanguageInfo;
 
 /**
  * 
@@ -60,6 +65,15 @@ public class ProjectInfoParsingHandler extends CustomizationAwareParsingHandler 
                 }
             }
         }
+        
+        BeanDefinitionBuilder beanBuilder = BeanDefinitionBuilder.genericBeanDefinition(LanguageInfo.class);
+        beanBuilder.setScope("singleton");
+        beanBuilder.addPropertyValue("supportedLanguages", projectInfo.getSupportedLanguages());
+        beanBuilder.addPropertyValue("defaultLanguage", projectInfo.getDefaultLanguage());
+        BeanDefinition beanDefinition = beanBuilder.getBeanDefinition();
+        BeanDefinitionRegistry beanRegistry = ParsingUtils.getSingleTopObject(BeanDefinitionRegistry.class, context);
+        beanRegistry.registerBeanDefinition(LanguageInfo.class.getName(), beanDefinition);
+        beanRegistry.registerAlias(LanguageInfo.class.getName(), "pustefixLanguageInfo");
         
     }
 

@@ -27,6 +27,7 @@ import javax.xml.parsers.ParserConfigurationException;
 
 import org.apache.log4j.Logger;
 import org.pustefixframework.container.spring.util.PustefixPropertiesPersister;
+import org.pustefixframework.http.InitializingWebRequestInterceptor;
 import org.pustefixframework.http.internal.PustefixInit;
 import org.springframework.beans.BeansException;
 import org.springframework.beans.factory.config.BeanDefinition;
@@ -47,6 +48,8 @@ import org.xml.sax.SAXException;
 
 import de.schlund.pfixcore.exception.PustefixCoreException;
 import de.schlund.pfixcore.exception.PustefixRuntimeException;
+import de.schlund.pfixxml.LanguageInfo;
+import de.schlund.pfixxml.TenantInfo;
 import de.schlund.pfixxml.config.EnvironmentProperties;
 import de.schlund.pfixxml.resources.ResourceUtil;
 
@@ -87,6 +90,8 @@ public class PustefixWebApplicationContext extends AbstractRefreshableWebApplica
                 ", mode=" + props.getProperty("mode") +
                 ", uid=" + props.getProperty("uid"));
         }
+
+    	addInterceptorBeans(beanFactory);
     	
     	String configLocations[] = getConfigLocations();
         if (configLocations == null) {
@@ -173,6 +178,19 @@ public class PustefixWebApplicationContext extends AbstractRefreshableWebApplica
         DefaultBeanNameGenerator beanNameGenerator = new DefaultBeanNameGenerator();
         String name = beanNameGenerator.generateBeanName(definition, registry);
         registry.registerBeanDefinition(name, definition);
+    }
+    
+    private void addInterceptorBeans(BeanDefinitionRegistry registry) {
+    	
+    	BeanDefinitionBuilder beanBuilder = BeanDefinitionBuilder.genericBeanDefinition(InitializingWebRequestInterceptor.class);
+        beanBuilder.setScope("singleton");
+        beanBuilder.addPropertyReference("tenantInfo", TenantInfo.class.getName());
+        beanBuilder.addPropertyReference("languageInfo", LanguageInfo.class.getName());
+        BeanDefinition definition = beanBuilder.getBeanDefinition();
+        DefaultBeanNameGenerator beanNameGenerator = new DefaultBeanNameGenerator();
+        String name = beanNameGenerator.generateBeanName(definition, registry);
+        registry.registerBeanDefinition(name, definition);
+        
     }
     
     @Override

@@ -51,7 +51,6 @@ import org.pustefixframework.config.project.SessionTimeoutInfo;
 import org.pustefixframework.container.spring.http.UriProvidingHttpRequestHandler;
 import org.pustefixframework.util.LocaleUtils;
 import org.pustefixframework.util.LogUtils;
-import org.pustefixframework.util.URLUtils;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.web.context.ServletContextAware;
 
@@ -190,40 +189,6 @@ public abstract class AbstractPustefixRequestHandler implements SessionTrackingS
             res.addHeader("P3P", p3pHeader);
         }
         
-        if(!tenantInfo.getTenants().isEmpty()) {
-            Tenant matchingTenant = tenantInfo.getMatchingTenant(req);
-            if(matchingTenant == null) {
-                matchingTenant = tenantInfo.getTenants().get(0);
-            }
-            req.setAttribute(REQUEST_ATTR_TENANT, matchingTenant);
-            LOG.debug("Set tenant " + matchingTenant.getName());
-            String matchingLanguage = matchingTenant.getDefaultLanguage();
-            String pathPrefix = URLUtils.getFirstPathComponent(req.getPathInfo());
-            if(pathPrefix != null) {
-                if(tenantInfo.isLanguagePrefix(pathPrefix)) {
-                    String language = matchingTenant.getSupportedLanguageByCode(pathPrefix);
-                    if(language != null && !language.equals(matchingTenant.getDefaultLanguage())) {
-                        matchingLanguage = language;
-                    } else {
-                        res.sendError(HttpServletResponse.SC_NOT_FOUND);
-                        return;
-                    }
-                }
-            }
-            req.setAttribute(REQUEST_ATTR_LANGUAGE, matchingLanguage);
-            LOG.debug("Set language " + matchingLanguage);
-        } else if(!projectInfo.getSupportedLanguages().isEmpty()) {
-            String matchingLanguage = projectInfo.getDefaultLanguage();
-            String pathPrefix = URLUtils.getFirstPathComponent(req.getPathInfo());
-            if(pathPrefix != null) {
-                String language = projectInfo.getSupportedLanguageByCode(pathPrefix);
-                if(language != null && !language.equals(projectInfo.getDefaultLanguage())) {
-                    matchingLanguage = language;
-                }
-            }
-            req.setAttribute(REQUEST_ATTR_LANGUAGE, matchingLanguage);
-        }
-            
         if(BotDetector.isBot(req)) {
             botSessionTrackingStrategy.handleRequest(req, res);
         } else {
