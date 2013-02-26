@@ -46,16 +46,17 @@ import javax.servlet.http.HttpSession;
 
 import org.apache.log4j.Logger;
 import org.pustefixframework.config.contextxmlservice.ServletManagerConfig;
-import org.pustefixframework.config.project.ProjectInfo;
 import org.pustefixframework.config.project.SessionTimeoutInfo;
 import org.pustefixframework.container.spring.http.UriProvidingHttpRequestHandler;
 import org.pustefixframework.util.LocaleUtils;
 import org.pustefixframework.util.LogUtils;
+import org.pustefixframework.util.URLUtils;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.web.context.ServletContextAware;
 
 import de.schlund.pfixcore.workflow.SiteMap;
 import de.schlund.pfixcore.workflow.SiteMap.PageLookupResult;
+import de.schlund.pfixxml.LanguageInfo;
 import de.schlund.pfixxml.PfixServletRequest;
 import de.schlund.pfixxml.Tenant;
 import de.schlund.pfixxml.TenantInfo;
@@ -108,7 +109,7 @@ public abstract class AbstractPustefixRequestHandler implements SessionTrackingS
     private BotSessionTrackingStrategy botSessionTrackingStrategy;
     private SessionTimeoutInfo sessionTimeoutInfo;
     protected TenantInfo tenantInfo;
-    protected ProjectInfo projectInfo;
+    protected LanguageInfo languageInfo;
     protected SiteMap siteMap;
     
     public abstract ServletManagerConfig getServletManagerConfig();
@@ -156,6 +157,7 @@ public abstract class AbstractPustefixRequestHandler implements SessionTrackingS
 
         req.setCharacterEncoding(servletEncoding);
         res.setCharacterEncoding(servletEncoding);
+        
         if (LOG.isDebugEnabled()) {
             LOG.debug("\n ------------------- Start of new Request ---------------");
             LOG.debug("====> Scheme://Server:Port " + req.getScheme() + "://" + getServerName(req) + ":" + req.getServerPort());
@@ -182,6 +184,8 @@ public abstract class AbstractPustefixRequestHandler implements SessionTrackingS
             return;
         }
         
+        initializeRequest(req, tenantInfo, languageInfo);
+        
         // Set P3P-Header if needed to make sure it is 
         // set for every response (even redirects).
         String p3pHeader = getServletManagerConfig().getProperties().getProperty(PROP_P3PHEADER);
@@ -195,6 +199,45 @@ public abstract class AbstractPustefixRequestHandler implements SessionTrackingS
             sessionTrackingStrategy.handleRequest(req, res);
         }
             
+    }
+    
+    public static void initializeRequest(HttpServletRequest request, TenantInfo tenantInfo, LanguageInfo languageInfo) {
+        if(tenantInfo != null && !tenantInfo.getTenants().isEmpty()) {
+            Tenant matchingTenant = tenantInfo.getMatchingTenant(request);
+            if(matchingTenant == null) {
+                matchingTenant = tenantInfo.getTenants().get(0);
+            }
+            request.setAttribute(AbstractPustefixRequestHandler.REQUEST_ATTR_TENANT, matchingTenant);
+            if(LOG.isDebugEnabled()) {
+            	LOG.debug("Set tenant " + matchingTenant.getName());
+            }
+            String matchingLanguage = matchingTenant.getDefaultLanguage();
+            String pathPrefix = URLUtils.getFirstPathComponent(request.getPathInfo());
+            if(pathPrefix != null) {
+                if(tenantInfo.isLanguagePrefix(pathPrefix)) {
+                    String language = matchingTenant.getSupportedLanguageByCode(pathPrefix);
+                    if(language != null) {
+                        matchingLanguage = language;
+                    } else {
+                        matchingLanguage = matchingTenant.getDefaultLanguage();
+                    }
+                }
+            }
+            request.setAttribute(AbstractPustefixRequestHandler.REQUEST_ATTR_LANGUAGE, matchingLanguage);
+            if(LOG.isDebugEnabled()) {
+            	LOG.debug("Set language " + matchingLanguage);
+            }
+        } else if(languageInfo != null && !languageInfo.getSupportedLanguages().isEmpty()) {
+            String matchingLanguage = languageInfo.getDefaultLanguage();
+            String pathPrefix = URLUtils.getFirstPathComponent(request.getPathInfo());
+            if(pathPrefix != null) {
+                String language = languageInfo.getSupportedLanguageByCode(pathPrefix);
+                if(language != null && !language.equals(languageInfo.getDefaultLanguage())) {
+                    matchingLanguage = language;
+                }
+            }
+            request.setAttribute(AbstractPustefixRequestHandler.REQUEST_ATTR_LANGUAGE, matchingLanguage);
+        }
     }
     
     
@@ -435,7 +478,7 @@ public abstract class AbstractPustefixRequestHandler implements SessionTrackingS
             //check if page is language prefix => default page
             Tenant tenant = (Tenant)request.getAttribute(REQUEST_ATTR_TENANT);
             if((tenant != null && tenant.getSupportedLanguageByCode(pageAlias) != null) ||
-                (tenant == null && projectInfo.getSupportedLanguageByCode(pageAlias) != null)) {
+                (tenant == null && languageInfo.getSupportedLanguageByCode(pageAlias) != null)) {
                 return null;
             }    
         }
@@ -472,11 +515,11 @@ public abstract class AbstractPustefixRequestHandler implements SessionTrackingS
                             }
                         }
                     }
-                } else if(projectInfo.getSupportedLanguages().size() > 1) {
-                    for(String supportedLanguage: projectInfo.getSupportedLanguages()) {
+                } else if(languageInfo.getSupportedLanguages().size() > 1) {
+                    for(String supportedLanguage: languageInfo.getSupportedLanguages()) {
                         String langPart = LocaleUtils.getLanguagePart(supportedLanguage);
                         String pathPrefix = "";
-                        if(!supportedLanguage.equals(projectInfo.getDefaultLanguage())) {
+                        if(!supportedLanguage.equals(languageInfo.getDefaultLanguage())) {
                             pathPrefix = langPart + "/";
                         }
                         String alias = siteMap.getAlias(registeredPage, supportedLanguage);
@@ -548,8 +591,8 @@ public abstract class AbstractPustefixRequestHandler implements SessionTrackingS
         this.tenantInfo = tenantInfo;
     }
 
-    public void setProjectInfo(ProjectInfo projectInfo) {
-        this.projectInfo = projectInfo;
+    public void setLanguageInfo(LanguageInfo languageInfo) {
+        this.languageInfo = languageInfo;
     }
     
     public void setSiteMap(SiteMap siteMap) {

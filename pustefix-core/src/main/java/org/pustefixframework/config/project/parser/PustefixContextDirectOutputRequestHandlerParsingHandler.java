@@ -34,7 +34,6 @@ import org.pustefixframework.config.customization.CustomizationInfo;
 import org.pustefixframework.config.directoutputservice.DirectOutputPageRequestConfig;
 import org.pustefixframework.config.directoutputservice.DirectOutputServiceConfig;
 import org.pustefixframework.config.generic.ParsingUtils;
-import org.pustefixframework.config.project.ProjectInfo;
 import org.pustefixframework.config.project.SessionTimeoutInfo;
 import org.pustefixframework.config.project.SessionTrackingStrategyInfo;
 import org.pustefixframework.http.PustefixContextDirectOutputRequestHandler;
@@ -58,6 +57,7 @@ import com.marsching.flexiparse.parser.exception.ParserException;
 
 import de.schlund.pfixcore.workflow.ContextImpl;
 import de.schlund.pfixcore.workflow.SiteMap;
+import de.schlund.pfixxml.LanguageInfo;
 import de.schlund.pfixxml.TenantInfo;
 import de.schlund.pfixxml.config.includes.IncludesResolver;
 import de.schlund.pfixxml.exceptionprocessor.ExceptionProcessingConfiguration;
@@ -149,8 +149,7 @@ public class PustefixContextDirectOutputRequestHandlerParsingHandler extends Cus
         beanBuilder.addPropertyValue("sessionAdmin", new RuntimeBeanReference(SessionAdmin.class.getName()));
         beanBuilder.addPropertyValue("sessionTrackingStrategy", strategyInfo.getSessionTrackingStrategyInstance());
         beanBuilder.addPropertyValue("tenantInfo", new RuntimeBeanReference(TenantInfo.class.getName()));
-        ProjectInfo projectInfo = ParsingUtils.getSingleTopObject(ProjectInfo.class, context);
-        beanBuilder.addPropertyValue("projectInfo", projectInfo);
+        beanBuilder.addPropertyValue("languageInfo", new RuntimeBeanReference(LanguageInfo.class.getName()));
         beanBuilder.addPropertyValue("siteMap", new RuntimeBeanReference(SiteMap.class.getName()));
         beanBuilder.addPropertyValue("exceptionProcessingConfiguration", new RuntimeBeanReference(ExceptionProcessingConfiguration.class.getName()));
         if(timeoutInfo != null) {

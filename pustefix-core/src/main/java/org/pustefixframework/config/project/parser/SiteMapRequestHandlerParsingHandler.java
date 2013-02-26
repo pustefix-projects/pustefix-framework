@@ -19,7 +19,6 @@
 package org.pustefixframework.config.project.parser;
 
 import org.pustefixframework.config.generic.ParsingUtils;
-import org.pustefixframework.config.project.ProjectInfo;
 import org.pustefixframework.http.SiteMapRequestHandler;
 import org.springframework.beans.factory.config.BeanDefinitionHolder;
 import org.springframework.beans.factory.config.RuntimeBeanReference;
@@ -31,6 +30,7 @@ import com.marsching.flexiparse.parser.ParsingHandler;
 import com.marsching.flexiparse.parser.exception.ParserException;
 
 import de.schlund.pfixcore.workflow.SiteMap;
+import de.schlund.pfixxml.LanguageInfo;
 import de.schlund.pfixxml.TenantInfo;
 
 public class SiteMapRequestHandlerParsingHandler implements ParsingHandler {
@@ -54,8 +54,7 @@ public class SiteMapRequestHandlerParsingHandler implements ParsingHandler {
         beanBuilder.setScope("singleton");
         beanBuilder.addPropertyValue("siteMap", new RuntimeBeanReference(SiteMap.class.getName()));
         beanBuilder.addPropertyValue("tenantInfo", new RuntimeBeanReference(TenantInfo.class.getName()));
-        ProjectInfo projectInfo = ParsingUtils.getSingleTopObject(ProjectInfo.class, context);
-        beanBuilder.addPropertyValue("projectInfo", projectInfo);
+        beanBuilder.addPropertyValue("languageInfo", new RuntimeBeanReference(LanguageInfo.class.getName()));
         beanBuilder.addPropertyValue("pustefixContext", new RuntimeBeanReference("pustefixContext"));
         if(siteMapType != null) {
         	beanBuilder.addPropertyValue("siteMapType", siteMapType);

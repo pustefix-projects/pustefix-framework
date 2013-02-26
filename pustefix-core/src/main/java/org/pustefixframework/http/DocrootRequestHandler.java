@@ -30,12 +30,15 @@ import javax.servlet.ServletContext;
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import javax.servlet.http.HttpSession;
 
 import org.apache.log4j.Logger;
 import org.pustefixframework.container.spring.http.UriProvidingHttpRequestHandler;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.web.context.ServletContextAware;
 
+import de.schlund.pfixxml.LanguageInfo;
+import de.schlund.pfixxml.TenantInfo;
 import de.schlund.pfixxml.resources.FileResource;
 import de.schlund.pfixxml.resources.Resource;
 import de.schlund.pfixxml.resources.ResourceUtil;
@@ -61,6 +64,9 @@ public class DocrootRequestHandler implements UriProvidingHttpRequestHandler, Se
     private String mode;
     
     private Set<String> extractedPaths = new HashSet<String>();
+    
+    private TenantInfo tenantInfo;
+    private LanguageInfo languageInfo;
     
     public ServletContext getServletContext() {
         return servletContext;
@@ -89,6 +95,8 @@ public class DocrootRequestHandler implements UriProvidingHttpRequestHandler, Se
     public void handleRequest(HttpServletRequest req, HttpServletResponse res)
             throws ServletException, IOException {
         
+    	AbstractPustefixRequestHandler.initializeRequest(req, tenantInfo, languageInfo);
+    	
         String path = req.getPathInfo();
         
         // Handle default (root) request
@@ -248,6 +256,14 @@ public class DocrootRequestHandler implements UriProvidingHttpRequestHandler, Se
                 if(resource.exists()) extractedPaths.add(path);
             }
         }
+    }
+    
+    public void setTenantInfo(TenantInfo tenantInfo) {
+    	this.tenantInfo = tenantInfo;
+    }
+    
+    public void setLanguageInfo(LanguageInfo languageInfo) {
+    	this.languageInfo = languageInfo;
     }
     
     public static String getServerName(HttpServletRequest req) {

@@ -29,7 +29,6 @@ import javax.xml.transform.dom.DOMSource;
 import javax.xml.transform.stream.StreamResult;
 
 import org.apache.log4j.Logger;
-import org.pustefixframework.config.project.ProjectInfo;
 import org.pustefixframework.container.spring.http.UriProvidingHttpRequestHandler;
 import org.pustefixframework.util.LocaleUtils;
 import org.springframework.context.ApplicationContext;
@@ -46,6 +45,7 @@ import de.schlund.pfixcore.workflow.Context;
 import de.schlund.pfixcore.workflow.ContextImpl;
 import de.schlund.pfixcore.workflow.PageRequest;
 import de.schlund.pfixcore.workflow.SiteMap;
+import de.schlund.pfixxml.LanguageInfo;
 import de.schlund.pfixxml.PfixServletRequest;
 import de.schlund.pfixxml.PfixServletRequestImpl;
 import de.schlund.pfixxml.Tenant;
@@ -67,7 +67,7 @@ public class SiteMapRequestHandler implements UriProvidingHttpRequestHandler, Se
     private String[] registeredURIs = new String[] {"/sitemap.xml"};
     private SiteMap siteMap;
     private TenantInfo tenantInfo;
-    private ProjectInfo projectInfo;
+    private LanguageInfo languageInfo;
     private ServletContext servletContext;
     private ApplicationContext applicationContext;
     
@@ -229,9 +229,9 @@ public class SiteMapRequestHandler implements UriProvidingHttpRequestHandler, Se
         	baseUrl += ":" + port;
         }
         if(tenant == null) {
-            if(!projectInfo.getSupportedLanguages().isEmpty()) {
-                for(String language: projectInfo.getSupportedLanguages()) {
-                    boolean defaultLanguage = language.equals(projectInfo.getDefaultLanguage());
+            if(!languageInfo.getSupportedLanguages().isEmpty()) {
+                for(String language: languageInfo.getSupportedLanguages()) {
+                    boolean defaultLanguage = language.equals(languageInfo.getDefaultLanguage());
                     for(String page: accPages) {
                         addURL(page, root, language, defaultLanguage, baseUrl, defaultPage, mobile);
                     }
@@ -308,8 +308,8 @@ public class SiteMapRequestHandler implements UriProvidingHttpRequestHandler, Se
         this.tenantInfo = tenantInfo;
     }
     
-    public void setProjectInfo(ProjectInfo projectInfo) {
-        this.projectInfo = projectInfo;
+    public void setLanguageInfo(LanguageInfo languageInfo) {
+        this.languageInfo = languageInfo;
     }
     
     public void setServletContext(ServletContext servletContext) {

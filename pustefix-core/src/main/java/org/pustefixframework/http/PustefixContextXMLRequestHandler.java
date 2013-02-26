@@ -245,7 +245,7 @@ public class PustefixContextXMLRequestHandler extends AbstractPustefixXMLRequest
                 String langPrefix = null;
                 Tenant tenant = spdoc.getTenant();
                 if((tenant != null && !spdoc.getLanguage().equals(tenant.getDefaultLanguage())) ||
-                        tenant == null && projectInfo.getSupportedLanguages().size() > 1 && !spdoc.getLanguage().equals(projectInfo.getDefaultLanguage())) {
+                        tenant == null && languageInfo.getSupportedLanguages().size() > 1 && !spdoc.getLanguage().equals(languageInfo.getDefaultLanguage())) {
                     langPrefix = LocaleUtils.getLanguagePart(spdoc.getLanguage());
                 }
                 if(context.getContextConfig().getDefaultPage(context.getVariant()).equals(spdoc.getPagename())) {
@@ -400,9 +400,9 @@ public class PustefixContextXMLRequestHandler extends AbstractPustefixXMLRequest
                     }
                 }
             }
-        } else if(projectInfo.getSupportedLanguages().size() > 1) {
-            for(String supportedLanguage: projectInfo.getSupportedLanguages()) {
-                if(!supportedLanguage.equals(projectInfo.getDefaultLanguage())) {
+        } else if(languageInfo.getSupportedLanguages().size() > 1) {
+            for(String supportedLanguage: languageInfo.getSupportedLanguages()) {
+                if(!supportedLanguage.equals(languageInfo.getDefaultLanguage())) {
                     uris.add("/" + LocaleUtils.getLanguagePart(supportedLanguage));
                 }
             }
