@@ -228,6 +228,9 @@
   
   <pfx:anchor frame="AFrame">AnAnchor</pfx:anchor>
   
+  <!-- Select a page at runtime -->
+  <pfx:page>pageName</pfx:page>
+
   <!-- Select a page alternative by key --> 
   <pfx:altkey>pageAlternativeKey</pfx:altkey>
 
