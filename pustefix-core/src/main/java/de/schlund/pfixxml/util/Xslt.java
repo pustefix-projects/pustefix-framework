@@ -357,7 +357,6 @@ public class Xslt {
                     // a NullPointerException to be thrown, if systemId
                     // is not set
                     source.setSystemId(target.getTargetGenerator().getDisccachedir().toURI().toString() + "/" + path);
-                
                     // Register included stylesheet with target
                     parent.getAuxDependencyManager().addDependencyTarget(target.getTargetKey());
                     return source;
@@ -368,7 +367,7 @@ public class Xslt {
                 throw new TransformerException("Resource can't be found: " + uri.toString());
             }
             try {
-            	Source source = new StreamSource(resource.getInputStream(), path);
+            	Source source = new StreamSource(resource.getInputStream(), resource.toURI().toString());
             	return source;
             } catch(IOException x) {
             	throw new TransformerException("Can't read resource: " + path);
