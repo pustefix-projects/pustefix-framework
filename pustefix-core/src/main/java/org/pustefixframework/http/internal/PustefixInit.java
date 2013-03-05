@@ -129,6 +129,16 @@ public class PustefixInit {
     	    JarFileCache.setCacheDir(cacheDir);
     	}
     	
+    	//override environment properties by according context init parameters
+    	Enumeration<?> names = servletContext.getInitParameterNames();
+    	while(names.hasMoreElements()) {
+    	    String name = (String)names.nextElement();
+    	    String value = servletContext.getInitParameter(name);
+            if(value != null && !value.equals("")) {
+                EnvironmentProperties.getProperties().put(name, value);
+            }
+    	}
+    	
     	if(docrootstr == null) {
     	    docrootstr = servletContext.getRealPath("/");
     	    if (docrootstr == null) {
@@ -140,16 +150,6 @@ public class PustefixInit {
     	    }
     	} else {
     	    GlobalConfigurator.setDocroot(docrootstr);
-    	}
-    
-    	// override environment properties by according context init parameters
-    	Enumeration<?> names = servletContext.getInitParameterNames();
-    	while(names.hasMoreElements()) {
-    	    String name = (String)names.nextElement();
-    	    String value = servletContext.getInitParameter(name);
-            if(value != null && !value.equals("")) {
-                EnvironmentProperties.getProperties().put(name, value);
-            }
     	}
     	
     	configureLogging(properties, servletContext);
