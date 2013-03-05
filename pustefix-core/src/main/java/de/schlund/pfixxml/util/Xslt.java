@@ -219,18 +219,19 @@ public class Xslt {
         	
         	String msg = x.getMessage();
         	Throwable extFuncError = ExtensionFunctionUtils.getExtensionFunctionError();
-        	if(extFuncError != null || (msg != null && msg.startsWith("Exception in extension function"))) {
+        	if(extFuncError != null || (msg != null && msg.contains("Exception in extension function"))) {
         		if(extFuncError == null) {
         			extFuncError = x;
         		} else {
         			ExtensionFunctionUtils.setExtensionFunctionError(null);
         		}
         		String extFuncMsg = x.getMessageAndLocation();
-        		if(extFuncMsg != null && extFuncMsg.startsWith("Exception in extension function") && x.getLocator() instanceof Element) {
+        		if(extFuncMsg != null && extFuncMsg.contains("Exception in extension function") 
+        				&& x.getLocator() != null && x.getLocator() instanceof Element) {
         			Element element = (Element)x.getLocator();
             		String val = element.getAttribute("select");
             		if(val.length() > 0) {
-            			extFuncMsg += " (Expression: \"" + val + "\")";
+            			extFuncMsg += "; Expression: \"" + val + "\"";
             		}
         		}
         		TransformerException xsltEx = new XsltExtensionFunctionException(extFuncMsg, extFuncError);
