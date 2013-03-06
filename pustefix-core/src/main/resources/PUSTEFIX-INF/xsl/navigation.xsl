@@ -247,9 +247,16 @@
     </xsl:param>
     <ixsl:variable name="page_{generate-id()}">
       <xsl:choose>
+        <xsl:when test="pfx:page">
+          <ixsl:variable name="tmp"><xsl:apply-templates select="pfx:page/node()"/></ixsl:variable>
+          <ixsl:choose>
+            <ixsl:when test="$tmp = '/'"><ixsl:value-of select="pfx:getHomePage()"/></ixsl:when>
+            <ixsl:when test="not(string($tmp) = '')"><ixsl:value-of select="$tmp"/></ixsl:when>
+            <ixsl:otherwise><ixsl:value-of select="$page"/></ixsl:otherwise>
+          </ixsl:choose>
+        </xsl:when>
         <xsl:when test="string($buttpage) = '/'"><ixsl:value-of select="pfx:getHomePage()"/></xsl:when>
         <xsl:when test="not(string($buttpage) = '')"><xsl:value-of select="$buttpage"/></xsl:when>
-        <xsl:when test="pfx:page"><xsl:apply-templates select="pfx:page/node()"/></xsl:when>
         <xsl:otherwise><ixsl:value-of select="$page"/></xsl:otherwise>
       </xsl:choose>
     </ixsl:variable>
