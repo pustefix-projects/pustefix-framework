@@ -293,6 +293,12 @@ public class GlobalServiceConfig implements Serializable {
         }
         return false;
     }
+    
+    @Override
+    public int hashCode() {
+        assert false : "hashCode not supported";
+        return 0;
+    }
 
     private void writeObject(ObjectOutputStream out) throws IOException {
         out.defaultWriteObject();

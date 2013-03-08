@@ -110,4 +110,10 @@ public class Configuration implements Serializable {
     	return false;
     }
     
+    @Override
+    public int hashCode() {
+        assert false : "hashCode not supported";
+        return 0;
+    }
+    
 }
