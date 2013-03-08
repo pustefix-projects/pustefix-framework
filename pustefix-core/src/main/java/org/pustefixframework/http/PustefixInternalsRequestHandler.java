@@ -310,8 +310,6 @@ public class PustefixInternalsRequestHandler implements UriProvidingHttpRequestH
                    addCacheStatistics(root);
                } else if(category.equals("messages")) {
                    messageList.toXML(root);
-               } else {
-                   
                }
            }
            doc = Xml.parse(XsltVersion.XSLT1, doc);

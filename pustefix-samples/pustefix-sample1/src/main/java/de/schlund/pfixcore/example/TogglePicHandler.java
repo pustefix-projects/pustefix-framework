@@ -47,8 +47,6 @@ public class TogglePicHandler implements IHandler {
         Boolean          show = tpic.getToggle();
         if ((show != null) && show.equals(Boolean.TRUE)) {
             ctp.setShow(!ctp.getShow());
-        } else {
-            // nothing.
         }
     }
 
