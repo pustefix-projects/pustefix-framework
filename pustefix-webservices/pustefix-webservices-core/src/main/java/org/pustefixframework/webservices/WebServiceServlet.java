@@ -126,9 +126,9 @@ public class WebServiceServlet extends HttpServlet {
     public void doPost(HttpServletRequest req, HttpServletResponse res) throws ServletException, IOException {
         try {
             runtime.process(req, res);
-        } catch (Throwable t) {
-            LOG.error("Error while processing webservice request", t);
-            if (!res.isCommitted()) throw new ServletException("Error while processing webservice request.", t);
+        } catch(Exception x) {
+            LOG.error("Error while processing webservice request", x);
+            if (!res.isCommitted()) throw new ServletException("Error while processing webservice request.", x);
         }
     }
 

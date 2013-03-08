@@ -219,9 +219,9 @@ public class JAXWSProcessor implements ServiceProcessor {
             ctx.startInvocation();
             try {
                 return i.proceed();
-            } catch(Throwable t) {
-                ctx.setThrowable(t);
-                throw new ProxyInvocationException(t);
+            } catch(Exception x) {
+                ctx.setThrowable(x);
+                throw new ProxyInvocationException(x);
             } finally {
                 ctx.endInvocation();
                 ServiceResponse res = ServiceCallContext.getCurrentContext().getServiceResponse();

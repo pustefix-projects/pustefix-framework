@@ -376,7 +376,7 @@ public class ConfigurationReader extends DefaultHandler {
             Object obj=clazz.newInstance();
             if(!superClazz.isInstance(obj)) throw new ClassCastException("Class '"+val+"' can't be casted to '"+superClazz.getName()+"'.");
             return obj;
-        } catch(Throwable x) {
+        } catch(Exception x) {
             throw new ConfigException(ConfigException.ILLEGAL_ATTRIBUTE_VALUE,attrName,val,x);
         } 
     }

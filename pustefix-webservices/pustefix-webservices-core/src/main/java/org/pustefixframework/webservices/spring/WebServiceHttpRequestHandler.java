@@ -197,9 +197,9 @@ public class WebServiceHttpRequestHandler implements UriProvidingHttpRequestHand
             } else if(req.getMethod().equals("GET")) {
                 adminWebapp.doGet(req, res);
             } else throw new ServletException("Method "+req.getMethod()+" not supported!");
-        } catch (Throwable t) {
-            LOG.error("Error while processing webservice request", t);
-            if (!res.isCommitted()) throw new ServletException("Error while processing webservice request.", t);
+        } catch (Exception x) {
+            LOG.error("Error while processing webservice request", x);
+            if (!res.isCommitted()) throw new ServletException("Error while processing webservice request.", x);
         }
     }
 
