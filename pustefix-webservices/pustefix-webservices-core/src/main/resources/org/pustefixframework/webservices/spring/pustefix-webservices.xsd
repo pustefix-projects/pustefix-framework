@@ -44,7 +44,6 @@
     <xsd:restriction base="xsd:string">
       <xsd:enumeration value="SOAP"/>
       <xsd:enumeration value="JSONWS"/>
-      <xsd:enumeration value="JSONQX"/>
       <xsd:enumeration value="TEST"/>
       <xsd:enumeration value="ANY"/>
     </xsd:restriction>

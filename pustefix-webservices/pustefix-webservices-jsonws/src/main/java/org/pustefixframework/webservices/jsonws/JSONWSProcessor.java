@@ -114,12 +114,12 @@ public class JSONWSProcessor implements ServiceProcessor {
                     jsonReq=(JSONObject)parser.getJSONValue();
                     long t2 = System.currentTimeMillis();
                     if (LOG.isDebugEnabled()) LOG.debug("Parsing: "+(t2-t1)+"ms");
-                } catch(Throwable t) {
+                } catch(Exception x) {
                     String payLoad = jsonData;
                     if(payLoad != null && payLoad.length() > 255) {
                         payLoad = payLoad.substring(0, 250) + " ...";
                     }
-                    error=new ServiceException("Error during parsing of request to service '" + serviceName + "': " + payLoad, t);
+                    error=new ServiceException("Error during parsing of request to service '" + serviceName + "': " + payLoad, x);
                 }
 
                 if(error==null) {
@@ -150,8 +150,8 @@ public class JSONWSProcessor implements ServiceProcessor {
                             }
                         }
                         if(method==null) throw new ServiceException("No matching method found: "+methodName);
-                    } catch(Throwable t) {
-                        error=new ServiceException("Error during method lookup",t);
+                    } catch(Exception x) {
+                        error=new ServiceException("Error during method lookup", x);
                     }
                    
                     if(error==null) {
@@ -169,8 +169,8 @@ public class JSONWSProcessor implements ServiceProcessor {
                             }
                             long t2 = System.currentTimeMillis();
                             if(LOG.isDebugEnabled()) LOG.debug("Deserialization: "+(t2-t1)+"ms");
-                        } catch(Throwable t) {
-                            error=new ServiceException("Error during deserialization",t);
+                        } catch(Exception x) {
+                            error=new ServiceException("Error during deserialization", x);
                         }
                         
                         if(error==null) {
@@ -183,9 +183,9 @@ public class JSONWSProcessor implements ServiceProcessor {
                             try { 
                                 Object serviceObject=registry.getServiceObject(serviceName);
                                 resultObject=method.invoke(serviceObject,paramObjects);
-                            } catch(Throwable t) {
-                                if(t instanceof InvocationTargetException && t.getCause()!=null) error=t.getCause();
-                                else error=new ServiceException("Error during invocation",t);
+                            } catch(Exception x) {
+                                if(x instanceof InvocationTargetException && x.getCause() != null) error = x.getCause();
+                                else error = new ServiceException("Error during invocation", x);
                             } 
                             
                             procInfo.endInvocation();

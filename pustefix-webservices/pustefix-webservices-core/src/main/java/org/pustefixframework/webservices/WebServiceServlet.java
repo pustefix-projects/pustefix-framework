@@ -54,7 +54,6 @@ public class WebServiceServlet extends HttpServlet {
 
     private static final String PROCESSOR_IMPL_JAXWS="org.pustefixframework.webservices.jaxws.JAXWSProcessor";
     private static final String PROCESSOR_IMPL_JSONWS="org.pustefixframework.webservices.jsonws.JSONWSProcessor";
-    private static final String PROCESSOR_IMPL_JSONQX="org.pustefixframework.webservices.jsonqx.JSONQXProcessor";
     
     private static final String GENERATOR_IMPL_JSONWS="org.pustefixframework.webservices.jsonws.JSONWSStubGenerator";
     
@@ -63,7 +62,6 @@ public class WebServiceServlet extends HttpServlet {
         String procClass = null;
         if(protocolType.equals(Constants.PROTOCOL_TYPE_SOAP)) procClass = PROCESSOR_IMPL_JAXWS;
         else if(protocolType.equals(Constants.PROTOCOL_TYPE_JSONWS)) procClass = PROCESSOR_IMPL_JSONWS;
-        else if(protocolType.equals(Constants.PROTOCOL_TYPE_JSONQX)) procClass = PROCESSOR_IMPL_JSONQX;
         try {
             Class<?> clazz = Class.forName(procClass);
             ServiceProcessor proc = (ServiceProcessor)clazz.newInstance();
@@ -112,12 +110,6 @@ public class WebServiceServlet extends HttpServlet {
                             } catch(Exception x) {
                                 throw new ServletException("Can't instantiate ServiceStubGenerator: "+GENERATOR_IMPL_JSONWS,x);
                             }
-                        }
-                        sp = findServiceProcessor(Constants.PROTOCOL_TYPE_JSONQX);
-                        if(sp!=null) {
-                            Method meth = sp.getClass().getMethod("setBeanMetaDataURL", URL.class);
-                            meth.invoke(sp, metaURL);
-                            runtime.addServiceProcessor(Constants.PROTOCOL_TYPE_JSONQX, sp);
                         }
                         getServletContext().setAttribute(ServiceRuntime.class.getName(), runtime);
                         adminWebapp = new AdminWebapp(runtime);
