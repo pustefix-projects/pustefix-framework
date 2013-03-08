@@ -194,8 +194,6 @@ public class ImageGeometry {
                         return null;
                     }
                     imageinfo.put(path, tmp);
-                } else {
-                    // CAT.debug("Cache hit and uptodate for: " + path);
                 }
                 return tmp;
             } else {

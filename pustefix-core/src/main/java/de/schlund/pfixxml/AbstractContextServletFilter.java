@@ -28,7 +28,6 @@ import javax.servlet.ServletRequest;
 import javax.servlet.ServletResponse;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-import javax.servlet.http.HttpSession;
 
 import de.schlund.pfixcore.workflow.Context;
 
@@ -64,11 +63,8 @@ public abstract class AbstractContextServletFilter implements Filter {
             HttpServletResponse res = (HttpServletResponse) sres;
             
             Context context = null;
-            HttpSession session = req.getSession(false);
-            if (session != null) {
-                //TODO: inject context
-                //context = SessionContextStore.getInstance(session).getContext(this.contextIdentifier);
-            }
+            //TODO: inject context
+            //context = SessionContextStore.getInstance(session).getContext(this.contextIdentifier);
             
             this.doFilter(req, res, chain, context);            
         } else {

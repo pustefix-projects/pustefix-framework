@@ -173,9 +173,7 @@ public class SessionHelper {
 
         rcBuf = new StringBuffer();
         rcBuf.append(scheme).append("://").append(host);
-        if (AbstractPustefixRequestHandler.isDefault(req.getScheme(), req.getServerPort())) {
-            // don't care about port -- stick with defaults
-        } else {
+        if (!AbstractPustefixRequestHandler.isDefault(req.getScheme(), req.getServerPort())) {
             // we are using non-default ports and are redirecting to ssl:
             // try to get the right ssl port from the configuration
             if ("https".equals(scheme) && !req.isSecure()) {
