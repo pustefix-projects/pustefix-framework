@@ -250,7 +250,7 @@
 
   <application>
     
-    <!-- Path that static resources will be delivered from -->
+    <!-- Path that static resources will be delivered from (set i18n attribute to "true" for multitenancy/-language support)-->
     <docroot-path>docroot:/htdocs</docroot-path>
     
     <!-- URI requests to / are redirected to (optional)-->
@@ -267,9 +267,10 @@
       <config-file>docroot:/WEB-INF/direct.conf.xml</config-file>
     </direct-output-service>
     
-    <!-- Extra paths for static resources -->
+    <!-- Extra paths for static resources (set i18n attribute to "true" for multitenancy/-language support)-->
     <static>
       <path>img</path>
+      <path i18n="true">errorpages</path>
     </static>
    
     <!-- Exceptions thrown by the business logic or Pustefix itself can be handled on the top layer by so-called ExceptionProcessors,

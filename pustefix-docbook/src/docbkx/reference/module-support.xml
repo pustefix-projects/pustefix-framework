@@ -44,6 +44,8 @@
   <static>
     <path>css</path>
     <path>img</path>
+    <!-- set i18n attribute to "true" for multitenancy/-language support -->
+    <path i18n="true">errorpages</path>
   </static>
 
   <!--

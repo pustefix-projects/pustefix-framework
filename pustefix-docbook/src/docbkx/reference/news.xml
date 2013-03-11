@@ -347,5 +347,29 @@
 
   </section>
 
+  <section xml:id="news.0_18_39">
+    <title>What's new in Pustefix 0.18.39</title>
+
+    <section xml:id="news.0_18_39.xslt">
+      <title>Setting pfx:button page at runtime</title>
+      <para>
+        The <literal>&lt;pfx:button/&gt;</literal> template now supports setting the page name at runtime using the <literal>&lt;pfx:page/&gt;</literal> child element (see <xref linkend="xslt.pfx.button"/>).
+      </para>
+    </section>
+
+  </section>
+
+  <section xml:id="news.0_18_42">
+    <title>What's new in Pustefix 0.18.42</title>
+
+    <section xml:id="news.0_18_42.multitenancy">
+      <title>Multitenancy/-language support for static resources</title>
+      <para>
+        Static resources now can be delivered in language/tenant-specific versions, whereas tenant/language act as additional path components, e.g. <literal>/bar/foo.gif</literal> is searched under <literal>/bar/en_CA/foo.gif</literal> and <literal>/bar/en/foo.gif</literal> first (see example in <xref linkend="advanced.multitenancy"/>). This feature can be enabled on directory basis by addding the boolean attribute <literal>i18n</literal> to the according static path configurations (see <xref linkend="configuration.project.projectxml"/> and <xref linkend="modulessupport.types.new"/>).
+      </para>
+    </section>
+
+  </section>
+
 
 </chapter>

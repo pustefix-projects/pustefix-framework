@@ -270,6 +270,18 @@
        to the result DOM tree. During XSL transformations the tenant targeted by the transformation can be accessed
        using the XSL parameter <literal>$tenant</literal>.
     </para>
+    <para>
+       Static resources, like error pages, can also be delivered in a language/tenant-specific way. Optionally resources can be
+       searched using tenant and language as path components, e.g. with tenant set to "Canada" and language set to "fr_CA", the
+       static page <literal>/pages/error404.html</literal> will be searched in the following locations (highest priority first):
+    </para>
+    <screen>/pages/Canada/fr_CA/error404.html
+/pages/Canada/fr/error404.html
+/pages/Canada/error404.html
+/pages/fr_CA/error404.html
+/pages/fr/error404.html
+/pages/error404.html
+</screen>
   </section>
 
   <section xml:id="advanced.dyninclude">
