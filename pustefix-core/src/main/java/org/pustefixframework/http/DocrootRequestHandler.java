@@ -23,21 +23,24 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.util.HashSet;
+import java.util.Iterator;
 import java.util.List;
+import java.util.NoSuchElementException;
 import java.util.Set;
 
 import javax.servlet.ServletContext;
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-import javax.servlet.http.HttpSession;
 
 import org.apache.log4j.Logger;
 import org.pustefixframework.container.spring.http.UriProvidingHttpRequestHandler;
+import org.pustefixframework.util.LocaleUtils;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.web.context.ServletContextAware;
 
 import de.schlund.pfixxml.LanguageInfo;
+import de.schlund.pfixxml.Tenant;
 import de.schlund.pfixxml.TenantInfo;
 import de.schlund.pfixxml.resources.FileResource;
 import de.schlund.pfixxml.resources.Resource;
@@ -45,19 +48,20 @@ import de.schlund.pfixxml.resources.ResourceUtil;
 import de.schlund.pfixxml.util.MD5Utils;
 
 /**
- * This servlet serves the static files from the docroot.   
+ * This servlet delivers static files from the webapp or embedded modules.   
  * 
- * @author Sebastian Marsching <sebastian.marsching@1und1.de>
  */
 public class DocrootRequestHandler implements UriProvidingHttpRequestHandler, ServletContextAware, InitializingBean {
     
     private Logger LOG = Logger.getLogger(DocrootRequestHandler.class);
     
     private String base;
+    private boolean i18nBase;
 
     private String defaultpath = "/";
     
     private List<String> passthroughPaths;
+    private Set<String> i18nPaths;
     
     private ServletContext servletContext;
 
@@ -84,8 +88,16 @@ public class DocrootRequestHandler implements UriProvidingHttpRequestHandler, Se
         this.passthroughPaths = passthroughPaths;
     }
     
+    public void setI18NPaths(Set<String> i18nPaths) {
+        this.i18nPaths = i18nPaths;
+    }
+    
     public void setBase(String path) {
         this.base = path;
+    }
+    
+    public void setI18NBase(boolean i18nBase) {
+        this.i18nBase = i18nBase;
     }
     
     public void setMode(String mode) {
@@ -95,8 +107,8 @@ public class DocrootRequestHandler implements UriProvidingHttpRequestHandler, Se
     public void handleRequest(HttpServletRequest req, HttpServletResponse res)
             throws ServletException, IOException {
         
-    	AbstractPustefixRequestHandler.initializeRequest(req, tenantInfo, languageInfo);
-    	
+        AbstractPustefixRequestHandler.initializeRequest(req, tenantInfo, languageInfo);
+        
         String path = req.getPathInfo();
         
         // Handle default (root) request
@@ -126,15 +138,44 @@ public class DocrootRequestHandler implements UriProvidingHttpRequestHandler, Se
         if (path.startsWith("/")) {
             path = path.substring(1);
         }
+
+        Tenant tenant = (Tenant)req.getAttribute(AbstractPustefixRequestHandler.REQUEST_ATTR_TENANT);
+        String tenantName = null;
+        if(tenant != null) {
+            tenantName = tenant.getName();
+        }
+        String language = (String)req.getAttribute(AbstractPustefixRequestHandler.REQUEST_ATTR_LANGUAGE);
+        
+        I18NIterator i18nIt = null;
+        
         if (passthroughPaths != null) {
+            
             for (String prefix : this.passthroughPaths) {
+                if(i18nPaths != null && i18nPaths.contains(prefix)) {
+                    i18nIt = new I18NIterator(tenantName, language, path);
+                }
                 if (path.startsWith(prefix)) {
                     Resource resource = null;
                     if(path.startsWith("modules/") && !extractedPaths.contains(prefix)) {
-                        String moduleUri = "module://" + path.substring(8);
-                        resource = ResourceUtil.getResource(moduleUri);
+                        if(i18nIt != null) {
+                            while(i18nIt.hasNext()) {
+                                String moduleUri = "module://" + i18nIt.next().substring(8);
+                                resource = ResourceUtil.getResource(moduleUri);
+                                if(resource.exists()) break;
+                            }
+                        } else {
+                            String moduleUri = "module://" + path.substring(8);
+                            resource = ResourceUtil.getResource(moduleUri);
+                        }
                     } else {
-                        resource = ResourceUtil.getFileResourceFromDocroot(path);
+                        if(i18nIt != null) {
+                            while(i18nIt.hasNext()) {
+                                resource = ResourceUtil.getFileResourceFromDocroot(i18nIt.next());
+                                if(resource.exists()) break;
+                            }
+                        } else {
+                            resource = ResourceUtil.getFileResourceFromDocroot(path);
+                        }
                     }
                     if(resource.exists()) {
                         inputResource = resource;
@@ -144,9 +185,22 @@ public class DocrootRequestHandler implements UriProvidingHttpRequestHandler, Se
             }
             if (inputResource == null) {
                 FileResource baseResource = ResourceUtil.getFileResource(base);
-                FileResource resource = ResourceUtil.getFileResource(baseResource, path);
-                if(resource.exists()) {
-                    inputResource = resource;
+                if(i18nBase) {
+                    i18nIt = new I18NIterator(tenantName, language, path);
+                    if(i18nIt != null) {
+                        while(i18nIt.hasNext()) {
+                            FileResource resource = ResourceUtil.getFileResource(baseResource, i18nIt.next());
+                            if(resource.exists()) {
+                                inputResource = resource;
+                                break;
+                            }
+                        }
+                    }
+                } else {
+                    FileResource resource = ResourceUtil.getFileResource(baseResource, path);
+                    if(resource.exists()) {
+                        inputResource = resource;
+                    }
                 }
             }
         }
@@ -217,7 +271,7 @@ public class DocrootRequestHandler implements UriProvidingHttpRequestHandler, Se
         }
          
         if(req.getMethod().equals("HEAD")) {
-        	return;
+            return;
         }
         
         OutputStream out = new BufferedOutputStream(res.getOutputStream());
@@ -259,11 +313,11 @@ public class DocrootRequestHandler implements UriProvidingHttpRequestHandler, Se
     }
     
     public void setTenantInfo(TenantInfo tenantInfo) {
-    	this.tenantInfo = tenantInfo;
+        this.tenantInfo = tenantInfo;
     }
     
     public void setLanguageInfo(LanguageInfo languageInfo) {
-    	this.languageInfo = languageInfo;
+        this.languageInfo = languageInfo;
     }
     
     public static String getServerName(HttpServletRequest req) {
@@ -275,5 +329,93 @@ public class DocrootRequestHandler implements UriProvidingHttpRequestHandler, Se
         }
     }
     
+  
+    
+    static class I18NIterator implements Iterator<String> {
+        
+        String tenantName;
+        String language;
+        String path;
+        String languagePart;
+        String pathStart;
+        String pathEnd;
+        int step;
+        
+        I18NIterator(String tenantName, String language, String path) {
+            this.tenantName = tenantName;
+            this.language = language;
+            this.path = path;
+            if(language != null) {
+                languagePart = LocaleUtils.getLanguagePart(language);
+                if(language.equals(languagePart)) {
+                    languagePart = null;
+                }
+            }
+            int ind = path.lastIndexOf('/');
+            if(ind > -1) {
+                pathStart = path.substring(0, ind + 1);
+                pathEnd = path.substring(ind + 1);
+            } else {
+                pathStart = "";
+                pathEnd = path;
+            }
+        }
+        
+        @Override
+        public boolean hasNext() {
+            return step < 6;
+        }
+        
+        @Override
+        public String next() {
+            if(step == 0) {
+                step++;
+                if(tenantName != null && language != null) {
+                    return pathStart + tenantName + "/" + language + "/" + pathEnd;
+                }
+            }
+            if(step == 1) {
+                step++;
+                if(tenantName != null && languagePart != null) {
+                    return pathStart + tenantName + "/" + languagePart + "/" + pathEnd;
+                }
+            }
+            if(step == 2) {
+                step++;
+                if(tenantName != null) {
+                    return pathStart + tenantName + "/" + pathEnd;
+                }
+            }
+            if(step == 3) {
+                step++;
+                if(language != null) {
+                    return pathStart + language + "/" + pathEnd;
+                }
+            }
+            if(step == 4) {
+                step++;
+                if(languagePart != null) {
+                    return pathStart + languagePart + "/" + pathEnd;
+                }
+            }
+            if(step == 5) {
+                step++;
+                return path;
+            }
+            throw new NoSuchElementException();
+        }
+        
+        @Override
+        public void remove() {
+            //ignore
+        }
+    }
+    
+    public static void main(String[] args) {
+        Iterator<String> it = new I18NIterator("CA", "en_CA", "foo/bar.png");
+        while(it.hasNext()) {
+            System.out.println(it.next());
+        }
+    }
     
 }

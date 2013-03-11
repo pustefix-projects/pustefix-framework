@@ -59,6 +59,7 @@ public class ModuleDescriptor {
     private boolean defaultSearchable;
     private int defaultSearchPriority = 10;
     private List<String> staticPaths = new ArrayList<String>();
+    private Set<String> i18nPaths = new HashSet<String>();
     
     private AntPathMatcher antPathMatcher = new AntPathMatcher();
     
@@ -153,12 +154,19 @@ public class ModuleDescriptor {
         return defaultSearchFilterAttributes;
     }
 
-    public void addStaticPath(String staticPath) {
+    public void addStaticPath(String staticPath, boolean i18n) {
         staticPaths.add(staticPath);
+        if(i18n) {
+            i18nPaths.add(staticPath);
+        }
     }
     
     public List<String> getStaticPaths() {
         return staticPaths;
+    }
+    
+    public boolean isI18NPath(String staticPath) {
+        return i18nPaths.contains(staticPath);
     }
     
     @Override
@@ -238,7 +246,12 @@ public class ModuleDescriptor {
                         if(path.endsWith("/")) path = path.substring(0, path.length() - 1);
                         if(path.equals("") || path.equals("/PUSTEFIX-INF")) path = "/";
                         else if(path.startsWith("/PUSTEFIX-INF")) path = path.substring(13);
-                        moduleInfo.addStaticPath(path);
+                        boolean i18n = false;
+                        String i18nAttr = pathElem.getAttribute("i18n").trim();
+                        if(i18nAttr.length() > 0) {
+                            i18n = Boolean.parseBoolean(i18nAttr);
+                        }
+                        moduleInfo.addStaticPath(path, i18n);
                     }
                 }
             }
