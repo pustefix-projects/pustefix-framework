@@ -33,6 +33,7 @@ import org.xml.sax.InputSource;
 import com.icl.saxon.Controller;
 import com.icl.saxon.PreparedStyleSheet;
 import com.icl.saxon.TransformerFactoryImpl;
+import com.icl.saxon.tree.DocumentImpl;
 
 import de.schlund.pfixxml.util.Xml;
 import de.schlund.pfixxml.util.XsltSupport;
@@ -86,6 +87,16 @@ public class XsltSaxon1 implements XsltSupport {
         Controller c=(Controller)transformer;
         c.setTraceListener(tl);
         c.setLineNumbering(true);
+    }
+    
+    public String getSystemId(Templates templates) {
+    	if(templates instanceof PreparedStyleSheet) {
+    		DocumentImpl doc = ((PreparedStyleSheet)templates).getStyleSheetDocument();
+    		if(doc != null) {
+    			return doc.getSystemId();
+    		}
+    	}
+    	return null;
     }
     
 }

@@ -88,4 +88,9 @@ public class XsltSaxon2 implements XsltSupport {
         //TODO: implementation
     }
     
+    public String getSystemId(Templates templates) {
+    	//TODO: implementation
+    	return null;
+    }
+    
 }

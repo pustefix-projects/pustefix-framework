@@ -167,6 +167,23 @@ public class Xslt {
     }
     
     public static void transform(Document xml, Templates templates, Map<String, Object> params, Result result, String encoding) throws TransformerException {
+    	try {
+            doTransform(xml, templates, params, result, encoding);
+    	} catch(TransformerException x) {
+    		XsltVersion xsltVersion = getXsltVersion(templates);
+    		XsltSupport xsltSupport = XsltProvider.getXsltSupport(xsltVersion);
+    		String systemId = xsltSupport.getSystemId(templates);
+    		if(systemId != null) {
+	    		InputSource source = new InputSource(systemId);
+	    		templates = loadTemplates(xsltVersion, source, null, true);
+	    		doTransform(xml, templates, params, result, encoding);
+    		} else {
+    			throw x;
+    		}
+    	}
+    }
+    
+    private static void doTransform(Document xml, Templates templates, Map<String, Object> params, Result result, String encoding) throws TransformerException {
         try {
             doTransform(xml,templates,params,result,encoding,false);
         } catch(UnsupportedOperationException x) {
@@ -357,7 +374,7 @@ public class Xslt {
                     // There is a bug in Saxon 6.5.3 which causes
                     // a NullPointerException to be thrown, if systemId
                     // is not set
-                    source.setSystemId(target.getTargetGenerator().getDisccachedir().toURI().toString() + "/" + path);
+                    source.setSystemId(target.getTargetKey());
                     // Register included stylesheet with target
                     parent.getAuxDependencyManager().addDependencyTarget(target.getTargetKey());
                     return source;
