@@ -379,6 +379,15 @@
            window.location.href = url;
          }
          </xsl:if>
+         <xsl:if test="$category='includes'">
+         function viewTarget(value) {
+           var url = window.location.href;
+           var ind = url.indexOf('?');
+           if(ind > 0) url = url.substring(0, ind);
+           url = url + "?target=" + encodeURIComponent(value);
+           window.location.href = url;
+         }
+         </xsl:if>
           
         </script>
       </head>
@@ -398,6 +407,7 @@
             <span><xsl:if test="$category='cache'"><xsl:attribute name="class">active</xsl:attribute></xsl:if><a href="cache">Cache</a></span>
             <span><xsl:if test="$category='modules'"><xsl:attribute name="class">active</xsl:attribute></xsl:if><a href="modules">Modules</a></span>
             <span><xsl:if test="$category='targets'"><xsl:attribute name="class">active</xsl:attribute></xsl:if><a href="targets">Targets</a></span>
+            <span><xsl:if test="$category='includes'"><xsl:attribute name="class">active</xsl:attribute></xsl:if><a href="includes">Includes</a></span>
             <span><xsl:if test="$category='search'"><xsl:attribute name="class">active</xsl:attribute></xsl:if><a href="search">Search</a></span>
             <span><xsl:if test="$category='actions'"><xsl:attribute name="class">active</xsl:attribute></xsl:if><a href="actions">Actions</a></span>
             <span><xsl:if test="$category='messages'"><xsl:attribute name="class">active</xsl:attribute></xsl:if><a href="messages">Messages</a></span>
@@ -639,6 +649,189 @@
         <xsl:if test="not($category) or $category='targets'">
         <div class="section">
           <xsl:apply-templates select="/pfxinternals/targets"/>
+        </div>
+        </xsl:if>
+        
+        <xsl:if test="not($category) or $category='includes'">
+        <div class="section">
+          <div>
+            <xsl:apply-templates select="/pfxinternals/targets/targetlist"/>
+          </div>
+          <br/>
+          <xsl:if test="/pfxinternals/includestatistics">
+          <div style="font-size:80%;padding:3px;padding-bottom:10px;">
+          <a href="javascript:expandAll()" style="cursor:pointer;">Expand all</a>&#xa0;
+          <a href="javascript:collapseAll()" style="cursor:pointer;">Collapse all</a>
+          </div>
+          <table id="incstats">
+            <tr>
+              <th align="left">
+                <xsl:choose>
+                  <xsl:when test="/pfxinternals/includestatistics/@sortby='title'">
+                    <span style="padding-right:3px">&#x25b6;</span>
+                    <a href="{$__contextpath}/pfxinternals/includes?target={enc:encode(/pfxinternals/targets/target/@key,'utf8')}">Part</a>
+                  </xsl:when>
+                  <xsl:otherwise>
+                    <a href="{$__contextpath}/pfxinternals/includes?target={enc:encode(/pfxinternals/targets/target/@key,'utf8')}&amp;sortby=title">Part</a>
+                  </xsl:otherwise>
+                </xsl:choose> 
+              </th>
+              <th align="right">
+                <xsl:choose>
+                  <xsl:when test="/pfxinternals/includestatistics/@sortby='shallow'">
+                    <span style="padding-right:3px">&#x25b6;</span>
+                    <a href="{$__contextpath}/pfxinternals/includes?target={enc:encode(/pfxinternals/targets/target/@key,'utf8')}">Shallow size</a>
+                  </xsl:when>
+                  <xsl:otherwise>
+                    <a href="{$__contextpath}/pfxinternals/includes?target={enc:encode(/pfxinternals/targets/target/@key,'utf8')}&amp;sortby=shallow">Shallow size</a>
+                  </xsl:otherwise>
+                </xsl:choose>
+              </th>
+              <th align="right" style="padding-left:20px;">
+                <xsl:choose>
+                  <xsl:when test="/pfxinternals/includestatistics/@sortby='retained'">
+                    <span style="padding-right:3px">&#x25b6;</span>
+                    <a href="{$__contextpath}/pfxinternals/includes?target={enc:encode(/pfxinternals/targets/target/@key,'utf8')}">Retained size</a>
+                  </xsl:when>
+                  <xsl:otherwise>
+                    <a href="{$__contextpath}/pfxinternals/includes?target={enc:encode(/pfxinternals/targets/target/@key,'utf8')}&amp;sortby=retained">Retained size</a>
+                  </xsl:otherwise>
+                </xsl:choose>
+              </th>
+            </tr>
+          </table>
+          
+          <script type="text/javascript">
+          
+            var incstats = <xsl:value-of select="/pfxinternals/includestatistics"/>;
+            
+            function formatBytes(bytes) {
+              var str = "" + bytes;
+              var tmp = "";
+              for(var i=0; i &lt; str.length; i++) {
+                 tmp = tmp + str.charAt(i);
+                 if((str.length - i -1) % 3 == 0 &amp;&amp; i &lt; str.length - 1) {
+                   tmp = tmp + ".";
+                 }
+              }
+              return tmp;
+            }
+            
+            function toggleInclude(elem) {
+              elem = elem.parentNode.parentNode;
+              if(elem.include.includes) {
+               
+                for(var i=0; i&lt;elem.include.includes.length; i++) {
+                  var row = elem.include.includes[i].tablerow;
+                  if(row.style.display=="none") {
+                    elem.include.includes[i].tablerow.style.display = "table-row";
+                  } else {
+                    collapse(elem.include.includes[i]);
+                  }
+                }
+                var state=elem.firstChild.firstChild.firstChild.data;
+                if(state == '-') {
+                  state = "+";
+                } else {
+                  state = "-";
+                }
+                elem.firstChild.firstChild.innerHTML=state;
+              }
+            }
+            
+            function collapseAll() {
+              if(incstats.includes) {
+                incstats.tablerow.firstChild.firstChild.innerHTML = "+";
+                for(var i=0; i&lt;incstats.includes.length; i++) {
+                  collapse(incstats.includes[i]);   
+                }
+              }
+            }
+            
+            function collapse(include) {
+              include.tablerow.style.display = 'none';
+              if(include.includes) {
+                include.tablerow.firstChild.firstChild.innerHTML='+';
+              } 
+              if(include.includes) {
+                for(var i=0; i&lt;include.includes.length; i++) {
+                  collapse(include.includes[i]);   
+                }
+              }
+            }
+            
+            function expandAll() {
+              expand(incstats);
+            }
+            
+            function expand(include) {
+              if(include == null) {
+                include = incstats;
+              } 
+              include.tablerow.style.display = "table-row";
+              if(include.includes) {
+                include.tablerow.firstChild.firstChild.innerHTML='-';
+                for(var i=0; i&lt;include.includes.length; i++) {
+                  expand(include.includes[i]);   
+                }
+              } 
+            }
+            
+            function addInclude(include,level) {
+              var elem = document.getElementById('incstats');
+              var tr = document.createElement("tr");
+              var ss;
+              if(level &lt; 2) {
+                if(include.includes) {
+                  ss = "-";
+                } else {
+                  ss = "&#xa0;"
+                }
+              } else {
+                if(include.includes) {
+                  ss = "+";
+                } else {
+                  ss = "&#xa0;"
+                }
+                if(level > 2) {
+                  tr.style.display = 'none';
+                }
+              }
+              elem.appendChild(tr);
+              var td = document.createElement("td");
+              var s = document.createElement("span");
+              s.style.paddingLeft = level*10+'px';
+              s.style.paddingRight = '5px';
+              if(include.includes) {
+                s.setAttribute("onclick","toggleInclude(this);");
+                s.style.cursor = "pointer";
+              }
+              s.appendChild(document.createTextNode(ss));
+              td.appendChild(s);
+              include.tablerow = tr;
+              tr.include = include;
+              td.appendChild(document.createTextNode(include.title));
+              tr.appendChild(td);
+              td = document.createElement("td");
+              td.style.textAlign="right";
+              td.appendChild(document.createTextNode(formatBytes(include.shallow)));
+              tr.appendChild(td);
+              td = document.createElement("td");
+              td.style.textAlign="right";
+              td.appendChild(document.createTextNode(formatBytes(include.retained)));
+              tr.appendChild(td);
+              if(include.includes) {
+                for(var i=0; i&lt;include.includes.length; i++) {
+                  addInclude(include.includes[i],level+1);
+                }
+              }
+            }
+            
+            addInclude(incstats,0);
+            
+            
+          </script>
+          </xsl:if>
         </div>
         </xsl:if>
         
@@ -992,6 +1185,9 @@
 
   <xsl:template match="targetlist">
     <select name="target" size="1" onChange="viewTarget(this.value)">
+      <xsl:if test="not(/pfxinternals/targets/target)">
+        <option>Select target</option>
+      </xsl:if>)
       <xsl:for-each select="target">
         <option><xsl:if test="@key = /pfxinternals/targets/target/@key"><xsl:attribute name="selected">true</xsl:attribute></xsl:if><xsl:value-of select="@key"/></option>
       </xsl:for-each>

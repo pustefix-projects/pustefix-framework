@@ -84,7 +84,10 @@ import org.w3c.dom.Node;
 import de.schlund.pfixcore.util.ModuleDescriptor;
 import de.schlund.pfixcore.util.ModuleInfo;
 import de.schlund.pfixxml.FilterHelper;
+import de.schlund.pfixxml.IncludeSizeParser;
+import de.schlund.pfixxml.IncludeSizeParser.IncludeStatistics;
 import de.schlund.pfixxml.config.EnvironmentProperties;
+import de.schlund.pfixxml.resources.FileResource;
 import de.schlund.pfixxml.resources.ModuleResource;
 import de.schlund.pfixxml.resources.Resource;
 import de.schlund.pfixxml.resources.ResourceUtil;
@@ -299,6 +302,8 @@ public class PustefixInternalsRequestHandler implements UriProvidingHttpRequestH
                    addSystemInfo(root);
                } else if(category.equals("targets")) {
                    addTargets(root, req);
+               } else if(category.equals("includes")) {
+            	   addIncludes(root, req);
                } else if(category.equals("search")) {
             	   Element searchElem = addSearch(root);
             	   if("search".equals(action)) {
@@ -612,6 +617,52 @@ public class PustefixInternalsRequestHandler implements UriProvidingHttpRequestH
         dumpTarget(target, targetsElem, new HashSet<String>(), true);
     }
     
+    private void addIncludes(Element parent, HttpServletRequest req) {
+        Element targetsElem = parent.getOwnerDocument().createElement("targets");
+        parent.appendChild(targetsElem);
+        addTopLevelTargetList(targetsElem);
+        
+        String targetKey = req.getParameter("target");
+        if(targetKey != null) {
+        	Target target = (TargetImpl)targetGenerator.getTarget(targetKey);
+        	if(target != null) {
+	            try {
+	                target.getValue();
+	            } catch(TargetGenerationException x) {
+	                //ignore as we can still provide the static target information
+	            }
+	            FileResource cacheDir = targetGenerator.getDisccachedir();
+	            try {
+	            	File xslFile = new File(cacheDir.getFile(), targetKey);
+	            	if(xslFile.exists()) {
+	            		IncludeStatistics stats = IncludeSizeParser.parse(xslFile);
+	            		IncludeSizeParser.SortBy sortBy = null;
+	            		String sortByParam = req.getParameter("sortby");
+	            		if(sortByParam != null) {
+	            			try {
+	            			sortBy = IncludeSizeParser.SortBy.valueOf(sortByParam.toUpperCase());
+	            			} catch(IllegalArgumentException x) {
+	            				//ignore illegal values
+	            			}
+	            		}
+	            		String json = stats.getJSON(sortBy);
+	            		Element statsElem = parent.getOwnerDocument().createElement("includestatistics");
+	            		if(sortByParam != null) {
+	            			statsElem.setAttribute("sortby", sortByParam);
+	            		}
+	            		parent.appendChild(statsElem);
+	            		statsElem.setTextContent(json);
+	            	}
+	            } catch(IOException x) {
+	            	x.printStackTrace();
+	            }
+	            Element targetElem = parent.getOwnerDocument().createElement("target");
+	            targetsElem.appendChild(targetElem);
+	            targetElem.setAttribute("key", target.getTargetKey());
+        	}
+        }
+    }
+    
     private void addTargetList(Element root) {
         Element targetsElem = root.getOwnerDocument().createElement("targetlist");
         root.appendChild(targetsElem);
@@ -620,6 +671,19 @@ public class PustefixInternalsRequestHandler implements UriProvidingHttpRequestH
         while(it.hasNext()) {
             String key = it.next();
             Target target = targets.get(key);
+            Element targetElem = root.getOwnerDocument().createElement("target");
+            targetElem.setAttribute("key", target.getTargetKey());
+            targetsElem.appendChild(targetElem);
+        }
+    }
+    
+    private void addTopLevelTargetList(Element root) {
+        Element targetsElem = root.getOwnerDocument().createElement("targetlist");
+        root.appendChild(targetsElem);
+        Set<Target> targets = targetGenerator.getPageTargetTree().getToplevelTargets();
+        Iterator<Target> it = targets.iterator();
+        while(it.hasNext()) {
+            Target target = it.next();
             Element targetElem = root.getOwnerDocument().createElement("target");
             targetElem.setAttribute("key", target.getTargetKey());
             targetsElem.appendChild(targetElem);
