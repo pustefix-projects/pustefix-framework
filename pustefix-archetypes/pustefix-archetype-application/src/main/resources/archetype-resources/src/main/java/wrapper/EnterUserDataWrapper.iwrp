@@ -3,10 +3,10 @@
            xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
            xsi:schemaLocation="http://www.pustefix-framework.org/2008/namespace/iwrapper 
                                http://www.pustefix-framework.org/2008/namespace/iwrapper.xsd">
-  
+
   <!-- This handler will process the data -->
   <ihandler class="${package}.handler.EnterUserDataHandler"/>
-  
+
   <!-- Parameters that have to be extracted from the request -->
   <param name="sex" type="java.lang.String" occurrence="mandatory"/>
   <param name="name" type="java.lang.String" occurrence="mandatory"/>

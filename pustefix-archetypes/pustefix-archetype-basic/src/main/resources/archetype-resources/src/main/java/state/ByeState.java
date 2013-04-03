@@ -13,15 +13,15 @@ import de.schlund.pfixxml.PfixServletRequest;
 public class ByeState extends StaticState {
 
     private User user;
-    
+
     @Override
     public boolean isAccessible(Context context, PfixServletRequest preq) throws Exception {
         return user.getName() != null;
     }
-    
+
     @Autowired
     public void setUser(User user) {
         this.user = user;
     }
-    
+
 }

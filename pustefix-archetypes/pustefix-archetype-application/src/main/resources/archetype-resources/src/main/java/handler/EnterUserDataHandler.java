@@ -35,7 +35,7 @@ public class EnterUserDataHandler implements IHandler {
             throws Exception {
         ContextResourceManager manager = context.getContextResourceManager();
         ContextUser cUser = manager.getResource(ContextUser.class);
-        
+
         EnterUserDataWrapper euWrapper = (EnterUserDataWrapper)wrapper;
         User user = new User();
         user.setSex(euWrapper.getSex());
