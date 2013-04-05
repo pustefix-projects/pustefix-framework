@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="utf-8"?>
+<pfx:document xmlns:pfx="http://www.schlund.de/pustefix/core" xmlns:ixsl="http://www.w3.org/1999/XSL/Transform">
+  <!-- put the frame markup your pages have in common here -->
+  <html>
+    <head>
+      <title>Pustefix i18n sample application</title>
+      <link href="{$__contextpath}/css/style.css" media="all" rel="stylesheet" type="text/css"/>
+    </head>
+    <body>
+      <div class="header">
+        <div class="logo"><pfx:image class="logo" src="img/logo.png"/></div>
+        <div class="title"><pfx:include href="txt/common.xml" part="title"/></div>
+        <div class="country"><pfx:image src="img/flag-48x48.png" i18n="true"/></div>
+        <div class="language"><pfx:include href="txt/common.xml" part="langchoice"/></div>      
+      </div>
+      <div class="content">
+        <pfx:include href="txt/common.xml" part="navi"/>
+        <pfx:maincontent prefix="" module="PAGEDEF"/>
+      </div>
+  
+      <div id="footer">
+        <a href="http://ca.{$fqdn}:8080{$__contextpath}">
+          <pfx:image src="img/CA_market/flag-24x24.png"/>
+        </a>
+        <a href="http://de.{$fqdn}:8080{$__contextpath}">
+          <pfx:image src="img/DE_market/flag-24x24.png"/>
+        </a>
+        <a href="http://us.{$fqdn}:8080{$__contextpath}">
+          <pfx:image src="img/US_market/flag-24x24.png"/>
+        </a> 
+      </div>
+      <pfx:editconsole/>
+    </body>
+  </html>
+</pfx:document>

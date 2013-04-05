@@ -25,6 +25,7 @@
     <module>pustefix-i18n-tenant-ca</module>
     <module>pustefix-i18n-tenant-de</module>
     <module>pustefix-i18n-tenant-us</module>
+    <module>pustefix-i18n-compact-webapp</module>
   </modules>
 
   <build>

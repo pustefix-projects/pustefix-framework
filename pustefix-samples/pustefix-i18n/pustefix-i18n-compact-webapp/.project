@@ -1,0 +1,21 @@
+<projectDescription>
+  <name>pustefix-i18n-compact-webapp</name>
+  <comment>Pustefix Web Application Framework. NO_M2ECLIPSE_SUPPORT: Project files created with the maven-eclipse-plugin are not supported in M2Eclipse.</comment>
+  <projects>
+    <project>pustefix-i18n-core</project>
+    <project>pustefix-i18n-lang-de</project>
+    <project>pustefix-i18n-lang-en</project>
+    <project>pustefix-i18n-lang-fr</project>
+    <project>pustefix-i18n-tenant-ca</project>
+    <project>pustefix-i18n-tenant-de</project>
+    <project>pustefix-i18n-tenant-us</project>
+  </projects>
+  <buildSpec>
+    <buildCommand>
+      <name>org.eclipse.jdt.core.javabuilder</name>
+    </buildCommand>
+  </buildSpec>
+  <natures>
+    <nature>org.eclipse.jdt.core.javanature</nature>
+  </natures>
+</projectDescription>
