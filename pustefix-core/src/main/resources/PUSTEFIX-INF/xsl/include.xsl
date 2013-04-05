@@ -209,6 +209,7 @@
     <xsl:param name="href"><xsl:choose><xsl:when test="@select-href"><xsl:value-of select="pfx:__eval(@select-href)"/></xsl:when><xsl:otherwise><xsl:value-of select="@href"/></xsl:otherwise></xsl:choose></xsl:param>
     <xsl:param name="module"><xsl:value-of select="@module"/></xsl:param>
     <xsl:param name="search"><xsl:value-of select="@search"/></xsl:param>
+    <xsl:param name="lang"><xsl:value-of select="$lang"/></xsl:param>
     <xsl:variable name="module_name">
       <xsl:choose>
         <xsl:when test="@module='PAGEDEF' or @module='pagedef'">
@@ -637,6 +638,7 @@
     <xsl:param name="themed-img"/>
     <xsl:param name="module"/>
     <xsl:param name="search"/>
+    <xsl:param name="i18n"/>
     <xsl:variable name="module_name">
       <xsl:choose>
         <xsl:when test="$module='PAGEDEF' or $module='pagedef'">
@@ -654,7 +656,7 @@
         <xsl:variable name="parent_theme"><xsl:value-of select="ancestor::theme[position() = 1]/@name"/></xsl:variable>
         <xsl:value-of select="image:getSrc(string($src),string($themed-path),string($themed-img),
                               string($parent_part),string($parent_theme),
-                              $__target_gen,string($__target_key),string($module_name),string($search),$tenant,$lang)"/>          
+                              $__target_gen,string($__target_key),string($module_name),string($search),$tenant,$lang,boolean($i18n))"/>          
       </xsl:when>
       <xsl:otherwise>
         <xsl:message terminate="no">
@@ -672,6 +674,7 @@
     <xsl:param name="exclude-attributes"/>
     <xsl:param name="module" select="@module"/>
     <xsl:param name="search" select="@search"/>
+    <xsl:param name="i18n" select="@i18n"/>
     <xsl:variable name="always-exclude-attributes" select="'src|alt|themed-path|themed-img|module|search|select-src|select-alt'"/>
     <xsl:variable name="real_src">
       <xsl:call-template name="pfx:image_register_src">
@@ -680,6 +683,7 @@
         <xsl:with-param name="themed-img" select="$themed-img"/>
         <xsl:with-param name="module" select="$module"/>
         <xsl:with-param name="search" select="$search"/>
+        <xsl:with-param name="i18n" select="$i18n"/>
       </xsl:call-template>
     </xsl:variable>
     <img src="{{$__contextpath}}/{$real_src}" alt="{$alt}">

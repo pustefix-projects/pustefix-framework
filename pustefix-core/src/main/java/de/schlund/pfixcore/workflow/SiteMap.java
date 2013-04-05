@@ -280,18 +280,30 @@ public class SiteMap {
     }
     
     private void readSiteMapAliases(Document siteMapAliasesDoc) {
+    	
         Element root = siteMapAliasesDoc.getDocumentElement();
-        String lang = root.getAttribute("lang").trim();
-        Map<String, String> pageToAlias = new HashMap<String, String>();
-        aliasMaps.put(lang, pageToAlias);
-        Map<String, String> aliasToPage = new HashMap<String, String>();
-        pageMaps.put(lang, aliasToPage);
-        List<Element> aliasElems = DOMUtils.getChildElementsByTagName(root, "alias");
-        for(Element aliasElem: aliasElems) {
-            String page = aliasElem.getAttribute("page").trim();
-            String alias = aliasElem.getTextContent().trim();
-            pageToAlias.put(page, alias);
-            aliasToPage.put(alias, page);
+        readSiteMapAliases(root);
+        List<Element> aliasGroupElems = DOMUtils.getChildElementsByTagName(root, "alias-group");
+        for(Element aliasGroupElem: aliasGroupElems) {
+        	readSiteMapAliases(aliasGroupElem);
+        }
+        
+    }
+    
+    private void readSiteMapAliases(Element siteMapAliasesGroup) {
+    	String lang = siteMapAliasesGroup.getAttribute("lang").trim();
+        if(lang.length() > 0) {
+        	Map<String, String> pageToAlias = new HashMap<String, String>();
+            aliasMaps.put(lang, pageToAlias);
+            Map<String, String> aliasToPage = new HashMap<String, String>();
+            pageMaps.put(lang, aliasToPage);
+            List<Element> aliasElems = DOMUtils.getChildElementsByTagName(siteMapAliasesGroup, "alias");
+	        for(Element aliasElem: aliasElems) {
+	            String page = aliasElem.getAttribute("page").trim();
+	            String alias = aliasElem.getTextContent().trim();
+	            pageToAlias.put(page, alias);
+	            aliasToPage.put(alias, page);
+	        }
         }
     }
     

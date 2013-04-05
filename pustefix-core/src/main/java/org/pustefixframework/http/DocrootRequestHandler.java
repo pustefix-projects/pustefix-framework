@@ -25,7 +25,6 @@ import java.io.OutputStream;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
-import java.util.NoSuchElementException;
 import java.util.Set;
 
 import javax.servlet.ServletContext;
@@ -35,7 +34,6 @@ import javax.servlet.http.HttpServletResponse;
 
 import org.apache.log4j.Logger;
 import org.pustefixframework.container.spring.http.UriProvidingHttpRequestHandler;
-import org.pustefixframework.util.LocaleUtils;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.web.context.ServletContextAware;
 
@@ -43,6 +41,8 @@ import de.schlund.pfixxml.LanguageInfo;
 import de.schlund.pfixxml.Tenant;
 import de.schlund.pfixxml.TenantInfo;
 import de.schlund.pfixxml.resources.FileResource;
+import de.schlund.pfixxml.resources.I18NIterator;
+import de.schlund.pfixxml.resources.I18NResourceUtil;
 import de.schlund.pfixxml.resources.Resource;
 import de.schlund.pfixxml.resources.ResourceUtil;
 import de.schlund.pfixxml.util.MD5Utils;
@@ -146,33 +146,25 @@ public class DocrootRequestHandler implements UriProvidingHttpRequestHandler, Se
         }
         String language = (String)req.getAttribute(AbstractPustefixRequestHandler.REQUEST_ATTR_LANGUAGE);
         
-        I18NIterator i18nIt = null;
-        
         if (passthroughPaths != null) {
             
             for (String prefix : this.passthroughPaths) {
+            	boolean i18n = false;
                 if(i18nPaths != null && i18nPaths.contains(prefix)) {
-                    i18nIt = new I18NIterator(tenantName, language, path);
+                    i18n = true;
                 }
                 if (path.startsWith(prefix)) {
                     Resource resource = null;
                     if(path.startsWith("modules/") && !extractedPaths.contains(prefix)) {
-                        if(i18nIt != null) {
-                            while(i18nIt.hasNext()) {
-                                String moduleUri = "module://" + i18nIt.next().substring(8);
-                                resource = ResourceUtil.getResource(moduleUri);
-                                if(resource.exists()) break;
-                            }
+                        String moduleUri = "module://" + path.substring(8);
+                        if(i18n) {
+                        	resource = I18NResourceUtil.getResource(moduleUri, tenantName, language);
                         } else {
-                            String moduleUri = "module://" + path.substring(8);
                             resource = ResourceUtil.getResource(moduleUri);
                         }
                     } else {
-                        if(i18nIt != null) {
-                            while(i18nIt.hasNext()) {
-                                resource = ResourceUtil.getFileResourceFromDocroot(i18nIt.next());
-                                if(resource.exists()) break;
-                            }
+                        if(i18n) {
+                            resource = I18NResourceUtil.getFileResourceFromDocroot(path, tenantName, language);
                         } else {
                             resource = ResourceUtil.getFileResourceFromDocroot(path);
                         }
@@ -185,23 +177,15 @@ public class DocrootRequestHandler implements UriProvidingHttpRequestHandler, Se
             }
             if (inputResource == null) {
                 FileResource baseResource = ResourceUtil.getFileResource(base);
+                FileResource resource;
                 if(i18nBase) {
-                    i18nIt = new I18NIterator(tenantName, language, path);
-                    if(i18nIt != null) {
-                        while(i18nIt.hasNext()) {
-                            FileResource resource = ResourceUtil.getFileResource(baseResource, i18nIt.next());
-                            if(resource.exists()) {
-                                inputResource = resource;
-                                break;
-                            }
-                        }
-                    }
+                    resource = I18NResourceUtil.getFileResource(baseResource, path, tenantName, language);
                 } else {
-                    FileResource resource = ResourceUtil.getFileResource(baseResource, path);
-                    if(resource.exists()) {
-                        inputResource = resource;
-                    }
+                    resource = ResourceUtil.getFileResource(baseResource, path);
                 }
+                if(resource.exists()) {
+            		inputResource = resource;
+            	}
             }
         }
         
@@ -328,91 +312,11 @@ public class DocrootRequestHandler implements UriProvidingHttpRequestHandler, Se
             return req.getServerName();
         }
     }
-    
-  
-    
-    static class I18NIterator implements Iterator<String> {
-        
-        String tenantName;
-        String language;
-        String path;
-        String languagePart;
-        String pathStart;
-        String pathEnd;
-        int step;
-        
-        I18NIterator(String tenantName, String language, String path) {
-            this.tenantName = tenantName;
-            this.language = language;
-            this.path = path;
-            if(language != null) {
-                languagePart = LocaleUtils.getLanguagePart(language);
-                if(language.equals(languagePart)) {
-                    languagePart = null;
-                }
-            }
-            int ind = path.lastIndexOf('/');
-            if(ind > -1) {
-                pathStart = path.substring(0, ind + 1);
-                pathEnd = path.substring(ind + 1);
-            } else {
-                pathStart = "";
-                pathEnd = path;
-            }
-        }
-        
-        @Override
-        public boolean hasNext() {
-            return step < 6;
-        }
-        
-        @Override
-        public String next() {
-            if(step == 0) {
-                step++;
-                if(tenantName != null && language != null) {
-                    return pathStart + tenantName + "/" + language + "/" + pathEnd;
-                }
-            }
-            if(step == 1) {
-                step++;
-                if(tenantName != null && languagePart != null) {
-                    return pathStart + tenantName + "/" + languagePart + "/" + pathEnd;
-                }
-            }
-            if(step == 2) {
-                step++;
-                if(tenantName != null) {
-                    return pathStart + tenantName + "/" + pathEnd;
-                }
-            }
-            if(step == 3) {
-                step++;
-                if(language != null) {
-                    return pathStart + language + "/" + pathEnd;
-                }
-            }
-            if(step == 4) {
-                step++;
-                if(languagePart != null) {
-                    return pathStart + languagePart + "/" + pathEnd;
-                }
-            }
-            if(step == 5) {
-                step++;
-                return path;
-            }
-            throw new NoSuchElementException();
-        }
-        
-        @Override
-        public void remove() {
-            //ignore
-        }
-    }
-    
+
+
     public static void main(String[] args) {
-        Iterator<String> it = new I18NIterator("CA", "en_CA", "foo/bar.png");
+    	//Iterator<String> it = new I18NIterator("", "en_CA", "img/logo.png");
+    	Iterator<String> it = new I18NIterator("CA", "en_CA", "docroot:/bar.png?foo=bar");
         while(it.hasNext()) {
             System.out.println(it.next());
         }
