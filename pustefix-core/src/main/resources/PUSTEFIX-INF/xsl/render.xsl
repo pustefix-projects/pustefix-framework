@@ -39,7 +39,7 @@
     </xsl:choose>
   </xsl:template>
 
-  <xsl:template match="pfx:render">
+  <xsl:template match="pfx:render" name="pfx:renderimpl">
     <xsl:variable name="systemId" select="rex:getSystemId()"/>
     <ixsl:call-template name="pfx:render">
       <ixsl:with-param name="href">
