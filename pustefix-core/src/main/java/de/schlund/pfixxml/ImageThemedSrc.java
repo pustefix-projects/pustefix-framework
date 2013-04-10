@@ -125,7 +125,7 @@ public class ImageThemedSrc {
                 	while(it.hasNext()) {
                 		String i18nUri = it.next();
                 		Resource i18nRes = ResourceUtil.getResource(i18nUri);
-                		if(res == null && i18nRes.exists()) {
+                		if(res == null && (i18nRes.exists() || !it.hasNext())) {
                 			res = i18nRes;
                 			src = I18NResourceUtil.getURLPath(i18nRes.toURI());
                 		} else {
@@ -150,7 +150,7 @@ public class ImageThemedSrc {
                 	while(it.hasNext()) {
                 		String i18nUri = it.next();
                 		Resource i18nRes = ResourceUtil.getResource(i18nUri);
-                		if(res == null && i18nRes.exists()) {
+                		if(res == null && (i18nRes.exists() || !it.hasNext())) {
                 			res = i18nRes;
                 			src = I18NResourceUtil.getURLPath(i18nRes.toURI());
                 		} else {
