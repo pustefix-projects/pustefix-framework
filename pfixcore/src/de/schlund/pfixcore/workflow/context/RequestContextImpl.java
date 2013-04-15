@@ -802,6 +802,7 @@ public class RequestContextImpl implements Cloneable, AuthorizationInterceptor {
             if (LOG.isDebugEnabled())
                 LOG.debug("===> [" + localAuthPage + "]: Need authorisation data");
             currentpagerequest = localAuthPage;
+            currentstatus = PageRequestStatus.JUMP;
             ResultDocument resdoc = documentFromCurrentStep();
             currentpagerequest = saved;
             prohibitcontinue = true;
