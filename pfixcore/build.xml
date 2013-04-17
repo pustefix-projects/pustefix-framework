@@ -11,7 +11,7 @@ or delete the DOCTYPE definition -->
   <import file="skel/build-skel.xml"/>
   <import file="build-maven.xml"/>
 
-  <property name="dist.version"        value="0.13.5-r6472" description="the version to use for pfixcore-*.*"/>
+  <property name="dist.version"        value="0.13.5-r6479" description="the version to use for pfixcore-*.*"/>
   <property name="dist.type"           value="release" description="distribution type: supported values release, build"/>
 
   <!-- additional properties -->
