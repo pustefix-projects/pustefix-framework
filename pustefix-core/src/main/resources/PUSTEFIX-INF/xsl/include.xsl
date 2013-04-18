@@ -280,8 +280,8 @@
         </xsl:variable>
         <xsl:choose>
           <xsl:when test="$incnodes and $incnodes[name() = 'theme']">
-            <xsl:if test="ic:pushInclude($__include_context, ., $incnodes[1])"/>
             <xsl:apply-templates select="pfx:includeparam"/>
+            <xsl:if test="ic:pushInclude($__include_context, ., $incnodes[1])"/>
             <xsl:apply-templates select="$incnodes/node()">
               <xsl:with-param name="__env" select="."/>
             </xsl:apply-templates>
@@ -894,12 +894,35 @@
     <xsl:variable name="__parent_repeat_context" select="ic:getContextNode($__include_context)"/>
     <xsl:variable name="__parent_repeat_context_pos" select="ic:getContextNodePosition($__include_context)"/>
     <xsl:variable name="__parent_repeat_context_last" select="ic:getContextNodeLast($__include_context)"/>
-    <xsl:for-each select="pfx:__eval(@select)">
-      <xsl:if test="ic:setContextNode($__include_context, ., position(), last())"/>
-      <xsl:apply-templates select="$__context/node()"/>
-    </xsl:for-each>
+    <xsl:variable name="sort" select="pfx:sort/@attribute"/>
+    <xsl:variable name="order">
+      <xsl:choose>
+        <xsl:when test="pfx:sort/@order">
+          <xsl:value-of select="pfx:sort/@order"/>
+        </xsl:when>
+        <xsl:otherwise>ascending</xsl:otherwise>
+      </xsl:choose>
+    </xsl:variable>
+    <xsl:choose>
+      <xsl:when test="pfx:sort">
+        <xsl:for-each select="pfx:__eval(@select)">
+          <xsl:sort order="{$order}" select="@*[name()=$sort]"/>
+          <xsl:if test="ic:setContextNode($__include_context, ., position(), last())"/>
+          <xsl:apply-templates select="$__context/node()"/>
+        </xsl:for-each>
+      </xsl:when>
+      <xsl:otherwise>
+        <xsl:for-each select="pfx:__eval(@select)">
+          <xsl:if test="ic:setContextNode($__include_context, ., position(), last())"/>
+          <xsl:apply-templates select="$__context/node()"/>
+        </xsl:for-each>
+      </xsl:otherwise>
+    </xsl:choose>
+    
     <xsl:if test="ic:setContextNode($__include_context, $__parent_repeat_context, $__parent_repeat_context_pos, $__parent_repeat_context_last)"/>
   </xsl:template>
+  
+  <xsl:template match="pfx:sort"/>
   
   <xsl:template match="pfx:includeparam"/>
   
@@ -907,7 +930,7 @@
    <xsl:variable name="value">
      <xsl:apply-templates/>
    </xsl:variable>
-   <xsl:if test="ic:setAppliedParameter($__include_context, @name, $value)"/>
+   <xsl:if test="ic:setAppliedParameter($__include_context, @name, $value, boolean(not(parent::pfx:include)))"/>
   </xsl:template>
 
   <xsl:template match="pfx:trim">

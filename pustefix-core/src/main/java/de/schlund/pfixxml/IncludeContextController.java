@@ -22,12 +22,14 @@ import de.schlund.pfixxml.util.ExtensionFunctionUtils;
 public class IncludeContextController {
 	
 	private static Pattern PARAM_PATTERN = Pattern.compile("\\$([a-zA-Z_][a-zA-Z_0-9\\-\\.]*)");
+	private static Pattern ALLOWED_SORT_PATTERN = Pattern.compile("^@?(a-zA-Z)[a-zA-Z_0-9\\-]+$");
 	
 	private NodeInfo contextNode;
 	private int contextNodePosition;
 	private int contextNodeLast;
 	
 	private Stack<IncludeContext> includeContextStack = new Stack<IncludeContext>();
+	private Map<String, Value> appliedIncludePartParams = new HashMap<String, Value>();
 	
 	public IncludeContextController(NodeInfo contextNode) {
 		this.contextNode = contextNode;
@@ -93,12 +95,14 @@ public class IncludeContextController {
 							if(paramName.length() == 0) {
 								throw new IllegalArgumentException("Include parameter with missing name");
 							}
-							Value value = null;
-							String select = elem.getAttribute("select");
-							if(select.length() > 0) {
-								value = evaluate(context, select);
-							} else {
-								value = new SingletonNodeSet((NodeInfo)elem);
+							Value value = appliedIncludePartParams.get(paramName);
+							if(value == null) {
+								String select = elem.getAttribute("select");
+								if(select.length() > 0) {
+									value = evaluate(context, select);
+								} else {
+									value = new SingletonNodeSet((NodeInfo)elem);
+								}
 							}
 							boolean tunnel = "yes".equals(elem.getAttribute("tunnel"));
 							if(tunnel) {
@@ -110,6 +114,7 @@ public class IncludeContextController {
 					}
 				}
 			}
+			appliedIncludePartParams.clear();
 			newContext.setIncludeElementTunnelParams(newTunnelParams);
 			includeContextStack.push(newContext);
 			nodes = includePartNode.getChildNodes();	
@@ -186,9 +191,13 @@ public class IncludeContextController {
 		return false;
 	}
 	
-	public void setAppliedParameter(String name, Value value) {
-		IncludeContext includeContext = includeContextStack.peek();
-		includeContext.addIncludePartParam(name, value);
+	public void setAppliedParameter(String name, Value value, boolean declared) {
+		if(declared) {
+			IncludeContext includeContext = includeContextStack.peek();
+			includeContext.addIncludePartParam(name, value);
+		} else {
+			appliedIncludePartParams.put(name, value);
+		}
 	}
 	
 	
@@ -225,6 +234,10 @@ public class IncludeContextController {
 		return ((SingletonNodeSet)contextNode).getFirst();
 	}
 	
+	public static boolean isAllowedSortExpression(String expression) {
+		return ALLOWED_SORT_PATTERN.matcher(expression).matches();
+	}
+	
 	public static IncludeContextController create(Object contextNode) throws Exception {
 		try {
 			return new IncludeContextController(getNodeInfo(contextNode));
@@ -233,5 +246,5 @@ public class IncludeContextController {
 			throw x;
 		}
 	}
-	
+
 }
