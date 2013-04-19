@@ -330,7 +330,7 @@ public class RequestContextImpl implements Cloneable, AuthorizationInterceptor {
             }
             rp = preq.getRequestParam("__lf");
             if (rp != null) {
-            	redirectURL += "&__lf=" + rp.getValue();
+                redirectURL += "&__lf=" + rp.getValue();
             }
             spdoc.setRedirect(redirectURL);
 
@@ -481,8 +481,14 @@ public class RequestContextImpl implements Cloneable, AuthorizationInterceptor {
                 LOG.debug("     ...got no matching pageflow for page [" + currentpagerequest.getName() + "]");
             }
         }
-
-        SPDocument spdoc = documentFromFlow(startwithflow, stopnextforcurrentrequest);
+        
+        SPDocument spdoc;
+        ResultDocument resdoc = checkPageAuthorization();
+        if(resdoc == null) {
+            spdoc = documentFromFlow(startwithflow, stopnextforcurrentrequest);
+        } else {
+            spdoc = resdoc.getSPDocument();
+        }
 
         processIC(parentcontext.getContextConfig().getEndInterceptors());
 
@@ -615,20 +621,15 @@ public class RequestContextImpl implements Cloneable, AuthorizationInterceptor {
             // take the right measures if not.
             if (!checkIsAccessible(currentpagerequest)) {
                 LOG.warn("[" + currentpagerequest + "]: Page is not accessible...");
-                boolean foundNext = false;
                 if (currentpageflow != null) {
                     LOG.warn("[" + currentpagerequest + "]: ...but trying to find an accessible page from the current page flow [" 
                              + currentpageflow.getName() + "]");
                     PageRequestStatus saved = currentstatus;
                     currentstatus = PageRequestStatus.WORKFLOW;
                     String nextPage = currentpageflow.findNextPage(this.parentcontext, currentpagerequest.getRootName(), false, stopnextforcurrentrequest);
-                    if(nextPage != null) {
-                        currentpagerequest = createPageRequest(nextPage);
-                        foundNext = true;
-                    }
+                    currentpagerequest = createPageRequest(nextPage);
                     currentstatus = saved;
-                }
-                if(!foundNext) {
+                } else {
                     String defpage = parentcontext.getContextConfig().getDefaultPage(variant);
                     LOG.warn("[" + currentpagerequest + "]: ...but trying to use the default page " + defpage); 
                     currentpagerequest = createPageRequest(defpage);
@@ -686,7 +687,7 @@ public class RequestContextImpl implements Cloneable, AuthorizationInterceptor {
         currentstatus = PageRequestStatus.WORKFLOW;
 
         String nextPage = currentpageflow.findNextPage(this.parentcontext, currentpagerequest.getRootName(), stopatcurrentpage, stopatnextaftercurrentpage);
-        if(nextPage == null) throw new PustefixApplicationException("Can't get an accessible page from pageflow '" + currentpageflow.getName() + "'.");
+        assert (nextPage != null);
         currentpagerequest = createPageRequest(nextPage);
 
         resdoc = documentFromCurrentStep();
@@ -801,6 +802,9 @@ public class RequestContextImpl implements Cloneable, AuthorizationInterceptor {
             if (LOG.isDebugEnabled())
                 LOG.debug("===> [" + localAuthPage + "]: Need authorisation data");
             currentpagerequest = localAuthPage;
+            if(!roleAuth) {
+            	currentstatus = PageRequestStatus.JUMP;
+            }
             ResultDocument resdoc = documentFromCurrentStep();
             currentpagerequest = saved;
             prohibitcontinue = true;

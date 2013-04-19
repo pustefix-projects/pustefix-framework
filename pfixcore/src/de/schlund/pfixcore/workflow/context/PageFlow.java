@@ -58,7 +58,7 @@ public interface PageFlow {
      * @param boolean
      *            stopatnextaftercurrentpage true if the "maximum" page to
      *            search for should be the one step after the current page
-     * @return name of the next page to show or null if no page is available
+     * @return name of the next page to show
      * @throws PustefixApplicationException
      *             if an exception is thrown by the application code called by
      *             this method
