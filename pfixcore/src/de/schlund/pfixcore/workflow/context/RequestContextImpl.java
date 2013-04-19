@@ -330,7 +330,7 @@ public class RequestContextImpl implements Cloneable, AuthorizationInterceptor {
             }
             rp = preq.getRequestParam("__lf");
             if (rp != null) {
-                redirectURL += "&__lf=" + rp.getValue();
+            	redirectURL += "&__lf=" + rp.getValue();
             }
             spdoc.setRedirect(redirectURL);
 
@@ -481,14 +481,8 @@ public class RequestContextImpl implements Cloneable, AuthorizationInterceptor {
                 LOG.debug("     ...got no matching pageflow for page [" + currentpagerequest.getName() + "]");
             }
         }
-        
-        SPDocument spdoc;
-        ResultDocument resdoc = checkPageAuthorization();
-        if(resdoc == null) {
-            spdoc = documentFromFlow(startwithflow, stopnextforcurrentrequest);
-        } else {
-            spdoc = resdoc.getSPDocument();
-        }
+
+        SPDocument spdoc = documentFromFlow(startwithflow, stopnextforcurrentrequest);
 
         processIC(parentcontext.getContextConfig().getEndInterceptors());
 
@@ -802,9 +796,6 @@ public class RequestContextImpl implements Cloneable, AuthorizationInterceptor {
             if (LOG.isDebugEnabled())
                 LOG.debug("===> [" + localAuthPage + "]: Need authorisation data");
             currentpagerequest = localAuthPage;
-            if(!roleAuth) {
-            	currentstatus = PageRequestStatus.JUMP;
-            }
             ResultDocument resdoc = documentFromCurrentStep();
             currentpagerequest = saved;
             prohibitcontinue = true;
