@@ -638,9 +638,21 @@ public class RequestContextImpl implements Cloneable, AuthorizationInterceptor {
                     String defpage = parentcontext.getContextConfig().getDefaultPage(variant);
                     LOG.warn("[" + currentpagerequest + "]: ...but trying to use the default page " + defpage); 
                     currentpagerequest = createPageRequest(defpage);
-                    // currentpageflow = pageflowmanager.pageFlowToPageRequest(currentpageflow, currentpagerequest, variant);
                     if (!checkIsAccessible(currentpagerequest)) {
-                        throw new PustefixCoreException("Even default page [" + defpage + "] was not accessible! Bailing out.");
+                        LOG.warn("Default page isn't accessible!");
+                        currentpageflow = pageflowmanager.pageFlowToPageRequest(currentpageflow, currentpagerequest, variant);
+                        if(currentpageflow != null) {
+                            LOG.warn("Try to find other page from default page's pageflow!");
+                            PageRequestStatus saved = currentstatus;
+                            currentstatus = PageRequestStatus.WORKFLOW;
+                            String nextPage = currentpageflow.findNextPage(this.parentcontext, currentpagerequest.getRootName(), false, stopnextforcurrentrequest);
+                            if(nextPage != null) {
+                                currentpagerequest = createPageRequest(nextPage);
+                                currentstatus = saved;
+                            } else {
+                                throw new PustefixCoreException("Even default page [" + defpage + "] was not accessible! Bailing out.");
+                            }
+                        }
                     }
                 }
             }
