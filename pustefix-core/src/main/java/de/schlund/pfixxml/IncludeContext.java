@@ -10,20 +10,19 @@ import com.icl.saxon.expr.Value;
 public class IncludeContext {
 	
 	private Node includeElementNode;
-	private Node includeElementContext;
 	private Map<String, Value> includeElementParams;
 	private Map<String, Value> includeElementTunnelParams;
 	
 	private Node includePartNode;
-	private Node includePartContext;
+	private String includePartSystemId;
+	private String includePartName;
 	private Map<String, Value> includePartParams;
 	
-	
-	public IncludeContext(Node includeElementNode, Node includeElementContext, Node includePartNode, Node includePartContext) {
+	public IncludeContext(Node includeElementNode, Node includePartNode, String includePartSystemId, String includePartName) {
 		this.includeElementNode = includeElementNode;
-		this.includeElementContext = includeElementContext;
 		this.includePartNode = includePartNode;
-		this.includePartContext = includePartContext;
+		this.includePartSystemId = includePartSystemId;
+		this.includePartName = includePartName;
 		includeElementParams = new HashMap<String, Value>();
 		includeElementTunnelParams = new HashMap<String, Value>();
 		includePartParams = new HashMap<String, Value>();
@@ -35,14 +34,7 @@ public class IncludeContext {
 	public void setIncludeElementNode(Node includeElementNode) {
 		this.includeElementNode = includeElementNode;
 	}
-	
-	public Node getIncludeElementContext() {
-		return includeElementContext;
-	}
-	public void setIncludeElementContext(Node includeElementContext) {
-		this.includeElementContext = includeElementContext;
-	}
-	
+
 	public Value getIncludeElementParam(String name) {
 		return includeElementParams.get(name);
 	}
@@ -77,11 +69,12 @@ public class IncludeContext {
 		this.includePartNode = includePartNode;
 	}
 	
-	public Node getIncludePartContext() {
-		return includePartContext;
+	public String getIncludePartSystemId() {
+		return includePartSystemId;
 	}
-	public void setIncludePartContext(Node includePartContext) {
-		this.includePartContext = includePartContext;
+	
+	public String getIncludePartName() {
+		return includePartName;
 	}
 	
 }

@@ -73,9 +73,15 @@ public class IncludeContextController {
 		}
 	}
 	
-	public void pushInclude(Context context, Node includeElementNode, Node includePartNode) throws Exception {
+	public void pushInclude(Context context, Node includeElementNode, Node includePartNode, 
+			String includePartSystemId, String includePartName) throws Exception {
+	
+		if(hasInfiniteRecursion(includePartNode, includePartSystemId, includePartName)) {
+			throw new XMLException("Part '" + includePartName + "' from '" + includePartSystemId + "' is recursively included too many times.");
+		}
 		try {
-			IncludeContext newContext = new IncludeContext(includeElementNode, includePartNode, includePartNode, includePartNode);
+			
+			IncludeContext newContext = new IncludeContext(includeElementNode, includePartNode, includePartSystemId, includePartName);
 			Map<String, Value> newTunnelParams = new HashMap<String, Value>();
 			if(!includeContextStack.isEmpty()) {
 				IncludeContext parentContext = includeContextStack.peek();
@@ -156,6 +162,20 @@ public class IncludeContextController {
 			ExtensionFunctionUtils.setExtensionFunctionError(x);
 			throw x;
 		}
+	}
+	
+	private boolean hasInfiniteRecursion(Node includePartNode, String includePartSystemId, String includePartName) {
+		int count = 0;
+		for(int i=includeContextStack.size()-1; i>0; i--) {
+			IncludeContext ctx = includeContextStack.get(i);
+			if(includePartName.equals(ctx.getIncludePartName()) && includePartSystemId.equals(ctx.getIncludePartSystemId())) {
+				count++;
+				if(count > 100) {
+					return true;
+				}
+			}
+		}
+		return false;
 	}
 	
 	public void popInclude() throws Exception {

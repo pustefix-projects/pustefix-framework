@@ -281,7 +281,7 @@
         <xsl:choose>
           <xsl:when test="$incnodes and $incnodes[name() = 'theme']">
             <xsl:apply-templates select="pfx:includeparam"/>
-            <xsl:if test="ic:pushInclude($__include_context, ., $incnodes[1])"/>
+            <xsl:if test="ic:pushInclude($__include_context, ., $incnodes[1], include:getResolvedURI(), $part)"/>
             <xsl:apply-templates select="$incnodes/node()">
               <xsl:with-param name="__env" select="."/>
             </xsl:apply-templates>
