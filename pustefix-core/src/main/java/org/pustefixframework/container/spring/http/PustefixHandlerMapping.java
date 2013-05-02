@@ -19,6 +19,9 @@
 package org.pustefixframework.container.spring.http;
 
 import java.util.List;
+import java.util.concurrent.ConcurrentHashMap;
+
+import javax.servlet.http.HttpServletRequest;
 
 import org.springframework.context.ApplicationContext;
 import org.springframework.web.context.request.WebRequestInterceptor;
@@ -27,6 +30,9 @@ import org.springframework.web.servlet.handler.AbstractDetectingUrlHandlerMappin
 
 public class PustefixHandlerMapping extends AbstractDetectingUrlHandlerMapping {
 
+    private ConcurrentHashMap<String, Object> handlerCache = new ConcurrentHashMap<String, Object>();
+    private Object handlerCacheNull = new Object();
+    
     public PustefixHandlerMapping() {
         super();
         setAlwaysUseFullPath(true);
@@ -44,6 +50,20 @@ public class PustefixHandlerMapping extends AbstractDetectingUrlHandlerMapping {
         return null;
     }
 
+    @Override
+    protected Object lookupHandler(String urlPath, HttpServletRequest request) throws Exception {
+        //cache handler lookup, because lookup can be expensive when having a lot of url paths,
+        //which are checked repeatedly by Spring
+        Object obj = handlerCache.get(urlPath);
+        if(obj == null) {
+            obj = super.lookupHandler(urlPath, request);
+            handlerCache.putIfAbsent(urlPath, obj == null ? handlerCacheNull : obj);
+        } else if(obj == handlerCacheNull) {
+            obj = null;
+        }
+        return obj;
+    }
+    
     @Override
     @SuppressWarnings({"unchecked","rawtypes"})
     protected void extendInterceptors(List interceptors) {
