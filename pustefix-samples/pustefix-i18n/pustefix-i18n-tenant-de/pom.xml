@@ -4,12 +4,12 @@
   <parent>
     <artifactId>pustefix-i18n</artifactId>
     <groupId>org.pustefixframework.samples</groupId>
-    <version>0.18.45</version>
+    <version>0.18.46-SNAPSHOT</version>
   </parent>
 
   <groupId>org.pustefixframework.samples</groupId>
   <artifactId>pustefix-i18n-tenant-de</artifactId>
-  <version>0.18.45</version>
+  <version>0.18.46-SNAPSHOT</version>
   <packaging>jar</packaging>
   <name>Pustefix i18n sample tenant module DE</name>
 
@@ -21,7 +21,7 @@
     <dependency>
       <groupId>org.pustefixframework</groupId>
       <artifactId>pustefix-core</artifactId>
-      <version>0.18.45</version>
+      <version>0.18.46-SNAPSHOT</version>
     </dependency>
     <dependency>
       <groupId>junit</groupId>
@@ -33,12 +33,12 @@
     <dependency>
       <groupId>org.pustefixframework.samples</groupId>
       <artifactId>pustefix-i18n-lang-de</artifactId>
-      <version>0.18.45</version>
+      <version>0.18.46-SNAPSHOT</version>
     </dependency>
      <dependency>
       <groupId>org.pustefixframework.samples</groupId>
       <artifactId>pustefix-i18n-core</artifactId>
-      <version>0.18.45</version>
+      <version>0.18.46-SNAPSHOT</version>
     </dependency>
   </dependencies>
   <build>
@@ -46,7 +46,7 @@
       <plugin>
         <groupId>org.pustefixframework.maven.plugins</groupId>
         <artifactId>pustefix-iwrapper-plugin</artifactId>
-        <version>0.18.45</version>
+        <version>0.18.46-SNAPSHOT</version>
         <executions>
           <execution>
             <goals>
@@ -58,7 +58,7 @@
       <plugin>
         <groupId>org.pustefixframework.maven.plugins</groupId>
         <artifactId>pustefix-statuscode-plugin</artifactId>
-        <version>0.18.45</version>
+        <version>0.18.46-SNAPSHOT</version>
         <configuration>
           <module>pustefix-i18n-de</module>
           <includes>
