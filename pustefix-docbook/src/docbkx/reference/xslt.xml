@@ -687,6 +687,11 @@
               </td>
             </tr>
             <tr>
+              <td>level</td>
+              <td>optional</td>
+              <td>Not set by default. Set this to <literal>runtime</literal> if the image should be included at runtime (on the last transformation level).</td>
+            </tr>
+            <tr>
               <td>search</td>
               <td>optional</td>
               <td>Not set by default. Set this to <literal>dynamic</literal> if the image should be dynamically searched. The search order is: current project, common folder, and if a module is specified: overriding module, specified module. The search ends if a matching image is found, regardless if there are matches with a more specific theme down the search chain. See <xref linkend="advanced.dyninclude"/>.</td>
@@ -709,6 +714,13 @@
           </tbody>
         </table>
       </para>
+      <para>
+        If you're including an image at runtime using <literal>level="runtime"</literal>, you can also defer the creation of the <literal>src</literal>, <literal>alt</literal>, <literal>themed-path</literal> and <literal>themed-img</literal> values until runtime using the <literal>pfx:src</literal>, <literal>pfx:alt</literal>, <literal>pfx:themed-path</literal> and <literal>pfx:themed-img</literal> tags instead of the according attributes. The following example shows how to use values coming from the DOM result tree:
+      </para>
+      <programlisting language="xml"><![CDATA[<pfx:image level="runtime">
+  <pfx:src><ixsl:value-of select="/formresult/myimginfo/@mysrc"/></pfx:src>
+  <pfx:alt><ixsl:value-of select="/formresult/myimginfo/@myalt"/></pfx:alt> 
+</pfx:image>]]></programlisting>
     </section>
 
     <section xml:id="xslt.renderextensions">
