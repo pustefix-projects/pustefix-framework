@@ -33,8 +33,8 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
 
 import org.apache.log4j.Logger;
+import org.pustefixframework.http.AbstractPustefixRequestHandler;
 import org.pustefixframework.http.AbstractPustefixXMLRequestHandler;
-import org.pustefixframework.util.NetUtils;
 
 import de.schlund.pfixxml.multipart.MultipartHandler;
 import de.schlund.pfixxml.multipart.PartData;
@@ -280,17 +280,7 @@ public class PfixServletRequestImpl implements PfixServletRequest {
      * @see de.schlund.pfixxml.PfixServletRequest#getRemoteAddr()
      */
     public String getRemoteAddr() {
-    	//TODO: make configurable
-        String forward = request.getHeader("X-Forwarded-For");
-        if (forward != null && !forward.equals("")) {
-            int ind = forward.indexOf(',');
-            if(ind > -1) forward = forward.substring(0, ind);
-            forward = forward.trim();
-            if(NetUtils.checkIP(forward)) {
-                return forward;
-            }
-        } 
-        return request.getRemoteAddr();
+        return AbstractPustefixRequestHandler.getRemoteAddr(request);
     }
 
     /* (non-Javadoc)

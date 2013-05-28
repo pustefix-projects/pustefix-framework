@@ -50,6 +50,7 @@ import org.pustefixframework.config.project.SessionTimeoutInfo;
 import org.pustefixframework.container.spring.http.UriProvidingHttpRequestHandler;
 import org.pustefixframework.util.LocaleUtils;
 import org.pustefixframework.util.LogUtils;
+import org.pustefixframework.util.NetUtils;
 import org.pustefixframework.util.URLUtils;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.web.context.ServletContextAware;
@@ -138,10 +139,14 @@ public abstract class AbstractPustefixRequestHandler implements SessionTrackingS
     public static String getRemoteAddr(HttpServletRequest req) {
         String forward = req.getHeader("X-Forwarded-For");
         if (forward != null && !forward.equals("")) {
-            return forward;
-        } else {
-            return req.getRemoteAddr();
-        }
+            int ind = forward.indexOf(',');
+            if(ind > -1) forward = forward.substring(0, ind);
+            forward = forward.trim();
+            if(NetUtils.checkIP(forward)) {
+                return forward;
+            }
+        } 
+        return req.getRemoteAddr();
     }
     
     public void setHandlerURI(String uri) {
@@ -442,7 +447,7 @@ public abstract class AbstractPustefixRequestHandler implements SessionTrackingS
             session.setAttribute(SessionUtils.SESSION_ATTR_LOCK, new ReentrantReadWriteLock());
             StringBuffer logbuff = new StringBuffer();
             logbuff.append(session.getAttribute(VISIT_ID) + "|" + session.getId() + "|");
-            logbuff.append(LogUtils.makeLogSafe(getServerName(req)) + "|" + LogUtils.makeLogSafe(req.getRemoteAddr()) + "|");
+            logbuff.append(LogUtils.makeLogSafe(getServerName(req)) + "|" + LogUtils.makeLogSafe(getRemoteAddr(req)) + "|");
             logbuff.append(LogUtils.makeLogSafe(req.getHeader("user-agent")) + "|");
             if (req.getHeader("referer") != null) {
                 logbuff.append(LogUtils.makeLogSafe(req.getHeader("referer")));
