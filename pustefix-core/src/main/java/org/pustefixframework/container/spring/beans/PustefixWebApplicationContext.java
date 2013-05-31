@@ -51,35 +51,39 @@ import de.schlund.pfixxml.config.EnvironmentProperties;
 import de.schlund.pfixxml.resources.ResourceUtil;
 
 public class PustefixWebApplicationContext extends AbstractRefreshableWebApplicationContext {
-	
+    
     private Logger LOG = Logger.getLogger(PustefixWebApplicationContext.class);
-    
+
     private PustefixInit pustefixInit;
-    
+
     public PustefixWebApplicationContext() {
         super();
     }
-    
+
     public PustefixWebApplicationContext(PustefixInit pustefixInit) {
         super();
         this.pustefixInit = pustefixInit;
     }
-    
+
     @Override
     protected void loadBeanDefinitions(DefaultListableBeanFactory beanFactory) throws IOException, BeansException {
-    	
+
+        //disable bean definition overriding as it turned out to be more cumbersome
+        //finding errors caused by this feature, than that it's bringing real benefit
+        beanFactory.setAllowBeanDefinitionOverriding(false);
+
         if(pustefixInit == null) {
-        	pustefixInit = (PustefixInit)getServletContext().getAttribute(PustefixInit.SERVLET_CONTEXT_ATTRIBUTE_NAME);
+            pustefixInit = (PustefixInit)getServletContext().getAttribute(PustefixInit.SERVLET_CONTEXT_ATTRIBUTE_NAME);
             if(pustefixInit == null) {
-	        	try {
-	                pustefixInit = new PustefixInit(getServletContext());
-	            } catch(PustefixCoreException x) {
-	                throw new PustefixRuntimeException("Pustefix initialization failed", x);
-	            }
+                try {
+                    pustefixInit = new PustefixInit(getServletContext());
+                } catch(PustefixCoreException x) {
+                    throw new PustefixRuntimeException("Pustefix initialization failed", x);
+                }
             }
         }
-    	
-    	if(LOG.isInfoEnabled()) {
+
+        if(LOG.isInfoEnabled()) {
             Properties props = EnvironmentProperties.getProperties();
             LOG.info("Initializing Pustefix with runtime properties: " +
                 "fqdn=" + props.getProperty("fqdn") +
@@ -87,8 +91,8 @@ public class PustefixWebApplicationContext extends AbstractRefreshableWebApplica
                 ", mode=" + props.getProperty("mode") +
                 ", uid=" + props.getProperty("uid"));
         }
-    	
-    	String configLocations[] = getConfigLocations();
+
+        String configLocations[] = getConfigLocations();
         if (configLocations == null) {
             configLocations = getDefaultConfigLocations();
             if (configLocations == null) {
@@ -127,10 +131,12 @@ public class PustefixWebApplicationContext extends AbstractRefreshableWebApplica
             }
 
         }
-   
+
+        beanFactory.registerScope("tenant", new TenantScope());
+
         addAnnotationBeanDefinitionPostProcessor(beanFactory);
     }
-    
+
     private void addAnnotationBeanDefinitionPostProcessor(BeanDefinitionRegistry registry) {
         BeanDefinitionBuilder beanBuilder = BeanDefinitionBuilder.genericBeanDefinition(AnnotationBeanDefinitionPostProcessor.class);
         beanBuilder.setScope("singleton");
@@ -139,7 +145,7 @@ public class PustefixWebApplicationContext extends AbstractRefreshableWebApplica
         String name = beanNameGenerator.generateBeanName(definition, registry);
         registry.registerBeanDefinition(name, definition);
     }
-    
+
     private void tryAddPropertyConfigurer(String configLocation, BeanDefinitionRegistry registry) {
         int ind = configLocation.lastIndexOf(".");
         if(ind > -1) {
@@ -157,7 +163,7 @@ public class PustefixWebApplicationContext extends AbstractRefreshableWebApplica
             }
         }
     }
-    
+
     private void addPropertyConfigurer(Class<? extends PropertyResourceConfigurer> clazz, Resource location, BeanDefinitionRegistry registry) {
         BeanDefinitionBuilder beanBuilder = BeanDefinitionBuilder.genericBeanDefinition(clazz);
         beanBuilder.setScope("singleton");
@@ -174,7 +180,7 @@ public class PustefixWebApplicationContext extends AbstractRefreshableWebApplica
         String name = beanNameGenerator.generateBeanName(definition, registry);
         registry.registerBeanDefinition(name, definition);
     }
-    
+
     @Override
     public Resource getResource(String location) {
         if(location.startsWith("module:") || location.startsWith("dynamic:")) {
@@ -183,5 +189,5 @@ public class PustefixWebApplicationContext extends AbstractRefreshableWebApplica
             return super.getResource(location);
         }
     }
-    
+
 }
