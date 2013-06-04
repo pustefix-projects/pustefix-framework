@@ -12,29 +12,6 @@
 
   <context:annotation-config/>
 
-  <bean id="testdata" class="de.schlund.pfixcore.example.TestData" scope="session" parent="testdata_base">
-    <aop:scoped-proxy/>
-    <property name="data" ref="${ref.testdata}"/>
-  </bean>
-  
-  <bean id="global_testdata" class="de.schlund.pfixcore.example.TestData">
-    <property name="text" value="TO_BE_OVERRIDDEN"/>
-  </bean>
-  
-  <bean id="global_testdata_prod" class="de.schlund.pfixcore.example.TestData">
-    <property name="text" value="baz"/>
-  </bean>
-
-  <bean id="default_state" abstract="true">
-     <property name="data" ref="global_testdata"/>
-  </bean>
-
-  <bean id="testdata_base" abstract="true">
-    <property name="text" value="${testdata.defaulttext}"/>
-  </bean>
-  
-  <bean id="enctest_handler" class="de.schlund.pfixcore.example.EncodingTestHandler"/>
-  
   <bean id="restest" class="de.schlund.pfixcore.example.ResourceTestBean">
     <property name="resource" value="WEB-INF/web.xml"/>
   </bean>
