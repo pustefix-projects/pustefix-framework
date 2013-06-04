@@ -24,24 +24,25 @@ import java.util.jar.Manifest;
  *
  */
 public class LiveClassFileTransformer implements ClassFileTransformer {
-    
+
     private LiveInfo liveInfo;
-    
+
     private Map<String, String> locationToLive = new HashMap<String, String>();
     private Set<URL> noLiveLocations = new HashSet<URL>();
-    
+
     public LiveClassFileTransformer(LiveInfo liveInfo) {
         this.liveInfo = liveInfo;
     }
-    
+
     public byte[] transform(ClassLoader loader, String className, Class<?> classBeingRedefined, 
             ProtectionDomain protectionDomain, byte[] classfileBuffer) throws IllegalClassFormatException {
-       
+
         URL location = protectionDomain.getCodeSource().getLocation();
         if(location != null && location.getProtocol().equals("file")) {
             if(location.getPath().endsWith(".jar") && location.getPath().contains("WEB-INF/lib")) {
-                
+
                 String liveLocation = locationToLive.get(location.toExternalForm());
+                //no "findbugs : DMI_COLLECTION_OF_URLS" here, because only file URLs in use
                 if(liveLocation == null && !noLiveLocations.contains(location)) {
                     try {
                         File file = new File(location.toURI());
@@ -61,6 +62,7 @@ public class LiveClassFileTransformer implements ClassFileTransformer {
                                     if(liveLocation != null) {
                                         locationToLive.put(location.toExternalForm(), liveLocation);
                                     } else {
+                                        //no "findbugs : DMI_COLLECTION_OF_URLS" here, because only file URLs in use
                                         noLiveLocations.add(location);
                                     }
                                 }
@@ -95,17 +97,17 @@ public class LiveClassFileTransformer implements ClassFileTransformer {
                         }
                     }
                 }
-                
+
             }
         }
-        
+
         return classfileBuffer;
     }
-    
+
     public String getLiveLocation(String jarPath) {
         return locationToLive.get(jarPath);
     }
-    
+
     private byte[] loadClass(File clFile) throws IOException {
         ByteArrayOutputStream out = new ByteArrayOutputStream();
         InputStream in = new FileInputStream(clFile);
