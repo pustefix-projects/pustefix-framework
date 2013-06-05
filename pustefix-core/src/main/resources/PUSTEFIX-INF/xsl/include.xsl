@@ -7,8 +7,9 @@
                 xmlns:image="xalan://de.schlund.pfixxml.ImageThemedSrcSaxon1"
                 xmlns:geometry="xalan://de.schlund.pfixxml.ImageGeometry"
                 xmlns:func="http://exslt.org/functions"
+                xmlns:saxon="http://icl.com/saxon"
                 xmlns:ic="java:de.schlund.pfixxml.IncludeContextController"
-                exclude-result-prefixes="include image geometry ic">
+                exclude-result-prefixes="include image geometry ic saxon">
 
   <!-- The needed parameters must be set in the including stylesheet! -->
 
@@ -516,9 +517,23 @@
         </xsl:otherwise>
       </xsl:choose>
     </xsl:variable>
-    <xsl:if test="include:exists($realpath, $part, $__target_gen, $__target_key, $module, $search, $tenant, $lang)">
-      <xsl:apply-templates/>
-    </xsl:if>
+    <xsl:choose>
+      <xsl:when test="include:exists($realpath, $part, $__target_gen, $__target_key, $module, $search, $tenant, $lang)">
+        <xsl:choose>
+          <xsl:when test="pfx:checkpassed">
+            <xsl:apply-templates select="pfx:checkpassed/node()"/>
+          </xsl:when>
+          <xsl:when test="not(pfx:checkfailed)">
+            <xsl:apply-templates/>
+          </xsl:when>
+        </xsl:choose>
+      </xsl:when>
+      <xsl:otherwise>
+        <xsl:if test="pfx:checkfailed">
+          <xsl:apply-templates select="pfx:checkfailed/node()"/>
+        </xsl:if>
+      </xsl:otherwise>
+    </xsl:choose>
   </xsl:template>
 
   <xsl:template match="pfx:checkinclude[@level='runtime']">
@@ -866,6 +881,10 @@
   
   <xsl:template match="pfx:value-of">
     <xsl:value-of select="pfx:__eval(@select)"/>
+  </xsl:template>
+  
+  <xsl:template match="pfx:copy-of">
+    <xsl:copy-of select="pfx:__eval(@select)"/>
   </xsl:template>
   
   <xsl:template match="pfx:if">
