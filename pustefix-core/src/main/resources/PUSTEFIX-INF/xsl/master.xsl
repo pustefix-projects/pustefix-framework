@@ -49,6 +49,7 @@
   <xsl:import href="module://pustefix-core/xsl/include.xsl"/>
   <xsl:import href="module://pustefix-core/xsl/navigation.xsl"/>
   <xsl:import href="module://pustefix-core/xsl/utils.xsl"/>
+  <xsl:import href="module://pustefix-core/xsl/common.xsl"/>
   <xsl:import href="module://pustefix-core/xsl/forminput.xsl"/>
 
   <cus:custom_xsl/>
@@ -103,6 +104,7 @@
       <ixsl:import href="module://pustefix-core/xsl/default_copy.xsl"/>
       <ixsl:import href="module://pustefix-core/xsl/include.xsl"/>
       <ixsl:import href="module://pustefix-core/xsl/functions.xsl"/>
+      <ixsl:import href="module://pustefix-core/xsl/common.xsl"/>
       <ixsl:import href="module://pustefix-core/xsl/render.xsl"/>
 
       <!-- generate user defined imports -->

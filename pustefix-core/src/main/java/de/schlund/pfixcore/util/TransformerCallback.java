@@ -472,4 +472,18 @@ public class TransformerCallback {
     	}
     }
 
+    //some useful functions not available until XSLT 2
+    
+    public static boolean endsWith(String str, String end) {
+    	return str.endsWith(end);
+    }
+    
+    public static String upperCase(String str) {
+    	return str.toUpperCase();
+    }
+
+    public static String lowerCase(String str) {
+    	return str.toLowerCase();
+    }
+    
 }

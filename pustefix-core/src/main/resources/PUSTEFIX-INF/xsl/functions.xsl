@@ -161,9 +161,4 @@
     <func:result select="callback:escapeJS($text)"/>
   </func:function>
   
-  <func:function name="pfx:sleep">
-    <xsl:param name="delay"/>
-    <func:result select="callback:sleep($delay)"/>
-  </func:function>
-  
 </xsl:stylesheet>
