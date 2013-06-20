@@ -1878,6 +1878,12 @@
   Display if page 'mypage' is accessible 
 </ixsl:test>]]></programlisting>
     </para>
+    </para>
+
+   <section xml:id="xslt.extensions.xpathfunctions.page">
+      <title>Page functions</title>
+
+    <para>
       <emphasis role="strong">Function:</emphasis> <emphasis>number</emphasis> <emphasis role="strong">pfx:isVisible</emphasis>(<emphasis>string</emphasis>)
     </para>
     <para>
@@ -1913,7 +1919,12 @@
     <para>
        The <emphasis role="strong">pfx:getDisplayPageName</emphasis> function returns the display name of the current page.
     </para>
-     <para></para>
+ 
+   </section>
+
+   <section xml:id="xslt.extensions.xpathfunctions.include">
+      <title>Include functions</title>
+
      <para>
       <emphasis role="strong">Function:</emphasis> <emphasis>boolean</emphasis> <emphasis role="strong">pfx:checkInclude</emphasis>(<emphasis>string, string, string, string</emphasis>)
     </para>
@@ -1925,19 +1936,77 @@
           <listitem><literal>false</literal>, if the include part can't be found</listitem>
       </itemizedlist>
     </para>
+   
+    </section>
+
+    <section xml:id="xslt.extensions.xpathfunctions.string">
+      <title>String functions</title>
+    
+      <para>
+        <emphasis role="strong">Function:</emphasis> <emphasis>boolean</emphasis> <emphasis role="strong">pfx:ends-with</emphasis>(<emphasis>string, string</emphasis>)
+      </para>
+      <para>
+        The <emphasis role="strong">pfx:ends-with</emphasis> function returns true if the first argument string ends with the second argument string, and otherwise returns false.
+      </para>
+
+      <para></para>
+      <para>
+        <emphasis role="strong">Function:</emphasis> <emphasis>string</emphasis> <emphasis role="strong">pfx:lower-case</emphasis>(<emphasis>string</emphasis>)
+      </para>
+      <para>
+        The <emphasis role="strong">pfx:lower-case</emphasis> function converts all of the characters in the arguments string to lower case.
+      </para>
+
+      <para></para>
+      <para>
+        <emphasis role="strong">Function:</emphasis> <emphasis>string</emphasis> <emphasis role="strong">pfx:upper-case</emphasis>(<emphasis>string</emphasis>)
+      </para>
+      <para>
+        The <emphasis role="strong">pfx:upper-case</emphasis> function converts all of the characters in the arguments string to upper case.
+      </para>
+
+    </section>
+
+    <section xml:id="xslt.extensions.xpathfunctions.development">
+      <title>Development functions</title>
+
+      <para>
+        <emphasis role="strong">Function:</emphasis> <emphasis>void</emphasis> <emphasis role="strong">pfx:sleep</emphasis>(<emphasis>number</emphasis>)
+      </para>
+      <para>
+        The <emphasis role="strong">pfx:sleep</emphasis> function pauses XSLT processing for the specified number of milliseconds. This function is intended for debugging purpose only.
+      </para>
+
+    </section>
+
+   <section xml:id="xslt.extensions.xpathfunctions.misc">
+      <title>Miscellaneous functions</title>
+
     <para>
       <emphasis role="strong">Function:</emphasis> <emphasis>string</emphasis> <emphasis role="strong">pfx:getEnvProperty</emphasis>(<emphasis>string</emphasis>)
     </para>
     <para>
        The <emphasis role="strong">pfx:getEnvProperty</emphasis> function returns then environment property denoted by the passed argument.
     </para>
- <para></para>
+
+    <para></para>
     <para>
       <emphasis role="strong">Function:</emphasis> <emphasis>string</emphasis> <emphasis role="strong">pfx:escapeJS</emphasis>(<emphasis>string</emphasis>)
     </para>
     <para>
        The <emphasis role="strong">pfx:escapeJS</emphasis> function escapes Javascript data by replacing non-alphanumeric characters by the according \xHH and \uHHHH escape sequences.
     </para>
+
+   <para></para>
+    <para>
+      <emphasis role="strong">Function:</emphasis> <emphasis>boolean</emphasis> <emphasis role="strong">pfx:isBot</emphasis>()
+    </para>
+    <para>
+       The <emphasis role="strong">pfx:isBot</emphasis> function returns true if the current request is made by a bot, otherwise it returns false.
+    </para>
+
+    </section>
+
   </section>
   </section>
 
