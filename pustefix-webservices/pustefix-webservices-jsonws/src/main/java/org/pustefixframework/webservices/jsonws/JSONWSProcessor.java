@@ -96,7 +96,7 @@ public class JSONWSProcessor implements ServiceProcessor {
                 
                 //Get service description
                 JSONObject jsonRes=listMethods(service,runtime,registry);
-                res.setContentType("application/json");
+                res.setContentType("text/plain");
                 res.setCharacterEncoding("utf-8");
                 res.setMessage(jsonRes.toJSONString());
                 
@@ -205,7 +205,7 @@ public class JSONWSProcessor implements ServiceProcessor {
                     }
                 }
                 
-                res.setContentType("application/json");
+                res.setContentType("text/plain");
                 res.setCharacterEncoding("utf-8");
                 writer=res.getMessageWriter();
                 writer.write("{");
@@ -264,7 +264,7 @@ public class JSONWSProcessor implements ServiceProcessor {
 
     public void processException(ServiceRequest req, ServiceResponse res, Exception exception) throws ServiceException {
         try {
-            res.setContentType("application/json");
+            res.setContentType("text/plain");
             res.setCharacterEncoding("utf-8");
             Writer writer=res.getMessageWriter();
             writer.write("{");

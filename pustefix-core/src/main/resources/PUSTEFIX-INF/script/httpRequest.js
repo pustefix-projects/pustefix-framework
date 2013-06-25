@@ -405,7 +405,7 @@ pfx.net.HTTPRequest.prototype._getResponse = function(request) {
        return null;
     }
     throw new Error("Missing response content type");
-  } else if(ctype.indexOf("application/json")==0 || ctype.indexOf("text/plain")==0 || ctype.indexOf("text/html")==0) {
+  } else if(ctype.indexOf("text/plain")==0 || ctype.indexOf("text/html")==0) {
     return request.responseText;
   } else if(ctype.indexOf("text/xml")==0) {
     return request.responseXML;
