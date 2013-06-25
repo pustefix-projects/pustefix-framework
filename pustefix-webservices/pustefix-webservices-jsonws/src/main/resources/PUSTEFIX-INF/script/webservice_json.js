@@ -212,12 +212,12 @@ pfx.ws.json.Call.prototype.invoke=function(method,args,expLen) {
    if(this._debug==true) alert("Request: "+jsonStr);
    if(this._userCallback || this._context) {
       var httpReq=new pfx.net.HTTPRequest('POST',this._uri,this.callback,this);
-      httpReq.setRequestHeader("Content-Type","text/plain");
+      httpReq.setRequestHeader("Content-Type","application/json");
       httpReq.setRequestHeader("wstype","jsonws");
       httpReq.start(jsonStr,null,jsonReq.id);
    } else {
       var httpReq=new pfx.net.HTTPRequest('POST',this._uri);
-      httpReq.setRequestHeader("Content-Type","text/plain");
+      httpReq.setRequestHeader("Content-Type","application/json");
       httpReq.setRequestHeader("wstype","jsonws");
       var response=httpReq.start(jsonStr,null,jsonReq.id);
       return this.callback(response);
