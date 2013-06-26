@@ -19,6 +19,7 @@
 package org.pustefixframework.container.spring.beans;
 
 import java.util.HashSet;
+import java.util.Iterator;
 import java.util.Map;
 import java.util.Set;
 
@@ -93,35 +94,85 @@ public class TenantTargetSource implements TargetSource {
         } else if(classes.length == 1) {
             return classes[0];
         } else {
-            Class<?> superClass = classes[0];
-            do {
-                int i = 1;
-                for(; i<classes.length; i++) {
-                    if(!superClass.isAssignableFrom(classes[i])) {
-                        break;
+            Set<Class<?>> interfaces = getCommonNonMarkerInterfaces(classes);
+            Class<?> baseClass = getCommonBaseClass(classes);
+
+            if(interfaces.size() > 0) {
+                boolean implemented = true;
+                for(Class<?> itf : interfaces) {
+                    if(!itf.isAssignableFrom(baseClass)) {
+                        implemented = false;
                     }
                 }
-                if(i == classes.length) {
-                    return superClass;
+                if(!implemented) {
+                    return classes[0];
                 }
-                Class<?>[] superInterfaces = superClass.getInterfaces();
-                for(Class<?> superInterface: superInterfaces) {
-                    if(superInterface.getMethods().length > 0) {
-                        i = 1;
-                        for(; i<classes.length; i++) {
-                            if(!superInterface.isAssignableFrom(classes[i])) {
-                                break;
-                            }
-                        }
-                        if(i == classes.length) {
-                            return superClass;
-                        }
-                    }
-                }
-                superClass = superClass.getSuperclass();
-            } while(superClass != null);
-            return null;
+            }
+            return baseClass;
         }
+    }
+
+    static Class<?> getCommonBaseClass(Class<?>[] clazzes) {
+        Class<?> superClass = clazzes[0];
+        do {
+            int i = 1;
+            for(; i<clazzes.length; i++) {
+                if(!superClass.isAssignableFrom(clazzes[i])) {
+                    break;
+                }
+            }
+            if(i == clazzes.length) {
+                return superClass;
+            }
+            superClass = superClass.getSuperclass();
+        } while(superClass != null);
+        return null;
+    }
+
+    static Set<Class<?>> getNonMarkerInterfaces(Class<?> clazz) {
+        Set<Class<?>> interfaces = new HashSet<Class<?>>();
+        getNonMarkerInterfaces(clazz, interfaces);
+        return interfaces;
+    }
+
+    private static void getNonMarkerInterfaces(Class<?> clazz, Set<Class<?>> interfaces) {
+        if(clazz.isInterface()) {
+            if(clazz.getDeclaredMethods().length > 0) {
+                 interfaces.add(clazz);
+            }
+            Class<?>[] itfs = clazz.getInterfaces();
+            for(Class<?> itf : itfs) {
+                getNonMarkerInterfaces(itf, interfaces);
+            }
+        } else {
+            while(clazz != null) {
+                Class<?>[] itfs = clazz.getInterfaces();
+                for(Class<?> itf : itfs) {
+                    getNonMarkerInterfaces(itf, interfaces);;
+                }
+                clazz = clazz.getSuperclass();
+            }
+        }
+    }
+
+    static Set<Class<?>> getCommonNonMarkerInterfaces(Class<?>[] clazzes) {
+        if(clazzes.length == 0) {
+            return new HashSet<Class<?>>();
+        }
+        Set<Class<?>> commonItfs = getNonMarkerInterfaces(clazzes[0]);
+        if(clazzes.length > 1) {
+            for(int i=1; i<clazzes.length; i++) {
+                Set<Class<?>> itfs = getNonMarkerInterfaces(clazzes[i]);
+                Iterator<Class<?>> it = commonItfs.iterator();
+                while(it.hasNext()) {
+                    Class<?> commonItf = it.next();
+                    if(!itfs.contains(commonItf)) {
+                        it.remove();
+                    }
+                }
+            }
+        }
+        return commonItfs;
     }
 
 }
