@@ -21,21 +21,21 @@ import de.schlund.pfixxml.util.MD5Utils;
  *
  */
 public class JarFileCache {
-    
+
     private static JarFileCache instance;
-    
+
     private final File cacheDir;
     private final Map<URL,CacheEntry> jarFileCache = new HashMap<URL,CacheEntry>();
-    
+
     public synchronized static JarFileCache getInstance() {
         if(instance == null) instance = new JarFileCache();
         return instance;
     }
-    
+
     public synchronized static void setCacheDir(File cacheDir) {
         instance = new JarFileCache(cacheDir);
     }
-    
+
     public JarFileCache() {
         File tempDir = new File(System.getProperty("java.io.tmpdir"));
         UID uid = new UID();
@@ -43,22 +43,23 @@ public class JarFileCache {
         cacheDir = new File(tempDir, "pustefix-jar-cache/" + md5);
         cacheDir.mkdirs();
     }
-    
+
     public JarFileCache(File cacheDir) {
         this.cacheDir = cacheDir;
         if(cacheDir.exists()) delete(cacheDir);
         cacheDir.mkdirs();
     }
-    
+
     public JarFile getJarFile(URL url) throws IOException {
         return getCachedJarFile(url).jarFile;
     }
-    
+
     public long getLastModified(URL url) throws IOException {
         return getCachedJarFile(url).lastMod;
     }
-    
+
     private synchronized CacheEntry getCachedJarFile(URL url) throws IOException {
+        //no "findbugs : DMI_COLLECTION_OF_URLS" here, because only file URLs in use
         CacheEntry entry = jarFileCache.get(url);
         if(entry == null || (entry.file.lastModified() > entry.lastMod)) {
             entry = new CacheEntry();
@@ -70,16 +71,17 @@ public class JarFileCache {
             entry.jarFile = new JarFile(entry.file);
             entry.lastMod = entry.file.lastModified();
             entry.id = jarFileCache.size();
+            //no "findbugs : DMI_COLLECTION_OF_URLS" here, because only file URLs in use
             jarFileCache.put(url, entry);
         }
         return entry;
     }
-    
+
     public synchronized File getFile(URL jarURL, String path) throws IOException {
         CacheEntry cacheEntry = getCachedJarFile(jarURL);
-        
+
         File file = new File(cacheDir, cacheEntry.id + "/" + path);
-       
+
         if(!file.exists()) {
             JarEntry entry = cacheEntry.jarFile.getJarEntry(path);
             if(entry == null) throw new FileNotFoundException("Jar entry '" + path + 
@@ -115,12 +117,12 @@ public class JarFileCache {
         }
         return file;    
     }
-    
+
     @Override
     protected void finalize() throws Throwable {
         if(cacheDir != null) delete(cacheDir);
     }
-    
+
     private static boolean delete(File file) {
         if(file.isDirectory()) {
             File[] files=file.listFiles();
@@ -130,12 +132,12 @@ public class JarFileCache {
         }
         return file.delete();
     }
-    
+
     class CacheEntry {
         File file;
         JarFile jarFile;
         long lastMod;
         int id;
     }
-    
+
 }

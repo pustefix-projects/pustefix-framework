@@ -91,4 +91,10 @@ public abstract class FaultHandler implements Serializable {
 		return false;
 	}
     
+    @Override
+    public int hashCode() {
+        assert false : "hashCode not supported";
+        return 0;
+    }
+	
 }

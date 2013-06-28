@@ -29,7 +29,7 @@ import de.schlund.pfixxml.ResultDocument;
 public class ContextUserImpl implements ContextUser {
 
     private User user;
-    
+
     public User getUser() {
         return user;
     }

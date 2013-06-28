@@ -22,7 +22,6 @@ import java.util.Properties;
 import org.pustefixframework.config.Constants;
 import org.pustefixframework.config.contextxmlservice.ServletManagerConfig;
 import org.pustefixframework.config.generic.ParsingUtils;
-import org.pustefixframework.config.project.ProjectInfo;
 import org.pustefixframework.config.project.SessionTrackingStrategyInfo;
 import org.pustefixframework.http.dereferer.DerefRequestHandler;
 import org.springframework.beans.factory.config.BeanDefinition;
@@ -36,6 +35,7 @@ import com.marsching.flexiparse.parser.ParsingHandler;
 import com.marsching.flexiparse.parser.exception.ParserException;
 
 import de.schlund.pfixcore.workflow.SiteMap;
+import de.schlund.pfixxml.LanguageInfo;
 import de.schlund.pfixxml.TenantInfo;
 import de.schlund.pfixxml.serverutil.SessionAdmin;
 
@@ -77,8 +77,7 @@ public class DerefRequestHandlerParsingHandler implements ParsingHandler {
             beanBuilder.addPropertyValue("sessionAdmin", new RuntimeBeanReference(SessionAdmin.class.getName()));
             beanBuilder.addPropertyValue("sessionTrackingStrategy", strategyInfo.getSessionTrackingStrategyInstance());
             beanBuilder.addPropertyValue("tenantInfo", new RuntimeBeanReference(TenantInfo.class.getName()));
-            ProjectInfo projectInfo = ParsingUtils.getSingleTopObject(ProjectInfo.class, context);
-            beanBuilder.addPropertyValue("projectInfo", projectInfo);
+            beanBuilder.addPropertyValue("languageInfo", new RuntimeBeanReference(LanguageInfo.class.getName()));
             beanBuilder.addPropertyValue("siteMap", new RuntimeBeanReference(SiteMap.class.getName()));
             BeanDefinition beanDefinition = beanBuilder.getBeanDefinition();
             BeanDefinitionHolder beanHolder = new BeanDefinitionHolder(beanDefinition, DerefRequestHandler.class.getName());

@@ -53,7 +53,6 @@ public class MockContextResourceManager implements ContextResourceManager {
     
     public void addResource(Class<?> itf, Object resource) {
         resourceMap.put(itf.getName(), resource);
-        System.out.println("put "+itf.getName());
     }
     
     public void addResource(String name, Object resource) {

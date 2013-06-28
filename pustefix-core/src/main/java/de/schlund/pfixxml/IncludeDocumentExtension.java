@@ -30,6 +30,7 @@ import javax.xml.transform.TransformerException;
 import javax.xml.transform.URIResolver;
 
 import org.apache.log4j.Logger;
+import org.pustefixframework.util.LocaleUtils;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.Node;
@@ -253,15 +254,48 @@ public final class IncludeDocumentExtension {
                     return ok? (Object) ns.get(0) : errorNode(context,curr_theme);
                     //return ok? (Object) ns.get(0) : new EmptyNodeSet();
                 } else {
-                    // too many specific themes found. Error!
-                    if (dolog) {
-                        DependencyTracker.logTyped("text", path, part, DEF_THEME,
-                                                   parent_path, parent_part, parent_theme, target);
+                    
+                    String languagePart = LocaleUtils.getLanguagePart(language);
+                    int lastMatchFactor = 0;
+                    Element lastMatch = null;
+                    for(Node node: ns) {
+                        Element elem = (Element)node;
+                        String tenantAttr = elem.getAttribute("tenant");
+                        String langAttr = elem.getAttribute("lang");
+                        int matchFactor = 0;
+                        if(tenantAttr.equals(tenant)) {
+                            matchFactor += 8;
+                        } else if(tenantAttr.isEmpty()) {
+                            matchFactor += 4;
+                        }
+                        if(matchFactor > 0) {
+                            if(langAttr.equals(language)) {
+                                matchFactor += 3;
+                            } else if(langAttr.isEmpty()) {
+                                matchFactor += 1;
+                            } else if(langAttr.equals(languagePart)) {
+                                matchFactor += 2;
+                            } else {
+                                matchFactor = 0;
+                            }
+                        }
+                        if(matchFactor > lastMatchFactor) {
+                            lastMatchFactor = matchFactor;
+                            lastMatch = elem;
+                        }
                     }
-                    XMLException ex = new XMLException("*** Theme branch '" + curr_theme +
-                                                       "' is defined multiple times under part '" + part + "@" + path + "'");
-                    target.setStoredException(ex);
-                    throw ex;
+                    
+                    boolean ok = true;
+                    if (dolog) {
+                        try {
+                            DependencyTracker.logTyped("text", path, part, curr_theme,
+                                                       parent_path, parent_part, parent_theme, target);
+                        } catch (Exception e) {
+                            // TODO
+                            ok = false;
+                        }
+                    }
+                    return ok? (Object) lastMatch : errorNode(context,curr_theme);
                 }
             }
             

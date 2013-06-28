@@ -445,8 +445,6 @@ public class Xml {
         t.setOutputProperty(OutputKeys.OMIT_XML_DECLARATION, decl? "no" : "yes");
         if (decl) {
             t.setOutputProperty(OutputKeys.ENCODING, ENCODING);
-        } else {
-            // don't set encoding, I'd force an xml decl by setting it.
         }
         t.setOutputProperty(OutputKeys.INDENT, pp? "yes" : "no");
         t.setOutputProperty(XsltProvider.getXmlSupport(xsltVersion).getIndentOutputKey(), "2");

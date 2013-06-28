@@ -36,9 +36,10 @@ import org.w3c.dom.Element;
 import org.w3c.dom.Text;
 import org.xml.sax.SAXParseException;
 
-import de.schlund.pfixxml.RenderingException;
 import de.schlund.pfixxml.resources.Resource;
 import de.schlund.pfixxml.resources.ResourceUtil;
+import de.schlund.pfixxml.util.Xml;
+import de.schlund.pfixxml.util.Xslt;
 import de.schlund.pfixxml.util.XsltExtensionFunctionException;
 
 
@@ -50,6 +51,8 @@ import de.schlund.pfixxml.util.XsltExtensionFunctionException;
  */
 public class XMLCreatorVisitor implements ExceptionDataValueVisitor {
 
+	private enum ErrorType { JAVA, XSLT, XSLT_EXT };
+	
 	private Document doc;
 	/* (non-Javadoc)
 	 * @see de.schlund.jmsexceptionhandler.rmiobj.ExceptionDataValueVisitor#visit(de.schlund.jmsexceptionhandler.rmiobj.ExceptionDataValue)
@@ -65,8 +68,8 @@ public class XMLCreatorVisitor implements ExceptionDataValueVisitor {
 			return;
 		}
 		Element e = doc.createElement("error");
-		boolean isXsltError = isXsltError(data.getThrowable());
-		e.setAttribute("type", isXsltError?"xslt":"java");
+		ErrorType errorType = getErrorType(data.getThrowable());
+		e.setAttribute("type", errorType.toString().toLowerCase());
 		
 		Element sess_info = doc.createElement("sessioninfo");
 		Text sess_info_txt = doc.createTextNode(data.getSessionid());
@@ -179,34 +182,53 @@ public class XMLCreatorVisitor implements ExceptionDataValueVisitor {
 	    }
 	}
 	
-	
-	private boolean isXsltError(Throwable throwable) {
-	    if(throwable instanceof RenderingException) {
-	        return hasXsltErrorCause(throwable);
-	    }
-	    return false;
+	private ErrorType getErrorType(Throwable throwable) {
+		Throwable cause = throwable.getCause();
+		if(cause != null) {
+			ErrorType errorType = getErrorType(cause);
+			if(errorType != ErrorType.JAVA) {
+				if(errorType == ErrorType.XSLT && throwable instanceof XsltExtensionFunctionException && !hasLocationInfo(cause)) {
+					return ErrorType.XSLT_EXT;
+				}
+				return errorType;
+			}
+		}
+		if(throwable instanceof SAXParseException && stackTraceContains(throwable, Xml.class.getName())) {
+			return ErrorType.XSLT;
+		} else if(throwable instanceof XsltExtensionFunctionException) {
+			return ErrorType.XSLT_EXT;
+		} else if(throwable instanceof TransformerException && stackTraceContains(throwable, Xslt.class.getName()) 
+				&& !throwable.getMessage().contains("Exception in extension function")) {
+			return ErrorType.XSLT;
+		}	
+		return ErrorType.JAVA;
 	}
 	
-	private boolean hasXsltErrorCause(Throwable throwable) {
-	    Throwable cause = throwable.getCause();
-	    if(cause != null) {
-	        if(cause instanceof TransformerException) {
-	            if(cause instanceof XsltExtensionFunctionException) {
-	                Throwable extCause = cause.getCause();
-	                if(extCause != null) {
-	                    if(extCause instanceof TransformerException || 
-	                            extCause instanceof SAXParseException) {
-	                        return true;
-	                    }
-	                }
-	                return false;
-	            }
-	            return true;
-	        } else {
-	            return hasXsltErrorCause(cause);
-	        }
-	    }
-	    return false;
+	private boolean hasLocationInfo(Throwable throwable) {
+		if(throwable instanceof TransformerException) {
+			if(((TransformerException)throwable).getLocator() != null) {
+				return true;
+			}
+		} else if(throwable instanceof SAXParseException) {
+			if(((SAXParseException)throwable).getLineNumber() > -1) {
+				return true;
+			}
+		}
+		if(throwable.getCause() == null) {
+			return false;
+		} else {
+			return hasLocationInfo(throwable.getCause());
+		}
+	}
+	
+	private boolean stackTraceContains(Throwable cause, String className) {
+		StackTraceElement[] elements = cause.getStackTrace();
+		for(StackTraceElement element: elements) {
+			if(element.getClassName().equals(className)) {
+				return true;
+			}
+		}
+		return false;
 	}
 	
     private static String cut(Resource res, String encoding, int line, int col, int before, int after, int maxLineLen) throws IOException {

@@ -3,24 +3,24 @@
   <parent>
     <artifactId>pustefix-webservices</artifactId>
     <groupId>org.pustefixframework.webservices</groupId>
-    <version>0.18.9-SNAPSHOT</version>
+    <version>0.18.48-SNAPSHOT</version>
   </parent>
   <name>Pustefix Webservices Core</name>
 
   <groupId>org.pustefixframework.webservices</groupId>
   <artifactId>pustefix-webservices-core</artifactId>
-  <version>0.18.9-SNAPSHOT</version>
+  <version>0.18.48-SNAPSHOT</version>
 
   <dependencies>
     <dependency>
       <groupId>org.springframework</groupId>
       <artifactId>spring-context</artifactId>
-      <version>3.0.5.RELEASE</version>
+      <version>3.0.7.RELEASE</version>
     </dependency>
     <dependency>
       <groupId>org.springframework</groupId>
       <artifactId>spring-test</artifactId>
-      <version>3.0.5.RELEASE</version>
+      <version>3.0.7.RELEASE</version>
     </dependency>
     <dependency>
       <groupId>com.marsching.flexiparse</groupId>

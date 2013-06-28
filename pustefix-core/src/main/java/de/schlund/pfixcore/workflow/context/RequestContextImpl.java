@@ -413,7 +413,7 @@ public class RequestContextImpl implements Cloneable, AuthorizationInterceptor {
                     }
                 }
                 if (action == null) {
-                    throw new UnknownActionException(actionname.getValue(), currentpagerequest.getName());
+                    LOG.warn("Page '" + currentpagerequest.getName() + "' has been called with unknown action.");
                 }
             } else {
                 LOG.warn("Page " + currentpagerequest.getName() + " has been called with action, but isn't configured.");
@@ -922,6 +922,8 @@ public class RequestContextImpl implements Cloneable, AuthorizationInterceptor {
 
     public void addCookie(Cookie cookie) {
         cookielist.add(cookie);
+        System.out.println("ADD COOKIE: " + cookie.getName() + " " + cookie.getValue());
+        Thread.dumpStack();
     }
     
     public List<Cookie> getCookies() {

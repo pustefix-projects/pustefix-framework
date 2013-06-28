@@ -5,25 +5,25 @@
   <parent>
     <groupId>org.pustefixframework</groupId>
     <artifactId>pustefixframework</artifactId>
-    <version>0.18.9-SNAPSHOT</version>
+    <version>0.18.48-SNAPSHOT</version>
   </parent>
 
   <groupId>org.pustefixframework.webservices</groupId>
   <artifactId>pustefix-webservices</artifactId>
   <packaging>pom</packaging>
-  <version>0.18.9-SNAPSHOT</version>
+  <version>0.18.48-SNAPSHOT</version>
   <name>Pustefix Webservices</name>
 
   <dependencies>
     <dependency>
       <groupId>org.pustefixframework</groupId>
       <artifactId>pustefix-core</artifactId>
-      <version>0.18.9-SNAPSHOT</version>
+      <version>0.18.48-SNAPSHOT</version>
     </dependency>
     <dependency>
       <groupId>log4j</groupId>
       <artifactId>log4j</artifactId>
-      <version>1.2.13</version>
+      <version>1.2.17</version>
     </dependency>
     <dependency>
       <groupId>javax.servlet</groupId>
@@ -41,6 +41,42 @@
 
   <build>
     <plugins>
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-antrun-plugin</artifactId>
+        <version>1.3</version>
+        <executions>
+          <execution>
+            <phase>generate-resources</phase>
+            <configuration>
+              <tasks>
+                <mkdir dir="${basedir}/target/classes/META-INF" />
+                <echo file="${basedir}/target/classes/META-INF/wsd.properties">
+                  groupId = ${project.groupId}
+                  artifactId = ${project.artifactId}
+                  version = ${project.version}
+                  name = ${project.name}
+                  url = ${project.url}
+                  site = ${project.distributionManagement.site.url}
+                  scmConnection = ${project.scm.connection}
+                </echo>
+                <echo file="${basedir}/target/classes/META-INF/pominfo.properties">
+                  groupId = ${project.groupId}
+                  artifactId = ${project.artifactId}
+                  version = ${project.version}
+                  name = ${project.name}
+                  url = ${project.url}
+                  site = ${project.distributionManagement.site.url}
+                  scmConnection = ${project.scm.connection}
+                </echo>
+              </tasks>
+            </configuration>
+            <goals>
+              <goal>run</goal>
+            </goals>
+          </execution>
+        </executions>
+      </plugin>
       <plugin>
         <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-surefire-plugin</artifactId>

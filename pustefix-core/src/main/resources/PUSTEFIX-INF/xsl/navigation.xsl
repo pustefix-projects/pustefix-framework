@@ -224,12 +224,6 @@
     <xsl:param name="args"/>
     <xsl:param name="cmds"/>
     <xsl:param name="anchors"/>
-    <xsl:param name="mypage">
-      <xsl:choose>
-        <xsl:when test="not(string($buttpage) = '')">'<xsl:value-of select="$buttpage"/>'</xsl:when>
-        <xsl:otherwise>$page</xsl:otherwise>
-      </xsl:choose>
-    </xsl:param>
     <xsl:param name="frame_impl">
       <xsl:choose>
         <xsl:when test="$frame">
@@ -251,20 +245,32 @@
         <xsl:when test="ancestor-or-self::pfx:frame">_top</xsl:when>
       </xsl:choose>
     </xsl:param>
+    <ixsl:variable name="page_{generate-id()}">
+      <xsl:choose>
+        <xsl:when test="pfx:page">
+          <ixsl:variable name="tmp_{generate-id()}"><xsl:apply-templates select="pfx:page/node()"/></ixsl:variable>
+          <ixsl:choose>
+            <ixsl:when test="$tmp_{generate-id()} = '/'"><ixsl:value-of select="pfx:getHomePage()"/></ixsl:when>
+            <ixsl:when test="not(string($tmp_{generate-id()}) = '')"><ixsl:value-of select="$tmp_{generate-id()}"/></ixsl:when>
+            <ixsl:otherwise><ixsl:value-of select="$page"/></ixsl:otherwise>
+          </ixsl:choose>
+        </xsl:when>
+        <xsl:when test="string($buttpage) = '/'"><ixsl:value-of select="pfx:getHomePage()"/></xsl:when>
+        <xsl:when test="not(string($buttpage) = '')"><xsl:value-of select="$buttpage"/></xsl:when>
+        <xsl:otherwise><ixsl:value-of select="$page"/></xsl:otherwise>
+      </xsl:choose>
+    </ixsl:variable>
     <xsl:variable name="mode_impl">
       <xsl:choose>
         <xsl:when test="not(string($mode) = '')"><xsl:value-of select="$mode"/></xsl:when>
-        <xsl:when test="string($buttpage) = ''">force</xsl:when>
+        <xsl:when test="string($buttpage) = '' and not(pfx:page)">force</xsl:when>
       </xsl:choose>
     </xsl:variable>
     <xsl:variable name="fulllink">
-      <ixsl:variable name="tmpaltkey">
-        <xsl:if test="$altkey"><xsl:copy-of select="$altkey"/></xsl:if>
-      </ixsl:variable>
-      <ixsl:value-of select="$__contextpath"/>/<ixsl:value-of select="pfx:__omitPage({$mypage}, $lang, $tmpaltkey)"/><ixsl:value-of select="$__sessionIdPath"/>
+      <ixsl:value-of select="$__contextpath"/>/<ixsl:value-of select="pfx:__omitPage($page_{generate-id()}, $lang, $tmpaltkey)"/><ixsl:value-of select="$__sessionIdPath"/>
       <ixsl:variable name="params">
       <xsl:if test="not($frame_impl='')">__frame=<xsl:value-of select="$frame_impl"/></xsl:if>
-      <ixsl:if test="not($__lf = '') and pfx:__needsLastFlow({$mypage},$__lf)">&amp;__lf=<ixsl:value-of select="$__lf"/></ixsl:if>
+      <ixsl:if test="not($__lf = '') and pfx:__needsLastFlow($page_{generate-id()},$__lf)">&amp;__lf=<ixsl:value-of select="$__lf"/></ixsl:if>
       <xsl:if test="($args or $cmds) and not($nodata) and not($startwithflow = 'true')">&amp;__sendingdata=1</xsl:if>
       <xsl:for-each select="$args">&amp;<xsl:value-of select="./@name"/>=<ixsl:call-template name="__enc"><ixsl:with-param name="in"><xsl:apply-templates select="./node()"/></ixsl:with-param></ixsl:call-template></xsl:for-each>
       <xsl:if test="$jumptopage">&amp;__jumptopage=<xsl:value-of select="$jumptopage"/></xsl:if>
@@ -273,7 +279,8 @@
       <xsl:if test="$startwithflow">&amp;__startwithflow=<xsl:value-of select="$startwithflow"/></xsl:if>
       <xsl:if test="$forcestop">&amp;__forcestop=<xsl:value-of select="$forcestop"/></xsl:if>
       <xsl:if test="$action">&amp;__action=<xsl:value-of select="$action"/></xsl:if>
-      <xsl:for-each select="$cmds">&amp;__CMD[<xsl:choose><xsl:when test="./@page"><xsl:value-of select="./@page"/></xsl:when><xsl:otherwise><ixsl:value-of select="{$mypage}"/></xsl:otherwise></xsl:choose>]:<xsl:value-of select="./@name"/>=<xsl:apply-templates select="./node()"/></xsl:for-each>
+      <xsl:variable name="node" select="."/>
+      <xsl:for-each select="$cmds">&amp;__CMD[<xsl:choose><xsl:when test="./@page"><xsl:value-of select="./@page"/></xsl:when><xsl:otherwise><ixsl:value-of select="$page_{generate-id($node)}"/></xsl:otherwise></xsl:choose>]:<xsl:value-of select="./@name"/>=<xsl:apply-templates select="./node()"/></xsl:for-each>
       <xsl:for-each select="$anchors[@frame != '']">&amp;__anchor=<xsl:value-of select="@frame"/>|<xsl:apply-templates select="./node()"/></xsl:for-each>
       </ixsl:variable>
       <ixsl:value-of select="pfx:__addParams($params)"/>
@@ -281,13 +288,17 @@
     </xsl:variable>
     <xsl:variable name="excluded_button_attrs">|action|activeclass|altkey|buttpage|forcestop|frame|invisibleclass|jumptopage|jumptopageflow|mode|nodata|normalclass|page|pageflow|popup|popupfeatures|popupheight|popupid|popupwidth|startwithflow|target|</xsl:variable>
     <xsl:variable name="excluded_button_span_attrs"><xsl:value-of select="$excluded_button_attrs"/>charset|type|name|href|hreflang|rel|rev|accesskey|shape|coords|tabindex|onfocus|onblur|</xsl:variable>
+    <ixsl:if test="true()">
+    <ixsl:variable name="tmpaltkey">
+      <xsl:if test="$altkey"><xsl:copy-of select="$altkey"/></xsl:if>
+    </ixsl:variable>
     <xsl:choose>
       <xsl:when test="string($urlonly) = 'true'">
         <xsl:copy-of select="$fulllink"/>
       </xsl:when>
       <xsl:otherwise>
         <ixsl:choose>
-          <ixsl:when test="(callback:checkAuthorization($__context__,{$mypage}) = 3) or (callback:isAccessible($__context__, $__target_gen, {$mypage}) = 0) and not('{$mode_impl}' = 'force')">
+          <ixsl:when test="(callback:checkAuthorization($__context__,$page_{generate-id()}) = 3) or (callback:isAccessible($__context__, $__target_gen, $page_{generate-id()}) = 0) and not('{$mode_impl}' = 'force')">
             <span>
               <xsl:if test="name()='pfx:button'"><xsl:copy-of select="@*[not(contains($excluded_button_span_attrs,concat('|',name(),'|')))]"/></xsl:if>
               <xsl:attribute name="class">
@@ -302,7 +313,7 @@
             </span>
           </ixsl:when>
           <xsl:if test="not($mode_impl = 'force')">
-              <ixsl:when test="$page = {$mypage}">
+              <ixsl:when test="$page = $page_{generate-id()} and $pageAlternative = $tmpaltkey">
                 <span>
                   <xsl:if test="name()='pfx:button'"><xsl:copy-of select="@*[not(contains($excluded_button_span_attrs,concat('|',name(),'|')))]"/></xsl:if>
                   <xsl:attribute name="class">
@@ -363,7 +374,10 @@
         </ixsl:choose>
       </xsl:otherwise>
     </xsl:choose>
+    </ixsl:if>
   </xsl:template>
+  
+  <xsl:template match="pfx:page"/>
 
   <xsl:template match="pfx:elink">
     <xsl:choose>

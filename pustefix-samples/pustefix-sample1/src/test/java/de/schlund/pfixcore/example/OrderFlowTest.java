@@ -37,7 +37,6 @@ import org.springframework.web.context.request.ServletRequestAttributes;
 import org.w3c.dom.Document;
 import org.w3c.dom.Node;
 
-import de.schlund.pfixcore.example.iwrapper.AdultInfo;
 import de.schlund.pfixcore.example.iwrapper.TShirt;
 import de.schlund.pfixcore.workflow.Context;
 import de.schlund.pfixcore.workflow.ContextImpl;
@@ -90,14 +89,11 @@ public class OrderFlowTest extends AbstractJUnit38SpringContextTests implements 
         Assert.assertFalse(overviewState.isAccessible(pustefixContext, pfxReq));
         
         AdultInfoHandler handler = (AdultInfoHandler)applicationContext.getBean(AdultInfoHandler.class.getName()+"#home#info");
-        Assert.assertTrue(handler.needsData(pustefixContext));
+        Assert.assertTrue(handler.needsData());
         
-        AdultInfo adultInfo = new AdultInfo();
-        adultInfo.init("info");
-        adultInfo.setStringValAdult("false");
-        adultInfo.loadFromStringValues();
-        handler.handleSubmittedData(pustefixContext, adultInfo);
+        AdultBean adultBean = new AdultBean();
         
+        handler.handleSubmittedData(adultBean);
         TShirtHandler tshirtHandler = (TShirtHandler)applicationContext.getBean(TShirtHandler.class.getName()+"#order#shirt");
         TShirt tshirt = new TShirt();
         tshirt.init("shirt");

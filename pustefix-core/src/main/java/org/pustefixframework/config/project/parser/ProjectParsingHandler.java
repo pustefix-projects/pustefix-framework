@@ -44,12 +44,9 @@ public class ProjectParsingHandler extends CustomizationAwareParsingHandler {
 
     public void handleNodeIfActive(HandlerContext context) throws ParserException {
        
-        if(context.getRunOrder() == RunOrder.START) {
-            
-            
-        } else {
-            
-            List<Tenant> tenants = new ArrayList<Tenant>();
+        if(context.getRunOrder() != RunOrder.START) {
+
+        	List<Tenant> tenants = new ArrayList<Tenant>();
             Collection<Tenant> tenantCollection = context.getObjectTreeElement().getObjectsOfTypeFromSubTree(Tenant.class);
             tenants.addAll(tenantCollection);
         

@@ -34,7 +34,7 @@
   
   <xs:complexType name="staticType">
     <xs:sequence>
-      <xs:element name="path" type="xs:string" maxOccurs="unbounded"/>
+      <xs:element name="path" type="md:pathType" maxOccurs="unbounded"/>
     </xs:sequence>
   </xs:complexType>
   
@@ -62,5 +62,13 @@
       <xs:attribute name="value" type="xs:string"/>
     </xs:complexType>
   </xs:element>
+  
+  <xs:complexType name="pathType">
+    <xs:simpleContent>
+      <xs:extension base="xs:string">
+        <xs:attribute name="i18n" type="xs:boolean" use="optional"/>
+      </xs:extension>
+    </xs:simpleContent>
+  </xs:complexType>
     
 </xs:schema>

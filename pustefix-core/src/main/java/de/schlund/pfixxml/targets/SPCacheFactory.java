@@ -120,6 +120,9 @@ public class SPCacheFactory {
      * through getCache() and getDocumentCache()!
      */
      public void reset() {
+    	 if(cacheStatistic != null) {
+     		cacheStatistic.reset();
+     	}
     	 init();
      }
      

@@ -50,7 +50,7 @@ public class IWrapperInfo {
     private static DocumentBuilderFactory  docBuilderFactory = DocumentBuilderFactory.newInstance();
     private static Map<Class<?>, Document> docCache          = new HashMap<Class<?>, Document>();
 
-    public static Document getDocument(Class<? extends IWrapper> iwrpClass, XsltVersion xsltVersion) {
+    public static Document getDocument(Class<?> iwrpClass, XsltVersion xsltVersion) {
         synchronized (iwrpClass) {
             Document iwrpDoc = null;
             synchronized (docCache) {
@@ -63,7 +63,12 @@ public class IWrapperInfo {
                     Element root = doc.createElement("iwrapper");
                     root.setAttribute("class", iwrpClass.getName());
                     doc.appendChild(root);
-                    IWrapper iw = iwrpClass.newInstance();
+                    IWrapper iw;
+                    if(IWrapper.class.isAssignableFrom(iwrpClass)) {
+                        iw = (IWrapper)iwrpClass.newInstance();
+                    } else {
+                        iw = new IWrapperAdapter(iwrpClass.newInstance());
+                    }
                     iw.init("dummy");
                     IWrapperParamDefinition[] defs = iw.gimmeAllParamDefinitions();
                     for (IWrapperParamDefinition def : defs) {

@@ -3,7 +3,7 @@
 <part name="top">
   <theme name="default">
     <pfx:button page="home"><ixsl:value-of select="pfx:getPageAlias('home')"/></pfx:button> 
-    <pfx:button page="order"><ixsl:value-of select="pfx:getPageAlias('order')"/></pfx:button> 
+    <pfx:button page="order" mode="force"><ixsl:value-of select="pfx:getPageAlias('order')"/></pfx:button> 
     <pfx:button page="overview"><ixsl:value-of select="pfx:getPageAlias('overview')"/></pfx:button> 
   </theme>
 </part>

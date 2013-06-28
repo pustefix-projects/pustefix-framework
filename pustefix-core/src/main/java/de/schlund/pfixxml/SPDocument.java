@@ -56,7 +56,8 @@ public class SPDocument {
     private String    contenttype    = null;
     private HashMap<String, String> header  = new HashMap<String, String>();
     private ArrayList<Cookie> cookies = new ArrayList<Cookie>();
-    private String    redirectURL    = null;
+    private String redirectURL = null;
+    private boolean permanentRedirect = false;
     private boolean trailLogged;
     private long creationTime;
 
@@ -135,7 +136,7 @@ public class SPDocument {
         if (redirectURL == null) {
             return error;
         } else {
-            return HttpServletResponse.SC_MOVED_TEMPORARILY;
+            return permanentRedirect?HttpServletResponse.SC_MOVED_PERMANENTLY:HttpServletResponse.SC_MOVED_TEMPORARILY;
         }
     }
 
@@ -240,6 +241,11 @@ public class SPDocument {
      */
     public void setRedirect(String redirectURL) {
         this.redirectURL = redirectURL;
+    }
+    
+    public void setRedirect(String redirectURL, boolean permanent) {
+        this.redirectURL = redirectURL;
+        this.permanentRedirect = permanent;
     }
 
     public boolean isRedirect() {

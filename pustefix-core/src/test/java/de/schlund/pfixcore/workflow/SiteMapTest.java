@@ -64,6 +64,13 @@ public class SiteMapTest extends TestCase {
         assertEquals("Test", siteMap.getAlias("Info", "de", "nationalparks"));        
         assertEquals("Info", siteMap.getPageName("Test", "de").pageName);
        
+        //test default page alternative
+        assertEquals("baz", siteMap.getAlias("foo", "en", "2"));
+        assertEquals("foo", siteMap.getPageName("foo", "en").pageName);
+        assertEquals("2", siteMap.getPageName("foo", "en").pageAlternativeKey);
+        assertEquals("bar", siteMap.getAlias("foo", "en", "1"));
+        assertEquals("1", siteMap.getPageName("bar", "en").pageAlternativeKey);
+        assertEquals("2", siteMap.getPageName("baz", "en").pageAlternativeKey);
         
     }
     

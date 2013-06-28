@@ -66,7 +66,6 @@ import de.schlund.pfixxml.resources.FileResource;
 import de.schlund.pfixxml.resources.ResourceUtil;
 import de.schlund.pfixxml.util.SimpleResolver;
 import de.schlund.pfixxml.util.TransformerHandlerAdapter;
-import de.schlund.pfixxml.util.logging.ProxyLogUtil;
 
 /**
  * This Servlet is just there to have it's init method called on startup of the
@@ -77,17 +76,13 @@ import de.schlund.pfixxml.util.logging.ProxyLogUtil;
  */
 public class PustefixInit {
 
-    /**
-     * 
-     */
-    private static final long serialVersionUID = 3072991705791635451L;
-
     // ~ Instance/static variables
     // ..................................................................
 
     private final static Logger LOG = Logger.getLogger(PustefixInit.class);
     
     private final static String log4jconfig = "/WEB-INF/pfixlog.xml";
+    public final static String SERVLET_CONTEXT_ATTRIBUTE_NAME = "___PUSTEFIX_INIT___";
 
     private long log4jmtime = -1;
     private boolean initDone;
@@ -134,6 +129,16 @@ public class PustefixInit {
     	    JarFileCache.setCacheDir(cacheDir);
     	}
     	
+    	//override environment properties by according context init parameters
+    	Enumeration<?> names = servletContext.getInitParameterNames();
+    	while(names.hasMoreElements()) {
+    	    String name = (String)names.nextElement();
+    	    String value = servletContext.getInitParameter(name);
+            if(value != null && !value.equals("")) {
+                EnvironmentProperties.getProperties().put(name, value);
+            }
+    	}
+    	
     	if(docrootstr == null) {
     	    docrootstr = servletContext.getRealPath("/");
     	    if (docrootstr == null) {
@@ -145,16 +150,6 @@ public class PustefixInit {
     	    }
     	} else {
     	    GlobalConfigurator.setDocroot(docrootstr);
-    	}
-    
-    	// override environment properties by according context init parameters
-    	Enumeration<?> names = servletContext.getInitParameterNames();
-    	while(names.hasMoreElements()) {
-    	    String name = (String)names.nextElement();
-    	    String value = servletContext.getInitParameter(name);
-            if(value != null && !value.equals("")) {
-                EnvironmentProperties.getProperties().put(name, value);
-            }
     	}
     	
     	configureLogging(properties, servletContext);
@@ -170,23 +165,16 @@ public class PustefixInit {
         
     	FileResource l4jfile = ResourceUtil.getFileResourceFromDocroot(log4jconfig);
     	
-        if(!l4jfile.exists()) {
-            ProxyLogUtil.getInstance().configureLog4jProxy();
-            ProxyLogUtil.getInstance().setServletContext(servletContext);
-        } else {
-        	
-            try {
-                configureLog4j(l4jfile);
-            } catch (FileNotFoundException e) {
-                throw new PustefixCoreException(l4jfile + ": file for log4j configuration not found!", e);
-            } catch (SAXException e) {
-                throw new PustefixCoreException(l4jfile + ": error on parsing log4j configuration file", e);
-            } catch (IOException e) {
-                throw new PustefixCoreException(l4jfile + ": error on reading log4j configuration file!", e);
-            }
+    	try {
+    		configureLog4j(l4jfile);
+    	} catch (FileNotFoundException e) {
+    		throw new PustefixCoreException(l4jfile + ": file for log4j configuration not found!", e);
+    	} catch (SAXException e) {
+    		throw new PustefixCoreException(l4jfile + ": error on parsing log4j configuration file", e);
+    	} catch (IOException e) {
+    		throw new PustefixCoreException(l4jfile + ": error on reading log4j configuration file!", e);
+    	}
 
-        }
-        
     }
 
     private void configureLog4j(FileResource configFile) throws SAXException, FileNotFoundException, IOException {

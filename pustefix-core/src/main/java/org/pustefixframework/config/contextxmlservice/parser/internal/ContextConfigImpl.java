@@ -174,6 +174,9 @@ public class ContextConfigImpl implements ContextConfig {
         }
         resources.put(config.getContextResourceClass(), config);
         for(Class<?> itf:config.getInterfaces()) {
+            if (resourceMap.containsKey(itf.getName())) {
+                LOG.warn("Overwriting implementation for interface " + itf.getName());
+            }
             resourceMap.put(itf.getName(), config);
         }
         cacheResources = null;

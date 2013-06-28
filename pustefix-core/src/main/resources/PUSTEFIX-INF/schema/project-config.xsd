@@ -18,7 +18,11 @@
         <xsd:element ref="config-include" minOccurs="0"/>
         <xsd:element ref="tenant" minOccurs="0" maxOccurs="unbounded"/>
         <xsd:element name="xml-generator" type="xml-generator-type"/>
-        <xsd:element name="searchengine-sitemap" minOccurs="0"/>
+        <xsd:element name="searchengine-sitemap" minOccurs="0">
+          <xsd:complexType>
+            <xsd:attribute name="type" type="xsd:string" use="optional"/>
+          </xsd:complexType>
+        </xsd:element>
         <xsd:element name="session-tracking-strategy" minOccurs="0">
           <xsd:simpleType>
             <xsd:restriction base="xsd:string">
@@ -132,7 +136,7 @@
   
   <xsd:complexType name="application-type">
     <xsd:sequence>
-      <xsd:element name="docroot-path" type="xsd:string" minOccurs="0"/>
+      <xsd:element name="docroot-path" type="path-type" minOccurs="0"></xsd:element>
       <xsd:element name="default-path" type="xsd:string" minOccurs="0"/>
       <xsd:element name="context-xml-service">
         <xsd:complexType>
@@ -191,7 +195,7 @@
       <xsd:element name="static" minOccurs="0">
         <xsd:complexType>
           <xsd:sequence>
-            <xsd:element name="path" type="xsd:string" maxOccurs="unbounded"/>
+            <xsd:element name="path" type="path-type" maxOccurs="unbounded"/>
           </xsd:sequence>
         </xsd:complexType>
       </xsd:element>
@@ -334,9 +338,25 @@
         </xsd:element>
         <xsd:element name="host" type="xsd:string"/>
       </xsd:choice>
-      <xsd:element name="lang" type="xsd:string"/>
+      <xsd:element name="lang" maxOccurs="unbounded">
+        <xsd:complexType>
+          <xsd:simpleContent>
+            <xsd:extension base="xsd:string">
+              <xsd:attribute name="default" type="xsd:boolean" use="optional"/>
+            </xsd:extension>
+          </xsd:simpleContent>
+        </xsd:complexType>
+      </xsd:element>
     </xsd:sequence>
     <xsd:attribute name="name" type="xsd:string" use="required"/>
+  </xsd:complexType>
+  
+  <xsd:complexType name="path-type">
+    <xsd:simpleContent>
+      <xsd:extension base="xsd:string">
+        <xsd:attribute name="i18n" type="xsd:boolean" use="optional"/>
+      </xsd:extension>
+    </xsd:simpleContent>
   </xsd:complexType>
 
 </xsd:schema>

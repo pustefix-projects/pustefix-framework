@@ -45,10 +45,9 @@ public class Constants {
     
     public final static String PROTOCOL_TYPE_SOAP="SOAP";
     public final static String PROTOCOL_TYPE_JSONWS="JSONWS";
-    public final static String PROTOCOL_TYPE_JSONQX="JSONQX";
     public final static String PROTOCOL_TYPE_TEST="TEST";
     public final static String PROTOCOL_TYPE_ANY="ANY";
-    public final static String[] PROTOCOL_TYPES={PROTOCOL_TYPE_SOAP,PROTOCOL_TYPE_JSONWS,PROTOCOL_TYPE_JSONQX,PROTOCOL_TYPE_TEST,PROTOCOL_TYPE_ANY};
+    public final static String[] PROTOCOL_TYPES={PROTOCOL_TYPE_SOAP,PROTOCOL_TYPE_JSONWS,PROTOCOL_TYPE_TEST,PROTOCOL_TYPE_ANY};
     
     public final static String ENCODING_STYLE_RPC="rpc";
     public final static String ENCODING_STYLE_DOCUMENT="document";

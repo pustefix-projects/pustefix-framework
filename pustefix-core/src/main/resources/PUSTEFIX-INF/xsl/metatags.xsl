@@ -8,6 +8,7 @@
   <xsl:import href="module://pustefix-core/xsl/default_copy.xsl"/>
   <xsl:import href="module://pustefix-core/xsl/include.xsl"/>
   <xsl:import href="module://pustefix-core/xsl/utils.xsl"/>
+  <xsl:import href="module://pustefix-core/xsl/common.xsl"/>
   <xsl:import href="module://pustefix-core/xsl/render.xsl"/>
 
   <cus:custom_xsl/>

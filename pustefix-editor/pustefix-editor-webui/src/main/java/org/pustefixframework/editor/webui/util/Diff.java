@@ -45,6 +45,12 @@ public class Diff {
             }
             return false;
         }
+
+        @Override
+        public int hashCode() {
+            assert false : "hashCode not supported";
+            return 0;
+        }
         
         public int compareTo(Match m) {
             if (posA < m.posA) {

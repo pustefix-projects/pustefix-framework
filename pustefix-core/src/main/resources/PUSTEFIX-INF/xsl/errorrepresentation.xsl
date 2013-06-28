@@ -14,8 +14,11 @@
               <td align="center" bgcolor="#cc0000" colspan="2">
                 <span style="color:#ffffff; font-weight: bold">
                   <xsl:choose>
-         	    <xsl:when test="/error[@type ='xslt']">
+         	        <xsl:when test="/error[@type ='xslt']">
                       XML/XSLT Error!
+                    </xsl:when>
+                    <xsl:when test="/error[@type = 'xslt_ext']">
+                      XSLT Extension Function Error!
                     </xsl:when>
                     <xsl:otherwise>
                       Java Error!
@@ -39,6 +42,19 @@
       <tr><td colspan="2">
       <xsl:variable name="rootcause" select=".//exception[not(exception)]"/>
       XML/XSLT error at <i><xsl:value-of select="$rootcause/xsltinfo/@systemId"/></i>
+      (line <i><xsl:value-of select="$rootcause/xsltinfo/@line"/>, column <xsl:value-of select="$rootcause/xsltinfo/@column"/></i>):<br/>
+      <b><xsl:value-of select="$rootcause/@type"/>: <xsl:value-of select="$rootcause/@msg"/></b>
+      <xsl:if test="$rootcause/xsltinfo/@context">
+        <pre style="font-size: 80%">
+          <xsl:value-of select="$rootcause/xsltinfo/@context"/>
+        </pre>
+      </xsl:if>
+      </td></tr>
+    </xsl:if>
+    <xsl:if test="@type='xslt_ext'">
+      <tr><td colspan="2">
+      <xsl:variable name="rootcause" select="..//exception[@type='de.schlund.pfixxml.util.XsltExtensionFunctionException']"/>
+      XSLT extension function error at <i><xsl:value-of select="$rootcause/xsltinfo/@systemId"/></i>
       (line <i><xsl:value-of select="$rootcause/xsltinfo/@line"/>, column <xsl:value-of select="$rootcause/xsltinfo/@column"/></i>):<br/>
       <b><xsl:value-of select="$rootcause/@type"/>: <xsl:value-of select="$rootcause/@msg"/></b>
       <xsl:if test="$rootcause/xsltinfo/@context">

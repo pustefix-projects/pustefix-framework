@@ -15,7 +15,7 @@
   </standardmaster>
   
   <standardmetatags>
-  	<include stylesheet="xsl/metatags.xsl"/>
+    <include stylesheet="xsl/metatags.xsl"/>
   </standardmetatags>
   
   <standardpage name="Home" xml="xml/frame.xml"/>

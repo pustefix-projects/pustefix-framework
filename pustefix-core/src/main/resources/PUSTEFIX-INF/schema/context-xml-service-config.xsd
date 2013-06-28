@@ -18,6 +18,7 @@
     <xs:sequence>
       <xs:element name="global-config" type="prop:context-xml-global-config-Type" minOccurs="0"/>
       <xs:element ref="prop:context"/>
+      <xs:element ref="prop:global-output" minOccurs="0"/>
       <xs:element ref="prop:interceptors" maxOccurs="1" minOccurs="0"/>
       <xs:choice minOccurs="0" maxOccurs="unbounded">
         <xs:element ref="prop:scriptedflow"/>
@@ -121,6 +122,22 @@
   </xs:complexType>
   
   <xs:element name="authconstraint" type="prop:authconstraintTopLevelType"/>
+  
+  <!-- global-output -->
+  
+  <xs:element name="global-output">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element name="resource" minOccurs="0" maxOccurs="unbounded">
+          <xs:complexType>
+            <xs:attribute name="class" use="optional"/>
+            <xs:attribute name="node" use="required"/>
+            <xs:attribute name="bean-ref" use="optional"/>
+          </xs:complexType>
+        </xs:element>
+      </xs:sequence>
+    </xs:complexType>
+  </xs:element>
   
   <!-- conditions -->
 

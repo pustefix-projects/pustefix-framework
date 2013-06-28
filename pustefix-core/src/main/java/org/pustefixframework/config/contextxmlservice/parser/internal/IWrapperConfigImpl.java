@@ -32,12 +32,14 @@ import de.schlund.pfixcore.generator.IWrapper;
 public class IWrapperConfigImpl implements IWrapperConfig {
     
     private String prefix = null;
-    private Class<? extends IWrapper> wrapperClass = null;
+    private Class<?> wrapperClass = null;
     private boolean checkActive = true;
     private boolean dologging = false;
     private IHandler handler;
     private String scope = "singleton";
     private String tenant;
+    private Class<?> handlerClass;
+    private String handlerBeanRef;
     
     /* (non-Javadoc)
      * @see de.schlund.pfixxml.config.IWrapperConfig#getPrefix()
@@ -57,7 +59,7 @@ public class IWrapperConfigImpl implements IWrapperConfig {
     /* (non-Javadoc)
      * @see de.schlund.pfixxml.config.IWrapperConfig#getWrapperClass()
      */
-    public Class<? extends IWrapper> getWrapperClass() {
+    public Class<?> getWrapperClass() {
         return this.wrapperClass;
     }
     
@@ -105,6 +107,22 @@ public class IWrapperConfigImpl implements IWrapperConfig {
     
     public String getTenant() {
         return tenant;
+    }
+    
+    public void setHandlerClass(Class<?> handlerClass) {
+        this.handlerClass = handlerClass;
+    }
+    
+    public Class<?> getHandlerClass() {
+        return handlerClass;
+    }
+    
+    public void setHandlerBeanRef(String handlerBeanRef) {
+        this.handlerBeanRef = handlerBeanRef;
+    }
+    
+    public String getHandlerBeanRef() {
+        return handlerBeanRef;
     }
     
 }

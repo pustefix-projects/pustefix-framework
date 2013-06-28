@@ -168,4 +168,8 @@ public class CacheStatistic implements CacheStatisticMBean, InitializingBean, Di
         return hitrateFormat.format(rate);
     }
     
+    public void reset() {
+    	cacheStatistics.clear();
+    }
+    
 }

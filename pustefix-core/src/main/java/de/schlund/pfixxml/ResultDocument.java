@@ -25,7 +25,6 @@ import javax.xml.transform.dom.DOMResult;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 
-import de.schlund.pfixcore.oxm.Marshaller;
 import de.schlund.pfixcore.oxm.impl.MarshallerFactory;
 import de.schlund.pfixxml.util.Xml;
 import de.schlund.util.statuscodes.StatusCode;
@@ -192,9 +191,8 @@ public class ResultDocument {
     }
     
     public static Element addObject(Element element, Object object) {
-        Marshaller marshaller = MarshallerFactory.getSharedMarshaller();
         DOMResult result = new DOMResult(element);
-        marshaller.marshal(object, result);
+        MarshallerFactory.getMarshaller(object).marshal(object, result);
         return element;
     }
     

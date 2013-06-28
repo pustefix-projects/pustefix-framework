@@ -35,6 +35,7 @@ import org.w3c.dom.Element;
 
 import de.schlund.pfixcore.generator.IHandler;
 import de.schlund.pfixcore.generator.IWrapper;
+import de.schlund.pfixcore.generator.IWrapperAdapter;
 import de.schlund.pfixcore.generator.IWrapperParam;
 import de.schlund.pfixcore.generator.RequestData;
 import de.schlund.pfixcore.generator.StatusCodeInfo;
@@ -291,11 +292,15 @@ public class IWrapperContainerImpl implements IWrapperContainer {
 
                 String iface = iConfig.getWrapperClass().getName();
 
-                Class<?> thewrapper = null;
                 IWrapper wrapper = null;
                 try {
+                    Class<?> thewrapper = null;
                     thewrapper = Class.forName(iface);
-                    wrapper = (IWrapper) thewrapper.newInstance();
+                    if(IWrapper.class.isAssignableFrom(thewrapper)) {
+                        wrapper = (IWrapper) thewrapper.newInstance();
+                    } else {
+                        wrapper = new IWrapperAdapter(thewrapper.newInstance(), iConfig);
+                    }
                 } catch (ClassNotFoundException e) {
                     throw new XMLException("unable to find class [" + iface + "] :" + e.getMessage());
                 } catch (InstantiationException e) {

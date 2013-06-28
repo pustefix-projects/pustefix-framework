@@ -496,7 +496,12 @@ public class IWrapperAnnotationProcessor extends AbstractProcessor {
         private void addPreCheck(Element paramElem, PreCheck preCheckAnno) {
             Element preCheckElem = paramElem.getOwnerDocument().createElementNS(XMLNS_IWRP, "iwrp:precheck");
             paramElem.appendChild(preCheckElem);
-            String preCheckType = preCheckAnno.type().getName();
+            String preCheckType = null;
+            try {
+            	preCheckType = preCheckAnno.type().getName();
+            } catch(MirroredTypeException x) {
+            	preCheckType = ((TypeElement)((DeclaredType)x.getTypeMirror()).asElement()).getQualifiedName().toString();
+            }
             preCheckElem.setAttribute("class", preCheckType);
             Property[] preCheckProps = preCheckAnno.properties();
             if (preCheckProps != null && preCheckProps.length > 0) {
@@ -512,7 +517,12 @@ public class IWrapperAnnotationProcessor extends AbstractProcessor {
         private void addPostCheck(Element paramElem, PostCheck postCheckAnno) {
             Element postCheckElem = paramElem.getOwnerDocument().createElementNS(XMLNS_IWRP, "iwrp:postcheck");
             paramElem.appendChild(postCheckElem);
-            String postCheckType = postCheckAnno.type().getName();
+            String postCheckType = null;
+            try {
+            	postCheckType = postCheckAnno.type().getName();
+            } catch(MirroredTypeException x) {
+            	postCheckType = ((TypeElement)((DeclaredType)x.getTypeMirror()).asElement()).getQualifiedName().toString();
+            }
             postCheckElem.setAttribute("class", postCheckType);
             Property[] postCheckProps = postCheckAnno.properties();
             if (postCheckProps != null && postCheckProps.length > 0) {

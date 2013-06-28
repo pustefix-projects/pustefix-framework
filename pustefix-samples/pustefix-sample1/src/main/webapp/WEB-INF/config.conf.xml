@@ -2,12 +2,12 @@
 <context-xml-service-config xmlns="http://www.pustefix-framework.org/2008/namespace/context-xml-service-config" 
                             xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
                             xsi:schemaLocation="http://www.pustefix-framework.org/2008/namespace/context-xml-service-config 
-                                                http://www.pustefix-framework.org/2008/namespace/context-xml-service-config.xsd"
+                                                http://www.pustefix-framework.org/2008/namespace/context-xml-service-config-0_18.xsd"
                             version="1.0">
 
   <global-config>
     <!-- <defaultstate class="de.schlund.pfixcore.example.DefaultStaticState" parent-bean-ref="default_state"/> -->
-    <!-- <force-ssl>true</force-ssl> -->
+ <!--   <force-ssl>true</force-ssl>-->
   </global-config>
 
   <context defaultpage="home">
@@ -30,8 +30,14 @@
 <!--        <prop name="baz">snafu</prop>-->
 <!--      </properties>-->
     </resource>
+    <resource bean-name="appinfo" class="de.schlund.pfixcore.example.ContextAppInfo"/>
+   
     <config-include file="conf/fragments.xml" section="resources" module="animal-module"/>
   </context>
+
+  <global-output>
+    <resource node="appinfo" bean-ref="appinfo"/>
+   </global-output>
 
   <interceptors>
     <start>
@@ -41,6 +47,7 @@
     <!--   <interceptor class="de.schlund.pfixcore.example.SampleStartIC"/> -->
     <!-- </end> -->
   </interceptors>
+
 
   <scriptedflow name="forceadult" file="WEB-INF/scriptedflow/forceadult.script.xml" />
   <scriptedflow name="ordershirt" file="WEB-INF/scriptedflow/ordershirt.script.xml" />
@@ -116,17 +123,19 @@
   <pagerequest name="home">
     <default>
       <input>
-        <wrapper prefix="info" class="de.schlund.pfixcore.example.iwrapper.AdultInfo" />
+       <wrapper prefix="info" handler-class="de.schlund.pfixcore.example.AdultInfoHandler"/>
         <wrapper prefix="prefix" class="de.schlund.pfixcore.example.iwrapper.IndexedTest" />
       </input>
       <output>
         <resource node="adultinfo" class="de.schlund.pfixcore.example.ContextAdultInfo" />
         <resource node="testdata" bean-ref="testdata"/>
+        <resource node="jaxbTest" bean-ref="jaxbTest"/>
       </output>
     </default>
     <variant name="foo:bar:baz">
       <input>
-        <wrapper prefix="info" class="de.schlund.pfixcore.example.iwrapper.AdultInfo" />
+     
+        <wrapper prefix="info" handler-class="de.schlund.pfixcore.example.AdultInfoHandler"/>
         <wrapper prefix="prefix" class="de.schlund.pfixcore.example.iwrapper.IndexedTest" />
       </input>
       <output>
@@ -184,7 +193,7 @@
   <pagerequest name="overview">
     <choose>
       <when test="$mode = 'prod'">
-        <force-ssl>true</force-ssl>
+        <!--<force-ssl>true</force-ssl>-->
       </when>
     </choose>
     <state class="de.schlund.pfixcore.example.OverviewState" />
@@ -196,6 +205,11 @@
   </pagerequest>
 
   <pagerequest name="encoding">
+   <choose>
+      <when test="$mode = 'prod'">
+        <force-ssl>true</force-ssl>
+      </when>
+    </choose>
     <state class="de.schlund.pfixcore.example.EncodingTestState" />
     <input>
       <wrapper prefix="text" class="de.schlund.pfixcore.example.iwrapper.EncodingTestWrapper" />
@@ -219,22 +233,6 @@
     </output>
   </pagerequest>
 
-  <pagerequest name="scriptingstate">
-    <state class="script:script/ScriptingState.bsh" />
-    <output>
-      <resource node="tshirt" class="de.schlund.pfixcore.example.ContextTShirt" />
-    </output>
-  </pagerequest>
-
-  <pagerequest name="scripting">
-    <input>
-      <wrapper prefix="shirt" class="de.schlund.pfixcore.example.iwrapper.ScriptingTShirt" />
-    </input>
-    <output>
-      <resource node="tshirt" class="de.schlund.pfixcore.example.ContextTShirt" />
-    </output>
-  </pagerequest>
-
   <pagerequest name="invalidate">
     <state class="de.schlund.pfixcore.example.InvalidateSessionState" />
   </pagerequest>
@@ -243,6 +241,9 @@
     <input>
       <wrapper prefix="checks" class="de.schlund.pfixcore.example.iwrapper.TestChecks" />
     </input>
+    <output>
+    <resource node="uploadfiles" class="de.schlund.pfixcore.example.ContextFileUpload" />
+    </output>
   </pagerequest>
   
 

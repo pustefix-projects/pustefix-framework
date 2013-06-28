@@ -2,6 +2,8 @@ package org.pustefixframework.util.javascript.internal;
 
 import org.pustefixframework.util.javascript.Compressor;
 
+import de.schlund.pfixxml.config.EnvironmentProperties;
+
 /**
  * 
  * Locator for finding Javascript compressor implementations in the 
@@ -15,8 +17,12 @@ import org.pustefixframework.util.javascript.Compressor;
 public class CompressorLocator {
 
     public static Compressor getCompressor() {
-        if(YUICompressorAdapter.isAvailable()) {
+        if("prod".equals(EnvironmentProperties.getProperties().getProperty("mode"))) {
+    	if(YUICompressorAdapter.isAvailable()) {
             return new YUICompressorAdapter();
+        }
+        } else {
+        	return new WhitespaceCompressor();
         }
         return null;
     }

@@ -231,12 +231,14 @@
   </xml-generator>
   
   <!-- automatically generate searchengine sitemap file sitemaps.xml 
-       (according to sitemaps protocol from http://www.sitemaps.org) -->
+       (according to sitemaps protocol from http://www.sitemaps.org), 
+       set the attribute "type" to "mobile" to generate a mobile sitemap-->
   <searchengine-sitemap/>
 
   <!-- Sets the session tracking strategy. Default is 'COOKIE'.
        Alternatively you can set 'URL' to force session tracking
-       within the URL, even if clients support cookies. You can
+       within the URL, even if clients support cookies. You can completely
+       disable URL based session tracking by setting 'COOKIEONLY'. You can
        completely leave out this element, if you go with the default. -->
   <session-tracking-strategy>COOKIE</session-tracking-strategy>
 
@@ -248,7 +250,7 @@
 
   <application>
     
-    <!-- Path that static resources will be delivered from -->
+    <!-- Path that static resources will be delivered from (set i18n attribute to "true" for multitenancy/-language support)-->
     <docroot-path>docroot:/htdocs</docroot-path>
     
     <!-- URI requests to / are redirected to (optional)-->
@@ -265,9 +267,10 @@
       <config-file>docroot:/WEB-INF/direct.conf.xml</config-file>
     </direct-output-service>
     
-    <!-- Extra paths for static resources -->
+    <!-- Extra paths for static resources (set i18n attribute to "true" for multitenancy/-language support)-->
     <static>
       <path>img</path>
+      <path i18n="true">errorpages</path>
     </static>
    
     <!-- Exceptions thrown by the business logic or Pustefix itself can be handled on the top layer by so-called ExceptionProcessors,
@@ -733,13 +736,17 @@
     <page name="..."/>
     <page name="..."/>
   </page>
-  <!-- the alias attribute can be used to provide a page alias which should be displayed instead of the logical name -->
-  <page name="Overview" alias="Summary"/>
+  <!-- the 'alias' attribute can be used to provide a page alias which should be displayed instead of the logical name,
+       you can optionally add the 'internal' attribute to exclude a page from the generated search engine sitemap,
+       you're also allowed to use arbitrary custom attributes -->
+  <page name="Overview" alias="Summary" internal="true" foo="bar"/>
   <!-- using the alt element you can add page alternatives, matching is done using the mandatory key attribute -->
   <page name="Info">
     <alt key="cities" name="Cities"/>
     <alt key="nationalparks" name="NationalParks"/>
     <alt key="mountains" name="Mountains"/>
+    <!-- Optionally you can set one page alternative to be the default one used when no page alternative is explicitly requested -->
+    <!-- <alt key="mountains" name="Mountains" default="true"/> -->
   </page>
   <!-- additional parts of a sitemap can be included, e.g. from modules -->
   <config-include file="conf/sitemap-fragment.xml" section="sitemap" module="*"/>
@@ -900,6 +907,47 @@
       </resource>
     </context>
     
+    <global-output>
+ ]]></programlisting>
+        The whole section is optional. You can list an arbitrary number of resources here.
+        The <literal>node</literal> attribute value has to be unique within this section and the <literal>output</literal> section of all <literal>pagerequest</literal> elements.
+        <programlisting language="xml"><![CDATA[
+        <resource node="AName" bean-ref="aBeanName"/>
+        ]]></programlisting>
+        <informaltable rules="all" frame="box">
+          <thead align="left">
+            <tr>
+              <th>Attribute</th>
+              <th>Description</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td><literal>class</literal></td>
+              <td><emphasis>Mandatory (if <literal>bean-ref</literal> is not present)</emphasis>. 
+              <tag class="attribute">class</tag> is one of the 
+              <classname>ContextResources</classname> defined via 
+              implements above.</td>
+            </tr>
+            <tr>
+              <td><literal>bean-ref</literal></td>
+              <td><emphasis>Mandatory (if <literal>class</literal> is not present)</emphasis>. 
+              Specifies the bean name of the resource that should be
+              included in the output tree.</td>
+            </tr>
+            <tr>
+              <td><literal>node</literal></td>
+              <td><emphasis>Mandatory</emphasis>. 
+              <tag class="attribute">node</tag> is the node in the 
+              output tree ("<literal>/formresult/AName</literal>") under 
+              which the <classname>ContextResource</classname> inserts 
+              it's data.</td>
+            </tr>
+          </tbody>
+        </informaltable>
+        <programlisting language="xml"><![CDATA[
+    </global-output>
+
     <interceptors>
       <start>
         <interceptor class="mypackage.MyInterceptor"/>
@@ -1879,5 +1927,61 @@
       </para>
     </section>
   </section>
+
+  <section xml:id="configuration.logging">
+    <title>Logging configuration </title>
+    <para>
+      The default logging framework used by Pustefix is Log4j. If you want to stay with this default, Pustefix helps you setting up your logging. By default it reads the Log4j configuration
+      from <literal>WEB-INF/pfixlog.xml</literal>. Within this file you can make use of the Pustefix customization tags (see <xref linkend="configuration.customization"/>).
+    </para>
+    <para>
+      Often you have to configure different file paths depending on your runtime environment, e.g. for development or production mode. Therefor you can use the customization tag
+      <literal>&lt;cus:logroot/&gt;</literal> as a placeholder for the <literal>logroot</literal> ServletContext init parameter, which can be set when deploying your application
+      in the target environment.
+    </para>
+<programlisting language="xml"><![CDATA[<?xml version="1.0" encoding="UTF-8" ?>
+<log4j:configuration xmlns:log4j="http://jakarta.apache.org/log4j/"
+                     xmlns:cus="http://www.schlund.de/pustefix/customize">
+
+  <appender name="LOGGER_GENERAL" class="org.apache.log4j.RollingFileAppender">
+    <param name="File"><cus:logroot/>pustefix-servlet.log</param>
+    <param name="MaxFileSize" value="10MB"/>
+    <layout class="org.apache.log4j.PatternLayout">
+      <param name="ConversionPattern" value="%d{ISO8601} [%t] %-5p %c [%M():%L] %x - %m\n"/>
+    </layout>
+  </appender>
+  ...
+</log4j:configuration>
+]]></programlisting>
+    <para>
+      Alternatively you can make use of Pustefix's <literal>&lt;cus:choose&gt;|&lt;cus:when&gt;|&lt;cus:otherwise&gt;</literal> customization tags, to branch the configuration depending on the predefined variables, 
+      like <literal>mode</literal>, <literal>fdqn</literal> or <literal>machine</literal>, e.g. you can set different log levels for different environments.
+    </para>
+<programlisting language="xml"><![CDATA[  <root>
+    <cus:choose>
+      <cus:when test="$mode = 'prod'">
+        <priority value="WARN"/>
+      </cus:when>
+      <cus:otherwise>
+        <priority value="DEBUG"/>
+      </cus:otherwise>
+    </cus:choose>
+    <appender-ref ref="LOGGER_GENERAL"/>
+  </root>
+]]></programlisting>
+    <para>
+       By default Log4j is configured at the beginning of the Spring ApplicationContext creation. But it's better to set up logging at the very beginning of the webapp startup to
+       be able to log errors or messages that occurred before this phase, e.g. errors from other servlets or filters. Therefor Pustefix provides a ServletContextListener, which
+       should be configured as the first listener in the webapp's <literal>web.xml</literal>.  
+    </para>
+<programlisting language="xml"><![CDATA[<web-app xmlns="http://java.sun.com/xml/ns/javaee" xmlns:jee="http://java.sun.com/xml/ns/javaee">
+   <listener>
+     <listener-class>org.pustefixframework.http.Log4jConfigListener</listener-class>
+   </listener>
+   ...
+</web-app>
+]]></programlisting>
+  </section>
+  
       
 </chapter>

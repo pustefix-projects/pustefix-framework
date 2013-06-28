@@ -114,7 +114,7 @@ public abstract class IWrapperImpl implements IWrapper {
         registerParams();
     }
 
-    public final void load(RequestData req) throws Exception {
+    public void load(RequestData req) throws Exception {
         this.req = req;
 
         for (Iterator<IWrapperParam> i = params.values().iterator(); i.hasNext();) {

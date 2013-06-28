@@ -29,7 +29,6 @@ import javax.xml.transform.dom.DOMSource;
 import javax.xml.transform.stream.StreamResult;
 
 import org.apache.log4j.Logger;
-import org.pustefixframework.config.project.ProjectInfo;
 import org.pustefixframework.container.spring.http.UriProvidingHttpRequestHandler;
 import org.pustefixframework.util.LocaleUtils;
 import org.springframework.context.ApplicationContext;
@@ -46,6 +45,7 @@ import de.schlund.pfixcore.workflow.Context;
 import de.schlund.pfixcore.workflow.ContextImpl;
 import de.schlund.pfixcore.workflow.PageRequest;
 import de.schlund.pfixcore.workflow.SiteMap;
+import de.schlund.pfixxml.LanguageInfo;
 import de.schlund.pfixxml.PfixServletRequest;
 import de.schlund.pfixxml.PfixServletRequestImpl;
 import de.schlund.pfixxml.Tenant;
@@ -56,21 +56,35 @@ public class SiteMapRequestHandler implements UriProvidingHttpRequestHandler, Se
 
     private Logger LOG = Logger.getLogger(SiteMapRequestHandler.class);
     
+    private final static int DEFAULT_HTTP_PORT = 80;
+    private final static int DEFAULT_HTTPS_PORT = 443;
+    
+    private final static String NS_SITEMAP = "http://www.sitemaps.org/schemas/sitemap/0.9";
+    private final static String NS_SITEMAP_MOBILE = "http://www.google.com/schemas/sitemap-mobile/1.0";
+    
+    public enum SiteMapType {DEFAULT, MOBILE};
+    
     private String[] registeredURIs = new String[] {"/sitemap.xml"};
     private SiteMap siteMap;
     private TenantInfo tenantInfo;
-    private ProjectInfo projectInfo;
+    private LanguageInfo languageInfo;
     private ServletContext servletContext;
     private ApplicationContext applicationContext;
     
-    private Map<String, CacheEntry> tenantToCacheEntry = new HashMap<String, CacheEntry>();
-    private CacheEntry cacheEntry;
+    private Map<String, CacheEntry> cacheEntries = new HashMap<String, CacheEntry>();
     
     private Context pustefixContext;
+    
+    private SiteMapType siteMapType;
     
     public synchronized void handleRequest(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
         
         CacheEntry entry = null;
+        
+        String host = AbstractPustefixRequestHandler.getServerName(request);
+        String scheme = request.getScheme();
+        int port = request.getServerPort();
+        String cacheKey = scheme + "-" + host;
         
         Tenant tenant = null;
         if(!tenantInfo.getTenants().isEmpty()) {
@@ -78,10 +92,12 @@ public class SiteMapRequestHandler implements UriProvidingHttpRequestHandler, Se
             if(tenant == null) {
                 tenant = tenantInfo.getTenants().get(0);
             }
-            entry = tenantToCacheEntry.get(tenant.getName());
-        } else {
-            entry = cacheEntry;
         }
+        if(tenant != null) {
+        	cacheKey += "-" + tenant.getName();
+        }
+        
+        entry = cacheEntries.get(cacheKey);
         
         if(entry == null) {
             File tempDir = (File)servletContext.getAttribute("javax.servlet.context.tempdir");
@@ -90,10 +106,10 @@ public class SiteMapRequestHandler implements UriProvidingHttpRequestHandler, Se
                 tempDir.mkdirs();
             }
             entry = new CacheEntry();
-            entry.file = new File(tempDir, "sitemap" + (tenant == null?"":"-"+tenant.getName()) + ".xml");
+            entry.file = new File(tempDir, cacheKey + ".xml");
             try {
-                String host = AbstractPustefixRequestHandler.getServerName(request);
-                Document doc = getSearchEngineSitemap(tenant, host);
+            	boolean mobile = (siteMapType == SiteMapType.MOBILE);
+                Document doc = getSearchEngineSitemap(tenant, scheme, host, port, mobile);
                 Transformer trf = TransformerFactory.newInstance().newTransformer();
                 trf.setOutputProperty(OutputKeys.INDENT, "yes");
                 FileOutputStream out = new FileOutputStream(entry.file);
@@ -108,6 +124,7 @@ public class SiteMapRequestHandler implements UriProvidingHttpRequestHandler, Se
                 digestOutput.close();
                 byte[] digestBytes = digest.digest();
                 entry.etag = MD5Utils.byteToHex(digestBytes);
+                cacheEntries.put(cacheKey, entry);
             } catch(Exception x) {
                 throw new ServletException("Error creating sitemap", x);
             }
@@ -194,40 +211,48 @@ public class SiteMapRequestHandler implements UriProvidingHttpRequestHandler, Se
         return accPages;
     }
     
-    public Document getSearchEngineSitemap(Tenant tenant, String host) throws Exception {
-        String ns = "http://www.sitemaps.org/schemas/sitemap/0.9";
+    public Document getSearchEngineSitemap(Tenant tenant, String scheme, String host, int port, boolean mobile) throws Exception {
+        
         DocumentBuilderFactory dbf = DocumentBuilderFactory.newInstance();
         dbf.setNamespaceAware(true);
         Document doc = dbf.newDocumentBuilder().newDocument();
-        Element root = doc.createElementNS(ns, "urlset");
-        root.setAttribute("xmlns", ns);
+        Element root = doc.createElementNS(NS_SITEMAP, "urlset");
+        root.setAttribute("xmlns", NS_SITEMAP);
+        if(mobile) {
+        	root.setAttribute("xmlns:mobile", NS_SITEMAP_MOBILE);
+        }
         doc.appendChild(root);
         Set<String> accPages = getAccessiblePages();
+        String defaultPage = pustefixContext.getContextConfig().getDefaultPage(null);
+        String baseUrl = scheme + "://" + host;
+        if(("http".equals(scheme) && port != DEFAULT_HTTP_PORT) || ("https".equals(scheme) && port != DEFAULT_HTTPS_PORT)) {
+        	baseUrl += ":" + port;
+        }
         if(tenant == null) {
-            if(!projectInfo.getSupportedLanguages().isEmpty()) {
-                for(String language: projectInfo.getSupportedLanguages()) {
-                    boolean defaultLanguage = language.equals(projectInfo.getDefaultLanguage());
+            if(!languageInfo.getSupportedLanguages().isEmpty()) {
+                for(String language: languageInfo.getSupportedLanguages()) {
+                    boolean defaultLanguage = language.equals(languageInfo.getDefaultLanguage());
                     for(String page: accPages) {
-                        addURL(page, root, language, defaultLanguage, host);
+                        addURL(page, root, language, defaultLanguage, baseUrl, defaultPage, mobile);
                     }
                 }
             } else {
                 for(String page: accPages) {
-                    addURL(page, root, null, true, host);
+                    addURL(page, root, null, true, baseUrl, defaultPage, mobile);
                 }
             }
         } else {
             for(String language: tenant.getSupportedLanguages()) {
                 boolean defaultLanguage = language.equals(tenant.getDefaultLanguage());
                 for(String page: accPages) {
-                    addURL(page, root, language, defaultLanguage, host);
+                    addURL(page, root, language, defaultLanguage, baseUrl, defaultPage, mobile);
                 }
             }
         }
         return doc;
     }
     
-    private void addURL(String page, Element parent, String lang, boolean defaultLang, String host) {
+    private void addURL(String page, Element parent, String lang, boolean defaultLang, String baseUrl, String defaultPage, boolean mobile) {
         Element urlElem = parent.getOwnerDocument().createElement("url");
         parent.appendChild(urlElem);
         Element locElem = parent.getOwnerDocument().createElement("loc");
@@ -235,24 +260,37 @@ public class SiteMapRequestHandler implements UriProvidingHttpRequestHandler, Se
         String alias;
         String langPrefix = "";
         if(lang == null) {
-            alias = page;
+        	if(page.equals(defaultPage)) {
+        		alias="";
+        	} else {
+        		alias = siteMap.getAlias(page, null);
+        	}
         } else {
-            alias = siteMap.getAlias(page, lang);
+        	if(page.equals(defaultPage)) {
+        		alias="";
+        	} else {
+        		alias = siteMap.getAlias(page, lang);
+        	}
             if(!defaultLang) langPrefix = LocaleUtils.getLanguagePart(lang) + "/";
         }
-        locElem.setTextContent("http://" + host + "/" + langPrefix + alias);
+        
+        locElem.setTextContent(baseUrl + "/" + langPrefix + alias);
         Element cfElem = parent.getOwnerDocument().createElement("changefreq");
         urlElem.appendChild(cfElem);
         cfElem.setTextContent("weekly");
         Element prioElem = parent.getOwnerDocument().createElement("priority");
         urlElem.appendChild(prioElem);
         prioElem.setTextContent("0.5");
+        if(mobile) {
+        	Element mobileElem = parent.getOwnerDocument().createElementNS(NS_SITEMAP_MOBILE, "mobile:mobile");
+        	urlElem.appendChild(mobileElem);
+        }
         Set<String> pageAlts = siteMap.getPageAlternativeKeys(page);
         if(pageAlts != null) {
             for(String pageAltKey: pageAlts) {
                 Element cloned = (Element)urlElem.cloneNode(true);
                 alias = siteMap.getAlias(page, lang, pageAltKey);
-                ((Element)cloned.getFirstChild()).setTextContent("http://" + host + "/" + langPrefix + alias);
+                ((Element)cloned.getFirstChild()).setTextContent(baseUrl + "/" + langPrefix + alias);
                 parent.appendChild(cloned);
             }
         }
@@ -270,8 +308,8 @@ public class SiteMapRequestHandler implements UriProvidingHttpRequestHandler, Se
         this.tenantInfo = tenantInfo;
     }
     
-    public void setProjectInfo(ProjectInfo projectInfo) {
-        this.projectInfo = projectInfo;
+    public void setLanguageInfo(LanguageInfo languageInfo) {
+        this.languageInfo = languageInfo;
     }
     
     public void setServletContext(ServletContext servletContext) {
@@ -284,6 +322,10 @@ public class SiteMapRequestHandler implements UriProvidingHttpRequestHandler, Se
     
     public void setApplicationContext(ApplicationContext applicationContext) {
         this.applicationContext = applicationContext;
+    }
+    
+    public void setSiteMapType(SiteMapType siteMapType) {
+    	this.siteMapType = siteMapType;
     }
     
     class CacheEntry {

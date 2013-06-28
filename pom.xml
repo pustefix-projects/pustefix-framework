@@ -4,7 +4,7 @@
 
   <groupId>org.pustefixframework</groupId>
   <artifactId>pustefixframework</artifactId>
-  <version>0.18.9-SNAPSHOT</version>
+  <version>0.18.48-SNAPSHOT</version>
   <packaging>pom</packaging>
   <name>Pustefix Framework</name>
   <url>http://pustefix-framework.org</url>
@@ -29,14 +29,13 @@
   </issueManagement>
 
   <scm>
-    <connection>scm:svn:https://pustefix.svn.sourceforge.net/svnroot/pustefix/trunk</connection>
-    <developerConnection>scm:svn:https://pustefix.svn.sourceforge.net/svnroot/pustefix/trunk</developerConnection>
+    <connection>scm:svn:https://svn.code.sf.net/p/pustefix/code/trunk</connection>
+    <developerConnection>scm:svn:https://svn.code.sf.net/p/pustefix/code/trunk</developerConnection>
     <url>http://dev.pustefix-framework.org/browser/trunk</url>
   </scm>
 
   <properties>
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-    <makemode>test</makemode>
   </properties>
 
   <dependencies>
@@ -82,7 +81,7 @@
     <developer>
       <name>Michael Hartmeier</name>
       <id>mlhartme</id>
-      <email>mlhartme@michael.hartmeier@1und1.de</email>
+      <email>mlhartme@users.sourceforge.net</email>
       <organization>United Internet</organization>
       <roles>
         <role>Java Development</role>
@@ -159,10 +158,10 @@
         <plugin>
           <groupId>org.apache.maven.plugins</groupId>
           <artifactId>maven-compiler-plugin</artifactId>
-          <version>2.3.2</version>
+          <version>3.0</version>
           <configuration>
-            <source>1.5</source>
-            <target>1.5</target>
+            <source>1.6</source>
+            <target>1.6</target>
           </configuration>
         </plugin>
         <plugin>

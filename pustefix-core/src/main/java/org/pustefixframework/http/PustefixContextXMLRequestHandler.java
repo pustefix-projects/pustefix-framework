@@ -162,7 +162,7 @@ public class PustefixContextXMLRequestHandler extends AbstractPustefixXMLRequest
                 
                 // Do a virtual request without any request parameters
                 // to get an initial SPDocument
-                PfixServletRequest vpreq = new PfixServletRequestImpl(VirtualHttpServletRequest.getVoidRequest(preq.getRequest()), getContextXMLServletConfig().getProperties());
+                PfixServletRequest vpreq = new PfixServletRequestImpl(VirtualHttpServletRequest.getVoidRequest(preq.getRequest()), getContextXMLServletConfig().getProperties(), this);
                 spdoc = context.handleRequest(vpreq);
 
                 // Reset current scripted flow state
@@ -193,6 +193,7 @@ public class PustefixContextXMLRequestHandler extends AbstractPustefixXMLRequest
 
                     // Create VM and run script
                     ScriptVM vm = new ScriptVM();
+                    vm.setPageAliasResolver(this);
                     vm.setScript(script);
                     try {
                         spdoc = vm.run(preq, spdoc, context, info.getParams());
@@ -229,18 +230,22 @@ public class PustefixContextXMLRequestHandler extends AbstractPustefixXMLRequest
                 spdoc = context.handleRequest(preq);
             }
             
-            if(spdoc != null && !spdoc.isRedirect()) {
-                if(spdoc.getPageAlternative() != null) {
+            if(spdoc != null) {
+            	if(spdoc.getPageAlternative() != null) {
                     Set<String> pageAltKeys = siteMap.getPageAlternativeKeys(spdoc.getPagename());
                     if(pageAltKeys == null || !pageAltKeys.contains(spdoc.getPageAlternative())) {
                         spdoc.setPageAlternative(null);
                     }
                 }
+            }
+            
+            if(spdoc != null && !spdoc.isRedirect()) {
                 String expectedPageName = null;
+                boolean isAlias = false;
                 String langPrefix = null;
                 Tenant tenant = spdoc.getTenant();
                 if((tenant != null && !spdoc.getLanguage().equals(tenant.getDefaultLanguage())) ||
-                        tenant == null && projectInfo.getSupportedLanguages().size() > 1 && !spdoc.getLanguage().equals(projectInfo.getDefaultLanguage())) {
+                        tenant == null && languageInfo.getSupportedLanguages().size() > 1 && !spdoc.getLanguage().equals(languageInfo.getDefaultLanguage())) {
                     langPrefix = LocaleUtils.getLanguagePart(spdoc.getLanguage());
                 }
                 if(context.getContextConfig().getDefaultPage(context.getVariant()).equals(spdoc.getPagename())) {
@@ -251,6 +256,7 @@ public class PustefixContextXMLRequestHandler extends AbstractPustefixXMLRequest
                         alias = langPrefix + "/" + alias;
                     }
                     expectedPageName = alias;
+                    isAlias = true;
                 }
                 String requestedPageName = preq.getRequestedPageName();
                 if( ( expectedPageName != null  && !expectedPageName.equals(requestedPageName)) ||
@@ -279,7 +285,7 @@ public class PustefixContextXMLRequestHandler extends AbstractPustefixXMLRequest
                     if (rp != null) {
                     	redirectURL += "&__lf=" + rp.getValue();
                     }
-                    spdoc.setRedirect(redirectURL);
+                    spdoc.setRedirect(redirectURL, isAlias);
                 }
             }
             return spdoc;
@@ -394,9 +400,9 @@ public class PustefixContextXMLRequestHandler extends AbstractPustefixXMLRequest
                     }
                 }
             }
-        } else if(projectInfo.getSupportedLanguages().size() > 1) {
-            for(String supportedLanguage: projectInfo.getSupportedLanguages()) {
-                if(!supportedLanguage.equals(projectInfo.getDefaultLanguage())) {
+        } else if(languageInfo.getSupportedLanguages().size() > 1) {
+            for(String supportedLanguage: languageInfo.getSupportedLanguages()) {
+                if(!supportedLanguage.equals(languageInfo.getDefaultLanguage())) {
                     uris.add("/" + LocaleUtils.getLanguagePart(supportedLanguage));
                 }
             }
@@ -412,6 +418,8 @@ public class PustefixContextXMLRequestHandler extends AbstractPustefixXMLRequest
     public String[] getRegisteredPages() {
 
         SortedSet<String> pages = new TreeSet<String>();
+        
+        pages.add("pfxsession");
         
         //add pages from configured pagerequests
         List<? extends PageRequestConfig> pageConfigs = config.getContextConfig().getPageRequestConfigs();

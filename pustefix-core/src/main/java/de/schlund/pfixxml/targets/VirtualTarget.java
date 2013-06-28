@@ -288,13 +288,7 @@ public abstract class VirtualTarget extends TargetImpl {
                         // a complete rebuild of this target the next try
                         storeValue(null);
                         setModTime(-1);
-                        FileResource cachefile = ResourceUtil.getFileResource(getTargetGenerator()
-                                .getDisccachedir(), getTargetKey());
-                        /**
-                        if (cachefile.exists()) {
-                            cachefile.delete();
-                        }
-                        */
+
                         TransformerException tex = e;
                         TargetGenerationException targetex = null;
                         if (storedException != null) {
@@ -347,11 +341,11 @@ public abstract class VirtualTarget extends TargetImpl {
         if (xmlobj == null)
             throw new XMLException("**** xml source "
                     + tmpxmlsource.getTargetKey() + " ("
-                    + tmpxmlsource.getType() + ") doesn't have a value!");
+                    + tmpxmlsource.getType() + ") can't be found!");
         if (templ == null)
             throw new XMLException("**** xsl source "
                     + tmpxslsource.getTargetKey() + " ("
-                    + tmpxslsource.getType() + ") doesn't have a value!");
+                    + tmpxslsource.getType() + ") can't be found!");
         TreeMap<String, Object> tmpparams = getParams();
         tmpparams.put("themes", themes.getId());
 

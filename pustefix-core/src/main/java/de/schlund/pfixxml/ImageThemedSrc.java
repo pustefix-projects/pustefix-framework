@@ -24,6 +24,8 @@ import javax.xml.transform.URIResolver;
 
 import org.apache.log4j.Logger;
 
+import de.schlund.pfixxml.resources.I18NIterator;
+import de.schlund.pfixxml.resources.I18NResourceUtil;
 import de.schlund.pfixxml.resources.Resource;
 import de.schlund.pfixxml.resources.ResourceUtil;
 import de.schlund.pfixxml.targets.Target;
@@ -45,11 +47,18 @@ public class ImageThemedSrc {
     
     private final static Logger LOG = Logger.getLogger(ImageThemedSrc.class);
 
+    public static String getSrc(XsltContext context, String src, String themed_path, String themed_img,
+            String parent_part_in, String parent_product_in,
+            TargetGenerator targetGen, String targetKey, String module, String search,
+            String tenant, String language) throws Exception {
+    	return getSrc(context, src, themed_path, themed_img, parent_part_in, parent_product_in, targetGen, targetKey, module, search, tenant, language, false);
+    }
+    
     /** xslt extension */
     public static String getSrc(XsltContext context, String src, String themed_path, String themed_img,
                                 String parent_part_in, String parent_product_in,
                                 TargetGenerator targetGen, String targetKey, String module, String search,
-                                String tenant, String language) throws Exception {
+                                String tenant, String language, boolean i18n) throws Exception {
         
         String filter = FilterHelper.getFilter(tenant, language);
         
@@ -94,7 +103,7 @@ public class ImageThemedSrc {
             if (src.startsWith("/")) {
                 src = src.substring(1);
             }
-            Resource res;
+            Resource res = null;
             LOG.debug("  -> Register image src '" + src + "'");
             if(dynamic) {
                 String uri =  "dynamic:/"+src;
@@ -102,13 +111,29 @@ public class ImageThemedSrc {
                     uri += "?module="+module;
                     if(filter!=null) uri += "&filter=" + URLEncoder.encode(filter, "UTF-8");
                 }
-                res = ResourceUtil.getResource(uri);
-                URI resUri = res.toURI();
-                if("module".equals(resUri.getScheme())) {
-                    src = "modules/"+resUri.getAuthority()+"/"+src;
+                if(!i18n) {
+                	res = ResourceUtil.getResource(uri);
+	                URI resUri = res.toURI();
+	                if("module".equals(resUri.getScheme())) {
+	                    src = "modules/"+resUri.getAuthority()+"/"+src;
+	                } else {
+	                    src = resUri.getPath();
+	                    if(src.startsWith("/")) src=src.substring(1);
+	                }
                 } else {
-                    src = resUri.getPath();
-                    if(src.startsWith("/")) src=src.substring(1);
+                	I18NIterator it = new I18NIterator(tenant, language, uri);
+                	while(it.hasNext()) {
+                		String i18nUri = it.next();
+                		Resource i18nRes = ResourceUtil.getResource(i18nUri);
+                		if(res == null && (i18nRes.exists() || !it.hasNext())) {
+                			res = i18nRes;
+                			src = I18NResourceUtil.getURLPath(i18nRes.toURI());
+                		} else {
+                			if(dolog) {
+                                DependencyTracker.logImage(context, i18nRes, parent_part_in, parent_product_in, targetGen, targetKey, "image");
+                            }
+                		}
+                	}
                 }
             } else {
                 String uri = null;
@@ -118,7 +143,23 @@ public class ImageThemedSrc {
                 } else {
                     uri = "docroot:/" + src;
                 }
-                res = ResourceUtil.getResource(uri);
+                if(!i18n) {
+                	res = ResourceUtil.getResource(uri);
+                } else {
+                	I18NIterator it = new I18NIterator(tenant, language, uri);
+                	while(it.hasNext()) {
+                		String i18nUri = it.next();
+                		Resource i18nRes = ResourceUtil.getResource(i18nUri);
+                		if(res == null && (i18nRes.exists() || !it.hasNext())) {
+                			res = i18nRes;
+                			src = I18NResourceUtil.getURLPath(i18nRes.toURI());
+                		} else {
+                			if(dolog) {
+                                DependencyTracker.logImage(context, i18nRes, parent_part_in, parent_product_in, targetGen, targetKey, "image");
+                            }
+                		}
+                	}
+                }
             }
             if(dolog) {
                 DependencyTracker.logImage(context, res, parent_part_in, parent_product_in, targetGen, targetKey, "image");

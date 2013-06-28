@@ -31,6 +31,7 @@
   <xsd:complexType name="alt-type">
     <xsd:attribute name="key" type="xsd:string" use="required"/>
     <xsd:attribute name="name" type="xsd:string" use="required"/>
+    <xsd:attribute name="default" type="xsd:boolean" use="optional"/>
   </xsd:complexType>
   
   <xsd:complexType name="config-include-type">

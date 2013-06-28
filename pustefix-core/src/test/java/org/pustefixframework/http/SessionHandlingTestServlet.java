@@ -8,8 +8,7 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-import org.pustefixframework.config.project.ProjectInfo;
-
+import de.schlund.pfixxml.LanguageInfo;
 import de.schlund.pfixxml.TenantInfo;
 import de.schlund.pfixxml.serverutil.SessionAdmin;
 
@@ -39,7 +38,7 @@ public class SessionHandlingTestServlet extends HttpServlet {
         handler.setSessionTrackingStrategy(strategy);
         handler.setServletContext(getServletContext());
         handler.setTenantInfo(new TenantInfo());
-        handler.setProjectInfo(new ProjectInfo(null));
+        handler.setLanguageInfo(new LanguageInfo());
         try {
             handler.init();
         } catch(ServletException x) {
@@ -52,6 +51,11 @@ public class SessionHandlingTestServlet extends HttpServlet {
     @Override
     protected void doGet(HttpServletRequest req, HttpServletResponse res) throws ServletException, IOException {
         handler.handleRequest(req, res);
+    }
+    
+    @Override
+    protected void doPost(HttpServletRequest req, HttpServletResponse res) throws ServletException, IOException {
+    	doGet(req, res);
     }
     
 }

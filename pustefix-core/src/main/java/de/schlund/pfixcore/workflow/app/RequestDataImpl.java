@@ -95,9 +95,7 @@ public class RequestDataImpl implements RequestData {
                     }
                     cmds.put(key, cmdstrs);
                 }
-            } else if (name.startsWith(SYNT_PREFIX) || name.startsWith(SBMT_PREFIX) || name.startsWith(CMDS_PREFIX)) {
-                // these are parameters that are no valid cmd and no "real" data
-            } else {
+            } else if (!(name.startsWith(SYNT_PREFIX) || name.startsWith(SBMT_PREFIX) || name.startsWith(CMDS_PREFIX))) {
                 RequestParam[] datavals = preq.getAllRequestParams(name);
                 if (datavals != null) {
                     data.put(name, datavals);

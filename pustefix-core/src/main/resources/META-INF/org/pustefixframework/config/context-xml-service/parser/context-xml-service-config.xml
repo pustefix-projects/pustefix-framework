@@ -55,6 +55,11 @@
     <match>/c:context-xml-service-config/c:interceptors//c:interceptor</match>
   </handler>
   
+  <!--  global context resource output -->
+  <handler class="org.pustefixframework.config.contextxmlservice.parser.GlobalOutputResourceParsingHandler">
+    <match>/c:context-xml-service-config/c:global-output/c:resource</match>
+  </handler>
+  
   <!-- scriptedflows -->
   <handler class="org.pustefixframework.config.contextxmlservice.parser.ScriptedFlowParsingHandler">
     <match>/c:context-xml-service-config/c:scriptedflow</match>

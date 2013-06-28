@@ -6,8 +6,4 @@
 
   <module-name>${artifactId}</module-name>
 
-  <resources>
-    <resource-mapping srcpath="resources/dyntxt" targetpath="dyntxt"/>
-  </resources>
-
 </module-descriptor>

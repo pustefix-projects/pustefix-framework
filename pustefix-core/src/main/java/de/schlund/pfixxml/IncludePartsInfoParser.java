@@ -18,16 +18,20 @@ import de.schlund.pfixxml.resources.Resource;
 public class IncludePartsInfoParser {
  
     public static IncludePartsInfo parse(Resource resource) throws IncludePartsInfoParsingException {
-        InputSource in = new InputSource();
-        try {
-            in.setByteStream(resource.getInputStream());
-            in.setSystemId(resource.toURI().toASCIIString());
-            IncludePartsInfo info = parse(in);
-            info.setLastMod(resource.lastModified());
-            return info;
-        } catch(IOException x) {
-            throw new IncludePartsInfoParsingException(resource.toURI().toString(), x);
-        }
+    	if(resource.exists()) {
+	        InputSource in = new InputSource();
+	        try {
+	            in.setByteStream(resource.getInputStream());
+	            in.setSystemId(resource.toURI().toASCIIString());
+	            IncludePartsInfo info = parse(in);
+	            info.setLastMod(resource.lastModified());
+	            return info;
+	        } catch(IOException x) {
+	            throw new IncludePartsInfoParsingException(resource.toURI().toString(), x);
+	        }
+    	} else {
+    		return null;
+    	}
     }
     
     public static IncludePartsInfo parse(InputSource source) throws IncludePartsInfoParsingException {
@@ -87,7 +91,17 @@ public class IncludePartsInfoParser {
                             if(variants != null) {
                                 for(String variant: variants) variantSet.add(variant);
                             }
-                            currentInfo = new IncludePartInfo(partName, render, variantSet);
+                            String contentType = null;
+                            contentType = attributes.getValue("content-type");
+                            if(contentType != null) {
+                            	contentType = contentType.trim();
+                            }
+                            boolean contextual = false;
+                            val = attributes.getValue("contextual");
+                            if(val != null) {
+                                contextual = Boolean.parseBoolean(val);
+                            }
+                            currentInfo = new IncludePartInfo(partName, render, variantSet, contentType, contextual);
                             includePartInfos.put(partName, currentInfo);
                         }
                     }

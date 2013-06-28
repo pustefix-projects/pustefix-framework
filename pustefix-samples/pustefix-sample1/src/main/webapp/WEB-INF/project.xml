@@ -44,11 +44,15 @@
         -->
         <tooling-extensions>false</tooling-extensions>
       </when>
+      <otherwise>
+        <tooling-extensions>true</tooling-extensions>
+      </otherwise>
     </choose>
   </xml-generator>
 
   <!-- automatically generate searchengine sitemap file sitemaps.xml 
-       (according to sitemaps protocol from http://www.sitemaps.org) -->
+       (according to sitemaps protocol from http://www.sitemaps.org), 
+       to create mobile sitemap specify attribute type="mobile -->
   <searchengine-sitemap/>
 
   <!-- Supported Session tracking strategies are:

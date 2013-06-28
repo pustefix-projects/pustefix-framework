@@ -6,10 +6,6 @@
 
   <module-name>sample-module-C</module-name>
 
-  <resources>
-    <resource-mapping srcpath="PUSTEFIX-INF/resources/dyntxt" targetpath="dyntxt"/>
-  </resources>
-
   <override-modules>
     <module name="sample-module-B">
       <resource path="txt/common.xml"/>

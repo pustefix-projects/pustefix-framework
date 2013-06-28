@@ -51,6 +51,7 @@ import org.apache.log4j.Logger;
 import org.pustefixframework.config.contextxmlservice.AbstractXMLServletConfig;
 import org.pustefixframework.config.contextxmlservice.ServletManagerConfig;
 import org.pustefixframework.container.spring.http.PustefixHandlerMapping;
+import org.pustefixframework.util.LogUtils;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.ApplicationContextAware;
 import org.w3c.dom.Document;
@@ -473,14 +474,22 @@ public abstract class AbstractPustefixXMLRequestHandler extends AbstractPustefix
                 }
                 res.setHeader(key, val);
             }
-        } 
-        // set some default values to force generating new requests every time...
-        if(!headers.containsKey("Expires")) {
-            res.setHeader("Expires", "Mon, 05 Jul 1970 05:07:00 GMT");
         }
-        if(!headers.containsKey("Cache-Control")) {
-            res.setHeader("Cache-Control", "private");
+        
+        if(preq.getRequestParam(PARAM_RENDER_HREF) != null && preq.getRequestParam(PARAM_REUSE) != null) {
+        	long maxAge = 1000L * 60 * 60 * 24 * 365 * 10; //10 years
+        	res.setDateHeader("Expires", System.currentTimeMillis() + maxAge);
+        	res.setHeader("Cache-Control", "max-age=" + maxAge / 1000 +", private");
+        } else {
+	        // set some default values to force generating new requests every time...
+	        if(!headers.containsKey("Expires")) {
+	            res.setHeader("Expires", "Mon, 05 Jul 1970 05:07:00 GMT");
+	        }
+	        if(!headers.containsKey("Cache-Control")) {
+	            res.setHeader("Cache-Control", "private");
+	        }
         }
+	        
         // Check if a content type was supplied
         String ctype;
         if ((ctype = spdoc.getResponseContentType()) != null) {
@@ -499,7 +508,12 @@ public abstract class AbstractPustefixXMLRequestHandler extends AbstractPustefix
         if(!generator.isGetModTimeMaybeUpdateSkipped()) {
             synchronized(this) {
                 try {
-                    boolean reloaded = generator.tryReinit();
+                    boolean reloaded = siteMap.tryReinit();
+                    if(reloaded) {
+                        generator.forceReinit();
+                    } else {
+                        reloaded = generator.tryReinit();
+                    }
                     if(reloaded) {
                         PustefixHandlerMapping handlerMapping = (PustefixHandlerMapping)applicationContext.getBean(PustefixHandlerMapping.class.getName());
                         handlerMapping.reload();
@@ -511,7 +525,7 @@ public abstract class AbstractPustefixXMLRequestHandler extends AbstractPustefix
         }
         
         if (spdoc.getResponseError() == HttpServletResponse.SC_NOT_FOUND && spdoc.getDocument() != null) {
-            String stylesheet = extractStylesheetFromSPDoc(spdoc, preq);
+            String stylesheet = extractStylesheetFromSPDoc(spdoc, preq, null);
             if (generator.getTarget(stylesheet) != null) {
                 spdoc.setResponseError(0);
                 spdoc.setResponseErrorText(null);
@@ -527,10 +541,19 @@ public abstract class AbstractPustefixXMLRequestHandler extends AbstractPustefix
         // So no error happened, let's go on with normal processing.
         HttpSession   session    = preq.getSession(false);
         TreeMap<String, Object> paramhash  = constructParameters(spdoc, params, session);
-        String        stylesheet = extractStylesheetFromSPDoc(spdoc, preq);
+        String        stylesheet = extractStylesheetFromSPDoc(spdoc, preq, res);
         if (stylesheet == null) {
         	if(spdoc.getPagename()!=null && !isPageDefined(spdoc.getPagename())) {
         		spdoc.setResponseError(HttpServletResponse.SC_NOT_FOUND);
+        		spdoc.setResponseErrorText(null);
+        		sendError(spdoc, res);
+        		return;
+        	} else if(preq.getRequestParam(PARAM_RENDER_HREF) != null) {
+        		if(preq.getRequestParam(PARAM_RENDER_PART) == null) {
+        			spdoc.setResponseError(HttpServletResponse.SC_BAD_REQUEST);
+        		} else {
+        			spdoc.setResponseError(HttpServletResponse.SC_NOT_FOUND);
+        		}
         		spdoc.setResponseErrorText(null);
         		sendError(spdoc, res);
         		return;
@@ -566,7 +589,7 @@ public abstract class AbstractPustefixXMLRequestHandler extends AbstractPustefix
             setCookies(spdoc,res);
         }
         
-        ByteArrayOutputStream output = new ByteArrayOutputStream(4096);
+        ByteArrayOutputStream output = new SkippingByteArrayOutputStream(4096);
         
         boolean modified_or_no_etag = doHandleDocument(spdoc, stylesheet, paramhash, preq, res, session, output);
 
@@ -580,20 +603,20 @@ public abstract class AbstractPustefixXMLRequestHandler extends AbstractPustefix
             StringBuffer logbuff = new StringBuffer();
             logbuff.append(session.getAttribute(VISIT_ID) + "|");
             logbuff.append(session.getId() + "|");
-            logbuff.append(preq.getRemoteAddr() + "|");
-            logbuff.append(preq.getServerName() + "|");
-            logbuff.append(stylesheet + "|");
-            logbuff.append(preq.getOriginalRequestURI());
+            logbuff.append(LogUtils.makeLogSafe(preq.getRemoteAddr()) + "|");
+            logbuff.append(LogUtils.makeLogSafe(preq.getServerName()) + "|");
+            logbuff.append(LogUtils.makeLogSafe(stylesheet) + "|");
+            logbuff.append(LogUtils.makeLogSafe(preq.getOriginalRequestURI()));
             if (preq.getQueryString() != null) {
-                logbuff.append("?" + preq.getQueryString());
+                logbuff.append("?" + LogUtils.makeLogSafe(preq.getQueryString()));
             }
             String flow = (String) paramhash.get("pageflow");
             if (flow != null) {
-                logbuff.append("|" + flow);
+                logbuff.append("|" + LogUtils.makeLogSafe(flow));
             }
             if(addinfo!=null) {
                 for (Iterator<String> keys = addinfo.keySet().iterator(); keys.hasNext(); ) {
-                    logbuff.append("|" + addinfo.get(keys.next()));
+                    logbuff.append("|" + LogUtils.makeLogSafe(""+addinfo.get(keys.next())));
                 }
             }
             LOGGER_TRAIL.warn(logbuff.toString());
@@ -709,6 +732,7 @@ public abstract class AbstractPustefixXMLRequestHandler extends AbstractPustefix
     }
 
     private void renderXmlonly(SPDocument spdoc, HttpServletResponse res) throws IOException {
+        res.setContentType("text/xml");
         Xml.serialize(spdoc.getDocument(), res.getOutputStream(), true, true);
     }
 
@@ -723,6 +747,13 @@ public abstract class AbstractPustefixXMLRequestHandler extends AbstractPustefix
                      ((spdoc != null) ? ("pagename=" +  spdoc.getPagename()) : "spdoc==null")); 
         }
         paramhash.put("page", spdoc.getPagename());
+        String definingModule = generator.getDefiningModule(spdoc.getPagename());
+        if(definingModule != null) {
+        	paramhash.put("__defining_module", definingModule);
+        }
+        if(spdoc.getPageAlternative() != null) {
+        	paramhash.put("pageAlternative", spdoc.getPageAlternative());
+        }
         RenderContext renderContext = RenderContext.create(generator.getXsltVersion());
         paramhash.put("__rendercontext__", renderContext);
         renderContext.setParameters(Collections.unmodifiableMap(paramhash));
@@ -862,7 +893,7 @@ public abstract class AbstractPustefixXMLRequestHandler extends AbstractPustefix
     
     
 
-    private String extractStylesheetFromSPDoc(SPDocument spdoc, PfixServletRequest preq) {
+    private String extractStylesheetFromSPDoc(SPDocument spdoc, PfixServletRequest preq, HttpServletResponse res) {
         // First look if the pagename is set
         String pagename             = spdoc.getPagename();
         if (pagename != null) {
@@ -879,7 +910,13 @@ public abstract class AbstractPustefixXMLRequestHandler extends AbstractPustefix
                 if(param != null) search = param.getValue();
                 try {
                     Target target = generator.getRenderTarget(href, part, module, search, spdoc.getVariant());
-                    if(target != null) return target.getTargetKey();
+                    if(target != null && res != null) {
+                    	String contentType = (String)target.getParams().get("content-type");
+                    	if(contentType != null) {
+                    		res.setContentType(contentType);
+                    	}
+                    	return target.getTargetKey();
+                    }
                     return null;
                 } catch (IncludePartsInfoParsingException e) {
                     throw new PustefixRuntimeException("Can't get render target", e);
@@ -989,7 +1026,7 @@ public abstract class AbstractPustefixXMLRequestHandler extends AbstractPustefix
             for (Iterator<Cookie> i = spdoc.getCookies().iterator(); i.hasNext();) {
                 Cookie cookie = i.next();
                 if (LOGGER.isDebugEnabled()) {
-                    LOGGER.debug("    Add cookie: " + cookie);
+                    LOGGER.debug("    Add cookie: " + cookie.getName() + "|" + cookie.getValue() + "|" + cookie.getDomain() + "|" + cookie.getPath());
                 }
                 res.addCookie(cookie);
             }
@@ -1091,6 +1128,27 @@ public abstract class AbstractPustefixXMLRequestHandler extends AbstractPustefix
     
     public void setApplicationContext(ApplicationContext applicationContext) {
         this.applicationContext = applicationContext;
+    }
+    
+    
+    class SkippingByteArrayOutputStream extends ByteArrayOutputStream {
+        
+        public SkippingByteArrayOutputStream(int size) {
+            super(size);
+        }
+        
+        @Override
+        public synchronized void writeTo(OutputStream out) throws IOException {
+            
+            //Leading-linebreak workaround for Saxon:
+            //Saxon outputs a leading linebreak when output is written without a xml declaration
+            if(buf[0] == '\n') {
+                out.write(buf, 1, count -1);
+            } else {
+            	super.writeTo(out);
+            }
+        }
+        
     }
     
 }

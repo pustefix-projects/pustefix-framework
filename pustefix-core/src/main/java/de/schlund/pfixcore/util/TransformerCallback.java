@@ -40,6 +40,7 @@ import org.pustefixframework.config.project.ProjectInfo;
 import org.pustefixframework.http.BotDetector;
 import org.pustefixframework.util.FrameworkInfo;
 import org.pustefixframework.util.LocaleUtils;
+import org.pustefixframework.util.javascript.JSUtils;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.Node;
@@ -60,6 +61,7 @@ import de.schlund.pfixcore.workflow.context.AccessibilityChecker;
 import de.schlund.pfixcore.workflow.context.RequestContextImpl;
 import de.schlund.pfixxml.ResultDocument;
 import de.schlund.pfixxml.Tenant;
+import de.schlund.pfixxml.config.EnvironmentProperties;
 import de.schlund.pfixxml.targets.TargetGenerator;
 import de.schlund.pfixxml.util.ExtensionFunctionUtils;
 import de.schlund.pfixxml.util.Xml;
@@ -192,7 +194,7 @@ public class TransformerCallback {
                 Map<String, ? extends IWrapperConfig> iwrappers = iwState.getIWrapperConfigMap(context.getTenant());
                 IWrapperConfig iwrpConfig = iwrappers.get(prefix);
                 if (iwrpConfig != null) {
-                    Class<? extends IWrapper> iwrpClass = (Class<? extends IWrapper>) iwrpConfig.getWrapperClass();
+                    Class<?> iwrpClass = (Class<?>) iwrpConfig.getWrapperClass();
                     if (iwrpClass != null) {
                         return IWrapperInfo.getDocument(iwrpClass, xsltVersion);
                     }
@@ -441,6 +443,47 @@ public class TransformerCallback {
             ExtensionFunctionUtils.setExtensionFunctionError(x);
             throw x;
         }
+    }
+    
+    public static String getHomePage(RequestContextImpl requestContext, TargetGenerator gen) throws Exception {
+        try {
+            ContextImpl context = requestContext.getParentContext();
+            String defaultPage = context.getContextConfig().getDefaultPage(context.getVariant());
+            return defaultPage;
+        } catch (Exception x) {
+            ExtensionFunctionUtils.setExtensionFunctionError(x);
+            throw x;
+        }
+    }
+    
+    public static String getEnvProperty(String propertyName) {
+        return EnvironmentProperties.getProperties().getProperty(propertyName);
+    }
+    
+    public static String escapeJS(String text) {
+    	return JSUtils.escape(text);
+    }
+
+    public static void sleep(long delay) {
+    	try {
+    		Thread.sleep(delay);
+    	} catch(InterruptedException x) {
+    		//do nothing
+    	}
+    }
+
+    //some useful functions not available until XSLT 2
+    
+    public static boolean endsWith(String str, String end) {
+    	return str.endsWith(end);
+    }
+    
+    public static String upperCase(String str) {
+    	return str.toUpperCase();
+    }
+
+    public static String lowerCase(String str) {
+    	return str.toLowerCase();
     }
     
 }

@@ -26,5 +26,9 @@ public class XsltExtensionFunctionException extends TransformerException {
     public XsltExtensionFunctionException(Throwable cause) {
         super(cause);
     }
+    
+    public XsltExtensionFunctionException(String msg, Throwable cause) {
+    	super(msg, cause);
+    }
 
 }

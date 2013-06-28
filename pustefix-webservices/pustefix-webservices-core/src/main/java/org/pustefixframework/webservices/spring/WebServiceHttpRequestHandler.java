@@ -21,16 +21,20 @@ package org.pustefixframework.webservices.spring;
 import java.io.IOException;
 import java.lang.reflect.Method;
 import java.net.URL;
+import java.util.concurrent.locks.Lock;
+import java.util.concurrent.locks.ReadWriteLock;
 
 import javax.servlet.ServletContext;
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import javax.servlet.http.HttpSession;
 
 import net.sf.cglib.proxy.Enhancer;
 
 import org.apache.log4j.Logger;
 import org.pustefixframework.container.spring.http.UriProvidingHttpRequestHandler;
+import org.pustefixframework.http.SessionUtils;
 import org.pustefixframework.webservices.AdminWebapp;
 import org.pustefixframework.webservices.Constants;
 import org.pustefixframework.webservices.ServiceProcessor;
@@ -55,8 +59,6 @@ import de.schlund.pfixxml.resources.ResourceUtil;
  */
 public class WebServiceHttpRequestHandler implements UriProvidingHttpRequestHandler, InitializingBean, ServletContextAware, ApplicationContextAware {
 
-    private static final long serialVersionUID = -5686011510105975584L;
-
     private Logger LOG = Logger.getLogger(WebServiceHttpRequestHandler.class.getName());
 
     private ServiceRuntime runtime;
@@ -71,7 +73,6 @@ public class WebServiceHttpRequestHandler implements UriProvidingHttpRequestHand
     
     private static final String PROCESSOR_IMPL_JAXWS="org.pustefixframework.webservices.jaxws.JAXWSProcessor";
     private static final String PROCESSOR_IMPL_JSONWS="org.pustefixframework.webservices.jsonws.JSONWSProcessor";
-    private static final String PROCESSOR_IMPL_JSONQX="org.pustefixframework.webservices.jsonqx.JSONQXProcessor";
     
     private static final String GENERATOR_IMPL_JSONWS="org.pustefixframework.webservices.jsonws.JSONWSStubGenerator";
     private static final String GENERATOR_IMPL_JAXWS="org.pustefixframework.webservices.jaxws.JAXWSStubGenerator";
@@ -81,7 +82,6 @@ public class WebServiceHttpRequestHandler implements UriProvidingHttpRequestHand
         String procClass = null;
         if(protocolType.equals(Constants.PROTOCOL_TYPE_SOAP)) procClass = PROCESSOR_IMPL_JAXWS;
         else if(protocolType.equals(Constants.PROTOCOL_TYPE_JSONWS)) procClass = PROCESSOR_IMPL_JSONWS;
-        else if(protocolType.equals(Constants.PROTOCOL_TYPE_JSONQX)) procClass = PROCESSOR_IMPL_JSONQX;
         try {
             Class<?> clazz = Class.forName(procClass);
             ServiceProcessor proc = (ServiceProcessor)clazz.newInstance();
@@ -135,13 +135,6 @@ public class WebServiceHttpRequestHandler implements UriProvidingHttpRequestHand
                     throw new ServletException("Can't instantiate ServiceStubGenerator: "+GENERATOR_IMPL_JSONWS,x);
                 }
             }
-            sp = findServiceProcessor(Constants.PROTOCOL_TYPE_JSONQX);
-            if(sp!=null) {
-                Method meth = sp.getClass().getMethod("setBeanMetaDataURL", URL.class);
-                meth.invoke(sp, metaURL);
-                runtime.addServiceProcessor(Constants.PROTOCOL_TYPE_JSONQX, sp);
-                LOG.info("Registered ServiceProcessor for "+Constants.PROTOCOL_TYPE_JSONQX);
-            }
             getServletContext().setAttribute(ServiceRuntime.class.getName(), runtime);
             adminWebapp = new AdminWebapp(runtime);
         } catch (Exception x) {
@@ -186,13 +179,27 @@ public class WebServiceHttpRequestHandler implements UriProvidingHttpRequestHand
     public void handleRequest(HttpServletRequest req, HttpServletResponse res) throws ServletException, IOException {
         try {
             if(req.getMethod().equals("POST")) {
+            	HttpSession session = req.getSession(false);
+            	if(session != null) {
+            		ReadWriteLock lock = (ReadWriteLock)session.getAttribute(SessionUtils.SESSION_ATTR_LOCK);
+     				if(lock != null) {
+     					Lock readLock = lock.readLock();
+     					readLock.lock();
+     					try {
+     						runtime.process(req, res);
+     						return;
+     					} finally {
+     						readLock.unlock();
+     					}
+     				}
+            	}
                 runtime.process(req, res);
             } else if(req.getMethod().equals("GET")) {
                 adminWebapp.doGet(req, res);
             } else throw new ServletException("Method "+req.getMethod()+" not supported!");
-        } catch (Throwable t) {
-            LOG.error("Error while processing webservice request", t);
-            if (!res.isCommitted()) throw new ServletException("Error while processing webservice request.", t);
+        } catch (Exception x) {
+            LOG.error("Error while processing webservice request", x);
+            if (!res.isCommitted()) throw new ServletException("Error while processing webservice request.", x);
         }
     }
 

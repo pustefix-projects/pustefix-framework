@@ -6,12 +6,12 @@
   <parent>
     <groupId>org.pustefixframework</groupId>
     <artifactId>pustefix-samples</artifactId>
-    <version>0.18.9-SNAPSHOT</version>
+    <version>0.18.48-SNAPSHOT</version>
   </parent>
  
   <groupId>org.pustefixframework.samples</groupId>
   <artifactId>pustefix-i18n</artifactId>
-  <version>0.18.9-SNAPSHOT</version>
+  <version>0.18.48-SNAPSHOT</version>
 
   <name>Pustefix i18n sample application</name>
   <packaging>pom</packaging>
@@ -25,6 +25,7 @@
     <module>pustefix-i18n-tenant-ca</module>
     <module>pustefix-i18n-tenant-de</module>
     <module>pustefix-i18n-tenant-us</module>
+    <module>pustefix-i18n-compact-webapp</module>
   </modules>
 
   <build>

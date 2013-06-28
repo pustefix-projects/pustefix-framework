@@ -17,21 +17,39 @@
  */
 package de.schlund.pfixcore.oxm.impl;
 
+import javax.xml.bind.annotation.XmlRootElement;
+
+import net.sf.cglib.proxy.Enhancer;
 import de.schlund.pfixcore.beans.BeanDescriptorFactory;
 import de.schlund.pfixcore.oxm.Marshaller;
 
 public class MarshallerFactory {
 
-    private static Marshaller marshaller;
+    private static Marshaller defaultMarshaller;
+    private static Marshaller jaxbMarshaller;
 
     static {
         BeanDescriptorFactory factory = new BeanDescriptorFactory();
         SerializerRegistry registry = new SerializerRegistry(factory);
-        marshaller = new MarshallerImpl(registry);
+        defaultMarshaller = new MarshallerImpl(registry);
+        jaxbMarshaller = new de.schlund.pfixcore.oxm.impl.JAXBMarshaller();
     }
-
-    public static Marshaller getSharedMarshaller() {
-        return marshaller;
+    
+    public static Marshaller getMarshaller(Object object) {
+    	
+    	Class<?> objectClass = object.getClass();
+    	if(Enhancer.isEnhanced(objectClass)) {
+    		objectClass = objectClass.getSuperclass();
+    	}
+    	XmlRootElement jaxbElem = objectClass.getAnnotation(XmlRootElement.class);
+    	Marshaller marshaller;
+    	if(jaxbElem == null) {
+    		marshaller = defaultMarshaller;
+    	} else {
+    		marshaller = jaxbMarshaller;
+    	}
+    	return marshaller;
+    	
     }
 
 }

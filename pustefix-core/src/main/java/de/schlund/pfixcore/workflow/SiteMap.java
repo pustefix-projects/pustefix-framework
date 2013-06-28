@@ -37,6 +37,7 @@ import javax.xml.transform.dom.DOMResult;
 import javax.xml.transform.sax.SAXTransformerFactory;
 import javax.xml.transform.sax.TransformerHandler;
 
+import org.apache.log4j.Logger;
 import org.pustefixframework.util.xml.DOMUtils;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
@@ -62,7 +63,12 @@ import de.schlund.pfixxml.util.XsltVersion;
 
 public class SiteMap {
     
+    private Logger LOG = Logger.getLogger(SiteMap.class);
+    
+    private Resource siteMapFile;
+    
     private Set<Resource> fileDependencies = new HashSet<Resource>();
+    private long lastFileModTime;
     private Map<String, Document> langToDoc = new HashMap<String, Document>();
     private List<Page> pageList = new ArrayList<Page>();
     private Map<String, Page> pageNameToPage = new LinkedHashMap<String, Page>();
@@ -84,14 +90,19 @@ public class SiteMap {
     }
     
     public SiteMap(Resource siteMapFile) throws IOException, SAXException, XMLException {
-       
-        URI uri = siteMapFile.toURI();
-        String uriStr = uri.toString();
-        if(uriStr.endsWith("depend.xml")) uriStr = uriStr.substring(0, uriStr.length() -10) + "sitemap.xml";
-        siteMapFile = ResourceUtil.getResource(uriStr);
-        
+        init(siteMapFile);
+    }
+    
+    private void init(Resource file) throws IOException, SAXException, XMLException {
+        if(siteMapFile == null) {
+            URI uri = file.toURI();
+            String uriStr = uri.toString();
+            if(uriStr.endsWith("depend.xml")) uriStr = uriStr.substring(0, uriStr.length() -10) + "sitemap.xml";
+            siteMapFile = ResourceUtil.getResource(uriStr);
+        }
         if(siteMapFile.exists()) {
             
+            lastFileModTime = siteMapFile.lastModified();
             Document siteMapDoc = Xml.parseMutable(siteMapFile);
             
             IncludesResolver iresolver = new IncludesResolver(null, "config-include");
@@ -153,12 +164,49 @@ public class SiteMap {
                 res = ResourceUtil.getResource("module://" + it.next() + "/conf/sitemap-aliases.xml");
                 if(res.exists()) {
                     readSiteMapAliases(Xml.parseMutable(res));
+                    fileDependencies.add(res);
                 }
             }
         
+            for(Resource fileDependency: fileDependencies) {
+                long lastMod = fileDependency.lastModified();
+                if(lastMod > lastFileModTime) lastFileModTime = lastMod;
+            }
+            
             provided = true;
         }
-        
+    }
+    
+    public synchronized boolean tryReinit() throws Exception {
+        if (needsReload()) {
+            LOG.info("##### Reloading sitemap #####");
+            reload();
+            return true;
+        } else {
+            return false;
+        }
+    }
+    
+    private boolean needsReload() {
+        for (Resource file : fileDependencies) {
+            if (file.lastModified() > lastFileModTime) {
+                return true;
+            }
+        }
+        return false;
+    }
+    
+    private void reload() throws IOException, SAXException, XMLException  {
+        fileDependencies.clear();
+        lastFileModTime = 0;
+        langToDoc.clear();
+        pageList.clear();
+        pageNameToPage.clear();
+        aliasMaps.clear();
+        pageMaps.clear();
+        pageAlternativeToPage.clear();
+        pageAliasToPage.clear();
+        init(siteMapFile);
     }
     
     public boolean isProvided() {
@@ -200,9 +248,29 @@ public class SiteMap {
         for(Element childAlt: childAlts) {
             String altKey = childAlt.getAttribute("key");
             String altName = childAlt.getAttribute("name");
+            boolean defaultAlt = Boolean.valueOf(childAlt.getAttribute("default"));
             page.pageAltKeyToName.put(altKey, altName);
             page.pageNameToAltKey.put(altName, altKey);
             pageAlternativeToPage.put(altName, page);
+            
+            PageAlternative pageAlt = new PageAlternative();
+            pageAlt.key = altKey;
+            pageAlt.name = altName;
+            page.pageAltKeyMap.put(altKey, pageAlt);
+            if(defaultAlt) {
+            	page.defaultPageAlt = pageAlt;
+            }
+            NamedNodeMap altMap = childAlt.getAttributes();
+            if(altMap != null) {
+                for(int i=0; i<altMap.getLength(); i++) {
+                    Node attrNode = altMap.item(i);
+                    String attrName = attrNode.getNodeName();
+                    if(!("name".equals(attrName)||("key").equals(attrName)||"default".equals(attrName))) {
+                        pageAlt.customAttributes.put(attrName, attrNode.getNodeValue());
+                    }
+                }
+            }
+            
         }
         List<Element> childPages = DOMUtils.getChildElementsByTagName(pageElem, "page");
         for(Element childPage: childPages) {
@@ -212,18 +280,30 @@ public class SiteMap {
     }
     
     private void readSiteMapAliases(Document siteMapAliasesDoc) {
+    	
         Element root = siteMapAliasesDoc.getDocumentElement();
-        String lang = root.getAttribute("lang").trim();
-        Map<String, String> pageToAlias = new HashMap<String, String>();
-        aliasMaps.put(lang, pageToAlias);
-        Map<String, String> aliasToPage = new HashMap<String, String>();
-        pageMaps.put(lang, aliasToPage);
-        List<Element> aliasElems = DOMUtils.getChildElementsByTagName(root, "alias");
-        for(Element aliasElem: aliasElems) {
-            String page = aliasElem.getAttribute("page").trim();
-            String alias = aliasElem.getTextContent().trim();
-            pageToAlias.put(page, alias);
-            aliasToPage.put(alias, page);
+        readSiteMapAliases(root);
+        List<Element> aliasGroupElems = DOMUtils.getChildElementsByTagName(root, "alias-group");
+        for(Element aliasGroupElem: aliasGroupElems) {
+        	readSiteMapAliases(aliasGroupElem);
+        }
+        
+    }
+    
+    private void readSiteMapAliases(Element siteMapAliasesGroup) {
+    	String lang = siteMapAliasesGroup.getAttribute("lang").trim();
+        if(lang.length() > 0) {
+        	Map<String, String> pageToAlias = new HashMap<String, String>();
+            aliasMaps.put(lang, pageToAlias);
+            Map<String, String> aliasToPage = new HashMap<String, String>();
+            pageMaps.put(lang, aliasToPage);
+            List<Element> aliasElems = DOMUtils.getChildElementsByTagName(siteMapAliasesGroup, "alias");
+	        for(Element aliasElem: aliasElems) {
+	            String page = aliasElem.getAttribute("page").trim();
+	            String alias = aliasElem.getTextContent().trim();
+	            pageToAlias.put(page, alias);
+	            aliasToPage.put(alias, page);
+	        }
         }
     }
     
@@ -255,6 +335,12 @@ public class SiteMap {
         for(String pageAltKey: page.pageAltKeyToName.keySet()) {
             Element altElem = parent.getOwnerDocument().createElement("alt");
             altElem.setAttribute("name", getAlias(page.pageAltKeyToName.get(pageAltKey), lang));
+            altElem.setAttribute("key", pageAltKey);
+            PageAlternative pageAlt = page.pageAltKeyMap.get(pageAltKey);
+            for(String attrName: pageAlt.customAttributes.keySet()) {
+                String attrVal = pageAlt.customAttributes.get(attrName);
+                altElem.setAttribute(attrName, attrVal);
+            }
             elem.appendChild(altElem);
         }
         for(Page child: page.pages) {
@@ -315,15 +401,19 @@ public class SiteMap {
     
     public String getAlias(String name, String lang, String pageAlternativeKey) {
         if(pageAlternativeKey == null || pageAlternativeKey.equals("")) {
-            return getAlias(name, lang);
-        } else {
-            String pageName = name;
-            String altPageName = getPageAlternative(name, pageAlternativeKey);
-            if(altPageName != null) {
-                pageName = altPageName;
-            }
-            return getAlias(pageName, lang);
+        	Page page = pageNameToPage.get(name);
+        	if(page == null || page.defaultPageAlt == null) {
+        		return getAlias(name, lang);
+        	} else {
+        		pageAlternativeKey = page.defaultPageAlt.key;
+        	}
         }
+        String pageName = name;
+        String altPageName = getPageAlternative(name, pageAlternativeKey);
+        if(altPageName != null) {
+        	pageName = altPageName;
+        }
+        return getAlias(pageName, lang);
     }
     
     private String getPageAlternative(String pageName, String pageAlternativeKey) {
@@ -393,6 +483,11 @@ public class SiteMap {
             if(pageAlt != null) {
                 aliasKey = pageAlt.pageNameToAltKey.get(page);
                 page = pageAlt.name;
+            } else {
+            	Page p = pageNameToPage.get(page);
+            	if(p != null && p.defaultPageAlt != null) {
+            		aliasKey = p.defaultPageAlt.key;
+            	}
             }
         }
         return new PageLookupResult(page, aliasKey);
@@ -423,12 +518,24 @@ public class SiteMap {
         List<Page> pages = new ArrayList<Page>();
         Map<String, String> pageAltKeyToName = new LinkedHashMap<String, String>();
         Map<String, String> pageNameToAltKey = new HashMap<String, String>();
+        Map<String, PageAlternative> pageAltKeyMap = new LinkedHashMap<String, PageAlternative>();
+        PageAlternative defaultPageAlt;
         
         Page(String name) {
             this.name = name;
         }
         
     }
+    
+    public class PageAlternative {
+    	
+    	String key;
+    	String name;
+    	
+    	Map<String, String> customAttributes = new HashMap<String, String>();
+    	
+    }
+    
     
     public class PageLookupResult {
         

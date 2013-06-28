@@ -1,5 +1,9 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <web-app xmlns="http://java.sun.com/xml/ns/javaee" xmlns:jee="http://java.sun.com/xml/ns/javaee">
+   <context-param>
+     <param-name>mode</param-name>
+     <param-value>test</param-value>
+   </context-param>
    <servlet>
       <servlet-name>dispatcher</servlet-name>
       <servlet-class>org.springframework.web.servlet.DispatcherServlet</servlet-class>
@@ -20,4 +24,8 @@
    <session-config>
       <session-timeout>60</session-timeout>
    </session-config>
+   <error-page>
+     <error-code>404</error-code>
+     <location>/error404.html</location>
+  </error-page>
 </web-app>

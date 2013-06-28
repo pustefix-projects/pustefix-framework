@@ -33,6 +33,9 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 import java.util.SortedSet;
+import java.util.concurrent.locks.Lock;
+import java.util.concurrent.locks.ReadWriteLock;
+import java.util.concurrent.locks.ReentrantReadWriteLock;
 import java.util.regex.Pattern;
 
 import javax.servlet.ServletContext;
@@ -43,16 +46,18 @@ import javax.servlet.http.HttpSession;
 
 import org.apache.log4j.Logger;
 import org.pustefixframework.config.contextxmlservice.ServletManagerConfig;
-import org.pustefixframework.config.project.ProjectInfo;
 import org.pustefixframework.config.project.SessionTimeoutInfo;
 import org.pustefixframework.container.spring.http.UriProvidingHttpRequestHandler;
 import org.pustefixframework.util.LocaleUtils;
+import org.pustefixframework.util.LogUtils;
+import org.pustefixframework.util.NetUtils;
 import org.pustefixframework.util.URLUtils;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.web.context.ServletContextAware;
 
 import de.schlund.pfixcore.workflow.SiteMap;
 import de.schlund.pfixcore.workflow.SiteMap.PageLookupResult;
+import de.schlund.pfixxml.LanguageInfo;
 import de.schlund.pfixxml.PfixServletRequest;
 import de.schlund.pfixxml.Tenant;
 import de.schlund.pfixxml.TenantInfo;
@@ -78,6 +83,7 @@ public abstract class AbstractPustefixRequestHandler implements SessionTrackingS
     public static final String           PROP_COOKIE_SEC_NOT_ENFORCED  = "servletmanager.cookie_security_not_enforced";
     public static final String           PROP_P3PHEADER                = "servletmanager.p3p";
     public static final String           PROP_SSL_REDIRECT_PORT        = "pfixcore.ssl_redirect_port.for.";
+    public static final String           PROP_NONSSL_REDIRECT_PORT     = "pfixcore.nonssl_redirect_port.for.";
     protected static final String        DEF_CONTENT_TYPE              = "text/html";
     private static final String          DEFAULT_ENCODING              = "UTF-8";
     private static final String          SERVLET_ENCODING              = "servlet.encoding";
@@ -104,7 +110,7 @@ public abstract class AbstractPustefixRequestHandler implements SessionTrackingS
     private BotSessionTrackingStrategy botSessionTrackingStrategy;
     private SessionTimeoutInfo sessionTimeoutInfo;
     protected TenantInfo tenantInfo;
-    protected ProjectInfo projectInfo;
+    protected LanguageInfo languageInfo;
     protected SiteMap siteMap;
     
     public abstract ServletManagerConfig getServletManagerConfig();
@@ -133,10 +139,14 @@ public abstract class AbstractPustefixRequestHandler implements SessionTrackingS
     public static String getRemoteAddr(HttpServletRequest req) {
         String forward = req.getHeader("X-Forwarded-For");
         if (forward != null && !forward.equals("")) {
-            return forward;
-        } else {
-            return req.getRemoteAddr();
-        }
+            int ind = forward.indexOf(',');
+            if(ind > -1) forward = forward.substring(0, ind);
+            forward = forward.trim();
+            if(NetUtils.checkIP(forward)) {
+                return forward;
+            }
+        } 
+        return req.getRemoteAddr();
     }
     
     public void setHandlerURI(String uri) {
@@ -152,6 +162,7 @@ public abstract class AbstractPustefixRequestHandler implements SessionTrackingS
 
         req.setCharacterEncoding(servletEncoding);
         res.setCharacterEncoding(servletEncoding);
+        
         if (LOG.isDebugEnabled()) {
             LOG.debug("\n ------------------- Start of new Request ---------------");
             LOG.debug("====> Scheme://Server:Port " + req.getScheme() + "://" + getServerName(req) + ":" + req.getServerPort());
@@ -178,6 +189,8 @@ public abstract class AbstractPustefixRequestHandler implements SessionTrackingS
             return;
         }
         
+        initializeRequest(req, tenantInfo, languageInfo);
+        
         // Set P3P-Header if needed to make sure it is 
         // set for every response (even redirects).
         String p3pHeader = getServletManagerConfig().getProperties().getProperty(PROP_P3PHEADER);
@@ -185,46 +198,51 @@ public abstract class AbstractPustefixRequestHandler implements SessionTrackingS
             res.addHeader("P3P", p3pHeader);
         }
         
-        if(!tenantInfo.getTenants().isEmpty()) {
-            Tenant matchingTenant = tenantInfo.getMatchingTenant(req);
-            if(matchingTenant == null) {
-                matchingTenant = tenantInfo.getTenants().get(0);
-            }
-            req.setAttribute(REQUEST_ATTR_TENANT, matchingTenant);
-            LOG.debug("Set tenant " + matchingTenant.getName());
-            String matchingLanguage = matchingTenant.getDefaultLanguage();
-            String pathPrefix = URLUtils.getFirstPathComponent(req.getPathInfo());
-            if(pathPrefix != null) {
-                if(tenantInfo.isLanguagePrefix(pathPrefix)) {
-                    String language = matchingTenant.getSupportedLanguageByCode(pathPrefix);
-                    if(language != null && !language.equals(matchingTenant.getDefaultLanguage())) {
-                        matchingLanguage = language;
-                    } else {
-                        res.sendError(HttpServletResponse.SC_NOT_FOUND);
-                        return;
-                    }
-                }
-            }
-            req.setAttribute(REQUEST_ATTR_LANGUAGE, matchingLanguage);
-            LOG.debug("Set language " + matchingLanguage);
-        } else if(!projectInfo.getSupportedLanguages().isEmpty()) {
-            String matchingLanguage = projectInfo.getDefaultLanguage();
-            String pathPrefix = URLUtils.getFirstPathComponent(req.getPathInfo());
-            if(pathPrefix != null) {
-                String language = projectInfo.getSupportedLanguageByCode(pathPrefix);
-                if(language != null && !language.equals(projectInfo.getDefaultLanguage())) {
-                    matchingLanguage = language;
-                }
-            }
-            req.setAttribute(REQUEST_ATTR_LANGUAGE, matchingLanguage);
-        }
-            
         if(BotDetector.isBot(req)) {
             botSessionTrackingStrategy.handleRequest(req, res);
         } else {
             sessionTrackingStrategy.handleRequest(req, res);
         }
             
+    }
+    
+    public static void initializeRequest(HttpServletRequest request, TenantInfo tenantInfo, LanguageInfo languageInfo) {
+        if(tenantInfo != null && !tenantInfo.getTenants().isEmpty()) {
+            Tenant matchingTenant = tenantInfo.getMatchingTenant(request);
+            if(matchingTenant == null) {
+                matchingTenant = tenantInfo.getTenants().get(0);
+            }
+            request.setAttribute(AbstractPustefixRequestHandler.REQUEST_ATTR_TENANT, matchingTenant);
+            if(LOG.isDebugEnabled()) {
+            	LOG.debug("Set tenant " + matchingTenant.getName());
+            }
+            String matchingLanguage = matchingTenant.getDefaultLanguage();
+            String pathPrefix = URLUtils.getFirstPathComponent(request.getPathInfo());
+            if(pathPrefix != null) {
+                if(tenantInfo.isLanguagePrefix(pathPrefix)) {
+                    String language = matchingTenant.getSupportedLanguageByCode(pathPrefix);
+                    if(language != null) {
+                        matchingLanguage = language;
+                    } else {
+                        matchingLanguage = matchingTenant.getDefaultLanguage();
+                    }
+                }
+            }
+            request.setAttribute(AbstractPustefixRequestHandler.REQUEST_ATTR_LANGUAGE, matchingLanguage);
+            if(LOG.isDebugEnabled()) {
+            	LOG.debug("Set language " + matchingLanguage);
+            }
+        } else if(languageInfo != null && !languageInfo.getSupportedLanguages().isEmpty()) {
+            String matchingLanguage = languageInfo.getDefaultLanguage();
+            String pathPrefix = URLUtils.getFirstPathComponent(request.getPathInfo());
+            if(pathPrefix != null) {
+                String language = languageInfo.getSupportedLanguageByCode(pathPrefix);
+                if(language != null && !language.equals(languageInfo.getDefaultLanguage())) {
+                    matchingLanguage = language;
+                }
+            }
+            request.setAttribute(AbstractPustefixRequestHandler.REQUEST_ATTR_LANGUAGE, matchingLanguage);
+        }
     }
     
     
@@ -255,8 +273,11 @@ public abstract class AbstractPustefixRequestHandler implements SessionTrackingS
 
     public void callProcess(PfixServletRequest preq, HttpServletRequest req, HttpServletResponse res) throws ServletException, IOException {
         
+    	//trigger initialization of page alternative name if not already done
+    	preq.getPageName();
+    	
+    	HttpSession session = req.getSession(false);
         if(sessionTimeoutInfo != null) {
-            HttpSession session = req.getSession(false);
             if(session != null) {
                 Integer count = (Integer)session.getAttribute(SESSION_ATTR_REQUEST_COUNT);
                 if(count == null) {
@@ -278,6 +299,19 @@ public abstract class AbstractPustefixRequestHandler implements SessionTrackingS
         
         try {
             res.setContentType(DEF_CONTENT_TYPE);
+            if(needsSession() && session != null) {
+				ReadWriteLock lock = (ReadWriteLock)session.getAttribute(SessionUtils.SESSION_ATTR_LOCK);
+				if(lock != null) {
+					Lock readLock = lock.readLock();
+					readLock.lock();
+					try {
+						process(preq, res);
+						return;
+					} finally {
+						readLock.unlock();
+					}
+				}
+            }
             process(preq, res);
         } catch (Throwable e) {
             if((e instanceof IOException) &&
@@ -410,15 +444,17 @@ public abstract class AbstractPustefixRequestHandler implements SessionTrackingS
                 }
                 session.setAttribute(VISIT_ID, TIMESTAMP_ID + "-" + nf.format(INC_ID) + mach);
             }
+            session.setAttribute(SessionUtils.SESSION_ATTR_LOCK, new ReentrantReadWriteLock());
             StringBuffer logbuff = new StringBuffer();
             logbuff.append(session.getAttribute(VISIT_ID) + "|" + session.getId() + "|");
-            logbuff.append(getServerName(req) + "|" + req.getRemoteAddr() + "|" + req.getHeader("user-agent") + "|");
+            logbuff.append(LogUtils.makeLogSafe(getServerName(req)) + "|" + LogUtils.makeLogSafe(getRemoteAddr(req)) + "|");
+            logbuff.append(LogUtils.makeLogSafe(req.getHeader("user-agent")) + "|");
             if (req.getHeader("referer") != null) {
-                logbuff.append(req.getHeader("referer"));
+                logbuff.append(LogUtils.makeLogSafe(req.getHeader("referer")));
             }
             logbuff.append("|");
             if (req.getHeader("accept-language") != null) {
-                logbuff.append(req.getHeader("accept-language"));
+                logbuff.append(LogUtils.makeLogSafe(req.getHeader("accept-language")));
             }
             LOGGER_VISIT.warn(logbuff.toString());
             getSessionAdmin().registerSession(session, getServerName(req), req.getRemoteAddr());
@@ -447,7 +483,7 @@ public abstract class AbstractPustefixRequestHandler implements SessionTrackingS
             //check if page is language prefix => default page
             Tenant tenant = (Tenant)request.getAttribute(REQUEST_ATTR_TENANT);
             if((tenant != null && tenant.getSupportedLanguageByCode(pageAlias) != null) ||
-                (tenant == null && projectInfo.getSupportedLanguageByCode(pageAlias) != null)) {
+                (tenant == null && languageInfo.getSupportedLanguageByCode(pageAlias) != null)) {
                 return null;
             }    
         }
@@ -484,11 +520,11 @@ public abstract class AbstractPustefixRequestHandler implements SessionTrackingS
                             }
                         }
                     }
-                } else if(projectInfo.getSupportedLanguages().size() > 1) {
-                    for(String supportedLanguage: projectInfo.getSupportedLanguages()) {
+                } else if(languageInfo.getSupportedLanguages().size() > 1) {
+                    for(String supportedLanguage: languageInfo.getSupportedLanguages()) {
                         String langPart = LocaleUtils.getLanguagePart(supportedLanguage);
                         String pathPrefix = "";
-                        if(!supportedLanguage.equals(projectInfo.getDefaultLanguage())) {
+                        if(!supportedLanguage.equals(languageInfo.getDefaultLanguage())) {
                             pathPrefix = langPart + "/";
                         }
                         String alias = siteMap.getAlias(registeredPage, supportedLanguage);
@@ -501,6 +537,10 @@ public abstract class AbstractPustefixRequestHandler implements SessionTrackingS
                         }
                     }
                 } else {
+                	String alias = siteMap.getAlias(registeredPage, null);
+                	if(alias != null && !registeredPage.equals(alias)) {
+                		uris.add("/" + alias);
+                	}
                     List<String> pageAltAliases = siteMap.getPageAlternativeAliases(registeredPage, null);
                     if(pageAltAliases != null) {
                         for(String pageAltAlias: pageAltAliases) {
@@ -556,8 +596,8 @@ public abstract class AbstractPustefixRequestHandler implements SessionTrackingS
         this.tenantInfo = tenantInfo;
     }
 
-    public void setProjectInfo(ProjectInfo projectInfo) {
-        this.projectInfo = projectInfo;
+    public void setLanguageInfo(LanguageInfo languageInfo) {
+        this.languageInfo = languageInfo;
     }
     
     public void setSiteMap(SiteMap siteMap) {

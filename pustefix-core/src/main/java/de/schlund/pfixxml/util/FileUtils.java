@@ -19,8 +19,10 @@ package de.schlund.pfixxml.util;
 
 import java.io.File;
 import java.io.FileInputStream;
+import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.OutputStreamWriter;
 
@@ -162,6 +164,98 @@ public class FileUtils {
             }
         }
         return file.delete();
+        
     }
     
+    /**
+     * Create new temporary directory relative to parent directory (or java.io.tmpdir if not specified) 
+     * and register it for deletion on JVM exit.
+     * 
+     * @param parentDir parent directory or null for java.io.tmpdir
+     * @return temporary directory
+     */
+    public static File createTemporaryDirectory(File parentDir) throws IOException {
+    	if(parentDir == null) {
+    		String tmp = System.getProperty("java.io.tmpdir");
+    		if(tmp != null) {
+    			parentDir = new File(tmp);
+    		} else {
+    			parentDir = new File(".");
+    		}
+    	}
+    	if(parentDir.exists()) {
+    		String suffix = "-" + System.nanoTime(); 
+    		File tmpDir = new File(parentDir, "tmp" + suffix);
+    		if(tmpDir.exists()) {
+    			int index = 0;
+    			do {
+					tmpDir = new File(parentDir, "tmp" + suffix + index);
+					index++;
+				} while (index < 10 && tmpDir.exists());
+    			if(tmpDir.exists()) {
+    				throw new IOException("Temporary directory " + tmpDir.getAbsolutePath() + " already exists.");
+    			}
+    		}
+    		tmpDir.mkdir();
+    		tmpDir.deleteOnExit();
+    		return tmpDir;
+    	} else {
+    		throw new FileNotFoundException("Parent directory " + parentDir.getAbsolutePath() + " doesn't exist.");
+    	} 
+    }
+
+    /**
+     * Check if file contains binary or text data
+     * 
+     * @param file data file
+     * @return true if data file contains binary data
+     * @throws IOException
+     */
+    public static boolean isBinary(File file) throws IOException {
+    	FileInputStream in = new FileInputStream(file);
+    	try {
+    		return isBinary(in);
+    	} finally {
+    		in.close();
+    	}
+    }
+    
+    /**
+     * Check if InputStream contains binary or text data
+     * 
+     * @param in data input
+     * @return true if input contains binary data
+     * @throws IOException
+     */
+    public static boolean isBinary(InputStream in) throws IOException {
+		
+    	//read up to 1kb
+    	byte[] buffer = new byte[1024];
+		int offset = 0;
+		int len = 1024;
+		int read = 0;
+		while((read = in.read(buffer, offset, len)) != -1 && len > 0) {
+			offset += read;
+			len -= read;
+		}
+		
+		//check if bytes contain null byte or too much control characters for normal text formats
+		int byteNo = buffer.length - len;
+		int controlCount = 0;
+		for(int i=0; i<byteNo; i++) {
+			byte b = buffer[i];
+            if(b == 0) {
+            	return true;
+            }
+            if(b<0x07 || (b>0x0d && b<0x20) || b>0x7E) {
+                controlCount++;
+            }
+		}
+		//more than 75% control characters
+		if(byteNo > 0 && controlCount * 100 / byteNo > 75) {
+            return true;
+        }
+        return false;
+	}
+
 }

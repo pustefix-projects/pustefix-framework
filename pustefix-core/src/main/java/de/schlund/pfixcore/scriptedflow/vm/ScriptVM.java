@@ -32,6 +32,7 @@ import de.schlund.pfixcore.exception.PustefixApplicationException;
 import de.schlund.pfixcore.exception.PustefixCoreException;
 import de.schlund.pfixcore.scriptedflow.vm.pvo.ParamValueObject;
 import de.schlund.pfixcore.workflow.ExtendedContext;
+import de.schlund.pfixxml.PageAliasResolver;
 import de.schlund.pfixxml.PfixServletRequest;
 import de.schlund.pfixxml.PfixServletRequestImpl;
 import de.schlund.pfixxml.SPDocument;
@@ -57,7 +58,12 @@ public class ScriptVM {
     private Map<String, String> registerVariables = new HashMap<String, String>();
 
     private XPathResolver resolver = new XPathResolver();
-
+    private PageAliasResolver pageAliasResolver;
+    
+    public void setPageAliasResolver(PageAliasResolver pageAliasResolver) {
+        this.pageAliasResolver = pageAliasResolver;
+    }
+    
     public void setScript(Script script) {
         if (this.script != null) {
             throw new IllegalStateException("Script can only be set once per VM instance");
@@ -270,7 +276,7 @@ public class ScriptVM {
     private boolean doVirtualRequest(String pagename, Map<String, String[]> reqParams, PfixServletRequest origPreq, ExtendedContext rcontext) throws PustefixApplicationException, PustefixCoreException {
 
         HttpServletRequest vhttpreq = new VirtualHttpServletRequest(origPreq.getRequest(), pagename, reqParams);
-        PfixServletRequest vpreq    = new PfixServletRequestImpl(vhttpreq, System.getProperties());
+        PfixServletRequest vpreq    = new PfixServletRequestImpl(vhttpreq, System.getProperties(), pageAliasResolver);
         
         // Send request to the context and use returned SPDocument
         // for further processing

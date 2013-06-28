@@ -64,7 +64,7 @@ public class GlobalServiceConfig implements Serializable {
     private Boolean                admin            = Boolean.FALSE;
     private Boolean                monitoring       = Boolean.FALSE;
     private String                 monitorScope     = Constants.MONITOR_SCOPE_SESSION;
-    private Integer                monitorSize      = 20;
+    private Integer                monitorSize      = 10;
     private Boolean                logging          = Boolean.FALSE;
     private transient FaultHandler faultHandler;
     private URL                    defaultBeanMetaDataUrl;
@@ -292,6 +292,12 @@ public class GlobalServiceConfig implements Serializable {
             return true;
         }
         return false;
+    }
+    
+    @Override
+    public int hashCode() {
+        assert false : "hashCode not supported";
+        return 0;
     }
 
     private void writeObject(ObjectOutputStream out) throws IOException {

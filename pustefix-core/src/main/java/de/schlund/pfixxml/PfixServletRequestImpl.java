@@ -33,6 +33,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
 
 import org.apache.log4j.Logger;
+import org.pustefixframework.http.AbstractPustefixRequestHandler;
 import org.pustefixframework.http.AbstractPustefixXMLRequestHandler;
 
 import de.schlund.pfixxml.multipart.MultipartHandler;
@@ -279,12 +280,7 @@ public class PfixServletRequestImpl implements PfixServletRequest {
      * @see de.schlund.pfixxml.PfixServletRequest#getRemoteAddr()
      */
     public String getRemoteAddr() {
-        String forward = request.getHeader("X-Forwarded-For");
-        if (forward != null && !forward.equals("")) {
-            return forward;
-        } else {
-            return request.getRemoteAddr();
-        }
+        return AbstractPustefixRequestHandler.getRemoteAddr(request);
     }
 
     /* (non-Javadoc)
@@ -513,7 +509,9 @@ public class PfixServletRequestImpl implements PfixServletRequest {
         if(internalPageName == null) {
             String pageName = getRequestedPageName();
             if(pageName != null) {
-                internalPageName = pageAliasResolver.getPageName(pageName, request);
+                if(pageAliasResolver != null) {
+                    internalPageName = pageAliasResolver.getPageName(pageName, request);
+                }
             }
         }
         return internalPageName;

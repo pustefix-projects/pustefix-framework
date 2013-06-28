@@ -19,18 +19,15 @@
 package org.pustefixframework.config.contextxmlservice.parser;
 
 import java.util.Collection;
-import java.util.Collections;
 import java.util.List;
 import java.util.Map;
-import java.util.Properties;
 
-import org.pustefixframework.config.contextxmlservice.IWrapperConfig;
+import org.pustefixframework.config.contextxmlservice.GlobalOutputConfig;
 import org.pustefixframework.config.contextxmlservice.PageFlowHolder;
 import org.pustefixframework.config.contextxmlservice.PageRequestConfig;
-import org.pustefixframework.config.contextxmlservice.ProcessActionStateConfig;
-import org.pustefixframework.config.contextxmlservice.StateConfig;
 import org.pustefixframework.config.contextxmlservice.parser.internal.ContextConfigImpl;
 import org.pustefixframework.config.contextxmlservice.parser.internal.ContextXMLServletConfigImpl;
+import org.pustefixframework.config.contextxmlservice.parser.internal.DefaultStateConfig;
 import org.pustefixframework.config.generic.ParsingUtils;
 import org.pustefixframework.config.project.ProjectInfo;
 import org.springframework.aop.scope.ScopedProxyUtils;
@@ -55,7 +52,6 @@ import de.schlund.pfixcore.workflow.ContextResourceManagerImpl;
 import de.schlund.pfixcore.workflow.PageMap;
 import de.schlund.pfixcore.workflow.State;
 import de.schlund.pfixcore.workflow.context.ServerContextImpl;
-import de.schlund.pfixxml.Tenant;
 
 /**
  * 
@@ -130,47 +126,10 @@ public class ContextXMLParsingHandler implements ParsingHandler {
                 beanBuilder.setParentName(contextConfig.getDefaultStateParentBeanName());
             }
             if (ConfigurableState.class.isAssignableFrom(defaultStateType)) {
-                final Class<? extends ConfigurableState> stateType = defaultStateType.asSubclass(ConfigurableState.class);
-                StateConfig config = new StateConfig() {
-                    
-                    public Map<String, ?> getContextResources() {
-                        return Collections.emptyMap();
-                    }
-            
-                    public Policy getIWrapperPolicy() {
-                        return Policy.ANY;
-                    }
-            
-                    public Map<String, ? extends IWrapperConfig> getIWrappers(Tenant tenant) {
-                        return Collections.emptyMap();
-                    }
-            
-                    public Map<String, ? extends ProcessActionStateConfig> getProcessActions() {
-                        return Collections.emptyMap();
-                    }
-            
-                    public Properties getProperties() {
-                        return new Properties();
-                    }
-            
-                    public String getScope() {
-                        return "prototype";
-                    }
-            
-                    public Class<? extends ConfigurableState> getState() {
-                        return stateType;
-                    }
-            
-                    public boolean isExternalBean() {
-                        return false;
-                    }
-            
-                    public boolean requiresToken() {
-                        return false;
-                    }
-                    
-                };
-                beanBuilder.addPropertyValue("config", config);
+                Class<? extends ConfigurableState> stateType = defaultStateType.asSubclass(ConfigurableState.class);
+                GlobalOutputConfig globalOutputConfig = ParsingUtils.getFirstTopObject(GlobalOutputConfig.class, context, false);
+                String defaultStateConfigBeanName = createDefaultStateConfigBean(beanRegistry, stateType, globalOutputConfig);
+                beanBuilder.addPropertyReference("config", defaultStateConfigBeanName);
             }
             beanDefinition = beanBuilder.getBeanDefinition();
             String defaultStateBeanName = beanNameGenerator.generateBeanName(beanDefinition, beanRegistry);
@@ -220,6 +179,25 @@ public class ContextXMLParsingHandler implements ParsingHandler {
             context.getObjectTreeElement().addObject(beanHolder); 
             
         }
+    }
+    
+    private String createDefaultStateConfigBean(BeanDefinitionRegistry beanRegistry, Class<? extends ConfigurableState> stateType, GlobalOutputConfig outputConfig) {
+    	
+    	BeanDefinitionBuilder beanBuilder = BeanDefinitionBuilder.genericBeanDefinition(DefaultStateConfig.class);
+    	beanBuilder.setScope("singleton");
+    	beanBuilder.addPropertyValue("state", stateType);
+    	if(outputConfig != null) {
+    		@SuppressWarnings({"unchecked","rawtypes"})
+    		Map<String, Object> contextResources = new ManagedMap(outputConfig.getContextResources().size());
+    		contextResources.putAll(outputConfig.getContextResources());
+    		beanBuilder.addPropertyValue("contextResources", contextResources);
+    	}
+    	BeanDefinition beanDefinition = beanBuilder.getBeanDefinition();
+    	DefaultBeanNameGenerator beanNameGenerator = new DefaultBeanNameGenerator();
+        String beanName = beanNameGenerator.generateBeanName(beanDefinition, beanRegistry);
+        beanRegistry.registerBeanDefinition(beanName, beanDefinition);
+        return beanName;
+    	
     }
 
 }

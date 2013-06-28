@@ -22,7 +22,6 @@ import org.junit.Before;
 import org.junit.Test;
 import org.pustefixframework.test.MockContext;
 
-import de.schlund.pfixcore.example.iwrapper.AdultInfo;
 import de.schlund.pfixxml.config.GlobalConfig;
 import de.schlund.pfixxml.config.GlobalConfigurator;
 
@@ -58,16 +57,13 @@ public class AdultInfoHandlerTest {
         AdultInfoHandler handler = new AdultInfoHandler();
         handler.setContextAdultInfo(info);
         
-        Assert.assertTrue(handler.needsData(context));
+        Assert.assertTrue(handler.needsData());
         
-        AdultInfo iwrapper = new AdultInfo();
-        iwrapper.init("info");
-        iwrapper.setStringValAdult("false");
-        iwrapper.loadFromStringValues();
-             
-        handler.handleSubmittedData(context, iwrapper);
+        AdultBean iwrapper = new AdultBean();
+      
+        handler.handleSubmittedData(iwrapper);
         
-        Assert.assertFalse(handler.needsData(context));
+        Assert.assertFalse(handler.needsData());
     
     }
     

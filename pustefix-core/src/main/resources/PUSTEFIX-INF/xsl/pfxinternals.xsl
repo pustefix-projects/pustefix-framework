@@ -1,13 +1,15 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<xsl:stylesheet xmlns:xsl="http://www.w3.org/1999/XSL/Transform" xmlns:enc="java.net.URLEncoder" version="1.0">
+<xsl:stylesheet xmlns:xsl="http://www.w3.org/1999/XSL/Transform" xmlns:enc="java.net.URLEncoder" exclude-result-prefixes="enc" version="1.0">
 
   <xsl:param name="__contextpath"/>
   <xsl:param name="category"/>
   
   <xsl:key name="priokey" match="/pfxinternals/modules/defaultsearch/module" use="@priority"/>
 
+  <xsl:output method="html"/>
+
   <xsl:template match="/">
-  <xsl:message><xsl:copy-of select="/"/></xsl:message>
+    <xsl:text disable-output-escaping="yes">&lt;!DOCTYPE html&gt;&#xa;</xsl:text>
     <html>
       <head>
         <title>Pustefix internals</title>
@@ -59,7 +61,10 @@
           a:focus {
             color: #666;
           }
-         
+          img.download {
+            vertical-align:top;
+            margin-left: 7px;
+          }
           div.section {
             background: #fff;
             padding: 15px;
@@ -96,11 +101,19 @@
             color: white;
             font-family: sans-serif;
           }
-          table.actions {
-            border-spacing: 0px;
+          div.actions {
           }
-          table.actions td {
-            padding-right: 20px;
+          div.actiongroup {
+            padding: 10pt;
+          }
+          div.actiongroup div {
+            padding-left: 10pt;
+            padding-bottom: 8pt;
+          }
+          div.actiongroup div.actiongrouptitle {
+            padding-left: 0pt;
+            padding-bottom: 10pt;
+            font-weight: bold;
           }
           table.info {
             border-spacing:0px;
@@ -210,7 +223,47 @@
             font-size: 85%;
           }
           table.defsearch td {padding-right: 0px;}
-          
+          <xsl:if test="$category='search'">
+          span.fielderror {
+            color: red;
+          }
+          table.searchform {
+            padding:0px;
+            padding-top: 20px;
+            border-spacing:0px;
+          }
+          table.searchform td {
+            padding:0px;
+          }
+          table.searchform th {
+            padding-bottom: 5px;
+            text-align:left;
+          }
+          table.searchform {
+            padding-bottom: 15px;
+          }
+          div.searchresult div.match {
+            padding-bottom: 5px;
+            padding-top: 5px;
+          }
+          div.searchresult span.line {
+            color: #aaa;
+            padding-right: 20px;
+          }
+          div.searchresult div.path {
+            font-weight: bold;
+            padding-bottom: 5px;
+            padding-top: 5px;
+          }
+          input.searchbutton {
+            padding:7px;
+          }
+          hr.searchresult {
+            border: 0px;
+            border-top: 1px solid #ccc;
+            color:red;
+          }
+          </xsl:if>
           <xsl:if test="$category='targets'">
           ul.targets {
             list-style-type: none; margin: 20px;
@@ -326,6 +379,15 @@
            window.location.href = url;
          }
          </xsl:if>
+         <xsl:if test="$category='includes'">
+         function viewTarget(value) {
+           var url = window.location.href;
+           var ind = url.indexOf('?');
+           if(ind > 0) url = url.substring(0, ind);
+           url = url + "?target=" + encodeURIComponent(value);
+           window.location.href = url;
+         }
+         </xsl:if>
           
         </script>
       </head>
@@ -345,6 +407,8 @@
             <span><xsl:if test="$category='cache'"><xsl:attribute name="class">active</xsl:attribute></xsl:if><a href="cache">Cache</a></span>
             <span><xsl:if test="$category='modules'"><xsl:attribute name="class">active</xsl:attribute></xsl:if><a href="modules">Modules</a></span>
             <span><xsl:if test="$category='targets'"><xsl:attribute name="class">active</xsl:attribute></xsl:if><a href="targets">Targets</a></span>
+            <span><xsl:if test="$category='includes'"><xsl:attribute name="class">active</xsl:attribute></xsl:if><a href="includes">Includes</a></span>
+            <span><xsl:if test="$category='search'"><xsl:attribute name="class">active</xsl:attribute></xsl:if><a href="search">Search</a></span>
             <span><xsl:if test="$category='actions'"><xsl:attribute name="class">active</xsl:attribute></xsl:if><a href="actions">Actions</a></span>
             <span><xsl:if test="$category='messages'"><xsl:attribute name="class">active</xsl:attribute></xsl:if><a href="messages">Messages</a></span>
           </div>
@@ -588,17 +652,293 @@
         </div>
         </xsl:if>
         
-        <xsl:if test="not($category) or $category='actions'">
+        <xsl:if test="not($category) or $category='includes'">
         <div class="section">
-          <table class="actions">
+          <div>
+            <xsl:apply-templates select="/pfxinternals/targets/targetlist"/>
+          </div>
+          <br/>
+          <xsl:if test="/pfxinternals/includestatistics">
+          <div style="font-size:80%;padding:3px;padding-bottom:10px;">
+          <a href="javascript:expandAll()" style="cursor:pointer;">Expand all</a>&#xa0;
+          <a href="javascript:collapseAll()" style="cursor:pointer;">Collapse all</a>
+          </div>
+          <table id="incstats">
             <tr>
-              <td><a href="{$__contextpath}/pfxinternals?action=reload">Schedule webapp reload</a></td>
-              <td><a href="javascript:removeCookies()">Remove cookies</a></td>
-            </tr>
-            <tr>   
-              <td><a href="{$__contextpath}/pfxinternals?action=invalidate">Invalidate all running sessions</a></td>
+              <th align="left">
+                <xsl:choose>
+                  <xsl:when test="/pfxinternals/includestatistics/@sortby='title'">
+                    <span style="padding-right:3px">&#x25b6;</span>
+                    <a href="{$__contextpath}/pfxinternals/includes?target={enc:encode(/pfxinternals/targets/target/@key,'utf8')}">Part</a>
+                  </xsl:when>
+                  <xsl:otherwise>
+                    <a href="{$__contextpath}/pfxinternals/includes?target={enc:encode(/pfxinternals/targets/target/@key,'utf8')}&amp;sortby=title">Part</a>
+                  </xsl:otherwise>
+                </xsl:choose> 
+              </th>
+              <th align="right">
+                <xsl:choose>
+                  <xsl:when test="/pfxinternals/includestatistics/@sortby='shallow'">
+                    <span style="padding-right:3px">&#x25b6;</span>
+                    <a href="{$__contextpath}/pfxinternals/includes?target={enc:encode(/pfxinternals/targets/target/@key,'utf8')}">Shallow size</a>
+                  </xsl:when>
+                  <xsl:otherwise>
+                    <a href="{$__contextpath}/pfxinternals/includes?target={enc:encode(/pfxinternals/targets/target/@key,'utf8')}&amp;sortby=shallow">Shallow size</a>
+                  </xsl:otherwise>
+                </xsl:choose>
+              </th>
+              <th align="right" style="padding-left:20px;">
+                <xsl:choose>
+                  <xsl:when test="/pfxinternals/includestatistics/@sortby='retained'">
+                    <span style="padding-right:3px">&#x25b6;</span>
+                    <a href="{$__contextpath}/pfxinternals/includes?target={enc:encode(/pfxinternals/targets/target/@key,'utf8')}">Retained size</a>
+                  </xsl:when>
+                  <xsl:otherwise>
+                    <a href="{$__contextpath}/pfxinternals/includes?target={enc:encode(/pfxinternals/targets/target/@key,'utf8')}&amp;sortby=retained">Retained size</a>
+                  </xsl:otherwise>
+                </xsl:choose>
+              </th>
             </tr>
           </table>
+          
+          <script type="text/javascript">
+          
+            var incstats = <xsl:value-of select="/pfxinternals/includestatistics"/>;
+            
+            function formatBytes(bytes) {
+              var str = "" + bytes;
+              var tmp = "";
+              for(var i=0; i &lt; str.length; i++) {
+                 tmp = tmp + str.charAt(i);
+                 if((str.length - i -1) % 3 == 0 &amp;&amp; i &lt; str.length - 1) {
+                   tmp = tmp + ".";
+                 }
+              }
+              return tmp;
+            }
+            
+            function toggleInclude(elem) {
+              elem = elem.parentNode.parentNode;
+              if(elem.include.includes) {
+               
+                for(var i=0; i&lt;elem.include.includes.length; i++) {
+                  var row = elem.include.includes[i].tablerow;
+                  if(row.style.display=="none") {
+                    elem.include.includes[i].tablerow.style.display = "table-row";
+                  } else {
+                    collapse(elem.include.includes[i]);
+                  }
+                }
+                var state=elem.firstChild.firstChild.firstChild.data;
+                if(state == '-') {
+                  state = "+";
+                } else {
+                  state = "-";
+                }
+                elem.firstChild.firstChild.innerHTML=state;
+              }
+            }
+            
+            function collapseAll() {
+              if(incstats.includes) {
+                incstats.tablerow.firstChild.firstChild.innerHTML = "+";
+                for(var i=0; i&lt;incstats.includes.length; i++) {
+                  collapse(incstats.includes[i]);   
+                }
+              }
+            }
+            
+            function collapse(include) {
+              include.tablerow.style.display = 'none';
+              if(include.includes) {
+                include.tablerow.firstChild.firstChild.innerHTML='+';
+              } 
+              if(include.includes) {
+                for(var i=0; i&lt;include.includes.length; i++) {
+                  collapse(include.includes[i]);   
+                }
+              }
+            }
+            
+            function expandAll() {
+              expand(incstats);
+            }
+            
+            function expand(include) {
+              if(include == null) {
+                include = incstats;
+              } 
+              include.tablerow.style.display = "table-row";
+              if(include.includes) {
+                include.tablerow.firstChild.firstChild.innerHTML='-';
+                for(var i=0; i&lt;include.includes.length; i++) {
+                  expand(include.includes[i]);   
+                }
+              } 
+            }
+            
+            function addInclude(include,level) {
+              var elem = document.getElementById('incstats');
+              var tr = document.createElement("tr");
+              var ss;
+              if(level &lt; 2) {
+                if(include.includes) {
+                  ss = "-";
+                } else {
+                  ss = "&#xa0;"
+                }
+              } else {
+                if(include.includes) {
+                  ss = "+";
+                } else {
+                  ss = "&#xa0;"
+                }
+                if(level > 2) {
+                  tr.style.display = 'none';
+                }
+              }
+              elem.appendChild(tr);
+              var td = document.createElement("td");
+              var s = document.createElement("span");
+              s.style.paddingLeft = level*10+'px';
+              s.style.paddingRight = '5px';
+              if(include.includes) {
+                s.setAttribute("onclick","toggleInclude(this);");
+                s.style.cursor = "pointer";
+              }
+              s.appendChild(document.createTextNode(ss));
+              td.appendChild(s);
+              include.tablerow = tr;
+              tr.include = include;
+              td.appendChild(document.createTextNode(include.title));
+              tr.appendChild(td);
+              td = document.createElement("td");
+              td.style.textAlign="right";
+              td.appendChild(document.createTextNode(formatBytes(include.shallow)));
+              tr.appendChild(td);
+              td = document.createElement("td");
+              td.style.textAlign="right";
+              td.appendChild(document.createTextNode(formatBytes(include.retained)));
+              tr.appendChild(td);
+              if(include.includes) {
+                for(var i=0; i&lt;include.includes.length; i++) {
+                  addInclude(include.includes[i],level+1);
+                }
+              }
+            }
+            
+            addInclude(incstats,0);
+            
+            
+          </script>
+          </xsl:if>
+        </div>
+        </xsl:if>
+        
+        <xsl:if test="not($category) or $category='search'">
+        <div class="section">
+         <form action="{$__contextpath}/pfxinternals/search">
+          <table class="searchform"><tr>
+            <td valign="top">
+              <fieldset><legend>File name patterns</legend>
+                <xsl:if test="/pfxinternals/search/@filepatternerror">
+                  <span class="fielderror"><xsl:value-of select="/pfxinternals/search/@filepatternerror"/></span><br/>
+                </xsl:if>
+                <input type="text" size="38" name="filepattern" value="*.xml">
+                  <xsl:if test="/pfxinternals/search/@filepattern"><xsl:attribute name="value"><xsl:value-of select="/pfxinternals/search/@filepattern"/></xsl:attribute></xsl:if>
+                </input>
+                <br/>
+                  <span style="font-size:75%">Patterns are separated by a comma (* = any string, ? = any character)</span>
+                  <input style="visibility:hidden" type="checkbox"/>
+              </fieldset>
+            </td>
+            <td valign="top">
+              <fieldset><legend>Containing text</legend>
+                <xsl:if test="/pfxinternals/search/@textpatternerror">
+                  <span class="fielderror"><xsl:value-of select="/pfxinternals/search/@textpatternerror"/></span><br/>
+                </xsl:if>
+                <input type="text" size="40" name="textpattern" value="">
+                  <xsl:if test="/pfxinternals/search/@textpattern"><xsl:attribute name="value"><xsl:value-of select="/pfxinternals/search/@textpattern"/></xsl:attribute></xsl:if>
+                </input>
+                <br/>
+                
+                <input type="checkbox" name="textpatterncase" value="true" style="vertical-align:middle;font-size:75%;">
+                  <xsl:if test="/pfxinternals/search/@textpatterncase='true'"><xsl:attribute name="checked">checked</xsl:attribute></xsl:if>
+                </input><span>Case sensitive</span>
+                <input type="checkbox" name="textpatternregex" value="true" style="vertical-align:middle;font-size:75%;">
+                  <xsl:if test="/pfxinternals/search/@textpatternregex='true'"><xsl:attribute name="checked">checked</xsl:attribute></xsl:if>
+                </input><span>Regular expression</span>
+                
+              </fieldset>
+            </td>
+            <td valign="top">
+	          <fieldset>
+	            <legend>Search scope</legend>
+	            
+	            <input type="checkbox" name="searchwebapp" value="true">
+                  <xsl:if test="not(/pfxinternals/search/@searchwebapp='false')"><xsl:attribute name="checked">checked</xsl:attribute></xsl:if>
+                </input>Webapp
+                <input type="checkbox" name="searchclasspath" value="true">
+                  <xsl:if test="/pfxinternals/search/@searchclasspath='true'"><xsl:attribute name="checked">checked</xsl:attribute></xsl:if>
+                </input>Classpath<br/>
+                <input type="checkbox" name="searchmodules" value="true">
+                  <xsl:if test="not(/pfxinternals/search/@searchmodules='false')"><xsl:attribute name="checked">checked</xsl:attribute></xsl:if>
+                </input>Modules
+                <select name="searchmodule">
+                  <option>All modules</option>
+                  <xsl:for-each select="/pfxinternals/search/modules/module">
+                    <option><xsl:if test="@name = /pfxinternals/search/@searchmodule"><xsl:attribute name="selected">selected</xsl:attribute></xsl:if><xsl:value-of select="@name"/></option>
+                  </xsl:for-each>
+                </select>
+                <br/>
+	          </fieldset>
+            </td>
+            <td>
+              <input type="hidden" name="action" value="search"/>
+              <input class="searchbutton" type="submit" value="Search"/><br/>
+            </td>
+          </tr></table>
+         </form>
+          <xsl:if test="not(/pfxinternals/search/result/resource)">
+            <div style="color:#666; padding-left: 5px;">Your search did not match!</div>
+          </xsl:if>
+          <xsl:for-each select="/pfxinternals/search/result/resource">
+            <hr class="searchresult"/>
+            <div class="searchresult">
+              <div class="path">
+                <xsl:call-template name="compactPath"><xsl:with-param name="path" select="@path"/></xsl:call-template>
+                <a href="{$__contextpath}/pfxinternals?action=download&amp;resource={enc:encode(@path,'utf-8')}">
+                  <img class="download" src="{$__contextpath}/modules/pustefix-core/img/download.png" title="Download '{@path}'"/>
+                </a>
+              </div>
+              <xsl:for-each select="match">
+                <div class="match">
+                  <span class="line">[<xsl:value-of select="@line"/>]<xsl:if test="@cut='true'"> ...</xsl:if></span>       
+                  <pre style="display:inline;white-space: pre-wrap;"><xsl:value-of select="."/></pre>
+                  <span class="line"><xsl:if test="@cut='true'"> ...</xsl:if></span>
+                </div>
+              </xsl:for-each>
+            </div>
+            
+          </xsl:for-each>
+        </div>
+        </xsl:if>
+        
+        <xsl:if test="not($category) or $category='actions'">
+        <div class="section">
+          <div class="actions">
+            <div class="actiongroup">
+              <div class="actiongrouptitle">General</div>
+              <div><a href="{$__contextpath}/pfxinternals?action=reload">Schedule webapp reload</a></div>
+              <div><a href="javascript:removeCookies()">Remove cookies</a></div>
+              <div><a href="{$__contextpath}/pfxinternals?action=invalidate">Invalidate all running sessions</a></div>
+            </div>
+            <div class="actiongroup">
+              <div class="actiongrouptitle">Target generator</div>
+              <div><a href="{$__contextpath}/pfxinternals?action=toolext">Toggle tooling extensions</a></div>
+              <div><a href="{$__contextpath}/pfxinternals?action=retarget">Reload with cleared cache</a></div>
+            </div>
+          </div>
         </div>
         </xsl:if>
         
@@ -845,6 +1185,9 @@
 
   <xsl:template match="targetlist">
     <select name="target" size="1" onChange="viewTarget(this.value)">
+      <xsl:if test="not(/pfxinternals/targets/target)">
+        <option>Select target</option>
+      </xsl:if>)
       <xsl:for-each select="target">
         <option><xsl:if test="@key = /pfxinternals/targets/target/@key"><xsl:attribute name="selected">true</xsl:attribute></xsl:if><xsl:value-of select="@key"/></option>
       </xsl:for-each>
@@ -907,6 +1250,44 @@
         <img class="download" src="{$__contextpath}/modules/pustefix-core/img/download.png" title="Download/Open"/>
       </a>
     </li>
+  </xsl:template>
+  
+  <xsl:template name="compactPath">
+    <xsl:param name="path"/>
+    <xsl:choose>
+      <xsl:when test="starts-with($path,'jar:') and contains($path,'!')">
+        <xsl:variable name="jarpath" select="substring-before($path,'!')"/>
+        <xsl:choose>
+          <xsl:when test="contains($jarpath,'/')">
+            <xsl:text>jar:file:/.../</xsl:text>
+            <xsl:call-template name="lastPathComponent">
+              <xsl:with-param name="path" select="$jarpath"/>
+            </xsl:call-template>
+            <xsl:value-of select="substring-after($path,'!')"/>
+          </xsl:when>
+          <xsl:otherwise>
+            <xsl:value-of select="$path"/>
+          </xsl:otherwise>
+        </xsl:choose>  
+      </xsl:when>
+      <xsl:otherwise>
+        <xsl:value-of select="$path"/>
+      </xsl:otherwise>
+    </xsl:choose>
+  </xsl:template>
+  
+  <xsl:template name="lastPathComponent">
+    <xsl:param name="path"/>
+    <xsl:choose>
+      <xsl:when test="contains($path,'/')">
+        <xsl:call-template name="lastPathComponent">
+          <xsl:with-param name="path" select="substring-after($path,'/')"/>
+        </xsl:call-template>
+      </xsl:when>
+      <xsl:otherwise>
+        <xsl:value-of select="$path"/>
+      </xsl:otherwise>
+    </xsl:choose>
   </xsl:template>
   
 </xsl:stylesheet>

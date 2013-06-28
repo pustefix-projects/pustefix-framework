@@ -83,7 +83,7 @@
                 <pfx:checkfield>
                   <pfx:name>prefix.Value.<ixsl:value-of select="position()"/></pfx:name>
                   <td class="{$pfx_class}" nowrap="nowrap">
-                    <pfx:error><pfx:image src="/core/img/error.gif" style="vertical-align: middle;"/></pfx:error>
+                    <pfx:error><pfx:image src="/img/error.gif" module="pustefix-core" style="vertical-align: middle;"/></pfx:error>
                     FooBar No. <ixsl:value-of select="position()"/>
                   </td>
                 </pfx:checkfield>
@@ -111,8 +111,9 @@
          Test of render extensions:<br/>
          <input type="button" name="test" onclick="rexTest()" value="test"/>
          <span id="rexresult"/>
+         <span id="rexjsresult"/>
        </div>
-        
+       
       </center>
     </theme>
   </part>
@@ -130,8 +131,11 @@
         <pfx:elink href="ftp://ftp.scc.kit.edu/" target="_popup">
         Goto FTP UniKa!</pfx:elink>
         <br/>
-        <pfx:button page="geninc">Test generated runtime stylesheet include</pfx:button>  
-        <pfx:button page="invalidate">Invalidate this session</pfx:button>  
+        <pfx:button page="geninc">Test generated runtime stylesheet include</pfx:button>&#160;&#160;
+        <pfx:button page="invalidate" target="_top">Invalidate this session</pfx:button>&#160;&#160;
+        <ixsl:if test="/formresult/adultinfo/@adult">
+        <pfx:button page="home" nodata="true" mode="force"><pfx:argument name="invalidate">true</pfx:argument>Directly invalidate session</pfx:button>&#160;&#160; 
+        </ixsl:if>
         <pfx:button page="frames">Goto frames test</pfx:button> 
         <br/>
         <pfx:button page="upload">Test upload mechanism</pfx:button>&#160;&#160;
@@ -315,6 +319,72 @@
   <part name="true" render="true">
     <theme name="default">
       Adult
+    </theme>
+  </part>
+  
+  <part name="headertest" render="true">
+    <theme name="default">
+       HEADERTEST WEBAPP
+    </theme>
+  </part>
+  
+  <part name="incparamtest">
+    <theme name="default">
+      <pfx:includeparam name="hardware-price">xxx</pfx:includeparam>
+      <pfx:if test="$hardware-price='xxx'">
+      <pfx:value-of select="$hardware-price" />
+      </pfx:if>
+      <pfx:include part="incparamtest2">
+        <pfx:includeparam name="hardware" select="$hardware-price"/>
+        <pfx:includeparam name="hardware" apply="true"><pfx:value-of select="$hardware-price"/></pfx:includeparam>
+      </pfx:include> 
+    </theme>
+  </part>
+  
+  <part name="incparamtest2">
+    <theme name="default">
+      <pfx:includeparam name="hardware"/>
+      <pfx:value-of select="$hardware"/>
+    </theme>
+  </part>
+  
+  <part name="part_start" render="true">
+    <theme name="default">
+       <pfx:render part="part_start_render"/>
+    </theme>
+  </part>
+  
+  <part name="part_start_render" render="true">
+    <theme name="default">
+      <pfx:include part="part_dispatch">
+        <pfx:includeparam name="hardware">smartphone</pfx:includeparam>
+      </pfx:include> 
+    </theme>
+  </part>
+  
+  <part name="part_dispatch">
+    <theme name="default">
+      <pfx:includeparam name="colors">
+        <item>red</item>
+        <item>blue</item>
+      </pfx:includeparam>
+      <pfx:includeparam name="hardware"/>
+      <pfx:for-each select="$colors/item">
+        <!-- <pfx:include select-part="concat('part_',$hardware,'_',.)"/>-->
+        X|<pfx:value-of select="position()"/>|<pfx:value-of select="current()/text()"/>|<pfx:if test="position()=last()">LAST</pfx:if>
+      </pfx:for-each>
+    </theme>
+  </part>
+  
+  <part name="part_smartphone_red">
+    <theme name="default">
+      SMARTPHONE RED
+    </theme>
+  </part>
+  
+  <part name="part_smartphone_blue">
+    <theme name="default">
+      SMARTPHONE BLUE
     </theme>
   </part>
   

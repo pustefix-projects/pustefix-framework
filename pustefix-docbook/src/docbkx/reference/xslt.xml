@@ -228,6 +228,9 @@
   
   <pfx:anchor frame="AFrame">AnAnchor</pfx:anchor>
   
+  <!-- Select a page at runtime -->
+  <pfx:page>pageName</pfx:page>
+
   <!-- Select a page alternative by key --> 
   <pfx:altkey>pageAlternativeKey</pfx:altkey>
 
@@ -684,6 +687,11 @@
               </td>
             </tr>
             <tr>
+              <td>level</td>
+              <td>optional</td>
+              <td>Not set by default. Set this to <literal>runtime</literal> if the image should be included at runtime (on the last transformation level).</td>
+            </tr>
+            <tr>
               <td>search</td>
               <td>optional</td>
               <td>Not set by default. Set this to <literal>dynamic</literal> if the image should be dynamically searched. The search order is: current project, common folder, and if a module is specified: overriding module, specified module. The search ends if a matching image is found, regardless if there are matches with a more specific theme down the search chain. See <xref linkend="advanced.dyninclude"/>.</td>
@@ -706,6 +714,13 @@
           </tbody>
         </table>
       </para>
+      <para>
+        If you're including an image at runtime using <literal>level="runtime"</literal>, you can also defer the creation of the <literal>src</literal>, <literal>alt</literal>, <literal>themed-path</literal> and <literal>themed-img</literal> values until runtime using the <literal>pfx:src</literal>, <literal>pfx:alt</literal>, <literal>pfx:themed-path</literal> and <literal>pfx:themed-img</literal> tags instead of the according attributes. The following example shows how to use values coming from the DOM result tree:
+      </para>
+      <programlisting language="xml"><![CDATA[<pfx:image level="runtime">
+  <pfx:src><ixsl:value-of select="/formresult/myimginfo/@mysrc"/></pfx:src>
+  <pfx:alt><ixsl:value-of select="/formresult/myimginfo/@myalt"/></pfx:alt> 
+</pfx:image>]]></programlisting>
     </section>
 
     <section xml:id="xslt.renderextensions">
@@ -715,16 +730,18 @@
        Thus you can include parts dynamically, e.g. you can include a part based on information from the result tree, which
        isn't available on the former transformation levels. This can also help to keep your stylesheets small, but it also has
        some drawbacks: standalone rendering of a part costs more time than doing a regular include and the XML source context
-       node is not defined (at least if a part isn't rendered within a main transformation, but standalone, e.g. triggered by an AJAX call).
+       node can only be relative if the part is rendered within the main transformation, and not standalone, e.g. triggered by an AJAX call.
       </para>    
       <para>
          Render includes are done using the <literal>&lt;pfx:render&gt;</literal> tag. Its syntax is similar to <literal>&lt;pfx:include&gt;</literal>.
          But referenced parts additionally have to be marked as render parts using the <literal>render</literal> attribute.
          You can optionally specify in which variants a render part should be available. All this is necessary
-         to know which parts can be invoked dynamically when pre-generating all pages for production environments. 
+         to know which parts can be invoked dynamically when pre-generating all pages for production environments.
+         Setting the <literal>contextual</literal> attribute to <literal>true</literal> you can specify that a part is context-dependent,
+         meaning that the initial context node for the transformation will be set to the current context node of the main transformation.
       </para>
       <programlisting language="xml"><![CDATA[<include_parts>
-  <part name="Foo" render="true" render-variants="foo foo:bar:baz">
+  <part name="Foo" render="true" render-variants="foo foo:bar:baz" contextual="true">
     <theme name="default">
       ...
     </theme>
@@ -807,6 +824,70 @@
 </pfx:checkinclude>
 ]]></programlisting>
       <para>Supported attributes and usage comply with the <literal>&lt;pfx:include&gt;</literal> element (see <xref linkend="xslt.pfx.include"/>).</para>
+    </section>
+    <section xml:id="xslt.pfx.includeparams">
+      <title>Include parameters (&lt;pfx:includeparam&gt;)</title>
+      <para>
+        When including a part using <literal>&lt;pfx:include&gt;</literal>, you can pass parameters, which will be available within the templates
+        applied during the current XSL transformation.
+      </para>
+      <para>
+        An include parameter can be passed by adding an according <literal>&lt;pfx:includeparam&gt;</literal> child element to the <literal>&lt;pfx:include&gt;</literal> element.
+        The syntax is similar to XSL template parameters.
+      </para> 
+<programlisting language="xml"><![CDATA[<pfx:include part="foo">
+  <pfx:includeparam name="myparam">myvalue</pfx:includeparam>
+  <pfx:includeparam name="another" select="/xpath/expression"/>
+  <pfx:includeparam name="xmlparam" tunnel="yes">
+     <item id="foo"/>
+     <item id="bar"/>
+  </pfx:include>
+</pfx:include>
+]]></programlisting>
+      <para>Include parameter values can be simple strings, nodesets or evaluation results of XPath expressions. Include parameters can be tunneled, i.e.
+            you can pass parameters to nested includes without having to newly declare the parameter on each include level.
+      </para>
+      <para>
+        Within the included part you can access passed include parameters by declaring them at the top of the part. Like with XSL parameters, you can just declare empty
+        parameters, set default values or mark a parameter as tunneled (without marking it, it will be overlaid). 
+      </para>
+<programlisting language="xml"><![CDATA[<part name="hey">
+  <theme name="default">
+    <pfx:includeparam name="myparam"/>
+    <pfx:includeparam name="another">default</pfx:include-param>
+    <pfx:includeparam name="xmlparam" tunnel="yes"/>
+]]></programlisting>
+      <para>
+        Having declared an include parameter, you can use one of Pustefix's builtin templates to operate on this parameter, e.g. write its value, iterate over its value
+        or check a condition against it. You can not only reference the parameter itself, but write complex XPath expressions.
+      </para>
+<programlisting language="xml"><![CDATA[<pfx:value-of select="$myparam"/>
+<pfx:value-of select="concat($myparam,'xyz')"/>
+
+<pfx:for-each select="$xmlparam/item">
+  <pfx:value-of select="@id"/>
+</pfx:for-each>
+
+<pfx:if test="$another='...'">...</pfx:if>
+
+<pfx:choose>
+  <pfx:when test="$another='...'">...</pfx:when
+  <pfx:otherwise>...</pfx:otherwise>
+</pfx:choose>
+]]></programlisting>
+      <para>
+        Besides these special templates some of Pustefix's core templates also have support for include parameters, i.e. the according elements provide
+        attributes which support include parameters or XPath expressions. Usually these attributes are prefixed with <literal>select-</literal>.
+      </para>
+<programlisting language="xml"><![CDATA[<pfx:include select-href="$myparam" select-part="concat($anotherparam,'xyz')"/>
+
+<pfx:checkinclude select-part="$myparam" select-href="..."/> 
+
+<pfx:checknoinclude select-part="$myparam" select-href="..."/> 
+
+<pfx:image select-src="$myparam" select-alt="..."/>
+]]></programlisting>
+
     </section>
   </section>
 
@@ -892,6 +973,15 @@
           </tbody>
         </table>
       </para>
+      <para>
+        Pustefix usually by default generates some hidden fields which are placed directly under the HTML <literal>form</literal> tag, but you
+        can explicitely control where Pustefix should place the fields using the <literal>&lt;pfx:hiddenfields/&gt;</literal> element.
+      </para>
+<programlisting language="xml"><![CDATA[<pfx:forminput>
+  <div>
+    <pfx:hiddenfields/>
+  </div>
+</pfx:forminput>]]></programlisting>
     </section>      
     <section xml:id="xslt.forms.submit">
       <title>Submitting forms</title>
@@ -1788,6 +1878,12 @@
   Display if page 'mypage' is accessible 
 </ixsl:test>]]></programlisting>
     </para>
+    </para>
+
+   <section xml:id="xslt.extensions.xpathfunctions.page">
+      <title>Page functions</title>
+
+    <para>
       <emphasis role="strong">Function:</emphasis> <emphasis>number</emphasis> <emphasis role="strong">pfx:isVisible</emphasis>(<emphasis>string</emphasis>)
     </para>
     <para>
@@ -1823,7 +1919,12 @@
     <para>
        The <emphasis role="strong">pfx:getDisplayPageName</emphasis> function returns the display name of the current page.
     </para>
-     <para></para>
+ 
+   </section>
+
+   <section xml:id="xslt.extensions.xpathfunctions.include">
+      <title>Include functions</title>
+
      <para>
       <emphasis role="strong">Function:</emphasis> <emphasis>boolean</emphasis> <emphasis role="strong">pfx:checkInclude</emphasis>(<emphasis>string, string, string, string</emphasis>)
     </para>
@@ -1835,6 +1936,77 @@
           <listitem><literal>false</literal>, if the include part can't be found</listitem>
       </itemizedlist>
     </para>
+   
+    </section>
+
+    <section xml:id="xslt.extensions.xpathfunctions.string">
+      <title>String functions</title>
+    
+      <para>
+        <emphasis role="strong">Function:</emphasis> <emphasis>boolean</emphasis> <emphasis role="strong">pfx:ends-with</emphasis>(<emphasis>string, string</emphasis>)
+      </para>
+      <para>
+        The <emphasis role="strong">pfx:ends-with</emphasis> function returns true if the first argument string ends with the second argument string, and otherwise returns false.
+      </para>
+
+      <para></para>
+      <para>
+        <emphasis role="strong">Function:</emphasis> <emphasis>string</emphasis> <emphasis role="strong">pfx:lower-case</emphasis>(<emphasis>string</emphasis>)
+      </para>
+      <para>
+        The <emphasis role="strong">pfx:lower-case</emphasis> function converts all of the characters in the arguments string to lower case.
+      </para>
+
+      <para></para>
+      <para>
+        <emphasis role="strong">Function:</emphasis> <emphasis>string</emphasis> <emphasis role="strong">pfx:upper-case</emphasis>(<emphasis>string</emphasis>)
+      </para>
+      <para>
+        The <emphasis role="strong">pfx:upper-case</emphasis> function converts all of the characters in the arguments string to upper case.
+      </para>
+
+    </section>
+
+    <section xml:id="xslt.extensions.xpathfunctions.development">
+      <title>Development functions</title>
+
+      <para>
+        <emphasis role="strong">Function:</emphasis> <emphasis>void</emphasis> <emphasis role="strong">pfx:sleep</emphasis>(<emphasis>number</emphasis>)
+      </para>
+      <para>
+        The <emphasis role="strong">pfx:sleep</emphasis> function pauses XSLT processing for the specified number of milliseconds. This function is intended for debugging purpose only.
+      </para>
+
+    </section>
+
+   <section xml:id="xslt.extensions.xpathfunctions.misc">
+      <title>Miscellaneous functions</title>
+
+    <para>
+      <emphasis role="strong">Function:</emphasis> <emphasis>string</emphasis> <emphasis role="strong">pfx:getEnvProperty</emphasis>(<emphasis>string</emphasis>)
+    </para>
+    <para>
+       The <emphasis role="strong">pfx:getEnvProperty</emphasis> function returns then environment property denoted by the passed argument.
+    </para>
+
+    <para></para>
+    <para>
+      <emphasis role="strong">Function:</emphasis> <emphasis>string</emphasis> <emphasis role="strong">pfx:escapeJS</emphasis>(<emphasis>string</emphasis>)
+    </para>
+    <para>
+       The <emphasis role="strong">pfx:escapeJS</emphasis> function escapes Javascript data by replacing non-alphanumeric characters by the according \xHH and \uHHHH escape sequences.
+    </para>
+
+   <para></para>
+    <para>
+      <emphasis role="strong">Function:</emphasis> <emphasis>boolean</emphasis> <emphasis role="strong">pfx:isBot</emphasis>()
+    </para>
+    <para>
+       The <emphasis role="strong">pfx:isBot</emphasis> function returns true if the current request is made by a bot, otherwise it returns false.
+    </para>
+
+    </section>
+
   </section>
   </section>
 

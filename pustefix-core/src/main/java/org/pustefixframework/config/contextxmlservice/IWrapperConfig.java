@@ -42,7 +42,7 @@ public interface IWrapperConfig {
      * 
      * @return wrapper class
      */
-    Class<? extends IWrapper> getWrapperClass();
+    Class<?> getWrapperClass();
 
     /**
      * If <code>true</code> the state will not check whether the correspondings
@@ -76,5 +76,9 @@ public interface IWrapperConfig {
     IHandler getHandler();
     
     String getTenant();
+    
+    Class<?> getHandlerClass();
+    
+    String getHandlerBeanRef();
     
 }

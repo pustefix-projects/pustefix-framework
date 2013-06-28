@@ -919,12 +919,12 @@ public interface State {
                 <td>This attribute specifies if the parameter must be given (mandatory), or if it's not considered to be an error if it is omitted (optional). The special value indexed tells the system that it should search for occurrences of the parameter name with a suffix appended of the form AParamName.ASuffix. The suffix string must be unique for every occurrence of the parameter named AParamName. Indexed parameters are never mandatory.</td>
               </tr>
               <tr>
-                <td>occurrence</td>
+                <td>frequency</td>
                 <td>Optional, default is single</td>
                 <td>This attribute specifies if only one parameter of the same name should be accepted or multiple. This determines if the generated getter method's return value is a single object or an array.</td>
               </tr>
               <tr>
-                <td>occurrence</td>
+                <td>missingscode</td>
                 <td>Optional, default is de.schlund.pfixcore.generator.MISSING_PARAM</td>
                 <td>This attribute applies only to mandatory parameters. It allows to specify a different than the default StatusCode to use when the parameter is not supplied.</td>
               </tr>

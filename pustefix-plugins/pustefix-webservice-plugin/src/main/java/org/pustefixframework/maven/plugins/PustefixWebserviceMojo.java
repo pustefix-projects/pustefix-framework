@@ -175,7 +175,6 @@ public class PustefixWebserviceMojo extends AbstractMojo {
                     File wsdlDir = tmpDir;
                     if (globConf.getWSDLSupportEnabled()) {
                         String wsdlRepo = globConf.getWSDLRepository();
-                        if (wsdlRepo.startsWith("/")) wsdlRepo.substring(1);
                         wsdlDir = new File(webappdir, wsdlRepo);
                         if (!wsdlDir.exists()) {
                             boolean ok = wsdlDir.mkdir();
@@ -186,7 +185,6 @@ public class PustefixWebserviceMojo extends AbstractMojo {
                     File stubDir = tmpDir;
                     if (globConf.getStubGenerationEnabled()) {
                         String stubRepo = globConf.getStubRepository();
-                        if (stubRepo.startsWith("/")) stubRepo.substring(1);
                         stubDir = new File(webappdir, stubRepo);
                         if (!stubDir.exists()) {
                             boolean ok = stubDir.mkdir();

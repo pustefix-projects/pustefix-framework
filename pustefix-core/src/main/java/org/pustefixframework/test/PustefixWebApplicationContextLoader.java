@@ -18,7 +18,10 @@
 package org.pustefixframework.test;
 
 import java.io.File;
+import java.io.IOException;
 import java.net.MalformedURLException;
+
+import javax.servlet.ServletContext;
 
 import org.pustefixframework.container.spring.beans.PustefixWebApplicationContext;
 import org.pustefixframework.http.internal.PustefixInit;
@@ -31,6 +34,7 @@ import de.schlund.pfixcore.exception.PustefixCoreException;
 import de.schlund.pfixxml.config.GlobalConfig;
 import de.schlund.pfixxml.resources.FileResource;
 import de.schlund.pfixxml.resources.ResourceUtil;
+import de.schlund.pfixxml.util.FileUtils;
 
 /**
  * ContextLoader strategy implementation for PustefixWebApplicationContext loading.
@@ -43,6 +47,7 @@ import de.schlund.pfixxml.resources.ResourceUtil;
 public class PustefixWebApplicationContextLoader implements ContextLoader {
     
     private File docroot;
+    private ServletContext servletContext;
     
     public PustefixWebApplicationContextLoader() {
         
@@ -50,6 +55,15 @@ public class PustefixWebApplicationContextLoader implements ContextLoader {
     
     public PustefixWebApplicationContextLoader(File docroot) {
         this.docroot = docroot;
+    }
+    
+    public PustefixWebApplicationContextLoader(ServletContext servletContext) {
+    	this.servletContext = servletContext;
+    }
+    
+    public PustefixWebApplicationContextLoader(File docroot, ServletContext servletContext) {
+        this.docroot = docroot;
+        this.servletContext = servletContext;
     }
     
     /**
@@ -64,7 +78,17 @@ public class PustefixWebApplicationContextLoader implements ContextLoader {
         
         //Mock ServletContext
         if(docroot==null) docroot = GlobalConfig.guessDocroot();
-        MockServletContext servletContext = new MockServletContext(docroot.toURI().toString());
+        
+        if(servletContext == null) {
+        	servletContext = new MockServletContext(docroot.toURI().toString());
+        	try {
+        		File tmpDir = FileUtils.createTemporaryDirectory(null);
+        		((MockServletContext)servletContext).addInitParameter("logroot", tmpDir.getCanonicalPath());
+        	} catch(IOException x) {
+        		throw new RuntimeException("Error creating temporary log directory", x);
+        	}
+        	
+        }
         
         PustefixInit pustefixInit;
         try {

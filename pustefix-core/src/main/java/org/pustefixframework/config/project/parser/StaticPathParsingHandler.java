@@ -28,8 +28,6 @@ import com.marsching.flexiparse.parser.exception.ParserException;
 
 /**
  * Handler reading /p:project-config/p:application/p:static//p:path elements
- * 
- * @author mleidig@schlund.de
  *
  */
 public class StaticPathParsingHandler extends CustomizationAwareParsingHandler {
@@ -41,7 +39,12 @@ public class StaticPathParsingHandler extends CustomizationAwareParsingHandler {
         String path = element.getTextContent().trim();
         if(path.length() > 0) {
             StaticPathInfo staticPathInfo = ParsingUtils.getSingleTopObject(StaticPathInfo.class, context);
-            staticPathInfo.addStaticPath(path);
+            boolean i18n = false;
+            String i18nAttr = element.getAttribute("i18n").trim();
+            if(i18nAttr.length() > 0) {
+                i18n = Boolean.parseBoolean(i18nAttr);
+            }
+            staticPathInfo.addStaticPath(path, i18n);
         }
     }
     

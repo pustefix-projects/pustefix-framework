@@ -113,7 +113,7 @@ public class TargetGenerator implements ResourceVisitor, ServletContextAware, In
     public static final String CACHEDIR = ".cache";
     
     private static final char RENDER_KEY_SEPARATOR = '#';
-    
+       
     private static final Logger LOG = Logger.getLogger(TargetGenerator.class);
 
     private PageTargetTree pagetree = new PageTargetTree();
@@ -162,6 +162,8 @@ public class TargetGenerator implements ResourceVisitor, ServletContextAware, In
     private Map<String, String> renderParams;
     private ServletContext servletContext;
     private TenantInfo tenantInfo;
+    
+    private Map<String, String> pageToDefiningModule;
     
     private Document dependXmlDoc;
     
@@ -221,6 +223,7 @@ public class TargetGenerator implements ResourceVisitor, ServletContextAware, In
     private void reload() throws Exception {
         pagetree = new PageTargetTree();
         alltargets.clear();
+        cacheFactory.reset();
         includeDocumentFactory.reset();
         targetDependencyRelation.reset();
         auxDependencyFactory.reset();
@@ -228,6 +231,10 @@ public class TargetGenerator implements ResourceVisitor, ServletContextAware, In
         sharedLeafFactory.reset();
         pageInfoFactory.reset();
         includePartsInfo.reset();
+        File[] files = cacheDir.getFile().listFiles();
+        for(File file:files) {
+        	FileUtils.delete(file);
+        }
         loadConfig(config_path);
     }
     
@@ -330,30 +337,52 @@ public class TargetGenerator implements ResourceVisitor, ServletContextAware, In
                 uri = "docroot:/" + href;
             }
         }
-        Resource res = ResourceUtil.getResource(uri);
+        Resource res;
+        try {
+            res = ResourceUtil.getResource(uri);
+        } catch(IllegalArgumentException x) {
+            Throwable cause = x.getCause();
+            if(cause != null && cause instanceof URISyntaxException) {
+                LOG.warn("Invalid render href '" + uri +"'.");
+                return null;
+            } else {
+                throw x;
+            }
+        }
         IncludePartsInfo info = includePartsInfo.getIncludePartsInfo(res);
-        IncludePartInfo partInfo = info.getParts().get(part);
-        if(partInfo != null) {
-            if(partInfo.isRender()) {
-                String selectedVariant = null;
-                if(variant != null) {
-                    String[] variants = variant.getVariantFallbackArray();
-                    for (int i = 0; i < variants.length; i++) {
-                        if(partInfo.getRenderVariants().contains(variants[i])) {
-                            selectedVariant = variants[i];
-                            break;
-                        }
-                    }
-                }
-                if("dynamic".equals(search)) {
-                    if(res instanceof ModuleResource) {
-                        module = res.toURI().getAuthority();
-                    }
-                }
-                if(module == null || module.equals("")) module = "WEBAPP";
-                return createTargetForRender(href, part, module, selectedVariant);
-            } else throw new RuntimeException("Part '" + part + "' in '" + res.toURI() + "' is not marked as render part");
-        } else throw new RuntimeException("Render part '" + part + "' in '" + res.toURI() + "' not found.");
+        if(info != null) {
+        	IncludePartInfo partInfo = info.getParts().get(part);
+        	if(partInfo != null) {
+        		if(partInfo.isRender()) {
+        			String selectedVariant = null;
+        			if(variant != null) {
+        				String[] variants = variant.getVariantFallbackArray();
+        				for (int i = 0; i < variants.length; i++) {
+        					if(partInfo.getRenderVariants().contains(variants[i])) {
+        						selectedVariant = variants[i];
+        						break;
+        					}
+        				}
+        			}
+        			if("dynamic".equals(search)) {
+        				if(res instanceof ModuleResource) {
+        					module = res.toURI().getAuthority();
+        				} else {
+                                                module = null;
+                                        }
+        			}
+        			if(module == null || module.equals("")) module = "WEBAPP";
+        			return createTargetForRender(href, part, module, selectedVariant, partInfo.getContentType(), partInfo.isContextual());
+        		} else {
+        			LOG.warn("Part '" + part + "' in '" + res.toURI() + "' is not marked as render part");
+        		}
+        	} else {
+        		LOG.warn("Render part '" + part + "' in '" + res.toURI() + "' not found.");
+        	}
+        } else {
+        	LOG.warn("Render part resource '" + res.toURI() +"' not found.");
+        }
+        return null;
     }
 
     public Target createXMLLeafTarget(String key) {
@@ -364,6 +393,14 @@ public class TargetGenerator implements ResourceVisitor, ServletContextAware, In
         return createTarget(TargetType.XSL_LEAF, key, null);
     }
 
+    public String getDefiningModule(String page) {
+    	String definingModule = null;
+    	if(page != null) {
+    		definingModule = pageToDefiningModule.get(page);
+    	}
+    	return definingModule;
+    }
+    
     //-- misc
 
     public void addListener(TargetGeneratorListener listener) {
@@ -391,18 +428,22 @@ public class TargetGenerator implements ResourceVisitor, ServletContextAware, In
 
     public synchronized boolean tryReinit() throws Exception {
         if (needsReload()) {
-            LOG.info("\n\n###############################\n" + "#### Reloading depend file: " + this.config_path.toString() + "\n" + "###############################\n");
-            synchronized (alltargets) {
-                if (alltargets != null && !alltargets.isEmpty()) {
-                    targetDependencyRelation.resetAllRelations((Collection<Target>) alltargets.values());
-                }
-            }
-            reload();
-            this.fireConfigurationChangeEvent();
-            return true;
+            return forceReinit();
         } else {
             return false;
         }
+    }
+    
+    public synchronized boolean forceReinit() throws Exception {
+        LOG.info("\n\n###############################\n" + "#### Reloading depend file: " + this.config_path.toString() + "\n" + "###############################\n");
+        synchronized (alltargets) {
+            if (alltargets != null && !alltargets.isEmpty()) {
+                targetDependencyRelation.resetAllRelations((Collection<Target>) alltargets.values());
+            }
+        }
+        reload();
+        this.fireConfigurationChangeEvent();
+        return true;
     }
 
     private boolean needsReload() {
@@ -674,29 +715,39 @@ public class TargetGenerator implements ResourceVisitor, ServletContextAware, In
 
         if(cacheDir == null) {
             cacheDir = ResourceUtil.getFileResourceFromDocroot(CACHEDIR);
-            if (!cacheDir.exists()) {
-                cacheDir.mkdirs();
-            } else if (!cacheDir.isDirectory() || !cacheDir.canRead()) {
-                throw new XMLException("Directory " + cacheDir + " is not readeable or is no directory");
-            } else if (!cacheDir.canWrite()) {
-                // When running in WAR mode this is okay
-                LOG.warn("Directory " + cacheDir + " is not writable!");
-                if(servletContext.getRealPath("/") == null) {
-                    File tmpDir = (File)servletContext.getAttribute("javax.servlet.context.tempdir");
-                    File dir = new File(tmpDir, "pustefix-xsl-cache");
-                    if(dir.exists()) {
-                        FileUtils.delete(dir);
-                        dir.mkdir();
+            if(cacheDir.exists()) {
+            	if(!cacheDir.isDirectory()) {
+            		throw new XMLException("File " + cacheDir + " is is no directory");
+            	}
+            	if(!cacheDir.canRead()) {
+                    throw new XMLException("Directory " + cacheDir + " is not readeable");
+            	}
+            	if(!cacheDir.canWrite()) {
+            		LOG.warn("Directory " + cacheDir + " is not writable!");
+            	}
+            } else {
+            	boolean ok = cacheDir.mkdirs();
+            	if(!ok) {
+            		if(servletContext.getRealPath("/") == null) {
+                        File tmpDir = (File)servletContext.getAttribute("javax.servlet.context.tempdir");
+                        File dir = new File(tmpDir, "pustefix-xsl-cache");
+                        if(dir.exists()) {
+                            FileUtils.delete(dir);
+                            dir.mkdir();
+                        }
+                        cacheDir = ResourceUtil.getFileResource(dir.toURI());
+                    } else {
+                    	throw new XMLException("Can't create cache directory: "+ cacheDir);
                     }
-                    cacheDir = ResourceUtil.getFileResource(dir.toURI());
-                }
+            	}
             }
         }
 
         HashSet<String> depxmls = new HashSet<String>();
         HashSet<String> depxsls = new HashSet<String>();
         HashMap<String, TargetStruct> allstructs = new HashMap<String, TargetStruct>();
-
+        pageToDefiningModule = new HashMap<String, String>();
+        
         long start = System.currentTimeMillis();
         for (int i = 0; i < targetnodes.getLength(); i++) {
             Element node = (Element) targetnodes.item(i);
@@ -757,6 +808,9 @@ public class TargetGenerator implements ResourceVisitor, ServletContextAware, In
             String defModule = node.getAttribute("defining-module");
             if(!defModule.equals("")) {
                 params.put("__defining_module", defModule);
+                if(pagename.length() > 0) {
+                	pageToDefiningModule.put(pagename, defModule);
+                }
             }
             // TODO Check that docroot really is not needed by targets
             // params.put("docroot", confile.getBase().getPath());
@@ -818,9 +872,9 @@ public class TargetGenerator implements ResourceVisitor, ServletContextAware, In
                     }
                     if(href.startsWith("/")) href = href.substring(1);
                     String part = partInfo.getName();
-                    createTargetForRender(href, part, module, null);
+                    createTargetForRender(href, part, module, null, partInfo.getContentType(), partInfo.isContextual());
                     for(String variant: partInfo.getRenderVariants()) {
-                        createTargetForRender(href, part, module, variant);
+                        createTargetForRender(href, part, module, variant, partInfo.getContentType(), partInfo.isContextual());
                     }
                 }
             }
@@ -924,7 +978,7 @@ public class TargetGenerator implements ResourceVisitor, ServletContextAware, In
 
     // *******************************************************************************************
     
-    private Target createTargetForRender(String href, String part, String module, String variantId) {
+    private Target createTargetForRender(String href, String part, String module, String variantId, String contentType, boolean isContextual) {
         
         Themes themes = global_themes;
         if(variantId != null) {
@@ -952,6 +1006,21 @@ public class TargetGenerator implements ResourceVisitor, ServletContextAware, In
             xmlTarget.addParam("render_href", href);
             xmlTarget.addParam("render_part", part);
             xmlTarget.addParam("render_module", module);
+            if(contentType != null) {
+            	xmlTarget.addParam("render_ctype", contentType);
+            }
+            Iterator<String> it = renderParams.keySet().iterator();
+            while(it.hasNext()) {
+                String name = it.next();
+                xmlTarget.addParam(name, renderParams.get(name));
+            }
+            if (getToolingExtensions()) {
+                xmlTarget.addParam("prohibitEdit", "no");
+            } else {
+                xmlTarget.addParam("prohibitEdit", "yes");
+            }
+            xmlTarget.addParam(XSLPARAM_SITEMAP, siteMap.getSiteMapXMLElement(getXsltVersion(), renderParams.get("lang")));
+            
             
             XSLVirtualTarget xslTarget = (XSLVirtualTarget)createTarget(TargetType.XSL_VIRTUAL, renderKey + ".xsl", themes);
             xmlSource = xmlTarget;
@@ -960,7 +1029,7 @@ public class TargetGenerator implements ResourceVisitor, ServletContextAware, In
             xslTarget.setXSLSource(xslSource);
             xslTarget.addParam(XSLPARAM_TG, this);
             xslTarget.addParam(XSLPARAM_TKEY, renderKey + ".xsl");
-            Iterator<String> it = renderParams.keySet().iterator();
+            it = renderParams.keySet().iterator();
             while(it.hasNext()) {
                 String name = it.next();
                 xslTarget.addParam(name, renderParams.get(name));
@@ -968,6 +1037,21 @@ public class TargetGenerator implements ResourceVisitor, ServletContextAware, In
             //create no doctype declaration
             xslTarget.removeParam("outputdoctype-public");
             xslTarget.removeParam("outputdoctype-system");
+            
+            if(contentType != null) {
+            	xslTarget.addParam("content-type", contentType);
+            	String outMethod;
+            	if(contentType.equals("text/html")) {
+            		outMethod = "html";
+            	} else if(contentType.equals("text/xml") || contentType.equals("application/xml")) {
+            		outMethod = "xml";
+            	} else {
+            		outMethod = "text";
+            	}
+            	xslTarget.addParam("outputmethod", outMethod);
+            }
+            xslTarget.addParam("render_contextual", isContextual);
+            xslTarget.addParam(XSLPARAM_SITEMAP, siteMap.getSiteMapXMLElement(getXsltVersion(), renderParams.get("lang")));
             target = xslTarget;
         }
         return target;

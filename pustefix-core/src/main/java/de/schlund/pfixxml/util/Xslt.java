@@ -46,6 +46,7 @@ import javax.xml.transform.stream.StreamSource;
 
 import org.apache.log4j.Logger;
 import org.w3c.dom.Document;
+import org.w3c.dom.Element;
 import org.xml.sax.InputSource;
 
 import de.schlund.pfixxml.resources.FileResource;
@@ -166,6 +167,23 @@ public class Xslt {
     }
     
     public static void transform(Document xml, Templates templates, Map<String, Object> params, Result result, String encoding) throws TransformerException {
+    	try {
+            doTransform(xml, templates, params, result, encoding);
+    	} catch(TransformerException x) {
+    		XsltVersion xsltVersion = getXsltVersion(templates);
+    		XsltSupport xsltSupport = XsltProvider.getXsltSupport(xsltVersion);
+    		String systemId = xsltSupport.getSystemId(templates);
+    		if(systemId != null) {
+	    		InputSource source = new InputSource(systemId);
+	    		templates = loadTemplates(xsltVersion, source, null, true);
+	    		doTransform(xml, templates, params, result, encoding);
+    		} else {
+    			throw x;
+    		}
+    	}
+    }
+    
+    private static void doTransform(Document xml, Templates templates, Map<String, Object> params, Result result, String encoding) throws TransformerException {
         try {
             doTransform(xml,templates,params,result,encoding,false);
         } catch(UnsupportedOperationException x) {
@@ -215,12 +233,31 @@ public class Xslt {
             trafo.setErrorListener(new PFErrorListener());
             trafo.transform(new DOMSource(Xml.parse(xsltVersion,xml)), result);
         } catch(TransformerException x) {
-            Throwable t=ExtensionFunctionUtils.getExtensionFunctionError();
-            if(t!=null) {
-                ExtensionFunctionUtils.setExtensionFunctionError(null);
-                throw new XsltExtensionFunctionException(t);
-            }
-            throw x;
+        	
+        	String msg = x.getMessage();
+        	Throwable extFuncError = ExtensionFunctionUtils.getExtensionFunctionError();
+        	if(extFuncError != null || (msg != null && msg.contains("Exception in extension function"))) {
+        		if(extFuncError == null) {
+        			extFuncError = x;
+        		} else {
+        			ExtensionFunctionUtils.setExtensionFunctionError(null);
+        		}
+        		String extFuncMsg = x.getMessageAndLocation();
+        		if(extFuncMsg != null && extFuncMsg.contains("Exception in extension function") 
+        				&& x.getLocator() != null && x.getLocator() instanceof Element) {
+        			Element element = (Element)x.getLocator();
+            		String val = element.getAttribute("select");
+            		if(val.length() > 0) {
+            			extFuncMsg += "; Expression: \"" + val + "\"";
+            		}
+        		}
+        		TransformerException xsltEx = new XsltExtensionFunctionException(extFuncMsg, extFuncError);
+        		xsltEx.setLocator(x.getLocator());
+        		throw xsltEx;
+        	} else {
+        		throw x;
+        	}
+            
         } finally {
            if(trace) {
               String traceStr=traceWriter.toString();
@@ -337,8 +374,7 @@ public class Xslt {
                     // There is a bug in Saxon 6.5.3 which causes
                     // a NullPointerException to be thrown, if systemId
                     // is not set
-                    source.setSystemId(target.getTargetGenerator().getDisccachedir().toURI().toString() + "/" + path);
-                
+                    source.setSystemId(target.getTargetKey());
                     // Register included stylesheet with target
                     parent.getAuxDependencyManager().addDependencyTarget(target.getTargetKey());
                     return source;
@@ -349,7 +385,7 @@ public class Xslt {
                 throw new TransformerException("Resource can't be found: " + uri.toString());
             }
             try {
-            	Source source = new StreamSource(resource.getInputStream(), path);
+            	Source source = new StreamSource(resource.getInputStream(), resource.toURI().toString());
             	return source;
             } catch(IOException x) {
             	throw new TransformerException("Can't read resource: " + path);

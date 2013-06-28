@@ -37,6 +37,8 @@ import com.marsching.flexiparse.parser.exception.ParserException;
 
 import de.schlund.pfixcore.util.ModuleDescriptor;
 import de.schlund.pfixcore.util.ModuleInfo;
+import de.schlund.pfixxml.LanguageInfo;
+import de.schlund.pfixxml.TenantInfo;
 import de.schlund.pfixxml.config.EnvironmentProperties;
 
 public class DocrootRequestHandlerParsingHandler implements ParsingHandler {
@@ -61,22 +63,23 @@ public class DocrootRequestHandlerParsingHandler implements ParsingHandler {
             
             StaticPathInfo staticPathInfo = new StaticPathInfo();
             //Add pre-defined static paths
-            staticPathInfo.addStaticPath("modules/pustefix-core/img");
-            staticPathInfo.addStaticPath("modules/pustefix-core/script");
-            staticPathInfo.addStaticPath("modules/pustefix-webservices-jaxws/script");
-            staticPathInfo.addStaticPath("modules/pustefix-webservices-jsonws/script");
-            staticPathInfo.addStaticPath("wsscript");
+            staticPathInfo.addStaticPath("modules/pustefix-core/img", false);
+            staticPathInfo.addStaticPath("modules/pustefix-core/script", false);
+            staticPathInfo.addStaticPath("modules/pustefix-webservices-jaxws/script", false);
+            staticPathInfo.addStaticPath("modules/pustefix-webservices-jsonws/script", false);
+            staticPathInfo.addStaticPath("wsscript", false);
  
             Set<String> moduleNames = ModuleInfo.getInstance().getModules();
             for(String moduleName: moduleNames) {
                 ModuleDescriptor moduleDesc = ModuleInfo.getInstance().getModuleDescriptor(moduleName);
                 List<String> paths = moduleDesc.getStaticPaths();
                 for(String path: paths) {
-                    staticPathInfo.addStaticPath("modules/" + moduleName + path);
+                    boolean i18n = moduleDesc.isI18NPath(path);
+                    staticPathInfo.addStaticPath("modules/" + moduleName + path, i18n);
                 }
             }
             
-            staticPathInfo.setBasePath(basePath);
+            staticPathInfo.setBasePath(basePath, Boolean.parseBoolean(basePathElement.getAttribute("i18n").trim()));
             staticPathInfo.setDefaultPath(defaultPath);
             
             context.getObjectTreeElement().addObject(staticPathInfo);
@@ -90,7 +93,11 @@ public class DocrootRequestHandlerParsingHandler implements ParsingHandler {
             beanBuilder.addPropertyValue("base", staticPathInfo.getBasePath());
             if(staticPathInfo.getDefaultPath() != null && !staticPathInfo.getDefaultPath().equals("")) beanBuilder.addPropertyValue("defaultPath", staticPathInfo.getDefaultPath());
             beanBuilder.addPropertyValue("passthroughPaths", staticPathInfo.getStaticPaths());
+            beanBuilder.addPropertyValue("i18NPaths", staticPathInfo.getI18NPaths());
+            beanBuilder.addPropertyValue("i18NBase", staticPathInfo.isBaseI18N());
             beanBuilder.addPropertyValue("mode", EnvironmentProperties.getProperties().getProperty("mode"));
+            beanBuilder.addPropertyReference("tenantInfo", TenantInfo.class.getName());
+            beanBuilder.addPropertyReference("languageInfo", LanguageInfo.class.getName());
             
             context.getObjectTreeElement().addObject(new BeanDefinitionHolder(beanBuilder.getBeanDefinition(), "org.pustefixframework.http.DocrootRequestHandler"));
             

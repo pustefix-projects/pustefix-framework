@@ -107,7 +107,7 @@ public class ModuleInfo {
     
     private void getOverridingModules(String moduleName, ModuleFilter filter, String resourcePath, List<String> modules) {
         for(ModuleDescriptor moduleDesc:moduleDescMap.values()) {
-            if((filter == null || filter.accept(moduleDesc.getModuleOverrideFilterAttributes())) && moduleDesc.overridesResource(moduleName, resourcePath)) {
+            if((filter == null || moduleDesc.getModuleOverrideFilterAttributes().isEmpty() || filter.accept(moduleDesc.getModuleOverrideFilterAttributes())) && moduleDesc.overridesResource(moduleName, resourcePath)) {
                 if(!modules.contains(moduleDesc.getName())) {
                     modules.add(0, moduleDesc.getName());
                     getOverridingModules(moduleDesc.getName(), filter, resourcePath, modules);

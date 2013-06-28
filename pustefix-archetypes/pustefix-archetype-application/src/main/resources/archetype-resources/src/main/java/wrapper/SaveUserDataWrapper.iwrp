@@ -3,7 +3,7 @@
            xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
            xsi:schemaLocation="http://www.pustefix-framework.org/2008/namespace/iwrapper 
                                http://www.pustefix-framework.org/2008/namespace/iwrapper.xsd">
-  
+
   <!-- This handler will process the data -->
   <ihandler class="${package}.handler.SaveUserDataHandler"/>
 

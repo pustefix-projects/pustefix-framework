@@ -50,6 +50,8 @@ import java.util.Properties;
 import java.util.Set;
 import java.util.SortedSet;
 import java.util.TreeSet;
+import java.util.regex.Pattern;
+import java.util.regex.PatternSyntaxException;
 
 import javax.management.MBeanServer;
 import javax.management.MalformedObjectNameException;
@@ -66,6 +68,7 @@ import org.apache.log4j.Logger;
 import org.pustefixframework.admin.mbeans.Admin;
 import org.pustefixframework.container.spring.http.UriProvidingHttpRequestHandler;
 import org.pustefixframework.live.LiveResolver;
+import org.pustefixframework.pfxinternals.search.FullTextSearch;
 import org.pustefixframework.util.FrameworkInfo;
 import org.pustefixframework.xml.tools.XSLInfo;
 import org.pustefixframework.xml.tools.XSLInfoFactory;
@@ -81,7 +84,10 @@ import org.w3c.dom.Node;
 import de.schlund.pfixcore.util.ModuleDescriptor;
 import de.schlund.pfixcore.util.ModuleInfo;
 import de.schlund.pfixxml.FilterHelper;
+import de.schlund.pfixxml.IncludeSizeParser;
+import de.schlund.pfixxml.IncludeSizeParser.IncludeStatistics;
 import de.schlund.pfixxml.config.EnvironmentProperties;
+import de.schlund.pfixxml.resources.FileResource;
 import de.schlund.pfixxml.resources.ModuleResource;
 import de.schlund.pfixxml.resources.Resource;
 import de.schlund.pfixxml.resources.ResourceUtil;
@@ -237,12 +243,48 @@ public class PustefixInternalsRequestHandler implements UriProvidingHttpRequestH
                } else if(action.equals("download")) {
                    String resourceParam = req.getParameter("resource");
                    if(resourceParam != null) {
+                	   if(resourceParam.startsWith("/")) {
+                		   resourceParam = "file:" + resourceParam;
+                	   }
                        Resource resource = ResourceUtil.getResource(resourceParam);
                        deliver(resource, res);
                        return;
                    } else {
                        res.sendError(HttpServletResponse.SC_NOT_FOUND, "Missing resource parameter");
                    }
+               } else if(action.equals("toolext")) {
+            	   boolean toolExtEnabled = targetGenerator.getToolingExtensions();
+            	   targetGenerator.setToolingExtensions(!toolExtEnabled);
+            	   targetGenerator.forceReinit();
+            	   messageList.addMessage(Message.Level.INFO, (toolExtEnabled?"Disabled":"Enabled") + " TargetGenerator tooling extensions.");
+            	   String referer = req.getHeader("Referer");
+            	   if(referer != null && !referer.contains("pfxinternals")) {
+            		   res.sendRedirect(referer);
+            		   return;
+            	   } else {
+            		   res.sendRedirect(req.getContextPath()+ handlerURI + "/messages");
+            		   return;
+            	   }
+               } else if(action.equals("retarget")) {
+            	   targetGenerator.forceReinit();
+            	   messageList.addMessage(Message.Level.INFO, "Reloaded TargetGenerator with cleared cache.");
+            	   String referer = req.getHeader("Referer");
+            	   if(referer != null && !referer.contains("pfxinternals")) {
+            		   res.sendRedirect(referer);
+            		   return;
+            	   } else {
+            		   res.sendRedirect(req.getContextPath()+ handlerURI + "/messages");
+            		   return;
+            	   }
+               } else if(action.equals("senderror")) {
+            	   String sc = req.getParameter("sc");
+            	   String msg = req.getParameter("msg");
+            	   if(msg == null) {
+            		   res.sendError(Integer.parseInt(sc));
+            	   } else {
+            		   res.sendError(Integer.parseInt(sc), msg);
+            	   }
+            	   return;
                }
            }
            
@@ -260,14 +302,19 @@ public class PustefixInternalsRequestHandler implements UriProvidingHttpRequestH
                    addSystemInfo(root);
                } else if(category.equals("targets")) {
                    addTargets(root, req);
+               } else if(category.equals("includes")) {
+            	   addIncludes(root, req);
+               } else if(category.equals("search")) {
+            	   Element searchElem = addSearch(root);
+            	   if("search".equals(action)) {
+            		   doSearch(searchElem, req);
+            	   }
                } else if(category.equals("modules")) {
                    addModuleInfo(root);
                } else if(category.equals("cache")) {
                    addCacheStatistics(root);
                } else if(category.equals("messages")) {
                    messageList.toXML(root);
-               } else {
-                   
                }
            }
            doc = Xml.parse(XsltVersion.XSLT1, doc);
@@ -570,6 +617,52 @@ public class PustefixInternalsRequestHandler implements UriProvidingHttpRequestH
         dumpTarget(target, targetsElem, new HashSet<String>(), true);
     }
     
+    private void addIncludes(Element parent, HttpServletRequest req) {
+        Element targetsElem = parent.getOwnerDocument().createElement("targets");
+        parent.appendChild(targetsElem);
+        addTopLevelTargetList(targetsElem);
+        
+        String targetKey = req.getParameter("target");
+        if(targetKey != null) {
+        	Target target = (TargetImpl)targetGenerator.getTarget(targetKey);
+        	if(target != null) {
+	            try {
+	                target.getValue();
+	            } catch(TargetGenerationException x) {
+	                //ignore as we can still provide the static target information
+	            }
+	            FileResource cacheDir = targetGenerator.getDisccachedir();
+	            try {
+	            	File xslFile = new File(cacheDir.getFile(), targetKey);
+	            	if(xslFile.exists()) {
+	            		IncludeStatistics stats = IncludeSizeParser.parse(xslFile);
+	            		IncludeSizeParser.SortBy sortBy = null;
+	            		String sortByParam = req.getParameter("sortby");
+	            		if(sortByParam != null) {
+	            			try {
+	            			sortBy = IncludeSizeParser.SortBy.valueOf(sortByParam.toUpperCase());
+	            			} catch(IllegalArgumentException x) {
+	            				//ignore illegal values
+	            			}
+	            		}
+	            		String json = stats.getJSON(sortBy);
+	            		Element statsElem = parent.getOwnerDocument().createElement("includestatistics");
+	            		if(sortByParam != null) {
+	            			statsElem.setAttribute("sortby", sortByParam);
+	            		}
+	            		parent.appendChild(statsElem);
+	            		statsElem.setTextContent(json);
+	            	}
+	            } catch(IOException x) {
+	            	x.printStackTrace();
+	            }
+	            Element targetElem = parent.getOwnerDocument().createElement("target");
+	            targetsElem.appendChild(targetElem);
+	            targetElem.setAttribute("key", target.getTargetKey());
+        	}
+        }
+    }
+    
     private void addTargetList(Element root) {
         Element targetsElem = root.getOwnerDocument().createElement("targetlist");
         root.appendChild(targetsElem);
@@ -578,6 +671,19 @@ public class PustefixInternalsRequestHandler implements UriProvidingHttpRequestH
         while(it.hasNext()) {
             String key = it.next();
             Target target = targets.get(key);
+            Element targetElem = root.getOwnerDocument().createElement("target");
+            targetElem.setAttribute("key", target.getTargetKey());
+            targetsElem.appendChild(targetElem);
+        }
+    }
+    
+    private void addTopLevelTargetList(Element root) {
+        Element targetsElem = root.getOwnerDocument().createElement("targetlist");
+        root.appendChild(targetsElem);
+        Set<Target> targets = targetGenerator.getPageTargetTree().getToplevelTargets();
+        Iterator<Target> it = targets.iterator();
+        while(it.hasNext()) {
+            Target target = it.next();
             Element targetElem = root.getOwnerDocument().createElement("target");
             targetElem.setAttribute("key", target.getTargetKey());
             targetsElem.appendChild(targetElem);
@@ -604,7 +710,6 @@ public class PustefixInternalsRequestHandler implements UriProvidingHttpRequestH
         }
         
         if(target.getTargetKey().endsWith(".xsl") && templateInfo) {
-            System.out.println("IIIIIIIII: "+target.getTargetKey() + " " +templateInfo);
             addTemplateInfo(target, targetElem, templates);
         }
         
@@ -684,7 +789,7 @@ public class PustefixInternalsRequestHandler implements UriProvidingHttpRequestH
     }
     
     private void deliver(Resource res, HttpServletResponse response) throws IOException {
-        if("test".equals(EnvironmentProperties.getProperties().get("mode"))) {
+        if(!"prod".equals(EnvironmentProperties.getProperties().get("mode"))) {
             if(res.exists()) {
                 OutputStream out = response.getOutputStream();
         
@@ -723,6 +828,138 @@ public class PustefixInternalsRequestHandler implements UriProvidingHttpRequestH
         }
         
     }
+    
+    private Element addSearch(Element parent) {
+        
+    	Element root = parent.getOwnerDocument().createElement("search");
+    	parent.appendChild(root);
+    
+        Element modulesElem = parent.getOwnerDocument().createElement("modules");
+        root.appendChild(modulesElem);
+        Set<String> modules = ModuleInfo.getInstance().getModules();
+        SortedSet<String> sortedModules = new TreeSet<String>();
+        sortedModules.addAll(modules);
+
+        for(String module: sortedModules) {
+            Element elem = parent.getOwnerDocument().createElement("module");
+            elem.setAttribute("name", module);
+            modulesElem.appendChild(elem);
+        }
+        
+        return root;
+        
+    }
+    
+    public void doSearch(Element root, HttpServletRequest req) {
+    	
+    	boolean paramErrors = false;
+    	
+    	//Read file pattern param
+    	
+    	String filePattern = req.getParameter("filepattern");
+    	if(filePattern != null) {
+    		root.setAttribute("filepattern", filePattern);
+    	}
+    		
+    	String fileRegexPattern = "";
+    	if(filePattern != null) {
+    		String[] tmpFilePatterns = filePattern.split(",");
+    		for(String tmpFilePattern: tmpFilePatterns) {
+    			tmpFilePattern = tmpFilePattern.trim();
+    			if(tmpFilePattern.length() > 0) {
+    				tmpFilePattern = tmpFilePattern.replace(".", "\\.").replace("+", "\\+").replace("*", ".*").replace("?", ".");
+    				fileRegexPattern = fileRegexPattern + (fileRegexPattern.length() == 0 ? "" : "|") + "(" + tmpFilePattern + ")";
+    			}
+    		}
+    	}
+    	if(fileRegexPattern.length() == 0) {
+    		root.setAttribute("filepatternerror", "You have to enter one or more file name patterns");
+    		paramErrors = true;
+    	}
+    	
+    	Pattern fileRegexPatternComp = null;
+    	try {
+    		fileRegexPatternComp = Pattern.compile(fileRegexPattern, Pattern.CASE_INSENSITIVE);
+    	} catch(PatternSyntaxException x) {
+    		root.setAttribute("filepatternerror", x.getMessage());
+    		paramErrors = true;
+    	}
+    	
+    	//Read search text params
+    	
+    	String textPattern = req.getParameter("textpattern");
+    	
+    	boolean textPatternCase = false;
+    	if("true".equals(req.getParameter("textpatterncase"))) {
+    		textPatternCase = true;
+    	}
+    	
+    	boolean textPatternRegex = false;
+    	if("true".equals(req.getParameter("textpatternregex"))) {
+    		textPatternRegex = true;
+    	}
+    	
+    	if(textPattern != null) {
+    		root.setAttribute("textpattern", textPattern);
+    	}
+    	root.setAttribute("textpatterncase", String.valueOf(textPatternCase));
+    	root.setAttribute("textpatternregex", String.valueOf(textPatternRegex));
+    	
+    	Pattern textRegexPatternComp = null;
+    	if(textPattern != null && textPattern.length() > 0) {
+        	if(!textPatternRegex) {
+        		textPattern = Pattern.quote(textPattern);
+        	}
+        	try {
+        		if(textPatternCase) {
+        			textRegexPatternComp = Pattern.compile(textPattern);
+        		} else {
+        			textRegexPatternComp = Pattern.compile(textPattern, Pattern.CASE_INSENSITIVE);
+        		}
+        	} catch(PatternSyntaxException x) {
+        		root.setAttribute("textpatternerror", x.getMessage());
+        		paramErrors = true;
+        	}
+    	}
+    	
+    	//Read search scope params
+    	
+    	boolean searchWebapp = false;
+    	if("true".equals(req.getParameter("searchwebapp"))) {
+    		searchWebapp = true;
+    	}
+    	boolean searchModules = false;
+    	if("true".equals(req.getParameter("searchmodules"))) {
+    		searchModules = true;
+    	}
+    	boolean searchClasspath = false;
+    	if("true".equals(req.getParameter("searchclasspath"))) {
+    		searchClasspath = true;
+    	}
+    	String searchModule = req.getParameter("searchmodule");
+    	if("All modules".equals(searchModule)) {
+    		searchModule = null;
+    	}
+    	
+    	root.setAttribute("searchwebapp", String.valueOf(searchWebapp));
+    	root.setAttribute("searchmodules", String.valueOf(searchModules));
+    	root.setAttribute("searchclasspath", String.valueOf(searchClasspath));
+    	if(searchModule != null) {
+    		root.setAttribute("searchmodule", searchModule);
+    	}
+    	
+    	
+    	if(paramErrors) {
+    		return;
+    	}
+    	
+    	//Search
+    	
+    	FullTextSearch search = new FullTextSearch();
+    	search.search(root, fileRegexPatternComp, textRegexPatternComp, searchWebapp, searchModules, searchModule, searchClasspath);
+    	
+    }
+    
     
     public String[] getRegisteredURIs() {
         return new String[] {handlerURI, handlerURI+"/**"};

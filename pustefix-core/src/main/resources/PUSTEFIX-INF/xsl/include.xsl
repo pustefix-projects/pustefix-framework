@@ -7,7 +7,9 @@
                 xmlns:image="xalan://de.schlund.pfixxml.ImageThemedSrcSaxon1"
                 xmlns:geometry="xalan://de.schlund.pfixxml.ImageGeometry"
                 xmlns:func="http://exslt.org/functions"
-                exclude-result-prefixes="include image geometry">
+                xmlns:saxon="http://icl.com/saxon"
+                xmlns:ic="java:de.schlund.pfixxml.IncludeContextController"
+                exclude-result-prefixes="include image geometry ic saxon">
 
   <!-- The needed parameters must be set in the including stylesheet! -->
 
@@ -204,10 +206,11 @@
     <xsl:param name="parent_theme"><xsl:value-of select="ancestor::theme[position() = 1]/@name"/></xsl:param>
     <xsl:param name="noerror"><xsl:value-of select="@noerror"/></xsl:param>
     <xsl:param name="noedit"><xsl:value-of select="@noedit"/></xsl:param>
-    <xsl:param name="part"><xsl:value-of select="@part"/></xsl:param>
-    <xsl:param name="href"><xsl:value-of select="@href"/></xsl:param>
+    <xsl:param name="part"><xsl:choose><xsl:when test="@select-part"><xsl:value-of select="pfx:__eval(@select-part)"/></xsl:when><xsl:otherwise><xsl:value-of select="@part"/></xsl:otherwise></xsl:choose></xsl:param>
+    <xsl:param name="href"><xsl:choose><xsl:when test="@select-href"><xsl:value-of select="pfx:__eval(@select-href)"/></xsl:when><xsl:otherwise><xsl:value-of select="@href"/></xsl:otherwise></xsl:choose></xsl:param>
     <xsl:param name="module"><xsl:value-of select="@module"/></xsl:param>
     <xsl:param name="search"><xsl:value-of select="@search"/></xsl:param>
+    <xsl:param name="lang"><xsl:value-of select="$lang"/></xsl:param>
     <xsl:variable name="module_name">
       <xsl:choose>
         <xsl:when test="@module='PAGEDEF' or @module='pagedef'">
@@ -278,9 +281,12 @@
         </xsl:variable>
         <xsl:choose>
           <xsl:when test="$incnodes and $incnodes[name() = 'theme']">
+            <xsl:apply-templates select="pfx:includeparam"/>
+            <xsl:if test="ic:pushInclude($__include_context, ., $incnodes[1], include:getResolvedURI(), $part)"/>
             <xsl:apply-templates select="$incnodes/node()">
               <xsl:with-param name="__env" select="."/>
             </xsl:apply-templates>
+            <xsl:if test="ic:popInclude($__include_context)"/>
           </xsl:when>
           <xsl:when test="not($noerror = 'true')">
             <xsl:call-template name="pfx:missinc">
@@ -487,8 +493,8 @@
   </xsl:template>
 
   <xsl:template match="pfx:checkinclude">
-    <xsl:param name="part"><xsl:value-of select="@part"/></xsl:param>
-    <xsl:param name="href"><xsl:value-of select="@href"/></xsl:param>
+    <xsl:param name="part"><xsl:choose><xsl:when test="@select-part"><xsl:value-of select="pfx:__eval(@select-part)"/></xsl:when><xsl:otherwise><xsl:value-of select="@part"/></xsl:otherwise></xsl:choose></xsl:param>
+    <xsl:param name="href"><xsl:choose><xsl:when test="@select-href"><xsl:value-of select="pfx:__eval(@select-href)"/></xsl:when><xsl:otherwise><xsl:value-of select="@href"/></xsl:otherwise></xsl:choose></xsl:param>
     <xsl:param name="module"><xsl:value-of select="@module"/></xsl:param>
     <xsl:param name="search"><xsl:value-of select="@search"/></xsl:param>
     <xsl:variable name="module_name">
@@ -511,14 +517,27 @@
         </xsl:otherwise>
       </xsl:choose>
     </xsl:variable>
-    <xsl:if test="include:exists($realpath, $part, $__target_gen, $__target_key, $module, $search, $tenant, $lang)">
-      <xsl:apply-templates/>
-    </xsl:if>
+    <xsl:choose>
+      <xsl:when test="include:exists($realpath, $part, $__target_gen, $__target_key, $module, $search, $tenant, $lang)">
+        <xsl:choose>
+          <xsl:when test="pfx:checkpassed">
+            <xsl:apply-templates select="pfx:checkpassed/node()"/>
+          </xsl:when>
+          <xsl:when test="not(pfx:checkfailed)">
+            <xsl:apply-templates/>
+          </xsl:when>
+        </xsl:choose>
+      </xsl:when>
+      <xsl:otherwise>
+        <xsl:if test="pfx:checkfailed">
+          <xsl:apply-templates select="pfx:checkfailed/node()"/>
+        </xsl:if>
+      </xsl:otherwise>
+    </xsl:choose>
   </xsl:template>
 
   <xsl:template match="pfx:checkinclude[@level='runtime']">
-    <ixsl:if test="true()">
-      <ixsl:variable name="_href_">
+      <ixsl:variable name="href_{generate-id()}">
         <xsl:choose>
           <xsl:when test="pfx:href">
             <xsl:apply-templates select="pfx:href/node()"/>
@@ -531,7 +550,7 @@
           </xsl:otherwise>
         </xsl:choose>
       </ixsl:variable>
-      <ixsl:variable name="_part_">
+      <ixsl:variable name="part_{generate-id()}">
         <xsl:choose>
           <xsl:when test="pfx:part">
             <xsl:apply-templates select="pfx:part/node()"/>
@@ -541,7 +560,7 @@
           </xsl:otherwise>
         </xsl:choose>
       </ixsl:variable>
-      <ixsl:variable name="_module_">
+      <ixsl:variable name="module_{generate-id()}">
         <xsl:choose>
           <xsl:when test="@module">
             <xsl:value-of select="module"/>
@@ -551,15 +570,14 @@
           </xsl:otherwise>
         </xsl:choose>
       </ixsl:variable>
-      <ixsl:if test="pfx:checkInclude($_href_, $_part_, $_module_, '{@search}')">
+      <ixsl:if test="pfx:checkInclude($href_{generate-id()}, $part_{generate-id()}, $module_{generate-id()}, '{@search}')">
         <xsl:apply-templates/>
       </ixsl:if>
-    </ixsl:if>
   </xsl:template>
 
   <xsl:template match="pfx:checknoinclude">
-    <xsl:param name="part"><xsl:value-of select="@part"/></xsl:param>
-    <xsl:param name="href"><xsl:value-of select="@href"/></xsl:param>
+    <xsl:param name="part"><xsl:choose><xsl:when test="@select-part"><xsl:value-of select="pfx:__eval(@select-part)"/></xsl:when><xsl:otherwise><xsl:value-of select="@part"/></xsl:otherwise></xsl:choose></xsl:param>
+    <xsl:param name="href"><xsl:choose><xsl:when test="@select-href"><xsl:value-of select="pfx:__eval(@select-href)"/></xsl:when><xsl:otherwise><xsl:value-of select="@href"/></xsl:otherwise></xsl:choose></xsl:param>
     <xsl:param name="module"><xsl:value-of select="@module"/></xsl:param>
     <xsl:param name="search"><xsl:value-of select="@search"/></xsl:param>
     <xsl:variable name="module_name">
@@ -588,8 +606,7 @@
   </xsl:template>
 
   <xsl:template match="pfx:checknoinclude[@level='runtime']">
-    <ixsl:if test="true()">
-      <ixsl:variable name="_href_">
+      <ixsl:variable name="href_{generate-id()}">
         <xsl:choose>
           <xsl:when test="pfx:href">
             <xsl:apply-templates select="pfx:href/node()"/>
@@ -602,7 +619,7 @@
           </xsl:otherwise>
         </xsl:choose>
       </ixsl:variable>
-      <ixsl:variable name="_part_">
+      <ixsl:variable name="part_{generate-id()}">
         <xsl:choose>
           <xsl:when test="pfx:part">
             <xsl:apply-templates select="pfx:part/node()"/>
@@ -612,7 +629,7 @@
           </xsl:otherwise>
         </xsl:choose>
       </ixsl:variable>
-      <ixsl:variable name="_module_">
+      <ixsl:variable name="module_{generate-id()}">
         <xsl:choose>
           <xsl:when test="@module">
             <xsl:value-of select="module"/>
@@ -622,10 +639,9 @@
           </xsl:otherwise>
         </xsl:choose>
       </ixsl:variable>
-      <ixsl:if test="not(pfx:checkInclude($_href_, $_part_, $_module_, '{@search}'))">
+      <ixsl:if test="not(pfx:checkInclude($href_{generate-id()}, $part_{generate-id()}, $module_{generate-id()}, '{@search}'))">
         <xsl:apply-templates/>
       </ixsl:if>
-    </ixsl:if>
   </xsl:template>
   
   <xsl:template match="pfx:href"/>
@@ -637,6 +653,7 @@
     <xsl:param name="themed-img"/>
     <xsl:param name="module"/>
     <xsl:param name="search"/>
+    <xsl:param name="i18n"/>
     <xsl:variable name="module_name">
       <xsl:choose>
         <xsl:when test="$module='PAGEDEF' or $module='pagedef'">
@@ -654,7 +671,7 @@
         <xsl:variable name="parent_theme"><xsl:value-of select="ancestor::theme[position() = 1]/@name"/></xsl:variable>
         <xsl:value-of select="image:getSrc(string($src),string($themed-path),string($themed-img),
                               string($parent_part),string($parent_theme),
-                              $__target_gen,string($__target_key),string($module_name),string($search),$tenant,$lang)"/>          
+                              $__target_gen,string($__target_key),string($module_name),string($search),$tenant,$lang,boolean($i18n))"/>          
       </xsl:when>
       <xsl:otherwise>
         <xsl:message terminate="no">
@@ -665,14 +682,15 @@
   </xsl:template>
   
   <xsl:template match="pfx:image" name="pfx:image">
-    <xsl:param name="src"   select="@src"/>
-    <xsl:param name="alt"   select="@alt"/>
+    <xsl:param name="src"><xsl:choose><xsl:when test="pfx:src"><xsl:apply-templates select="pfx:src/node()"/></xsl:when><xsl:when test="@select-src"><xsl:value-of select="pfx:__eval(@select-src)"/></xsl:when><xsl:otherwise><xsl:value-of select="@src"/></xsl:otherwise></xsl:choose></xsl:param>
+    <xsl:param name="alt"><xsl:choose><xsl:when test="pfx:alt"><xsl:apply-templates select="pfx:alt/node()"/></xsl:when><xsl:when test="@select-alt"><xsl:value-of select="pfx:__eval(@select-alt)"/></xsl:when><xsl:otherwise><xsl:value-of select="@alt"/></xsl:otherwise></xsl:choose></xsl:param>
     <xsl:param name="themed-path" select="@themed-path"/> 
     <xsl:param name="themed-img"  select="@themed-img"/>
     <xsl:param name="exclude-attributes"/>
     <xsl:param name="module" select="@module"/>
     <xsl:param name="search" select="@search"/>
-    <xsl:variable name="always-exclude-attributes" select="'src|alt|themed-path|themed-img|module|search'"/>
+    <xsl:param name="i18n" select="@i18n"/>
+    <xsl:variable name="always-exclude-attributes" select="'src|alt|themed-path|themed-img|module|search|select-src|select-alt'"/>
     <xsl:variable name="real_src">
       <xsl:call-template name="pfx:image_register_src">
         <xsl:with-param name="src" select="$src"/>
@@ -680,6 +698,7 @@
         <xsl:with-param name="themed-img" select="$themed-img"/>
         <xsl:with-param name="module" select="$module"/>
         <xsl:with-param name="search" select="$search"/>
+        <xsl:with-param name="i18n" select="$i18n"/>
       </xsl:call-template>
     </xsl:variable>
     <img src="{{$__contextpath}}/{$real_src}" alt="{$alt}">
@@ -692,6 +711,9 @@
     </img>
     
   </xsl:template>
+  
+  <xsl:template match="pfx:src"/>
+  <xsl:template match="pfx:alt"/>
   
   <xsl:template match="pfx:image[@level='runtime']">
     <img>
@@ -745,7 +767,7 @@
       <xsl:otherwise>
         <xsl:variable name="path">
           <xsl:choose>
-            <xsl:when test="starts-with($src, '/')">
+            <xsl:when test="starts-with($src, '/') and not(starts-with($src, '//'))">
               <xsl:value-of select="substring-after($src, '/')"/>
             </xsl:when>
             <xsl:otherwise>
@@ -798,7 +820,7 @@
       <xsl:otherwise>
         <xsl:variable name="path">
           <xsl:choose>
-            <xsl:when test="starts-with($src, '/')">
+            <xsl:when test="starts-with($src, '/') and not(starts-with($src, '//'))">
               <xsl:value-of select="substring-after($src, '/')"/>
             </xsl:when>
             <xsl:otherwise>
@@ -840,5 +862,101 @@
     <xsl:param name="search"/>
     <func:result select="include:exists($href, $part, $__target_gen, $__target_key, $module, $search, $tenant, $lang)"/>
   </func:function>
+  
  
+  <!-- include parameter stuff -->
+
+  <xsl:variable name="__include_context" select="ic:create(.)"/>
+
+  <func:function name="pfx:__incparam">
+    <xsl:param name="name"/>
+    <xsl:variable name="incparam" select="ic:getIncludeParam($__include_context, $name)"/>
+  	<func:result select="$incparam"/>
+  </func:function>
+  
+  <func:function name="pfx:__eval">
+    <xsl:param name="expr"/>
+   	<func:result select="ic:evaluate($__include_context, $expr)"/>
+  </func:function>
+  
+  <xsl:template match="pfx:value-of">
+    <xsl:value-of select="pfx:__eval(@select)"/>
+  </xsl:template>
+  
+  <xsl:template match="pfx:copy-of">
+    <xsl:copy-of select="pfx:__eval(@select)"/>
+  </xsl:template>
+  
+  <xsl:template match="pfx:if">
+    <xsl:if test="pfx:__eval(@test)">
+      <xsl:apply-templates select="./node()"/>
+    </xsl:if>
+  </xsl:template>
+  
+  <xsl:template match="pfx:choose">
+    <xsl:variable name="res" select="pfx:when[pfx:__eval(@test)][1]"/>
+    <xsl:choose>
+      <xsl:when test="$res">
+        <xsl:apply-templates select="$res/node()"/>
+      </xsl:when>
+      <xsl:when test="pfx:otherwise">
+        <xsl:apply-templates select="pfx:otherwise/node()"/>
+      </xsl:when>
+    </xsl:choose>
+  </xsl:template>
+  
+  <xsl:template match="pfx:when"/>
+  <xsl:template match="pfx:otherwise"/>
+  
+  <xsl:template match="pfx:for-each">
+    <xsl:variable name="__context" select="."/>
+    <xsl:variable name="__parent_repeat_context" select="ic:getContextNode($__include_context)"/>
+    <xsl:variable name="__parent_repeat_context_pos" select="ic:getContextNodePosition($__include_context)"/>
+    <xsl:variable name="__parent_repeat_context_last" select="ic:getContextNodeLast($__include_context)"/>
+    <xsl:variable name="sort" select="pfx:sort/@attribute"/>
+    <xsl:variable name="order">
+      <xsl:choose>
+        <xsl:when test="pfx:sort/@order">
+          <xsl:value-of select="pfx:sort/@order"/>
+        </xsl:when>
+        <xsl:otherwise>ascending</xsl:otherwise>
+      </xsl:choose>
+    </xsl:variable>
+    <xsl:choose>
+      <xsl:when test="pfx:sort">
+        <xsl:for-each select="pfx:__eval(@select)">
+          <xsl:sort order="{$order}" select="@*[name()=$sort]"/>
+          <xsl:if test="ic:setContextNode($__include_context, ., position(), last())"/>
+          <xsl:apply-templates select="$__context/node()"/>
+        </xsl:for-each>
+      </xsl:when>
+      <xsl:otherwise>
+        <xsl:for-each select="pfx:__eval(@select)">
+          <xsl:if test="ic:setContextNode($__include_context, ., position(), last())"/>
+          <xsl:apply-templates select="$__context/node()"/>
+        </xsl:for-each>
+      </xsl:otherwise>
+    </xsl:choose>
+    
+    <xsl:if test="ic:setContextNode($__include_context, $__parent_repeat_context, $__parent_repeat_context_pos, $__parent_repeat_context_last)"/>
+  </xsl:template>
+  
+  <xsl:template match="pfx:sort"/>
+  
+  <xsl:template match="pfx:includeparam"/>
+  
+  <xsl:template match="pfx:includeparam[@apply='true']">
+   <xsl:variable name="value">
+     <xsl:apply-templates/>
+   </xsl:variable>
+   <xsl:if test="ic:setAppliedParameter($__include_context, @name, $value, boolean(not(parent::pfx:include)))"/>
+  </xsl:template>
+
+  <xsl:template match="pfx:trim">
+    <xsl:variable name="tmp">
+      <xsl:apply-templates/>
+    </xsl:variable>
+    <xsl:value-of xmlns:string="java:java.lang.String" select="string:trim($tmp)"/>
+  </xsl:template>
+
 </xsl:stylesheet>

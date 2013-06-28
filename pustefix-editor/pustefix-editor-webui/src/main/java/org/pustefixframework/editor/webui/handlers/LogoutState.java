@@ -43,10 +43,7 @@ public class LogoutState extends StateImpl {
 
     @Override
     public ResultDocument getDocument(Context context, PfixServletRequest req) throws Exception {;
-        
-        if (!isDirectTrigger(context, req) || isSubmitAuthTrigger(context, req)) {
-            // we are not direct triggered or we got authdata, don't do a logout,
-        } else {
+        if (isDirectTrigger(context, req) && !isSubmitAuthTrigger(context, req)) {  
             sessionResource.logout();
             projectsResource.reset();
         }
