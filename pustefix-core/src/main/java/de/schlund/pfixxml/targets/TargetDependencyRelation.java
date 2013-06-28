@@ -171,6 +171,9 @@ public class TargetDependencyRelation {
     }
 
     public synchronized void addRelation(AuxDependency parent, AuxDependency aux, Target target) {
+        if (parent != target.getTargetGenerator().getAuxDependencyFactory().getAuxDependencyRoot() && !checkLoopFree(parent, aux, target)) {
+            return;
+        }
 
         if(LOG.isDebugEnabled()) {
             LOG.debug("+++ Adding relations " + target.getTargetKey() + " <-> " + aux.toString() + " / " + parent.toString());
@@ -278,6 +281,29 @@ public class TargetDependencyRelation {
             Target target = i.next();
             resetRelation(target);
         }
+    }
+
+    private synchronized boolean checkLoopFree(AuxDependency parent, AuxDependency aux, Target target) {
+        // The simple loop
+        if (parent == aux) {
+            return false;
+        }
+        HashMap<AuxDependency, HashSet<AuxDependency>> parentchild = targettoparentchild.get(target);
+        if (parentchild != null) {
+            // Now iterate over all children of aux recursively and check if any of them is parent.
+            HashSet<AuxDependency> children = parentchild.get(aux);
+            if (children != null) {
+                for (Iterator<AuxDependency> i = children.iterator(); i.hasNext();) {
+                    AuxDependency child = i.next();
+                    if (child.getType() == DependencyType.TEXT) {
+                        if (!checkLoopFree(parent, child, target)) {
+                            return false;
+                        }
+                    }
+                }
+            }
+        }
+        return true;
     }
 
 }// DependencyRefCounter
