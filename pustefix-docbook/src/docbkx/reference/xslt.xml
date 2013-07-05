@@ -1959,6 +1959,14 @@
 
       <para></para>
       <para>
+        <emphasis role="strong">Function:</emphasis> <emphasis>node-set</emphasis> <emphasis role="strong">pfx:tokenize</emphasis>(<emphasis>string, string</emphasis>)
+      </para>
+      <para>
+        The <emphasis role="strong">pfx:tokenize</emphasis> function splits the first argument string into substrings by using the second argument string as separator (in the form of a regular expression).
+      </para>
+
+      <para></para>
+      <para>
         <emphasis role="strong">Function:</emphasis> <emphasis>string</emphasis> <emphasis role="strong">pfx:upper-case</emphasis>(<emphasis>string</emphasis>)
       </para>
       <para>
