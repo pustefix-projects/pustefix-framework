@@ -69,18 +69,18 @@ public class ModuleResourceProvider implements ResourceProvider {
                     if (resolvedUrl != null) {
                         // jar or file?
                         if (resolvedUrl.getProtocol().equals("jar")) {
-                            return new ModuleResource(uri, url);
+                            return new ModuleResource(uri, url, desc.getResourcePath());
                         } else {
-                            return new ModuleSourceResource(uri, new File(resolvedUrl.getFile()));
+                            return new ModuleSourceResource(uri, new File(resolvedUrl.getFile()), desc.getResourcePath());
                         }
                     } else if(url.getProtocol().equals("file")){
-                        return new ModuleSourceResource(uri, new File(url.getFile()));
+                        return new ModuleSourceResource(uri, new File(url.getFile()), desc.getResourcePath());
                     }
                 } catch (Exception e) {
                     throw new PustefixRuntimeException(e);
                 }
             }
-            return new ModuleResource(uri, url);
+            return new ModuleResource(uri, url, desc.getResourcePath());
         }
         return new ModuleResource(uri);
     }

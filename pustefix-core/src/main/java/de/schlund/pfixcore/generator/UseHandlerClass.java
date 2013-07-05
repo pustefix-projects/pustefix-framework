@@ -23,5 +23,5 @@ import java.lang.annotation.RetentionPolicy;
 
 @Retention(RetentionPolicy.RUNTIME)
 public @interface UseHandlerClass {
-    Class<? extends IHandler> value();
+    Class<?> value();
 }

@@ -576,6 +576,7 @@ public class TargetGenerator implements ResourceVisitor, ServletContextAware, In
             }
         }
         
+        //add module information if standardpage was defined in module and no module data is directly set
         for(int i = 0; i < pageNodes.getLength(); i++) {
             Element pageElem = (Element)pageNodes.item(i);
             String module = (String)pageElem.getUserData("module");
@@ -583,10 +584,32 @@ public class TargetGenerator implements ResourceVisitor, ServletContextAware, In
             if(module == null) module = configFileModule;
             if(module != null) {
                 pageElem.setAttribute("defining-module", module);
-                String moduleAttr = pageElem.getAttribute("module");
-                if(moduleAttr.length() == 0) pageElem.setAttribute("module", module);
+                if(pageElem.getAttribute("module").length() == 0 && pageElem.getAttribute("xml").contains("/")) {
+                    pageElem.setAttribute("module", module);
+                }
             }
         }
+        
+        //add module information if target was defined in module and no module data is directly set
+        NodeList targetNodes = confDoc.getElementsByTagName("target");
+        for(int i = 0; i < targetNodes.getLength(); i++) {
+            Element targetElem = (Element)targetNodes.item(i);
+            String module = (String)targetElem.getUserData("module");
+            if("webapp".equals("module")) module = null;
+            if(module == null) module = configFileModule;
+            if(module != null) {
+                targetElem.setAttribute("defining-module", module);
+                Element depxmlElem = DOMUtils.getFirstChildByTagName(targetElem, "depxml");
+                if(depxmlElem.getAttribute("module").length() == 0 && depxmlElem.getAttribute("name").contains("/")) {
+                    depxmlElem.setAttribute("module", module);
+                }
+                Element depxslElem = DOMUtils.getFirstChildByTagName(targetElem, "depxsl");
+                if(depxslElem.getAttribute("module").length() == 0 && depxslElem.getAttribute("name").contains("/")) {
+                    depxslElem.setAttribute("module", module);
+                }
+            }
+        }
+        
         NodeList includeNodes = confDoc.getElementsByTagName("include");
         for(int i = 0; i < includeNodes.getLength(); i++) {
             Element includeElem = (Element)includeNodes.item(i);
@@ -660,7 +683,6 @@ public class TargetGenerator implements ResourceVisitor, ServletContextAware, In
                 renderParams.put(name, value);
             }
         }
-        
         Element root = (Element) config.getElementsByTagName("make").item(0);
         
         String versionStr=root.getAttribute("xsltversion");

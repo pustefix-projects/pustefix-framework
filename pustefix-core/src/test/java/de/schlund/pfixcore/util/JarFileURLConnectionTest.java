@@ -67,7 +67,7 @@ public class JarFileURLConnectionTest extends TestCase {
     }
     
     public void testJarEntryURL() throws Exception {
-        String urlStr = "jar:"+testModuleFile.toURI().toString()+"!/PUSTEFIX-INF/txt/common.xml";
+        String urlStr = "jar:"+testModuleFile.toURI().toString()+"!" + ModuleDescriptor.DEFAULT_RESOURCE_PATH + "/txt/common.xml";
         URL url = new URL(urlStr);   
         JarURLConnection con = (JarURLConnection)url.openConnection();
         JarURLConnection conFile = new JarFileURLConnection(url);
@@ -77,7 +77,7 @@ public class JarFileURLConnectionTest extends TestCase {
     }
     
     public void testNonExistingJarEntryURL() throws Exception {
-        String urlStr = "jar:"+testModuleFile.toURI().toString()+"!/PUSTEFIX-INF/txt/commonXXX.xml";
+        String urlStr = "jar:"+testModuleFile.toURI().toString()+"!" + ModuleDescriptor.DEFAULT_RESOURCE_PATH + "/txt/commonXXX.xml";
         URL url = new URL(urlStr);   
         JarURLConnection con = (JarURLConnection)url.openConnection();
         JarURLConnection conFile = new JarFileURLConnection(url);

@@ -17,6 +17,7 @@
  */
 package de.schlund.pfixcore.util;
 
+import java.io.InputStream;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.Dictionary;
@@ -38,19 +39,21 @@ import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 
 /**
- * 
- * @author mleidig@schlund.de
+ * Holds information about a module read from the module descriptor file.
  *
  */
 public class ModuleDescriptor {
-    
+
     private final static Logger LOG = Logger.getLogger(ModuleDescriptor.class);
-    
+
     private final static String DEPRECATED_NS_MODULE_DESCRIPTOR = "http://pustefix.sourceforge.net/moduledescriptor200702"; 
     private final static String NS_MODULE_DESCRIPTOR = "http://www.pustefix-framework.org/2008/namespace/module-descriptor";
-    
+
+    final static String DEFAULT_RESOURCE_PATH = "/PUSTEFIX-INF";
+
     private URL url;
     private String name;
+    private String resourcePath = DEFAULT_RESOURCE_PATH;
     private boolean contentEditable;
     private Map<String,Set<String>> moduleToResourcePaths = new HashMap<String,Set<String>>();
     private Map<String,Set<String>> moduleToResourcePathPatterns = new HashMap<String,Set<String>>();
@@ -60,30 +63,38 @@ public class ModuleDescriptor {
     private int defaultSearchPriority = 10;
     private List<String> staticPaths = new ArrayList<String>();
     private Set<String> i18nPaths = new HashSet<String>();
-    
+
     private AntPathMatcher antPathMatcher = new AntPathMatcher();
-    
-    public ModuleDescriptor(URL url, String name) {
+
+    private ModuleDescriptor(URL url, String name) {
         this.url = url;
         this.name = name;
     }
-    
+
     public URL getURL() {
         return url;
     }
-    
+
     public String getName() {
         return name;
     }
-    
+
+    public String getResourcePath() {
+        return resourcePath;
+    }
+
+    public void setResourcePath(String resourcePath) {
+        this.resourcePath = resourcePath;
+    }
+
     public boolean isContentEditable() {
         return contentEditable;
     }
-    
+
     public void setContentEditable(boolean contentEditable) {
         this.contentEditable = contentEditable;
     }
-    
+
     /**
      * Adds resource/module overridden by this module.
      * 
@@ -107,7 +118,7 @@ public class ModuleDescriptor {
             resList.add(resourcePath);
         }
     }
-    
+
     public boolean overridesResource(String module, String path) {
         Set<String> overrides = moduleToResourcePaths.get(module);
         if(overrides != null) {
@@ -121,35 +132,35 @@ public class ModuleDescriptor {
         }
         return false;
     }
-    
+
     public void addModuleOverrideFilterAttribute(String name, String value) {
         moduleOverrideFilterAttributes.put(name, value);
     }
-    
+
     public void addDefaultSearchFilterAttribute(String name, String value) {
         defaultSearchFilterAttributes.put(name, value);
     }
-    
+
     public void setDefaultSearchable(boolean defaultSearchable) {
         this.defaultSearchable = defaultSearchable;
     }
-    
+
     public boolean isDefaultSearchable() {
         return defaultSearchable;
     }
-    
+
     public void setDefaultSearchPriority(int defaultSearchPriority) {
         this.defaultSearchPriority = defaultSearchPriority;
     }
-    
+
     public int getDefaultSearchPriority() {
         return defaultSearchPriority;
     }
-             
+
     public Dictionary<String,String> getModuleOverrideFilterAttributes() {
         return moduleOverrideFilterAttributes;
     }
-    
+
     public Dictionary<String,String> getDefaultSearchFilterAttributes() {
         return defaultSearchFilterAttributes;
     }
@@ -160,27 +171,32 @@ public class ModuleDescriptor {
             i18nPaths.add(staticPath);
         }
     }
-    
+
     public List<String> getStaticPaths() {
         return staticPaths;
     }
-    
+
     public boolean isI18NPath(String staticPath) {
         return i18nPaths.contains(staticPath);
     }
-    
+
     @Override
     public String toString() {
         return "MODULE " + name;
     }
-    
-        
+
     public static ModuleDescriptor read(URL url) throws Exception {
         ModuleDescriptor moduleInfo;
         DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
         factory.setNamespaceAware(true);
         DocumentBuilder builder = factory.newDocumentBuilder();
-        Document document = builder.parse(url.openStream());
+        InputStream in = url.openStream();
+        Document document;
+        try {
+            document = builder.parse(url.openStream());
+        } finally {
+            in.close();
+        }
         Element root = document.getDocumentElement();
         if(root.getLocalName().equals("module-descriptor")) {
             if(DEPRECATED_NS_MODULE_DESCRIPTOR.equals(root.getNamespaceURI()) || 
@@ -193,6 +209,19 @@ public class ModuleDescriptor {
             String name = nameElem.getTextContent().trim();
             if(name.equals("")) throw new Exception("Text content of element 'module-name' must not be empty!");
             moduleInfo = new ModuleDescriptor(url, name);
+            Element resPathElem = getSingleChildElement(root, "resource-path", false);
+            if(resPathElem != null) {
+                String resPath = resPathElem.getTextContent().trim();
+                if(resPath.length() > 0) {
+                    if(!resPath.startsWith("/")) {
+                        resPath = "/" + resPath;
+                    }
+                    if(resPath.endsWith("/")) {
+                        resPath = resPath.substring(0, resPath.length() - 1);
+                    }
+                    moduleInfo.setResourcePath(resPath);
+                }
+            }
             Element editElem = getSingleChildElement(root, "content-editable", false);
             if(editElem != null) {
                 boolean editable = Boolean.valueOf(editElem.getTextContent());
@@ -244,8 +273,8 @@ public class ModuleDescriptor {
                     if(!path.equals("")) {
                         if(!path.startsWith("/")) path = "/" + path;
                         if(path.endsWith("/")) path = path.substring(0, path.length() - 1);
-                        if(path.equals("") || path.equals("/PUSTEFIX-INF")) path = "/";
-                        else if(path.startsWith("/PUSTEFIX-INF")) path = path.substring(13);
+                        if(path.equals("") || path.equals(moduleInfo.getResourcePath())) path = "/";
+                        else if(path.startsWith(moduleInfo.getResourcePath())) path = path.substring(moduleInfo.getResourcePath().length());
                         boolean i18n = false;
                         String i18nAttr = pathElem.getAttribute("i18n").trim();
                         if(i18nAttr.length() > 0) {
@@ -258,8 +287,7 @@ public class ModuleDescriptor {
         } else throw new Exception("Illegal module descriptor");
         return moduleInfo;
     }
-    
-    
+
     private static Element getSingleChildElement(Element parent, String localName, boolean mandatory) throws Exception {
         Element elem = null;
         NodeList nodes = parent.getChildNodes();
@@ -273,7 +301,7 @@ public class ModuleDescriptor {
         if(mandatory && elem == null) throw new Exception("Missing '" + localName + "' child element.");
         return elem;
     }
-    
+
     private static List<Element> getChildElements(Element parent, String localName) {
         List<Element> elems = new ArrayList<Element>();
         NodeList nodes = parent.getChildNodes();
@@ -285,5 +313,5 @@ public class ModuleDescriptor {
         }
         return elems;
     }
-    
+
 }

@@ -19,6 +19,9 @@
 package de.schlund.pfixxml;
 
 
+import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.ConcurrentMap;
+
 import org.apache.log4j.Logger;
 
 import de.schlund.pfixxml.resources.Resource;
@@ -31,6 +34,8 @@ import de.schlund.pfixxml.util.XsltContext;
 public class DependencyTracker {
     
     private final static Logger LOG = Logger.getLogger(DependencyTracker.class);
+    private final static Logger USAGE_LOG = Logger.getLogger("LOGGER_PFXUSAGE");
+    private final static ConcurrentMap<String, ConcurrentMap<String, Boolean>> includeUsage = new ConcurrentHashMap<String, ConcurrentMap<String, Boolean>>();
     
     /** xslt extension */
     public static String logImage(XsltContext context, Resource path,
@@ -83,6 +88,7 @@ public class DependencyTracker {
         }
         DependencyType  thetype   = DependencyType.getByTag(type);
         if (thetype == DependencyType.TEXT) {
+        	logInclude(false, path, part, target.getTargetGenerator());
             target.getAuxDependencyManager().addDependencyInclude(path, part, theme, parent_path, parent_part, parent_theme);
         } else if (thetype == DependencyType.IMAGE) {
             target.getAuxDependencyManager().addDependencyImage(path, parent_path, parent_part, parent_theme);
@@ -90,4 +96,26 @@ public class DependencyTracker {
             throw new RuntimeException("Unknown dependency type '" + type + "'!");
         }
     }
+
+    /**
+     * Log referenced includes for statistical purpose, e.g. finding unused parts.
+     * 
+     */
+    public static void logInclude(boolean runtime, Resource path, String part, TargetGenerator targetGen) {
+    	if(USAGE_LOG.isInfoEnabled()) {
+	    	String uri = path.toURI().toString();
+	    	ConcurrentMap<String, Boolean> parts = includeUsage.get(uri);
+	    	if(parts == null) {
+	    		parts = new ConcurrentHashMap<String, Boolean>();
+	    		ConcurrentMap<String, Boolean> oldParts = includeUsage.putIfAbsent(uri, parts);
+	    		if(oldParts != null) {
+	    			parts = oldParts;
+	    		}
+	    	}
+	    	if(parts.putIfAbsent(part, Boolean.TRUE) == null) {
+	    		USAGE_LOG.info("INC|" + (runtime?"R":"G")+ "|" + uri + "|" + part);
+	    	}
+    	}
+    }
+
 }

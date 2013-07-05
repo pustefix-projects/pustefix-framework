@@ -39,9 +39,9 @@ public class ModuleResource implements Resource {
     private URI origUri;
     private URL url;
     
-    public ModuleResource(URI uri, URL moduleUrl) {
+    public ModuleResource(URI uri, URL moduleUrl, String moduleResourcePath) {
         this.uri = uri;
-        String path = "PUSTEFIX-INF"+uri.getPath();
+        String path = moduleResourcePath + uri.getPath();
         try {
             url = new URL(moduleUrl, path);
         } catch (MalformedURLException x) {

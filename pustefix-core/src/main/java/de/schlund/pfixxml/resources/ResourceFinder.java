@@ -52,12 +52,12 @@ public class ResourceFinder {
                 }
             }
         } else {
+        	ModuleInfo moduleInfo = ModuleInfo.getInstance();
+            ModuleDescriptor desc = moduleInfo.getModuleDescriptor(module);
             String[] modulePaths = new String[paths.length];
             for(int i=0; i<paths.length; i++) {
-                modulePaths[i] = "PUSTEFIX-INF/" + paths[i];
+                modulePaths[i] = desc.getResourcePath() + "/" + paths[i];
             }
-            ModuleInfo moduleInfo = ModuleInfo.getInstance();
-            ModuleDescriptor desc = moduleInfo.getModuleDescriptor(module);
             findInModule(desc, modulePaths, fileExtensions, visitor);
         }
     }

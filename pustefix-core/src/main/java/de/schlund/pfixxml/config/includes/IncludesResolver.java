@@ -19,6 +19,7 @@
 package de.schlund.pfixxml.config.includes;
 
 import java.io.IOException;
+import java.net.URI;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
@@ -192,7 +193,12 @@ public class IncludesResolver {
                     for (int i=0; i < includeNodes.getLength(); i++) {
                         Node node = includeNodes.item(i);
                         Node newNode = doc.importNode(node, true);
-                        setModuleUserData(newNode, module);
+                        String definingModule = null;
+                        URI uri = includeFile.toURI();
+                        if("module".equals(uri.getScheme())) {
+                            definingModule = uri.getAuthority();
+                        }
+                        setModuleUserData(newNode, definingModule);
                         elem.getParentNode().insertBefore(newNode, elem);
                     }
                     

@@ -250,6 +250,8 @@ public final class IncludeDocumentExtension {
                             // TODO
                             ok = false;
                         }
+                    } else {
+                    	DependencyTracker.logInclude(true, path, part, targetgen);
                     }
                     return ok? (Object) ns.get(0) : errorNode(context,curr_theme);
                     //return ok? (Object) ns.get(0) : new EmptyNodeSet();
@@ -294,6 +296,8 @@ public final class IncludeDocumentExtension {
                             // TODO
                             ok = false;
                         }
+                    } else {
+                    	DependencyTracker.logInclude(true, path, part, targetgen);
                     }
                     return ok? (Object) lastMatch : errorNode(context,curr_theme);
                 }

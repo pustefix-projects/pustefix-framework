@@ -32,9 +32,9 @@ public class ModuleSourceResource extends ModuleResource {
     
     private File file;
     
-    public ModuleSourceResource(URI uri, File moduleDir) {
+    public ModuleSourceResource(URI uri, File moduleDir, String moduleResourcePath) {
         super(uri);
-        file = new File(moduleDir, "PUSTEFIX-INF"+uri.getPath());
+        file = new File(moduleDir, moduleResourcePath + uri.getPath());
     }
     
     @Override
