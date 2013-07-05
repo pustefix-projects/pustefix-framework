@@ -32,6 +32,8 @@ import org.pustefixframework.config.contextxmlservice.parser.internal.IWrapperCo
 import org.pustefixframework.config.contextxmlservice.parser.internal.PageRequestConfigImpl;
 import org.pustefixframework.config.contextxmlservice.parser.internal.StateConfigImpl;
 import org.pustefixframework.config.generic.ParsingUtils;
+import org.pustefixframework.web.mvc.InputHandler;
+import org.pustefixframework.web.mvc.internal.InputHandlerAdapter;
 import org.springframework.aop.scope.ScopedProxyUtils;
 import org.springframework.beans.factory.config.BeanDefinition;
 import org.springframework.beans.factory.config.BeanDefinitionHolder;
@@ -48,7 +50,6 @@ import com.marsching.flexiparse.parser.HandlerContext;
 import com.marsching.flexiparse.parser.ParsingHandler;
 import com.marsching.flexiparse.parser.exception.ParserException;
 
-import de.schlund.pfixcore.generator.IHandler;
 import de.schlund.pfixcore.generator.IWrapper;
 import de.schlund.pfixcore.generator.UseHandlerBeanRef;
 import de.schlund.pfixcore.generator.UseHandlerClass;
@@ -166,7 +167,7 @@ public class PageRequestParsingHandler implements ParsingHandler {
                 for (IWrapperConfig wrapperConfig : iwrpConfList) {
                     Class<? extends IWrapper> wrapperClass = wrapperConfig.getWrapperClass();
                     
-                    Class<? extends IHandler> handlerClass = null;
+                    Class<?> handlerClass = null;
                     UseHandlerClass handlerClassAnnotation = wrapperClass.getAnnotation(UseHandlerClass.class);
                     UseHandlerBeanRef handlerBeanRefAnnotation = wrapperClass.getAnnotation(UseHandlerBeanRef.class);
                     
@@ -196,6 +197,14 @@ public class PageRequestParsingHandler implements ParsingHandler {
                             for (String alias : beanHolder.getAliases()) {
                                 beanRegistry.registerAlias(beanHolder.getBeanName(), alias);
                             }
+                        }
+                        
+                        if(InputHandler.class.isAssignableFrom(handlerClass)) {
+                            beanBuilder = BeanDefinitionBuilder.genericBeanDefinition(InputHandlerAdapter.class);
+                            beanBuilder.addPropertyReference("delegate", handlerBeanName);
+                            beanDefinition = beanBuilder.getBeanDefinition();
+                            handlerBeanName = nameGenerator.generateBeanName(beanDefinition, beanRegistry);
+                            beanRegistry.registerBeanDefinition(handlerBeanName, beanDefinition);
                         }
                         
                     }
