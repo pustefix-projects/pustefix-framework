@@ -110,6 +110,7 @@ public class Admin implements AdminMBean {
                 serverSock = new ServerSocket(port);
             } catch(IOException x) {
                 LOG.log(Level.SEVERE, "Can't listen on port " + port, x);
+                throw new RuntimeException("Can't listen on port " + port, x);
             }
             while(!isInterrupted()) {
                 try {
@@ -117,7 +118,8 @@ public class Admin implements AdminMBean {
                     ClientThread client = new ClientThread(sock);
                     client.start(); 
                 } catch(IOException x) {
-                    LOG.log(Level.SEVERE, "I/O error during connection", x);
+                    LOG.log(Level.SEVERE, "I/O error while handling connection", x);
+                    throw new RuntimeException("I/O error while handling connection", x);
                 }
             }
         }
