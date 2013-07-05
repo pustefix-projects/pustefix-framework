@@ -4,7 +4,8 @@
                 xmlns:pfx="http://www.schlund.de/pustefix/core"
                 xmlns:func="http://exslt.org/functions"
                 xmlns:callback="xalan://de.schlund.pfixcore.util.TransformerCallback"
-                exclude-result-prefixes="pfx func callback">
+                xmlns:xslt2="java:de.schlund.pfixxml.util.xsltimpl.Xslt2BackPortFunctions"
+                exclude-result-prefixes="pfx func callback xslt2">
   
   <!-- XPath functions available on all transformation levels -->
   
@@ -13,17 +14,23 @@
   <func:function name="pfx:ends-with">
     <xsl:param name="str"/>
     <xsl:param name="end"/>
-    <func:result select="callback:endsWith($str, $end)"/>
+    <func:result select="xslt2:endsWith($str, $end)"/>
   </func:function>
   
   <func:function name="pfx:lower-case">
     <xsl:param name="str"/>
-    <func:result select="callback:lowerCase($str)"/>
+    <func:result select="xslt2:lowerCase($str)"/>
   </func:function>
   
   <func:function name="pfx:upper-case">
     <xsl:param name="str"/>
-    <func:result select="callback:upperCase($str)"/>
+    <func:result select="xslt2:upperCase($str)"/>
+  </func:function>
+  
+  <func:function name="pfx:tokenize">
+    <xsl:param name="str"/>
+    <xsl:param name="pattern"/>
+    <func:result select="xslt2:tokenize($str, $pattern)"/>
   </func:function>
   
   <!-- Development functions -->

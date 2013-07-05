@@ -461,29 +461,15 @@ public class TransformerCallback {
     }
     
     public static String escapeJS(String text) {
-    	return JSUtils.escape(text);
+        return JSUtils.escape(text);
     }
 
     public static void sleep(long delay) {
-    	try {
-    		Thread.sleep(delay);
-    	} catch(InterruptedException x) {
-    		//do nothing
-    	}
+        try {
+            Thread.sleep(delay);
+        } catch(InterruptedException x) {
+            //do nothing
+        }
     }
 
-    //some useful functions not available until XSLT 2
-    
-    public static boolean endsWith(String str, String end) {
-    	return str.endsWith(end);
-    }
-    
-    public static String upperCase(String str) {
-    	return str.toUpperCase();
-    }
-
-    public static String lowerCase(String str) {
-    	return str.toLowerCase();
-    }
-    
 }
