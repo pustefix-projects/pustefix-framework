@@ -97,11 +97,15 @@ public class Xslt {
     }
 
     public static Templates loadTemplates(XsltVersion xsltVersion, Resource path, TargetImpl parent) throws TransformerConfigurationException {
-        try {
+        return loadTemplates(xsltVersion, path, parent, false);
+    }
+    
+    public static Templates loadTemplates(XsltVersion xsltVersion, Resource path, TargetImpl parent, boolean debug) throws TransformerConfigurationException {
+    	try {
             InputSource is = new InputSource();
             is.setSystemId(path.toURI().toString());
             is.setByteStream(path.getInputStream());
-            return loadTemplates(xsltVersion, is, parent);
+            return loadTemplates(xsltVersion, is, parent, debug);
         } catch(IOException x) {
             throw new TransformerConfigurationException("Can't load template", x);
         }
@@ -170,12 +174,13 @@ public class Xslt {
     	try {
             doTransform(xml, templates, params, result, encoding);
     	} catch(TransformerException x) {
+    		LOG.error(x);
     		XsltVersion xsltVersion = getXsltVersion(templates);
     		XsltSupport xsltSupport = XsltProvider.getXsltSupport(xsltVersion);
     		String systemId = xsltSupport.getSystemId(templates);
     		if(systemId != null) {
-	    		InputSource source = new InputSource(systemId);
-	    		templates = loadTemplates(xsltVersion, source, null, true);
+	    		Resource res = ResourceUtil.getResource(systemId);
+	    		templates = loadTemplates(xsltVersion, res, null, true);
 	    		doTransform(xml, templates, params, result, encoding);
     		} else {
     			throw x;
