@@ -22,17 +22,13 @@ import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
 
-import javax.xml.parsers.DocumentBuilder;
-import javax.xml.parsers.DocumentBuilderFactory;
-import javax.xml.xpath.XPath;
-import javax.xml.xpath.XPathFactory;
-
 import org.apache.maven.plugin.AbstractMojo;
 import org.apache.maven.plugin.MojoExecutionException;
 import org.apache.maven.project.MavenProject;
 import org.codehaus.plexus.util.DirectoryScanner;
 import org.pustefixframework.maven.plugins.GenerateSCodes.Result;
-import org.w3c.dom.Document;
+
+import de.schlund.pfixcore.util.ModuleDescriptor;
 
 /**
  * Generate StatusCode constant classes from statusmessage files.
@@ -43,6 +39,7 @@ import org.w3c.dom.Document;
  * @phase generate-sources
  */
 public class PustefixStatuscodeMojo extends AbstractMojo {
+    
     /**
      * @parameter default-value="${project.build.directory}/generated-sources/statuscodes"
      * @required
@@ -90,20 +87,32 @@ public class PustefixStatuscodeMojo extends AbstractMojo {
             if(webappDir.exists()) {
                 docRoot = webappDir;
             } else {
-                if(module == null) module = getModuleName();
-                if(module != null) {
-                    docRoot = new File(project.getBasedir(), "src/main/resources/PUSTEFIX-INF");
+                ModuleDescriptor moduleInfo = null;
+                try {
+                    File descriptor = new File(project.getBasedir(), "src/main/resources/META-INF/pustefix-module.xml");
+                    if(descriptor.exists()) {
+                        moduleInfo = ModuleDescriptor.read(descriptor.toURI().toURL());
+                    }
+                } catch (Exception e) {
+                    throw new MojoExecutionException("Error reading module descriptor", e);
+                }
+                if(moduleInfo != null) {
+                    if(module == null) {
+                        module = moduleInfo.getName();
+                    }
+                    if(docRoot == null) {
+                        docRoot = new File(project.getBasedir(), "src/main/resources" + moduleInfo.getResourcePath());
+                    }
                 }
             }
         }
-        
         if(docRoot == null || !docRoot.exists()) return;
-	
+    
         DirectoryScanner ds = new DirectoryScanner();
         if(includes!=null) {
             ds.setIncludes(includes);
         } else {
-            ds.setIncludes(new String[] { "dyntxt/statuscodeinfo.xml" });
+            ds.setIncludes(new String[] { "dyntxt/statuscodeinfo.xml", "statuscodeinfo.xml" });
         }
         if(excludes!=null) ds.setExcludes(excludes);
         ds.setBasedir(docRoot);
@@ -130,23 +139,5 @@ public class PustefixStatuscodeMojo extends AbstractMojo {
         }
 
     }
-    
-    private String getModuleName() throws MojoExecutionException {
-        String name = null;
-        File descriptor = new File(project.getBasedir(), "src/main/resources/META-INF/pustefix-module.xml");
-        if(descriptor.exists()) {
-            try {
-                DocumentBuilderFactory dbf = DocumentBuilderFactory.newInstance(); 
-                dbf.setNamespaceAware(false);
-                DocumentBuilder db = dbf.newDocumentBuilder();
-                Document doc = db.parse(descriptor);
-                XPath xpath = XPathFactory.newInstance().newXPath();
-                name = xpath.evaluate("/module-descriptor/module-name", doc);
-            } catch(Exception x) {
-                throw new MojoExecutionException("Error while reading module name from descriptor", x);
-            }
-        }
-        return name;
-    }
-    
+
 }

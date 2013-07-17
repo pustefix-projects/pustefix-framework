@@ -87,7 +87,11 @@ public class GenerateSCodes {
                 if(!filePath.startsWith("/")) {
                     // try to get resource relative to info file
                     String path = infoFile;
-                    path=path.substring(0,path.lastIndexOf(File.separatorChar))+File.separator+filePath;
+                    int ind = path.lastIndexOf(File.separatorChar);
+                    if(ind > -1) {
+                        path = path.substring(0, ind);
+                    }
+                    path += File.separator + filePath;
                     File tmp = new File(resDir, path);
                     if(tmp.exists()) res = path;
                 }
