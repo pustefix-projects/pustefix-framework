@@ -23,14 +23,10 @@ import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.net.URL;
 import java.util.List;
 import java.util.jar.JarFile;
 import java.util.zip.ZipEntry;
-
-import javax.xml.parsers.DocumentBuilder;
-import javax.xml.parsers.DocumentBuilderFactory;
-import javax.xml.xpath.XPath;
-import javax.xml.xpath.XPathFactory;
 
 import org.apache.maven.artifact.Artifact;
 import org.apache.maven.plugin.AbstractMojo;
@@ -43,6 +39,7 @@ import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.xml.sax.InputSource;
 
+import de.schlund.pfixcore.util.ModuleDescriptor;
 import de.schlund.pfixxml.util.Xml;
 
 /**
@@ -241,25 +238,24 @@ public class PustefixMergeMojo extends AbstractMojo {
         }
         ZipEntry descEntry = jar.getEntry("META-INF/pustefix-module.xml");
         if(descEntry != null) {
-            String moduleName;
+            ModuleDescriptor moduleInfo = null;
             try {
-                InputStream descIn = jar.getInputStream(descEntry);
-                moduleName = getModuleName(descIn);
-                descIn.close();
-            } catch(IOException x) {
-                throw new MojoExecutionException("Can't read module name from descriptor: " + jarFile.getAbsolutePath());
+                URL url = new URL("jar:" + jarFile.toURI().toURL().toString() + "!/META-INF/pustefix-module.xml");
+                moduleInfo = ModuleDescriptor.read(url);
+            } catch(Exception x) {
+                throw new MojoExecutionException("Can't read module information from descriptor: " + jarFile.getAbsolutePath(), x);
             }
             String[] modIncludes = DEFAULT_INCLUDES;
             if(includes != null) modIncludes = includes;
             File modulesSrcDir = new File(modulesdir);
             File destDir = new File(modulesDestDirname);
             for(String modInclude: modIncludes) {
-                ZipEntry entry = jar.getEntry("PUSTEFIX-INF/"+modInclude);
+                ZipEntry entry = jar.getEntry(moduleInfo.getResourcePath().substring(1) + "/" + modInclude);
                 if(entry != null) {
-                    File extracted = new File(modulesSrcDir, moduleName + "/" + modInclude);
-                    String moduleURI = "module://" + moduleName + "/PUSTEFIX-INF/" + modInclude;
+                    File extracted = new File(modulesSrcDir, moduleInfo.getName() + "/" + modInclude);
+                    String moduleURI = "module://" + moduleInfo.getName() + "/" + modInclude;
                     if(!extracted.exists()) {
-                        File destFile = new File(destDir, moduleName + "/" + modInclude);
+                        File destFile = new File(destDir, moduleInfo.getName() + "/" + modInclude);
                         if (mergeSuffix != null) {
                             String name = destFile.getName();
                             int ind = name.indexOf('.');
@@ -319,18 +315,5 @@ public class PustefixMergeMojo extends AbstractMojo {
             }
         }  
     }
-    
-    private String getModuleName(InputStream in) throws MojoExecutionException {
-        try {
-            DocumentBuilderFactory dbf = DocumentBuilderFactory.newInstance(); 
-            dbf.setNamespaceAware(false);
-            DocumentBuilder db = dbf.newDocumentBuilder();
-            Document doc = db.parse(in);
-            XPath xpath = XPathFactory.newInstance().newXPath();
-            return xpath.evaluate("/module-descriptor/module-name", doc);
-        } catch(Exception x) {
-            throw new MojoExecutionException("Error while reading module name from descriptor", x);
-        }
-    }
-    
+
 }
