@@ -281,12 +281,14 @@
         </xsl:variable>
         <xsl:choose>
           <xsl:when test="$incnodes and $incnodes[name() = 'theme']">
+            <xsl:if test="ic:pushApply($__include_context)"/>
             <xsl:apply-templates select="pfx:includeparam"/>
             <xsl:if test="ic:pushInclude($__include_context, ., $incnodes[1], include:getResolvedURI(), $part)"/>
             <xsl:apply-templates select="$incnodes/node()">
               <xsl:with-param name="__env" select="."/>
             </xsl:apply-templates>
             <xsl:if test="ic:popInclude($__include_context)"/>
+            <xsl:if test="ic:popApply($__include_context)"/>
           </xsl:when>
           <xsl:when test="not($noerror = 'true')">
             <xsl:call-template name="pfx:missinc">

@@ -29,7 +29,7 @@ public class IncludeContextController {
 	private int contextNodeLast;
 	
 	private Stack<IncludeContext> includeContextStack = new Stack<IncludeContext>();
-	private Map<String, Value> appliedIncludePartParams = new HashMap<String, Value>();
+	private Stack<Map<String, Value>> appliedIncludePartParamStack = new Stack<Map<String, Value>>();
 	
 	public IncludeContextController(NodeInfo contextNode) {
 		this.contextNode = contextNode;
@@ -90,6 +90,9 @@ public class IncludeContextController {
 					newTunnelParams.put(tunnelParamName, tunnelParams.get(tunnelParamName));
 				}
 			}
+			
+			Map<String, Value> appliedIncludePartParams = appliedIncludePartParamStack.peek();
+			
 			NodeList nodes = includeElementNode.getChildNodes();	
 			if(nodes != null) {
 				for(int i=0; i<nodes.getLength(); i++) {
@@ -120,9 +123,10 @@ public class IncludeContextController {
 					}
 				}
 			}
-			appliedIncludePartParams.clear();
+			
 			newContext.setIncludeElementTunnelParams(newTunnelParams);
-			includeContextStack.push(newContext);
+			includeContextStack.push(newContext);		
+			
 			nodes = includePartNode.getChildNodes();	
 			if(nodes != null) {
 				for(int i=0; i<nodes.getLength(); i++) {
@@ -216,10 +220,19 @@ public class IncludeContextController {
 			IncludeContext includeContext = includeContextStack.peek();
 			includeContext.addIncludePartParam(name, value);
 		} else {
+			Map<String, Value> appliedIncludePartParams = appliedIncludePartParamStack.peek();
 			appliedIncludePartParams.put(name, value);
 		}
 	}
 	
+	public void pushApply() {
+		Map<String, Value> appliedIncludePartParams = new HashMap<String, Value>();
+		appliedIncludePartParamStack.push(appliedIncludePartParams);
+	}
+	
+	public void popApply() {
+		appliedIncludePartParamStack.pop();
+	}
 	
 	public Value evaluate (Context parentContext, String expr) throws Exception {
 		try {

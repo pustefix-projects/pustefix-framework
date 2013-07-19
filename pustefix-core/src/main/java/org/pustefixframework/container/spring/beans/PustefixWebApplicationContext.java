@@ -70,7 +70,7 @@ public class PustefixWebApplicationContext extends AbstractRefreshableWebApplica
 
         //disable bean definition overriding as it turned out to be more cumbersome
         //finding errors caused by this feature, than that it's bringing real benefit
-        beanFactory.setAllowBeanDefinitionOverriding(false);
+        //beanFactory.setAllowBeanDefinitionOverriding(false);
 
         if(pustefixInit == null) {
             pustefixInit = (PustefixInit)getServletContext().getAttribute(PustefixInit.SERVLET_CONTEXT_ATTRIBUTE_NAME);
@@ -133,7 +133,6 @@ public class PustefixWebApplicationContext extends AbstractRefreshableWebApplica
         }
 
         beanFactory.registerScope("tenant", new TenantScope());
-
         addAnnotationBeanDefinitionPostProcessor(beanFactory);
     }
 

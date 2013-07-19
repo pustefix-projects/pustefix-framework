@@ -57,13 +57,15 @@ public class DocrootResourceOnFileSystemProvider extends DocrootResourceProvider
             try {
                 URL resolvedLiveDocroot = LiveResolver.getInstance().resolveLiveDocroot(docroot, uri.getPath());
                 if (resolvedLiveDocroot != null) {
-                    return new DocrootResourceOnFileSystemImpl(uri, resolvedLiveDocroot.getFile());
+                    Resource res = new DocrootResourceOnFileSystemImpl(uri, resolvedLiveDocroot.getFile());
+                    if(res.exists()) {
+                    	return res;
+                    }
                 }
             } catch (Exception e) {
                 throw new PustefixRuntimeException(e);
             }
         }
-
         return new DocrootResourceOnFileSystemImpl(uri, docroot);
     }
 
