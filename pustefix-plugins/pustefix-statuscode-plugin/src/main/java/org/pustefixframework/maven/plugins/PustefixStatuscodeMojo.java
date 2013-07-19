@@ -28,8 +28,6 @@ import org.apache.maven.project.MavenProject;
 import org.codehaus.plexus.util.DirectoryScanner;
 import org.pustefixframework.maven.plugins.GenerateSCodes.Result;
 
-import de.schlund.pfixcore.util.ModuleDescriptor;
-
 /**
  * Generate StatusCode constant classes from statusmessage files.
  *
