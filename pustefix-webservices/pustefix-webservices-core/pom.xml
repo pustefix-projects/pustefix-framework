@@ -3,13 +3,13 @@
   <parent>
     <artifactId>pustefix-webservices</artifactId>
     <groupId>org.pustefixframework.webservices</groupId>
-    <version>0.18.48-SNAPSHOT</version>
+    <version>0.18.48</version>
   </parent>
   <name>Pustefix Webservices Core</name>
 
   <groupId>org.pustefixframework.webservices</groupId>
   <artifactId>pustefix-webservices-core</artifactId>
-  <version>0.18.48-SNAPSHOT</version>
+  <version>0.18.48</version>
 
   <dependencies>
     <dependency>
