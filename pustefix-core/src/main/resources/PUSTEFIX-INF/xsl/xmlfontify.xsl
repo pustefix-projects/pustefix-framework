@@ -28,9 +28,26 @@
           table.info th,td {text-align:left; padding:4px;}
           table.info td {color: #666666; font-weight: normal;}
           table.info th {color: #000000; font-weight: normal;}
+          ul#formresult { list-style-type: none; -moz-user-select: -moz-none; -khtml-user-select: none; -webkit-user-select: none; }
+          ul#formresult li { list-style-type: none; margin-left: -15px; }
+          ul#formresult li.expanded:before { content: "- "; color: #c90000; font-weight: bold; margin-left: -19px; }
+          ul#formresult li.collapsed:before { content: "+ "; color: #c90000; font-weight: bold; margin-left: -19px; }
+          ul#formresult li.expanded, ul li.collapsed { cursor: pointer; }
+          ul#formresult li.expanded ul { display: block; }
+          ul#formresult li.collapsed ul { display: none; }
+          .assistent { background: #eeeeee; position: fixed; left: 0; top: 0; right: 0; width: 100%; border-bottom: 2px solid #000000; padding: 5px; }
+          .assistent input { padding: 5px; font-family: sans; font-size: 16px; width: 50%; margin-right: 15px; }
+          .assistent a { color: #000000; }
+          .assistent label { margin-left: 5px; margin-right: 10px; }
+          ul a:hover { text-decoration: underline; }
         </style>
       </head>
       <body>
+        <div class="assistent"> 
+          <label for="xpath">XPath-Expression</label> <input id="xpath" readonly="readonly" />
+          <a href="javascript:void(0);" id="expand">expand all</a> | <a href="javascript:void(0);" id="collapse">collapse all</a> | <a href="#PageStatus">Page status</a> | <a href="#IWrappers">IWrappers</a>
+        </div>
+        <br /><br />
         <h1>XML data:</h1>
         <xsl:apply-templates mode="static_disp" select="/"/>
         <xsl:call-template name="render_iwrappers">
@@ -38,7 +55,7 @@
         </xsl:call-template>
         <xsl:call-template name="render_roles"/>
         <br/>
-        <h1>Page status:</h1>
+        <h1 id="PageStatus">Page status:</h1>
         <table cellpadding="4" cellspacing="0" style="padding-left:20px;">
         <tr>
         <td style="border-bottom: 1px solid black;">Page name</td>
@@ -50,7 +67,7 @@
           <xsl:with-param name="thepages" select="$sitemap/page"/>
         </xsl:call-template>
         </table>
-        <br/>
+        <script type="text/javascript" src="/modules/pustefix-core/script/dom.js"></script>
       </body>
     </html>
   </xsl:template>
@@ -128,7 +145,7 @@
     <xsl:variable name="iwrappers" select="callback:getIWrappers($__context__,/,'')"/>
     <xsl:if test="count($iwrappers/iwrappers/iwrapper) > 0">
       <br/>
-      <h1>IWrappers:</h1>
+      <h1 id="IWrappers">IWrappers:</h1>
       <table cellspacing="0" class="datatable">
         <tr>
           <th><b>Parameter</b></th>
@@ -284,9 +301,13 @@
   </xsl:template>
 
   <xsl:template match="*" mode="static_disp">
+  
     <xsl:param name="ind">  </xsl:param>
     <xsl:param name="break">true</xsl:param>
     <xsl:param name="bold">true</xsl:param>
+    <xsl:param name="parent" />
+    <xsl:param name="count" />
+    
     <xsl:variable name="dim">
       <xsl:choose>
         <xsl:when test="ancestor-or-self::wrapperstatus[1] and generate-id(ancestor-or-self::wrapperstatus[1]) = generate-id(/formresult/wrapperstatus)">true</xsl:when>
@@ -329,49 +350,90 @@
         <xsl:otherwise>dimmed</xsl:otherwise>
       </xsl:choose>
     </xsl:variable>
-    <xsl:if test="$break='false'">
-      <br/>
-    </xsl:if>
-    <xsl:value-of select="$ind"/>
-    <span class="bracket">
-      <xsl:text>&lt;</xsl:text>
-    </span>
-    <span class="{$tagclass}">
-      <xsl:if test="$bold = 'true' and $dim = 'false'">
-        <xsl:attribute name="style">font-weight: bold;</xsl:attribute>
+    <xsl:variable name="position">
+      <xsl:if test="count(parent::node()/child::*[name() = name(current())]) &gt; 1">
+        <xsl:value-of select="count(preceding-sibling::node()[name() = name(current())]) + 1" />
       </xsl:if>
-    <xsl:value-of select="name()"/></span>
-    <xsl:for-each select="@*">
-      <xsl:text> </xsl:text>
-      <span class="{$attrclass}"><xsl:value-of select="name()"/></span>
-      <xsl:text>="</xsl:text><span class="{$valueclass}"><xsl:value-of select="."/></span>
-      <xsl:text>"</xsl:text>
-    </xsl:for-each>
-    <span class="bracket"><xsl:if test="count(./node()) = 0">/</xsl:if>&gt;</span>
-    <xsl:apply-templates mode="static_disp">
-      <xsl:with-param name="bold">
+    </xsl:variable>
+    
+    <ul>
+    
+      <xsl:if test="name() = 'formresult'">
+        <xsl:attribute name="id">formresult</xsl:attribute>
+      </xsl:if>
+    
+        <!--xsl:if test="count(./*) &gt; 0">
+          <xsl:attribute name="class">parent</xsl:attribute>
+        </xsl:if-->
+    
+      <li>
+      
         <xsl:choose>
-          <xsl:when test="count(ancestor::node()) &gt; 1">false</xsl:when>
-          <xsl:otherwise>true</xsl:otherwise>
+          <xsl:when test="name() = 'formresult'">
+            <xsl:attribute name="class">expanded formesult</xsl:attribute>
+          </xsl:when>
+          <xsl:when test="count(./*) &gt; 0">
+            <xsl:attribute name="class">collapsed</xsl:attribute>
+          </xsl:when>
+          <xsl:otherwise />
         </xsl:choose>
-        </xsl:with-param>
-        <xsl:with-param name="ind">
-        <xsl:value-of select="$ind"/>    </xsl:with-param>
-      <xsl:with-param name="break">false</xsl:with-param>
-    </xsl:apply-templates>
-    <xsl:if test="not(count(./node()) = 0)">
-      <xsl:if test="count(./*) &gt; 0">
-        <br/>
-        <xsl:value-of select="$ind"/>
-      </xsl:if>
-      <span class="bracket">&lt;/</span>
-      <span class="{$tagclass}">
-      <xsl:if test="$bold = 'true' and $dim = 'false'">
-        <xsl:attribute name="style">font-weight: bold;</xsl:attribute>
-      </xsl:if>
-      <xsl:value-of select="name()"/></span>
-      <span class="bracket">&gt;</span>
-    </xsl:if>
+      
+        <span class="bracket">&lt;</span>
+        
+        <span class="{$tagclass}">
+        
+          <xsl:if test="$bold = 'true' and $dim = 'false'">
+            <xsl:attribute name="style">font-weight: bold;</xsl:attribute>
+          </xsl:if>
+          
+          <a>
+            <xsl:attribute name="title"><xsl:value-of select="$parent" />/<xsl:value-of select="name()" /><xsl:if test="not($position = '')">[<xsl:value-of select="$position" />]</xsl:if></xsl:attribute>
+            <xsl:value-of select="name()"/></a></span>
+            
+          <xsl:for-each select="@*">
+            <xsl:text> </xsl:text>
+            <span class="{$attrclass}">
+              <a>
+                <xsl:attribute name="title"><xsl:value-of select="$parent" />/<xsl:value-of select="name(parent::node())" /><xsl:if test="not($position = '')">[<xsl:value-of select="$position" />]</xsl:if>/@<xsl:value-of select="name()" /></xsl:attribute>
+                <xsl:value-of select="name()"/>
+              </a>
+            </span>
+            <xsl:text>="</xsl:text>
+            <span class="{$valueclass}">
+              <a>
+                <xsl:attribute name="title"><xsl:value-of select="$parent" />/<xsl:value-of select="name(parent::node())" />[@<xsl:value-of select="name()" />='<xsl:value-of select="." />']</xsl:attribute>
+                <xsl:value-of select="."/>
+              </a>
+            </span>
+            <xsl:text>"</xsl:text>
+          </xsl:for-each>
+          
+        <span class="bracket"><xsl:if test="count(./node()) = 0">/</xsl:if>&gt;</span>
+        
+        <xsl:apply-templates mode="static_disp">
+          <xsl:with-param name="bold">
+            <xsl:choose>
+              <xsl:when test="count(ancestor::node()) &gt; 1">false</xsl:when>
+              <xsl:otherwise>true</xsl:otherwise>
+            </xsl:choose>
+            </xsl:with-param>
+          <xsl:with-param name="break">false</xsl:with-param>
+          <xsl:with-param name="parent"><xsl:value-of select="$parent" />/<xsl:value-of select="name()" /></xsl:with-param>
+        </xsl:apply-templates>
+        
+        <xsl:if test="not(count(./node()) = 0)">
+        
+          <span class="bracket">&lt;/</span>
+          <span class="{$tagclass}">
+            <xsl:value-of select="name()"/>
+          </span>
+          <span class="bracket">&gt;</span>
+          
+        </xsl:if>
+        
+      </li>
+    </ul>
+    
   </xsl:template>
   
   <xsl:template match="text()" mode="static_disp">
