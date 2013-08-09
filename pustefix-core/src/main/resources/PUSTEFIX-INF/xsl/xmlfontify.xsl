@@ -420,15 +420,13 @@
           <xsl:with-param name="break">false</xsl:with-param>
           <xsl:with-param name="parent"><xsl:value-of select="$parent" />/<xsl:value-of select="name()" /></xsl:with-param>
         </xsl:apply-templates>
-        
+
         <xsl:if test="not(count(./node()) = 0)">
-        
           <span class="bracket">&lt;/</span>
           <span class="{$tagclass}">
             <xsl:value-of select="name()"/>
           </span>
           <span class="bracket">&gt;</span>
-          
         </xsl:if>
         
       </li>
