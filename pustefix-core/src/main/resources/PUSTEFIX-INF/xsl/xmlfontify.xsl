@@ -6,6 +6,7 @@
   <xsl:param name="__sitemap"/>
   <xsl:param name="sitemap" select="$__sitemap"/>
   <xsl:param name="__target_gen"/>
+  <xsl:param name="__contextpath"/>
 
   <xsl:template match="/">
     <html>
@@ -67,7 +68,7 @@
           <xsl:with-param name="thepages" select="$sitemap/page"/>
         </xsl:call-template>
         </table>
-        <script type="text/javascript" src="/modules/pustefix-core/script/dom.js"></script>
+        <script type="text/javascript" src="{$__contextpath}/modules/pustefix-core/script/dom.js"></script>
       </body>
     </html>
   </xsl:template>
