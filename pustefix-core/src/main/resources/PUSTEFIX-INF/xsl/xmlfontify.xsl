@@ -45,10 +45,10 @@
       <body>
         <div class="assistent"> 
           <label for="xpath">XPath-Expression</label> <input id="xpath" readonly="readonly" />
-          <a href="javascript:void(0);" id="expand">expand all</a> | <a href="javascript:void(0);" id="collapse">collapse all</a> | <a href="#PageStatus">Page status</a> | <a href="#IWrappers">IWrappers</a>
+          <a href="javascript:void(0);" id="expand">expand all</a> | <a href="javascript:void(0);" id="collapse">collapse all</a> | <a href="#XMLData">XML data</a> |  <a href="#PageStatus">Page status</a> | <a href="#IWrappers">IWrappers</a>
         </div>
         <br /><br />
-        <h1>XML data:</h1>
+        <h1 id="XMLData">XML data:</h1>
         <xsl:apply-templates mode="static_disp" select="/"/>
         <xsl:call-template name="render_iwrappers">
           <xsl:with-param name="tree" select="/"/>
