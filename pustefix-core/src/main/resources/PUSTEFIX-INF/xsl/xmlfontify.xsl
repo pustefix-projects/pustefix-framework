@@ -36,6 +36,9 @@
           ul#formresult li.expanded, ul li.collapsed { cursor: pointer; }
           ul#formresult li.expanded ul { display: block; }
           ul#formresult li.collapsed ul { display: none; }
+          ul#formresult li div.dots { display: inline-block; width: 30px; }
+          ul#formresult li.expanded div.dots { display: none; }
+          ul#formresult li.collapsed div.dots { display: inline-block; }
           .assistent { background: #eeeeee; position: fixed; left: 0; top: 0; right: 0; width: 100%; border-bottom: 2px solid #000000; padding: 5px; }
           .assistent input { padding: 5px; font-family: sans; font-size: 16px; width: 50%; margin-right: 15px; }
           .assistent a { color: #000000; }
@@ -426,9 +429,9 @@
 
         <xsl:if test="not(count(./node()) = 0)">
         
-          <!--xsl:if test="not(name() = 'formresult') and count(*) &gt; 0">
-          <div class="dots">...</div>
-          </xsl:if-->
+          <xsl:if test="not(name() = 'formresult') and count(*) &gt; 0">
+            <div class="dots">...</div>
+          </xsl:if>
 
           <span class="bracket">&lt;/</span>
           <span class="{$tagclass}">
