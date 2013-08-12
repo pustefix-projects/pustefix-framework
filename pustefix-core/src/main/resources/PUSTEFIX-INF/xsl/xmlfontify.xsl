@@ -36,7 +36,7 @@
           ul#formresult li.expanded, ul li.collapsed { cursor: pointer; }
           ul#formresult li.expanded ul { display: block; }
           ul#formresult li.collapsed ul { display: none; }
-          ul#formresult li div.dots { display: inline-block; width: 30px; }
+          ul#formresult li div.dots { color: #ccc; display: inline-block; width: 30px; }
           ul#formresult li.expanded div.dots { display: none; }
           ul#formresult li.collapsed div.dots { display: inline-block; }
           .assistent { background: #eeeeee; position: fixed; left: 0; top: 0; right: 0; width: 100%; border-bottom: 2px solid #000000; padding: 5px; }
