@@ -4,7 +4,7 @@ var domElement = document.getElementsByTagName("li")[0],
     xpath = document.getElementById("xpath"),
     collapse = document.getElementById("collapse"),
     expand = document.getElementById("expand");
-
+    
 for (var x = 0; x < nodeElements.length; x+=1) {
   if (nodeElements[x].addEventListener) {
     nodeElements[x].addEventListener("click", function(e) { getXpathExpression(e.target); }, false);

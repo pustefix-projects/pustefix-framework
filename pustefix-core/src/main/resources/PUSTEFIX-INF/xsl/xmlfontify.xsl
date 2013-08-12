@@ -29,10 +29,10 @@
           table.info th,td {text-align:left; padding:4px;}
           table.info td {color: #666666; font-weight: normal;}
           table.info th {color: #000000; font-weight: normal;}
-          ul#formresult { list-style-type: none; -moz-user-select: -moz-none; -khtml-user-select: none; -webkit-user-select: none; }
-          ul#formresult li { list-style-type: none; margin-left: -15px; }
-          ul#formresult li.expanded:before { content: "- "; color: #c90000; font-weight: bold; margin-left: -19px; }
-          ul#formresult li.collapsed:before { content: "+ "; color: #c90000; font-weight: bold; margin-left: -19px; }
+          ul#formresult { list-style-type: none; -moz-user-select: -moz-none; -khtml-user-select: none; -webkit-user-select: none; margin-left: -10px; }
+          ul#formresult li { list-style-type: none; margin-left: -20px; }
+          ul#formresult li.expanded:before { content: "- "; color: #c90000; font-weight: bold; margin-left: -15px; }
+          ul#formresult li.collapsed:before { content: "+ "; color: #c90000; font-weight: bold; margin-left: -15px; }
           ul#formresult li.expanded, ul li.collapsed { cursor: pointer; }
           ul#formresult li.expanded ul { display: block; }
           ul#formresult li.collapsed ul { display: none; }
@@ -40,7 +40,7 @@
           .assistent input { padding: 5px; font-family: sans; font-size: 16px; width: 50%; margin-right: 15px; }
           .assistent a { color: #000000; }
           .assistent label { margin-left: 5px; margin-right: 10px; }
-          ul a:hover { text-decoration: underline; }
+          ul a:hover { text-decoration: underline; cursor: pointer; }
         </style>
       </head>
       <body>
@@ -368,17 +368,19 @@
         </xsl:if-->
     
       <li>
-      
-        <xsl:choose>
-          <xsl:when test="name() = 'formresult'">
-            <xsl:attribute name="class">expanded formesult</xsl:attribute>
-          </xsl:when>
-          <xsl:when test="count(./*) &gt; 0">
-            <xsl:attribute name="class">collapsed</xsl:attribute>
-          </xsl:when>
-          <xsl:otherwise />
-        </xsl:choose>
-      
+       
+        <xsl:attribute name="class">
+          <xsl:choose>
+            <xsl:when test="name() = 'formresult'">
+              <xsl:text>formesult</xsl:text>
+            </xsl:when>
+            <xsl:when test="count(./*) &gt; 0">
+              <xsl:text>collapsed</xsl:text>
+            </xsl:when>
+            <xsl:otherwise />
+          </xsl:choose>
+        </xsl:attribute>
+
         <span class="bracket">&lt;</span>
         
         <span class="{$tagclass}">
@@ -423,9 +425,20 @@
         </xsl:apply-templates>
 
         <xsl:if test="not(count(./node()) = 0)">
+        
+          <!--xsl:if test="not(name() = 'formresult') and count(*) &gt; 0">
+          <div class="dots">...</div>
+          </xsl:if-->
+
           <span class="bracket">&lt;/</span>
           <span class="{$tagclass}">
+          
+            <xsl:if test="$bold = 'true' and $dim = 'false'">
+              <xsl:attribute name="style">font-weight: bold;</xsl:attribute>
+            </xsl:if>
+          
             <xsl:value-of select="name()"/>
+            
           </span>
           <span class="bracket">&gt;</span>
         </xsl:if>
