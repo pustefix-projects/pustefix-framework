@@ -429,9 +429,9 @@
 
         <xsl:if test="not(count(./node()) = 0)">
         
-          <xsl:if test="not(name() = 'formresult') and count(*) &gt; 0">
+          <!--xsl:if test="not(name() = 'formresult') and count(*) &gt; 0">
             <div class="dots">...</div>
-          </xsl:if>
+          </xsl:if-->
 
           <span class="bracket">&lt;/</span>
           <span class="{$tagclass}">
