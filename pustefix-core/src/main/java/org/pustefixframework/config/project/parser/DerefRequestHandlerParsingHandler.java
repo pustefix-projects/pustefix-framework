@@ -17,10 +17,9 @@
  */
 package org.pustefixframework.config.project.parser;
 
-import java.util.Properties;
-
 import org.pustefixframework.config.Constants;
 import org.pustefixframework.config.contextxmlservice.ServletManagerConfig;
+import org.pustefixframework.config.derefservice.internal.DerefServiceConfig;
 import org.pustefixframework.config.generic.ParsingUtils;
 import org.pustefixframework.config.project.SessionTrackingStrategyInfo;
 import org.pustefixframework.http.dereferer.DerefRequestHandler;
@@ -49,22 +48,9 @@ public class DerefRequestHandlerParsingHandler implements ParsingHandler {
         
         if(root.getLocalName().equals("application")) {
             
-            final Properties properties = new Properties(System.getProperties());
-            ServletManagerConfig config = new ServletManagerConfig() {
+            ServletManagerConfig config = new DerefServiceConfig();
+            context.getObjectTreeElement().addObject(config);
 
-                public Properties getProperties() {
-                    return properties;
-                }
-
-                public boolean isSSL() {
-                    return false;
-                }
-
-                public boolean needsReload() {
-                    return false;
-                }
-                
-            };
             SessionTrackingStrategyInfo strategyInfo = ParsingUtils.getSingleSubObjectFromRoot(SessionTrackingStrategyInfo.class, context);
             
             beanBuilder = BeanDefinitionBuilder.genericBeanDefinition(DerefRequestHandler.class);

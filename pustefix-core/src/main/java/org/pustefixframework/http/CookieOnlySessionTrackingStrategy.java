@@ -224,6 +224,14 @@ public class CookieOnlySessionTrackingStrategy implements SessionTrackingStrateg
                 return;
                     
             }
+            
+            //redirect to SSL when not running under SSL but session already used SSL before, thus
+            //the secure session cookie will be sent again and requests are server sticky, which is
+            //needed for the deref mechanism to work (because of server bound signature keys)
+            if(req.getRequestedSessionId() == null && getCookie(cookies, COOKIE_SESSION_SSL) != null && !req.isSecure()) {
+                redirectToSSL(req, res, HttpServletResponse.SC_MOVED_TEMPORARILY);
+                return;
+            }
                     
         }
         

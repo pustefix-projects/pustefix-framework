@@ -25,6 +25,7 @@ import java.util.Properties;
 import org.pustefixframework.config.contextxmlservice.parser.internal.ContextConfigImpl;
 import org.pustefixframework.config.contextxmlservice.parser.internal.ContextXMLServletConfigImpl;
 import org.pustefixframework.config.customization.CustomizationAwareParsingHandler;
+import org.pustefixframework.config.derefservice.internal.DerefServiceConfig;
 import org.pustefixframework.config.generic.ParsingUtils;
 
 import com.marsching.flexiparse.parser.HandlerContext;
@@ -68,6 +69,11 @@ public class RegisterProjectPropertiesParsingHandler extends CustomizationAwareP
             }
         }
         contextConfig.setProperties(contextProperties);
+        
+        DerefServiceConfig config = ParsingUtils.getSingleSubObjectFromRoot(DerefServiceConfig.class, context, false);
+        if(config != null) {
+            config.setProperties(contextProperties);
+        }
         
     }
 
