@@ -225,13 +225,13 @@ public abstract class IWrapperImpl implements IWrapper {
         }
     }
 
-    protected final IWrapperParam gimmeParamForKey(String key) {
+    public final IWrapperParam gimmeParamForKey(String key) {
         synchronized (params) {
             return (IWrapperParam) params.get(key);
         }
     }
 
-    protected final IWrapperIndexedParam gimmeIndexedParamForKey(String key) {
+    public final IWrapperIndexedParam gimmeIndexedParamForKey(String key) {
         synchronized (idxprms) {
             return (IWrapperIndexedParam) idxprms.get(key);
         }
