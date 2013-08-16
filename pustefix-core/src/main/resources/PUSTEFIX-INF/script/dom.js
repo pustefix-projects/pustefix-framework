@@ -8,12 +8,18 @@ var domElement = document.getElementsByTagName("li")[0],
     collapse = document.getElementById("collapse"),
     expand = document.getElementById("expand"),
     xml = loadXMLDoc(currentLocation),
-    autocompletion = document.getElementById("autocompletion");
+    autocompletion = document.getElementById("autocompletion"),
+    body = document.getElementsByTagName("body")[0];
+    
     
  // ie check
  
  if (!xml.evaluate) {
   xpath.className = '';
+} else {
+  body.onload = function() {
+    xPathChecker();
+  }
 }
     
 for (var x = 0; x < nodeElements.length; x+=1) {
@@ -202,6 +208,8 @@ function getAttributes() {
 
 function getChildNodes() {
 
+  xpath.className = "invalid";
+
   try {
   
     var iterator = xml.evaluate(xpath.value, xml, null, XPathResult.ANY_TYPE, null),
@@ -213,11 +221,13 @@ function getChildNodes() {
     while (thisNode) {
     
       childNodes = thisNode.childNodes;
-    
+      
       if (childNodes.length > 1) {
       
         autocompletion.innerHTML = "";
         autocompletion.style.display = "block";
+        
+        xpath.className = "valid";
       
         for (var x = 0; x < childNodes.length; x+=1) {
         
