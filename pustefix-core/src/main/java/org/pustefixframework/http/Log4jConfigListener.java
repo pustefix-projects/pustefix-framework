@@ -3,6 +3,7 @@ package org.pustefixframework.http;
 import javax.servlet.ServletContextEvent;
 import javax.servlet.ServletContextListener;
 
+import org.apache.log4j.LogManager;
 import org.pustefixframework.http.internal.PustefixInit;
 
 import de.schlund.pfixcore.exception.PustefixCoreException;
@@ -31,6 +32,7 @@ public class Log4jConfigListener implements ServletContextListener {
 	public void contextDestroyed(ServletContextEvent sce) {
 		
 		sce.getServletContext().removeAttribute(PustefixInit.SERVLET_CONTEXT_ATTRIBUTE_NAME);
+		LogManager.shutdown();
 	};
 	
 }
