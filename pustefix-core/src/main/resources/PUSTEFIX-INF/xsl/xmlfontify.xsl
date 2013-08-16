@@ -40,7 +40,10 @@
           ul#formresult li.expanded div.dots { display: none; }
           ul#formresult li.collapsed div.dots { display: inline-block; }
           .assistent { background: #eeeeee; position: fixed; left: 0; top: 0; right: 0; width: 100%; border-bottom: 2px solid #000000; padding: 5px; }
-          .assistent input { padding: 5px; font-family: sans; font-size: 16px; width: 50%; margin-right: 15px; }
+          .assistent input#xpath { border: 1px solid #ccc; padding: 2px; font-family: sans; font-size: 16px; width: 700px; margin-right: 15px; }
+          .assistent input#xpath.valid { background: url("/modules/pustefix-core/img/valid.png") no-repeat scroll 8px 4px white; padding-left: 30px; }
+          .assistent input#xpath.invalid { background: url("/modules/pustefix-core/img/invalid.png") no-repeat scroll 8px 4px white; padding-left: 30px; }
+          .assistent div#autocompletion { display: none; position: absolute; background: #ffffff; left: 148px; border: 1px solid #cccccc; border-top: none; margin-top: -4px; padding: 5px; width: 688px; }
           .assistent a { color: #000000; }
           .assistent label { margin-left: 5px; margin-right: 10px; }
           ul a:hover { text-decoration: underline; cursor: pointer; }
@@ -48,8 +51,9 @@
       </head>
       <body>
         <div class="assistent"> 
-          <label for="xpath">XPath-Expression</label> <input id="xpath" readonly="readonly" />
-          <a href="javascript:void(0);" id="expand">expand all</a> | <a href="javascript:void(0);" id="collapse">collapse all</a> | <a href="#XMLData">XML data</a> |  <a href="#PageStatus">Page status</a> | <a href="#IWrappers">IWrappers</a>
+          <label for="xpath">XPath-Expression</label> <input id="xpath" class="valid" value="/formresult" />
+          <a href="javascript:void(0);" id="expand">Expand all</a> | <a href="javascript:void(0);" id="collapse">Collapse all</a> | <a href="#XMLData">XML data</a> |  <a href="#PageStatus">Page status</a> | <a href="#IWrappers">IWrappers</a>
+          <div id="autocompletion"></div>
         </div>
         <br /><br />
         <h1 id="XMLData">XML data:</h1>
@@ -378,7 +382,7 @@
               <xsl:text>formesult</xsl:text>
             </xsl:when>
             <xsl:when test="count(./*) &gt; 0">
-              <xsl:text>collapsed</xsl:text>
+              <xsl:text>expanded</xsl:text>
             </xsl:when>
             <xsl:otherwise />
           </xsl:choose>
