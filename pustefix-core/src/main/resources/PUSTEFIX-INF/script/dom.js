@@ -219,15 +219,15 @@ function getChildNodes() {
         allChildNodes = [];
         
     while (thisNode) {
-    
+            
+      xpath.className = "valid";
+        
       childNodes = thisNode.childNodes;
       
       if (childNodes.length > 1) {
       
         autocompletion.innerHTML = "";
         autocompletion.style.display = "block";
-        
-        xpath.className = "valid";
       
         for (var x = 0; x < childNodes.length; x+=1) {
         
