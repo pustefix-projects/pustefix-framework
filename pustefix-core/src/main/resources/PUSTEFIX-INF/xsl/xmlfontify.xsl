@@ -43,7 +43,7 @@
           .assistent input#xpath { border: 1px solid #ccc; padding: 2px; font-family: sans; font-size: 16px; width: 700px; margin-right: 15px; }
           .assistent input#xpath.valid { background: url("/modules/pustefix-core/img/valid.png") no-repeat scroll 8px 4px white; padding-left: 30px; }
           .assistent input#xpath.invalid { background: url("/modules/pustefix-core/img/invalid.png") no-repeat scroll 8px 4px white; padding-left: 30px; }
-          .assistent div#autocompletion { display: none; position: absolute; background: #ffffff; left: 148px; border: 1px solid #cccccc; border-top: none; margin-top: -4px; padding: 5px; width: 688px; }
+          .assistent div#autocompletion { display: none; position: absolute; background: #ffffff; left: 180px; border: 1px solid #cccccc; border-top: none; margin-top: -4px; padding: 5px; width: 688px; }
           .assistent a { color: #000000; }
           .assistent label { margin-left: 5px; margin-right: 10px; }
           ul a:hover { text-decoration: underline; cursor: pointer; }
