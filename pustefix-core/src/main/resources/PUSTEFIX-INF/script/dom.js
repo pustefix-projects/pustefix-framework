@@ -19,6 +19,7 @@ var domElement = document.getElementsByTagName("li")[0],
 } else {
   body.onload = function() {
     xPathChecker();
+    autocompletion.style.display = "none";
   }
 }
     
@@ -165,7 +166,7 @@ function getAttributes() {
   if (fullExpression.lastIndexOf("[") > 0) {
     fullExpression = fullExpression.substr(0, fullExpression.lastIndexOf("["));
   }
-
+  
   if (lastChar == '@') {
   
     try {
@@ -178,7 +179,7 @@ function getAttributes() {
       
       attributes = thisNode.attributes;
         
-        if (attributes.length > 1) {
+        if (attributes.length > 0) {
         
           autocompletion.innerHTML = "";
           autocompletion.style.display = "block";
@@ -223,7 +224,7 @@ function getChildNodes() {
       xpath.className = "valid";
         
       childNodes = thisNode.childNodes;
-      
+
       if (childNodes.length > 1) {
       
         autocompletion.innerHTML = "";

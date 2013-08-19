@@ -51,7 +51,7 @@
       </head>
       <body>
         <div class="assistent"> 
-          <label for="xpath">XPath-Expression</label> <input id="xpath" class="valid" value="/formresult" />
+          <label for="xpath">XPath-Expression [<a href="http://www.w3schools.com/xpath/xpath_syntax.asp" target="_blank">?</a>]</label> <input id="xpath" class="valid" value="/formresult" />
           <a href="javascript:void(0);" id="expand">Expand all</a> | <a href="javascript:void(0);" id="collapse">Collapse all</a> | <a href="#XMLData">XML data</a> |  <a href="#PageStatus">Page status</a> | <a href="#IWrappers">IWrappers</a>
           <div id="autocompletion"></div>
         </div>
