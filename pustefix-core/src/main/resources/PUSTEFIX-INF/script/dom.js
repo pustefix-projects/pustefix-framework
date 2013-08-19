@@ -222,7 +222,7 @@ function getChildNodes() {
     while (thisNode) {
             
       xpath.className = "valid";
-        
+
       childNodes = thisNode.childNodes;
 
       if (childNodes.length > 1) {
