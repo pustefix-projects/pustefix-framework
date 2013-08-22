@@ -23,6 +23,8 @@ import java.util.Map;
 
 import org.pustefixframework.config.Constants;
 import org.pustefixframework.config.customization.CustomizationAwareParsingHandler;
+import org.pustefixframework.config.generic.ParsingUtils;
+import org.pustefixframework.config.project.ProjectInfo;
 import org.springframework.beans.factory.config.BeanDefinition;
 import org.springframework.beans.factory.config.BeanDefinitionHolder;
 import org.springframework.beans.factory.support.BeanDefinitionBuilder;
@@ -39,9 +41,9 @@ import de.schlund.pfixxml.exceptionprocessor.PageForwardingExceptionProcessor;
 import de.schlund.pfixxml.exceptionprocessor.UniversalExceptionProcessor;
 
 /**
+ * Reads exception processing configuration and creates according
+ * configuration objects and Spring bean definitions.
  * 
- * @author mleidig@schlund.de
- *
  */
 public class ExceptionProcessingParsingHandler extends CustomizationAwareParsingHandler {
 
@@ -58,6 +60,8 @@ public class ExceptionProcessingParsingHandler extends CustomizationAwareParsing
             beanBuilder.setScope("singleton");
             Map<Class<?>, ExceptionConfig> map = new HashMap<Class<?>, ExceptionConfig>();
             beanBuilder.addPropertyValue("exceptionConfigs", map);
+            ProjectInfo projectInfo = ParsingUtils.getSingleTopObject(ProjectInfo.class, context);
+            beanBuilder.addPropertyValue("projectName", projectInfo.getProjectName());
             BeanDefinition beanDefinition = beanBuilder.getBeanDefinition();
             BeanDefinitionHolder beanHolder = new BeanDefinitionHolder(beanDefinition, ExceptionProcessingConfiguration.class.getName());
             context.getObjectTreeElement().addObject(beanHolder);
@@ -106,9 +110,9 @@ public class ExceptionProcessingParsingHandler extends CustomizationAwareParsing
                 } catch(ClassNotFoundException x) {
                     throw new ParserException("Can't get exception class: " + type);
                 }
-                map.put(exClass.asSubclass(Throwable.class), config);      
+                map.put(exClass.asSubclass(Throwable.class), config);
             }
-        
+
             beanBuilder.addPropertyValue("exceptionConfigs", map);
         
         }
