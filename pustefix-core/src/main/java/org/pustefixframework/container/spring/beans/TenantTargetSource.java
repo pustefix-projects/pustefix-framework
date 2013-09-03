@@ -69,7 +69,7 @@ public class TenantTargetSource implements TargetSource {
             if(Enhancer.isEnhanced(clazz)) {
                 clazz = clazz.getSuperclass();
             }
-            clazzes.add(obj.getClass());
+            clazzes.add(clazz);
         }
         return getBaseClass(clazzes.toArray(new Class<?>[clazzes.size()]));
 
