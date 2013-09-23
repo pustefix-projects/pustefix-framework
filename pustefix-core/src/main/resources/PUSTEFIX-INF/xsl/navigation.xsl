@@ -267,7 +267,7 @@
       </xsl:choose>
     </xsl:variable>
     <xsl:variable name="fulllink">
-      <ixsl:value-of select="$__contextpath"/>/<ixsl:value-of select="pfx:__omitPage($page_{generate-id()}, $lang, $tmpaltkey)"/><ixsl:value-of select="$__sessionIdPath"/>
+      <ixsl:value-of select="$__contextpath"/>/<ixsl:value-of select="pfx:__omitPage($page_{generate-id()}, $lang, $tmpaltkey_{generate-id()})"/><ixsl:value-of select="$__sessionIdPath"/>
       <ixsl:variable name="params">
       <xsl:if test="not($frame_impl='')">__frame=<xsl:value-of select="$frame_impl"/></xsl:if>
       <ixsl:if test="not($__lf = '') and pfx:__needsLastFlow($page_{generate-id()},$__lf)">&amp;__lf=<ixsl:value-of select="$__lf"/></ixsl:if>
@@ -289,7 +289,7 @@
     <xsl:variable name="excluded_button_attrs">|action|activeclass|altkey|buttpage|forcestop|frame|invisibleclass|jumptopage|jumptopageflow|mode|nodata|normalclass|page|pageflow|popup|popupfeatures|popupheight|popupid|popupwidth|startwithflow|target|</xsl:variable>
     <xsl:variable name="excluded_button_span_attrs"><xsl:value-of select="$excluded_button_attrs"/>charset|type|name|href|hreflang|rel|rev|accesskey|shape|coords|tabindex|onfocus|onblur|</xsl:variable>
     <ixsl:if test="true()">
-    <ixsl:variable name="tmpaltkey">
+    <ixsl:variable name="tmpaltkey_{generate-id()}">
       <xsl:if test="$altkey"><xsl:copy-of select="$altkey"/></xsl:if>
     </ixsl:variable>
     <xsl:choose>
@@ -313,7 +313,7 @@
             </span>
           </ixsl:when>
           <xsl:if test="not($mode_impl = 'force')">
-              <ixsl:when test="$page = $page_{generate-id()} and $pageAlternative = $tmpaltkey">
+              <ixsl:when test="$page = $page_{generate-id()} and $pageAlternative = $tmpaltkey_{generate-id()}">
                 <span>
                   <xsl:if test="name()='pfx:button'"><xsl:copy-of select="@*[not(contains($excluded_button_span_attrs,concat('|',name(),'|')))]"/></xsl:if>
                   <xsl:attribute name="class">
