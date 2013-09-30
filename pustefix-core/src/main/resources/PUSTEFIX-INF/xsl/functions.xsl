@@ -62,7 +62,11 @@
     <xsl:param name="prefix"/>
     <func:result select="callback:getIWrapperInfo($__context__,/,$pageName,$prefix)"/>
   </func:function>
-  
+ 
+  <func:function name="pfx:getTenantInfo">
+    <func:result select="callback:getTenantInfo($__context__,$__target_gen,/)"/>
+  </func:function>
+ 
   <func:function name="pfx:hasRole">
     <xsl:param name="roleName"/>
     <func:result select="callback:hasRole($__context__,$roleName)"/>
