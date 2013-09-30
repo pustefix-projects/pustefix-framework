@@ -40,6 +40,7 @@ import java.util.regex.Pattern;
 
 import javax.servlet.ServletContext;
 import javax.servlet.ServletException;
+import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
@@ -61,6 +62,7 @@ import de.schlund.pfixxml.LanguageInfo;
 import de.schlund.pfixxml.PfixServletRequest;
 import de.schlund.pfixxml.Tenant;
 import de.schlund.pfixxml.TenantInfo;
+import de.schlund.pfixxml.config.EnvironmentProperties;
 import de.schlund.pfixxml.exceptionprocessor.ExceptionConfig;
 import de.schlund.pfixxml.exceptionprocessor.ExceptionProcessingConfiguration;
 import de.schlund.pfixxml.exceptionprocessor.ExceptionProcessor;
@@ -189,6 +191,19 @@ public abstract class AbstractPustefixRequestHandler implements SessionTrackingS
             return;
         }
         
+        String tenantParam = req.getParameter("__tenant");
+        if(tenantParam != null && !"prod".equals(EnvironmentProperties.getProperties().getProperty("mode"))) {
+            Tenant tenant = tenantInfo.getTenant(tenantParam);
+            if(tenant != null) {
+                res.addCookie(new Cookie("__PFX_TENANT__", tenant.getName()));
+            }
+            HttpSession session = req.getSession(false);
+            if(session != null) {
+                session.invalidate();
+            }
+            res.sendRedirect(req.getRequestURL().toString());
+        }
+        
         initializeRequest(req, tenantInfo, languageInfo);
         
         // Set P3P-Header if needed to make sure it is 
@@ -210,7 +225,16 @@ public abstract class AbstractPustefixRequestHandler implements SessionTrackingS
         if(tenantInfo != null && !tenantInfo.getTenants().isEmpty()) {
             Tenant matchingTenant = tenantInfo.getMatchingTenant(request);
             if(matchingTenant == null) {
-                matchingTenant = tenantInfo.getTenants().get(0);
+                //check if tenant was provided as cookie (only allowed at development time)
+                if(!"prod".equals(EnvironmentProperties.getProperties().getProperty("mode"))) {
+                    String tenantName = getCookieValue(request, "__PFX_TENANT__");
+                    if(tenantName != null) {
+                        matchingTenant = tenantInfo.getTenant(tenantName);
+                    }
+                }
+                if(matchingTenant == null) {
+                    matchingTenant = tenantInfo.getTenants().get(0);
+                }
             }
             request.setAttribute(AbstractPustefixRequestHandler.REQUEST_ATTR_TENANT, matchingTenant);
             if(LOG.isDebugEnabled()) {
@@ -472,6 +496,18 @@ public abstract class AbstractPustefixRequestHandler implements SessionTrackingS
         res.setHeader("Cache-Control", "no-cache, no-store, private, must-revalidate");
         res.setStatus(type);
         res.setHeader("Location", reloc_url);
+    }
+    
+    private static String getCookieValue(HttpServletRequest req, String name) {
+    	Cookie[] cookies = req.getCookies();
+        if(cookies != null) {
+            for(Cookie cookie: cookies) {
+                if(cookie.getName().equals(name)) {
+                    return cookie.getValue();
+                }
+            }
+        }
+        return null;
     }
     
     public String getPageName(String pageAlias, HttpServletRequest request) {
