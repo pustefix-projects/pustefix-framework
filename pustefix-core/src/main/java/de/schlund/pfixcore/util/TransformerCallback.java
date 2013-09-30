@@ -18,12 +18,15 @@
 package de.schlund.pfixcore.util;
 
 import java.io.StringWriter;
+import java.net.InetAddress;
+import java.net.UnknownHostException;
 import java.util.Arrays;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
+import javax.servlet.http.HttpServletRequest;
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.transform.OutputKeys;
@@ -61,6 +64,7 @@ import de.schlund.pfixcore.workflow.context.AccessibilityChecker;
 import de.schlund.pfixcore.workflow.context.RequestContextImpl;
 import de.schlund.pfixxml.ResultDocument;
 import de.schlund.pfixxml.Tenant;
+import de.schlund.pfixxml.TenantInfo;
 import de.schlund.pfixxml.config.EnvironmentProperties;
 import de.schlund.pfixxml.targets.TargetGenerator;
 import de.schlund.pfixxml.util.ExtensionFunctionUtils;
@@ -470,6 +474,71 @@ public class TransformerCallback {
         } catch(InterruptedException x) {
             //do nothing
         }
+    }
+    
+    public static Node getTenantInfo(RequestContextImpl requestContext, TargetGenerator gen, Node docNode) throws Exception {
+        try {
+        	HttpServletRequest req = requestContext.getPfixServletRequest().getRequest();   
+            Tenant currentTenant = requestContext.getParentContext().getTenant();
+            TenantInfo tenantInfo = gen.getTenantInfo();
+            Map<String, Tenant> domainPrefixes = tenantInfo.getTenantsByDomainPrefix();
+            Map<Tenant, String> tenantToDomainPrefix = tenantInfo.getDomainPrefixesByTenant();
+            
+            //check if server name is prefixed by the tenant, if so remove prefix
+            String serverName = req.getServerName();
+            int ind = serverName.indexOf('.');
+            if(ind > -1) {
+            	String prefix = serverName.substring(0, ind);
+            	Tenant tenant = domainPrefixes.get(prefix);
+            	if(tenant != null && tenant.equals(currentTenant)) {
+            		serverName = serverName.substring(ind + 1);
+            	}
+            }
+
+            XsltVersion xsltVersion = Xml.getXsltVersion(docNode);
+            DocumentBuilder db = docBuilderFactory.newDocumentBuilder();
+            Document doc = db.newDocument();
+            Element root = doc.createElement("tenants");
+            doc.appendChild(root);
+            for (Tenant tenant : tenantInfo.getTenants()) {
+                Element tenantElem = tenant.toXML(root);
+                String domainPrefix = tenantToDomainPrefix.get(tenant);
+                String prefixedServerName = domainPrefix + "." + serverName;
+                try {
+                	//check if prefixed servername can be resolved by DNS, otherwise
+                	//use servername without prefix and pass tenant as parameter
+                	InetAddress.getByName(prefixedServerName);
+                	tenantElem.setAttribute("url", createURL(req, prefixedServerName, null, null));
+                } catch(UnknownHostException e) {
+                	tenantElem.setAttribute("url", createURL(req, serverName, "__tenant", tenant.getName()));
+                }
+                if(tenant == currentTenant) {
+                	tenantElem.setAttribute("current", "true");
+                }
+            }
+            return Xml.parse(xsltVersion, doc);
+        } catch (Exception x) {
+            ExtensionFunctionUtils.setExtensionFunctionError(x);
+            throw x;
+        }
+    }
+
+    private static String createURL(HttpServletRequest req, String serverName, String paramName, String paramValue) {
+    	StringBuilder sb = new StringBuilder();
+    	sb.append(req.getScheme());
+    	sb.append("://");
+    	sb.append(serverName);
+    	if((req.getScheme().equals("http") && req.getLocalPort() != 80)
+    			|| (req.getScheme().equals("https") && req.getLocalPort() != 443)) {
+    		sb.append(':');
+    		sb.append(req.getLocalPort());
+    	}
+    	sb.append(req.getContextPath());
+    	sb.append(req.getPathInfo());
+    	if(paramName != null & paramValue != null) {
+    		sb.append("?").append(paramName).append("=").append(paramValue);
+    	}
+    	return sb.toString();
     }
 
 }

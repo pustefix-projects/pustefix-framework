@@ -66,7 +66,7 @@ public class Tenant {
         return true;
     }
     
-    public void toXML(Element root) {
+    public Element toXML(Element root) {
         Document doc = root.getOwnerDocument();
         Element tenantElem = doc.createElement("tenant");
         tenantElem.setAttribute("name", getName());
@@ -79,6 +79,7 @@ public class Tenant {
             tenantElem.appendChild(elem);
         }
         root.appendChild(tenantElem);
+        return tenantElem;
     }
     
     @Override

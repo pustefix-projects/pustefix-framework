@@ -304,6 +304,10 @@ public class TargetGenerator implements ResourceVisitor, ServletContextAware, In
         this.tenantInfo = tenantInfo;
     }
     
+    public TenantInfo getTenantInfo() {
+    	return tenantInfo;
+    }
+    
     public Node getConfigDocument() {
         return dependXmlDoc;
     }
