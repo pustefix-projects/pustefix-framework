@@ -26,6 +26,7 @@ public class TenantInfoTest extends TestCase {
         assertEquals(result, prefPrefixes.keySet());
 
         tenants.add(new Tenant("UK"));
+        tenantInfo.setTenants(tenants);
         prefPrefixes = tenantInfo.getTenantsByDomainPrefix();
         result = new HashSet<String>();
         result.add("de_tenant");
@@ -38,6 +39,7 @@ public class TenantInfoTest extends TestCase {
         tenants.add(new Tenant("tenant-DE"));
         tenants.add(new Tenant("tenant-FR"));
         tenants.add(new Tenant("tenant-US"));
+        tenantInfo.setTenants(tenants);
         prefPrefixes = tenantInfo.getTenantsByDomainPrefix();
         result = new HashSet<String>();
         result.add("de");
