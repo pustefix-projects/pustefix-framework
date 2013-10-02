@@ -17,17 +17,24 @@
         <pfx:include href="txt/common.xml" part="navi"/>
         <pfx:maincontent prefix="" module="PAGEDEF"/>
       </div>
-  
       <div id="footer">
-        <a href="http://ca.{$fqdn}:8080{$__contextpath}">
-          <pfx:image src="img/CA_market/flag-24x24.png"/>
-        </a>
-        <a href="http://de.{$fqdn}:8080{$__contextpath}">
-          <pfx:image src="img/DE_market/flag-24x24.png"/>
-        </a>
-        <a href="http://us.{$fqdn}:8080{$__contextpath}">
-          <pfx:image src="img/US_market/flag-24x24.png"/>
-        </a> 
+        <ixsl:for-each select="pfx:getTenantInfo()/tenants/tenant">
+          <ixsl:choose>
+            <ixsl:when test="@current='true'">
+              <img>
+                <ixsl:attribute name="src"><ixsl:value-of select="$__contextpath"/>/img/<ixsl:value-of select="@name"/>/flag-24x24.png</ixsl:attribute>
+                <ixsl:attribute name="class">activetenant</ixsl:attribute>
+              </img>
+            </ixsl:when> 
+            <ixsl:otherwise>
+              <a href="{@url}">
+                <img>
+                  <ixsl:attribute name="src"><ixsl:value-of select="$__contextpath"/>/img/<ixsl:value-of select="@name"/>/flag-24x24.png</ixsl:attribute>
+                </img>
+              </a>
+            </ixsl:otherwise>
+          </ixsl:choose>
+        </ixsl:for-each>
       </div>
       <pfx:editconsole/>
     </body>

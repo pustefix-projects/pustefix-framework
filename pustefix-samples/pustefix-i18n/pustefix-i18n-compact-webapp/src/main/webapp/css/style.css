@@ -169,3 +169,9 @@ div.info img {
 	border: 0px;
 	background: white;
 }
+
+img.activetenant {                       
+   opacity: 0.4;
+   filter: alpha(opacity=40);
+   zoom: 1;
+}
