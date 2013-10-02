@@ -9,7 +9,8 @@
                 xmlns:func="http://exslt.org/functions"
                 xmlns:saxon="http://icl.com/saxon"
                 xmlns:ic="java:de.schlund.pfixxml.IncludeContextController"
-                exclude-result-prefixes="include image geometry ic saxon">
+                xmlns:inf="java:de.schlund.pfixxml.LocationInfo"
+                exclude-result-prefixes="include image geometry ic saxon inf">
 
   <!-- The needed parameters must be set in the including stylesheet! -->
 
@@ -193,10 +194,12 @@
       <xsl:attribute name="alt"><xsl:value-of select="$thetext"/></xsl:attribute>
       <xsl:attribute name="title"><xsl:value-of select="$thetext"/></xsl:attribute>
     </img>
-    <xsl:message>*** Include not found:
-      TargetKey = <xsl:value-of select="$__target_key"/> 
-      Resource = <xsl:value-of select="$href"/>
-      Part = <xsl:value-of select="$part"/> ***</xsl:message>
+    <xsl:message>WARNING at '<xsl:value-of select="inf:getLocation()"/>':
+       *** Include not found:
+       TargetKey = <xsl:value-of select="$__target_key"/> 
+       Resource = <xsl:value-of select="$href"/>
+       Part = <xsl:value-of select="$part"/> ***
+    </xsl:message>
   </xsl:template>
 
   <xsl:template match="pfx:include" name="pfx:include">
@@ -273,7 +276,7 @@
               <xsl:value-of select="$incnodes/@name"/>
             </xsl:when>
             <xsl:otherwise>
-              <xsl:message terminate="yes">
+              <xsl:message terminate="yes">WARNING at '<xsl:value-of select="inf:getLocation()"/>':
                 Error when calling extension function 'include:get' => Didn't get a valid nodeset.
               </xsl:message>
             </xsl:otherwise>
@@ -676,7 +679,7 @@
                               $__target_gen,string($__target_key),string($module_name),string($search),$tenant,$lang,boolean($i18n))"/>          
       </xsl:when>
       <xsl:otherwise>
-        <xsl:message terminate="no">
+        <xsl:message terminate="no">WARNING at '<xsl:value-of select="inf:getLocation()"/>':
           *** Need either the 'src' attribute XOR both of 'themed-img' and 'themed-path' given. ***
         </xsl:message>
       </xsl:otherwise>
@@ -764,7 +767,9 @@
     </xsl:param>
     <xsl:choose>
       <xsl:when test="string($src) = ''">
-        <xsl:message terminate="no">**** Caution:      Error calling pfx:image_geom_impl: no src specified ****</xsl:message>
+        <xsl:message terminate="no">WARNING at '<xsl:value-of select="inf:getLocation()"/>':
+          **** Caution:      Error calling pfx:image_geom_impl: no src specified ****
+        </xsl:message>
       </xsl:when>
       <xsl:otherwise>
         <xsl:variable name="path">
@@ -817,7 +822,9 @@
     </xsl:param>
     <xsl:choose>
       <xsl:when test="string($src) = ''">
-        <xsl:message terminate="no">**** Caution:      Error calling pfx:image_geom_impl_new: no src specified ****</xsl:message>
+        <xsl:message terminate="no">WARNING at '<xsl:value-of select="inf:getLocation()"/>':
+           **** Caution:      Error calling pfx:image_geom_impl_new: no src specified ****
+        </xsl:message>
       </xsl:when>
       <xsl:otherwise>
         <xsl:variable name="path">

@@ -22,12 +22,16 @@ import javax.xml.transform.Source;
 import javax.xml.transform.Transformer;
 import javax.xml.transform.TransformerException;
 import javax.xml.transform.dom.DOMResult;
+import javax.xml.transform.sax.SAXSource;
 
 import org.w3c.dom.Document;
 import org.w3c.dom.Node;
 
+import com.icl.saxon.Controller;
+import com.icl.saxon.om.NamePool;
 import com.icl.saxon.om.NodeInfo;
 import com.icl.saxon.output.SaxonOutputKeys;
+import com.icl.saxon.tinytree.TinyBuilder;
 
 import de.schlund.pfixxml.util.XmlSupport;
 import de.schlund.pfixxml.util.Xslt;
@@ -39,10 +43,21 @@ import de.schlund.pfixxml.util.XsltVersion;
 public class XmlSaxon1 implements XmlSupport {
     
     public Document createInternalDOM(Source input) throws TransformerException {
-        Transformer trans  = Xslt.createIdentityTransformer(XsltVersion.XSLT1);
-        DOMResult   result = new DOMResult();
-        trans.transform(input, result);
-        return (Document) result.getNode();
+        
+        //use internal Saxon API instead of identity transformation
+        //to preserve line numbers if SAXSource is available
+        if(input instanceof SAXSource){
+            TinyBuilder builder = new TinyBuilder();
+            builder.setLineNumbering(true);
+            builder.setNamePool(NamePool.getDefaultNamePool());
+            return (Document)builder.build((SAXSource)input);
+        } else {
+            Transformer trans = Xslt.createIdentityTransformer(XsltVersion.XSLT1);
+            ((Controller)trans).setLineNumbering(true);
+            DOMResult result = new DOMResult();
+            trans.transform(input, result);
+            return (Document)result.getNode();
+        } 
     }
     
     public boolean isInternalDOM(Node node) {

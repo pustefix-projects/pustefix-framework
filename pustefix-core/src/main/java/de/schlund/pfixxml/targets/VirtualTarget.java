@@ -24,16 +24,20 @@ import java.util.Iterator;
 import java.util.TreeMap;
 import java.util.TreeSet;
 
+import javax.xml.transform.Source;
 import javax.xml.transform.Templates;
 import javax.xml.transform.TransformerException;
+import javax.xml.transform.sax.SAXSource;
 import javax.xml.transform.stream.StreamResult;
 
 import org.apache.log4j.NDC;
 import org.w3c.dom.Document;
+import org.xml.sax.InputSource;
 
 import de.schlund.pfixxml.XMLException;
 import de.schlund.pfixxml.resources.FileResource;
 import de.schlund.pfixxml.resources.ResourceUtil;
+import de.schlund.pfixxml.util.Xml;
 import de.schlund.pfixxml.util.Xslt;
 
 /**
@@ -372,4 +376,25 @@ public abstract class VirtualTarget extends TargetImpl {
         forceupdate = true;
     }
 
+    public Source getSource() throws TargetGenerationException {
+        // Make sure we have an up-to-date version
+        this.getValue();
+        
+        FileResource thefile = ResourceUtil.getFileResource(getTargetGenerator().getDisccachedir(), getTargetKey());
+        if (thefile.exists() && thefile.isFile()) {
+            try {
+                InputSource input = new InputSource();
+                input.setSystemId(thefile.toURI().toString());
+                input.setByteStream(thefile.getInputStream());
+                SAXSource source = new SAXSource(Xml.createXMLReader(), input);
+                return source;
+            } catch (IOException e) {
+                throw new TargetGenerationException("Error while reading DOM from disccache for target "
+                                                    + getTargetKey(), e);
+            }
+        } else {
+            return null;
+        }
+    }
+    
 } // VirtualTarget

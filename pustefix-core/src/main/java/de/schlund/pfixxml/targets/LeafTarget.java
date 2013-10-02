@@ -22,11 +22,16 @@ import java.io.IOException;
 import java.util.Iterator;
 import java.util.TreeSet;
 
+import javax.xml.transform.Source;
+import javax.xml.transform.sax.SAXSource;
+
 import org.apache.log4j.NDC;
+import org.xml.sax.InputSource;
 
 import de.schlund.pfixxml.XMLException;
 import de.schlund.pfixxml.resources.Resource;
 import de.schlund.pfixxml.resources.ResourceUtil;
+import de.schlund.pfixxml.util.Xml;
 
 /**
  * LeafTarget.java
@@ -184,6 +189,24 @@ public abstract class LeafTarget extends TargetImpl {
         }
         NDC.pop();
         return getModTime();
+    }
+    
+    public Source getSource() throws TargetGenerationException {
+        Resource thefile = ResourceUtil.getResource(getTargetKey());
+        if (thefile.exists() && thefile.isFile()) {
+            try {
+                InputSource input = new InputSource();
+                input.setSystemId(thefile.toURI().toString());
+                input.setByteStream(thefile.getInputStream());
+                SAXSource source = new SAXSource(Xml.createXMLReader(), input);
+                return source;
+            } catch (IOException e) {
+                throw new TargetGenerationException("Error while reading DOM from disccache for target "
+                                                    + getTargetKey(), e);
+            }
+        } else {
+            return null;
+        }
     }
 
 }// LeafTarget

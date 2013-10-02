@@ -35,6 +35,7 @@ import net.sf.saxon.TransformerFactoryImpl;
 import org.xml.sax.InputSource;
 
 import de.schlund.pfixxml.util.Xml;
+import de.schlund.pfixxml.util.XsltMessageWriter;
 import de.schlund.pfixxml.util.XsltSupport;
 
 /**
@@ -89,6 +90,12 @@ public class XsltSaxon2 implements XsltSupport {
     }
     
     public String getSystemId(Templates templates) {
+    	//TODO: implementation
+    	return null;
+    }
+    
+    @Override
+    public XsltMessageWriter recordMessages(Transformer transformer) {
     	//TODO: implementation
     	return null;
     }

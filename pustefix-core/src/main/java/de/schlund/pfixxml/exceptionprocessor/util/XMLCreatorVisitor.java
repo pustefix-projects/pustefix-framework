@@ -41,6 +41,7 @@ import de.schlund.pfixxml.resources.ResourceUtil;
 import de.schlund.pfixxml.util.Xml;
 import de.schlund.pfixxml.util.Xslt;
 import de.schlund.pfixxml.util.XsltExtensionFunctionException;
+import de.schlund.pfixxml.util.XsltMessageTempStore;
 
 
 /**
@@ -125,10 +126,10 @@ public class XMLCreatorVisitor implements ExceptionDataValueVisitor {
 	        
 	        if(throwable instanceof TransformerException) {
 	            TransformerException te = (TransformerException)throwable;
+	            Element xsltInfo = doc.createElement("xsltinfo");
+                exElem.appendChild(xsltInfo);
 	            SourceLocator locator = te.getLocator();
 	            if(locator!=null) {
-	                Element xsltInfo = doc.createElement("xsltinfo");
-	                exElem.appendChild(xsltInfo);
 	                xsltInfo.setAttribute("line", String.valueOf(locator.getLineNumber()));
 	                xsltInfo.setAttribute("column", String.valueOf(locator.getColumnNumber()));
 	                xsltInfo.setAttribute("publicId", locator.getPublicId());
@@ -144,6 +145,12 @@ public class XMLCreatorVisitor implements ExceptionDataValueVisitor {
 	                        //ignore
 	                    }
 	                }
+	            }
+	            String messages = XsltMessageTempStore.removeMessages(te);
+	            if(messages != null) {
+	            	Element msgElem = doc.createElement("messages");
+	            	xsltInfo.appendChild(msgElem);
+	            	msgElem.setTextContent(messages);
 	            }
 	        } else if (throwable instanceof SAXParseException) {
 	            SAXParseException spe = (SAXParseException)throwable;

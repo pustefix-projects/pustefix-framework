@@ -19,6 +19,8 @@
 package de.schlund.pfixxml;
 
 import com.icl.saxon.Context;
+import com.icl.saxon.expr.StaticContext;
+import com.icl.saxon.om.NodeInfo;
 
 import de.schlund.pfixxml.targets.TargetGenerator;
 import de.schlund.pfixxml.util.ExtensionFunctionUtils;
@@ -81,6 +83,17 @@ public class IncludeDocumentExtensionSaxon1 {
     
     public static String getDynIncInfo(String part, String theme, String path, String resolvedModule, String requestedModule, String tenant, String language) {
         return IncludeDocumentExtension.getDynIncInfo(part, theme, path, resolvedModule, requestedModule, tenant, language);
+    }
+
+    public static String getLocation(Context context) {
+        StringBuilder sb = new StringBuilder();
+        NodeInfo currentNode = context.getCurrentNodeInfo();
+        if(currentNode != null) {
+            sb.append(currentNode.getSystemId() + ":" + currentNode.getParent().getParent().getLineNumber());
+        }
+        StaticContext staticContext = context.getStaticContext();
+        sb.append(" "+staticContext.getSystemId()+ ":"+staticContext.getLineNumber());
+        return sb.toString();
     }
 
 }

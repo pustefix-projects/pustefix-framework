@@ -192,6 +192,8 @@ public class Xslt {
         try {
             doTransform(xml,templates,params,result,encoding,false);
         } catch(UnsupportedOperationException x) {
+            //workaround for the following sporadically occurring error, which can't be reproduced and normally doesn't occur again after retry:
+            //java.lang.UnsupportedOperationException: Cannot create intensional node-set with context dependencies: class com.icl.saxon.expr.PathExpression
             if(result instanceof StreamResult) {
                 OutputStream out=((StreamResult)result).getOutputStream();
                 if(out instanceof ByteArrayOutputStream) {
@@ -221,6 +223,7 @@ public class Xslt {
            traceWriter=new StringWriter();
            XsltProvider.getXsltSupport(xsltVersion).doTracing(trafo,traceWriter);
         }
+        XsltMessageWriter msgWriter = XsltProvider.getXsltSupport(xsltVersion).recordMessages(trafo);
         long start = 0;
         if (params != null) {
             for (Iterator<String> e = params.keySet().iterator(); e.hasNext();) {
@@ -238,7 +241,7 @@ public class Xslt {
             trafo.setErrorListener(new PFErrorListener());
             trafo.transform(new DOMSource(Xml.parse(xsltVersion,xml)), result);
         } catch(TransformerException x) {
-        	
+            XsltMessageTempStore.setMessages(x, msgWriter.getMessages());
         	String msg = x.getMessage();
         	Throwable extFuncError = ExtensionFunctionUtils.getExtensionFunctionError();
         	if(extFuncError != null || (msg != null && msg.contains("Exception in extension function"))) {
@@ -360,9 +363,9 @@ public class Xslt {
                 
                 if(! ( debug && target instanceof LeafTarget)) {
                 
-                    Document dom;
+                    Source source;
                     try {
-                        dom = (Document) target.getDOM();
+                        source = target.getSource();
                     } catch (TargetGenerationException e) {
                         throw new TransformerException("Could not retrieve target '"
                                                    + target.getTargetKey() + "' included by stylesheet!", e);
@@ -370,17 +373,10 @@ public class Xslt {
                 
                     // If Document object is null, the file could not be found or read
                     // so return null to tell the parser the URI could not be resolved
-                    if (dom == null) {
+                    if (source == null) {
                         return null;
                     }
-                
-                    Source source = new DOMSource(dom);
-                
-                    // There is a bug in Saxon 6.5.3 which causes
-                    // a NullPointerException to be thrown, if systemId
-                    // is not set
-                    source.setSystemId(target.getTargetKey());
-                    // Register included stylesheet with target
+
                     parent.getAuxDependencyManager().addDependencyTarget(target.getTargetKey());
                     return source;
                 }

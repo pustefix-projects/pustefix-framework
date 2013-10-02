@@ -21,7 +21,7 @@ package de.schlund.pfixxml.targets;
 import java.util.TreeMap;
 import java.util.TreeSet;
 
-import org.w3c.dom.Document;
+import javax.xml.transform.Source;
 
 /**
  *
@@ -50,5 +50,6 @@ public interface Target extends Comparable<Target> {
      */
     Object  getValue() throws TargetGenerationException;
     boolean needsUpdate() throws Exception;
-    Document getDOM() throws TargetGenerationException;
+    Source getSource() throws TargetGenerationException;
+   
 }

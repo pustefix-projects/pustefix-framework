@@ -4,7 +4,8 @@
                 xmlns:ixsl="http://www.w3.org/1999/XSL/TransformOutputAlias"
                 xmlns:pfx="http://www.schlund.de/pustefix/core"
                 xmlns:rex="java:de.schlund.pfixxml.RenderExtensionSaxon1"
-                exclude-result-prefixes="rex">
+                xmlns:inf="java:de.schlund.pfixxml.LocationInfo"
+                exclude-result-prefixes="rex inf">
 
   <xsl:param name="__rendercontext__"/>
 
@@ -64,7 +65,11 @@
         <xsl:choose>
           <xsl:when test="@part"><xsl:value-of select="@part"/></xsl:when>
           <xsl:when test="pfx:part"><xsl:apply-templates select="pfx:part/node()"/></xsl:when>
-          <xsl:otherwise><xsl:message>ERROR: Render include requires part specification.</xsl:message></xsl:otherwise>
+          <xsl:otherwise>
+            <xsl:message>WARNING at '<xsl:value-of select="inf:getLocation()"/>':
+              ERROR: Render include requires part specification.
+            </xsl:message>
+          </xsl:otherwise>
         </xsl:choose>
       </ixsl:with-param>
       <xsl:if test="@module or pfx:module or starts-with($systemId,'module://')">
@@ -93,11 +98,13 @@
         <xsl:if test="$search='dynamic'"> dynamically searched </xsl:if><xsl:if test="$module">from '<xsl:value-of select="$module"/>'</xsl:if>
       </xsl:variable>
       <img src="{$__contextpath}/modules/pustefix-core/img/warning.gif" alt="{$text}" title="{$text}"/>
-      <xsl:message>*** Render include not found:
+      <xsl:message>WARNING at '<xsl:value-of select="inf:getLocation()"/>':
+        *** Render include not found:
         href = <xsl:value-of select="$href"/>
         module = <xsl:value-of select="$module"/>
         search = <xsl:value-of select="$search"/> 
-        part = <xsl:value-of select="$part"/> ***</xsl:message>
+        part = <xsl:value-of select="$part"/> ***
+      </xsl:message>
     </xsl:if>
   </xsl:template>
 

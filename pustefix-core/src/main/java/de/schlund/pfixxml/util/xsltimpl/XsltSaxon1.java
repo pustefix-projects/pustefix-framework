@@ -25,17 +25,21 @@ import javax.xml.transform.Source;
 import javax.xml.transform.Templates;
 import javax.xml.transform.Transformer;
 import javax.xml.transform.TransformerConfigurationException;
+import javax.xml.transform.TransformerException;
 import javax.xml.transform.TransformerFactory;
 import javax.xml.transform.sax.SAXSource;
 
 import org.xml.sax.InputSource;
 
 import com.icl.saxon.Controller;
+import com.icl.saxon.FeatureKeys;
 import com.icl.saxon.PreparedStyleSheet;
 import com.icl.saxon.TransformerFactoryImpl;
+import com.icl.saxon.output.Emitter;
 import com.icl.saxon.tree.DocumentImpl;
 
 import de.schlund.pfixxml.util.Xml;
+import de.schlund.pfixxml.util.XsltMessageWriter;
 import de.schlund.pfixxml.util.XsltSupport;
 
 /**
@@ -58,8 +62,10 @@ public class XsltSaxon1 implements XsltSupport {
     
     static {
         Source src = new SAXSource(Xml.createXMLReader(), new InputSource(new StringReader(ID)));
-        TransformerFactory factory = new TransformerFactoryImpl();
+        TransformerFactoryImpl factory = new TransformerFactoryImpl();
+       
         try {
+            factory.setAttribute(FeatureKeys.LINE_NUMBERING, true);
             PP_XSLT = factory.newTemplates(src);
         } catch (TransformerConfigurationException e) {
             throw new RuntimeException(e);
@@ -97,6 +103,22 @@ public class XsltSaxon1 implements XsltSupport {
     		}
     	}
     	return null;
+    }
+    
+    @Override
+    public XsltMessageWriter recordMessages(Transformer transformer) {
+        Controller c = (Controller)transformer;
+        XsltMessageWriter w = new XsltMessageWriter();
+        Emitter emitter = c.getMessageEmitter();
+        if(emitter == null) {
+            try {
+                emitter = c.makeMessageEmitter();
+            } catch (TransformerException e) {
+                throw new RuntimeException("Error creating XSLT message emitter", e);
+            }
+        }
+        emitter.setWriter(w);
+        return w;
     }
     
 }

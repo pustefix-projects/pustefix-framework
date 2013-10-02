@@ -15,26 +15,21 @@
  * along with Pustefix; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  */
-
 package de.schlund.pfixxml.util;
 
-import java.io.Writer;
+import java.util.Map;
+import java.util.WeakHashMap;
 
-import javax.xml.transform.Templates;
-import javax.xml.transform.Transformer;
-import javax.xml.transform.TransformerFactory;
+public class XsltMessageTempStore {
 
-/**
- * @author mleidig@schlund.de
- */
-public interface XsltSupport {
+    private static Map<Exception, String> messageMap = new WeakHashMap<Exception, String>();
 
-    public TransformerFactory getSharedTransformerFactory();
-    public TransformerFactory getThreadTransformerFactory();
-    public Templates getPrettyPrinterTemplates();
-    public boolean isInternalTemplate(Templates templates);
-    public void doTracing(Transformer transformer, Writer traceWriter);
-    public String getSystemId(Templates templates);
-    public XsltMessageWriter recordMessages(Transformer transformer);
-    
+    public static void setMessages(Exception exception, String messages) {
+        messageMap.put(exception, messages);
+    }
+
+    public static String removeMessages(Exception exception) {
+        return messageMap.remove(exception);
+    }
+
 }

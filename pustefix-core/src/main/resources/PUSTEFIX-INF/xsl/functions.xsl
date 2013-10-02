@@ -5,7 +5,8 @@
                 xmlns:func="http://exslt.org/functions"
                 xmlns:callback="xalan://de.schlund.pfixcore.util.TransformerCallback"
                 xmlns:rfh="java:org.pustefixframework.http.AbstractPustefixXMLRequestHandler$RegisterFrameHelper"
-                exclude-result-prefixes="pfx func callback rfh">
+                xmlns:inf="java:de.schlund.pfixxml.LocationInfo"
+                exclude-result-prefixes="pfx func callback rfh inf">
   
   <func:function name="pfx:isVisible">
     <xsl:param name="pagename"></xsl:param>
@@ -18,7 +19,7 @@
           <xsl:value-of select="./@name"/>
         </xsl:when>
         <xsl:otherwise>
-          <xsl:message terminate="yes">
+          <xsl:message terminate="yes">WARNING at '<xsl:value-of select="inf:getLocation()"/>':
             pfx:isVisible() either needs a parameter or has to be called in the right context!
           </xsl:message>
         </xsl:otherwise>
@@ -38,7 +39,7 @@
           <xsl:value-of select="./@name"/>
         </xsl:when>
         <xsl:otherwise>
-          <xsl:message terminate="yes">
+          <xsl:message terminate="yes">WARNING at '<xsl:value-of select="inf:getLocation()"/>':
             pfx:isVisited() either needs a parameter or has to be called in the right context!
           </xsl:message>
         </xsl:otherwise>
@@ -66,7 +67,7 @@
   <func:function name="pfx:getTenantInfo">
     <func:result select="callback:getTenantInfo($__context__,$__target_gen,/)"/>
   </func:function>
- 
+  
   <func:function name="pfx:hasRole">
     <xsl:param name="roleName"/>
     <func:result select="callback:hasRole($__context__,$roleName)"/>

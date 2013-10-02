@@ -413,33 +413,39 @@ public class TransformerCallback {
             throw x;
         }
     }
-    
+
     public static String omitPage(RequestContextImpl requestContext, TargetGenerator gen, String pageName, String lang, String altKey) throws Exception {
         try {
             ContextImpl context = requestContext.getParentContext();
-            String langPrefix = "";
             Tenant tenant = context.getTenant();
             ProjectInfo projectInfo = context.getProjectInfo();
-            if((tenant != null && !lang.equals(tenant.getDefaultLanguage())) ||
-                    (tenant == null && projectInfo.getSupportedLanguages().size() > 1 && !lang.equals(projectInfo.getDefaultLanguage()))) {
-                langPrefix = LocaleUtils.getLanguagePart(lang);
-            }
             String defaultPage = context.getContextConfig().getDefaultPage(context.getVariant());
-            if(defaultPage.equals(pageName)) {
-                return langPrefix;
-            } else {
-                String alias = gen.getSiteMap().getAlias(pageName, lang, altKey);
-                if(langPrefix.length() > 0) {
-                    alias = langPrefix + "/" + alias;
-                }
-                return alias;
-            }
+            return omitPage(gen, pageName, lang, altKey, tenant, projectInfo, defaultPage);
         } catch (Exception x) {
             ExtensionFunctionUtils.setExtensionFunctionError(x);
             throw x;
         }
     }
-    
+
+    public static String omitPage(TargetGenerator gen, String pageName, String lang, String altKey, Tenant tenant, 
+            ProjectInfo projectInfo, String defaultPage) throws Exception {
+
+        String langPrefix = "";
+        if((tenant != null && !lang.equals(tenant.getDefaultLanguage())) ||
+                (tenant == null && projectInfo.getSupportedLanguages().size() > 1 && !lang.equals(projectInfo.getDefaultLanguage()))) {
+            langPrefix = LocaleUtils.getLanguagePart(lang);
+        }
+        if(defaultPage.equals(pageName)) {
+            return langPrefix;
+        } else {
+            String alias = gen.getSiteMap().getAlias(pageName, lang, altKey);
+            if(langPrefix.length() > 0) {
+                alias = langPrefix + "/" + alias;
+            }
+            return alias;
+        }
+    }
+
     public static String getPageAlias(TargetGenerator gen, String pageName, String lang) throws Exception {
         try {
             return gen.getSiteMap().getAlias(pageName, lang);
@@ -478,21 +484,25 @@ public class TransformerCallback {
     
     public static Node getTenantInfo(RequestContextImpl requestContext, TargetGenerator gen, Node docNode) throws Exception {
         try {
-        	HttpServletRequest req = requestContext.getPfixServletRequest().getRequest();   
+            HttpServletRequest req = requestContext.getPfixServletRequest().getRequest();   
+            String pageName = requestContext.getCurrentPageRequest().getRootName();
             Tenant currentTenant = requestContext.getParentContext().getTenant();
+            ContextImpl context = requestContext.getParentContext();
+            ProjectInfo projectInfo = context.getProjectInfo();
+            String defaultPage = context.getContextConfig().getDefaultPage(context.getVariant());
             TenantInfo tenantInfo = gen.getTenantInfo();
             Map<String, Tenant> domainPrefixes = tenantInfo.getTenantsByDomainPrefix();
             Map<Tenant, String> tenantToDomainPrefix = tenantInfo.getDomainPrefixesByTenant();
-            
+
             //check if server name is prefixed by the tenant, if so remove prefix
             String serverName = req.getServerName();
             int ind = serverName.indexOf('.');
             if(ind > -1) {
-            	String prefix = serverName.substring(0, ind);
-            	Tenant tenant = domainPrefixes.get(prefix);
-            	if(tenant != null && tenant.equals(currentTenant)) {
-            		serverName = serverName.substring(ind + 1);
-            	}
+                String prefix = serverName.substring(0, ind);
+                Tenant tenant = domainPrefixes.get(prefix);
+                if(tenant != null && tenant.equals(currentTenant)) {
+                    serverName = serverName.substring(ind + 1);
+                }
             }
 
             XsltVersion xsltVersion = Xml.getXsltVersion(docNode);
@@ -504,16 +514,17 @@ public class TransformerCallback {
                 Element tenantElem = tenant.toXML(root);
                 String domainPrefix = tenantToDomainPrefix.get(tenant);
                 String prefixedServerName = domainPrefix + "." + serverName;
+                String page = omitPage(gen, pageName, tenant.getDefaultLanguage(), null, tenant, projectInfo, defaultPage);
                 try {
-                	//check if prefixed servername can be resolved by DNS, otherwise
-                	//use servername without prefix and pass tenant as parameter
-                	InetAddress.getByName(prefixedServerName);
-                	tenantElem.setAttribute("url", createURL(req, prefixedServerName, null, null));
+                    //check if prefixed servername can be resolved by DNS, otherwise
+                    //use servername without prefix and pass tenant as parameter
+                    InetAddress.getByName(prefixedServerName);
+                    tenantElem.setAttribute("url", createURL(req, prefixedServerName, page, null, null));
                 } catch(UnknownHostException e) {
-                	tenantElem.setAttribute("url", createURL(req, serverName, "__tenant", tenant.getName()));
+                    tenantElem.setAttribute("url", createURL(req, serverName, page, "__tenant", tenant.getName()));
                 }
                 if(tenant == currentTenant) {
-                	tenantElem.setAttribute("current", "true");
+                    tenantElem.setAttribute("current", "true");
                 }
             }
             return Xml.parse(xsltVersion, doc);
@@ -523,22 +534,22 @@ public class TransformerCallback {
         }
     }
 
-    private static String createURL(HttpServletRequest req, String serverName, String paramName, String paramValue) {
-    	StringBuilder sb = new StringBuilder();
-    	sb.append(req.getScheme());
-    	sb.append("://");
-    	sb.append(serverName);
-    	if((req.getScheme().equals("http") && req.getLocalPort() != 80)
-    			|| (req.getScheme().equals("https") && req.getLocalPort() != 443)) {
-    		sb.append(':');
-    		sb.append(req.getLocalPort());
-    	}
-    	sb.append(req.getContextPath());
-    	sb.append(req.getPathInfo());
-    	if(paramName != null & paramValue != null) {
-    		sb.append("?").append(paramName).append("=").append(paramValue);
-    	}
-    	return sb.toString();
+    private static String createURL(HttpServletRequest req, String serverName, String pageName, String paramName, String paramValue) {
+        StringBuilder sb = new StringBuilder();
+        sb.append(req.getScheme());
+        sb.append("://");
+        sb.append(serverName);
+        if((req.getScheme().equals("http") && req.getLocalPort() != 80)
+                || (req.getScheme().equals("https") && req.getLocalPort() != 443)) {
+            sb.append(':');
+            sb.append(req.getLocalPort());
+        }
+        sb.append(req.getContextPath());
+        sb.append("/").append(pageName);
+        if(paramName != null & paramValue != null) {
+            sb.append("?").append(paramName).append("=").append(paramValue);
+        }
+        return sb.toString();
     }
 
 }

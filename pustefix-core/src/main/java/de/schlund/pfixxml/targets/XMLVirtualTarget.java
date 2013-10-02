@@ -22,8 +22,6 @@ import java.util.TreeMap;
 
 import javax.xml.transform.TransformerException;
 
-import org.w3c.dom.Document;
-
 import de.schlund.pfixxml.resources.FileResource;
 import de.schlund.pfixxml.resources.ResourceUtil;
 import de.schlund.pfixxml.util.Xml;
@@ -62,10 +60,6 @@ public class XMLVirtualTarget extends VirtualTarget {
         } else {
             return null;
         }
-    }
-
-    public Document getDOM() throws TargetGenerationException {
-        return (Document) this.getValue();
     }
 
 } // XMLVirtualTarget

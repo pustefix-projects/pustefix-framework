@@ -25,11 +25,8 @@ import java.io.IOException;
 import javax.xml.transform.Templates;
 import javax.xml.transform.TransformerException;
 
-import org.w3c.dom.Document;
-
 import de.schlund.pfixxml.resources.Resource;
 import de.schlund.pfixxml.resources.ResourceUtil;
-import de.schlund.pfixxml.util.Xml;
 import de.schlund.pfixxml.util.Xslt;
 
 /**
@@ -82,18 +79,4 @@ public class XSLLeafTarget extends LeafTarget {
         }
     }
 
-    public Document getDOM() throws TargetGenerationException {
-        Resource thefile = ResourceUtil.getResource(getTargetKey());
-        if (thefile.exists() && thefile.isFile()) {
-            try {
-                return Xml.parse(generator.getXsltVersion(), thefile);
-            } catch (TransformerException e) {
-                throw new TargetGenerationException("Error while reading DOM from disccache for target "
-                                                    + getTargetKey(), e);
-            }
-        } else {
-            return null;
-        }
-    }
-    
 }// XSLLeafTarget
