@@ -29,7 +29,8 @@
           table.info th,td {text-align:left; padding:4px;}
           table.info td {color: #666666; font-weight: normal;}
           table.info th {color: #000000; font-weight: normal;}
-          ul#formresult { list-style-type: none; -moz-user-select: -moz-none; -khtml-user-select: none; -webkit-user-select: none; margin-left: -10px; }
+          ul#formresult { list-style-type: none; margin-left: -10px; }
+          ul#formresult.dblclick {  -moz-user-select: -moz-none; -khtml-user-select: none; -webkit-user-select: none;  }
           ul#formresult li { list-style-type: none; margin-left: -20px; }
           ul#formresult li.expanded:before { content: "- "; color: #c90000; font-weight: bold; margin-left: -15px; }
           ul#formresult li.collapsed:before { content: "+ "; color: #c90000; font-weight: bold; margin-left: -15px; }
