@@ -57,13 +57,13 @@ public class ResourceFinder {
             String[] modulePaths = new String[paths.length];
             for(int i=0; i<paths.length; i++) {
                 modulePaths[i] = desc.getResourcePath() + "/" + paths[i];
+                if(modulePaths[i].startsWith("/")) modulePaths[i] = modulePaths[i].substring(1);
             }
             findInModule(desc, modulePaths, fileExtensions, visitor);
         }
     }
     
     private static void findInModule(ModuleDescriptor desc, String[] modulePaths, String[] fileExtensions, ResourceVisitor visitor) throws Exception {
-        
         URL url = desc.getURL().getProtocol().equals("jar") ? getJarURL(desc.getURL()) : getFileUrl(desc.getURL());
         if(url.getProtocol().equals("jar")) {
             JarFileURLConnection con = new JarFileURLConnection(url);
