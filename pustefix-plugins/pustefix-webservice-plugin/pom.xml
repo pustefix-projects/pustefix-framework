@@ -4,7 +4,7 @@
   <parent>
     <groupId>org.pustefixframework.maven.plugins</groupId>
     <artifactId>pustefix-plugins</artifactId>
-    <version>0.18.51</version>
+    <version>0.18.52-SNAPSHOT</version>
     <relativePath>../pom.xml</relativePath>
   </parent>
 
@@ -12,7 +12,7 @@
 
   <groupId>org.pustefixframework.maven.plugins</groupId>
   <artifactId>pustefix-webservice-plugin</artifactId>
-  <version>0.18.51</version>
+  <version>0.18.52-SNAPSHOT</version>
   <packaging>maven-plugin</packaging>
 
   <dependencies>
@@ -29,7 +29,7 @@
     <dependency>
       <groupId>org.pustefixframework.webservices</groupId>
       <artifactId>pustefix-webservices-jaxws</artifactId>
-      <version>0.18.51</version>
+      <version>0.18.52-SNAPSHOT</version>
     </dependency>
     <dependency>
       <groupId>org.apache.ant</groupId>
