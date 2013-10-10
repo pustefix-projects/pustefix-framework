@@ -4,7 +4,7 @@
 
   <groupId>org.pustefixframework</groupId>
   <artifactId>pustefixframework</artifactId>
-  <version>0.18.51-SNAPSHOT</version>
+  <version>0.18.51</version>
   <packaging>pom</packaging>
   <name>Pustefix Framework</name>
   <url>http://pustefix-framework.org</url>
@@ -29,9 +29,9 @@
   </issueManagement>
 
   <scm>
-    <connection>scm:svn:https://svn.code.sf.net/p/pustefix/code/trunk</connection>
-    <developerConnection>scm:svn:https://svn.code.sf.net/p/pustefix/code/trunk</developerConnection>
-    <url>http://dev.pustefix-framework.org/browser/trunk</url>
+    <connection>scm:svn:https://svn.code.sf.net/p/pustefix/code/tags/pustefixframework-0.18.51</connection>
+    <developerConnection>scm:svn:https://svn.code.sf.net/p/pustefix/code/tags/pustefixframework-0.18.51</developerConnection>
+    <url>http://dev.pustefix-framework.org/browser/tags/pustefixframework-0.18.51</url>
   </scm>
 
   <properties>
