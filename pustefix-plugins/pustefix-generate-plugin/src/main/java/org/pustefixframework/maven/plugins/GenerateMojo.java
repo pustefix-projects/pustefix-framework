@@ -59,6 +59,12 @@ public class GenerateMojo extends AbstractMojo {
      * @required
      */
     private boolean parallel;
+    
+    /**
+     * @parameter default-value=true
+     * @required
+     */
+    private boolean cleanup;
 
     /** @parameter default-value="${project}" */
     private MavenProject mavenProject;
@@ -100,9 +106,31 @@ public class GenerateMojo extends AbstractMojo {
         } finally {
             Thread.currentThread().setContextClassLoader(contextLoader);
         }
-
+        
+        if(cleanup) {
+            cleanupFiles(cache);
+        }
     }
 
+    /**
+     * Remove non-top-level target and dependency information files
+     * to reduce size of cache directory
+     */
+    private void cleanupFiles(File cacheDir) {
+        File[] files = cacheDir.listFiles();
+        for(File file: files) {
+            String name = file.getName();
+            if(name.endsWith(".aux")) {
+                file.delete();
+            } else if(name.endsWith(".xml")) {
+                File xslFile = new File(file.getParentFile(), name.substring(0, name.length()-4) + ".xsl");
+                if(xslFile.exists()) {
+                    file.delete();
+                }
+            }
+        }
+    }
+    
     private URLClassLoader getProjectRuntimeClassLoader() throws MojoExecutionException {
         try {
             List<?> elements = mavenProject.getCompileClasspathElements();
