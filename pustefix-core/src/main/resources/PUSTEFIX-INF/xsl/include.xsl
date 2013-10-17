@@ -968,4 +968,11 @@
     <xsl:value-of xmlns:string="java:java.lang.String" select="string:trim($tmp)"/>
   </xsl:template>
 
+  <xsl:template match="pfx:element">
+    <xsl:param name="name"><xsl:choose><xsl:when test="@select-name"><xsl:value-of select="pfx:__eval(@select-name)"/></xsl:when><xsl:otherwise><xsl:value-of select="@name"/></xsl:otherwise></xsl:choose></xsl:param>
+    <xsl:element name="{$name}">
+      <xsl:apply-templates/>
+    </xsl:element>
+  </xsl:template>
+
 </xsl:stylesheet>
