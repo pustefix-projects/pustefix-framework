@@ -74,6 +74,7 @@ public class PfixServletRequestImpl implements PfixServletRequest {
     private String                querystring;
     private String                scheme;
     private String                uri;
+    private String                contextPath;
     private HttpSession           session          = null;
     private int                   serverport;
     private HttpServletRequest    request;
@@ -105,6 +106,7 @@ public class PfixServletRequestImpl implements PfixServletRequest {
         querystring = req.getQueryString();
         scheme      = req.getScheme();
         uri         = req.getRequestURI();
+        contextPath = req.getContextPath();
         serverport  = req.getServerPort();
         request     = req;
         session     = req.getSession(false);
@@ -158,6 +160,10 @@ public class PfixServletRequestImpl implements PfixServletRequest {
      */
     public String getOriginalRequestURI() {
         return uri;
+    }
+    
+    public String getOriginalContextPath() {
+        return contextPath;
     }
 
     /* (non-Javadoc)

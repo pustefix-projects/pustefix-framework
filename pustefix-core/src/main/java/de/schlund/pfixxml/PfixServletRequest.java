@@ -66,6 +66,8 @@ public interface PfixServletRequest {
      */
     public String getOriginalRequestURI();
 
+    public String getOriginalContextPath();
+    
     /**
      * Retrieve the port number from the orginal request
      * @return the port

@@ -62,6 +62,7 @@ import de.schlund.pfixcore.workflow.RequestTokenAwareState;
 import de.schlund.pfixcore.workflow.State;
 import de.schlund.pfixcore.workflow.context.AccessibilityChecker;
 import de.schlund.pfixcore.workflow.context.RequestContextImpl;
+import de.schlund.pfixxml.PfixServletRequest;
 import de.schlund.pfixxml.ResultDocument;
 import de.schlund.pfixxml.Tenant;
 import de.schlund.pfixxml.TenantInfo;
@@ -484,7 +485,7 @@ public class TransformerCallback {
     
     public static Node getTenantInfo(RequestContextImpl requestContext, TargetGenerator gen, Node docNode) throws Exception {
         try {
-            HttpServletRequest req = requestContext.getPfixServletRequest().getRequest();   
+            PfixServletRequest req = requestContext.getPfixServletRequest();   
             String pageName = requestContext.getCurrentPageRequest().getRootName();
             Tenant currentTenant = requestContext.getParentContext().getTenant();
             ContextImpl context = requestContext.getParentContext();
@@ -495,7 +496,7 @@ public class TransformerCallback {
             Map<Tenant, String> tenantToDomainPrefix = tenantInfo.getDomainPrefixesByTenant();
 
             //check if server name is prefixed by the tenant, if so remove prefix
-            String serverName = req.getServerName();
+            String serverName = req.getOriginalServerName();
             int ind = serverName.indexOf('.');
             if(ind > -1) {
                 String prefix = serverName.substring(0, ind);
@@ -534,17 +535,17 @@ public class TransformerCallback {
         }
     }
 
-    private static String createURL(HttpServletRequest req, String serverName, String pageName, String paramName, String paramValue) {
-        StringBuilder sb = new StringBuilder();
-        sb.append(req.getScheme());
+    private static String createURL(PfixServletRequest req, String serverName, String pageName, String paramName, String paramValue) {
+    	StringBuilder sb = new StringBuilder();
+        sb.append(req.getOriginalScheme());
         sb.append("://");
         sb.append(serverName);
-        if((req.getScheme().equals("http") && req.getLocalPort() != 80)
-                || (req.getScheme().equals("https") && req.getLocalPort() != 443)) {
+        if((req.getOriginalScheme().equals("http") && req.getOriginalServerPort() != 80)
+                || (req.getOriginalScheme().equals("https") && req.getOriginalServerPort() != 443)) {
             sb.append(':');
-            sb.append(req.getLocalPort());
+            sb.append(req.getOriginalServerPort());
         }
-        sb.append(req.getContextPath());
+        sb.append(req.getOriginalContextPath());
         sb.append("/").append(pageName);
         if(paramName != null & paramValue != null) {
             sb.append("?").append(paramName).append("=").append(paramValue);
