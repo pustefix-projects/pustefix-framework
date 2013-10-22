@@ -20,6 +20,9 @@
         <xsl:when test="ancestor::pfx:forminput[position()=1]/@send-to-page">
           <xsl:value-of select="ancestor::pfx:forminput[position()=1]/@send-to-page" />
         </xsl:when>
+        <xsl:when test="ancestor::pfx:button[position()=1]/@page">
+          <xsl:value-of select="ancestor::pfx:button[position()=1]/@page"/>
+        </xsl:when>
         <xsl:otherwise>
           <xsl:value-of select="$page" />
         </xsl:otherwise>
