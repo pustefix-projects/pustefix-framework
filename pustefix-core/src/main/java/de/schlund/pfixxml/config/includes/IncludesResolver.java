@@ -18,8 +18,11 @@
 
 package de.schlund.pfixxml.config.includes;
 
+import java.io.BufferedReader;
 import java.io.IOException;
+import java.io.InputStreamReader;
 import java.net.URI;
+import java.net.URL;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
@@ -47,6 +50,9 @@ import de.schlund.pfixxml.util.XPath;
 import de.schlund.pfixxml.util.Xml;
 
 public class IncludesResolver {
+    
+    private final static String CONFIG_EXCLUDE_FILE = "/META-INF/config-excludes.txt";
+    
     private List<FileIncludeEventListener> listeners = new ArrayList<FileIncludeEventListener>();
 
     private String namespace;
@@ -122,6 +128,21 @@ public class IncludesResolver {
             String module = elem.getAttribute("module");
             if(module.equals("")) module = null;
             
+            Set<String> excludedModules = new HashSet<String>();
+            URL configExcludeFileURL = getClass().getResource(CONFIG_EXCLUDE_FILE);
+            if(configExcludeFileURL != null) {
+                try {
+                    BufferedReader reader = new BufferedReader(new InputStreamReader(configExcludeFileURL.openStream(), "UTF-8"));
+                    String line;
+                    while((line = reader.readLine()) != null) {
+                        excludedModules.add(line);
+                    }
+                    reader.close();
+                } catch(IOException x) {
+                    throw new SAXException("Error while reading " + CONFIG_EXCLUDE_FILE, x);
+                }
+            }
+            
             String filepath = elem.getAttribute("file");
             if (filepath == null) {
                 throw new SAXException("The attribute \"file\" must be set for the include tag!");
@@ -134,7 +155,7 @@ public class IncludesResolver {
                     Pattern modulePattern = Pattern.compile(module.replaceAll("\\*", ".*"));
                     Set<String> moduleNames = ModuleInfo.getInstance().getModules();
                     for(String moduleName: moduleNames) {
-                        if(modulePattern.matcher(moduleName).matches()) {
+                        if(modulePattern.matcher(moduleName).matches() && !excludedModules.contains(moduleName)) {
                             includePaths.add("module://" + moduleName + "/" + filepath);
                         }
                     }
@@ -148,7 +169,6 @@ public class IncludesResolver {
             }
             
             for(String includePath: includePaths) {
-
                 // Look if the same include has been performed ealier in the recursion
                 // If yes, we have a cyclic dependency
                 Set<Tupel<String, String>> list = includesList.get();
