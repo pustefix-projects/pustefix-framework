@@ -975,4 +975,11 @@
     </xsl:element>
   </xsl:template>
 
+  <xsl:template match="pfx:attr">
+    <xsl:param name="name"><xsl:choose><xsl:when test="@select-name"><xsl:value-of select="pfx:__eval(@select-name)"/></xsl:when><xsl:otherwise><xsl:value-of select="@name"/></xsl:otherwise></xsl:choose></xsl:param>
+    <xsl:attribute name="{$name}">
+      <xsl:apply-templates/>
+    </xsl:attribute>
+  </xsl:template>
+
 </xsl:stylesheet>
