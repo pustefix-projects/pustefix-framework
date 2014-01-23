@@ -74,14 +74,18 @@ public class ModuleResource implements Resource {
             con.getJarEntry();
             return true;
         } catch(FileNotFoundException x) {
+        	try {	
+        		return ResourceIndex.getInstance().exists(url);
+        	} catch(IOException ex) {
+        		//ignore 
+        	}
             return false;
         } catch(IOException x) {
             throw new PustefixRuntimeException("Failed existance check: " + uri, x);
         }
     }
 
-    public InputStream getInputStream() throws IOException {
-        
+    public InputStream getInputStream() throws IOException {	
         if(url == null) throw new IOException("Resource doesn't exist: " + uri);
         JarURLConnection con = getConnection();
         return con.getInputStream();

@@ -31,6 +31,7 @@ import java.net.URL;
 
 import de.schlund.pfixxml.resources.AbstractDocrootResourceImpl;
 import de.schlund.pfixxml.resources.DocrootResource;
+import de.schlund.pfixxml.resources.ResourceIndex;
 
 /**
  * Actual implementation of the {@link DocrootResource}. This class should never
@@ -79,7 +80,15 @@ class DocrootResourceOnFileSystemImpl extends AbstractDocrootResourceImpl {
 
     @Override
     public boolean exists() {
-        return file.exists();
+        boolean exists = file.exists();
+        if(!exists) {
+        	try {	
+        		exists = ResourceIndex.getInstance().exists(file.toURI().toURL());
+        	} catch(IOException ex) {
+        		//ignore 
+        	}
+        }
+        return exists;
     }
 
     @Override

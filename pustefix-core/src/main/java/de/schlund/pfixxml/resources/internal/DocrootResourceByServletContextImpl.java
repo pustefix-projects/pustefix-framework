@@ -33,6 +33,7 @@ import javax.servlet.ServletContext;
 
 import de.schlund.pfixxml.resources.AbstractDocrootResourceImpl;
 import de.schlund.pfixxml.resources.DocrootResource;
+import de.schlund.pfixxml.resources.ResourceIndex;
 
 /**
  * Implementation of the {@link DocrootResource} using a servlet context to fetch resources. 
@@ -81,7 +82,16 @@ class DocrootResourceByServletContextImpl extends AbstractDocrootResourceImpl {
 
     @Override
     public boolean exists() {
-        return isFile() || isDirectory();
+    	
+        boolean exists = isFile() || isDirectory();
+        if(!exists) {
+        	try {	
+        		exists = ResourceIndex.getInstance().exists(path);
+        	} catch(IOException ex) {
+        		//ignore 
+        	}
+        }
+        return exists;
     }
 
     @Override
