@@ -22,10 +22,17 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.OutputStreamWriter;
 import java.io.Writer;
+import java.text.SimpleDateFormat;
+
+import javax.xml.parsers.DocumentBuilderFactory;
+import javax.xml.parsers.ParserConfigurationException;
 
 import org.apache.maven.plugin.AbstractMojo;
 import org.apache.maven.plugin.MojoExecutionException;
 import org.apache.maven.project.MavenProject;
+import org.w3c.dom.Document;
+import org.w3c.dom.NodeList;
+import org.xml.sax.SAXException;
 
 /**
  * Generate Pustefix resource index.
@@ -53,12 +60,39 @@ public class ResourceIndexMojo extends AbstractMojo {
      */
     private MavenProject project;
 
+    private SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss,SSS Z");
+    
     public void execute() throws MojoExecutionException {
 
         File resourceDir = null;
+        String resourcePath = "PUSTEFIX-INF";
         if("jar".equalsIgnoreCase(project.getPackaging())) {
             resourceDir = new File(baseDir, "src/main/resources");
+            File descFile = new File(resourceDir, "META-INF/pustefix-module.xml");
+            if(descFile.exists()) {
+            	try {
+            		DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
+            		factory.setNamespaceAware(true);
+            		Document doc = factory.newDocumentBuilder().parse(descFile);
+            		NodeList nodes = doc.getElementsByTagNameNS("http://www.pustefix-framework.org/2008/namespace/module-descriptor", "resource-path");
+            		if(nodes.getLength() == 0) {
+            			resourceDir = new File(resourceDir, resourcePath);
+            		} else if(nodes.getLength() == 1) {
+            			resourcePath = nodes.item(0).getTextContent().trim();
+            			resourceDir = new File(resourceDir, resourcePath);
+            		} else {
+            			throw new MojoExecutionException("Multiple 'resource-path' elements aren't allowed in 'pustefix-module.xml'.");
+            		}
+            	} catch(IOException x) {
+            		throw new MojoExecutionException("Error reading 'pustefix-module.xml'.", x);
+            	} catch(SAXException x) {
+            		throw new MojoExecutionException("Error parsing 'pustefix-module.xml'.", x);
+            	} catch(ParserConfigurationException x) {
+            		throw new MojoExecutionException("Error parsing 'pustefix-module.xml'.", x);
+            	}
+            }
         } else if("war".equalsIgnoreCase(project.getPackaging())) {
+        	resourcePath = "/";
             resourceDir = new File(baseDir, "src/main/webapp");
         }
 
@@ -70,6 +104,8 @@ public class ResourceIndexMojo extends AbstractMojo {
             File indexFile = new File(indexDir, "pustefix-resource.index");
             try {
                 Writer writer = new OutputStreamWriter(new FileOutputStream(indexFile), "UTF-8");
+                writer.write(resourcePath);
+                writer.write('\n');
                 createIndex(resourceDir, resourceDir.getCanonicalPath(), writer);
                 writer.close();
             } catch(IOException x) {
@@ -78,7 +114,7 @@ public class ResourceIndexMojo extends AbstractMojo {
         }
     }
 
-    private static void createIndex(File file, String rootPath, Writer writer) throws IOException {
+    private void createIndex(File file, String rootPath, Writer writer) throws IOException {
         if(!file.isHidden()) {
         	String path = file.getCanonicalPath();
         	if(path.length() > rootPath.length()) {
@@ -86,7 +122,11 @@ public class ResourceIndexMojo extends AbstractMojo {
 	        	if(file.isDirectory()) {
 	        		relPath += "/";
 	        	}
-	        	writer.write(relPath);
+	        	writer.write(relPath.replaceAll("\\|", "\\\\|"));
+	        	writer.write("|");
+	        	writer.write(dateFormat.format(file.lastModified()));
+	        	writer.write("|");
+	        	writer.write(String.valueOf(file.length()));
 	        	writer.write('\n');
         	}
         	if(file.isDirectory()) {
