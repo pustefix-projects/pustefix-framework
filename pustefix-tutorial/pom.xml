@@ -5,12 +5,12 @@
   <parent>
     <groupId>org.pustefixframework</groupId>
     <artifactId>pustefixframework</artifactId>
-    <version>0.18.54</version>
+    <version>0.18.55-SNAPSHOT</version>
   </parent>
 
   <groupId>org.pustefixframework</groupId>
   <artifactId>pustefix-tutorial</artifactId>
-  <version>0.18.54</version>
+  <version>0.18.55-SNAPSHOT</version>
 
   <packaging>pom</packaging>
   <name>Pustefix Tutorial Applications</name>
