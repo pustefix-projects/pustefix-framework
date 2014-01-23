@@ -4,14 +4,14 @@
   <parent>
     <artifactId>pustefix-editor</artifactId>
     <groupId>org.pustefixframework.editor</groupId>
-    <version>0.18.54-SNAPSHOT</version>
+    <version>0.18.54</version>
   </parent>
 
   <name>Pustefix Editor Backend Code</name>
 
   <groupId>org.pustefixframework.editor</groupId>
   <artifactId>pustefix-editor-backend</artifactId>
-  <version>0.18.54-SNAPSHOT</version>
+  <version>0.18.54</version>
   
   <dependencies>
     <dependency>
@@ -22,7 +22,7 @@
     <dependency>
       <groupId>org.pustefixframework.editor</groupId>
       <artifactId>pustefix-editor-common</artifactId>
-      <version>0.18.54-SNAPSHOT</version>
+      <version>0.18.54</version>
     </dependency>
     <dependency>
       <groupId>com.caucho</groupId>
