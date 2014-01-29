@@ -73,7 +73,7 @@
         <dependency>
           <groupId>org.pustefixframework.editor</groupId>
           <artifactId>pustefix-editor-backend</artifactId>
-          <version>0.18.54-SNAPSHOT</version>
+          <version>0.18.55-SNAPSHOT</version>
         </dependency>
       </dependencies>
     </profile>
@@ -90,7 +90,7 @@
           <plugin>
             <groupId>org.pustefixframework.maven.plugins</groupId>
             <artifactId>pustefix-generate-plugin</artifactId>
-            <version>0.18.54-SNAPSHOT</version>
+            <version>0.18.55-SNAPSHOT</version>
             <executions>
               <execution>
                 <goals>
