@@ -20,6 +20,9 @@ package org.pustefixframework.test;
 import java.io.File;
 import java.io.IOException;
 import java.net.MalformedURLException;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Properties;
 
 import javax.servlet.ServletContext;
 
@@ -41,13 +44,21 @@ import de.schlund.pfixxml.util.FileUtils;
  * This class can be used to set up the ApplicationContext using Spring's TestContext Framework
  * or creating it programmatically.
  * 
- * @author mleidig@schlund.de
- *
+ * <p>
+ * Usage example:<br/>
+ * <pre>
+ * @ContextConfiguration(loader=PustefixWebApplicationContextLoader.class,
+ *                       locations={"docroot:/WEB-INF/project.xml", 
+ *                                  "docroot:/WEB-INF/spring.xml", 
+ *                                  "(mode=test)"})
+ * </pre>
+ * </p>
  */
 public class PustefixWebApplicationContextLoader implements ContextLoader {
     
     private File docroot;
     private ServletContext servletContext;
+    private Properties locationProperties = new Properties();
     
     public PustefixWebApplicationContextLoader() {
         
@@ -58,7 +69,7 @@ public class PustefixWebApplicationContextLoader implements ContextLoader {
     }
     
     public PustefixWebApplicationContextLoader(ServletContext servletContext) {
-    	this.servletContext = servletContext;
+        this.servletContext = servletContext;
     }
     
     public PustefixWebApplicationContextLoader(File docroot, ServletContext servletContext) {
@@ -75,19 +86,23 @@ public class PustefixWebApplicationContextLoader implements ContextLoader {
      * Calling this method also creates a mock ServletContext and initializes factories.
      */
     public ApplicationContext loadContext(String... locations) {
-        
+
         //Mock ServletContext
         if(docroot==null) docroot = GlobalConfig.guessDocroot();
         
         if(servletContext == null) {
-        	servletContext = new MockServletContext(docroot.toURI().toString());
-        	try {
-        		File tmpDir = FileUtils.createTemporaryDirectory(null);
-        		((MockServletContext)servletContext).addInitParameter("logroot", tmpDir.getCanonicalPath());
-        	} catch(IOException x) {
-        		throw new RuntimeException("Error creating temporary log directory", x);
-        	}
-        	
+            servletContext = new MockServletContext(docroot.toURI().toString());
+            try {
+                File tmpDir = FileUtils.createTemporaryDirectory(null);
+                ((MockServletContext)servletContext).addInitParameter("logroot", tmpDir.getCanonicalPath());
+                String mode = locationProperties.getProperty("mode");
+                if(mode != null) {
+                    ((MockServletContext)servletContext).addInitParameter("mode", mode);
+                }
+            } catch(IOException x) {
+                throw new RuntimeException("Error creating temporary log directory", x);
+            }
+            
         }
         
         PustefixInit pustefixInit;
@@ -120,7 +135,18 @@ public class PustefixWebApplicationContextLoader implements ContextLoader {
     }
     
     public String[] processLocations(Class<?> clazz, String... locations) {
-        return locations;
+        List<String> newLocations = new ArrayList<String>();
+        for(String location: locations) {
+            if(location.startsWith("(") && location.endsWith(")")) {
+                String[] tokens = location.substring(1, location.length() - 1).split("=");
+                if(tokens.length == 2) {
+                    locationProperties.setProperty(tokens[0], tokens[1]);
+                }
+            } else {
+                newLocations.add(location);
+            }
+        }
+        return newLocations.toArray(new String[newLocations.size()]);
     }
     
 }

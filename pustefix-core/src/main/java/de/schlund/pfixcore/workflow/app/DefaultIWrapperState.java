@@ -24,6 +24,7 @@ import org.pustefixframework.config.contextxmlservice.IWrapperConfig;
 import org.pustefixframework.config.contextxmlservice.StateConfig;
 import org.pustefixframework.generated.CoreStatusCodes;
 
+import de.schlund.pfixcore.scriptedflow.vm.VirtualHttpServletRequest;
 import de.schlund.pfixcore.util.TokenManager;
 import de.schlund.pfixcore.workflow.Context;
 import de.schlund.pfixcore.workflow.IWrapperState;
@@ -117,7 +118,7 @@ public class DefaultIWrapperState extends StateImpl implements IWrapperState, Re
                 }
             } else {
                 StateConfig stateConf = getConfig();
-                if (stateConf != null && stateConf.requiresToken()) {
+                if (stateConf != null && stateConf.requiresToken() && !(preq.getRequest() instanceof VirtualHttpServletRequest)) {
                     context.addPageMessage(CoreStatusCodes.FORM_TOKEN_MISSING, null, null);
                     wrp_container.retrieveCurrentStatus(false);
                     context.prohibitContinue();

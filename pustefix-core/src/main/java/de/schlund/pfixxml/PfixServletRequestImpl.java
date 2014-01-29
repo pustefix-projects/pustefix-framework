@@ -517,6 +517,8 @@ public class PfixServletRequestImpl implements PfixServletRequest {
             if(pageName != null) {
                 if(pageAliasResolver != null) {
                     internalPageName = pageAliasResolver.getPageName(pageName, request);
+                } else {
+                    internalPageName = pageName;
                 }
             }
         }
