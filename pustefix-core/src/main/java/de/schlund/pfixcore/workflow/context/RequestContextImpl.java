@@ -674,9 +674,9 @@ public class RequestContextImpl implements Cloneable, AuthorizationInterceptor {
                             }
                             currentstatus = saved;
                         }
-                    }
-                    if(!foundNext) {
-                        throw new PustefixCoreException("Even default page [" + defpage + "] or other page of its flow  was not accessible! Bailing out.");
+                        if(!foundNext) {
+                            throw new PustefixCoreException("Even default page [" + defpage + "] or other page of its flow  was not accessible! Bailing out.");
+                        }
                     }
                 }
             }
