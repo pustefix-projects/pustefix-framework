@@ -279,6 +279,12 @@ public abstract class AbstractPustefixXMLRequestHandler extends AbstractPustefix
         if (!doreuse && session.getAttribute(SESS_CLEANUP_FLAG_STAGE2) != null) {
             HttpServletRequest req = preq.getRequest();
             String redirectUri = SessionHelper.getClearedURL(req.getScheme(), getServerName(req), req, getAbstractXMLServletConfig().getProperties());
+            if(req.isRequestedSessionIdFromCookie()) {
+                Cookie cookie = new Cookie("JSESSIONID", "");
+                cookie.setMaxAge(0);
+                cookie.setPath((req.getContextPath().equals("")) ? "/" : req.getContextPath());
+                res.addCookie(cookie);
+            }
             relocate(res, redirectUri);
             return;
         }
