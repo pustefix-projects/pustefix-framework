@@ -15,7 +15,6 @@
  * along with Pustefix; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  */
-
 package org.pustefixframework.config.contextxmlservice.parser;
 
 import org.pustefixframework.config.contextxmlservice.parser.internal.ContextXMLServletConfigImpl;
@@ -34,21 +33,22 @@ import com.marsching.flexiparse.parser.exception.ParserException;
 
 import de.schlund.pfixcore.workflow.ContextInterceptor;
 
+
 public class ContextInterceptorParsingHandler implements ParsingHandler {
 
     public void handleNode(HandlerContext context) throws ParserException {
-       
+
         Element element = (Element)context.getNode();
         ParsingUtils.checkAttributes(element, null, new String[] {"class","bean-ref"});
-        
+
         ContextXMLServletConfigImpl config = ParsingUtils.getSingleTopObject(ContextXMLServletConfigImpl.class, context);     
-        
+
         String beanName;
-        
+
         String className = element.getAttribute("class").trim();
         String beanRef = element.getAttribute("bean-ref").trim();
         if(className.length()>0) {
-            
+
             Class<?> clazz;
             try {
                 clazz = Class.forName(className);
@@ -58,18 +58,18 @@ public class ContextInterceptorParsingHandler implements ParsingHandler {
             if (!ContextInterceptor.class.isAssignableFrom(clazz)) {
                 throw new ParserException("Context interceptor " + clazz + " does not implement " + ContextInterceptor.class + " interface!");
             }
-            
+
             String scope = element.getAttribute("scope");
             if (scope == null || scope.length() == 0) {
                 scope = "singleton";
             }
-            
+
             BeanDefinitionRegistry beanRegistry = ParsingUtils.getSingleTopObject(BeanDefinitionRegistry.class, context);
             DefaultBeanNameGenerator beanNameGenerator = new DefaultBeanNameGenerator();
             BeanDefinitionBuilder beanBuilder;
             BeanDefinitionHolder beanHolder;
             BeanDefinition beanDefinition;
-            
+
             beanBuilder = BeanDefinitionBuilder.genericBeanDefinition(clazz);
             beanBuilder.setScope(scope);
             beanDefinition = beanBuilder.getBeanDefinition();
@@ -92,19 +92,18 @@ public class ContextInterceptorParsingHandler implements ParsingHandler {
         } else {
             throw new ParserException("No 'class' or 'bean-ref' attribute set at 'interceptor' element.");
         }
-       
-        
+
         Element parent = (Element)element.getParentNode();
-        if (parent.getNodeName().equals("start")) {
+        if (parent.getLocalName().equals("start")) {
             config.getContextConfig().addStartInterceptorBean(beanName);
         }
-        if (parent.getNodeName().equals("end")) {
+        if (parent.getLocalName().equals("end")) {
             config.getContextConfig().addEndInterceptorBean(beanName);
         }
-        if (parent.getNodeName().equals("postrender")) {
+        if (parent.getLocalName().equals("postrender")) {
             config.getContextConfig().addPostRenderInterceptorBean(beanName);
         }
-        
+
     }
 
 }

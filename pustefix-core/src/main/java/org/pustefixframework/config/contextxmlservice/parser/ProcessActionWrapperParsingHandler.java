@@ -26,21 +26,16 @@ import com.marsching.flexiparse.parser.ParsingHandler;
 import com.marsching.flexiparse.parser.exception.ParserException;
 
 
-/**
- * 
- * @author mleidig
- *
- */
 public class ProcessActionWrapperParsingHandler implements ParsingHandler {
 
     public void handleNode(HandlerContext context) throws ParserException {
-       
+
         Element element = (Element)context.getNode();
         ParsingUtils.checkAttributes(element, new String[] {"ref"}, null);
-         
+
         ProcessActionStateConfigImpl actionConfig = ParsingUtils.getSingleTopObject(ProcessActionStateConfigImpl.class, context);
         String prefix = element.getAttribute("ref").trim();
-        String parentType = element.getParentNode().getNodeName();
+        String parentType = element.getParentNode().getLocalName();
         if (parentType.equals("submit")) {
             actionConfig.addSubmitPrefix(prefix);
         } else if (parentType.equals("retrieve")) {

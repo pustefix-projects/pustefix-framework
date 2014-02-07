@@ -28,26 +28,22 @@ import com.marsching.flexiparse.parser.exception.ParserException;
 
 import de.schlund.pfixcore.auth.AuthConstraintImpl;
 
-/**
- * 
- * @author mleidig
- *
- */
+
 public class AuthConstraintParsingHandler implements ParsingHandler {
 
     public void handleNode(HandlerContext context) throws ParserException {
 
         Element element = (Element)context.getNode();
         ParsingUtils.checkAttributes(element, null, new String[] {"id", "default", "ref", "authpage"});
-        
+
         ContextXMLServletConfigImpl config = ParsingUtils.getSingleTopObject(ContextXMLServletConfigImpl.class, context);
-        
+
         boolean topLevel = false;
         Element parentElement = (Element)element.getParentNode();
-        if(parentElement.getNodeName().equals("context-xml-service-config")) {
+        if(parentElement.getLocalName().equals("context-xml-service-config")) {
             topLevel = true;
         }
-        
+
         AuthConstraintImpl constraint = null;
         if (topLevel) {
             String constraintId = element.getAttribute("id").trim();

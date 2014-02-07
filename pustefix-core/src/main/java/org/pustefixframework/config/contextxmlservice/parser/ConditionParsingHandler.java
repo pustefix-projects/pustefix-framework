@@ -40,13 +40,9 @@ import de.schlund.pfixcore.auth.conditions.NavigationCase;
 import de.schlund.pfixcore.auth.conditions.Not;
 import de.schlund.pfixcore.auth.conditions.Or;
 
-/**
- * 
- * @author mleidig
- *
- */
+
 public class ConditionParsingHandler implements ParsingHandler {
-    
+
     private Condition findParentCondition(HandlerContext context) {
         Iterator<Condition> parentConditions = context.getObjectTreeElement().getObjectsOfTypeFromTopTree(Condition.class).iterator();
         Condition parentCondition = null;
@@ -164,7 +160,7 @@ public class ConditionParsingHandler implements ParsingHandler {
         Node parent = element.getParentNode();
         if(parent!=null && parent.getNodeType()==Node.ELEMENT_NODE) {
             Element parentElem = (Element)parent;
-            if(parentElem.getNodeName().equals("pagerequest")) return true;
+            if(parentElem.getLocalName().equals("pagerequest")) return true;
             else return isInPageRequest(parentElem);
         }
         return false;
