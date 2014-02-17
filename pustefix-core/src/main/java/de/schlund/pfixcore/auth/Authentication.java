@@ -29,5 +29,8 @@ public interface Authentication {
     public boolean revokeRole(String roleName);
 
     public Role[] getRoles();
+    
+    public String getAuthTarget();
+    public void setAuthTarget(String targetPage);
 
 }

@@ -33,9 +33,9 @@ public class AuthConstraintImpl implements AuthConstraint {
     private Condition condition;
     private String defaultAuthPage;
     private String id;
-
     private List<NavigationCase> navigation = new LinkedList<NavigationCase>();
-
+    private boolean authJump = true;
+    
     public AuthConstraintImpl(String id) {
         this.id = id;
     }
@@ -76,7 +76,15 @@ public class AuthConstraintImpl implements AuthConstraint {
         }
         return defaultAuthPage;
     }
+    
+    public void setAuthJump(boolean authJump) {
+        this.authJump = authJump;
+    }
 
+    public boolean getAuthJump() {
+        return authJump;
+    }
+    
     public boolean isAuthorized(Context context) {
         return evaluate(context);
     }
@@ -95,6 +103,7 @@ public class AuthConstraintImpl implements AuthConstraint {
         sb.append("{");
         sb.append("id=" + id);
         sb.append(",authpage=" + defaultAuthPage);
+        sb.append(",authjump=" + authJump);
         sb.append("}");
         sb.append("[");
         sb.append(condition);

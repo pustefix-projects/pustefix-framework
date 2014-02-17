@@ -390,8 +390,12 @@ public class RequestContextImpl implements Cloneable, AuthorizationInterceptor {
                 String authPageName = authConst.getAuthPage(parentcontext);
                 if (authPageName != null) {
                     currentpagerequest = createPageRequest(authPageName);
-                    if (!roleAuthTarget.equals(authPageName))
-                        setJumpToPage(roleAuthTarget);
+                    if (!roleAuthTarget.equals(authPageName)) {
+                        if(authConst.getAuthJump()) {
+                            setJumpToPage(roleAuthTarget);
+                        }
+                        parentcontext.getAuthentication().setAuthTarget(roleAuthTarget);
+                    }
                 } else
                     throw new RuntimeException("No authpage defined for authconstraint " + "of page: " + roleAuthTarget);
             } else

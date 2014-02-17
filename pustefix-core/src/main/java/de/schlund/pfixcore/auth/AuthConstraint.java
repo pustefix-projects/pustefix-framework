@@ -42,5 +42,7 @@ public interface AuthConstraint extends Condition {
     public String getAuthPage(Context context);
     
     public String getDefaultAuthPage();
+    
+    public boolean getAuthJump();
 
 }

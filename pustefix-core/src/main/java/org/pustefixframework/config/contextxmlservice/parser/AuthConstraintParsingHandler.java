@@ -34,7 +34,7 @@ public class AuthConstraintParsingHandler implements ParsingHandler {
     public void handleNode(HandlerContext context) throws ParserException {
 
         Element element = (Element)context.getNode();
-        ParsingUtils.checkAttributes(element, null, new String[] {"id", "default", "ref", "authpage"});
+        ParsingUtils.checkAttributes(element, null, new String[] {"id", "default", "ref", "authpage", "authjump"});
 
         ContextXMLServletConfigImpl config = ParsingUtils.getSingleTopObject(ContextXMLServletConfigImpl.class, context);
 
@@ -73,6 +73,8 @@ public class AuthConstraintParsingHandler implements ParsingHandler {
         }
         String authPage = element.getAttribute("authpage").trim();
         if (!authPage.equals("")) constraint.setDefaultAuthPage(authPage);
+        String authJump = element.getAttribute("authjump").trim();
+        if (!authJump.equals("")) constraint.setAuthJump(Boolean.valueOf(authJump));
     }
 
 }

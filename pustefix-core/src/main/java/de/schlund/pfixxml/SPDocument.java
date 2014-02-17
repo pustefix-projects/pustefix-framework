@@ -26,9 +26,11 @@ import java.util.Map;
 import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletResponse;
 
+import org.pustefixframework.http.AbstractPustefixRequestHandler;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 
+import de.schlund.pfixxml.serverutil.SessionHelper;
 import de.schlund.pfixxml.util.Xml;
 
 
@@ -246,6 +248,31 @@ public class SPDocument {
     public void setRedirect(String redirectURL, boolean permanent) {
         this.redirectURL = redirectURL;
         this.permanentRedirect = permanent;
+    }
+    
+    /**
+     * Sets a redirection URL to an application page.
+     * 
+     * @param page Page name
+     * @param preq Current request
+     */
+    public void setRedirect(String page, PfixServletRequest preq) {
+        setRedirect(page, false, preq);
+    }
+    
+    /**
+     * Sets a redirection URL to an application page.
+     * 
+     * @param page Page name
+     * @param permanent Set if permanent or temporary redirect
+     * @param preq Current request
+     */
+    public void setRedirect(String page, boolean permanent, PfixServletRequest preq) {
+        String url = preq.getScheme() + "://" + AbstractPustefixRequestHandler.getServerName(preq.getRequest()) 
+                + ((preq.getServerPort() != 80 && preq.getServerPort() != 443) ? ":" + preq.getServerPort() : "" ) 
+                + preq.getContextPath() + preq.getServletPath() + "/" + page
+                + SessionHelper.getSessionIdPath(preq.getRequest());
+        setRedirect(url, permanent);
     }
 
     public boolean isRedirect() {

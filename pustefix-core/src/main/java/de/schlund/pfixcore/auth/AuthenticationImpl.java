@@ -33,6 +33,7 @@ public class AuthenticationImpl implements Authentication {
 
     private SortedMap<String, Role> roles;
     private RoleProvider            roleProvider;
+    private String authTarget;
 
     public AuthenticationImpl(RoleProvider roleProvider) {
         this.roleProvider = roleProvider;
@@ -69,6 +70,14 @@ public class AuthenticationImpl implements Authentication {
 
     public synchronized boolean revokeRole(String roleName) {
         return roles.remove(roleName) != null;
+    }
+    
+    public synchronized void setAuthTarget(String authTarget) {
+        this.authTarget = authTarget;
+    }
+    
+    public synchronized String getAuthTarget() {
+        return authTarget;
     }
 
 }
