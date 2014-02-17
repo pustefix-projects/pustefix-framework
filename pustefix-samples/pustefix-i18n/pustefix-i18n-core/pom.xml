@@ -4,12 +4,12 @@
   <parent>
     <artifactId>pustefix-i18n</artifactId>
     <groupId>org.pustefixframework.samples</groupId>
-    <version>0.18.58</version>
+    <version>0.18.59-SNAPSHOT</version>
   </parent>
 
   <groupId>org.pustefixframework.samples</groupId>
   <artifactId>pustefix-i18n-core</artifactId>
-  <version>0.18.58</version>
+  <version>0.18.59-SNAPSHOT</version>
   <packaging>jar</packaging>
   <name>Pustefix i18n sample core module</name>
 
@@ -21,7 +21,7 @@
     <dependency>
       <groupId>org.pustefixframework</groupId>
       <artifactId>pustefix-core</artifactId>
-      <version>0.18.58</version>
+      <version>0.18.59-SNAPSHOT</version>
     </dependency>
     <dependency>
       <groupId>javax.servlet</groupId>
@@ -41,7 +41,7 @@
      <plugin>
         <groupId>org.pustefixframework.maven.plugins</groupId>
         <artifactId>pustefix-iwrapper-plugin</artifactId>
-        <version>0.18.58</version>
+        <version>0.18.59-SNAPSHOT</version>
         <executions>
           <execution>
             <goals>
@@ -53,7 +53,7 @@
       <plugin>
         <groupId>org.pustefixframework.maven.plugins</groupId>
         <artifactId>pustefix-statuscode-plugin</artifactId>
-        <version>0.18.58</version>
+        <version>0.18.59-SNAPSHOT</version>
         <configuration>
           <module>pustefix-i18n-core</module>
           <dynamic>true</dynamic>
