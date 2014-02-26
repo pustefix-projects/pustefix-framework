@@ -371,5 +371,18 @@
 
   </section>
 
+  <section xml:id="news.0_18_59">
+    <title>What's new in Pustefix 0.18.59</title>
+
+    <section xml:id="news.0_18_59.tooling">
+      <title>Rendering pages with static DOM tree during development</title>
+      <para>
+        Introduced new special parameter <literal>__staticdom</literal>, which lets you render pages with the static DOM tree provided by the default <literal>State</literal>, e.g. for
+        debugging view problems (see <xref linkend="tooling.specialparams"/>).
+      </para>
+    </section>
+
+  </section>
+
 
 </chapter>

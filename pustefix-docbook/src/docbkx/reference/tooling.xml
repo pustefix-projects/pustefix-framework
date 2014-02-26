@@ -70,4 +70,37 @@
           <listitem><emphasis>Message:</emphasis> Message board showing results of last triggered actions</listitem>
       </itemizedlist>
     </section>
+    <section xml:id="tooling.specialparams">
+      <title>Special parameters for development</title>
+      <para>
+        Pustefix supports some special parameters triggering special behaviour/functions useful during development:
+      </para>
+      <table rules="all" frame="box">
+        <caption>Special parameters for development</caption>
+        <thead>
+          <tr>
+            <th>Name</th>
+            <th>Value</th>
+            <th>Description</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td>__xmlonly</td>
+            <td>1 | 2</td>
+            <td>Adding this parameter to an URL the page isn't rendered, but the originating DOM tree model is displayed. 
+                Setting the value to <literal>1</literal> the DOM tree plus some additional data about the application state is rendered as HTML.
+                Setting the value to <literal>2</literal> the pure XML is returned.</td>
+          </tr>
+          <tr>
+            <td>__staticdom</td>
+            <td>-</td>
+            <td>Adding this parameter to an URL the page is rendered using the default DOM tree as created by the default <literal>State</literal> implementation.
+                Not using the designated <literal>State</literal> can be useful for debugging, e.g. when the page isn't reachable because of pageflow or 
+                exception issues.</td>
+          </tr>
+        </tbody>
+      </table>
+    </section>
+      
 </chapter>
