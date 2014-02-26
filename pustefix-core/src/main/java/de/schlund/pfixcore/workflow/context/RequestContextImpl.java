@@ -62,6 +62,7 @@ import de.schlund.pfixxml.RequestParam;
 import de.schlund.pfixxml.ResultDocument;
 import de.schlund.pfixxml.SPDocument;
 import de.schlund.pfixxml.Variant;
+import de.schlund.pfixxml.config.EnvironmentProperties;
 import de.schlund.util.statuscodes.StatusCode;
 
 /**
@@ -500,6 +501,13 @@ public class RequestContextImpl implements Cloneable, AuthorizationInterceptor {
             } else {
                 throw new PustefixCoreException("Can't get result document for render part because page '" + 
                         currentpagerequest.getName() + "' isn't accessible.");
+            }
+        } else if(currentpservreq.getRequestParam(AbstractPustefixXMLRequestHandler.PARAM_STATIC_DOM) != null
+                && !"prod".equals(EnvironmentProperties.getProperties().getProperty("mode"))) {
+            try {
+                spdoc = parentcontext.getContextConfig().getDefaultState().getDocument(parentcontext, currentpservreq).getSPDocument();
+            } catch(Exception x) {
+                throw new PustefixCoreException("Error getting SPDocument from default State", x);
             }
         } else {
             spdoc = documentFromFlow(startwithflow, stopnextforcurrentrequest);

@@ -104,6 +104,7 @@ public abstract class AbstractPustefixXMLRequestHandler extends AbstractPustefix
     public  static final String PARAM_XMLONLY         = "__xmlonly";
     public  static final String PARAM_XMLONLY_FONTIFY = "1"; // -> RENDER_FONFIFY
     public  static final String PARAM_XMLONLY_XMLONLY = "2"; // -> RENDER_XMLONLY
+    public  static final String PARAM_STATIC_DOM      = "__staticdom";
     public  static final String PARAM_ANCHOR          = "__anchor";
     private static final String PARAM_EDITMODE        = "__editmode";
     private static final String PARAM_FRAME           = "__frame";
