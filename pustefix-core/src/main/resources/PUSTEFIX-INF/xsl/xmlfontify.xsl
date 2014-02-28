@@ -1,6 +1,8 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<xsl:stylesheet xmlns:xsl="http://www.w3.org/1999/XSL/Transform" version="1.0"
-                xmlns:callback="xalan://de.schlund.pfixcore.util.TransformerCallback">
+<xsl:stylesheet xmlns:xsl="http://www.w3.org/1999/XSL/Transform" 
+                xmlns:callback="xalan://de.schlund.pfixcore.util.TransformerCallback"
+                xmlns:pxsl="http://pustefixframework.org/org.pustefixframework.xslt.ExtensionElements"
+                extension-element-prefixes="pxsl" version="1.1">
 
   <xsl:param name="__context__"/>
   <xsl:param name="__sitemap"/>
@@ -48,7 +50,20 @@
           .assistent a { color: #000000; }
           .assistent label { margin-left: 5px; margin-right: 10px; }
           ul a:hover { text-decoration: underline; cursor: pointer; }
+          pre.errors {display:none; position:absolute; background:#FF9999; color:#000; border:red; border-radius: 10px; padding: 10px;}
         </style>
+        <script type="text/javascript">
+          function toggleErrors(errElem, id) {
+            var elem = document.getElementById(id);
+            if(elem.style.display=='block') {
+              elem.style.display='none';
+              errElem.innerHTML="[+]";
+            } else {
+              elem.style.display='block';
+              errElem.innerHTML="[-]";
+            }
+          }
+        </script>
       </head>
       <body>
         <div class="assistent"> 
@@ -98,7 +113,11 @@
   <xsl:template name="render_page">
     <xsl:param name="ind"/>
     <xsl:variable name="vis_retval" select="callback:isVisited($__context__, string(@name))"/>
-    <xsl:variable name="acc_retval" select="callback:isAccessible($__context__, $__target_gen, string(@name))"/>
+    <xsl:variable name="acc_retval">
+      <pxsl:fail-safe>
+        <xsl:value-of select="callback:isAccessible($__context__, $__target_gen, string(@name))"/>
+      </pxsl:fail-safe>
+    </xsl:variable>
     <xsl:variable name="auth_retval" select="callback:checkAuthorization($__context__, string(@name))"/>
 <!--    <xsl:variable name="acc_retval">1</xsl:variable>-->
     <xsl:variable name="visited"> 
@@ -116,8 +135,15 @@
         <xsl:when test="$acc_retval = -1">
         <span style="color: #aaaaaa;">?</span>
         </xsl:when>
+        <xsl:when test="$acc_retval = 0">
+          <span style="color: #cc3333;">false</span>
+        </xsl:when>
         <xsl:otherwise>
-        <span style="color: #cc3333;">false</span></xsl:otherwise>
+          <span style="color: red;">error
+            <span style="cursor: pointer;" title="Show exception" onclick="toggleErrors(this, 'error_{generate-id()}')">[+]</span>
+          </span>
+          <pre id="error_{generate-id()}" class="errors"><xsl:value-of select="$acc_retval"/></pre>
+        </xsl:otherwise>
       </xsl:choose>
     </xsl:variable>
     <xsl:variable name="authorized">
