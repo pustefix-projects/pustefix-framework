@@ -13,16 +13,28 @@ public class BytecodeAPIUtils {
     private final static String PROXYCHECK_CLASS_CGLIB = "net.sf.cglib.proxy.Enhancer";
     private final static String PROXYCHECK_METHOD_CGLIB = "isEnhanced";
     
+    private final static String PROXYCHECK_CLASS_CGLIB_SPRING = "org.springframework.cglib.proxy.Enhancer";
+    private final static String PROXYCHECK_METHOD_CGLIB_SPRING = "isEnhanced";
+    
     private final static String PROXYCHECK_CLASS_JAVASSIST = "javassist.util.proxy.ProxyFactory";
     private final static String PROXYCHECK_METHOD_JAVASSIST = "isProxyClass";
     
     private static Method cglibProxyCheckMethod;
+    private static Method cglibSpringProxyCheckMethod;
     private static Method javassistProxyCheckMethod;
     
     static {
         try {
             Class<?> clazz = Class.forName(PROXYCHECK_CLASS_CGLIB);
             cglibProxyCheckMethod = clazz.getMethod(PROXYCHECK_METHOD_CGLIB, new Class<?>[] {Class.class});
+        } catch(ClassNotFoundException x) {
+            //ignore
+        } catch(NoSuchMethodException x) {
+            //ignore
+        }
+        try {
+            Class<?> clazz = Class.forName(PROXYCHECK_CLASS_CGLIB_SPRING);
+            cglibSpringProxyCheckMethod = clazz.getMethod(PROXYCHECK_METHOD_CGLIB_SPRING, new Class<?>[] {Class.class});
         } catch(ClassNotFoundException x) {
             //ignore
         } catch(NoSuchMethodException x) {
@@ -49,6 +61,16 @@ public class BytecodeAPIUtils {
         if(cglibProxyCheckMethod != null) {
             try {
                 boolean ret = (Boolean)cglibProxyCheckMethod.invoke(null, clazz);
+                if(ret) {
+                    return true;
+                }
+            } catch(Exception x) {
+                //ignore
+            }
+        }
+        if(cglibSpringProxyCheckMethod != null) {
+            try {
+                boolean ret = (Boolean)cglibSpringProxyCheckMethod.invoke(null, clazz);
                 if(ret) {
                     return true;
                 }
