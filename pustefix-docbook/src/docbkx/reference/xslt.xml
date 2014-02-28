@@ -2016,6 +2016,49 @@
     </section>
 
   </section>
+
+  <section xml:id="xslt.extensions.extensionelements">
+    <title>XSL extension elements</title>
+    <para>In addition to the standard XSL elements Pustefix provides some useful XSL extension elements. They can be used by delaring the namespace
+          <literal>http://pustefixframework.org/org.pustefixframework.xslt.ExtensionElements</literal>, using the prefix <literal>pxsl</literal>
+          and adding the prefix to the <literal>extension-element-prefixes</literal> attribute of the stylesheet:</para>
+      <programlisting language="xml"><![CDATA[<xsl:stylesheet xmlns:xsl="http://www.w3.org/1999/XSL/Transform" 
+                xmlns:pxsl="http://pustefixframework.org/org.pustefixframework.xslt.ExtensionElements"
+                extension-element-prefixes="pxsl" version="1.1">]]></programlisting>
+      <para>
+        There are some extension elements providing extended logging functionality. They work similar to the <literal>&lt;xsl:message/&gt;</literal> 
+        instruction, but additionally support different log levels and can optionally write to a Log4J logger instead of standard output.
+      </para>
+<programlisting language="xml"><![CDATA[<pxsl:log level="DEBUG|INFO|WARN|ERROR"
+              logger="SOME_LOG4J_LOGGER"> 
+  <!-- content -->
+</pxsl:log>
+    
+<!-- shortcuts for specific log levels -->
+<pxsl:debug> <!-- content --> </pxsl:debug>
+<pxsl:info> <!-- content --> </pxsl:info>
+<pxsl:warn> <!-- content --> </pxsl:warn>
+<pxsl:error> <!-- content --> </pxsl:error>]]></programlisting>
+     <para>If you don't specify a logger, the content will be written to standard output. But the log levels are bound to the application mode by default,
+           i.e. the log messages will be filtered. Here's which messages are displayed in which mode:
+     </para>   
+     <itemizedlist>
+          <listitem><literal>prod</literal> => WARN, ERROR</listitem>
+          <listitem><literal>test</literal> or <literal>devel</literal> => DEBUG, INFO, WARN, ERROR</listitem>
+          <listitem>other modes => INFO, WARN, ERROR</listitem>
+      </itemizedlist>
+      <para>
+        The <literal>&lt;pxsl:fail-safe/&gt;</literal> extension element catches an exception thrown during the processing of its child elements and 
+        outputs its stacktrace instead of the content. This element shouldn't be used on normal pages. It's intended for tooling and debugging purposes only.  
+      </para>
+ <programlisting language="xml"><![CDATA[<xsl:variable name="result">
+   <pxsl:fail-safe>
+      <xsl:value-of select="call:someExtensionFunction()"/>
+   </pxsl:fail-safe>
+</xsl:variable>]]></programlisting>
+
+  </section>
+  
   </section>
 
 </chapter>
