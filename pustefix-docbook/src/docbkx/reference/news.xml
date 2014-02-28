@@ -381,6 +381,13 @@
         debugging view problems (see <xref linkend="tooling.specialparams"/>).
       </para>
     </section>
+    <section xml:id="news.0_18_59.xslt">
+      <title>Added XSL extension elements for logging and debugging</title>
+      <para>
+        Added some XSL extension elements extending the standard way of outputting messages in XSL by supporting log level and Log4J loggers. Added extension element for fail-safe
+        XSLT processing, e.g. on tooling or test pages (see <xref linkend="xslt.extensions.extensionelements"/>).
+      </para>
+    </section>
 
   </section>
 

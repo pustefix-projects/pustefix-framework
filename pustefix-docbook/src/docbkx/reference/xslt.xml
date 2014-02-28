@@ -2019,7 +2019,7 @@
 
   <section xml:id="xslt.extensions.extensionelements">
     <title>XSL extension elements</title>
-    <para>In addition to the standard XSL elements Pustefix provides some useful XSL extension elements. They can be used by delaring the namespace
+    <para>In addition to the standard XSL elements Pustefix provides some useful XSL extension elements. They can be used by declaring the namespace
           <literal>http://pustefixframework.org/org.pustefixframework.xslt.ExtensionElements</literal>, using the prefix <literal>pxsl</literal>
           and adding the prefix to the <literal>extension-element-prefixes</literal> attribute of the stylesheet:</para>
       <programlisting language="xml"><![CDATA[<xsl:stylesheet xmlns:xsl="http://www.w3.org/1999/XSL/Transform" 
