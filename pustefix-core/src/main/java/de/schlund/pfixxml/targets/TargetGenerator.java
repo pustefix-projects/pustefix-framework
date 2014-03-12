@@ -898,6 +898,7 @@ public class TargetGenerator implements ResourceVisitor, ServletContextAware, In
                     }
                     if(href.startsWith("/")) href = href.substring(1);
                     String part = partInfo.getName();
+                    if(module == null || module.equals("")) module = "WEBAPP";
                     createTargetForRender(href, part, module, null, partInfo.getContentType(), partInfo.isContextual());
                     for(String variant: partInfo.getRenderVariants()) {
                         createTargetForRender(href, part, module, variant, partInfo.getContentType(), partInfo.isContextual());
