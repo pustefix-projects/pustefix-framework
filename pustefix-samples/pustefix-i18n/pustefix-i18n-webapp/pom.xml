@@ -6,12 +6,12 @@
   <parent>
     <groupId>org.pustefixframework.samples</groupId>
     <artifactId>pustefix-i18n</artifactId>
-    <version>0.18.59</version>
+    <version>0.18.60-SNAPSHOT</version>
   </parent>
 
   <groupId>org.pustefixframework.samples</groupId>
   <artifactId>pustefix-i18n-webapp</artifactId>
-  <version>0.18.59</version>
+  <version>0.18.60-SNAPSHOT</version>
   <packaging>war</packaging>
 
   <name>Pustefix i18n sample webapp</name>
@@ -24,28 +24,28 @@
     <dependency>
       <groupId>org.pustefixframework</groupId>
       <artifactId>pustefix-core</artifactId>
-      <version>0.18.59</version>
+      <version>0.18.60-SNAPSHOT</version>
     </dependency>
     <dependency>
       <groupId>org.pustefixframework.samples</groupId>
       <artifactId>pustefix-i18n-core</artifactId>
-      <version>0.18.59</version>
+      <version>0.18.60-SNAPSHOT</version>
     </dependency>
     <!-- Tenant modules -->
     <dependency>
       <groupId>org.pustefixframework.samples</groupId>
       <artifactId>pustefix-i18n-tenant-ca</artifactId>
-      <version>0.18.59</version>
+      <version>0.18.60-SNAPSHOT</version>
     </dependency>
     <dependency>
       <groupId>org.pustefixframework.samples</groupId>
       <artifactId>pustefix-i18n-tenant-us</artifactId>
-      <version>0.18.59</version>
+      <version>0.18.60-SNAPSHOT</version>
     </dependency>
     <dependency>
       <groupId>org.pustefixframework.samples</groupId>
       <artifactId>pustefix-i18n-tenant-de</artifactId>
-      <version>0.18.59</version>
+      <version>0.18.60-SNAPSHOT</version>
     </dependency>
   </dependencies>
  
