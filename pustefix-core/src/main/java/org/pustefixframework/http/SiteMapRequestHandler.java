@@ -254,7 +254,7 @@ public class SiteMapRequestHandler implements UriProvidingHttpRequestHandler, Se
     
     private void addURL(String page, Element parent, String lang, boolean defaultLang, String baseUrl, String defaultPage, boolean mobile) {
         Element urlElem = parent.getOwnerDocument().createElement("url");
-        parent.appendChild(urlElem);
+        if(!siteMap.hasDefaultPageAlternative(page)) parent.appendChild(urlElem);
         Element locElem = parent.getOwnerDocument().createElement("loc");
         urlElem.appendChild(locElem);
         String alias;

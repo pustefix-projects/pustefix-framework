@@ -507,7 +507,13 @@ public class SiteMap {
         return doc.getDocumentElement();
     }
     
-
+    public boolean hasDefaultPageAlternative(String pageName) {
+        Page page = pageNameToPage.get(pageName);
+        if(page != null) {
+            return page.defaultPageAlt != null;
+        }
+        return false;
+    }
     
     public class Page {
         
