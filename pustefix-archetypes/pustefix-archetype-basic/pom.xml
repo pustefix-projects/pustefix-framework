@@ -38,14 +38,6 @@
     <resources>
       <resource>
         <targetPath>${project.build.directory}/classes</targetPath>
-        <filtering>false</filtering>
-        <directory>src/main/resources</directory>
-        <excludes>
-          <exclude>META-INF/maven/archetype-metadata.xml</exclude>
-        </excludes>
-      </resource>
-      <resource>
-        <targetPath>${project.build.directory}/classes</targetPath>
         <filtering>true</filtering>
         <directory>src/main/resources</directory>
         <includes>
