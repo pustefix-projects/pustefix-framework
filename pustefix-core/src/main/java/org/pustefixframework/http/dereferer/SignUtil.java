@@ -17,25 +17,20 @@
  */
 package org.pustefixframework.http.dereferer;
 
-import java.util.Random;
+import javax.crypto.SecretKey;
 
-import de.schlund.pfixxml.util.MD5Utils;
+import org.pustefixframework.util.MacUtils;
 
 public abstract class SignUtil {
     
-    private final static String SIGN_KEY;
-    
-    static {
-        Random random = new Random();
-        StringBuffer sb = new StringBuffer();
-        for (int i = 0; i < 32; i++) {
-            sb.append(random.nextInt(10));
-        }
-        SIGN_KEY = sb.toString();
-    }
+    private final static SecretKey SIGN_KEY = MacUtils.generateMacKey(MacUtils.HMAC_MD5);
     
     public static String getSignature(String str, long timeStamp) {
-        return MD5Utils.hex_md5(str + timeStamp + SIGN_KEY, "utf8");
+        StringBuilder sb = new StringBuilder();
+        sb.append(timeStamp);
+        sb.append(' ');
+        sb.append(str);
+        return MacUtils.hexMac(sb.toString(), MacUtils.CHARSET_UTF8, SIGN_KEY);
     }
     
     public static boolean checkSignature(String str, long timeStamp, String signature) {
