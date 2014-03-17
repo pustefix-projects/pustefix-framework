@@ -6,13 +6,13 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.net.URISyntaxException;
 import java.net.URL;
-import java.rmi.server.UID;
+import java.nio.file.FileSystems;
+import java.nio.file.Files;
+import java.nio.file.Path;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.jar.JarEntry;
 import java.util.jar.JarFile;
-
-import de.schlund.pfixxml.util.MD5Utils;
 
 /**
  * JarFile instance cache providing JarEntries backed by file system cache.
@@ -37,11 +37,12 @@ public class JarFileCache {
     }
 
     public JarFileCache() {
-        File tempDir = new File(System.getProperty("java.io.tmpdir"));
-        UID uid = new UID();
-        String md5 = MD5Utils.hex_md5(uid.toString());
-        cacheDir = new File(tempDir, "pustefix-jar-cache/" + md5);
-        cacheDir.mkdirs();
+        Path tempDir = FileSystems.getDefault().getPath(System.getProperty("java.io.tmpdir"));
+        try {
+            this.cacheDir = Files.createTempDirectory(tempDir, "pustefix-jar-cache-").toFile();
+        } catch(IOException x) {
+            throw new RuntimeException("Error creating temporary directory for JAR caching", x);
+        }
     }
 
     public JarFileCache(File cacheDir) {
@@ -49,7 +50,7 @@ public class JarFileCache {
         if(cacheDir.exists()) delete(cacheDir);
         cacheDir.mkdirs();
     }
-
+    
     public JarFile getJarFile(URL url) throws IOException {
         return getCachedJarFile(url).jarFile;
     }
