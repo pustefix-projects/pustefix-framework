@@ -317,20 +317,15 @@ public class RequestContextImpl implements Cloneable, AuthorizationInterceptor {
         }
 
         if (spdoc != null && forceSSL) {
-            // Make sure connection is switched to SSL if current page is marked
-            // as "secure"
-            String scheme = "https";
-            String port = getServerContext().getProperties().getProperty(
-                    AbstractPustefixRequestHandler.PROP_SSL_REDIRECT_PORT + String.valueOf(preq.getOriginalServerPort()));
-            if (port == null) {
-                port = "443";
-            }
+            // Make sure connection is switched to SSL if current page is marked as "secure"
+            int port = AbstractPustefixRequestHandler.getSSLRedirectPort(preq.getOriginalServerPort(), getServerContext().getProperties());
             String sessionIdPath = "";
             HttpSession session = preq.getSession(false);
             if(session.getAttribute(AbstractPustefixRequestHandler.SESSION_ATTR_COOKIE_SESSION) == null) {
                 sessionIdPath = ";jsessionid=" + session.getId();
             }
-            String redirectURL = scheme + "://" + AbstractPustefixRequestHandler.getServerName(preq.getRequest()) + ":" + port + preq.getContextPath()
+            String redirectURL = "https://" + AbstractPustefixRequestHandler.getServerName(preq.getRequest()) 
+            		+ ( port == 443 ? "" : ":" + port ) + preq.getContextPath()
                     + preq.getServletPath() + "/" + spdoc.getPagename() + sessionIdPath + "?__reuse="
                     + spdoc.getTimestamp();
 
@@ -922,7 +917,7 @@ public class RequestContextImpl implements Cloneable, AuthorizationInterceptor {
             currentpagerequest = page;
             
             if(!isAuthorizationPossible()) return false;
-            
+
             State state = getStateForPageRequest(page);
 
             boolean retval;

@@ -22,6 +22,7 @@ import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
+import java.lang.management.ManagementFactory;
 import java.net.URL;
 import java.nio.charset.Charset;
 import java.text.NumberFormat;
@@ -31,6 +32,7 @@ import java.util.Date;
 import java.util.Enumeration;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Properties;
 import java.util.Set;
 import java.util.SortedSet;
 import java.util.concurrent.locks.Lock;
@@ -38,6 +40,9 @@ import java.util.concurrent.locks.ReadWriteLock;
 import java.util.concurrent.locks.ReentrantReadWriteLock;
 import java.util.regex.Pattern;
 
+import javax.management.JMException;
+import javax.management.MBeanServer;
+import javax.management.ObjectName;
 import javax.servlet.ServletContext;
 import javax.servlet.ServletException;
 import javax.servlet.http.Cookie;
@@ -151,6 +156,60 @@ public abstract class AbstractPustefixRequestHandler implements SessionTrackingS
         return req.getRemoteAddr();
     }
     
+    public static int getSSLRedirectPort(int port, Properties props) {
+        String redirectPort = (String)props.get(PROP_SSL_REDIRECT_PORT + String.valueOf(port));
+        if(redirectPort == null) {
+            //try to get SSL redirect port from Tomcat MBean
+            try {
+                MBeanServer mbeanServer = ManagementFactory.getPlatformMBeanServer();
+                ObjectName objNamePattern = new ObjectName("*:type=Connector,port=" + port);
+                Set<ObjectName> objNames= mbeanServer.queryNames(objNamePattern, null);
+                if(objNames.size() == 1) {
+                    ObjectName objName = objNames.iterator().next();
+                    Integer targetPort = (Integer)mbeanServer.getAttribute(objName, "redirectPort");
+                    redirectPort = String.valueOf(targetPort);
+                    props.setProperty(PROP_SSL_REDIRECT_PORT + String.valueOf(port), redirectPort);
+                }
+            } catch(JMException x) {
+                LOG.warn("Error getting redirect port from Tomcat connector", x);
+            }
+            //if not found use default port
+            if(redirectPort == null) {
+                redirectPort = "443";
+                props.put(PROP_SSL_REDIRECT_PORT + String.valueOf(port), redirectPort);
+            }
+        }
+        return Integer.valueOf(redirectPort);
+    }
+    
+    public static int getNonSSLRedirectPort(int port, Properties props) {
+        String redirectPort = props.getProperty(AbstractPustefixRequestHandler.PROP_NONSSL_REDIRECT_PORT + String.valueOf(port));
+        if(redirectPort == null) {
+            Enumeration<?> propNames = props.propertyNames();
+            String mappedPort = null;
+            while(propNames.hasMoreElements() && mappedPort == null) {
+                String propName = (String)propNames.nextElement();
+                if(propName.startsWith(AbstractPustefixRequestHandler.PROP_SSL_REDIRECT_PORT)) {
+                    int ind = propName.lastIndexOf('.');
+                    if(ind > -1) {
+                        String portKey = propName.substring(ind + 1);
+                        String portVal = props.getProperty(propName);
+                        if(portVal.equals(String.valueOf(port))) {
+                            redirectPort = portKey;
+                            props.put(PROP_NONSSL_REDIRECT_PORT + String.valueOf(port), redirectPort);
+                        }
+                    }
+                }
+            }
+            //if not found use default port
+            if(redirectPort == null) {
+                redirectPort = "80";
+                props.put(PROP_NONSSL_REDIRECT_PORT + String.valueOf(port), redirectPort);
+            }
+        }
+        return Integer.valueOf(redirectPort);
+    }
+
     public void setHandlerURI(String uri) {
         this.handlerURI = uri;
     }
