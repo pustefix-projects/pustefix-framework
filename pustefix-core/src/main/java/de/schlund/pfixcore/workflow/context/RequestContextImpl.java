@@ -491,7 +491,7 @@ public class RequestContextImpl implements Cloneable, AuthorizationInterceptor {
         }
         SPDocument spdoc = null;
         if(currentpservreq.getRequestParam(AbstractPustefixXMLRequestHandler.PARAM_RENDER_HREF) != null) {
-            if(checkIsAccessible(currentpagerequest)) {
+            if(checkPageAuthorization() == null && checkIsAccessible(currentpagerequest)) {
                 spdoc = documentFromCurrentStep().getSPDocument();
             } else {
                 throw new PustefixCoreException("Can't get result document for render part because page '" + 
@@ -505,7 +505,15 @@ public class RequestContextImpl implements Cloneable, AuthorizationInterceptor {
                 throw new PustefixCoreException("Error getting SPDocument from default State", x);
             }
         } else {
-            spdoc = documentFromFlow(startwithflow, stopnextforcurrentrequest);
+            ResultDocument res = checkPageAuthorization();
+            if(res != null) {
+                if(roleAuth) {
+                    addAuthenticationData(res);
+                }
+                spdoc = res.getSPDocument();
+            } else {
+                spdoc = documentFromFlow(startwithflow, stopnextforcurrentrequest);
+            }
         }
         
         processIC(parentcontext.getContextConfig().getEndInterceptors());
