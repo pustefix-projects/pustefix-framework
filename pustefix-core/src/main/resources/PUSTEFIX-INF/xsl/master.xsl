@@ -98,8 +98,10 @@
                      xmlns:deref="xalan://org.pustefixframework.http.dereferer.SignUtil"
                      xmlns:callback="xalan://de.schlund.pfixcore.util.TransformerCallback"
                      xmlns:compress="xalan://org.pustefixframework.util.javascript.CompressorCallback"
-                     xmlns:rfh="java:org.pustefixframework.http.AbstractPustefixXMLRequestHandler$RegisterFrameHelper" 
-                     exclude-result-prefixes="pfx cus xsl url deref callback compress func rfh">
+                     xmlns:rfh="java:org.pustefixframework.http.AbstractPustefixXMLRequestHandler$RegisterFrameHelper"
+                     xmlns:pxsl="http://pustefixframework.org/org.pustefixframework.xslt.ExtensionElements"
+                     exclude-result-prefixes="pfx cus xsl url deref callback compress func rfh pxsl"
+                     extension-element-prefixes="pxsl">
 
       <ixsl:import href="module://pustefix-core/xsl/default_copy.xsl"/>
       <ixsl:import href="module://pustefix-core/xsl/include.xsl"/>
