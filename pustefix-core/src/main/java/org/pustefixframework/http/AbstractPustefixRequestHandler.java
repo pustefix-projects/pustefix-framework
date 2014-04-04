@@ -162,7 +162,7 @@ public abstract class AbstractPustefixRequestHandler implements SessionTrackingS
             //try to get SSL redirect port from Tomcat MBean
             try {
                 MBeanServer mbeanServer = ManagementFactory.getPlatformMBeanServer();
-                ObjectName objNamePattern = new ObjectName("*:type=Connector,port=" + port);
+                ObjectName objNamePattern = new ObjectName("*:type=Connector,port=" + port + ",*");
                 Set<ObjectName> objNames= mbeanServer.queryNames(objNamePattern, null);
                 if(objNames.size() == 1) {
                     ObjectName objName = objNames.iterator().next();
