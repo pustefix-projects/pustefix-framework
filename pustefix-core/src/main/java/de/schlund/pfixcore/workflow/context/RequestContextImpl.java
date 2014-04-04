@@ -706,19 +706,7 @@ public class RequestContextImpl implements Cloneable, AuthorizationInterceptor {
                 LOG.debug("* [" + currentpagerequest + "] returned document to show, skipping page flow.");
                 document = resdoc.getSPDocument();
             } else if (jumptopage != null) {
-                LOG.debug("* [" + currentpagerequest + "] signalled success, jumptopage is set as [" + jumptopage + "].");
-                currentpagerequest = createPageRequest(jumptopage);
-                currentstatus = PageRequestStatus.JUMP;
-                if (jumptopageflow != null) {
-                    setCurrentPageFlow(jumptopageflow);
-                } else {
-                    currentpageflow = pageflowmanager.pageFlowToPageRequest(currentpageflow, currentpagerequest, getVariant());
-                }
-                jumptopage = null; // we don't want to recurse infinitely
-                jumptopageflow = null; // we don't want to recurse infinitely
-
-                LOG.debug("******* JUMPING to [" + currentpagerequest + "] *******\n");
-                document = documentFromFlow(false, stopnextforcurrentrequest);
+                document = doJump(stopnextforcurrentrequest);
             } else if (currentpageflow != null) {
                 LOG.debug("* [" + currentpagerequest + "] signalled success, starting page flow process");
                 document = runPageFlow(false, stopnextforcurrentrequest);
@@ -734,9 +722,30 @@ public class RequestContextImpl implements Cloneable, AuthorizationInterceptor {
             LOG.debug("* Current page: [" + currentpagerequest + "]");
             document = runPageFlow(true, stopnextforcurrentrequest);
         }
+
+        if(!prohibitcontinue && jumptopage != null) {
+            document = doJump(stopnextforcurrentrequest);
+        }
+        
         return document;
     }
 
+    private SPDocument doJump(boolean stopnextforcurrentrequest) throws PustefixApplicationException, PustefixCoreException {
+        LOG.debug("* [" + currentpagerequest + "] signalled success, jumptopage is set as [" + jumptopage + "].");
+        currentpagerequest = createPageRequest(jumptopage);
+        currentstatus = PageRequestStatus.JUMP;
+        if (jumptopageflow != null) {
+            setCurrentPageFlow(jumptopageflow);
+        } else {
+            currentpageflow = pageflowmanager.pageFlowToPageRequest(currentpageflow, currentpagerequest, getVariant());
+        }
+        jumptopage = null; // we don't want to recurse infinitely
+        jumptopageflow = null; // we don't want to recurse infinitely
+
+        LOG.debug("******* JUMPING to [" + currentpagerequest + "] *******\n");
+        return documentFromFlow(false, stopnextforcurrentrequest);
+    }
+    
     private SPDocument runPageFlow(boolean stopatcurrentpage, boolean stopatnextaftercurrentpage) throws PustefixApplicationException, PustefixCoreException {
         ResultDocument resdoc = null;
         SPDocument document = null;
