@@ -25,7 +25,9 @@ import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+import java.util.regex.Pattern;
 
+import javax.servlet.http.HttpServletRequest;
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.transform.OutputKeys;
@@ -43,6 +45,11 @@ import org.pustefixframework.http.BotDetector;
 import org.pustefixframework.util.FrameworkInfo;
 import org.pustefixframework.util.LocaleUtils;
 import org.pustefixframework.util.javascript.JSUtils;
+import org.springframework.beans.factory.NoSuchBeanDefinitionException;
+import org.springframework.context.ApplicationContext;
+import org.springframework.web.context.request.RequestContextHolder;
+import org.springframework.web.context.request.ServletRequestAttributes;
+import org.springframework.web.servlet.support.RequestContextUtils;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.Node;
@@ -84,6 +91,8 @@ public class TransformerCallback {
 
     private final static Logger           LOG               = Logger.getLogger(TransformerCallback.class);
     private static DocumentBuilderFactory docBuilderFactory = DocumentBuilderFactory.newInstance();
+    
+    private static Pattern JAVACLASS_PATTERN = Pattern.compile("[a-zA-Z][a-zA-Z0-9_]*(\\.[a-zA-Z][a-zA-Z0-9_]*)*");
 
     // public static void setNoStore(SPDocument spdoc) {
     // spdoc.setNostore(true);
@@ -535,7 +544,7 @@ public class TransformerCallback {
     }
 
     private static String createURL(PfixServletRequest req, String serverName, String pageName, String paramName, String paramValue) {
-    	StringBuilder sb = new StringBuilder();
+        StringBuilder sb = new StringBuilder();
         sb.append(req.getOriginalScheme());
         sb.append("://");
         sb.append(serverName);
@@ -550,6 +559,41 @@ public class TransformerCallback {
             sb.append("?").append(paramName).append("=").append(paramValue);
         }
         return sb.toString();
+    }
+    
+    /**
+     * Get a bean from the Spring application by name or type.
+     * First tries to get the bean by name, if no such bean is defined and 
+     * the name is valid class name, it tries to look up the bean by class.
+     * 
+     * @param nameOrType bean name or bean type
+     * @return Spring bean
+     */
+    public static Object getBean(String nameOrType) {
+        
+        try {
+        HttpServletRequest req = ((ServletRequestAttributes)RequestContextHolder.getRequestAttributes()).getRequest();
+        ApplicationContext ctx = RequestContextUtils.getWebApplicationContext(req);
+        Object bean;
+        try {
+            bean = ctx.getBean(nameOrType);
+        } catch(NoSuchBeanDefinitionException noBeanEx) {
+            if(JAVACLASS_PATTERN.matcher(nameOrType).matches()) {
+                try {
+                    Class<?> beanType = Class.forName(nameOrType);
+                    bean = ctx.getBean(beanType);
+                } catch(ClassNotFoundException noClassEx) {
+                    throw noBeanEx;
+                }
+            } else {
+                throw noBeanEx;
+            }
+        }
+        return bean;
+        } catch (Exception x) {
+            ExtensionFunctionUtils.setExtensionFunctionError(x);
+            throw x;
+        }
     }
 
 }

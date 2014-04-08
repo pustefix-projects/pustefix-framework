@@ -391,5 +391,18 @@
 
   </section>
 
+  <section xml:id="news.0_18_63">
+    <title>What's new in Pustefix 0.18.63</title>
+
+    <section xml:id="news.0_18_63.xslt">
+      <title>Instance level XSLT extension functions</title>
+      <para>
+        Using the new XSLT extension function <literal>pfx:getBean()</literal> you can look up Spring beans and pass them as first argument to XSLT extension functions
+        for making instance level method calls (see <xref linkend="xslt.extensions.xpathfunctions.misc"/>).
+      </para>
+    </section>
+
+  </section>
+
 
 </chapter>

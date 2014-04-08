@@ -2013,6 +2013,16 @@
        The <emphasis role="strong">pfx:isBot</emphasis> function returns true if the current request is made by a bot, otherwise it returns false.
     </para>
 
+   <para></para>
+    <para>
+      <emphasis role="strong">Function:</emphasis> <emphasis>Object</emphasis> <emphasis role="strong">pfx:getBean</emphasis>(<emphasis>string</emphasis>)
+    </para>
+    <para>
+       The <emphasis role="strong">pfx:getBean</emphasis> function gets a bean reference from the Spring ApplicationContext looking it up by its name or type. Thus you can call
+       extension functions on instance level by passing the bean as first method argument, e.g.:
+    </para>
+    <programlisting language="xml"><![CDATA[<ixsl:value-of xmlns:my="java:mypackage.MyClass" select="my:myMethod(pfx:getBean('myname'),'arg1','arg2')"/>]]></programlisting>
+
     </section>
 
   </section>

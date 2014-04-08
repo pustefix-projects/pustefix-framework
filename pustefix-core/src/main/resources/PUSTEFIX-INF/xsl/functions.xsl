@@ -166,4 +166,9 @@
     <func:result select="callback:escapeJS($text)"/>
   </func:function>
   
+  <func:function name="pfx:getBean">
+    <xsl:param name="name"/>
+    <func:result select="callback:getBean($name)"/>
+  </func:function>
+  
 </xsl:stylesheet>
