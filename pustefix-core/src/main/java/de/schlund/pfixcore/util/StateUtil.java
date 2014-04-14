@@ -24,10 +24,9 @@ import java.util.Iterator;
 import java.util.Map;
 import java.util.Properties;
 
-import net.sf.cglib.proxy.Enhancer;
-
 import org.apache.log4j.Logger;
 import org.pustefixframework.config.contextxmlservice.StateConfig;
+import org.pustefixframework.util.BytecodeAPIUtils;
 import org.w3c.dom.Element;
 
 import de.schlund.pfixcore.beans.InsertStatus;
@@ -74,7 +73,7 @@ public class StateUtil {
     private static void renderContextResource(Object cr, ResultDocument resdoc, String nodename) throws Exception {
         String classname = cr.getClass().getName();
         Class<?> clazz = cr.getClass();
-        if(Enhancer.isEnhanced(clazz)) {
+        if(BytecodeAPIUtils.isProxy(clazz)) {
             clazz = clazz.getSuperclass();
             classname = clazz.getName();
         }

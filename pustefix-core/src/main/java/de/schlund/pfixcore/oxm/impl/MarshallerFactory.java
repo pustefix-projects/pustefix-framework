@@ -19,7 +19,8 @@ package de.schlund.pfixcore.oxm.impl;
 
 import javax.xml.bind.annotation.XmlRootElement;
 
-import net.sf.cglib.proxy.Enhancer;
+import org.pustefixframework.util.BytecodeAPIUtils;
+
 import de.schlund.pfixcore.beans.BeanDescriptorFactory;
 import de.schlund.pfixcore.oxm.Marshaller;
 
@@ -38,7 +39,7 @@ public class MarshallerFactory {
     public static Marshaller getMarshaller(Object object) {
     	
     	Class<?> objectClass = object.getClass();
-    	if(Enhancer.isEnhanced(objectClass)) {
+    	if(BytecodeAPIUtils.isProxy(objectClass)) {
     		objectClass = objectClass.getSuperclass();
     	}
     	XmlRootElement jaxbElem = objectClass.getAnnotation(XmlRootElement.class);

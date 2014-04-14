@@ -23,8 +23,7 @@ import java.util.Iterator;
 import java.util.Map;
 import java.util.Set;
 
-import net.sf.cglib.proxy.Enhancer;
-
+import org.pustefixframework.util.BytecodeAPIUtils;
 import org.springframework.aop.TargetSource;
 import org.springframework.web.context.request.RequestAttributes;
 import org.springframework.web.context.request.RequestContextHolder;
@@ -66,7 +65,7 @@ public class TenantTargetSource implements TargetSource {
         Set<Class<?>> clazzes = new HashSet<Class<?>>();
         for(Object obj: targetMap.values()) {
             Class<?> clazz = obj.getClass();
-            if(Enhancer.isEnhanced(clazz)) {
+            if(BytecodeAPIUtils.isProxy(clazz)) {
                 clazz = clazz.getSuperclass();
             }
             clazzes.add(clazz);

@@ -5,8 +5,7 @@ import javax.xml.bind.JAXBException;
 import javax.xml.transform.Result;
 import javax.xml.transform.dom.DOMResult;
 
-import net.sf.cglib.proxy.Enhancer;
-
+import org.pustefixframework.util.BytecodeAPIUtils;
 import org.w3c.dom.Attr;
 import org.w3c.dom.Element;
 import org.w3c.dom.NamedNodeMap;
@@ -26,7 +25,7 @@ public class JAXBMarshaller implements Marshaller {
         try {
 
             Class<?> objectClass = obj.getClass();
-            if(Enhancer.isEnhanced(objectClass)) {
+            if(BytecodeAPIUtils.isProxy(objectClass)) {
                 objectClass = objectClass.getSuperclass();
             }
             JAXBContext jc = JAXBContext.newInstance(objectClass);

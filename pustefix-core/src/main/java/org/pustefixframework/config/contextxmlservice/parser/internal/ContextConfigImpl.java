@@ -26,15 +26,14 @@ import java.util.LinkedHashMap;
 import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Map.Entry;
 import java.util.Properties;
 import java.util.Set;
-import java.util.Map.Entry;
-
-import net.sf.cglib.proxy.Enhancer;
 
 import org.apache.log4j.Logger;
 import org.pustefixframework.config.contextxmlservice.ContextConfig;
 import org.pustefixframework.config.contextxmlservice.ContextResourceConfig;
+import org.pustefixframework.util.BytecodeAPIUtils;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 
@@ -195,7 +194,7 @@ public class ContextConfigImpl implements ContextConfig {
     }
     
     public ContextResourceConfig getContextResourceConfig(Class<?> clazz) {
-        if(Enhancer.isEnhanced(clazz)) {
+        if(BytecodeAPIUtils.isProxy(clazz)) {
             clazz = clazz.getSuperclass();
         }
         return getContextResourceConfig(clazz.getName());

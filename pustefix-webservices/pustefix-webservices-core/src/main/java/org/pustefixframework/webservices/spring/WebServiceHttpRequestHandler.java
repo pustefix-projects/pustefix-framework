@@ -30,11 +30,10 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 
-import net.sf.cglib.proxy.Enhancer;
-
 import org.apache.log4j.Logger;
 import org.pustefixframework.container.spring.http.UriProvidingHttpRequestHandler;
 import org.pustefixframework.http.SessionUtils;
+import org.pustefixframework.util.BytecodeAPIUtils;
 import org.pustefixframework.webservices.AdminWebapp;
 import org.pustefixframework.webservices.Constants;
 import org.pustefixframework.webservices.ServiceProcessor;
@@ -167,7 +166,7 @@ public class WebServiceHttpRequestHandler implements UriProvidingHttpRequestHand
                 serviceObject = applicationContext.getBean(ref);
             }
             Class<?> serviceObjectClass = serviceObject.getClass();
-            if(Enhancer.isEnhanced(serviceObjectClass)) serviceObjectClass = serviceObjectClass.getSuperclass();
+            if(BytecodeAPIUtils.isProxy(serviceObjectClass)) serviceObjectClass = serviceObjectClass.getSuperclass();
             serviceConfig.setImplementationName(serviceObjectClass.getName());
             serviceConfig.setProtocolType(reg.getProtocol());
             runtime.getConfiguration().addServiceConfig(serviceConfig);

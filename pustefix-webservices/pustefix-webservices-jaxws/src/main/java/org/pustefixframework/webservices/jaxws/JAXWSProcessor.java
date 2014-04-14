@@ -31,11 +31,10 @@ import javax.servlet.http.HttpServletResponse;
 import javax.xml.namespace.QName;
 import javax.xml.ws.handler.Handler;
 
-import net.sf.cglib.proxy.Enhancer;
-
 import org.aopalliance.intercept.MethodInterceptor;
 import org.aopalliance.intercept.MethodInvocation;
 import org.apache.log4j.Logger;
+import org.pustefixframework.util.BytecodeAPIUtils;
 import org.pustefixframework.webservices.Constants;
 import org.pustefixframework.webservices.InsertPIResponseWrapper;
 import org.pustefixframework.webservices.ProcessingInfo;
@@ -109,7 +108,7 @@ public class JAXWSProcessor implements ServiceProcessor {
             WSBinding binding = BindingImpl.create(BindingID.SOAP11_HTTP);
             binding.setHandlerChain(handlerChain);
             Class<?> serviceClass = serviceObj.getClass();
-            if(Enhancer.isEnhanced(serviceClass)) serviceClass = serviceClass.getSuperclass();
+            if(BytecodeAPIUtils.isProxy(serviceClass)) serviceClass = serviceClass.getSuperclass();
             WSEndpoint<?> endpoint = WSEndpoint.create(serviceClass, false, invoker, serviceQName, null, null, binding, null, null, null, true);    
             String url = conf.getGlobalServiceConfig().getRequestPath()+"/"+serviceName;
             adapterList.createAdapter(serviceName, url, endpoint);     
