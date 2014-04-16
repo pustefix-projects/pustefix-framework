@@ -33,6 +33,7 @@ import java.util.Set;
 import org.apache.log4j.Logger;
 import org.pustefixframework.config.contextxmlservice.ContextConfig;
 import org.pustefixframework.config.contextxmlservice.ContextResourceConfig;
+import org.pustefixframework.config.contextxmlservice.PreserveParams;
 import org.pustefixframework.util.BytecodeAPIUtils;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
@@ -68,7 +69,8 @@ public class ContextConfigImpl implements ContextConfig {
     private Map<String,String> variantToDefaultPage = new HashMap<String,String>();
     private Map<String,ContextResourceConfigImpl> resourceMap = new HashMap<String,ContextResourceConfigImpl>();
     private LinkedHashMap<Class<?>, ContextResourceConfigImpl> resources = new LinkedHashMap<Class<?>, ContextResourceConfigImpl>();
-    private List<ContextResourceConfigImpl> cacheResources = null; 
+    private List<ContextResourceConfigImpl> cacheResources = null;
+    private PreserveParams preserveParams = new PreserveParams();
     private Map<String, PageFlow> pageflows = new HashMap<String, PageFlow>();
     private HashMap<String, PageRequestConfigImpl> pagerequests = new HashMap<String, PageRequestConfigImpl>();
     private List<PageRequestConfigImpl> cachePagerequests = null;
@@ -108,6 +110,7 @@ public class ContextConfigImpl implements ContextConfig {
         this.defaultStateClass = ref.defaultStateClass;
         this.endInterceptorBeans = ref.endInterceptorBeans;
         this.endinterceptors = ref.endinterceptors;
+        this.preserveParams = ref.preserveParams;
         this.pageflows = ref.pageflows;
         this.pagerequests = ref.pagerequests;
         this.postRenderInterceptorBeans = ref.postRenderInterceptorBeans;
@@ -202,6 +205,14 @@ public class ContextConfigImpl implements ContextConfig {
     
     public ContextResourceConfig getContextResourceConfig(String name) {
         return resourceMap.get(name);
+    }
+    
+    public PreserveParams getPreserveParams() {
+        return preserveParams;
+    }
+    
+    public void setPreserveParams(PreserveParams preserveParams) {
+        this.preserveParams = preserveParams;
     }
     
     public List<PageFlow> getPageFlows() {
@@ -302,12 +313,12 @@ public class ContextConfigImpl implements ContextConfig {
     }
     
     public void addAuthConstraint(String id,AuthConstraint authConstraint) {
-    	authConstraints.put(id,authConstraint);
-    	
+        authConstraints.put(id,authConstraint);
+        
     }
     
     public AuthConstraint getAuthConstraint(String id) {
-    	return authConstraints.get(id);
+        return authConstraints.get(id);
     }
     
     public void setDefaultAuthConstraint(AuthConstraint authConstraint) {

@@ -33,6 +33,7 @@ import javax.servlet.http.HttpSession;
 
 import org.apache.log4j.Logger;
 import org.pustefixframework.config.contextxmlservice.PageRequestConfig;
+import org.pustefixframework.config.contextxmlservice.PreserveParams;
 import org.pustefixframework.config.contextxmlservice.ProcessActionPageRequestConfig;
 import org.pustefixframework.http.AbstractPustefixRequestHandler;
 import org.pustefixframework.http.AbstractPustefixXMLRequestHandler;
@@ -325,17 +326,17 @@ public class RequestContextImpl implements Cloneable, AuthorizationInterceptor {
                 sessionIdPath = ";jsessionid=" + session.getId();
             }
             String redirectURL = "https://" + AbstractPustefixRequestHandler.getServerName(preq.getRequest()) 
-            		+ ( port == 443 ? "" : ":" + port ) + preq.getContextPath()
+                    + ( port == 443 ? "" : ":" + port ) + preq.getContextPath()
                     + preq.getServletPath() + "/" + spdoc.getPagename() + sessionIdPath + "?__reuse="
                     + spdoc.getTimestamp();
-
-            RequestParam rp = preq.getRequestParam("__frame");
-            if (rp != null && rp.getValue() != null && !rp.getValue().equals("")) {
-                redirectURL += "&__frame=" + rp.getValue();
-            }
-            rp = preq.getRequestParam(PARAM_LASTFLOW);
-            if (rp != null) {
-            	redirectURL += "&" + PARAM_LASTFLOW + "=" + rp.getValue();
+            PreserveParams preserveParams = parentcontext.getContextConfig().getPreserveParams();
+            for(String paramName: preq.getRequestParamNames()) {
+                if(preserveParams.containsParam(paramName)) {
+                    RequestParam rp = preq.getRequestParam(paramName);
+                    if (rp != null && rp.getValue() != null && !rp.getValue().equals("")) {
+                        redirectURL += "&" + paramName + "=" + rp.getValue();
+                    }
+                }
             }
             spdoc.setRedirect(redirectURL);
 
@@ -964,7 +965,7 @@ public class RequestContextImpl implements Cloneable, AuthorizationInterceptor {
     }
     
     public List<Cookie> getCookies() {
-    	return cookielist;
+        return cookielist;
     }
 
     public Cookie[] getRequestCookies() {

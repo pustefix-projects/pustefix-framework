@@ -105,6 +105,10 @@
     <match>/c:context-xml-service-config/c:pagerequest/c:authconstraint</match>
     <match>/c:context-xml-service-config/c:pagerequest/*[self::c:default or self::c:variant]/c:authconstraint</match>
   </handler>
+  
+  <handler class="org.pustefixframework.config.contextxmlservice.parser.PreserveParamsParsingHandler">
+    <match>/c:context-xml-service-config/c:preserve-params</match>
+  </handler>
     
   <!--  pageflows -->
   

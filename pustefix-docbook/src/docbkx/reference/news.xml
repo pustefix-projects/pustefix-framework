@@ -401,6 +401,13 @@
         for making instance level method calls (see <xref linkend="xslt.extensions.xpathfunctions.misc"/>).
       </para>
     </section>
+    <section xml:id="news.0_18_63.urls">
+      <title>Preserving parameters on redirect</title>
+      <para>
+        Sometimes request parameters should be preserved when redirecting after a request has been processed, e.g. for tracking purposes. See <xref linkend="configuration.servlet.contextxml"/>
+        for details about the <literal>&lt;preserve-params&gt;</literal> configuration.
+      </para>
+    </section>
 
   </section>
 

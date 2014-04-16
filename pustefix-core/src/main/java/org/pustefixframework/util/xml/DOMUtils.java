@@ -34,6 +34,18 @@ public class DOMUtils {
         return elems;
     }
     
+    public static List<Element> getChildElementsByLocalName(Element parent, String localName) {
+        List<Element> elems = new ArrayList<Element>();
+        NodeList nodes = parent.getChildNodes();
+        for(int i=0; i<nodes.getLength(); i++) {
+            Node node = nodes.item(i);
+            if(node.getNodeType() == Node.ELEMENT_NODE && node.getLocalName().equals(localName)) {
+                elems.add((Element)node);
+            }
+        }
+        return elems;
+    }
+    
     public static Element getFirstChildByTagName(Element parent, String tagName) {
         NodeList nodes = parent.getChildNodes();
         for(int i=0; i<nodes.getLength(); i++) {

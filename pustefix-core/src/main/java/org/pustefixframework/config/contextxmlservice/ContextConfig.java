@@ -152,4 +152,6 @@ public interface ContextConfig {
     Condition getCondition(String id);
     Element getAuthConstraintAsXML(Document doc, AuthConstraint authConstraint);
     
+    PreserveParams getPreserveParams();
+    
 }

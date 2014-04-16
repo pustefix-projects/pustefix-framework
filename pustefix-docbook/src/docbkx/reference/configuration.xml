@@ -973,6 +973,14 @@
         ]]></programlisting>
          You can define an arbitrary number of roles, conditions and 
          authconstraints here, for details see <xref linkend="advanced.rolebasedauth"/>.
+         <programlisting language="xml"><![CDATA[
+    <preserve-params>
+      <param name="myparam"/>
+      <!-- <config-include file="path/to/config-fragments.xml" section="preserve-params"/> -->
+    </preserve-params>
+         ]]></programlisting>
+         Sometimes request parameters should be preserved when redirecting after a request has been processed,
+         e.g. for passing tracking information. Here you can configure a global list of such parameters.
          <!-- TODO Add link here -->
          <programlisting language="xml"><![CDATA[
     <pageflow name="AName" final="APageName" stopnext="true|false">

@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <context-xml-service-config xmlns="http://www.pustefix-framework.org/2008/namespace/context-xml-service-config" 
                             xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-                            xsi:schemaLocation="http://www.pustefix-framework.org/2008/namespace/context-xml-service-config 
+                            xsi:schemaLocation="http://www.pustefix-framework.org/2008/namespace/context-xml-service-config
                                                 http://www.pustefix-framework.org/2008/namespace/context-xml-service-config-0_18.xsd"
                             version="1.0">
 
@@ -48,9 +48,15 @@
     <!-- </end> -->
   </interceptors>
 
-
   <scriptedflow name="forceadult" file="WEB-INF/scriptedflow/forceadult.script.xml" />
   <scriptedflow name="ordershirt" file="WEB-INF/scriptedflow/ordershirt.script.xml" />
+
+  <!--
+  <preserve-params>
+    <param name="myparam"/>
+    <config-include file="WEB-INF/fragments.xml" section="preserve-params"/>
+  </preserve-params> 
+  -->
 
   <!-- <pageflow name="OrderFlow" stopnext="true"> -->
   <pageflow name="OrderFlow" final="home">

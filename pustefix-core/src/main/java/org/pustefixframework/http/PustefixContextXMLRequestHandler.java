@@ -34,6 +34,7 @@ import org.apache.log4j.Logger;
 import org.pustefixframework.config.contextxmlservice.AbstractXMLServletConfig;
 import org.pustefixframework.config.contextxmlservice.ContextXMLServletConfig;
 import org.pustefixframework.config.contextxmlservice.PageRequestConfig;
+import org.pustefixframework.config.contextxmlservice.PreserveParams;
 import org.pustefixframework.util.LocaleUtils;
 
 import de.schlund.pfixcore.exception.PustefixApplicationException;
@@ -231,7 +232,7 @@ public class PustefixContextXMLRequestHandler extends AbstractPustefixXMLRequest
             }
             
             if(spdoc != null) {
-            	if(spdoc.getPageAlternative() != null) {
+                if(spdoc.getPageAlternative() != null) {
                     Set<String> pageAltKeys = siteMap.getPageAlternativeKeys(spdoc.getPagename());
                     if(pageAltKeys == null || !pageAltKeys.contains(spdoc.getPageAlternative())) {
                         spdoc.setPageAlternative(null);
@@ -277,13 +278,14 @@ public class PustefixContextXMLRequestHandler extends AbstractPustefixXMLRequest
                         + ":" + port + preq.getContextPath() + preq.getServletPath() + "/" 
                         + (expectedPageName == null ? "" : expectedPageName)
                         + sessionIdPath + "?__reuse=" + spdoc.getTimestamp();
-                    RequestParam rp = preq.getRequestParam("__frame");
-                    if (rp != null && rp.getValue() != null && !rp.getValue().equals("")) {
-                        redirectURL += "&__frame=" + rp.getValue();
-                    }
-                    rp = preq.getRequestParam("__lf");
-                    if (rp != null) {
-                    	redirectURL += "&__lf=" + rp.getValue();
+                    PreserveParams preserveParams = context.getContextConfig().getPreserveParams();
+                    for(String paramName: preq.getRequestParamNames()) {
+                        if(preserveParams.containsParam(paramName)) {
+                            RequestParam rp = preq.getRequestParam(paramName);
+                            if (rp != null && rp.getValue() != null && !rp.getValue().equals("")) {
+                                redirectURL += "&" + paramName + "=" + rp.getValue();
+                            }
+                        }
                     }
                     spdoc.setRedirect(redirectURL, isAlias);
                 }
@@ -296,7 +298,7 @@ public class PustefixContextXMLRequestHandler extends AbstractPustefixXMLRequest
     
     @Override
     protected boolean isPageDefined(String name) {
-    	return config.getContextConfig().getPageRequestConfig(name) != null;
+        return config.getContextConfig().getPageRequestConfig(name) != null;
     }
 
     private Script getScriptedFlowByName(String scriptedFlowName) throws CompilerException {
