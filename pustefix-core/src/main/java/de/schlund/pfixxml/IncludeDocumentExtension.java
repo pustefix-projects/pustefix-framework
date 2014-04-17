@@ -22,10 +22,14 @@ import java.net.URI;
 import java.net.URISyntaxException;
 import java.net.URLEncoder;
 import java.text.MessageFormat;
+import java.util.LinkedHashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import javax.xml.parsers.DocumentBuilder;
+import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.transform.TransformerException;
 import javax.xml.transform.URIResolver;
 
@@ -75,6 +79,8 @@ public final class IncludeDocumentExtension {
     private static Pattern dynamicUriPattern = Pattern.compile("dynamic://[^?#]*(\\?([^#]*))?(#.*)?");
     
     private static DynamicResourceProvider dynamicResourceProvider = (DynamicResourceProvider)ResourceProviderRegistry.getResourceProvider("dynamic");
+    
+    private static DocumentBuilderFactory docBuilderFactory = DocumentBuilderFactory.newInstance();
     
     //~ Methods
     // ....................................................................................
@@ -251,7 +257,7 @@ public final class IncludeDocumentExtension {
                             ok = false;
                         }
                     } else {
-                    	DependencyTracker.logInclude(true, path, part, targetgen);
+                        DependencyTracker.logInclude(true, path, part, targetgen);
                     }
                     return ok? (Object) ns.get(0) : errorNode(context,curr_theme);
                     //return ok? (Object) ns.get(0) : new EmptyNodeSet();
@@ -297,7 +303,7 @@ public final class IncludeDocumentExtension {
                             ok = false;
                         }
                     } else {
-                    	DependencyTracker.logInclude(true, path, part, targetgen);
+                        DependencyTracker.logInclude(true, path, part, targetgen);
                     }
                     return ok? (Object) lastMatch : errorNode(context,curr_theme);
                 }
@@ -513,5 +519,73 @@ public final class IncludeDocumentExtension {
     public static boolean isIncludeDocument(XsltContext context) {
         return context.getDocumentElementName().equals("include_parts");
     }
+    
+    public static Node getIncludeInfo(XsltContext context, String path, String module, String search, 
+            String tenant, String language) throws Exception {
+        
+        try {
+            if (path.startsWith("/")) path = path.substring(1);
+            if(module != null) {
+                module = module.trim();
+                if(module.equals("")) module = null;
+            }
+            URI parentURI = new URI(getSystemId(context));
+            String uriStr = makeURI(path, "test", module, search, tenant, language, parentURI);
+            
+            IncludePartsInfoFactory infoFactory = dynamicResourceProvider.getIncludePartsInfoFactory();
+            Map<String, IncludePartInfo> infoMap = new LinkedHashMap<>();
+            
+            if(search.equals("dynamic")) {
+                DynamicResourceInfo info = new DynamicResourceInfo();
+                dynamicResourceProvider.getResource(new URI(uriStr), info);
+                for(DynamicResourceInfo.Entry entry: info.getEntries()) {
+                    Resource res;
+                    if(entry.getModule().equals("webapp")) {
+                        res = ResourceUtil.getResource(path);
+                    } else {
+                        res = ResourceUtil.getResource("module://" + entry.getModule() + "/" + path);
+                    }    
+                    IncludePartsInfo partsInfo = infoFactory.getIncludePartsInfo(res);
+                    if(partsInfo != null) {
+                        for(IncludePartInfo partInfo: partsInfo.getParts().values()) {
+                            if(!infoMap.containsKey(partInfo.getName())) {
+                                infoMap.put(partInfo.getName(), partInfo);
+                            }
+                        }
+                    }
+                }
+            } else {
+                Resource res = ResourceUtil.getResource(uriStr);
+                IncludePartsInfo partsInfo = infoFactory.getIncludePartsInfo(res);
+                for(IncludePartInfo partInfo: partsInfo.getParts().values()) {
+                    infoMap.put(partInfo.getName(), partInfo);
+                }
+            }
+            
+            DocumentBuilder db = docBuilderFactory.newDocumentBuilder();
+            Document doc = db.newDocument();
+            Element root = doc.createElement("parts");
+            doc.appendChild(root);
+            for(IncludePartInfo partInfo: infoMap.values()) {
+                Element elem = doc.createElement("part");
+                root.appendChild(elem);
+                elem.setAttribute("name", partInfo.getName());
+                if(partInfo.isRender()) {
+                    elem.setAttribute("render", "true");
+                }
+                if(partInfo.isContextual()) {
+                    elem.setAttribute("contextual", "true");
+                }
+                if(partInfo.getContentType() != null) {
+                    elem.setAttribute("content-type", partInfo.getContentType());
+                }
+            }
+            return Xml.parse(context.getXsltVersion(), doc);
+            
+        } catch (Exception x) {
+            ExtensionFunctionUtils.setExtensionFunctionError(x);
+            throw x;
+        }
+    }
 
-}// end of class IncludeDocumentExtension
+}

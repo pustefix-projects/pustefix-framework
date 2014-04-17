@@ -5,6 +5,12 @@
 
   <part name="content" render="true">
     <theme name="default">
+        
+        <div style="opacity:0.2;">
+           <pfx:for-each select="pfx:getIncludeInfo('txt/animals.xml','animal-module')/part[starts-with(@name,'cat_image_')]">
+             <pfx:include select-part="@name" href="txt/animals.xml" module="animal-module"/>
+           </pfx:for-each>
+        </div>
         <h2>Select your favorite animal:</h2>
         <pfx:forminput>
           <ixsl:for-each select="/formresult/animals/supportedAnimals/string">

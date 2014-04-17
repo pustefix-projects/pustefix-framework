@@ -872,6 +872,14 @@
     <func:result select="include:exists($href, $part, $__target_gen, $__target_key, $module, $search, $tenant, $lang)"/>
   </func:function>
   
+  <func:function name="pfx:getIncludeInfo">
+    <xsl:param name="href"/>
+    <xsl:param name="module"/>
+    <xsl:param name="search"/>
+    <xsl:param name="tenant"><xsl:value-of select="$tenant"/></xsl:param>
+    <xsl:param name="lang"><xsl:value-of select="$lang"/></xsl:param>
+    <func:result select="include:getIncludeInfo($href, $module, $search, $tenant, $lang)/parts"/>
+  </func:function>
  
   <!-- include parameter stuff -->
 

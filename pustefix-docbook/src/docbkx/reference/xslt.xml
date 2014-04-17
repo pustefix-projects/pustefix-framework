@@ -1936,6 +1936,21 @@
           <listitem><literal>false</literal>, if the include part can't be found</listitem>
       </itemizedlist>
     </para>
+
+     <para>
+      <emphasis role="strong">Function:</emphasis> <emphasis>node-set</emphasis> <emphasis role="strong">pfx:getIncludeInfo</emphasis>(<emphasis>string, string, string</emphasis>)
+    </para>
+    <para>
+       The <emphasis role="strong">pfx:getIncludeInfo</emphasis> function returns information about the include parts contained in a resource or a set of resources (when doing
+       a dynamic search). The function expects three string arguments: href, module (optional) and search (optional).
+      The function returns a node-set with each node describing a part, e.g. its name.
+<para>Example:
+    <programlisting language="xml"><![CDATA[<!-- iterates over the names of all parts from a file and includes the parts -->
+<pfx:for-each select="pfx:getIncludeInfo('path/to/file.xml','amodule')/part">
+   <pfx:include select-part="@name" href="path/to/file.xml" module="amodule"/>
+</pfx:for-each>]]></programlisting>
+    </para>
+    </para>
    
     </section>
 

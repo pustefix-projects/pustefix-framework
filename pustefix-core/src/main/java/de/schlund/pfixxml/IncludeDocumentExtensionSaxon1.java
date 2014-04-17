@@ -18,6 +18,8 @@
 
 package de.schlund.pfixxml;
 
+import org.w3c.dom.Node;
+
 import com.icl.saxon.Context;
 import com.icl.saxon.expr.StaticContext;
 import com.icl.saxon.om.NodeInfo;
@@ -94,6 +96,12 @@ public class IncludeDocumentExtensionSaxon1 {
         StaticContext staticContext = context.getStaticContext();
         sb.append(" "+staticContext.getSystemId()+ ":"+staticContext.getLineNumber());
         return sb.toString();
+    }
+    
+    public static Node getIncludeInfo(Context context, String path, String module, String search, 
+            String tenant, String language) throws Exception {
+        XsltContext xsltContext=new XsltContextSaxon1(context);
+        return IncludeDocumentExtension.getIncludeInfo(xsltContext, path, module, search, tenant, language);
     }
 
 }

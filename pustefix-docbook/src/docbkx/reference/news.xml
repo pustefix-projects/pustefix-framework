@@ -408,6 +408,14 @@
         for details about the <literal>&lt;preserve-params&gt;</literal> configuration.
       </para>
     </section>
+    <section xml:id="news.0_18_63.includes">
+      <title>Reflective include information</title>
+      <para>
+        Pustefix now provides some reflective include information during the XSL transformation. Using the new <literal>pfx:getIncludeInfo</literal> XPath function you can query the names 
+        of all parts contained in a file, e.g. useful to automatically include generated include parts based on naming conventions 
+        (see <xref linkend="xslt.extensions.xpathfunctions.include"/>).
+      </para>
+    </section>
 
   </section>
 
