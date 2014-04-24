@@ -33,6 +33,7 @@ import java.util.Iterator;
 import java.util.Map;
 import java.util.Properties;
 import java.util.TreeMap;
+import java.util.regex.Pattern;
 
 import javax.servlet.ServletException;
 import javax.servlet.http.Cookie;
@@ -113,6 +114,9 @@ public abstract class AbstractPustefixXMLRequestHandler extends AbstractPustefix
     public static final String PARAM_RENDER_PART = "__render_part";
     public static final String PARAM_RENDER_MODULE = "__render_module";
     public static final String PARAM_RENDER_SEARCH = "__render_search";
+    static final Pattern PARAM_RENDER_HREF_PATTERN = Pattern.compile("/?([A-Za-z0-9][A-Za-z0-9._-]+/)*[A-Za-z0-9][A-Za-z0-9._-]+");
+    static final Pattern PARAM_RENDER_PART_PATTERN = Pattern.compile("[A-Za-z0-9._-]+");
+    static final Pattern PARAM_RENDER_MODULE_PATTERN = Pattern.compile("[A-Za-z][A-Za-z0-9]*([_-][A-Za-z0-9]+)*");
     
     private static final String   XSLPARAM_LANG           = "lang";
     private static final String   XSLPARAM_SESSION_ID     = "__sessionId";
@@ -897,24 +901,70 @@ public abstract class AbstractPustefixXMLRequestHandler extends AbstractPustefix
         paramhash.put("__register_frame_helper__", new RegisterFrameHelper(getLRU(session), spdoc));
         return paramhash;
     }
-    
-    
 
     private String extractStylesheetFromSPDoc(SPDocument spdoc, PfixServletRequest preq, HttpServletResponse res) {
         // First look if the pagename is set
         String pagename             = spdoc.getPagename();
         if (pagename != null) {
+            
             if(preq.getRequestParam(PARAM_RENDER_HREF) != null) {
-                String href = preq.getRequestParam(PARAM_RENDER_HREF).getValue();
+                
+                String href = null;
+                RequestParam param = preq.getRequestParam(PARAM_RENDER_HREF);
+                if(param != null) {
+                    String value = param.getValue().trim();
+                    if(value.length() > 0) {
+                        if(value.length() < 100 && PARAM_RENDER_HREF_PATTERN.matcher(value).matches()) {
+                            href = param.getValue();
+                        } else {
+                            LOGGER.warn("Requested render href value is invalid: " + LogUtils.makeLogSafe(value));
+                            return null;
+                        }
+                    }
+                }
+                
                 String part = "render";
-                RequestParam param = preq.getRequestParam(PARAM_RENDER_PART);
-                if(param != null) part = param.getValue();
+                param = preq.getRequestParam(PARAM_RENDER_PART);
+                if(param != null) {
+                    String value = param.getValue().trim();
+                    if(value.length() > 0) {
+                        if(value.length() < 100 && PARAM_RENDER_PART_PATTERN.matcher(value).matches()) {
+                            part = param.getValue();
+                        } else {
+                            LOGGER.warn("Requested render part name is invalid: " + LogUtils.makeLogSafe(value));
+                            return null;
+                        }
+                    }
+                }
+                
                 String module = null;
                 param = preq.getRequestParam(PARAM_RENDER_MODULE);
-                if(param != null) module = param.getValue();
+                if(param != null) {
+                    String value = param.getValue().trim();
+                    if(value.length() > 0) {
+                        if(value.length() < 100 && PARAM_RENDER_MODULE_PATTERN.matcher(value).matches()) {
+                            module = param.getValue();
+                        } else {
+                            LOGGER.warn("Requested render module name is invalid: " + LogUtils.makeLogSafe(value));
+                            return null;
+                        }
+                    }
+                }
+                
                 String search = null;
                 param = preq.getRequestParam(PARAM_RENDER_SEARCH);
-                if(param != null) search = param.getValue();
+                if(param != null) {
+                    String value = param.getValue().trim();
+                    if(value.length() > 0) {
+                        if(value.equals("dynamic")) {
+                            search = value;
+                        } else {
+                            LOGGER.warn("Requested render search name is invalid: " + LogUtils.makeLogSafe(value));
+                            return null;
+                        }
+                    }
+                }
+
                 try {
                     Target target = generator.getRenderTarget(href, part, module, search, spdoc.getVariant());
                     if(target != null && res != null) {
