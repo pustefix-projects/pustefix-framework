@@ -64,6 +64,6 @@ public class SetTest extends TestCase {
         m.marshal(bean, res);
         String expected = "<result><mySet><entry><string>foo</string></entry><entry><string>bar</string></entry></mySet><annoSet><element><string>foo</string></element><element><string>bar</string></element></annoSet></result>";
         Document expDoc = OxmTestHelper.createDocument(expected);
-        XmlAssert.assertEquals(expDoc, doc);
+        XmlAssert.assertEqualsUnordered(expDoc, doc);
     }
 }
