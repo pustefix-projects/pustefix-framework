@@ -1,8 +1,7 @@
 package de.schlund.pfixxml;
 
-import net.sf.saxon.Configuration;
 import net.sf.saxon.expr.XPathContext;
-import net.sf.saxon.om.Validation;
+import net.sf.saxon.lib.ParseOptions;
 
 import org.w3c.dom.Node;
 
@@ -38,7 +37,7 @@ public class RenderExtensionSaxon2 {
     public static void renderStart(XPathContext saxonContext, RenderContextSaxon2 renderContext) throws Exception {     
         try {
             if(renderContext.getResult() != null) {
-                saxonContext.changeOutputDestination(renderContext.getProperties(), renderContext.getResult(), true, Configuration.XSLT, Validation.PRESERVE, null);
+                saxonContext.changeOutputDestination(saxonContext.getReceiver(), new ParseOptions());
             }
         } catch(Exception x) {
             ExtensionFunctionUtils.setExtensionFunctionError(x);
