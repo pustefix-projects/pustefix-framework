@@ -20,6 +20,7 @@ package de.schlund.pfixcore.example;
 import javax.servlet.ServletContext;
 
 import org.junit.Assert;
+import org.junit.Test;
 import org.pustefixframework.http.AbstractPustefixRequestHandler;
 import org.pustefixframework.http.PustefixContextXMLRequestHandler;
 import org.pustefixframework.test.PustefixWebApplicationContextLoader;
@@ -28,13 +29,13 @@ import org.springframework.mock.web.MockHttpServletRequest;
 import org.springframework.mock.web.MockHttpServletResponse;
 import org.springframework.mock.web.MockHttpSession;
 import org.springframework.test.context.ContextConfiguration;
-import org.springframework.test.context.junit38.AbstractJUnit38SpringContextTests;
+import org.springframework.test.context.junit4.AbstractJUnit4SpringContextTests;
 import org.springframework.web.context.request.RequestContextHolder;
 import org.springframework.web.context.request.ServletRequestAttributes;
 
 @ContextConfiguration(loader=PustefixWebApplicationContextLoader.class,locations={
     "docroot:/WEB-INF/project.xml", "docroot:/WEB-INF/spring.xml"})
-public class HomePageTest extends AbstractJUnit38SpringContextTests {
+public class HomePageTest extends AbstractJUnit4SpringContextTests {
     
     @Autowired
     private ServletContext servletContext;
@@ -42,6 +43,7 @@ public class HomePageTest extends AbstractJUnit38SpringContextTests {
     @Autowired
     private PustefixContextXMLRequestHandler requestHandler;
     
+    @Test
     public void testPageRequest() throws Exception {
         MockHttpServletRequest req = new MockHttpServletRequest();
         req.setPathInfo("/");

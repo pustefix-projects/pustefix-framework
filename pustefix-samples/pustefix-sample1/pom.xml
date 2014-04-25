@@ -38,8 +38,8 @@
     </dependency>
     <dependency>
       <groupId>javax.servlet</groupId>
-      <artifactId>servlet-api</artifactId>
-      <version>2.4</version>
+      <artifactId>javax.servlet-api</artifactId>
+      <version>3.0.1</version>
       <scope>provided</scope>
     </dependency>
 
@@ -80,12 +80,39 @@
           <uriEncoding>UTF-8</uriEncoding>
         </configuration>
       </plugin>
+
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-antrun-plugin</artifactId>
+        <version>1.7</version>
+        <executions>
+          <execution>
+            <id>tomcatconf</id>
+            <phase>prepare-package</phase>
+            <configuration>
+              <target>
+                <mkdir dir="${project.build.directory}/addtomcatconf" />
+                <echo file="${project.build.directory}/addtomcatconf/context.xml"><![CDATA[<?xml version='1.0' encoding='utf-8'?>
+<Context cookies="true" useHttpOnly="true">
+  <Parameter name="mode" value="test" override="false" />
+  <Manager pathname="" />
+</Context>
+]]></echo>
+              </target>
+            </configuration>
+            <goals>
+              <goal>run</goal>
+            </goals>
+          </execution>
+        </executions>
+      </plugin>
+
       <plugin>
         <groupId>org.apache.tomcat.maven</groupId>
         <artifactId>tomcat7-maven-plugin</artifactId>
         <version>2.0</version>
         <configuration>
-          <contextFile>${basedir}/src/test/resources/context.xml</contextFile>
+          <contextFile>${project.build.directory}/addtomcatconf/context.xml</contextFile>
           <path>/</path>
           <uriEncoding>UTF-8</uriEncoding>
         </configuration>
