@@ -38,9 +38,8 @@
     <dependency>
       <groupId>org.tuckey</groupId>
       <artifactId>urlrewritefilter</artifactId>
-    <version>3.1.0</version>
-    
-</dependency>
+      <version>4.0.4</version>
+    </dependency>
     
   </dependencies>
  
