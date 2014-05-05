@@ -214,9 +214,8 @@
     </snapshotRepository>
 -->
     <snapshotRepository>
-      <id>1und1-snapshots</id>
-      <name>1und1-snapshots</name>
-      <url>http://mavenrepo.united.domain:8081/nexus/content/repositories/1und1-snapshots</url>
+      <id>ciso-snapshot</id>
+      <url>https://artifactory.1and1.org/artifactory/ciso-snapshot</url>
     </snapshotRepository>
     <site>
       <id>pustefix</id>

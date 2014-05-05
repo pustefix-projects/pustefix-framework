@@ -419,5 +419,19 @@
 
   </section>
 
+  <section xml:id="news.0_18_64">
+    <title>What's new in Pustefix 0.18.64</title>
+
+    <section xml:id="news.0_18_64.iwrapper">
+      <title>Support standard Java regular expressions in IWrapper checks</title>
+      <para>
+        IWrapper parameters now can be checked using standard Java regular expressions instead of the special Perl5/Apache ORO expressions. To be backwards-compatible existing expressions, starting
+        with <literal>/</literal>, still will be handled as Perl5 expressions. Other expressions will be treated as Java standard expression. Future Pustefix versions will completely remove
+        the Apache ORO and convert Perl5 expressions to Java standard expression under the hood.
+      </para>
+    </section>
+
+  </section>
+
 
 </chapter>
