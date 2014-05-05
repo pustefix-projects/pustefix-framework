@@ -8,7 +8,7 @@
   
   <param name="Size" type="java.lang.String">
     <precheck class="de.schlund.pfixcore.generator.prechecks.RegexpCheck">
-      <cparam name="regexp" value="/^(S|M|L|XL|XXL)$/"/>
+      <cparam name="regexp" value="(S|M|L|XL|XXL)"/>
     </precheck>
   </param>
   

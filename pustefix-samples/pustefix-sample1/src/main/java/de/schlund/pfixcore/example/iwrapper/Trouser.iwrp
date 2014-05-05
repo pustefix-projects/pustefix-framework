@@ -9,7 +9,7 @@
   
   <param name="Size" type="java.lang.String">
     <precheck class="de.schlund.pfixcore.generator.prechecks.RegexpCheck">
-      <cparam name="regexp" value="/^(M|L|XL)$/"/>
+      <cparam name="regexp" value="(M|L|XL)"/>
     </precheck>
   </param>
   
