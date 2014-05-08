@@ -970,6 +970,7 @@ public class PustefixInternalsRequestHandler implements UriProvidingHttpRequestH
             File tmpDir = (File)servletContext.getAttribute("javax.servlet.context.tempdir");
             if(tmpDir != null && tmpDir.exists()) {
                 File dataFile = new File(tmpDir, "pfxinternals.ser");
+                dataFile.deleteOnExit();
                 ObjectOutputStream out = new ObjectOutputStream(new FileOutputStream(dataFile));
                 out.writeObject(messageList);
                 out.close();
@@ -984,6 +985,7 @@ public class PustefixInternalsRequestHandler implements UriProvidingHttpRequestH
             File tmpDir = (File)servletContext.getAttribute("javax.servlet.context.tempdir");
             if(tmpDir != null && tmpDir.exists()) {
                 File dataFile = new File(tmpDir, "pfxinternals.ser");
+                dataFile.deleteOnExit();
                 if(dataFile.exists()) {
                     ObjectInputStream in = new ObjectInputStream(new FileInputStream(dataFile));
                     messageList = (MessageList)in.readObject();      

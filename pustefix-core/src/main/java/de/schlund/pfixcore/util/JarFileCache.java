@@ -14,6 +14,8 @@ import java.util.Map;
 import java.util.jar.JarEntry;
 import java.util.jar.JarFile;
 
+import de.schlund.pfixxml.util.FileUtils;
+
 /**
  * JarFile instance cache providing JarEntries backed by file system cache.
  * 
@@ -33,6 +35,9 @@ public class JarFileCache {
     }
 
     public synchronized static void setCacheDir(File cacheDir) {
+        if(instance != null) {
+            instance.dispose();
+        }
         instance = new JarFileCache(cacheDir);
     }
 
@@ -47,7 +52,9 @@ public class JarFileCache {
 
     public JarFileCache(File cacheDir) {
         this.cacheDir = cacheDir;
-        if(cacheDir.exists()) delete(cacheDir);
+        if(cacheDir.exists()) {
+            FileUtils.delete(cacheDir);
+        }
         cacheDir.mkdirs();
     }
     
@@ -118,20 +125,14 @@ public class JarFileCache {
         }
         return file;    
     }
-
+    
     @Override
     protected void finalize() throws Throwable {
-        if(cacheDir != null) delete(cacheDir);
+        if(cacheDir != null) dispose();
     }
-
-    private static boolean delete(File file) {
-        if(file.isDirectory()) {
-            File[] files=file.listFiles();
-            for(int i=0;i<files.length;i++) {
-                delete(files[i]);
-            }
-        }
-        return file.delete();
+    
+    public void dispose() {
+        FileUtils.delete(cacheDir);
     }
 
     class CacheEntry {

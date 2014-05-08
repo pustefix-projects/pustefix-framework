@@ -28,6 +28,7 @@ import javax.servlet.ServletContext;
 
 import org.pustefixframework.container.spring.beans.PustefixWebApplicationContext;
 import org.pustefixframework.http.internal.PustefixInit;
+import org.pustefixframework.http.internal.PustefixTempDirs;
 import org.springframework.context.ApplicationContext;
 import org.springframework.mock.web.MockServletContext;
 import org.springframework.test.context.ContextLoader;
@@ -37,7 +38,6 @@ import de.schlund.pfixcore.exception.PustefixCoreException;
 import de.schlund.pfixxml.config.GlobalConfig;
 import de.schlund.pfixxml.resources.FileResource;
 import de.schlund.pfixxml.resources.ResourceUtil;
-import de.schlund.pfixxml.util.FileUtils;
 
 /**
  * ContextLoader strategy implementation for PustefixWebApplicationContext loading.
@@ -93,7 +93,7 @@ public class PustefixWebApplicationContextLoader implements ContextLoader {
         if(servletContext == null) {
             servletContext = new MockServletContext(docroot.toURI().toString());
             try {
-                File tmpDir = FileUtils.createTemporaryDirectory(null);
+                File tmpDir = PustefixTempDirs.getInstance(servletContext).createTempDir("pustefix-logs-");
                 ((MockServletContext)servletContext).addInitParameter("logroot", tmpDir.getCanonicalPath());
                 String mode = locationProperties.getProperty("mode");
                 if(mode != null) {
@@ -126,11 +126,12 @@ public class PustefixWebApplicationContextLoader implements ContextLoader {
         
         //Set up PustefixWebApplicationContext
         PustefixWebApplicationContext appContext = new PustefixWebApplicationContext(pustefixInit);
+        appContext.registerShutdownHook();
         appContext.setServletContext(servletContext);
         servletContext.setAttribute(WebApplicationContext.ROOT_WEB_APPLICATION_CONTEXT_ATTRIBUTE, appContext);
         appContext.setConfigLocations(locations);
         appContext.refresh();
-       
+        
         return appContext;
     }
     

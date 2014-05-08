@@ -28,6 +28,7 @@ import javax.xml.parsers.ParserConfigurationException;
 import org.apache.log4j.Logger;
 import org.pustefixframework.container.spring.util.PustefixPropertiesPersister;
 import org.pustefixframework.http.internal.PustefixInit;
+import org.pustefixframework.http.internal.PustefixTempDirs;
 import org.springframework.beans.BeansException;
 import org.springframework.beans.factory.config.BeanDefinition;
 import org.springframework.beans.factory.config.PropertyOverrideConfigurer;
@@ -188,5 +189,11 @@ public class PustefixWebApplicationContext extends AbstractRefreshableWebApplica
             return super.getResource(location);
         }
     }
-
+    
+    @Override
+    protected void doClose() {
+        super.doClose();
+        PustefixTempDirs.getInstance(getServletContext()).dispose();
+    }
+    
 }
