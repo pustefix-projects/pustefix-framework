@@ -26,6 +26,7 @@ import junit.framework.TestCase;
 
 import org.w3c.dom.Document;
 
+import de.schlund.pfixcore.util.JarFileCache;
 import de.schlund.pfixxml.XMLException;
 import de.schlund.pfixxml.config.GlobalConfig;
 import de.schlund.pfixxml.config.GlobalConfigurator;
@@ -39,6 +40,11 @@ public class TargetGeneratorTest extends TestCase {
 
     static {
         if(GlobalConfig.getDocroot()==null) GlobalConfigurator.setDocroot(DOCROOT.getAbsolutePath());
+    }
+    
+    @Override
+    protected void tearDown() throws Exception {
+    	JarFileCache.getInstance().dispose();
     }
     
     public void testEmpty() throws Exception {
