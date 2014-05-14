@@ -34,6 +34,7 @@ import org.apache.log4j.Logger;
 import org.pustefixframework.config.contextxmlservice.ContextConfig;
 import org.pustefixframework.config.contextxmlservice.ContextResourceConfig;
 import org.pustefixframework.config.contextxmlservice.PreserveParams;
+import org.pustefixframework.container.spring.beans.TenantAwareProperties;
 import org.pustefixframework.util.BytecodeAPIUtils;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
@@ -77,7 +78,7 @@ public class ContextConfigImpl implements ContextConfig {
     private ArrayList<ContextInterceptor> startinterceptors = new ArrayList<ContextInterceptor>();
     private ArrayList<ContextInterceptor> endinterceptors = new ArrayList<ContextInterceptor>();
     private ArrayList<ContextInterceptor> postRenderInterceptors = new ArrayList<ContextInterceptor>();
-    private Properties props = new Properties();
+    private Properties props = new TenantAwareProperties();
     private boolean synchronize = true;
     private Map<String,AuthConstraint> authConstraints = new HashMap<String,AuthConstraint>();
     private AuthConstraint defaultAuthConstraint;

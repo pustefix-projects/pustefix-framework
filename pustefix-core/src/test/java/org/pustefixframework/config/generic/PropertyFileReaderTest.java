@@ -28,14 +28,16 @@ import org.apache.log4j.Logger;
 import org.apache.log4j.PatternLayout;
 import org.junit.Before;
 import org.junit.Test;
+import org.pustefixframework.container.spring.beans.TenantAwareProperties;
+import org.springframework.mock.web.MockHttpServletRequest;
+import org.springframework.web.context.request.RequestAttributes;
+import org.springframework.web.context.request.RequestContextHolder;
+import org.springframework.web.context.request.ServletRequestAttributes;
 
+import de.schlund.pfixxml.Tenant;
 import de.schlund.pfixxml.config.EnvironmentProperties;
 
-/**
- * 
- * @author mleidig
- *
- */
+
 public class PropertyFileReaderTest {
 
     @Before
@@ -67,4 +69,43 @@ public class PropertyFileReaderTest {
         
         assertEquals(props, refProps);
     }
+    
+    @Test
+    public void testTenants() throws Exception {
+        
+        Properties btp = new Properties();
+        btp.put("mode", "test");
+        EnvironmentProperties.setProperties(btp);
+        
+        InputStream in = getClass().getResourceAsStream("/properties-tenants.xml");
+        Properties props = new TenantAwareProperties();
+        PropertyFileReader.read(in, props);
+        
+        assertEquals("ho", props.getProperty("hey"));
+        setTenant("DE");
+        assertEquals("ho-DE", props.getProperty("hey"));
+        
+        btp = new Properties();
+        btp.put("mode", "prod");
+        EnvironmentProperties.setProperties(btp);
+        
+        in = getClass().getResourceAsStream("/properties-tenants.xml");
+        props = new TenantAwareProperties();
+        PropertyFileReader.read(in, props);
+        
+        assertEquals("ho-prod", props.getProperty("hey"));
+        setTenant("UK");
+        assertEquals("ho-prod-UK", props.getProperty("hey"));
+      
+    }
+    
+    private void setTenant(String name) {
+        
+        Tenant tenant = new Tenant(name);
+        MockHttpServletRequest req = new MockHttpServletRequest();
+        req.setAttribute("__PFX_TENANT__", tenant);
+        RequestAttributes attributes = new ServletRequestAttributes(req);
+        RequestContextHolder.setRequestAttributes(attributes);
+    }
+    
 }

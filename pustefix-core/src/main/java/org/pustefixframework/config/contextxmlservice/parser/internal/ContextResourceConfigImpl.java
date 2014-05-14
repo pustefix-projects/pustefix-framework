@@ -23,6 +23,7 @@ import java.util.Properties;
 import java.util.Set;
 
 import org.pustefixframework.config.contextxmlservice.ContextResourceConfig;
+import org.pustefixframework.container.spring.beans.TenantAwareProperties;
 
 
 /**
@@ -34,7 +35,7 @@ public class ContextResourceConfigImpl implements ContextResourceConfig {
     
     private Class<?> resourceClass = null;
     private HashSet<Class<?>> interfaces = new HashSet<Class<?>>();
-    private Properties props = new Properties();
+    private Properties props = new TenantAwareProperties();
     private String beanName;
     
     public ContextResourceConfigImpl(Class<?> clazz) {

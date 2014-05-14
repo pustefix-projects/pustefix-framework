@@ -29,6 +29,7 @@ import java.util.Properties;
 import org.pustefixframework.config.contextxmlservice.IWrapperConfig;
 import org.pustefixframework.config.contextxmlservice.ProcessActionStateConfig;
 import org.pustefixframework.config.contextxmlservice.StateConfig;
+import org.pustefixframework.container.spring.beans.TenantAwareProperties;
 
 import de.schlund.pfixcore.workflow.ConfigurableState;
 import de.schlund.pfixxml.Tenant;
@@ -154,7 +155,7 @@ public class StateConfigImpl implements Cloneable, StateConfig {
     }
     
     public void setProperties(Properties props) {
-        this.props = new Properties();
+        this.props = new TenantAwareProperties();
         Enumeration<?> e = props.propertyNames();
         while (e.hasMoreElements()) {
             String propname = (String) e.nextElement();

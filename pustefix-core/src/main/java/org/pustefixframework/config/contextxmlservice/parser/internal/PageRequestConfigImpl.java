@@ -26,6 +26,7 @@ import java.util.Properties;
 
 import org.pustefixframework.config.contextxmlservice.PageRequestConfig;
 import org.pustefixframework.config.contextxmlservice.SSLOption;
+import org.pustefixframework.container.spring.beans.TenantAwareProperties;
 
 import de.schlund.pfixcore.auth.AuthConstraint;
 
@@ -99,7 +100,7 @@ public class PageRequestConfigImpl implements Cloneable, PageRequestConfig, SSLO
     }
     
     public void setProperties(Properties props) {
-        this.props = new Properties();
+        this.props = new TenantAwareProperties();
         Enumeration<?> e = props.propertyNames();
         while (e.hasMoreElements()) {
             String propname = (String) e.nextElement();
