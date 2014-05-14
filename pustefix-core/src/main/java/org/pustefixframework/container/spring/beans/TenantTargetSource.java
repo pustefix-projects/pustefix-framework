@@ -46,7 +46,7 @@ public class TenantTargetSource implements TargetSource {
     public Object getTarget() throws Exception {
 
         RequestAttributes attributes = RequestContextHolder.currentRequestAttributes();
-        Tenant tenant = (Tenant)attributes.getAttribute("__PFX_TENANT__", RequestAttributes.SCOPE_REQUEST);
+        Tenant tenant = (Tenant)attributes.getAttribute(TenantScope.REQUEST_ATTRIBUTE_TENANT, RequestAttributes.SCOPE_REQUEST);
         if(tenant == null) {
             throw new Exception("Can't resolve target object because no tenant set");
         }

@@ -56,7 +56,7 @@ public class TenantAwarePropertiesTest extends TestCase {
         
         Tenant tenant = new Tenant(name);
         MockHttpServletRequest req = new MockHttpServletRequest();
-        req.setAttribute("__PFX_TENANT__", tenant);
+        req.setAttribute(TenantScope.REQUEST_ATTRIBUTE_TENANT, tenant);
         RequestAttributes attributes = new ServletRequestAttributes(req);
         RequestContextHolder.setRequestAttributes(attributes);
     }

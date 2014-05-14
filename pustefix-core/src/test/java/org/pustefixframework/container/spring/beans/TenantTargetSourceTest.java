@@ -68,10 +68,10 @@ public class TenantTargetSourceTest extends TestCase {
         RequestAttributes attrs = new ServletRequestAttributes(req);
         RequestContextHolder.setRequestAttributes(attrs);
 
-        attrs.setAttribute("__PFX_TENANT__", new Tenant("foo"), RequestAttributes.SCOPE_REQUEST);
+        attrs.setAttribute(TenantScope.REQUEST_ATTRIBUTE_TENANT, new Tenant("foo"), RequestAttributes.SCOPE_REQUEST);
         assertTrue(fooObj == src.getTarget());
 
-        attrs.setAttribute("__PFX_TENANT__", new Tenant("baz"), RequestAttributes.SCOPE_REQUEST);
+        attrs.setAttribute(TenantScope.REQUEST_ATTRIBUTE_TENANT, new Tenant("baz"), RequestAttributes.SCOPE_REQUEST);
         assertTrue(barObj == src.getTarget());
 
     }
@@ -84,19 +84,19 @@ public class TenantTargetSourceTest extends TestCase {
         RequestAttributes attrs = new ServletRequestAttributes(req);
         RequestContextHolder.setRequestAttributes(attrs);
 
-        attrs.setAttribute("__PFX_TENANT__", new Tenant("foo"), RequestAttributes.SCOPE_REQUEST);
+        attrs.setAttribute(TenantScope.REQUEST_ATTRIBUTE_TENANT, new Tenant("foo"), RequestAttributes.SCOPE_REQUEST);
         assertEquals(1, ((Counter)context.getBean("counterByInterface")).count());
         assertEquals(2, ((Counter)context.getBean("counterByInterface")).count());
 
-        attrs.setAttribute("__PFX_TENANT__", new Tenant("baz"), RequestAttributes.SCOPE_REQUEST);
+        attrs.setAttribute(TenantScope.REQUEST_ATTRIBUTE_TENANT, new Tenant("baz"), RequestAttributes.SCOPE_REQUEST);
         assertEquals(1, ((Counter)context.getBean("counterByInterface")).count());
         assertEquals(2, ((Counter)context.getBean("counterByInterface")).count());
 
-        attrs.setAttribute("__PFX_TENANT__", new Tenant("foo"), RequestAttributes.SCOPE_REQUEST);
+        attrs.setAttribute(TenantScope.REQUEST_ATTRIBUTE_TENANT, new Tenant("foo"), RequestAttributes.SCOPE_REQUEST);
         assertEquals(1, ((CounterImpl)context.getBean("counterByClass")).count());
         assertEquals(2, ((CounterImpl)context.getBean("counterByClass")).count());
 
-        attrs.setAttribute("__PFX_TENANT__", new Tenant("baz"), RequestAttributes.SCOPE_REQUEST);
+        attrs.setAttribute(TenantScope.REQUEST_ATTRIBUTE_TENANT, new Tenant("baz"), RequestAttributes.SCOPE_REQUEST);
         assertEquals(1, ((CounterImpl)context.getBean("counterByClass")).count());
         assertEquals(2, ((CounterImpl)context.getBean("counterByClass")).count());
 
