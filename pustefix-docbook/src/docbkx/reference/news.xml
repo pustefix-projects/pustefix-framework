@@ -430,6 +430,13 @@
         the Apache ORO and convert Perl5 expressions to Java standard expression under the hood.
       </para>
     </section>
+    <section xml:id="news.0_18_64.multitenancy">
+      <title>Support multitenant property configuration</title>
+      <para>
+        Properties within the Pustefix configuration files now can be configured tenant-dependent. The tenant can be specified using a <literal>tenant</literal> attribute, 
+        e.g. <literal>&lt;prop name="foo" tenant="UK"&gt;bar&lt;/prop&gt;</literal> (see <xref linkend="configuration.format.props"/>).
+      </para>
+    </section>
 
   </section>
 
