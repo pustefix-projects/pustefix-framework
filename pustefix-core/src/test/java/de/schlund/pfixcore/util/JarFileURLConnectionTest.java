@@ -25,6 +25,11 @@ public class JarFileURLConnectionTest extends TestCase {
             }
         }
     }
+    
+    @Override
+    protected void tearDown() throws Exception {
+        JarFileCache.getInstance().dispose();
+    }
 
     public void testJarFileURL() throws Exception {
         String urlStr = "jar:"+testModuleFile.toURI().toString()+"!/";

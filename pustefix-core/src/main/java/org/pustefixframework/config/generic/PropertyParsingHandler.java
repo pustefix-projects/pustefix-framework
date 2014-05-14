@@ -46,7 +46,12 @@ public class PropertyParsingHandler extends CustomizationAwareParsingHandler {
         CustomizationInfo info = context.getObjectTreeElement().getObjectsOfTypeFromTopTree(CustomizationInfo.class).iterator().next();
         value = info.replaceVariables(value);
         
-        properties.setProperty(name, value);
+        String tenant = elem.getAttribute("tenant").trim();
+        if(tenant.length() > 0) {
+            properties.setProperty(name + "[" + tenant + "]", value);
+        } else {
+            properties.setProperty(name, value);
+        }
     }
 
 }

@@ -24,9 +24,6 @@ import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.lang.management.ManagementFactory;
 import java.net.ServerSocket;
-import java.nio.file.FileSystems;
-import java.nio.file.Files;
-import java.nio.file.Path;
 import java.util.Enumeration;
 import java.util.Properties;
 
@@ -125,16 +122,13 @@ public class PustefixInit {
         if(initDone) return;
         
     	Properties properties = new Properties(System.getProperties());
-        
-    	File tempDir = (File)servletContext.getAttribute("javax.servlet.context.tempdir");
-        if(tempDir != null && !tempDir.equals("")) {
-            try {
-                File cacheDir = Files.createTempDirectory(tempDir.toPath(), "pustefix-jar-cache-").toFile();
-                JarFileCache.setCacheDir(cacheDir);
-            } catch(IOException x) {
-                throw new RuntimeException("Error creating temporary directory for JAR caching", x);
-            }
-        }
+    	
+    	try {
+    	    File cacheDir = PustefixTempDirs.getInstance(servletContext).createTempDir("pustefix-jar-cache-");
+    	    JarFileCache.setCacheDir(cacheDir);
+    	} catch(IOException x) {
+    	    throw new RuntimeException("Error creating temporary directory for JAR caching", x);
+    	}
     	
     	//override environment properties by according context init parameters
     	Enumeration<?> names = servletContext.getInitParameterNames();
@@ -308,5 +302,5 @@ public class PustefixInit {
             throw new RuntimeException("Can't get free port", x);
         }
     }
-    
+
 }

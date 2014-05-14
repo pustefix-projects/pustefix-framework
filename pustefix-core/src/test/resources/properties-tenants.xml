@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<properties xmlns="http://www.pustefix-framework.org/2008/namespace/properties-config">
+  
+  <choose>
+    <when test="$mode='prod'">
+      <property name="hey">ho-prod</property>
+      <property name="hey" tenant="UK">ho-prod-UK</property>
+    </when>
+    <otherwise>
+      <property name="hey">ho</property>
+      <property name="hey" tenant="DE">ho-DE</property>
+    </otherwise>
+  </choose>
+
+</properties>
