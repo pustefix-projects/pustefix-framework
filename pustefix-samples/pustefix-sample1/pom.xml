@@ -14,6 +14,10 @@
 
   <name>Pustefix Sample 1</name>
 
+  <properties>
+    <pustefix.mode>test</pustefix.mode>
+  </properties>
+
   <dependencies>
     <dependency>
       <groupId>org.pustefixframework</groupId>
@@ -70,7 +74,44 @@
   </dependencies>
  
   <build>
-    <plugins> 
+    <plugins>
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-antrun-plugin</artifactId>
+        <version>1.7</version>
+        <executions>
+          <execution>
+            <id>tomcatconf</id>
+            <phase>prepare-package</phase>
+            <configuration>
+              <target>
+                <mkdir dir="${project.build.directory}/addtomcatconf" />
+                <echo file="${project.build.directory}/addtomcatconf/context.xml"><![CDATA[<?xml version='1.0' encoding='utf-8'?>
+<Context cookies="true" useHttpOnly="true">
+  <Parameter name="mode" value="${pustefix.mode}" override="false" />
+  <Manager pathname="" />
+</Context>
+]]></echo>
+              </target>
+            </configuration>
+            <goals>
+              <goal>run</goal>
+            </goals>
+          </execution>
+        </executions>
+      </plugin>
+      <plugin>
+        <groupId>org.apache.tomcat.maven</groupId>
+        <artifactId>tomcat7-maven-plugin</artifactId>
+        <version>2.0</version>
+        <configuration>
+          <path>/</path>
+          <contextFile>${project.build.directory}/addtomcatconf/context.xml</contextFile>
+          <warDirectory>${war.dir}</warDirectory>
+          <uriEncoding>UTF-8</uriEncoding>
+          <useSeparateTomcatClassLoader>true</useSeparateTomcatClassLoader>
+        </configuration>
+      </plugin>
       <plugin>
         <groupId>org.codehaus.mojo</groupId>
         <artifactId>tomcat-maven-plugin</artifactId>
@@ -80,17 +121,6 @@
           <uriEncoding>UTF-8</uriEncoding>
         </configuration>
       </plugin>
-      <plugin>
-        <groupId>org.apache.tomcat.maven</groupId>
-        <artifactId>tomcat7-maven-plugin</artifactId>
-        <version>2.0</version>
-        <configuration>
-          <contextFile>${basedir}/src/test/resources/context.xml</contextFile>
-          <path>/</path>
-          <uriEncoding>UTF-8</uriEncoding>
-        </configuration>
-      </plugin>
-
       <plugin>
         <!--  some tests operated on the exploded webapp -->
         <artifactId>maven-surefire-plugin</artifactId>
@@ -170,6 +200,21 @@
              <configuration>
                <path>/</path>
                <uriEncoding>UTF-8</uriEncoding>
+               <httpsPort>8443</httpsPort>
+               <keystoreFile>${user.home}/keystore</keystoreFile>
+               <keystorePass>secret</keystorePass>
+             </configuration>
+           </plugin>
+           <plugin>
+             <groupId>org.apache.tomcat.maven</groupId>
+             <artifactId>tomcat7-maven-plugin</artifactId>
+             <version>2.0</version>
+             <configuration>
+               <path>/</path>
+               <contextFile>${project.build.directory}/addtomcatconf/context.xml</contextFile>
+               <warDirectory>${war.dir}</warDirectory>
+               <uriEncoding>UTF-8</uriEncoding>
+               <useSeparateTomcatClassLoader>true</useSeparateTomcatClassLoader>
                <httpsPort>8443</httpsPort>
                <keystoreFile>${user.home}/keystore</keystoreFile>
                <keystorePass>secret</keystorePass>

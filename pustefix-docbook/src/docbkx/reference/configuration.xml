@@ -262,6 +262,23 @@
     <context-xml-service>
       <!-- Path to the configuration file for the service -->
       <config-file>docroot:/WEB-INF/config.conf.xml</config-file>
+      <!-- Set this to true if you want to skip the last transformation and only get a
+           xml document containing all needed information for an external renderer: -->
+      <!-- <render-external>true</render-external> -->
+      <!-- Set the maximum number of DOMs stored for reusage (default 5): -->
+      <!-- <max-stored-doms>5</max-stored-doms> -->
+      <!-- Set the timeout (in seconds) for removing old DOMs (default 300): -->
+      <choose>
+        <when test="$mode='prod'">
+          <session-cleaner-timeout>20</session-cleaner-timeout>
+        </when>
+        <otherwise>
+          <session-cleaner-timeout>600</session-cleaner-timeout>
+          <!-- Allow viewing of the DOM tree model, which is enabled 
+               by default in all non-production modes -->
+          <!--<show-dom>true</show-dom>-->
+        </otherwise>
+      </choose>
     </context-xml-service>
     
     <direct-output-service>
