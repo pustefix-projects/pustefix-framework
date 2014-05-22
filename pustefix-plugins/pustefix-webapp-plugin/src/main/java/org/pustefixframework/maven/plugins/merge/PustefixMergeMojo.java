@@ -24,7 +24,7 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.URL;
-import java.util.List;
+import java.util.Set;
 import java.util.jar.JarFile;
 import java.util.zip.ZipEntry;
 
@@ -221,7 +221,7 @@ public class PustefixMergeMojo extends AbstractMojo {
 
     @SuppressWarnings("unchecked")
     public void processUnextractedModules() throws MojoExecutionException {
-        List<Artifact> artifacts; artifacts = project.getCompileArtifacts();
+        Set<Artifact> artifacts; artifacts = project.getArtifacts();
         for (Artifact artifact : artifacts) {
             if ("jar".equals(artifact.getType())) {
                 processUnextractedModule(artifact.getFile());
