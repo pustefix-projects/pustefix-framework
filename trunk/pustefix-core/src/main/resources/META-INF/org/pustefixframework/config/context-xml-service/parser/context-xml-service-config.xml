@@ -1,0 +1,215 @@
+<?xml version="1.0"?>
+<configuration
+  xmlns="http://www.marsching.com/2008/flexiparse/configurationNS"
+  xmlns:c="http://www.pustefix-framework.org/2008/namespace/context-xml-service-config"
+>
+   
+  
+  <handler class="org.pustefixframework.config.contextxmlservice.parser.ContextXMLParsingHandler" run-order="both">
+    <match>/c:context-xml-service-config</match>
+  </handler>
+
+  <!-- global -->
+  
+  <handler class="org.pustefixframework.config.contextxmlservice.parser.DefaultStateParsingHandler">
+    <match>/c:context-xml-service-config/c:global-config/c:defaultstate</match>
+  </handler>
+  
+  <handler class="org.pustefixframework.config.contextxmlservice.parser.DefaultIHandlerStateParsingHandler">
+    <match>/c:context-xml-service-config/c:global-config/c:defaultihandlerstate</match>
+  </handler>
+  
+  <handler class="org.pustefixframework.config.contextxmlservice.parser.SSLParsingHandler">
+    <match>/c:context-xml-service-config/c:global-config//c:force-ssl</match>
+    <match>/c:context-xml-service-config/c:pagerequest//c:force-ssl</match>
+  </handler>
+  
+  <handler class="org.pustefixframework.config.contextxmlservice.parser.ContextXMLRegisterGlobalPropertiesParsingHandler" run-order="end">
+    <preceding-handler>org.pustefixframework.config.generic.PropertiesParsingHandler</preceding-handler>
+    <match>/c:context-xml-service-config/c:properties</match>
+    <match>/c:context-xml-service-config/c:choose/c:when/c:properties</match>
+    <match>/c:context-xml-service-config/c:choose/c:otherwise/c:properties</match>
+  </handler>
+  
+  <!-- context -->
+  
+  <handler class="org.pustefixframework.config.contextxmlservice.parser.ContextParsingHandler">
+    <match>/c:context-xml-service-config/c:context</match>
+  </handler>
+  
+  <handler class="org.pustefixframework.config.contextxmlservice.parser.ContextDefaultPageParsingHandler">
+    <match>/c:context-xml-service-config/c:context/c:defaultpage</match>
+  </handler>
+  
+  <handler class="org.pustefixframework.config.contextxmlservice.parser.ContextResourceParsingHandler">
+    <match>/c:context-xml-service-config/c:context/c:resource</match>
+  </handler>
+  
+  <handler class="org.pustefixframework.config.contextxmlservice.parser.ContextResourceRegisterPropertiesParsingHandler" run-order="end">
+    <preceding-handler>org.pustefixframework.config.generic.PropertiesParsingHandler</preceding-handler>
+    <match>/c:context-xml-service-config/c:context//c:resource//c:properties</match>
+  </handler>
+  
+  <!-- interceptors -->
+  <handler class="org.pustefixframework.config.contextxmlservice.parser.ContextInterceptorParsingHandler">
+    <match>/c:context-xml-service-config/c:interceptors//c:interceptor</match>
+  </handler>
+  
+  <!--  global context resource output -->
+  <handler class="org.pustefixframework.config.contextxmlservice.parser.GlobalOutputResourceParsingHandler">
+    <match>/c:context-xml-service-config/c:global-output/c:resource</match>
+  </handler>
+  
+  <!-- scriptedflows -->
+  <handler class="org.pustefixframework.config.contextxmlservice.parser.ScriptedFlowParsingHandler">
+    <match>/c:context-xml-service-config/c:scriptedflow</match>
+  </handler>
+  
+  <!-- authorization -->
+  
+  <handler class="org.pustefixframework.config.contextxmlservice.parser.RoleProviderParsingHandler">
+    <match>/c:context-xml-service-config/c:roleprovider</match>
+  </handler>
+  
+  <handler class="org.pustefixframework.config.contextxmlservice.parser.RoleParsingHandler">
+    <match>/c:context-xml-service-config/c:role</match>
+  </handler>
+  
+  <handler class="org.pustefixframework.config.contextxmlservice.parser.ConditionParsingHandler">
+    <match>/c:context-xml-service-config/c:condition</match>
+    <match>/c:context-xml-service-config/c:authconstraint//c:and</match>
+    <match>/c:context-xml-service-config/c:authconstraint//c:or</match>
+    <match>/c:context-xml-service-config/c:authconstraint//c:not</match>
+    <match>/c:context-xml-service-config/c:authconstraint//c:condition</match>
+    <match>/c:context-xml-service-config/c:authconstraint//c:authconstraint</match>
+    <match>/c:context-xml-service-config/c:authconstraint//c:hasrole</match>
+    <match>/c:context-xml-service-config/c:authconstraint//c:navigateTo</match>
+    <match>/c:context-xml-service-config/c:pagerequest/c:authconstraint//c:and</match>
+    <match>/c:context-xml-service-config/c:pagerequest/c:authconstraint//c:or</match>
+    <match>/c:context-xml-service-config/c:pagerequest/c:authconstraint//c:not</match>
+    <match>/c:context-xml-service-config/c:pagerequest/c:authconstraint//c:condition</match>
+    <match>/c:context-xml-service-config/c:pagerequest/c:authconstraint//c:authconstraint</match>
+    <match>/c:context-xml-service-config/c:pagerequest/c:authconstraint//c:hasrole</match>
+    <match>/c:context-xml-service-config/c:pagerequest/c:authconstraint//c:navigateTo</match>
+    <match>/c:context-xml-service-config/c:pagerequest/*[self::c:default or self::c:variant]/c:authconstraint//c:and</match>
+    <match>/c:context-xml-service-config/c:pagerequest/*[self::c:default or self::c:variant]/c:authconstraint//c:or</match>
+    <match>/c:context-xml-service-config/c:pagerequest/*[self::c:default or self::c:variant]/c:authconstraint//c:not</match>
+    <match>/c:context-xml-service-config/c:pagerequest/*[self::c:default or self::c:variant]/c:authconstraint//c:condition</match>
+    <match>/c:context-xml-service-config/c:pagerequest/*[self::c:default or self::c:variant]/c:authconstraint//c:authconstraint</match>
+    <match>/c:context-xml-service-config/c:pagerequest/*[self::c:default or self::c:variant]/c:authconstraint//c:hasrole</match>
+    <match>/c:context-xml-service-config/c:pagerequest/*[self::c:default or self::c:variant]/c:authconstraint//c:navigateTo</match>
+  </handler>
+ 
+  <handler class="org.pustefixframework.config.contextxmlservice.parser.AuthConstraintParsingHandler">
+    <match>/c:context-xml-service-config/c:authconstraint</match>
+    <match>/c:context-xml-service-config/c:pagerequest/c:authconstraint</match>
+    <match>/c:context-xml-service-config/c:pagerequest/*[self::c:default or self::c:variant]/c:authconstraint</match>
+  </handler>
+  
+  <handler class="org.pustefixframework.config.contextxmlservice.parser.PreserveParamsParsingHandler">
+    <match>/c:context-xml-service-config/c:preserve-params</match>
+  </handler>
+    
+  <!--  pageflows -->
+  
+  <handler class="org.pustefixframework.config.contextxmlservice.parser.PageFlowParsingHandler">
+    <match>/c:context-xml-service-config/c:pageflow</match>
+  </handler>
+  
+  <handler class="org.pustefixframework.config.contextxmlservice.parser.PageFlowVariantParsingHandler">
+    <match>/c:context-xml-service-config/c:pageflow/c:variant</match>
+  </handler>
+  
+  <handler class="org.pustefixframework.config.contextxmlservice.parser.PageFlowStepParsingHandler">
+    <match>/c:context-xml-service-config/c:pageflow//c:flowstep</match>
+  </handler>
+  
+  <handler class="org.pustefixframework.config.contextxmlservice.parser.PageFlowStepOnContinueParsingHandler">
+    <match>/c:context-xml-service-config/c:pageflow//c:flowstep/c:oncontinue</match>
+  </handler>
+  
+  <handler class="org.pustefixframework.config.contextxmlservice.parser.PageFlowStepConditionParsingHandler">
+    <match>/c:context-xml-service-config/c:pageflow//c:flowstep/c:oncontinue/c:when</match>
+  </handler>
+  
+  <handler class="org.pustefixframework.config.contextxmlservice.parser.PageFlowStepActionParsingHandler">
+    <match>/c:context-xml-service-config/c:pageflow//c:flowstep/c:oncontinue/c:when/c:action</match>
+  </handler>
+  
+    
+    
+  <handler class="org.pustefixframework.config.contextxmlservice.parser.PageRequestParsingHandler" run-order="both">
+    <match>/c:context-xml-service-config/c:pagerequest[not(child::c:variant) and not (child::c:default)]</match>
+    <match>/c:context-xml-service-config/c:pagerequest/c:default</match>
+    <match>/c:context-xml-service-config/c:pagerequest/c:variant</match>
+  </handler>
+
+  <handler class="org.pustefixframework.config.contextxmlservice.parser.PageRequestDefaultFlowParsingHandler">
+    <match>/c:context-xml-service-config/c:pagerequest//c:defaultflow</match>
+  </handler>
+
+  <handler class="org.pustefixframework.config.contextxmlservice.parser.PageRequestStateParsingHandler">
+    <match>/c:context-xml-service-config/c:pagerequest//c:state</match>
+  </handler>
+  
+  <handler class="org.pustefixframework.config.contextxmlservice.parser.PageRequestInputParsingHandler">
+    <match>/c:context-xml-service-config/c:pagerequest//c:input</match>
+  </handler>
+  
+  <handler class="org.pustefixframework.config.contextxmlservice.parser.PageRequestInputWrapperParsingHandler">
+    <match>/c:context-xml-service-config/c:pagerequest//c:input/c:wrapper</match>
+  </handler>
+  
+  <handler class="org.pustefixframework.config.contextxmlservice.parser.PageRequestOutputResourceParsingHandler">
+    <match>/c:context-xml-service-config/c:pagerequest//c:output/c:resource</match>
+  </handler>
+  
+  <!-- actions -->
+  
+  <handler class="org.pustefixframework.config.contextxmlservice.parser.ProcessActionParsingHandler">
+    <match>/c:context-xml-service-config/c:pagerequest//c:process/c:action</match>
+  </handler>
+  
+  <handler class="org.pustefixframework.config.contextxmlservice.parser.ProcessActionWrapperParsingHandler">
+    <match>/c:context-xml-service-config/c:pagerequest//c:process/c:action/c:submit/c:wrapper</match>
+    <match>/c:context-xml-service-config/c:pagerequest//c:process/c:action/c:retrieve/c:wrapper</match>
+  </handler>
+  
+  <handler class="org.pustefixframework.config.contextxmlservice.parser.PageRequestRegisterPropertiesParsingHandler" run-order="end">
+    <preceding-handler>org.pustefixframework.config.generic.PropertiesParsingHandler</preceding-handler>
+    <match>/c:context-xml-service-config/c:pagerequest//c:properties</match>
+  </handler>
+  
+  
+  <handler class="org.pustefixframework.config.generic.PropertiesParsingHandler">
+    <match>/c:context-xml-service-config//c:properties</match>
+    <match>/c:context-xml-service-config/c:context//c:resource//c:properties</match>
+    <match>/c:context-xml-service-config/c:pagerequest//c:properties</match>
+  </handler>
+  
+  <handler class="org.pustefixframework.config.generic.PropertyParsingHandler">
+    <match>/c:context-xml-service-config//c:properties//c:prop</match>
+    <match>/c:context-xml-service-config/c:context//c:resource//c:properties/c:prop</match>
+    <match>/c:context-xml-service-config/c:pagerequest//c:properties//c:prop</match>
+  </handler>
+  
+  
+  <handler id="org.pustefixframework.config.customization.WhenParsingHandler" class="org.pustefixframework.config.customization.CustomizationWhenParsingHandler">
+    <match>/c:context-xml-service-config/c:servletinfo/c:choose/c:when</match>
+    <match>/c:context-xml-service-config/c:global-config/c:choose/c:when</match>
+    <match>/c:context-xml-service-config/c:pagerequest//c:properties/c:choose/c:when</match>
+    <match>/c:context-xml-service-config/c:pagerequest/c:choose/c:when</match>
+    <match>/c:context-xml-service-config/c:properties/c:choose/c:when</match>
+    <match>/c:context-xml-service-config/c:context/c:resource/c:properties/c:choose/c:when</match>
+  </handler>
+  
+  <handler id="org.pustefixframework.config.customization.OtherwiseParsingHandler" class="org.pustefixframework.config.customization.CustomizationOtherwiseParsingHandler">
+    <match>/c:context-xml-service-config/c:servletinfo/c:choose/c:otherwise</match>
+    <match>/c:context-xml-service-config/c:global-config/c:choose/c:otherwise</match>
+    <match>/c:context-xml-service-config/c:pagerequest//c:properties/c:choose/c:otherwise</match>
+    <match>/c:context-xml-service-config/c:pagerequest/c:choose/c:otherwise</match>
+    <match>/c:context-xml-service-config/c:properties/c:choose/c:otherwise</match>
+    <match>/c:context-xml-service-config/c:context/c:resource/c:properties/c:choose/c:otherwise</match>
+  </handler>
+  
+</configuration>

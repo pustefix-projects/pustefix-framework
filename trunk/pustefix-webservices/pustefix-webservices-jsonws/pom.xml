@@ -1,0 +1,32 @@
+<?xml version="1.0"?><project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+  <modelVersion>4.0.0</modelVersion>
+  <parent>
+    <artifactId>pustefix-webservices</artifactId>
+    <groupId>org.pustefixframework.webservices</groupId>
+    <version>0.18.64</version>
+  </parent>
+
+  <name>Pustefix Webservices Jsonws</name>
+
+  <groupId>org.pustefixframework.webservices</groupId>
+  <artifactId>pustefix-webservices-jsonws</artifactId>
+  <version>0.18.64</version>
+
+  <dependencies>
+    <dependency>
+      <groupId>org.pustefixframework.webservices</groupId>
+      <artifactId>pustefix-webservices-core</artifactId>
+      <version>0.18.64</version>
+    </dependency>
+    <dependency>
+      <groupId>cglib</groupId>
+      <artifactId>cglib-nodep</artifactId>
+      <version>2.1_3</version>
+      <scope>test</scope>
+    </dependency>
+  </dependencies>
+  <!-- TODO: add javacc like in ant build -->
+  <!-- 
+    <javacc target="${dir.src}/de/schlund/pfixcore/webservice/json/JSONParser.jj" outputdirectory="${dir.src}/de/schlund/pfixcore/webservice/json/parser" javacchome="${env.JAVACC_HOME}" />
+  -->  
+</project>

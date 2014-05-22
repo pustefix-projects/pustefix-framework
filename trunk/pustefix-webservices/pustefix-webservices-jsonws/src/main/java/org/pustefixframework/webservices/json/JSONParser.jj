@@ -1,0 +1,154 @@
+options {
+	STATIC = false;
+	UNICODE_INPUT = true;
+}
+
+PARSER_BEGIN(JSONParser)
+
+package org.pustefixframework.webservices.json.parser;
+
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.InputStreamReader;
+import java.io.IOException;
+import java.io.StringReader;
+import java.io.Reader;
+import java.util.Stack;
+
+import org.pustefixframework.webservices.json.*;
+
+public class JSONParser {
+	
+	Object jsonValue;
+	String memberName;
+	
+	public static void main(String[] args) {
+		try {
+			String query=args[0];
+			query=load(new File(query),"UTF-8");
+			JSONParser parser=new JSONParser(new StringReader(query));
+			Object val=parser.getJSONValue();
+			System.out.println(ParserUtils.javaToJson(val));
+		} catch(Exception x) {
+			x.printStackTrace();
+		}
+	}
+	
+	public Object getJSONValue() throws Exception {
+   	if(jsonValue==null) {
+      	value();
+      }
+      return jsonValue;
+   }
+
+
+    public static String load(File file,String encoding) throws IOException { 
+        FileInputStream fis=new FileInputStream(file);
+        InputStreamReader reader=new InputStreamReader(fis,encoding);
+        StringBuffer strBuf=new StringBuffer();
+        char[] buffer=new char[4096];
+        int i=0;
+        try {
+            while((i=reader.read(buffer))!=-1) strBuf.append(buffer,0,i);
+        } finally {
+            fis.close();
+        }
+        return strBuf.toString();
+    }
+	
+}
+
+PARSER_END(JSONParser)
+
+
+SKIP :
+{
+	" "
+	| "\t"
+	| "\r"
+	| "\n"
+	| "\f"
+}
+
+
+TOKEN:
+{
+	<LCB: "{">
+	| <RCB: "}">
+	| <LSB: "[">
+	| <RSB: "]">
+	| <COL: ":">
+	| <COM: ",">
+	| <TRUE: "true">
+	| <FALSE: "false">
+	| <NULL: "null">
+}
+
+
+TOKEN:
+{
+	<QSTR:
+   	"\""
+      (   (~["\"","\\","\u0000"-"\u001F"])
+        | ("\\"
+            ( ["b","f","n","r","t","\\","\""]
+            | ["u"] <HEX><HEX><HEX><HEX>
+            )
+          )
+      )*
+      "\""
+	>
+	| <#HEX: ["0"-"9","a"-"f","A"-"F"] >
+	| <NUM :  ("-")? ("0" | ["1"-"9"] (["0"-"9"])*) ("." (["0"-"9"])+ )? (["e","E"] (["+","-"])? (["0"-"9"])+ )? >
+	| <DATE: "new Date(" ( 
+					( ("-")? ( "0" | ["1"-"9"] (["0"-"9"])* ) ) |  
+					( "Date.UTC(" ("0" | ["1"-"9"] (["0"-"9"])*) ("," ("0" | ["1"-"9"] (["0"-"9"])*) )* ")" )
+		) ")">
+}
+
+void value():
+{
+	Token valueToken;
+}
+{
+	object()
+	| array()
+	| valueToken=<QSTR> {jsonValue=ParserUtils.jsonToJava(valueToken.image);} 
+	| valueToken=<NUM> { jsonValue=ParserUtils.parseNumber(valueToken.image);}
+	| <TRUE> { jsonValue=Boolean.TRUE; } 
+	| <FALSE> { jsonValue=Boolean.FALSE; } 
+	| <NULL> { jsonValue=null; }
+   | valueToken=<DATE> { jsonValue=ParserUtils.parseDate(valueToken.image);}
+}
+
+
+void member():
+{
+	Token memberNameToken;
+}
+{
+	memberNameToken=<QSTR> <COL> value()
+	{memberName=ParserUtils.jsonToJava(memberNameToken.image);}
+}
+
+
+void object() : 
+{
+	JSONObject jsonObject;
+}
+{
+	{jsonObject=new JSONObject();}
+	<LCB> member() {jsonObject.putMember(memberName,jsonValue);} ( <COM> member() {jsonObject.putMember(memberName,jsonValue);} )* <RCB>	
+	{jsonValue=jsonObject;}
+}
+
+
+void array():
+{
+	JSONArray jsonArray;
+}
+{
+	{jsonArray=new JSONArray();}
+	<LSB> (value() {jsonArray.add(jsonValue);} ( <COM> value() {jsonArray.add(jsonValue);} )*)? <RSB>
+	{jsonValue=jsonArray;}
+}

@@ -1,0 +1,15 @@
+#set( $symbol_pound = '#' )
+#set( $symbol_dollar = '$' )
+#set( $symbol_escape = '\' )
+<?xml version="1.0" encoding="utf-8"?><pfx:document xmlns:pfx="http://www.schlund.de/pustefix/core" xmlns:ixsl="http://www.w3.org/1999/XSL/Transform">
+<!-- This page is a frame containing the choosen content -->
+  <html>
+    <head>
+      <title>A new pustefix project</title>
+    </head>
+    <body style="padding: 10px;">
+      <pfx:maincontent/>
+      <pfx:editconsole/>
+    </body>
+  </html>
+</pfx:document>

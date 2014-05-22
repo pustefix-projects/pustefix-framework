@@ -1,0 +1,50 @@
+<?xml version="1.0" encoding="utf-8"?>
+<context-xml-service-config 
+    xmlns="http://www.pustefix-framework.org/2008/namespace/context-xml-service-config" 
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xsi:schemaLocation="http://www.pustefix-framework.org/2008/namespace/context-xml-service-config 
+                        http://www.pustefix-framework.org/2008/namespace/context-xml-service-config.xsd"
+    version="1.0">
+  
+  <global-config>
+  </global-config>
+
+  <context defaultpage="Home">
+    <resource bean-name="contextUser" class="org.pustefixframework.samples.i18n.context.User"/>
+    <resource bean-name="contextTermsInfo" class="org.pustefixframework.samples.i18n.context.TermsInfo"/>
+  </context>
+
+  <interceptors>
+    <start>
+      <interceptor class="org.pustefixframework.samples.i18n.interceptor.PageAlternativeInterceptor"/>
+    </start>
+  </interceptors>
+
+  <pageflow name="MainFlow" final="Home">
+    <flowstep name="Home"/>
+    <flowstep name="Overview"/>
+    <flowstep name="Info"/>
+  </pageflow>
+
+  <pagerequest name="Home">
+    <input>
+      <wrapper prefix="registration" class="org.pustefixframework.samples.i18n.wrapper.Registration"/>
+      <config-include file="conf/app-fragment.xml" module="*" refid="registration_wrappers"/>
+    </input>
+  </pagerequest>
+
+  <pagerequest name="Overview">
+    <input policy="NONE">
+      <wrapper prefix="terms" class="org.pustefixframework.samples.i18n.wrapper.Info"/>
+    </input>
+    <output>
+      <resource node="user" bean-ref="contextUser"/>
+      <resource node="terms" bean-ref="contextTermsInfo"/>
+    </output>
+  </pagerequest>
+
+  <pagerequest name="Info">
+    <state class="org.pustefixframework.samples.i18n.state.InfoState"/>
+  </pagerequest>
+
+</context-xml-service-config>

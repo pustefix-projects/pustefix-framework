@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<properties xmlns="http://www.pustefix-framework.org/2008/namespace/properties-config" 
+            xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+            xsi:schemaLocation="http://www.pustefix-framework.org/2008/namespace/properties-config 
+                                http://www.pustefix-framework.org/schema/properties-config.xsd">
+    
+    <property name="global_testdata.text">bar</property>
+
+</properties>

@@ -1,0 +1,79 @@
+<?xml version="1.0"?>
+<glossary xml:id="glossary" xmlns="http://docbook.org/ns/docbook" xmlns:xlink="http://www.w3.org/1999/xlink"
+  xmlns:xi="http://www.w3.org/2001/XInclude" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xsi:schemaLocation="http://docbook.org/ns/docbook http://www.docbook.org/xml/5.0CR7/xsd/docbook.xsd">
+  <title>Glossary</title>
+  
+  <glossdiv>
+    <title>C</title>
+    <glossentry xml:id="glossary.core">
+      <glossterm>Core</glossterm>
+      <glossdef>
+        <para>
+          Pustefix runtime. Java code for servlets, workflow, and editor and the basic
+          configuration used by projects.
+        </para>
+      </glossdef>
+    </glossentry>
+  </glossdiv>
+  
+  <glossdiv>
+    <title>E</title>
+    <glossentry xml:id="glossary.editor">
+      <glossterm>Editor</glossterm>
+      <glossdef>
+        <para>
+          Modifies projects in a web browser.
+          The editor is itself a project which is part of the core.
+        </para>
+      </glossdef>
+    </glossentry>
+    <glossentry xml:id="glossary.environment">
+      <glossterm>Environment</glossterm>
+      <glossdef>
+        <para>
+          Pustefix SDK. What you install to develop your own projects with pustefix.
+          Includes core, editor, and the basic structure.
+          Caution: The respective download is called &quot;pfixcore-skel-&lt;VERSION&gt;.tar.gz&quot;,
+          which stands for "skeleton", because it contains everything in the correct
+          layout of directories to start a new environement, but is missing the flesh,
+          i.e. your private application code.
+        </para>
+      </glossdef>
+    </glossentry>
+  </glossdiv>
+
+  <glossdiv>
+    <title>P</title>
+    <glossentry xml:id="glossary.project">
+      <glossterm>Project</glossterm>
+      <glossdef>
+        <para>
+          A web application that uses pustefix core. Projects reside in the projects
+          directory (when starting with a skeleton environment as it can be downloaded
+          from sourceforge - the CVS checkout itself uses the examples directory).
+          A single environment hosts an arbitray number of projects.
+          The term application is sometimes used as a synonym.
+          Caution: the following directories in the projects directory do not hold
+          projects: common, core, servletconf.
+        </para>
+      </glossdef>
+    </glossentry>
+    <glossentry xml:id="glossary.pfixcore">
+      <glossterm>Pfixcore</glossterm>
+      <glossdef>
+        <para>
+          The SVN module that implements the framework.
+        </para>
+      </glossdef>
+    </glossentry>
+    <glossentry xml:id="glossary.pustefix">
+      <glossterm>Pustefix</glossterm>
+      <glossdef>
+        <para>
+          Denotes either framework, core, or environment, depending on the context.
+        </para>
+      </glossdef>
+    </glossentry>
+  </glossdiv>
+</glossary>

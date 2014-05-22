@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="utf-8"?><include_parts xmlns:ixsl="http://www.w3.org/1999/XSL/Transform" xmlns:pfx="http://www.schlund.de/pustefix/core">
+  <part name="content">
+    <theme name="default">
+      <pfx:forminput>
+        Name: <pfx:xinp type="text" name="user.name" />
+        <pfx:checkfield name="user.name">
+          <pfx:error><pfx:scode/></pfx:error>
+        </pfx:checkfield>
+        <br/>
+
+        E-Mail: <pfx:xinp type="text" name="user.email" />
+        <pfx:checkfield name="user.email">
+          <pfx:error><pfx:scode/></pfx:error>
+        </pfx:checkfield>
+        <br/>
+
+        Birthday: <pfx:xinp type="text" name="user.birthday" />
+        <pfx:checkfield name="user.birthday">
+          <pfx:error><pfx:scode/></pfx:error>
+        </pfx:checkfield>
+        <br/>
+
+        Gender: 
+        <pfx:xinp type="select" name="user.gender">
+          <pfx:option value="m" >male</pfx:option>
+          <pfx:option value="f" >female</pfx:option>
+        </pfx:xinp>
+        <pfx:checkfield name="user.gender">
+          <pfx:error><pfx:scode/></pfx:error>
+        </pfx:checkfield>
+        <br/>
+
+        Homepage: <pfx:xinp type="text" name="user.homepage" />
+        <pfx:checkfield name="user.homepage">
+          <pfx:error><pfx:scode/></pfx:error>
+        </pfx:checkfield>
+        <br/>
+        
+        Admin: <pfx:xinp type="check" name="user.admin" value="true" default="false" />
+        <br/>      
+        <pfx:xinp type="submit" value="save"/>
+      </pfx:forminput>  
+    </theme>
+  </part>
+ </include_parts>

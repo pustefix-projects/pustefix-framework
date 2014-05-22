@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project>
+  <version position="left"/>
+
+  <bannerLeft>
+    <name>Pustefix</name>
+    <src>http://dev.pustefix-framework.org/static/pustefix_logo.gif</src>
+    <href>http://www.pustefixframework.org/</href>
+  </bannerLeft>
+  <body>
+    <links>
+      <item name="Pustefix" href="http://org.pustefixframework.org/" />
+    </links>
+    <menu name="Documents">
+      <item name="Tutorial" href="docbkx/tutorial.html"/>
+      <item name="Reference" href="docbkx/reference.html"/>
+      <item name="FAQ" href="docbkx/faq.html"/>
+      <item name="Changes" href="trac-report.html"/>
+    </menu>
+  </body>
+</project>

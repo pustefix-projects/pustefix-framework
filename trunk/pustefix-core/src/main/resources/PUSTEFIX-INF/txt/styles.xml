@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="UTF-8"?><include_parts xmlns:ixsl="http://www.w3.org/1999/XSL/Transform" xmlns:pfx="http://www.schlund.de/pustefix/core">
+
+  <part name="standard">
+    <theme name="default">
+  <!-- Put core CSS here -->
+  body      { color: #000000; background-color: #ffffff;
+              font-family: Verdana, Helvetica, Tahoma, Arial, Sans, sans-serif; font-size: 12px; }
+  td        { font-family: Verdana, Helvetica, Tahoma, Arial, Sans, sans-serif; font-size: 12px; }
+
+  .core_errorbox_table   { background-color: #cccccc; }
+  .core_errorlabel_td    { text-align: left; }
+  .core_errorlabel_text  { color: #cc0000; font-weight: bold; }
+  .core_errortext        { font-style: italic; }
+
+  .core_button_active    { }
+  .core_button_normal    { }
+  .core_button_invisible { }
+
+  .core_xml_errorbox     { background-color: #cccccc; color: #ff0000; font-weight: bold; border:outset 1px #000000; }
+
+  #core_pagemessages_box  { border:dashed 1px #cccccc; padding: 2px;}
+
+  .core_pagemessage_info  { padding: 2px; font-family: Arial, Helvetica; font-weight:bold; color: #1a762b; background-color:#abffbb; }
+  .core_pagemessage_header_info  { padding: 2px; font-family: Arial, Helvetica; font-size:16px; font-weight:bold; color: #1a762b; background-color:#abffbb; }
+
+  .core_pagemessage_warn  { padding: 5px; font-family: Arial, Helvetica; font-weight:bold; color: #777700; background-color:#eeee00; }
+  .core_pagemessage_header_warn  { padding: 5px; font-family: Arial, Helvetica; font-size:16px; font-weight:bold; color: #777700; background-color:#eeee00; }
+
+  .core_pagemessage_error  { padding: 5px; font-family: Arial, Helvetica; font-weight:bold; color: #ff0000; background-color:#ffd4d4; }
+  .core_pagemessage_header_error  { padding: 5px; font-family: Arial, Helvetica; font-size:16px; font-weight:bold; color: #ff0000; background-color:#ffd4d4; }
+
+      </theme>
+    
+    
+  </part>
+
+</include_parts>

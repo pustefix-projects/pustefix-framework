@@ -1,0 +1,68 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans 
+    xmlns="http://www.springframework.org/schema/beans"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xmlns:ws="http://pustefixframework.org/schema/webservices"
+    xmlns:aop="http://www.springframework.org/schema/aop"
+    xsi:schemaLocation="
+        http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-2.0.xsd
+        http://www.springframework.org/schema/aop http://www.springframework.org/schema/aop/spring-aop-2.5.xsd
+        http://pustefixframework.org/schema/webservices http://pustefixframework.org/schema/webservices/pustefix-webservices.xsd"
+>
+
+  <bean id="org.pustefixframework.webservices.spring.WebServiceHttpRequestHandler"
+        class="org.pustefixframework.webservices.spring.WebServiceHttpRequestHandler">
+    <property name="configFile" value="docroot:/WEB-INF/webservice.conf.xml"/>
+    <property name="serviceRuntime" ref="serviceRuntime"/>
+  </bean>
+
+  <bean id="serviceRuntime"
+        class="org.pustefixframework.webservices.ServiceRuntime"/>
+
+  <bean id="calculator" class="org.pustefixframework.webservices.example.CalculatorImpl"/>
+  
+  <bean id="test_session" class="org.pustefixframework.webservices.example.TestImpl" scope="session">
+    <aop:scoped-proxy/>
+    <property name="text" value="Test session scope"/>
+  </bean>
+  
+  <bean id="test_singleton" class="org.pustefixframework.webservices.example.TestImpl" scope="singleton">
+    <property name="text" value="Test singleton scope"/>
+  </bean>
+
+
+  <ws:webservice 
+        id="service_calculator" 
+        servicename="Calculator" 
+        interface="org.pustefixframework.webservices.example.Calculator" 
+        ref="calculator" 
+        protocol="TEST" 
+        session="none" />
+  
+  <ws:webservice
+        id="service_test_session"
+        servicename="Test"
+        interface="org.pustefixframework.webservices.example.Test"
+        ref="test_session"
+        protocol="TEST" />
+  
+  <ws:webservice 
+        id="service_test_nested" 
+        servicename="TestNested" 
+        interface="org.pustefixframework.webservices.example.Test"
+        authconstraint="MY_AUTHCONSTRAINT"
+        protocol="TEST" >
+    <bean class="org.pustefixframework.webservices.example.TestImpl"/>
+  </ws:webservice>
+  
+  <ws:webservice 
+        id="service_test_nestedref" 
+        servicename="TestNestedRef" 
+        interface="org.pustefixframework.webservices.example.Test"
+        protocol="TEST"
+        session="none">
+    <ref bean="test_singleton"/>
+  </ws:webservice>
+  
+ 
+</beans>

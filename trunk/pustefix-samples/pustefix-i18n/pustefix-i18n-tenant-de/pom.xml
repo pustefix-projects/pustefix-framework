@@ -1,0 +1,85 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+  <modelVersion>4.0.0</modelVersion>
+  <parent>
+    <artifactId>pustefix-i18n</artifactId>
+    <groupId>org.pustefixframework.samples</groupId>
+    <version>0.18.64</version>
+  </parent>
+
+  <groupId>org.pustefixframework.samples</groupId>
+  <artifactId>pustefix-i18n-tenant-de</artifactId>
+  <version>0.18.64</version>
+  <packaging>jar</packaging>
+  <name>Pustefix i18n sample tenant module DE</name>
+
+  <properties>
+    <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+  </properties>
+
+  <dependencies>
+    <dependency>
+      <groupId>org.pustefixframework</groupId>
+      <artifactId>pustefix-core</artifactId>
+      <version>0.18.64</version>
+    </dependency>
+    <dependency>
+      <groupId>junit</groupId>
+      <artifactId>junit</artifactId>
+      <version>4.8.1</version>
+      <scope>test</scope>
+    </dependency>
+    <!-- Language modules -->
+    <dependency>
+      <groupId>org.pustefixframework.samples</groupId>
+      <artifactId>pustefix-i18n-lang-de</artifactId>
+      <version>0.18.64</version>
+    </dependency>
+     <dependency>
+      <groupId>org.pustefixframework.samples</groupId>
+      <artifactId>pustefix-i18n-core</artifactId>
+      <version>0.18.64</version>
+    </dependency>
+  </dependencies>
+  <build>
+    <plugins>
+      <plugin>
+        <groupId>org.pustefixframework.maven.plugins</groupId>
+        <artifactId>pustefix-iwrapper-plugin</artifactId>
+        <version>0.18.64</version>
+        <executions>
+          <execution>
+            <goals>
+              <goal>generate</goal>
+            </goals>
+          </execution>
+        </executions>
+      </plugin>
+      <plugin>
+        <groupId>org.pustefixframework.maven.plugins</groupId>
+        <artifactId>pustefix-statuscode-plugin</artifactId>
+        <version>0.18.64</version>
+        <configuration>
+          <module>pustefix-i18n-de</module>
+          <includes>
+            <include>dyntxt/statuscodeinfo.xml</include>
+          </includes>
+        </configuration>
+        <executions>
+          <execution>
+            <goals>
+              <goal>generate</goal>
+            </goals>
+          </execution>
+        </executions>
+      </plugin>
+      <plugin>
+        <artifactId>maven-compiler-plugin</artifactId>
+        <configuration>
+          <source>1.5</source>
+          <target>1.5</target>
+        </configuration>
+      </plugin>
+    </plugins>
+  </build>
+</project>
