@@ -29,7 +29,8 @@ import java.net.JarURLConnection;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.net.URLClassLoader;
-import java.util.List;
+import java.util.Iterator;
+import java.util.Set;
 
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
@@ -47,7 +48,7 @@ import org.w3c.dom.Document;
 public class Reflection {
     public static Reflection create(MavenProject project) throws MojoExecutionException {
         URL[] cp;
-        List<Artifact> artifacts;
+        Set<Artifact> artifacts;
         StringBuilder classpath;
         File file;
 
@@ -58,8 +59,9 @@ public class Reflection {
             file = new File(project.getBuild().getOutputDirectory());
             cp[0] = file.toURI().toURL();
             classpath.append(file);
+            Iterator<Artifact> it = artifacts.iterator();
             for (int i = 1; i < cp.length; i++) {
-                file = artifacts.get(i - 1).getFile();
+                file = it.next().getFile();
                 cp[i] = file.toURI().toURL();
                 classpath.append(':').append(file.getAbsolutePath());
             }
@@ -70,8 +72,8 @@ public class Reflection {
     }
 
     @SuppressWarnings("unchecked")
-    private static List<Artifact> extracted(MavenProject project) {
-        return project.getCompileArtifacts();
+    private static Set<Artifact> extracted(MavenProject project) {
+        return project.getArtifacts();
     }
     
     private final URLClassLoader loader;
