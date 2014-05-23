@@ -1,0 +1,164 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<include_parts xmlns:ixsl="http://www.w3.org/1999/XSL/Transform"
+               xmlns:pfx="http://www.schlund.de/pustefix/core">
+
+  <part name="test">
+    <theme name="default">
+      <pfx:include part="data_table">
+        <!-- Pass table caption as include parameter -->
+        <pfx:includeparam name="title">Compare animals</pfx:includeparam>
+      </pfx:include>
+    </theme>
+  </part>
+
+  <part name="data_table">
+    <theme name="default">
+      <!-- Declare include parameters -->
+      <pfx:includeparam name="title"/>
+      <pfx:includeparam name="categories">
+        <category id="image"/>
+        <category id="topspeed"/>
+        <category id="maxage"/>
+      </pfx:includeparam>
+      
+      <table>
+        <caption>
+          <!-- Get display caption from include parameter -->
+          <pfx:value-of select="$title"/>
+        </caption>
+        <tr>
+          <th align="left">Name</th>
+          <ixsl:for-each select="/formresult/animals/supportedAnimals/string">
+            <td>
+              <ixsl:value-of select="."/>
+            </td>
+          </ixsl:for-each>
+        </tr>
+        
+        <!-- iterate over include parameter value nodes -->
+        <pfx:for-each select="$categories/category">
+          <tr>
+            <th align="left">
+              <!-- include parts cat_image, cat_topspeed, etc. -->
+              <pfx:include select-part="concat('cat_',@id)"/>
+           </th>
+           <ixsl:for-each select="/formresult/animals/supportedAnimals/string">
+             <td>
+               <pfx:checkinclude level="runtime">
+                 <pfx:part>cat_<pfx:value-of select="@id"/>_<ixsl:value-of select="."/></pfx:part>
+                 <pfx:include level="runtime">
+                   <pfx:part>cat_<pfx:value-of select="@id"/>_<ixsl:value-of select="."/></pfx:part>
+                 </pfx:include>
+               </pfx:checkinclude>
+             </td>
+           </ixsl:for-each>
+          </tr>
+        </pfx:for-each>
+      </table>
+      
+    </theme>
+  </part>
+  
+  <part name="data_cell">
+    <theme name="default">
+    
+    </theme>
+  </part>
+  
+  <part name="cat_name">
+    <theme name="default">
+      Name
+    </theme>
+  </part>
+  
+  <part name="cat_image">
+    <theme name="default">
+      Picture
+    </theme>
+  </part>
+  
+  <part name="cat_topspeed">
+    <theme name="default">
+      Top speed
+    </theme>
+  </part>
+  
+  <part name="cat_maxage">
+    <theme name="default">
+      Max age
+    </theme>
+  </part>
+  
+  <part name="cat_image_Tiger">
+    <theme name="default">
+      <pfx:image class="small" src="img/tiger-small.jpg" width="125" height="94"/>
+    </theme>
+  </part>
+  
+  <part name="cat_image_Elephant">
+    <theme name="default">
+      <pfx:image class="small" src="img/elephant-small.jpg" width="125" height="94"/>
+    </theme>
+  </part>
+  
+  <part name="cat_image_Giraffe">
+    <theme name="default">
+      <pfx:image class="small" src="img/giraffe-small.jpg" width="125" height="94"/>
+    </theme>
+  </part>
+  
+  <part name="cat_image_Lion">
+    <theme name="default">
+      <pfx:image class="small" src="img/lion-small.jpg" width="125" height="94"/>
+    </theme>
+  </part>
+  
+  <part name="cat_image_Rhino">
+    <theme name="default">
+      <pfx:image class="small" src="img/rhino-small.jpg" width="125" height="94"/>
+    </theme>
+  </part>
+  
+  <part name="cat_image_Zebra">
+    <theme name="default">
+      <pfx:image class="small" src="img/zebra-small.jpg" width="125" height="94"/>
+    </theme>
+  </part>
+
+  <part name="cat_topspeed_Zebra">
+    <theme name="default">
+      35 km/h
+    </theme>
+  </part>
+  
+  <part name="cat_topspeed_Tiger">
+    <theme name="default">
+      45 km/h
+    </theme>
+  </part>
+  
+  <part name="cat_maxage_Elephant">
+    <theme name="default">
+      70 years
+    </theme>
+  </part>
+  
+  <part name="cat_maxage_Giraffe">
+    <theme name="default">
+      30 years
+    </theme>
+  </part>
+  
+  <part name="cat_maxage_Lion">
+    <theme name="default">
+      25 years
+    </theme>
+  </part>
+  
+  <part name="cat_maxage_Rhino">
+    <theme name="default">
+      35 years
+    </theme>
+  </part>
+
+</include_parts>

@@ -1,0 +1,70 @@
+<?xml version="1.0" encoding="UTF-8"?> <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+  <modelVersion>4.0.0</modelVersion>
+
+  <parent>
+    <groupId>org.pustefixframework</groupId>
+    <artifactId>pustefix-samples</artifactId>
+    <version>0.18.65</version>
+  </parent>
+
+  <groupId>org.pustefixframework</groupId>
+  <artifactId>pustefix-testsuite</artifactId>
+  <version>0.18.65</version>
+  <packaging>war</packaging>
+
+  <name>Pustefix Testsuite</name>
+
+  <dependencies>
+    <dependency>
+      <groupId>org.pustefixframework</groupId>
+      <artifactId>pustefix-core</artifactId>
+      <version>0.18.65</version>
+    </dependency>
+    <dependency>
+      <groupId>org.pustefixframework.webservices</groupId>
+      <artifactId>pustefix-webservices-core</artifactId>
+      <version>0.18.65</version>      
+    </dependency>
+
+
+    <dependency>
+      <groupId>rhino</groupId>
+      <artifactId>js</artifactId>
+      <version>1.5R3</version>
+    </dependency>
+    <dependency>
+      <groupId>org.beanshell</groupId>
+      <artifactId>bsh</artifactId>
+      <version>2.0b4</version>
+    </dependency>
+  </dependencies>
+ 
+  <build>
+    <plugins> 
+      <plugin>
+        <groupId>org.pustefixframework.maven.plugins</groupId>
+        <artifactId>pustefix-statuscode-plugin</artifactId>
+        <version>0.18.65</version>
+        <executions>
+          <execution>
+            <goals>
+              <goal>generate</goal>
+            </goals>
+          </execution>
+        </executions>
+      </plugin>
+      <plugin>
+        <groupId>org.pustefixframework.maven.plugins</groupId>
+        <artifactId>pustefix-iwrapper-plugin</artifactId>
+        <version>0.18.65</version>
+        <executions>
+          <execution>
+            <goals>
+              <goal>generate</goal>
+            </goals>
+          </execution>
+        </executions>
+      </plugin>
+    </plugins>
+  </build>
+</project>

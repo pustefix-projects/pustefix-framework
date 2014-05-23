@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<sitemap-aliases lang="de">
+  <alias page="Home">Start</alias>
+  <alias page="Overview">Uebersicht</alias>
+  <alias page="Info">Information</alias>
+  <alias page="Cities">Staedte</alias>
+  <alias page="NationalParks">Test</alias>
+  <alias page="Mountains">Berge</alias>
+  <alias page="TOC">Inhalt</alias>
+</sitemap-aliases>

@@ -1,0 +1,49 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<web-app xmlns="http://java.sun.com/xml/ns/javaee" xmlns:jee="http://java.sun.com/xml/ns/javaee">
+   <context-param>
+     <param-name>mode</param-name>
+     <param-value>test</param-value>
+   </context-param>
+   <filter>
+     <filter-name>CharacterEncodingFilter</filter-name>
+     <filter-class>org.springframework.web.filter.CharacterEncodingFilter</filter-class>
+     <init-param>
+       <param-name>encoding</param-name>
+       <param-value>UTF-8</param-value>
+     </init-param>
+   </filter>
+   <filter>
+      <filter-name>UrlRewriteFilter</filter-name>
+      <filter-class>org.tuckey.web.filters.urlrewrite.UrlRewriteFilter</filter-class>
+   </filter>
+   <filter-mapping>
+      <filter-name>UrlRewriteFilter</filter-name>
+      <url-pattern>/xml/main/*</url-pattern>
+      <dispatcher>REQUEST</dispatcher>
+      <dispatcher>FORWARD</dispatcher>
+   </filter-mapping>
+   <filter-mapping>
+     <filter-name>CharacterEncodingFilter</filter-name>
+     <url-pattern>/*</url-pattern>
+   </filter-mapping>
+   <servlet>
+      <servlet-name>dispatcher</servlet-name>
+      <servlet-class>org.springframework.web.servlet.DispatcherServlet</servlet-class>
+      <init-param>
+         <param-name>contextClass</param-name>
+         <param-value>org.pustefixframework.container.spring.beans.PustefixWebApplicationContext</param-value>
+      </init-param>
+      <init-param>
+         <param-name>contextConfigLocation</param-name>
+         <param-value>WEB-INF/project.xml WEB-INF/spring.xml</param-value>
+      </init-param>
+      <load-on-startup>1</load-on-startup>
+   </servlet>
+   <servlet-mapping>
+      <servlet-name>dispatcher</servlet-name>
+      <url-pattern>/*</url-pattern>
+   </servlet-mapping>
+   <session-config>
+      <session-timeout>60</session-timeout>
+   </session-config>
+</web-app>

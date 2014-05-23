@@ -1,0 +1,331 @@
+<?xml version="1.0" encoding="UTF-8"?><include_parts xmlns:ixsl="http://www.w3.org/1999/XSL/Transform" xmlns:pfx="http://www.schlund.de/pustefix/core">
+  
+  <part name="content">
+    <theme name="default">
+      <center>
+        <pfx:forminput>
+          <table width="400">
+            <tr>
+              <td align="left">
+                <b><big>Confirmation:</big></b>
+              </td>
+            </tr>
+          </table>
+          <table bgcolor="#bbccff" class="boxed" width="400">
+            <tr valign="top">
+              <pfx:checkfield name="info.Adult"><td class="{$pfx_class}"><pfx:include part="adult"/></td></pfx:checkfield>
+              <td>
+                <pfx:xinp name="info.Adult" type="radio" value="true"/><pfx:include part="yes"/><br/>
+                <pfx:xinp default="true" name="info.Adult" type="radio" value="false"/><pfx:include part="no"/><br/>
+                <pfx:xinp name="info.Adult" type="radio" value="foobar"/>foobar<br/>
+              </td>
+            </tr>
+            <errormsg name="info.Adult"/>
+            <tr>
+              <td>
+                Date of birth: <pfx:xinp name="info.Date" type="text" size="10"/>
+              </td>
+            </tr>
+            <tr>
+              <td>
+                <ixsl:if test="/formresult/adultinfo/@adult">
+                  <pfx:render>
+                    <pfx:part><ixsl:value-of select="/formresult/adultinfo/@adult"/></pfx:part>
+                  </pfx:render>
+                </ixsl:if>
+              </td>
+            </tr>
+          </table>
+          <table width="400">
+            <tr>
+              <td align="right" nowrap="nowrap">
+                <pfx:xinp type="submit" value="Go!"/>
+                <pfx:xinp forcestop="true" type="submit" value="Don't go"/>
+                <pfx:xinp forcestop="step" type="submit" value="Go Step by Step!"/>
+              </td>
+            </tr>
+          </table>
+          <br/>
+          <pfx:token errorpage="tokenerror"/>
+        <p>
+          <h3><pfx:button page="scripting">SCRIPTING IHandler Test</pfx:button></h3>
+        </p>
+        <p>
+          <h3><pfx:button page="scriptingstate">SCRIPTING State Test</pfx:button></h3>
+        </p>
+        <p>
+          <h3><pfx:button page="testchecks">Pre- and postchecks Test</pfx:button></h3>
+        </p>
+        <br/>
+        <pfx:include part="buttons"/>
+        <br/>
+        <table cellpadding="10">
+          <tr valign="top">
+            <td>
+              <pfx:include part="env_info"/>
+            </td>
+            <td>
+              <pfx:include part="variant_info"/>
+            </td>
+          </tr>
+        </table>
+        <hr/>
+        <pfx:button page="A">Go to test page A</pfx:button>
+        <hr/>
+          <table bgcolor="#bbcc88" class="boxed" id="special">
+            <tr>
+              <td align="left" colspan="2">
+                <b>Indexed parameter test:</b>
+              </td>
+            </tr>
+            <ixsl:for-each select="$sitemap//page">
+              <tr>
+                <pfx:checkfield>
+                  <pfx:name>prefix.Value.<ixsl:value-of select="position()"/></pfx:name>
+                  <td class="{$pfx_class}" nowrap="nowrap">
+                    <pfx:error><pfx:image src="/img/error.gif" module="pustefix-core" style="vertical-align: middle;"/></pfx:error>
+                    FooBar No. <ixsl:value-of select="position()"/>
+                  </td>
+                </pfx:checkfield>
+                <td>
+                  <pfx:xinp type="text">
+                    <pfx:name>prefix.Value.<ixsl:value-of select="position()"/></pfx:name>
+                    <pfx:default><ixsl:value-of select="@name"/></pfx:default>
+                  </pfx:xinp>
+                </td>
+              </tr>
+              <errormsg><name>prefix.Value.<ixsl:value-of select="position()"/></name></errormsg>
+            </ixsl:for-each>
+          </table>
+       </pfx:forminput>
+       
+       <div class="test">  
+         Test of deref-server for forms: 
+         <pfx:externalform href="http://www.gimp.org">
+           <input type="text" name="FOO"/>
+           <input type="submit"/>
+         </pfx:externalform>
+       </div>
+        
+       <div class="test">
+         Test of render extensions:<br/>
+         <input type="button" name="test" onclick="rexTest()" value="test"/>
+         <span id="rexresult"/>
+         <span id="rexjsresult"/>
+       </div>
+       
+      </center>
+    </theme>
+  </part>
+  
+  <part name="buttons">
+    <theme name="default">
+      <pfx:button page="test" target="_top">
+        STARTWITHFLOW test
+      </pfx:button>
+      <br/>
+      <pfx:elink href="http://www.gimp.org" target="_popup">
+        <pfx:argument name="foo"><ixsl:value-of select="/formresult/@serial"/></pfx:argument>
+        Goto Gimp!</pfx:elink>  
+        <pfx:button page="install">Download README.1st (text/plain)</pfx:button>  
+        <pfx:elink href="ftp://ftp.scc.kit.edu/" target="_popup">
+        Goto FTP UniKa!</pfx:elink>
+        <br/>
+        <pfx:button page="geninc">Test generated runtime stylesheet include</pfx:button>&#160;&#160;
+        <pfx:button page="invalidate" target="_top">Invalidate this session</pfx:button>&#160;&#160;
+        <ixsl:if test="/formresult/adultinfo/@adult">
+        <pfx:button page="home" nodata="true" mode="force"><pfx:argument name="invalidate">true</pfx:argument>Directly invalidate session</pfx:button>&#160;&#160; 
+        </ixsl:if>
+        <pfx:button page="frames">Goto frames test</pfx:button> 
+        <br/>
+        <pfx:button page="upload">Test upload mechanism</pfx:button>&#160;&#160;
+        <pfx:button page="encoding">Encoding test page</pfx:button>&#160;&#160;
+        <pfx:button page="SelectAnimal">Moduletest I</pfx:button>  
+        <br/>
+        <pfx:button page="moduletest">Moduletest II</pfx:button>
+    </theme>
+  </part>
+  
+  <part name="adult">
+    <theme name="bar">
+      [BAR] Are you older than 18 years?
+    </theme>
+    <theme name="default">
+      [DEF] Are you really older than 18 years?
+      </theme>
+      <theme name="foo">
+        <pfx:include part="thefoo"/> Older than 18?
+      </theme>
+  </part>
+  
+  <part name="yes">
+    <theme name="default">
+      <pfx:langselect>
+        <pfx:lang name="default">Yes!</pfx:lang>
+        <pfx:lang name="de_*">Ja!</pfx:lang>
+        <pfx:lang name="fr_*">Oui!</pfx:lang>
+      </pfx:langselect>
+    </theme>
+  </part>
+  
+  <part name="no">
+    <theme name="default">No!</theme>
+  </part>
+  
+  <part name="inline_test">
+    <theme name="default">
+      <pfx:themeselect>
+        <pfx:theme name="foo">
+          (FOO inline theme)
+        </pfx:theme>
+        <pfx:theme name="default">
+          (DEFAULT inline theme)
+        </pfx:theme>
+      </pfx:themeselect>
+      <br/>
+      <pfx:langselect>
+        <pfx:lang name="en_*">
+          (en_* inline lang)
+        </pfx:lang>
+        <pfx:lang name="en_GB">
+          (en_GB inline lang)
+        </pfx:lang>
+        <pfx:lang name="de_DE">
+          (de_DE inline lang)
+        </pfx:lang>
+        <pfx:lang name="default">
+          (default inline lang)
+        </pfx:lang>
+      </pfx:langselect>
+      <br/>
+    </theme>
+  </part>
+  
+  <part name="variant_info">
+    <theme name="default">
+      <table class="info">
+        <tr>
+          <td>Requested variant</td>
+          <td>
+            <ixsl:choose>
+              <ixsl:when test="/formresult/@requested-variant">
+                <ixsl:value-of select="/formresult/@requested-variant"/>
+              </ixsl:when>
+              <ixsl:otherwise>
+                <i>None</i>
+              </ixsl:otherwise>
+            </ixsl:choose>
+          </td>
+        </tr>
+        <tr>
+          <td>Used PageRequest</td>
+          <td>
+            <ixsl:choose>
+              <ixsl:when test="/formresult/@used-pr">
+                <ixsl:value-of select="/formresult/@used-pr"/>
+              </ixsl:when>
+              <ixsl:otherwise>
+                <i>Root definition</i>
+              </ixsl:otherwise>
+            </ixsl:choose>
+          </td>
+        </tr>
+        <tr>
+          <td>Used PageFlow</td>
+          <td>
+            <ixsl:choose>
+              <ixsl:when test="/formresult/@used-pf">
+                <ixsl:value-of select="/formresult/@used-pf"/>
+              </ixsl:when>
+              <ixsl:otherwise>
+                <i>Root definition</i>
+              </ixsl:otherwise>
+            </ixsl:choose>
+          </td>
+        </tr>
+        <tr>
+          <td>Used page variant</td>
+          <td>
+            <ixsl:choose>
+              <ixsl:when test="/formresult/@used-pv">
+                <ixsl:value-of select="/formresult/@used-pv"/>
+              </ixsl:when>
+              <ixsl:otherwise>
+                <i>Root definition</i>
+              </ixsl:otherwise>
+            </ixsl:choose>
+          </td>
+        </tr>
+      </table>
+    </theme>
+  </part>
+  
+  <part name="env_info">
+    <theme name="default">
+      <table class="info">
+        <tr>
+          <td>Remote IP</td><td><ixsl:value-of select="$__remote_addr"/></td>
+        </tr>
+        <tr>
+          <td>Request Scheme</td><td><ixsl:value-of select="$__request_scheme"/></td>
+        </tr>
+        <tr>
+          <td>Server name</td><td><ixsl:value-of select="$__server_name"/></td>
+        </tr>
+        <tr>
+          <td>Complete uri</td><td><ixsl:value-of select="$__uri"/></td>
+        </tr>
+        <tr>
+          <td>Query String</td><td><ixsl:value-of select="$__querystring"/></td>
+        </tr>
+        <tr>
+          <td>Session for ext. reference</td><td><ixsl:value-of select="$__external_session_ref"/></td>
+        </tr>
+        <tr>
+          <td>Page name</td><td><ixsl:value-of select="$page"/></td>
+        </tr>
+        <tr>
+	    <ixsl:choose>
+	      <ixsl:when test="not($pageflow)">
+          	<td>Last used PageFlow name (currently none)</td><td><ixsl:value-of select="$__lf"/></td>
+	      </ixsl:when>
+	      <ixsl:otherwise>
+          	<td>PageFlow name</td><td><ixsl:value-of select="$__lf"/></td>
+          </ixsl:otherwise>
+        </ixsl:choose>
+        </tr>
+      </table>
+  </theme>
+  </part>
+  
+  <part name="XXX">
+    <theme name="default">
+      Hallo
+    </theme>
+  </part>
+  
+  <part name="thefoo">
+    <theme name="default">
+      [FOO]
+    </theme>
+  </part>
+  
+  <part name="false" render="true">
+    <theme name="default">
+      No adult
+    </theme>
+  </part>
+  
+  <part name="true" render="true">
+    <theme name="default">
+      Adult
+    </theme>
+  </part>
+  
+  <part name="headertest" render="true">
+    <theme name="default">
+       HEADERTEST WEBAPP
+    </theme>
+  </part>
+
+</include_parts>

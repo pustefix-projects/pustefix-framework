@@ -1,0 +1,501 @@
+<?xml version="1.0" encoding="UTF-8"?><include_parts xmlns:ixsl="http://www.w3.org/1999/XSL/Transform" xmlns:pfx="http://www.schlund.de/pustefix/core">
+  
+  <part name="standard">
+    <theme name="default">
+        <!-- Put application specific CSS here -->
+
+body{
+  background-color: #ffffff;
+  color: #000000;
+  font-family: Verdana, "Bitstream Vera Sans", Futura, Arial, sans-serif;
+  font-size: 12px;
+}
+
+hr{
+  height: 0;
+  border: 0 none;
+  border-top: 1px solid #474E66;
+}
+
+h1{
+  font-size: 18px;
+}
+
+div.box ul{
+  margin: 10px 20px 10px 20px;
+}
+
+ul.jobs{
+  list-style-type: square;
+  padding-left: 24px;
+}
+
+ul.jobs li{
+  margin-bottom: 10px;
+}
+
+div.box{
+  border: 1px solid #474E66;
+  margin: 20px;
+  padding-bottom: 10px;
+}
+
+div.box p{
+  margin: 10px 20px 10px 20px;
+}
+
+div.box h1{
+  background-color: #E7E8ED;
+  padding: 4px 10px 4px 10px;
+  margin-top: 0;
+  color: #002276;
+}
+
+a:link,
+a:visited{
+  color: #002276;
+  text-decoration: underline;
+}
+
+a:hover,
+a:active{
+  color: #002276;
+}
+
+
+.editor_submit,
+a.editor_submit:link,
+a.editor_submit:visited {
+  border: 1px solid #002276;
+  text-decoration: none;
+  padding: 2px 4px 2px 4px;
+  background-color: #EBF5FF;
+  cursor: default;
+  color: #002276;
+}
+
+.editor_submit:hover,
+a.editor_submit:hover,
+a.editor_submit:active {
+  border: 1px solid #002276;
+  text-decoration: none;
+  padding: 2px 4px 2px 4px;
+  background-color: #F5FAFF;
+  cursor: default;
+  color: #002276;
+}
+
+.editor_importantlink,
+a.editor_importantlink:link,
+a.editor_importantlink:visited {
+  font-size:13px;
+  font-weight:bold;
+  text-decoration: none;
+  color: #002276;
+}
+
+body.navi{
+  background-color: #002276;
+  margin: 0;
+  padding: 0;
+}
+
+body.navi ul{
+  background-color: #002276;
+  padding: 8px;
+  padding-bottom: 2px;
+  margin: 0;
+  margin-top: 10px;
+  border-bottom: 6px solid #EBF5FF;
+}
+
+body.navi ul li{
+  display: inline;
+  margin-right: 6px;
+  list-style-type: none;
+  color: #ffffff;
+  padding-bottom: 0;
+  margin-bottom: 0;
+}
+
+
+body.navi ul li span.active,
+body.navi ul li a:link,
+body.navi ul li a:visited{
+  color: #ffffff;
+  border: 1px solid #ffffff;
+  padding: 3px 8px 2px 8px;
+  border-bottom: 0 none;
+  text-decoration: none;
+  cursor: default;
+}
+
+body.navi ul li a:hover,
+body.navi ul li a:active{
+  background-color: #EBF5FF;
+  color: #002276;
+}
+
+body.navi ul li span.active{
+  font-weight: bold;
+  background-color: #EBF5FF;
+  color: #002276;
+}
+
+
+div.docframe h1{
+  font-size: 12px;
+  margin-bottom: 0;
+  background-color: #FFFFFF;
+  width: auto;
+  display: inline;
+  text-align: right;
+  float: right;
+  padding: 3px 6px 5px 6px;
+  border: 1px solid #474E66;
+  border-bottom: 0 none;
+  background-color: #EBF5FF;
+  color: #002276;
+}
+
+div.docframe div.main{
+  border: 1px solid #474E66;
+}
+
+
+div.docframe div.main h2{
+  background-color: #E7E8ED;
+  color: #002276;
+  font-size: 15px;
+  margin-top: 0;
+  padding: 4px 8px 4px 8px;
+  border-bottom: 1px dotted #474E66;
+}
+
+div.docframe div.main p{
+  margin: 6px 10px 6px 10px;
+}
+
+div.docframe div.main h3{
+  margin: 30px 10px 0px 10px;
+  text-decoration: underline;
+}
+
+div.docframe div.main h4{
+  font-size: 14px;
+  margin-bottom: 0px;
+}
+
+div.docframe div.main li.high h4{
+  border-top: 1px solid #BDC1CF;
+  border-bottom: 1px dotted #BDC1CF;
+  background-color: #DCDFE6;
+}
+
+div.docframe div.main li.low h4{
+  border-top: 1px solid #C9E4FF;
+  border-bottom: 1px dotted #C9E4FF;
+  background-color: #E7F3FF;
+}
+
+.editor_sidebar_content_sel{
+  padding: 2px 0px 2px 0px;
+  background-color: #002276;
+  color: #FFFFFF;
+}
+        
+.editor_sidebar_content_aux {
+  background-color: #FEFFD2;
+}
+
+.editor_sidebar_box {
+  padding: 2px 2px 2px 2px;
+  background-color: #cBd5eF;
+  color: #333333;
+}
+
+.editor_sidebar_content_sel *{
+  color: #FFFFFF !important;
+}
+
+
+div.docframe div.main h5{
+  font-size: 12px;
+  margin-bottom: 0px;
+}
+
+div.docframe div.main h4.required{
+  color: #990000;
+}
+
+div.docframe div.main h4.required:after{
+  content: " *";
+}
+
+div.docframe div.main ul{
+
+  margin-right: 10px;
+  margin-left: 0px;
+  padding-left: 26px;
+}
+
+div.docframe div.main ul li.default{
+  color: #990000;
+}
+
+div.docframe div.main ul li.default:after{
+  content: " *";
+}
+
+div.docframe div.main li{
+
+}
+
+div.docframe div.main li li{
+  border-bottom: 0 none;
+  border-top: 0 none;
+}
+
+
+div.docframe div.main li.low{
+  background-color: #F7FBFF;
+  border-bottom: 1px solid #C9E4FF;
+  border-left: 1px dotted #C9E4FF;
+  border-right: 1px dotted #C9E4FF;
+}
+
+div.docframe div.main li.high{
+  background-color: #F1F2F5;
+  border-bottom: 1px solid #BDC1CF;
+  border-left: 1px dotted #BDC1CF;
+  border-right: 1px dotted #BDC1CF;
+}
+
+div.docframe div.main ul li p{
+  margin-left: 0;
+}
+
+div.docframe div.main ul li span.default{
+  color: #990000;
+}
+
+.editor_body_sidebar{
+  background-color: #EBF5FF;
+}
+
+.editor_sidebar_content {
+  margin: 8px;
+  width: auto;
+  font-size: 10px !important;
+}
+        
+.editor_sidebar_content_images {
+  width:90%;
+}
+
+div.editor_includes_sidebar_content {
+  margin:8px;
+  width:auto;
+}
+
+div.editor_includes_sidebar_content,
+div.editor_includes_sidebar_directory,
+div.editor_includes_sidebar_directory_title,
+div.editor_includes_sidebar_file,
+div.editor_includes_sidebar_part {
+  font-family: Verdana, Helvetica, Tahoma, Arial, sans-serif;
+  font-size: 12px;
+  padding: 2px;
+  white-space:nowrap;
+}
+        
+div.editor_includes_sidebar_directory_title {
+  background-color: #cBd5eF;
+  color: #333333;
+  white-space:nowrap;
+}
+
+div.editor_includes_sidebar_part_selected,
+div.editor_includes_sidebar_part_selected a {
+  background-color: #002276;
+  color:#ffffff;
+}
+
+span.editor_includes_sidebar_directory_showbutton,
+span.editor_includes_sidebar_directory_hidebutton,
+span.editor_includes_sidebar_file_showbutton,
+span.editor_includes_sidebar_file_hidebutton {
+  font-weight: bold;
+  cursor: pointer;
+}
+
+div.editor_includes_sidebar_buttons {
+  margin-bottom: 8px;
+}
+
+div.editor_includes_sidebar_buttons span {
+  text-decoration: underline;
+  color: #002276;
+  cursor: pointer;
+}
+
+.editor_compare_row {
+  padding: 2px 6px 2px 6px;
+  font-family:monospace;
+}
+       
+div.topbar{
+  position:absolute;
+  right: 0;
+  top: 0;
+  background-color: #990000;
+  border-bottom: 1px solid #ffffff;
+  border-left: 1px solid #ffffff;
+  padding: 2px 6px 2px 6px;
+}
+
+div.topbar a:link,
+div.topbar a:visited{
+  font-weight: bold;
+  text-decoration: none;
+  color: #ffffff;
+
+
+}
+
+.editor_input_pwd,
+.editor_input{
+  border: 1px solid;
+  border-color: #474E66 #E7E8ED #E7E8ED #474E66;
+  padding: 2px 4px 2px 4px;
+}
+
+.editor_input_pwd:focus,
+.editor_input:focus{
+  border: 1px solid;
+  border-color: #002276 #4A5F9A #4A5F9A #002276;
+  background-color: #EBF5FF;
+}
+
+.editor_textarea {
+  border: 1px black solid;
+  width: 100%;
+}
+
+div.info{
+  width: 300px;
+  border: 1px solid #990000;
+  background-color: #FFFFFF;
+  margin: 20px;
+  padding: 6px 10px 6px 10px;
+  background-color: #FAFBFC;
+
+}
+
+div.info h1{
+  font-size: 13px;
+  margin: 0;
+}
+
+div.info h2{
+  font-size: 11px;
+}
+
+.editor_odd_row { background: #F7FBFF; }
+.editor_even_row { background: #EBF5FF; }
+
+.editor_box{
+  border: 1px solid #474E66;
+  padding: 6px 10px 6px 10px;
+  background-color: #F5FAFF;
+}
+
+.editor_box .editor_box{
+  background-color: #FFFFFF;
+  border: 1px solid #C9E4FF;
+  margin: 10px 0 10px 0;
+}
+
+.editor_note {
+  background-color: #ffffff;
+  border: 1px solid #990000;
+  font-weight: bold;
+  font-size: 11px;
+  margin: 10px 0 10px 0;
+}
+      
+.editor_error {
+  background-color: #ffeeee;
+  border: 1px solid #990000;
+  padding: 4px;
+  margin: 10px 0 10px 0;
+  vertical-align:middle;
+}
+.editor_error td {
+  font-weight:bold;
+  font-size:15px;      
+}
+
+ul.list{
+  padding-left: 24px;
+  margin: 0;
+  margin-bottom: 20px;
+
+}
+
+ul.list li{
+  margin-top: 2px;
+}
+
+table.editor_pagemessages_box,
+div.editor_pagemessages_box {
+  border:dashed 1px #cccccc;
+  padding: 2px;
+}
+
+
+.PfxError  { color: #cc0000; font-weight: bold; }
+
+.editor_box_alpha { border-style:solid; border-width:1px;
+                    padding: 0; border-color: black; }
+.editor_box_alpha tr { padding: 0;}
+.editor_box_alpha td { padding: 3px;}
+
+.editor_box_alpha tr td { padding: 10px;}
+
+.editor_main_emph { font-weight: bold; }
+.editor_warn { color: #cc0000; font-weight: bold; padding: 5px;}
+.editor_locked { color: #ff0000; font-weight: bold; }
+
+.editor_missing_img { color: #0000cc; font-weight: bold; }
+.editor_missing_img_txt { color: #ffffff; font-weight: bold;
+                          font-size: 14px; }
+
+.editor_dim { color:#445588; }
+
+.editor_page_old { font-weight: bold; font-style: italic; color:#aa3333; }
+.editor_small { color: #000000; font-size: 9px;
+                font-family: Verdana, Helvetica, Tahoma, Arial, sans-serif;}
+                
+div.important_note {
+   background: #333333;
+   padding: 10px;
+   border: 1px solid #999999;
+   color: white;
+   font-weight: bold;
+   text-align:left;
+}
+span.important_note {
+   padding-left: 7px;
+}
+
+      </theme>
+    
+    
+  </part>
+  
+</include_parts><!--
+Local Variables:
+mode: xml
+End:
+-->

@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="utf-8"?>
+<include_parts xmlns:ixsl="http://www.w3.org/1999/XSL/Transform" xmlns:pfx="http://www.schlund.de/pustefix/core">
+  
+  <part name="country">
+    <theme name="default">
+      the United States of America
+    </theme>
+  </part>
+  
+  <part name="info">
+    <theme name="default">
+      <pfx:image src="img/cities/NewYork.jpg"/>
+      <pfx:image src="img/mountains/MountWhitney.jpg"/>
+      <pfx:image src="img/nationalparks/Zion.jpg"/>
+    </theme>
+    <theme name="cities">
+      <pfx:image src="img/cities/NewYork.jpg"/>
+      <pfx:image src="img/cities/Washington.jpg"/>
+      <pfx:image src="img/cities/LosAngeles.jpg"/>
+    </theme>
+    <theme name="mountains">
+      <pfx:image src="img/mountains/MountRainier.jpg"/>
+      <pfx:image src="img/mountains/MountWhitney.jpg"/>
+      <pfx:image src="img/mountains/RockyMountains.jpg"/>
+    </theme>
+    <theme name="nationalparks">
+      <pfx:image src="img/nationalparks/GrandCanyon.jpg"/>
+      <pfx:image src="img/nationalparks/Yellowstone.jpg"/>
+      <pfx:image src="img/nationalparks/Zion.jpg"/>
+    </theme>
+  </part>
+
+</include_parts>

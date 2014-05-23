@@ -1,0 +1,103 @@
+<?xml version="1.0" encoding="UTF-8"?><include_parts xmlns:ixsl="http://www.w3.org/1999/XSL/Transform" xmlns:pfx="http://www.schlund.de/pustefix/core">
+  
+  <part name="content">
+    <theme name="default">
+      <center>
+        <pfx:forminput>
+          <br/>
+          <table class="editor_box">
+            <tr>
+              <pfx:checkfield name="lucefix.Contents">
+                <td class="{$pfx_class}">Contents:</td>
+              </pfx:checkfield>
+              <td nowrap="nowrap"><pfx:xinp name="lucefix.Contents" type="text"/></td>
+            </tr>
+            <errmsg name="lucefix.Contents"/>
+            <tr>
+              <pfx:checkfield name="lucefix.Comments">
+                <td class="{$pfx_class}">Comments:</td>
+              </pfx:checkfield>
+              <td nowrap="nowrap"><pfx:xinp name="lucefix.Comments" type="text"/></td>
+            </tr>
+            <errmsg name="lucefix.Comments"/>
+            <tr>
+              <pfx:checkfield name="lucefix.Tags">
+                <td class="{$pfx_class}">Tags:</td>
+              </pfx:checkfield>
+              <td nowrap="nowrap"><pfx:xinp name="lucefix.Tags" type="text"/></td>
+            </tr>
+            <errmsg name="lucefix.Tags"/>
+            <tr>
+              <pfx:checkfield name="lucefix.Attribkeys">
+                <td class="{$pfx_class}">Attributekeys:</td>
+              </pfx:checkfield>
+              <td nowrap="nowrap"><pfx:xinp name="lucefix.Attribkeys" type="text"/></td>
+            </tr>
+            <errmsg name="lucefix.Attribkeys"/>
+            <tr>
+              <pfx:checkfield name="lucefix.Attribvalues">
+                <td class="{$pfx_class}">Attributevalues:</td>
+              </pfx:checkfield>
+              <td nowrap="nowrap"><pfx:xinp name="lucefix.Attribvalues" type="text"/></td>
+            </tr>
+            <errmsg name="lucefix.Attribvalues"/>
+            <tr>
+              <td align="right" colspan="2">
+                <pfx:xinp class="editor_submit" type="submit" value="Submit">
+                  <pfx:argument name="lucefix.Doit">true</pfx:argument>
+                </pfx:xinp>
+              </td>
+            </tr>
+          </table>
+          <br/>
+          <ixsl:choose>
+            <ixsl:when test="count(/formresult/lucefix/hit) &gt; 0">
+              <table>
+                <tr>
+                  <td class="editor_main_emph">Matches for
+                  "<ixsl:value-of select="/formresult/lucefix/@lastQuery"/>":</td>
+                </tr>
+              </table>
+              <table class="editor_box">
+                <ixsl:for-each select="/formresult/lucefix/hit">
+                  <ixsl:variable name="class">
+                    <ixsl:choose>
+                      <ixsl:when test="(count(preceding::hit) mod 2) = 0">editor_even_row</ixsl:when>
+                      <ixsl:otherwise>editor_odd_row</ixsl:otherwise>
+                    </ixsl:choose>
+                  </ixsl:variable>
+                  <tr><td class="{$class}">
+                      <pfx:button page="includes">
+		        <ixsl:value-of select="@filename"/>/<ixsl:value-of select="@part"/>@<ixsl:value-of select="@product"/>
+                        <pfx:argument name="selectinclude.Path"><ixsl:value-of select="@filename"/></pfx:argument>
+                        <pfx:argument name="selectinclude.Part"><ixsl:value-of select="@part"/></pfx:argument>
+                        <pfx:argument name="selectinclude.Theme"><ixsl:value-of select="@product"/></pfx:argument>
+                        <pfx:command name="SELWRP">selectinclude</pfx:command>
+                        <pfx:command name="SELWRP">upload</pfx:command>
+                    </pfx:button></td><td class="{$class}">
+                      <pfx:image height="10" src="/img/score.png">
+                        <ixsl:attribute name="alt"><ixsl:value-of select="@score"/></ixsl:attribute>
+                        <ixsl:attribute name="title"><ixsl:value-of select="@score"/></ixsl:attribute>
+                        <ixsl:attribute name="width"><ixsl:value-of select="round(number(@score) * 100)"/></ixsl:attribute>
+                      </pfx:image>
+                  </td></tr>
+                </ixsl:for-each>
+              </table>
+            </ixsl:when>
+            <ixsl:when test="/formresult/lucefix/@lastQuery != ''">
+              <table class="editor_box">
+                <tr>
+                  <td colspan="2">
+                    <b>No matches for "<ixsl:value-of select="/formresult/lucefix/@lastQuery"/>"</b>
+                  </td>
+                </tr>
+              </table>
+            </ixsl:when>
+          </ixsl:choose>
+        </pfx:forminput>
+        <br/>
+        <pfx:elink href="http://lucene.apache.org/" target="_blank"><pfx:image border="0" src="/img/lucene.png"/></pfx:elink>
+      </center>
+    </theme>
+  </part>
+</include_parts>

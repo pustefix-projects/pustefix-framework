@@ -1,0 +1,66 @@
+<?xml version="1.0" encoding="ISO-8859-1"?><include_parts xmlns:ixsl="http://www.w3.org/1999/XSL/Transform" xmlns:pfx="http://www.schlund.de/pustefix/core">
+
+  <part name="partC">
+    <theme name="default">
+      <div class="part_module">
+        <h3>CCC - C</h3>
+        <partinfo part="partC" theme="default" path="txt/common.xml" module="sample-module-C"/>
+      </div>
+    </theme>
+  </part>
+
+  <part name="partAC">
+    <theme name="default">
+      <div class="part_module">
+        <h3>CCC - AC</h3>
+        <partinfo part="partAC" theme="default" path="txt/common.xml" module="sample-module-C"/>
+      </div>
+    </theme>
+  </part>
+
+  <part name="partBC">
+    <theme name="default">
+      <div class="part_module">
+        <h3>CCC - BC</h3>
+        <partinfo part="partBC" theme="default" path="txt/common.xml" module="sample-module-C"/>
+      </div>
+    </theme>
+  </part>
+
+  <part name="partABC">
+    <theme name="default">
+      <div class="part_module">
+        <h3>CCC - ABC</h3>
+        <partinfo part="partABC" theme="default" path="txt/common.xml" module="sample-module-C"/>
+      </div>
+    </theme>
+  </part>
+ 
+  <part name="partProjectCommonABC">
+    <theme name="default">
+      <div class="part_module">
+        <h3>CCC - ProjectCommonABC</h3>
+        <partinfo part="partProjectCommonABC" theme="default" path="txt/common.xml" module="sample-module-C"/>
+      </div>
+    </theme>
+  </part>
+  
+  <part name="partCommonABC">
+    <theme name="default">
+      <div class="part_module">
+        <h3>CCC - CommonABC</h3>
+        <partinfo part="partCommonABC" theme="default" path="txt/common.xml" module="sample-module-C"/>
+      </div>
+    </theme>
+  </part>
+  
+  <part name="partProjectABC">
+    <theme name="default">
+      <div class="part_module">
+        <h3>CCC - ProjectABC</h3>
+        <partinfo part="partProjectABC" theme="default" path="txt/common.xml" module="sample-module-C"/>
+      </div>
+    </theme>
+  </part> 
+ 
+</include_parts>

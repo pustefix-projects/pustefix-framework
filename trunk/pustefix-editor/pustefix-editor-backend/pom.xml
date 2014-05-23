@@ -1,0 +1,45 @@
+<?xml version="1.0"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+  <modelVersion>4.0.0</modelVersion>
+  <parent>
+    <artifactId>pustefix-editor</artifactId>
+    <groupId>org.pustefixframework.editor</groupId>
+    <version>0.18.65</version>
+  </parent>
+
+  <name>Pustefix Editor Backend Code</name>
+
+  <groupId>org.pustefixframework.editor</groupId>
+  <artifactId>pustefix-editor-backend</artifactId>
+  <version>0.18.65</version>
+  
+  <dependencies>
+    <dependency>
+      <groupId>lucene</groupId>
+      <artifactId>lucene</artifactId>
+      <version>1.4.3</version>
+    </dependency> 
+    <dependency>
+      <groupId>org.pustefixframework.editor</groupId>
+      <artifactId>pustefix-editor-common</artifactId>
+      <version>0.18.65</version>
+    </dependency>
+    <dependency>
+      <groupId>com.caucho</groupId>
+      <artifactId>hessian</artifactId>
+      <version>3.1.5</version>
+    </dependency>
+    <dependency>
+      <groupId>org.springframework</groupId>
+      <artifactId>spring-webmvc</artifactId>
+      <version>3.0.7.RELEASE</version>
+    </dependency>
+    <dependency>
+      <groupId>javax.mail</groupId>
+      <artifactId>mail</artifactId>
+      <version>1.4.1</version>
+    </dependency>
+  </dependencies>
+  
+</project>
+

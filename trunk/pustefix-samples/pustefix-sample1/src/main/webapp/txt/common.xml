@@ -1,0 +1,67 @@
+<?xml version="1.0" encoding="UTF-8"?><include_parts xmlns:ixsl="http://www.w3.org/1999/XSL/Transform" xmlns:pfx="http://www.schlund.de/pustefix/core">
+  
+  <part name="appname" render="true">
+    <theme name="default">
+      Sample1
+    </theme>
+  </part>
+  
+  <part name="header" render="true">
+    <theme name="default">
+      <table class="header">
+        <tr>
+          <td class="logo">
+            <pfx:image src="img/logo.png"/>
+          </td>
+          <td class="name">
+            <div class="desc">
+              <pfx:langselect>
+                <pfx:lang name="en_*">Pustefix playground webapp</pfx:lang>
+                <pfx:lang name="de_*">Pustefix Spielwiese</pfx:lang>
+              </pfx:langselect>
+            </div>
+            <div class="name"><pfx:include part="appname"/></div>
+          </td>
+          <td class="navi"><pfx:include href="txt/navigation.xml" part="top"/></td>
+           <td class="langchoice">
+      	     <pfx:langselect>
+      	       <pfx:lang name="en_*">
+      	         <span>English</span><br/>
+      	         <a href="{$__contextpath}/{pfx:__omitPage($page,text())}{$__sessionIdPath}?__language=de_DE">Deutsch</a>
+      	       </pfx:lang>
+      	       <pfx:lang name="de_*">
+      	         <a href="{$__contextpath}/{pfx:__omitPage($page,text())}{$__sessionIdPath}?__language=en_UK">English</a><br/>
+      	         <span>Deutsch</span>
+      	       </pfx:lang>
+      	     </pfx:langselect>
+          </td>	
+          <td class="rev">
+            <pfx:langselect>
+              <pfx:lang name="en_*">Powered by Pustefix Framework</pfx:lang>
+              <pfx:lang name="de_*">Erstellt mit dem Pustefix Framework</pfx:lang>
+            </pfx:langselect>
+            <ixsl:text> </ixsl:text><ixsl:value-of select="pfx:getFrameworkVersion()"/></td>
+        </tr>
+      </table>
+    </theme>
+  </part>
+
+  <part name="rextest" render="true">
+    <theme name="default">
+      <div style="padding: 10px; color: #{substring(/formresult/@serial,8,6)}">
+      Serial id of current result tree for page <i><ixsl:value-of select="$page"/></i>: 
+      <b><ixsl:value-of select="/formresult/@serial"/></b>
+      </div>
+    </theme>
+  </part>
+  
+  <part name="rexjstest" render="true" content-type="text/javascript">
+    <theme name="default">
+      //a comment to see compression work
+      function getSerial() {
+        return 'Serial id of script render include result tree: <ixsl:value-of select="/formresult/@serial"/>';
+      }
+     </theme>
+  </part>
+
+</include_parts>

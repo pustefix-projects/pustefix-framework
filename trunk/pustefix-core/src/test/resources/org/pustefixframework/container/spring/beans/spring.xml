@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xmlns:aop="http://www.springframework.org/schema/aop"
+       xmlns:context="http://www.springframework.org/schema/context"
+       xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-3.0.xsd 
+                           http://www.springframework.org/schema/aop http://www.springframework.org/schema/aop/spring-aop-3.0.xsd
+                           http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context-3.0.xsd">
+
+  <bean name="counterByInterface" class="org.pustefixframework.container.spring.beans.TenantProxyFactoryBean">
+    <property name="targets">
+      <map>
+        <entry key="foo">
+          <bean class="org.pustefixframework.container.spring.beans.DerivedCounter"/>
+        </entry>
+        <entry key="*">
+          <bean class="org.pustefixframework.container.spring.beans.OtherCounter"/>
+        </entry>
+      </map>
+    </property>
+  </bean>
+  
+  <bean name="counterByClass" class="org.springframework.aop.framework.ProxyFactoryBean">
+    <property name="targetSource">
+      <bean class="org.pustefixframework.container.spring.beans.TenantTargetSource">
+        <property name="targets">
+          <map>
+            <entry key="foo">
+              <bean class="org.pustefixframework.container.spring.beans.DerivedCounter"/>
+            </entry>
+            <entry key="*">
+              <bean class="org.pustefixframework.container.spring.beans.CounterImpl"/>
+            </entry>
+          </map>
+        </property>
+      </bean>
+    </property>
+  </bean>
+
+</beans>

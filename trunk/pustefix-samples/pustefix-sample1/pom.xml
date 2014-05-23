@@ -1,0 +1,228 @@
+<?xml version="1.0" encoding="UTF-8"?> <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+  <modelVersion>4.0.0</modelVersion>
+
+  <parent>
+    <groupId>org.pustefixframework</groupId>
+    <artifactId>pustefix-samples</artifactId>
+    <version>0.18.65</version>
+  </parent>
+
+  <groupId>org.pustefixframework</groupId>
+  <artifactId>pustefix-sample1</artifactId>
+  <version>0.18.65</version>
+  <packaging>war</packaging>
+
+  <name>Pustefix Sample 1</name>
+
+  <properties>
+    <pustefix.mode>test</pustefix.mode>
+  </properties>
+
+  <dependencies>
+    <dependency>
+      <groupId>org.pustefixframework</groupId>
+      <artifactId>pustefix-core</artifactId>
+      <version>0.18.65</version>
+    </dependency>
+    <dependency>
+      <groupId>org.pustefixframework.webservices</groupId>
+      <artifactId>pustefix-webservices-core</artifactId>
+      <version>0.18.65</version>      
+    </dependency>
+
+    <dependency>
+      <groupId>rhino</groupId>
+      <artifactId>js</artifactId>
+      <version>1.5R3</version>
+    </dependency>
+    <dependency>
+      <groupId>org.beanshell</groupId>
+      <artifactId>bsh</artifactId>
+      <version>2.0b4</version>
+    </dependency>
+    <dependency>
+      <groupId>javax.servlet</groupId>
+      <artifactId>servlet-api</artifactId>
+      <version>2.4</version>
+      <scope>provided</scope>
+    </dependency>
+
+    <dependency>
+      <groupId>org.pustefixframework.samples.modules</groupId>
+      <artifactId>animal-module</artifactId>
+      <version>0.18.65</version>
+    </dependency>
+    <dependency>
+      <groupId>org.pustefixframework.samples.modules</groupId>
+      <artifactId>common-module</artifactId>
+      <version>0.18.65</version>
+    </dependency>
+
+    <dependency>
+      <groupId>org.tuckey</groupId>
+      <artifactId>urlrewritefilter</artifactId>
+      <version>3.1.0</version>
+    </dependency>
+    
+    <!-- Inline javascript compression -->
+    <dependency>
+      <groupId>com.yahoo.platform.yui</groupId>
+      <artifactId>yuicompressor</artifactId>
+      <version>2.3.6</version>
+    </dependency>
+
+  </dependencies>
+ 
+  <build>
+    <plugins>
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-antrun-plugin</artifactId>
+        <version>1.7</version>
+        <executions>
+          <execution>
+            <id>tomcatconf</id>
+            <phase>prepare-package</phase>
+            <configuration>
+              <target>
+                <mkdir dir="${project.build.directory}/addtomcatconf" />
+                <echo file="${project.build.directory}/addtomcatconf/context.xml"><![CDATA[<?xml version='1.0' encoding='utf-8'?>
+<Context cookies="true" useHttpOnly="true">
+  <Parameter name="mode" value="${pustefix.mode}" override="false" />
+  <Manager pathname="" />
+</Context>
+]]></echo>
+              </target>
+            </configuration>
+            <goals>
+              <goal>run</goal>
+            </goals>
+          </execution>
+        </executions>
+      </plugin>
+      <plugin>
+        <groupId>org.apache.tomcat.maven</groupId>
+        <artifactId>tomcat7-maven-plugin</artifactId>
+        <version>2.0</version>
+        <configuration>
+          <path>/</path>
+          <contextFile>${project.build.directory}/addtomcatconf/context.xml</contextFile>
+          <warDirectory>${war.dir}</warDirectory>
+          <uriEncoding>UTF-8</uriEncoding>
+          <useSeparateTomcatClassLoader>true</useSeparateTomcatClassLoader>
+        </configuration>
+      </plugin>
+      <plugin>
+        <groupId>org.codehaus.mojo</groupId>
+        <artifactId>tomcat-maven-plugin</artifactId>
+        <version>1.1</version>
+        <configuration>
+          <path>/</path>
+          <uriEncoding>UTF-8</uriEncoding>
+        </configuration>
+      </plugin>
+      <plugin>
+        <!--  some tests operated on the exploded webapp -->
+        <artifactId>maven-surefire-plugin</artifactId>
+        <configuration>
+          <skip>true</skip>
+        </configuration>
+        <executions>
+          <execution>
+            <phase>integration-test</phase>
+            <goals>
+              <goal>test</goal>
+            </goals>
+            <configuration>
+              <skip>false</skip>
+            </configuration>
+          </execution>
+        </executions>
+      </plugin>
+      <plugin>
+        <groupId>org.pustefixframework.maven.plugins</groupId>
+        <artifactId>pustefix-webapp-plugin</artifactId>
+        <version>0.18.65</version>
+        <executions>
+          <execution>
+            <goals>
+              <goal>merge-statusmessages</goal>
+            </goals>
+          </execution>
+        </executions>
+      </plugin>
+      <plugin>
+        <groupId>org.pustefixframework.maven.plugins</groupId>
+        <artifactId>pustefix-statuscode-plugin</artifactId>
+        <version>0.18.65</version>
+        <executions>
+          <execution>
+            <goals>
+              <goal>generate</goal>
+            </goals>
+          </execution>
+        </executions>
+      </plugin>
+      <plugin>
+        <groupId>org.pustefixframework.maven.plugins</groupId>
+        <artifactId>pustefix-iwrapper-plugin</artifactId>
+        <version>0.18.65</version>
+        <executions>
+          <execution>
+            <goals>
+              <goal>generate</goal>
+            </goals>
+          </execution>
+        </executions>
+      </plugin>
+    </plugins>
+  </build>
+  
+  <profiles>
+    <profile>
+      <id>activatePustefixEditor</id>
+      <dependencies>
+        <dependency>
+          <groupId>org.pustefixframework.editor</groupId>
+          <artifactId>pustefix-editor-backend</artifactId>
+          <version>${project.version}</version>
+        </dependency>
+      </dependencies>
+    </profile>
+     <profile>
+       <id>pustefix.ssl</id>
+       <build>
+         <plugins>
+           <plugin>
+             <groupId>org.codehaus.mojo</groupId>
+             <artifactId>tomcat-maven-plugin</artifactId>
+             <version>1.1</version>
+             <configuration>
+               <path>/</path>
+               <uriEncoding>UTF-8</uriEncoding>
+               <httpsPort>8443</httpsPort>
+               <keystoreFile>${user.home}/keystore</keystoreFile>
+               <keystorePass>secret</keystorePass>
+             </configuration>
+           </plugin>
+           <plugin>
+             <groupId>org.apache.tomcat.maven</groupId>
+             <artifactId>tomcat7-maven-plugin</artifactId>
+             <version>2.0</version>
+             <configuration>
+               <path>/</path>
+               <contextFile>${project.build.directory}/addtomcatconf/context.xml</contextFile>
+               <warDirectory>${war.dir}</warDirectory>
+               <uriEncoding>UTF-8</uriEncoding>
+               <useSeparateTomcatClassLoader>true</useSeparateTomcatClassLoader>
+               <httpsPort>8443</httpsPort>
+               <keystoreFile>${user.home}/keystore</keystoreFile>
+               <keystorePass>secret</keystorePass>
+             </configuration>
+           </plugin>
+         </plugins>
+       </build>
+     </profile>
+  </profiles>
+  
+</project>

@@ -1,0 +1,2089 @@
+<?xml version="1.0"?>
+<chapter xml:id="xslt" xmlns="http://docbook.org/ns/docbook" xmlns:xlink="http://www.w3.org/1999/xlink"
+  xmlns:xi="http://www.w3.org/2001/XInclude" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xsi:schemaLocation="http://docbook.org/ns/docbook http://www.docbook.org/xml/5.0CR7/xsd/docbook.xsd"
+>
+  <title>Core Pustefix tag library</title>
+  <para>
+    Pustefix includes a small library of tags defined as XSLT templates which implement low level functionality common to all
+    Pustefix applications. These templates are mostly concerned with creating links to Pustefix pages or external URLs, sending
+    data via HTML forms (including the necessary error handling) and including XML ressources (<emphasis>Include Parts</emphasis>).
+  </para>
+  <para>
+    All core tags reside in their own namespace. The prefix usually used is
+    <code>pfx</code>, and the namespace is
+    <code>http://www.schlund.de/pustefix/core</code>. You are not supposed to enter your own private project 
+    specific tags into this namespace.
+  </para>
+
+  <para>
+    The following table lists these tags together with a very short explanation of what they do. Refer to the relevant subsections
+    below to find a detailed explanation on their relevant attributes, subnodes and how to use them.
+  </para>
+
+<para>
+  <table rules="all" frame="box">
+    <caption>The Core Pustefix XSLT Tags</caption>
+    <thead>
+      <tr>
+        <th>Tag name</th>
+        <th>Short information</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td>pfx:document</td>
+        <td>The top-most container for all Pustefix pages, see <xref linkend="xslt.structure"/></td>
+      </tr>
+      <tr>
+        <td>pfx:frameset, pfx:frame</td>
+        <td>Used to define pages with framesets and frames, see <xref linkend="xslt.structure"/></td>
+      </tr>
+      <tr>
+        <td>pfx:button</td>
+        <td>This tag creates simple links to internal Pustefix pages (possibly submitting parameters for requests), see <xref linkend="xslt.pfx.button"/></td>
+      </tr>
+      <tr>
+        <td>pfx:url</td>
+        <td>Used to create only the content of the href attribute of a link to an internal page, see <xref linkend="xslt.pfx.url"/></td>
+      </tr>
+      <tr>
+        <td>pfx:elink</td>
+        <td>
+          This tag creates links to external URLs where care must be taken to strip the session ID from the referer header to not leak
+          sensitive information to the outside world, see <xref linkend="xslt.pfx.elink"/>
+        </td>
+      </tr>
+      <tr>
+        <td>pfx:include</td>
+        <td>
+          This tag references a file via its href attribute, and includes a named snippet of xml content contained in this file
+          via the part attribute, see <xref linkend="xslt.pfx.include"/>
+        </td>
+      </tr>
+      <tr>
+        <td>pfx:maincontent</td>
+        <td>This tag is used to include "computed" include parts, see <xref linkend="xslt.pfx.maincontent"/></td>
+      </tr>
+      <tr>
+        <td>pfx:image</td>
+        <td>
+          This tag references images to be included in the final page (via <literal>img</literal>-tags), see <xref linkend="xslt.pfx.image"/>
+        </td>
+      </tr>
+      <tr>
+        <td>pfx:forminput</td>
+        <td>This tag creates a HTML form, see <xref linkend="xslt.pfx.forminput"/></td>
+      </tr>
+      <tr>
+        <td>pfx:xinp</td>
+        <td>Used to create HTML form elements, see <xref linkend="xslt.forms.elements"/></td>
+      </tr>
+      <tr>
+        <td>pfx:checkfield</td>
+        <td>This tag supplies content depending on the error state of a special form field, see <xref linkend="xslt.forms.errors.fields"/></td>
+      </tr>
+      <tr>
+        <td>pfx:checkerror</td>
+        <td>Used to check for the presence of any error condition, see <xref linkend="xslt.forms.errors.fields"/></td>
+      </tr>
+      <tr>
+        <td>pfx:checkmessage</td>
+        <td>Used to check for the presence of any page message, see <xref linkend="xslt.forms.errors.page"/></td>
+      </tr>
+      <tr>
+        <td>pfx:checkactive, pfx:checknotactive</td>
+        <td>These tags check for visibility (or not) of pages or for the activity (or not) of handlers, see <xref linkend="xslt.utility.active"/></td>
+      </tr>
+      <tr>
+        <td>pfx:themeselect, pfx:langselect</td>
+        <td>Used to select content depending on a matching theme or currently selected language, see <xref linkend="xslt.pfx.themeselect"/> and <xref linkend="xslt.pfx.langselect"/></td>
+      </tr>
+      <tr>
+        <td>pfx:editconsole, pfx:webserviceconsole</td>
+        <td>create panels of shortcut links useful during development, see <xref linkend="xslt.consoles"/></td>
+      </tr>
+    </tbody>
+  </table>
+</para>
+
+  <section xml:id="xslt.structure">
+    <title>Defining the structure of a document</title>
+    <para>
+      This section describes the format for those documents serving as the structure defining
+      xml source of the finally transformed documents. These can be found in the xml
+      subdirectory of your project.
+    </para>
+    <para>
+      The explanation keeps an eye on the expected usage patterns of these documents.
+    </para>
+    <para>
+      There are basically two kinds of "pages" you deliver with Pustefix.
+    </para>
+    <itemizedlist>
+      <listitem>
+        <para>
+          Pages that have no frames and may deliver html or any other text based format.
+        </para>
+      </listitem>
+      <listitem>
+        <para>
+          Pages that contain an arbitrary amount of frames and framesets. Those usually deliver html.
+        </para>
+      </listitem>
+    </itemizedlist>
+    <section>
+      <title>Structure of a Type 1 document</title>
+      <para>
+        For a html delivering page without frames:
+      </para>
+      <programlisting language="xml"><![CDATA[
+<pfx:document xmlns:pfx="http://www.schlund.de/pustefix/core">
+  <html>
+    <!--
+      Any content valid for an html document
+    -->
+  </html>
+</pfx:document>]]></programlisting>
+      <para>
+        If you don't want to deliver html, just omit the &lt;html&gt; tag. The following
+        could be used to implement a CSS stylesheet.
+      </para>
+      <programlisting language="xml"><![CDATA[<pfx:document>.foo { color: #ffff00; font-family: Helvetica; }</pfx:document>]]></programlisting>
+      <para>
+        The rule of thumb is: Whatever you put between &lt;pfx:document&gt; is up to you and
+        will be delivered just as you write it there. Just remember that the &lt;html&gt; is
+        not automatically inserted for you, you have to write it yourself.
+      </para>
+    </section>
+    <section>
+      <title>Structure of a Type 2 document</title>
+      <para>
+        There are only subtle differences. A document is a Type 2 doc by definition
+        whenever there is a &lt;pfx:frameset&gt; and possibly a &lt;head&gt; node as the
+        only direct children of &lt;pfx:document&gt;.
+      </para>
+      <programlisting language="xml"><![CDATA[
+<pfx:document xmlns:pfx="http://www.schlund.de/pustefix/core">
+  <head>
+    <!--
+      Again, put anything you want to appear in the head of the _top frame! This means
+      page title, script stuff or stylesheets.
+    -->
+  </head>
+  <pfx:frameset rows="20,*">
+    <pfx:frame name="navi">
+      <html>
+        <head>...</head>
+        <body>
+          <!-- Any HTML content -->
+        </body>
+      </html>
+    </pfx:frame>
+    <pfx:frame name="main">
+      <html>
+        <body>
+          <!-- Any HTML content -->
+        </body>
+      </html>
+    </pfx:frame>
+  </pfx:frameset>
+</pfx:document>]]></programlisting>
+      <para>
+        As you can see there is NO &lt;html&gt; tag just below &lt;pfx:document&gt;.
+        This is the one important difference between Type 1) and Type 2). As a rule you
+        could say that you only have to insert the &lt;html&gt; yourself wherever the
+        "real" content is. In a Type 1) doc this is the whole content of the
+        &lt;pfx:document&gt; tag, so we need to set it there. But for a Type 2) doc,
+        the "real" content is the content of the &lt;pfx:frame&gt; tags, so you need to
+        set it there.
+      </para>
+    </section>
+  </section>
+
+  <section xml:id="xslt.links">
+    <title>Creating links to internal and external pages</title>
+    <para>Pustefix provides tags that allow you create links to internal and external pages.</para>
+	<section xml:id="xslt.pfx.button">
+	  <title>pfx:button</title>
+	  <para>
+        The <literal>&lt;pfx:button&gt;</literal> tag is responsible for generating links to other
+        pages inside the pustefix environment. In fact, it not always creates a link, but depending on
+        the fact if the target page is accessible ("invisible") or not, or if the target page is the
+        same as the current page ("active", aka "the target page is already active") it can display
+        completely different content, and only when the target page is accessible and is different
+        from the current page, a <literal>&lt;a href="..."&gt;...&lt;/a&gt;</literal> is put around it.
+      </para>
+      <para>
+        The template takes care of constructing the correct url with session information embedded
+        and builds up valid, url encoded query strings.
+      </para>
+      <programlisting language="xml"><![CDATA[<pfx:button page="APage" pageflow="AFlow" jumptopage="APage" jumptopageflow="AFlow" 
+            forcestop="true|false|step" startwithflow="true|false" altkey="pageAlternativeKey">
+  <!-- Control the submit commands -->
+  <pfx:command page="APage" name="SUBWRP">prefix</pfx:command>
+
+  <!-- Supply additional parameters -->
+  <pfx:argument name="AName">AValue</pfx:argument>
+  
+  <pfx:anchor frame="AFrame">AnAnchor</pfx:anchor>
+  
+  <!-- Select a page at runtime -->
+  <pfx:page>pageName</pfx:page>
+
+  <!-- Select a page alternative by key --> 
+  <pfx:altkey>pageAlternativeKey</pfx:altkey>
+
+  <!--
+    These three optional child nodes can be used to display different
+    content depending on the situation:
+  -->
+  <pfx:invisible>
+    <!-- Displayed when link is not accessible -->
+  </pfx:invisible>
+  <pfx:normal>
+    <!-- Displayed when link is accessible -->
+  </pfx:normal>
+  <pfx:active>
+    <!-- Displayed when current page == link target -->
+  </pfx:active>
+  <!--
+    Displayed link content
+  -->
+</pfx:button>]]></programlisting>
+      <para>
+        The <literal>&lt;pfx:button&gt;</literal> tag supports the following attributes:
+      </para>
+      <table rules="all" frame="box">
+        <caption>Attributes of the pfx:button tag</caption>
+        <thead>
+          <tr>
+            <th>Attribute name</th>
+            <th>Mandatory?</th>
+            <th>Description</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td>page</td>
+            <td>optional</td>
+            <td>defaults to the current page. Used to give the target page where the link points to. Note: leaving this empty also implies mode="force".</td>
+          </tr>
+          <tr>
+            <td>pageflow / jumptopage / jumptopageflow / forcestop</td>
+            <td>optional</td>
+            <td>These attributes work the same as for form submit controls</td>
+          </tr>
+          <tr>
+            <td>altkey</td>
+            <td>optional</td>
+            <td>Select page alternative by key</td>
+          </tr>
+          <tr>
+            <td>startwithflow</td>
+            <td>optional</td>
+            <td>
+              <para>Defaults to false. When set to true, the request will not go to a page directly, but start with the a processing of the chosen pageflow to determine the page to use.</para>
+              <para>The meaning of the page attribute also changes: If the submitted page is part of the chosen pageflow, the flow will be queried for the page to use up to the point in the flow where the given page is, which is then used in any case. In other words, this constitutes an end point for the search of a matching page in the flow.</para>
+            </td>
+          </tr>
+          <tr>
+            <td>mode</td>
+            <td>optional</td>
+            <td>
+              <para>Default is empty. When set to force, a link is created and the matching CSS is used even in the active button state, i.e. whenever the target page is the current page.</para>
+              <para>When set to desc, the button state is not only active when the current page == target page, but also when the current page is a descendent page of the target page.</para>
+            </td>
+          </tr>
+          <tr>
+            <td>nodata</td>
+            <td>optional</td>
+            <td>Default to false. Normally, whenever you use a pfx:argument tag to attach parameters to the query string, the system automatically also adds the parmeter __sendingdata=1 to the query string, thereby signalling to the backend system, that it should process incoming data. Set this attribute to true to prohibit this behaviour.</td>
+          </tr>
+          <tr>
+            <td>frame / target</td>
+            <td>optional</td>
+            <td>Works the same as for submit controls</td>
+          </tr>
+          <tr>
+            <td>normalclass / activeclass / invisibleclass</td>
+            <td>optional</td>
+            <td>defaults are: core_button_normal, core_button_active and core_button_invisible. These three attributes define the CSS classes to be used for the three different states of a pfx:button</td>
+          </tr>
+        </tbody>
+      </table>
+      <section>
+        <title>Commands and arguments</title>
+        <para>
+		  It is possible to use the same children to control the submit behaviour as it is done
+		  with form controls.
+        </para>
+      </section>
+      <section>
+        <title>Link contents</title>
+        <para>
+          The <literal>pfx:button</literal> template allows you to change the link content depending
+          on the status of the target page.
+        </para>
+        <itemizedlist>
+          <listitem>
+            <para>Content of pfx:invisible will be only displayed when the target page is not accessible.</para>
+          </listitem>
+          <listitem>
+            <para>Content of pfx:active will be only displayed when the target page is the current page.</para>
+          </listitem>
+          <listitem>
+            <para>Content of pfx:normal will be only displayed when the target page is different from the current page and when it's accessible.</para>
+          </listitem>
+        </itemizedlist>
+        <para>
+          Content outside of these tags will be used in any case. If you only want to have different content for
+          the invisible case, just put the content for the active and normal case inside pfx:normal, and add a
+          pfx:invisible child with the differing content. The content of a pfx:normal node serves as the fallback
+          for the other two cases.
+        </para>
+        <note>
+          <para>
+            Note that only in the normal (regardless if the content comes from a dedicated pfx:normal child node or not)
+            a link is put around the generated content.
+          </para>
+        </note>
+        <para>
+          Note also, that for differences between the three cases that can be expressed with CSS, you don't need to
+          use these special child nodes. The system makes sure to use the three associated classes explained above to
+          allow styling.
+        </para>
+        <para>
+          It is also possible to change to content, depending on whether a page has already been visited or
+          not.
+        </para>
+        <itemizedlist>
+          <listitem>
+            <para>Content of pfx:visited will be only displayed when the link has been already visited at least once in this session.</para>
+          </listitem>
+          <listitem>
+            <para>Content of pfx:visited will be only displayed when the link has not been visited in this session.</para>
+          </listitem>
+        </itemizedlist>
+        <para>
+          The two tags above may also be put inside pfx:normal and pfx:invisible tags to express different content for accessible
+          (or inaccessible) pages depending on the fact if they have been visited at least once already.
+        </para>
+        <para>
+          This makes of course not much sense with pfx:active, because a page where this applies is always the current page
+          and by that is always visited.
+        </para>
+      </section>
+    </section>
+    <section xml:id="xslt.pfx.url"> 
+      <title>pfx:url</title>
+      <para>
+        This tag takes mostly the same attributes as <literal>&lt;pfx:button&gt;</literal>, but it only creates the URL and does not build up
+        any content or generate a whole link. You can use this template if you just need the pure URL string.	  
+	  </para>
+	</section>
+    <section xml:id="xslt.pfx.elink"> 
+      <title>pfx:elink</title>
+      <para>
+        When creating links to external URLs care must be taken to ensure that no sensitive data (especially the session ID)
+        leaks into log files of remote servers via the referer header. To make sure that this can't happen, all links to
+        external sites must be propagated via a special servlet, the <literal>de.schlund.pfixxml.DerefServer</literal>.
+      </para>
+      <para>
+        Every Pustefix project has this servlet configured to be accessible under the path <filename>/deref</filename>.
+        To make the handling of external URLs easier, there also exists a special tag <literal>&lt;pfx:elink&gt;</literal>
+        that automates the creation of the correct link.
+      </para>
+      <programlisting language="xml"><![CDATA[<pfx:elink href="http://some.host/location" target="_popup|SomeName">
+  <!--
+    Optional, use the <pfx:host> child instead of the href attribute whenever you
+    need to construct the URL with additional code (e.g. from data only available
+    at runtime)
+  -->
+  <pfx:host>...</pfx:host>
+
+  <!--
+    Optional, use as many of <pfx:argument> tags as you need to supply the
+    parameters for the query string.
+  -->
+  <pfx:argument name="SomeName">...</pfx:argument>
+
+  <!--
+    Place content of the link here
+  -->
+</pfx:elink>]]></programlisting>
+	</section>
+  </section>
+
+  <section>
+    <title>Including text and images</title>
+    <para>
+      There are two types of ressources that need to be included into a Pustefix page. Textual content ("Include Parts") is
+      included with the help of the <literal>&lt;pfx:include&gt;</literal> tag while images are included via the
+      <literal>&lt;pfx:image&gt;</literal> tag. Both tags make sure to register the ressources in the runtime system, so at all
+      times the system knows which ressources a certain page uses. This information is used to check if the page is still
+      up-to-date or needs rebuilding (by comparing file modification times of the ressources with the creation time of the page itself).
+    </para>
+    <para>
+      Of course this check can be disabled for a "live" system, as there is typically no need to check for changed ressources.
+    </para>
+    <section xml:id="xslt.pfx.include">
+      <title>Include parts (&lt;pfx:include&gt;)</title>
+      <para>
+        Include parts contain the content that is displayed on your pages.
+        The parts are organized into include files. Every part has the same structure:
+      </para>
+      <para>
+        The children of the part tag are theme tags (at least one). The name attribute
+        of the theme tag is the name of a theme as it is defined in the projects
+        depend.xml.in file. Often these themes are just the project name or "default",
+        which is used as the fallback when no more specific theme name matches
+        (see here on how to define themes in the depend.xml.in file).
+      </para>
+      <note>
+        <para>
+          Earlier versions of Pustefix had no special themeing, the only thing that
+          was used was the project name itself and "default" as the fallback. Still today,
+          the default value for the "themes" attribute in the root node of the depend.xml.in
+          file (when not given explicitely) is just "&lt;ProjectName&gt; default", which
+          makes the new system behave exactly as the old one did.
+        </para>
+      </note>
+      <para>
+        The resolution of the matching theme is done at the time the part is included
+        (see below). Every page "knows" which themes are defined for it, and therefore it
+        is possible to decide which product branch to use on generation time. The language
+        on the other hand can be changed dynamically while the user clicks through the
+        application, so the selection of the right language subtree (if more than one is
+        present) is done at runtime.
+      </para>
+      <programlisting language="xml"><![CDATA[<include_parts>
+  <part name="Foo">
+    <theme name="default">
+      <pfx:langselect>
+        <pfx:lang name="default">
+          <!--
+            The default content of part Foo goes here...
+          -->
+        </pfx:lang>
+        <pfx:lang name="en_GB">
+          <!--
+            Default content in british english goes here...
+          -->
+        </pfx:lang>
+        <pfx:lang name="en_*">
+          <!--
+            Default content in any other english language goes here...
+          -->
+        </pfx:lang>
+      </pfx:langselect>
+    </theme>
+    <theme name="Theme_A">
+      <!--
+        The default content for theme Theme_A goes here...
+      -->
+    </theme>
+  </part>
+
+  <part name="Baz">
+    <!-- Other parts -->
+  </part>
+</include_parts>]]></programlisting>
+      <para>
+        A part is referenced with two attributes: The filename of the include file that
+        contains it, and the name of the part. The filename can be omitted, if you're referencing a part within the same file.
+      </para>
+      <programlisting language="xml"><![CDATA[<pfx:include href="MyProject/txt/MyIncludefile" part="Foo" noerror="true|false" noedit="true|false"/>]]></programlisting>
+      <para>
+        <table rules="all" frame="box">
+          <caption>Attributes of the pfx:include tag</caption>
+          <thead>
+            <tr>
+              <th>Attribute name</th>
+              <th>Mandatory?</th>
+              <th>Description</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td>href</td>
+              <td>optional</td>
+              <td>If not given, it defaults to the current include part file. If it's not given and the module attribute is set, the path of the current include part file will be used as path within the module (omitting the first path component if the current file isn't already from a module).</td>
+            </tr>
+            <tr>
+              <td>part</td>
+              <td>mandatory</td>
+              <td>The name of the part to include</td>
+            </tr>
+            <tr>
+              <td>noerror</td>
+              <td>optional</td>
+              <td>Defaults to false. Set this to true to imply that no warning sign should be generated when the include is not found. Only set this when you know what you do.</td>
+            </tr>
+            <tr>
+              <td>noedit</td>
+              <td>optional</td>
+              <td>Defaults to false. Set this to true to imply that this include part should not be editable via the pustefix editor. Only set this when you know what you do.</td>
+            </tr>
+            <tr>
+              <td>level</td>
+              <td>optional</td>
+              <td>Not set by default. Set this to <literal>runtime</literal> if the part should be included at runtime (on the last transformation level).</td>
+            </tr>
+            <tr>
+              <td>search</td>
+              <td>optional</td>
+              <td>Not set by default. Set this to <literal>dynamic</literal> if a matching part should be dynamically searched. The search order is: current project, common folder, and if a module is specified: overriding module, specified module. See <xref linkend="advanced.dyninclude"/>.</td>
+            </tr>
+            <tr>
+              <td>module</td>
+              <td>optional</td>
+              <td>Not set by default. Set this to the name of the module from which the part should be loaded. If dynamic search is set, the module just serves as fallback location if the part can't be found in the project or common location and isn't overrided by another module. See <xref linkend="advanced.dyninclude"/>. You can also use one of the pre-defined special module names (see <xref linkend="advanced.dyninclude.modinclude.special"/>).</td>
+            </tr>
+          </tbody>
+        </table>
+      </para>
+      <para>
+        Using this tag results in the matching product branch of the include part to be
+        inserted in place of the tag.
+      </para>
+      <para>
+        If you're deferring an include until runtime using <literal>level="runtime"</literal>, you can also defer the creation of the <literal>href</literal> and <literal>part</literal> values until runtime using the <literal>pfx:href</literal> and <literal>pfx:part</literal> tags instead of the according attributes. The following example shows how to use values coming from the DOM result tree:
+      </para>
+      <programlisting language="xml"><![CDATA[<pfx:include level="runtime">
+  <pfx:href><ixsl:value-of select="/formresult/mypartinfo/@myhref"/></pfx:href>
+  <pfx:part><ixsl:value-of select="/formresult/mypartinfo/@mypartname"/></pfx:part> 
+</pfx:include>]]></programlisting>
+      <note>
+        You should be aware that parts included at runtime aren't transformed with the <literal>master.xsl</literal> stylesheet, i.e. if the included part contains Pustefix tags (forms, buttons, etc.) they won't work. So the runtime inclusion is primarily intended for including simple text/HTML content.
+      </note>
+    </section>
+    <section xml:id="xslt.pfx.maincontent">
+      <title>Generated include requests (&lt;pfx:maincontent&gt;)</title>
+      <para>
+        Looking at the example naturally leads to the question how it is possible to
+        generate different pages with only a small number of structural xml files and
+        always the same XSLT stylesheets. The answer is that at least one of the include
+        parts isn't included via the pfx:include tag (which only handles static attribute values)
+        but instead the filename of the include part is auto generated from the name of the
+        page that is to be produced.
+      </para>
+      <para>
+        Looking at this page, one can see that the two transformations which produce BazPage.xml resp. BazPage.xsl have the page name supplied through the use of an XSLT transformation parameter. Using this parameter, the tag pfx:maincontent constructs an include request depending on the page name.
+      </para>
+      <programlisting language="xml"><![CDATA[<pfx:maincontent part="content" path="MyProject/txt/pages" prefix="main_"/>]]></programlisting>
+      <para>
+        <table rules="all" frame="box">
+          <caption>Attributes of the pfx:maincontent tag</caption>
+          <thead>
+            <tr>
+              <th>Attribute name</th>
+              <th>Mandatory?</th>
+              <th>Description</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td>path</td>
+              <td>optional</td>
+              <td>If not given, but a XSLT parameter $maincontentpath has been defined in the depend.xml.in file, the value of the parameter is used. If there's even no $maincontentpath parameter, it defaults to PROJECTNAME/txt/pages</td>
+            </tr>
+            <tr>
+              <td>prefix</td>
+              <td>optional</td>
+              <td>defaults to main_</td>
+            </tr>
+            <tr>
+              <td>postfix</td>
+              <td>optional</td>
+              <td>defaults to .xml</td>
+            </tr>
+            <tr>
+              <td>part</td>
+              <td>optional</td>
+              <td>defaults to content</td>
+            </tr>
+            <tr>
+              <td>search</td>
+              <td>optional</td>
+              <td>Not set by default. Set this to <literal>dynamic</literal> if a matching part should be dynamically searched. The search order is: current project, common folder, and if a module is specified: overriding module, specified module. See <xref linkend="advanced.dyninclude"/>.</td>
+            </tr>
+            <tr>
+              <td>module</td>
+              <td>optional</td>
+              <td>Not set by default. Set this to the name of the module from which the part should be loaded. If dynamic search is set, the module just serves as fallback location if the part can't be found in the project or common location and isn't overrided by another module. See <xref linkend="advanced.dyninclude"/>. You can also use one of the pre-defined special module names (see <xref linkend="advanced.dyninclude.modinclude.special"/>).</td>
+            </tr>
+          </tbody>
+        </table>
+      </para>
+      <para>
+        For the page "home" this is equivalent to <![CDATA[<pfx:include href="MyProject/txt/pages/main_home.xml" part="content"/>]]> and of course similar for every other page.
+      </para>
+      <para>
+        Starting with this page specific include, the content of the page can be included from many different include parts.
+      </para>
+    </section>
+    <section xml:id="xslt.pfx.image">
+      <title>Displaying images (&lt;pfx:image&gt;)</title>
+      <para>
+        HTML <literal>&lt;img&gt;</literal> tags are usually not written directly, instead they are generated by using
+        the <literal>&lt;pfx:image&gt;</literal> tag. Using this tag makes sure that the used image is registered in the
+        runtime system as a dependency of the current target that's being generated.
+      </para>
+      <para>
+        One important feature of the <literal>&lt;pfx:image&gt;</literal> tag is that it inserts the natural height and
+        width of the requested image unless they are explicitely given (as attributes width and height of course).
+      </para>
+      <programlisting language="xml"><![CDATA[<pfx:image src="some/path/to/img.gif" themed-path="some/path" themed-img="img.gif"/>]]></programlisting>
+      <para>
+        <table rules="all" frame="box">
+          <caption>Attributes of the pfx:image tag</caption>
+          <thead>
+            <tr>
+              <th>Attribute name</th>
+              <th>Mandatory?</th>
+              <th>Description</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td>src</td>
+              <td>optional</td>
+              <td>
+                <para>
+                  The src path references an image in the file system. It must be given as a path relative to the
+                  docroot (typically this means something like <filename>MyProject/img/foo.gif</filename>.
+                  Note that you need to define an alias for the image directories in your project.xml config file
+                  for Apache to be able to find the image.
+                </para>
+                <para>
+                  Note that you can either specify the src attribute OR both of themed-path and themed-img
+                </para>
+              </td>
+            </tr>
+            <tr>
+              <td>themed-path &amp; themed-img</td>
+              <td>optional</td>
+              <td>
+                <para>
+                  These two attributes allow for themed images. The mechanism uses the same theme fallback queue
+                  as it is used for include parts. The algorithm to find the image to use is quite easy:
+                </para>
+                <para>
+                  Build an image path by concatenating themed-path, a <literal>/</literal> sign, the most specific theme, a <literal>/</literal> sign,
+                  and themed-img. Check if this image exists. If yes, use it as the <literal>src</literal> attribute for the resulting
+                  <literal>img</literal> tag. If not, take the next specific theme from the fallback queue (if it exists) and try again,
+                  until the image is found.
+                </para>
+                <para>
+                  Example: The themes fallback list is "foo bar default", themed-path is "MyProject/img" and themed-img is "test.gif".
+                  The image file names that are tried one after the other are
+                </para>
+                <itemizedlist>
+                  <listitem><simpara>MyProject/img/foo/test.gif</simpara></listitem>
+                  <listitem><simpara>MyProject/img/bar/test.gif</simpara></listitem>
+                  <listitem><simpara>MyProject/img/default/test.gif</simpara></listitem>
+                </itemizedlist>
+              </td>
+            </tr>
+            <tr>
+              <td>level</td>
+              <td>optional</td>
+              <td>Not set by default. Set this to <literal>runtime</literal> if the image should be included at runtime (on the last transformation level).</td>
+            </tr>
+            <tr>
+              <td>search</td>
+              <td>optional</td>
+              <td>Not set by default. Set this to <literal>dynamic</literal> if the image should be dynamically searched. The search order is: current project, common folder, and if a module is specified: overriding module, specified module. The search ends if a matching image is found, regardless if there are matches with a more specific theme down the search chain. See <xref linkend="advanced.dyninclude"/>.</td>
+            </tr>
+            <tr>
+              <td>module</td>
+              <td>optional</td>
+              <td>Not set by default. Set this to the name of the module from which the image should be loaded. If dynamic search is set, the module just serves as fallback location if an according image can't be found in the project or common location or another overriding module. See <xref linkend="advanced.dyninclude"/>. You can also use one of the pre-defined special module names (see <xref linkend="advanced.dyninclude.modinclude.special"/>).</td>
+            </tr>
+            <tr>
+              <td>other attributes</td>
+              <td>optional</td>
+              <td>
+                <para>
+                  All other attributes given (e.g. <literal>alt</literal>, <literal>width</literal>,
+                  <literal>height</literal>, <literal>title</literal>, etc. are copied unchanged into the resulting img tag      
+                </para>
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </para>
+      <para>
+        If you're including an image at runtime using <literal>level="runtime"</literal>, you can also defer the creation of the <literal>src</literal>, <literal>alt</literal>, <literal>themed-path</literal> and <literal>themed-img</literal> values until runtime using the <literal>pfx:src</literal>, <literal>pfx:alt</literal>, <literal>pfx:themed-path</literal> and <literal>pfx:themed-img</literal> tags instead of the according attributes. The following example shows how to use values coming from the DOM result tree:
+      </para>
+      <programlisting language="xml"><![CDATA[<pfx:image level="runtime">
+  <pfx:src><ixsl:value-of select="/formresult/myimginfo/@mysrc"/></pfx:src>
+  <pfx:alt><ixsl:value-of select="/formresult/myimginfo/@myalt"/></pfx:alt> 
+</pfx:image>]]></programlisting>
+    </section>
+
+    <section xml:id="xslt.renderextensions">
+      <title>Dynamically including parts at rendering time</title>
+      <para>
+       Include parts can be also rendered standalone and included at runtime/rendering time on the last transformation level.
+       Thus you can include parts dynamically, e.g. you can include a part based on information from the result tree, which
+       isn't available on the former transformation levels. This can also help to keep your stylesheets small, but it also has
+       some drawbacks: standalone rendering of a part costs more time than doing a regular include and the XML source context
+       node can only be relative if the part is rendered within the main transformation, and not standalone, e.g. triggered by an AJAX call.
+      </para>    
+      <para>
+         Render includes are done using the <literal>&lt;pfx:render&gt;</literal> tag. Its syntax is similar to <literal>&lt;pfx:include&gt;</literal>.
+         But referenced parts additionally have to be marked as render parts using the <literal>render</literal> attribute.
+         You can optionally specify in which variants a render part should be available. All this is necessary
+         to know which parts can be invoked dynamically when pre-generating all pages for production environments.
+         Setting the <literal>contextual</literal> attribute to <literal>true</literal> you can specify that a part is context-dependent,
+         meaning that the initial context node for the transformation will be set to the current context node of the main transformation.
+      </para>
+      <programlisting language="xml"><![CDATA[<include_parts>
+  <part name="Foo" render="true" render-variants="foo foo:bar:baz" contextual="true">
+    <theme name="default">
+      ...
+    </theme>
+  </part>
+</include_parts>]]></programlisting>
+      <para>
+        A part is referenced with at least a <literal>part</literal> attribute. The <literal>path</literal> to the include file can be omitted
+        if you're referencing a part within the same file. Using <literal>module</literal> and/or <literal>search</literal> you can reference
+        parts from modules or do dynamic lookups. 
+      </para>
+      <programlisting language="xml"><![CDATA[<pfx:render href="txt/common.xml" part="Foo"/>]]></programlisting>
+      <para>
+        <table rules="all" frame="box">
+          <caption>Attributes of the pfx:render tag</caption>
+          <thead>
+            <tr>
+              <th>Attribute name</th>
+              <th>Mandatory?</th>
+              <th>Description</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td>href</td>
+              <td>optional</td>
+              <td>If not set, it defaults to the current include part file.</td>
+            </tr>
+            <tr>
+              <td>part</td>
+              <td>mandatory</td>
+              <td>The name of the part to include</td>
+            </tr>
+            <tr>
+              <td>search</td>
+              <td>optional</td>
+              <td>Not set by default. Set this to <literal>dynamic</literal> if a matching part should be dynamically searched. See <xref linkend="advanced.dyninclude"/>.</td>
+            </tr>
+            <tr>
+              <td>module</td>
+              <td>optional</td>
+              <td>Not set by default. Set this to the name of the module from which the part should be loaded. See <xref linkend="advanced.dyninclude"/>.</td>
+            </tr>
+          </tbody>
+        </table>
+      </para>
+      <para>
+        Render include parts not just can be rendered as part of another page within the main transformation, but they can be also  
+        rendered standalone. Therefor Pustefix provides a Javascript API which lets you easily request a part via AJAX. 
+      </para>
+      <programlisting language="xml"><![CDATA[<script type="text/javascript" src="{$__contextpath}/modules/pustefix-core/script/httpRequest.js"></script>
+<script type="text/javascript" src="{$__contextpath}/modules/pustefix-core/script/render.js"></script>
+
+<script type="text/javascript">
+   function callback(result) {
+      document.getElementById("result").innerHTML = result;
+   }
+   function test() {
+      //pfx.render(href, part, module, search, callback, context, requestId)
+      pfx.render("txt/common.xml", "Foo", "", "", callback, null, "1");
+   }
+</script>]]></programlisting>
+    </section>
+    <section xml:id="xslt.pfx.checkinclude">
+      <title>Checking include part existence (&lt;pfx:checkinclude&gt;)</title>
+      <para>
+        The <literal>&lt;pfx:checkinclude&gt;</literal> and <literal>&lt;pfx:checknoinclude&gt;</literal> tags can be used to display content
+        depending on the existence of an include part.
+      </para>
+<programlisting language="xml"><![CDATA[<pfx:checkinclude part="foo" href="txt/afile.xml">
+  Display if part exists
+</pfx:checkinclude>
+
+<pfx:checknoinclude part="bar" href="txt/afile.xml">
+  Display if part not exists
+</pfx:checknoinclude
+
+<pfx:checkinclude href="txt/afile.xml" module="amodule" search="dynamic" level="runtime">
+  <pfx:part><ixsl:value-of select="/formresult/displaypart/@name"/></pfx:part>
+  Display if part exists
+</pfx:checkinclude>
+]]></programlisting>
+      <para>Supported attributes and usage comply with the <literal>&lt;pfx:include&gt;</literal> element (see <xref linkend="xslt.pfx.include"/>).</para>
+    </section>
+    <section xml:id="xslt.pfx.includeparams">
+      <title>Include parameters (&lt;pfx:includeparam&gt;)</title>
+      <para>
+        When including a part using <literal>&lt;pfx:include&gt;</literal>, you can pass parameters, which will be available within the templates
+        applied during the current XSL transformation.
+      </para>
+      <para>
+        An include parameter can be passed by adding an according <literal>&lt;pfx:includeparam&gt;</literal> child element to the <literal>&lt;pfx:include&gt;</literal> element.
+        The syntax is similar to XSL template parameters.
+      </para> 
+<programlisting language="xml"><![CDATA[<pfx:include part="foo">
+  <pfx:includeparam name="myparam">myvalue</pfx:includeparam>
+  <pfx:includeparam name="another" select="/xpath/expression"/>
+  <pfx:includeparam name="xmlparam" tunnel="yes">
+     <item id="foo"/>
+     <item id="bar"/>
+  </pfx:include>
+</pfx:include>
+]]></programlisting>
+      <para>Include parameter values can be simple strings, nodesets or evaluation results of XPath expressions. Include parameters can be tunneled, i.e.
+            you can pass parameters to nested includes without having to newly declare the parameter on each include level.
+      </para>
+      <para>
+        Within the included part you can access passed include parameters by declaring them at the top of the part. Like with XSL parameters, you can just declare empty
+        parameters, set default values or mark a parameter as tunneled (without marking it, it will be overlaid). 
+      </para>
+<programlisting language="xml"><![CDATA[<part name="hey">
+  <theme name="default">
+    <pfx:includeparam name="myparam"/>
+    <pfx:includeparam name="another">default</pfx:include-param>
+    <pfx:includeparam name="xmlparam" tunnel="yes"/>
+]]></programlisting>
+      <para>
+        Having declared an include parameter, you can use one of Pustefix's builtin templates to operate on this parameter, e.g. write its value, iterate over its value
+        or check a condition against it. You can not only reference the parameter itself, but write complex XPath expressions.
+      </para>
+<programlisting language="xml"><![CDATA[<pfx:value-of select="$myparam"/>
+<pfx:value-of select="concat($myparam,'xyz')"/>
+
+<pfx:for-each select="$xmlparam/item">
+  <pfx:value-of select="@id"/>
+</pfx:for-each>
+
+<pfx:if test="$another='...'">...</pfx:if>
+
+<pfx:choose>
+  <pfx:when test="$another='...'">...</pfx:when
+  <pfx:otherwise>...</pfx:otherwise>
+</pfx:choose>
+]]></programlisting>
+      <para>
+        Besides these special templates some of Pustefix's core templates also have support for include parameters, i.e. the according elements provide
+        attributes which support include parameters or XPath expressions. Usually these attributes are prefixed with <literal>select-</literal>.
+      </para>
+<programlisting language="xml"><![CDATA[<pfx:include select-href="$myparam" select-part="concat($anotherparam,'xyz')"/>
+
+<pfx:checkinclude select-part="$myparam" select-href="..."/> 
+
+<pfx:checknoinclude select-part="$myparam" select-href="..."/> 
+
+<pfx:image select-src="$myparam" select-alt="..."/>
+]]></programlisting>
+
+    </section>
+  </section>
+
+  <section xml:id="xslt.forms">
+    <title>Handling HTML forms</title>
+    <para>
+      Pustefix supplies a complete set of tags that replace the standard HTML form element tags.
+      The advantage of using these tags is that they are automatically pre-filled with values delivered from the backend.
+    </para>
+    <section xml:id="xslt.pfx.forminput">
+      <title>Form creation</title>
+      <para>
+        The creation of a html form is done with the help of the tag <literal>&lt;pfx:forminput&gt;</literal>.
+        Most often you don't need to set any attributes, the defaults should work just fine.
+      </para>
+      <programlisting language="xml"><![CDATA[<pfx:forminput send-to-page="APage" send-to-pageflow="APageFlow" frame="AFrameName" target="ATargetName" type="auth|data">
+  <!-- place form elements here -->
+</pfx:forminput>]]></programlisting>
+      <para>
+        <table rules="all" frame="box">
+          <caption>Attributes of the pfx:forminput tag</caption>
+          <thead>
+            <tr>
+              <th>Attribute name</th>
+              <th>Mandatory?</th>
+              <th>Description</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td>type</td>
+              <td>optional</td>
+              <td>
+                <para>
+                  Defaults to <literal>data</literal>. Must be set to <literal>auth</literal>, if the submitted information contains
+                  authentication data (e.g. userid, password).
+                </para>
+              </td>
+            </tr>
+            <tr>
+              <td>target</td>
+              <td>optional</td>
+              <td>
+                <para>
+                  Defaults to the parent frame (if frames are used, current window otherwise)
+                </para>
+              </td>
+            </tr>
+            <tr>
+              <td>frame</td>
+              <td>optional</td>
+              <td>
+                <para>
+                  This is used to select which named frame is about to be loaded into the target frame after submit. The default when frames are used is the parent frame.
+                </para>
+                <para>
+                  Most often you have to set neither frame nor target.
+                </para>
+              </td>
+            </tr>
+            <tr>
+              <td>send-to-page</td>
+              <td>optional</td>
+              <td>
+                <para>
+                  Selects the page the submitted data is send to. Default is to use the current page. Most of the time, this is the right thing to do.
+                </para>
+              </td>
+            </tr>
+            <tr>
+              <td>send-to-pageflow</td>
+              <td>optional</td>
+              <td>
+                <para>
+                  Should not be used. Selects the pageflow to use. Default is to not set a pageflow name explicitely, but
+                  let the backend reuse the current flow or select a matching one. Leave it that way if you don't know
+                  why you want to change it. If you want to select a pageflow to use, better do so via the submit button as
+                  explained below. Note that this mechanism will most likely not work when using the
+                  <literal>send-to-pageflow</literal> attribute here.        
+                </para>
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </para>
+      <para>
+        Pustefix usually by default generates some hidden fields which are placed directly under the HTML <literal>form</literal> tag, but you
+        can explicitely control where Pustefix should place the fields using the <literal>&lt;pfx:hiddenfields/&gt;</literal> element.
+      </para>
+<programlisting language="xml"><![CDATA[<pfx:forminput>
+  <div>
+    <pfx:hiddenfields/>
+  </div>
+</pfx:forminput>]]></programlisting>
+    </section>      
+    <section xml:id="xslt.forms.submit">
+      <title>Submitting forms</title>
+      <para>
+        Make sure that all the other form related tags detailed below are contained inside a <literal>pfx:forminput</literal> block.
+      </para>
+      <para>
+        The form can be submitted by clicking on submit controls which can be realized in two ways:
+        The simple html submit button is made with the tag <literal>&lt;pfx:xinp type="submit"&gt;</literal>, while using an
+        image as the submit control is done with <literal>&lt;pfx:xinp type="image"&gt;</literal>.
+      </para>
+      <para>
+        A very useful ability of both submit controls is that it's possible to attach additional form parameters to them,
+        that are only transmitted when that exact submit control is pressed. This way it's possible for a form to have two or
+        more submit controls, each with different additional data attached and submitted, depending on which submit
+        control the user clicks on.
+      </para>
+      <programlisting language="xml"><![CDATA[<pfx:xinp type="submit|image" pageflow="APageFlow" jumptopage="APage" jumptopageflow="APageFlow" forcestop="true|false|step">
+  <!--
+    Attach additional information to the controls
+  -->
+  <pfx:command page="APage" name="SUBWRP">prefix</pfx:command>
+  <pfx:argument name="AName">AValue</pfx:argument>
+  <pfx:anchor frame="AFrame">AnAnchor</pfx:anchor>
+</pfx:xinp>]]></programlisting>
+      <para>
+        <table rules="all" frame="box">
+          <caption>Attributes of form submit controls</caption>
+          <thead>
+            <tr>
+              <th>Attribute name</th>
+              <th>Mandatory?</th>
+              <th>Description</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td>type</td>
+              <td>mandatory</td>
+              <td>
+                <para>
+                  <literal>submit</literal> creates a simple html submit button, <literal>image</literal> uses an image as the submit button.
+                </para>
+              </td>
+            </tr>
+            <tr>
+              <td>pageflow</td>
+              <td>optional</td>
+              <td>
+                <para>
+                  Used to explicitely set a pagflow to use after the submit has been handled sucessfully.
+                  Note that there is no corresponding way to set the page the submit is directed at, you need to
+                  set the send-to-page attribute of the <literal>pfx:forminput</literal> tag.
+                </para>
+              </td>
+            </tr>
+            <tr>
+              <td>jumptopage / jumptopageflow</td>
+              <td>optional</td>
+              <td>
+                <para>
+                  If you don't want the pageflow mechanism to control which page to display as the next page after a
+                  successful submit, you can set this page via the <literal>jumptopage</literal> attribute. In this case,
+                  you also have the possibility to set the pageflow to use for this follow-up page and submit circle via
+                  the <literal>jumptopageflow</literal> attribute.
+                </para>
+              </td>
+            </tr>
+            <tr>
+              <td>forcestop</td>
+              <td>optional</td>
+              <td>
+                <para>
+                  Default is false. If you don't want the pageflow mechanism control wether to stay on the current page
+                  after a successful submit or not, you can unconditionally force it to stay on the current page
+                  (when setting the attribute to <literal>true</literal>). Alternatively, if you want the pageflow mechanism
+                  to stop at most no more than one step further in the flow (e.g. a wizard like application) you can set
+                  this attribute to <literal>step</literal>.
+                </para>
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </para>
+      <para>
+        When setting the type to <literal>image</literal>, you may also specify the attributes <literal>src</literal>,
+        <literal>themed-path</literal>, <literal>themed-img</literal>, <literal>search</literal> and <literal>module</literal>. These attributes work exactly as described in
+        <xref linkend="xslt.pfx.image"/>.
+      </para>
+      <para>
+         You can alternatively use the <literal>pfx:submitbutton</literal> tag to produce a <literal>button</literal> element instead of an <literal>input</literal> element. The <literal>button</literal> elements are more flexible than the traditional <literal>input</literal> elements, but are not supported by some old browsers.
+      </para>
+      <programlisting language="xml"><![CDATA[<pfx:submitbutton pageflow="APageFlow" jumptopage="APage" jumptopageflow="APageFlow" forcestop="true|false|step">
+      <!-- you can put additional stuff here as described above, but in contrast to the traditional
+           submit element you can also have content (like text or images) here -->
+</pfx:submitbutton>]]></programlisting>
+
+
+    </section>
+    <section xml:id="xslt.controls.arguments">
+      <title>Arguments, comands and anchors</title>
+      <para>
+        Command controls (like described in <xref linkend="xslt.forms.submit"/>) and links (like described in <xref linkend="xslt.pfx.button"/>)
+        can contain child tags that are used to pass additional data when the link or button is clicked.
+      </para>
+      <section xml:id="xslt.pfx.anchor">
+        <title>Anchors</title>
+        <para>
+          The <literal>&lt;pfx:anchor&gt;</literal> tag is used to supply an anchor for a link or submit button.
+        </para>
+        <programlisting language="xml"><![CDATA[<pfx:anchor frame="AFrame">AnAnchor</pfx:anchor>]]></programlisting>
+        <para>
+          The content gives the name of the anchor as it's defined in the target page.
+        </para>
+        <para>
+          <table rules="all" frame="box">
+            <caption>Attributes of pfx:anchor</caption>
+            <thead>
+              <tr>
+                <th>Attribute name</th>
+                <th>Mandatory?</th>
+                <th>Description</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td>frame</td>
+                <td>optional</td>
+                <td>
+                  <para>
+                    You need to set it if the page uses frames or not. In this case you can use more than on pfx:anchor tag, one for
+                    each frame you want to define an anchor for. This way it's possible to scroll each frame independently to the
+                    desired position with one request (without the need for JavaScript). If you don't use frames, only one pfx:anchor
+                    tag makes sense, without a frame attribute. 
+                  </para>
+                </td>
+              </tr>
+            </tbody>
+          </table>
+        </para>
+      </section>
+      <section xml:id="xslt.pfx.argument">
+        <title>Arguments</title>
+        <para>
+          The <literal>&lt;pfx:argument&gt;</literal> tag is used to supply additional parameters for the request.
+        </para>
+        <programlisting language="xml"><![CDATA[<pfx:argument name="AName">AValue</pfx:argument>]]></programlisting>
+        <para>
+          The content gives the value of the parameter to submit. It's also possible that this value is only known at runtime by using values dynamically supplied from the DOM tree. This may be handled like here:
+       </para>
+       <programlisting language="xml"><![CDATA[<pfx:argument name="foo"><ixsl:value-of select="/formresult/bar"/><pfx:argument>]]></programlisting>
+        <para>
+          <table rules="all" frame="box">
+            <caption>Attributes of pfx:argument</caption>
+            <thead>
+              <tr>
+                <th>Attribute name</th>
+                <th>Mandatory?</th>
+                <th>Description</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td>name</td>
+                <td>mandatory</td>
+                <td>
+                  <para>
+                    The name of the argument to submit.
+                  </para>
+                </td>
+              </tr>
+            </tbody>
+          </table>
+        </para>
+      </section>
+      <section xml:id="xslt.pfx.command">
+        <title>Commands</title>
+        <para>
+          The <literal>&lt;pfx:command&gt;</literal> tag can be used to explicitly select the wrappers on a page, which should be used
+          for handling the submitted data or retrieving the updated data after a successful submit.
+        </para>
+        <programlisting language="xml"><![CDATA[ <pfx:command page="APage" name="SUBWRP|RETWRP">prefix</pfx:command>]]></programlisting>
+        <para>
+          The content gives the prefix of the wrapper to select as defined on the target page.
+        </para>
+        <note>
+          <para>
+            If you don't give any selected wrappers for submit handling (<literal>SUBWRP</literal>), all wrappers defined on the target page become selected for submit handling.
+          </para>
+          <para>
+            If you don't give any selected wrappers for retrieving data after successful submits (<literal>RETWRP</literal>), no wrappers are selected for retrieving data.
+          </para>
+          <para>
+            It's recommended to use actions instead of commands. Actions let you define the selected wrappers within the configuration, which is a much cleaner approach.
+          </para>
+        </note>
+        <para>
+          <table rules="all" frame="box">
+            <caption>Attributes of pfx:command</caption>
+            <thead>
+              <tr>
+                <th>Attribute name</th>
+                <th>Mandatory?</th>
+                <th>Description</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td>name</td>
+                <td>mandatory</td>
+                <td>
+                  <para>
+                    The name of the command. Currently, the supported commands are <literal>SUBWRP</literal>, <literal>RETWRP</literal> and
+                    the deprecated <literal>SELWRP</literal>, which is an equivalent of <literal>SUBWRP</literal> and only supported for backwards compatibility.
+                  </para>
+                  <para>
+                    All commands select a wrapper with the matching prefix on the page that is designated by the page attribute
+                    (or the current page, when empty).
+                  </para>
+                  <para>
+                    <literal>SUBWRP</literal> selects a wrapper that should be used for handling the data that is submitted.
+                  </para>
+                  <para>
+                    <literal>RETWRP</literal> selects a wrapper whose data should be retrieved/updated after a successfull submit.
+                  </para>
+                  <para>
+                   You can use more than one pfx:command to select as many wrappers as you want.
+                  </para>
+                  <para>
+                    Note: As the recommended way to select wrappers for submitting/retrieving data is the action mechanism, it is possible that the 
+                    whole pfx:command stuff will go away in future releases.
+                  </para>
+                </td>
+              </tr>
+              <tr>
+                <td>page</td>
+                <td>optional</td>
+                <td>
+                  <para>
+                    Most often empty. This should be set to the page the request is directed at if it's not the current page.
+                  </para>
+                </td>
+              </tr>
+            </tbody>
+          </table>
+        </para>
+      </section>
+    </section>
+    <section xml:id="xslt.forms.elements">
+      <title>Form elements</title>
+      <para>
+        Using these form element tags ensures that values, that are supplied by the backend application are used as
+        values for the generated html form elements. This is done dynamically by generating the necessary <literal>ixsl:</literal>
+        statements that will check the DOM tree for matching values and adding them as value attributes (text, password and hidden
+        input fields) or content (text areas) or selecting them according to their value (check boxes, radio boxes, option menus).
+      </para>
+      <para>
+        Another thing these tags do is to automatically check if the runtime DOM tree contains an error attached to their name.
+        In this case, the resulting html input field is augmented with special CSS classes to help with styling these fields
+        depending on the state they have (error/no error).
+      </para>
+      <para>
+        Typically the CSS used when no attached error is detected is just the value of a class attribute given to the pustefix
+        input tag. On the other hand, if an error is attached, the class attribute looks like this:
+      </para>
+      <programlisting>[@class] PfxError PfxInputTextError [PfxErrorLevel_$level]</programlisting>
+      <para>
+        where <literal>@class</literal> is the user supplied class attribute mentioned above (if it's there at all) and
+        <literal>$level</literal> is an optional attribute of the error element in the runtime DOM tree. The example works the
+        same for other input fields of the form <literal>&lt;input type="..."&gt;</literal>, by replacing
+        <literal>"Text"</literal> with <literal>"Password"</literal>, <literal>"Check"</literal> or <literal>"Radio"</literal>
+        (Hidden input fields are not visible anyway. Select menus and text areas don't need a special class as they can be easily
+        selected via CSS rules. For the last two, the error CSS looks like this:
+      </para>
+      <programlisting>[@class] PfxError [PfxErrorLevel_$level])</programlisting>
+      <section xml:id="xslt.forms.elements.text">
+        <title>Creating a text input field</title>
+        <para>
+          Text input fields are created using the <literal>&lt;pfx:xinp&gt;</literal> tag.
+        </para>
+        <programlisting language="xml"><![CDATA[<pfx:xinp type="text" name="AName" default="AValue" position="1|..|n" class="ACssClass">
+  <!--
+    name and default can also be set at runtime
+  -->
+  <pfx:default>
+    <ixsl:value-of select="/some/runtime/value"/>
+  </pfx:default>
+  <pfx:name>
+    <ixsl:value-of select="/some/runtime/name"/>
+  </pfx:name>
+ </pfx:xinp>]]></programlisting>
+        <para>
+          <table rules="all" frame="box">
+            <caption>Attributes of pfx:xinp[@type="text"]</caption>
+            <thead>
+              <tr>
+                <th>Attribute name</th>
+                <th>Mandatory?</th>
+                <th>Description</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td>name or &lt;pfx:name&gt;</td>
+                <td>mandatory</td>
+                <td>
+                  <para>
+                    The name of the parameter. Use the name attribute when the name is a known literal value. If it must be
+                    computed at runtime (e.g. from the runtime DOM tree), you can use the <literal>&lt;pfx:name&gt;</literal>
+                    child element. In the end, the form of a parameter name should be prefix.InternalName.
+                  </para>
+                </td>
+              </tr>
+              <tr>
+                <td>name or &lt;pfx:default&gt;</td>
+                <td>optional</td>
+                <td>
+                  <para>
+                    The difference between the attribute and the child element form is analog to the description given above.
+                    You can use the default specification to pre-set a value for the case that the backend doesn't
+                    set one on it's own.
+                  </para>
+                </td>
+              </tr>
+              <tr>
+                <td>position</td>
+                <td>optional</td>
+                <td>
+                  <para>
+                    Default is <literal>1</literal>. Useful only for parameters which are defined to occur multiple times, i.e.
+                    the same parameter name may appear more than one time in the output from the backend system to pre-fill
+                    elements on the UI. Wiht position you can decide, which of those multiple outputs under the same name you
+                    want to reference for the pre-filled value.
+                  </para>
+                </td>
+              </tr>
+              <tr>
+                <td>class</td>
+                <td>optional</td>
+                <td>
+                  <para>
+                    See <xref linkend="xslt.forms.elements"/> for an explanation on how the CSS class(es) for the html
+                    element are constructed.
+                  </para>
+                </td>
+              </tr>
+            </tbody>
+          </table>
+        </para>
+      </section>
+      <section xml:id="xslt.forms.elements.textarea">
+        <title>Creating a text area field</title>
+        <para>
+          Text area fields are created the same way as text input fields (see <xref linkend="xslt.forms.elements.text"/>),
+          you only have to set the <literal>type</literal> attribute to <literal>area</literal>.
+        </para>
+        <para>
+          Basically the same attributes as for <literal>&lt;pfx:xinp type="text"&gt;</literal>, with the exception
+          that there's no default attribute or child node. The same way as it works for the html textarea tag, the content
+          of the element (minus the special <literal>&lt;pfx:name&gt;</literal> child) becomes the default value
+          for the form input element.
+        </para>
+      </section>
+      <section xml:id="xslt.forms.elements.password">
+        <title>Creating a password field</title>
+        <para>
+          Password fields are created the same way as text input fields (see <xref linkend="xslt.forms.elements.text"/>),
+          you only have to set the <literal>type</literal> attribute to <literal>password</literal>.
+        </para>
+        <para>
+          Similar to <literal>&lt;pfx:xinp type="text"&gt;</literal>, but without the ability to set a default value from the UI and the position is fixed to be "1".
+        </para>
+      </section>
+      <section xml:id="xslt.forms.elements.hidden">
+        <title>Creating a hidden field</title>
+        <para>
+          Hidden fields are created the same way as text input fields (see <xref linkend="xslt.forms.elements.text"/>),
+          you only have to set the <literal>type</literal> attribute to <literal>hidden</literal>.
+        </para>
+        <para>
+          Basically the same attributes as for <literal>&lt;pfx:xinp type="text"&gt;</literal>. Of course no special class attribute handling, as the result is invisible anyway.
+        </para>
+      </section>
+      <section xml:id="xslt.forms.elements.radio">
+        <title>Creating a radio or check box</title>
+        <para>
+          Radio buttons and checkboxes are created using the <literal>&lt;pfx:xinp&gt;</literal> tag as well.
+        </para>
+<programlisting language="xml"><![CDATA[<pfx:xinp type="radio|check" name="AName" value="AValue" default="true|false" class="ACssClass">
+  <pfx:name>
+    <ixsl:value-of select="/some/runtime/name"/>
+  </pfx:name>
+  <pfx:value>
+    <ixsl:value-of select="/some/runtime/value"/>
+  </pfx:value>
+  <pfx:default>
+    <ixsl:value-of select="/runtime/true/or/false"/>
+  </pfx:default>
+</pfx:xinp>]]></programlisting>
+        <para>
+          <table rules="all" frame="box">
+            <caption>Attributes of pfx:xinp[@type="radio|check"]</caption>
+            <thead>
+              <tr>
+                <th>Attribute name</th>
+                <th>Mandatory?</th>
+                <th>Description</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td>name or &lt;pfx:name&gt;</td>
+                <td>mandatory</td>
+                <td>
+                  <para>
+                    The name of the parameter. Use the name attribute when the name is a known literal value. If it must be computed at
+                    runtime (e.g. from the runtime DOM tree), you can use the <literal>&lt;pfx:name&gt;</literal> child element. In the end,
+                    the form of a parameter name should be prefix.InternalName.
+                  </para>
+                  <para>
+                    A group of radio- or checkboxes share the same name and differ by the value they submit when they are checked. 
+                  </para>
+                </td>
+              </tr>
+              <tr>
+                <td>value or &lt;pfx:value&gt;</td>
+                <td>mandatory</td>
+                <td>
+                  <para>
+                    Needed to set the value that is to be submitted when the element is checked. The difference between the attribute and
+                    the child element form is analog to the description given above.
+                  </para>
+                </td>
+              </tr>
+              <tr>
+                <td>default or &lt;pfx:default&gt;</td>
+                <td>optional</td>
+                <td>
+                  <para>
+                    Allowed values are <literal>true</literal> and <literal>false</literal>. The difference between the attribute and
+                    the child element form is analog to the description given above. You can use the default specification to decide if
+                    the form element is checked for the case that the backend doesn't supply which of the group's members are to be checked.
+                  </para>
+                </td>
+              </tr>
+              <tr>
+                <td>class</td>
+                <td>optional</td>
+                <td>
+                  <para>
+                    See <xref linkend="xslt.forms.elements"/> for an explanation on how the CSS class(es) for the html
+                    element are constructed.
+                  </para>
+                </td>
+              </tr>
+            </tbody>
+          </table>
+        </para>
+      </section>
+      <section xml:id="xslt.forms.elements.select">
+        <title>Creating option menus</title>
+        <para>
+          Radio buttons and checkboxes are created using the <literal>&lt;pfx:xinp&gt;</literal> and <literal>&lt;pfx:option&gt;</literal> tags.
+        </para>
+        <programlisting language="xml"><![CDATA[<pfx:xinp type="select" name="AName" class="ACssClass" multiple="true|false">
+  <pfx:name>
+    <ixsl:value-of select="/some/runtime/name"/>
+  </pfx:name>
+
+  <!--
+    One option tag per option that is available in the menu
+  -->
+  <pfx:option value="AValue" default="true|false">
+    <pfx:value>
+      <ixsl:value-of select="/some/runtime/value"/>
+    </pfx:value>
+    <pfx:default>
+      <ixsl:value-of select="/runtime/true/or/false"/>
+    </pfx:default>
+  </pfx:option>
+</pfx:xinp>]]></programlisting>
+        <para>
+          <table rules="all" frame="box">
+            <caption>Attributes of pfx:xinp[@type="select"]</caption>
+            <thead>
+              <tr>
+                <th>Attribute name</th>
+                <th>Mandatory?</th>
+                <th>Description</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td>name or &lt;pfx:name&gt;</td>
+                <td>mandatory</td>
+                <td>
+                  <para>
+                    The name of the parameter. Use the name attribute when the name is a known literal value. If it must be computed at
+                    runtime (e.g. from the runtime DOM tree), you can use the <literal>&lt;pfx:name&gt;</literal> child element. In the end,
+                    the form of a parameter name should be prefix.InternalName.
+                  </para>
+                </td>
+              </tr>
+              <tr>
+                <td>class</td>
+                <td>optional</td>
+                <td>
+                  <para>
+                    See <xref linkend="xslt.forms.elements"/> for an explanation on how the CSS class(es) for the html
+                    element are constructed.
+                  </para>
+                </td>
+              </tr>
+              <tr>
+                <td>multiple</td>
+                <td>optional</td>
+                <td>
+                  <para>
+                    Defaults to false. Set to true when you want to have a select menu with multiple selectable options.
+                  </para>
+                </td>
+              </tr>
+            </tbody>
+          </table>
+        </para>
+        <para>
+          <table rules="all" frame="box">
+            <caption>Attributes of pfx:option</caption>
+            <thead>
+              <tr>
+                <th>Attribute name</th>
+                <th>Mandatory?</th>
+                <th>Description</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td>value or &lt;pfx:value&gt;</td>
+                <td>mandatory</td>
+                <td>
+                  <para>
+                    Needed to set the value that is to be submitted when the element is checked. The difference between
+                    the attribute and the child element form is analog to the description given above.
+                  </para>
+                </td>
+              </tr>
+              <tr>
+                <td>default or &lt;pfx:default&gt;</td>
+                <td>optional</td>
+                <td>
+                  <para>
+                    See <xref linkend="xslt.forms.elements"/> for an explanation on how the CSS class(es) for the html
+                    element are constructed.
+                  </para>
+                </td>
+              </tr>
+              <tr>
+                <td>multiple</td>
+                <td>optional</td>
+                <td>
+                  <para>
+                    Allowed values are <literal>true</literal> and <literal>false</literal>. The difference between the
+                    attribute and the child element form is analog to the description given above. You can use the default
+                    specification to decide if the option is selected for the case that the backend doesn't supply which
+                    of the options are to be selected.
+                  </para>
+                </td>
+              </tr>
+            </tbody>
+          </table>
+        </para>
+        <para>
+          All other attributes are copied to the resulting HTML element.
+        </para>
+      </section>
+    </section>
+    <section xml:id="xslt.forms.errors">
+      <title>Handling error conditions</title>
+      <para>
+        Errors in Pustefix come in two variants:
+      </para>
+      <orderedlist>
+        <listitem>
+          <para>
+            Field errors that are attached to a form input field and which must be handled on the page the form element is defined on.
+          </para>
+        </listitem>
+        <listitem>
+          <para>
+            Page messages which are (not neccessary fatal) errors or warnings which may or may not be displayed on the current or the following page.
+          </para>
+          <para>
+            Page messages are not associated to a single form element, but are used for general feedback on the status of the application.
+          </para>
+        </listitem>
+      </orderedlist>
+      <section xml:id="xslt.forms.errors.fields">
+        <title>Errors attached to a field</title>
+        <para>
+          The <literal>&lt;pfx:checkerror&gt;</literal> tag is used to display content depending on the fact if a field error
+          (or possibly a field error with a special level attribute) is present in the runtime DOM tree.
+        </para>
+        <programlisting language="xml"><![CDATA[<pfx:checkerror level="AString">
+  <!--
+    Content to be displayed when any error with the matching level attribute is present in the
+    runtime DOM tree. The level attribute is optional, when it's missing, any error will trigger
+    the display of the content of the pfx:checkerror tag.
+  -->
+</pfx:checkerror>]]></programlisting>
+        <para>
+          The <literal>&lt;pfx:checkfield&gt;</literal> tag is used to display error messages depending on the form
+          field they are attached to.
+        </para>
+        <programlisting language="xml"><![CDATA[<pfx:checkfield name="prefix.Name">
+  <pfx:error>
+    <!--
+      Content that's displayed when an error associated to the form field referenced
+      in the name attribute is present in the runtime DOM tree.
+    -->
+  </pfx:error>
+  <pfx:normal>
+    <!--
+      Content that's displayed when no error associated to the form field referenced
+      in the name attribute is present in the runtime DOM tree.
+    -->
+  </pfx:normal>
+  <!--
+    Content outside of the two child nodes is displayed in both cases.
+  -->
+</pfx:checkfield>]]></programlisting>
+        <para>
+          There can be more than one of <literal>&lt;pfx:error&gt;</literal> and <literal>&lt;pfx:normal&gt;</literal>
+          child nodes. These can be used to display completely different content based on the presence or not of an error.
+        </para>
+        <para>
+          The <literal>&lt;pfx:checkfield&gt;</literal> tag defines a set of ixsl variables that can be used inside its body. These are
+        </para>
+        <itemizedlist>
+          <listitem>
+            <simpara>
+              <literal>$pfx_scode</literal>: The StatusCode node that represents the error. This can be used to call
+              <literal>ixsl:apply-templates</literal> on to display the error message.
+            </simpara>
+          </listitem>
+          <listitem>
+            <simpara>
+              <literal>$pfx_level</literal>: The level attribute of the error in the runtime DOM tree (or empty, if
+              there's no level attribute).
+            </simpara>
+          </listitem>
+          <listitem>
+            <simpara>
+              <literal>$pfx_class</literal>: The CSS class that has been constructed depending on the presence of the error.
+              If there's no error, this variable is empty. Else, if the error is present and has no level attribute set,
+              the value is just <literal>PfxError</literal>. If the error has a level attribute, the class is set to be
+              <literal>PfxError PfxErrorLevel_{$pfx_level}</literal>.
+            </simpara>
+          </listitem>
+        </itemizedlist>
+        <example>
+          <title>Using <literal>&lt;pfx:checkfield&gt;</literal></title>
+          <programlisting language="xml"><![CDATA[<tr>
+  <pfx:checkfield name="addr.Street">
+    <td class="{$pfx_class}">Street:</td>
+  </pfx:checkfield>
+  <td><pfx:xinp type="text" name="addr.Street"/></td>
+</tr> 
+<pfx:checkfield name="addr.Street">
+  <pfx:error>
+    <tr>
+      <td colspan="2" class="{$pfx_class}">
+        <ixsl:apply-templates select="$pfx_scode"/>
+      </td>
+    </tr>
+  </pfx:error>
+</pfx:checkfield>]]></programlisting>
+        <para>
+          You can see how the second <literal>&lt;pfx:checkfield&gt;</literal> inserts a whole new row in the table structure
+          when and only when a matching error happens. Also note how the defined <literal>$pfx_class</literal> variable is used
+          to style content depending on the presence of an error.
+        </para>
+        </example>
+      </section>
+      
+      <section xml:id="xslt.forms.errors.page">
+        <title>Checking for pagemessages</title>
+        <para>
+          The <literal>&lt;pfx:checkmessage&gt;</literal> tag is used to display content depending on the fact if a
+          page message (or possibly a page message with a special level attribute) is present in the runtime DOM tree.
+        </para>
+        <programlisting language="xml"><![CDATA[<pfx:checkmessage level="AString">
+  <!--
+    Content to be displayed when any page message with the matching level attribute is
+    present in the runtime DOM tree. The level attribute is optional, when it's missing,
+    any page message will trigger the display of the content of the pfx:checkmessage tag.
+  -->
+<pfx:checkmessage>]]></programlisting>
+        <para>
+          The <literal>&lt;pfx:messageloop&gt;</literal> tag can be used to repeat content for every page message
+          that is present in the runtime DOM tree.
+        </para>
+        <programlisting language="xml"><![CDATA[<pfx:checkmessage level="AString">
+  <pfx:messageloop>
+    <!--
+      This content is repeated for all the page messages that match the restrictions imposed by
+      the parent's level attribute (or all page messages, if the attribute isn not given).
+    -->
+  </pfx:messageloop>.
+</pfx:checkmessage>]]></programlisting>
+        <para>
+          The <literal>&lt;pfx:messageloop&gt;</literal> tag defines a set of ixsl variables that can be used inside its body. These are
+        </para>
+        <itemizedlist>
+          <listitem>
+            <simpara>
+              <literal>$pfx_scode</literal>: The StatusCode node that represents the error. This can be used to call
+              <literal>ixsl:apply-templates</literal> on to display the error message.
+            </simpara>
+          </listitem>
+          <listitem>
+            <simpara>
+              <literal>$pfx_level</literal>: The level attribute of the error in the runtime DOM tree (or empty, if
+              there's no level attribute).
+            </simpara>
+          </listitem>
+          <listitem>
+            <simpara>
+              <literal>$pfx_class</literal>: The CSS class that has been constructed depending on the presence of the error.
+              If there's no error, this variable is empty. Else, if the error is present and has no level attribute set,
+              the value is just <literal>PfxError</literal>. If the error has a level attribute, the class is set to be
+              <literal>PfxError PfxErrorLevel_{$pfx_level}</literal>.
+            </simpara>
+          </listitem>
+        </itemizedlist>
+      </section>
+    </section>
+    <section xml:id="xslt.forms.token">
+      <title>Avoiding duplicate form submission</title>
+      <para>
+        You may face situations where you want to prevent, that the same form is submitted multiple times (e.g. by double-click,
+        back button) or that a form, opened in a new window/tab, but already opened in another window/tab, can still be
+        submitted from the old window/tab.
+      </para>
+      <para>
+        Using the <literal>&lt;pfx:token&gt;</literal> tag a hidden field with a random token is included into its parent form.
+        The token is stored in the Context, keyed by a customizable name (by default pagename#elementid, which can be overwritten/replaced
+        using the name attribute). After the form is submitted, the token is invalidated and submitting the form again causes the setting
+        of a page message. Via the errorpage attribute you can optionally jump to an error page.
+      </para>
+      <programlisting language="xml"><![CDATA[<pfx:forminput>
+  <pfx:token errorpage="multisubmiterror"/>
+  <!-- place form elements here -->
+</pfx:forminput>]]></programlisting>
+      <para>
+        You should be aware that this mechanism depends on the caching behaviour of the used browser, e.g. for browsers, which don't
+        cache but reload pages accessed via the back button, it can't prevent the repeated form submission, because the form in
+        fact is a new instance and we can't detect or decide that the submit is illegal.
+      </para>
+      <para>
+        This mechanism by default only prevents forms with illegal tokens from being processed. If you want to ensure that form submits
+        including no token will fail too, you can force this behaviour by setting the requirestoken attribute at the pagerequest's input
+        element to true. This will force tokens for every form that's submitted to this page.
+      </para>
+      <programlisting language="xml"><![CDATA[<contextxmlserver>
+  <!--
+    servlet config options
+  -->
+  <pagerequest name="...">
+    <input requirestoken="true">
+      <interface prefix="..." class="..."/>
+    </input>
+  </pagerequest>
+</contextxmlserver>]]></programlisting>
+    </section>
+  </section>
+
+  <section>
+    <title>Miscellaneous utility tags</title>
+    <para>Pustefix also provides several utility tags, that might be helpful in your application.</para>
+    <section xml:id="xslt.utility.active">
+      <title>Checking page status</title>
+      <para>
+        The <literal>&lt;pfx:checkactive&gt;</literal> and <literal>&lt;pfx:checknotactive&gt;</literal> allow you
+        to check from the XSL-stylesheet, whether a specific IHandler currently is active or not.
+      </para>
+      <programlisting language="xml"><![CDATA[<pfx:checkactive page="APageName" prefix="AHandlerName">
+  <!--
+    Content to be displayed, if the handler is active
+  -->
+</pfx:checkactive>]]></programlisting>
+      <para>
+        <table rules="all" frame="box">
+          <caption>Attributes of the pfx:checkactive and pfx:checknotactive tags</caption>
+          <thead>
+            <tr>
+              <th>Attribute name</th>
+              <th>Mandatory?</th>
+              <th>Description</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td>page</td>
+              <td>optional</td>
+              <td>
+                <para>
+                  When using the page attribute, the content of the tag is only displayed if the referenced page is accessible.
+                  This is an easy way to display complete subparts of a page depending on the accessibility of another page.
+                </para>
+              </td>
+            </tr>
+            <tr>
+              <td>prefix</td>
+              <td>optional</td>
+              <td>
+                <para>
+                  When using the prefix, the content of the tag is only displayed if a referenced handler on the current
+                  page is active. The prefix is the same name as used in the servlet property file for the handler.
+                </para>
+                <para>
+                  You can only use one of the attributes page and prefix.
+                </para>
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </para>
+    </section>
+    <section xml:id="xslt.pfx.langselect">
+      <title>Displaying content based on the language</title>
+      <para>
+        The selection mechanism of <literal>&lt;pfx:langselect&gt;</literal> allows to select matching content anywhere
+        inside a include part depending on the current language that is set in the running session.
+        The <literal>&lt;pfx:lang name="default"&gt;</literal> tag is acting as the fallback for all languages that don't
+        have a better, more specific named <literal>&lt;pfx:lang&gt;</literal> node.
+      </para>
+      <programlisting language="xml"><![CDATA[<pfx:langselect>
+  <pfx:lang name="en_*">...</pfx:lang>
+  <pfx:lang name="en_GB">...</pfx:lang>
+  <pfx:lang name="default">...</pfx:lang>
+</pfx:langselect>]]></programlisting>
+      <para>
+        The system doesn't enforce but expects languages to be of the standard form of ISO language codes. In this case,
+        a <literal>&lt;pfx:lang&gt;</literal> node with a name attribute ending in an asterisk (<literal>*</literal>) can be used to
+        create a fallback for a whole "family" of languages. In the example above, the <literal>en_*</literal> node will serve as a fallback
+        for all language codes starting with en_ except <literal>en_GB</literal> (which has a more specific node below).
+      </para>
+    </section>
+    <section xml:id="xslt.pfx.themeselect">
+      <title>Displaying content based on the theme</title>
+      <para>
+        The selection mechanism of <literal>&lt;pfx:themeselect&gt;</literal> allows to select matching content anywhere inside a
+        include part depending on the same selection mechanism that is used to select the include part the first hand as described
+        in <xref linkend="xslt.pfx.include"/>
+      </para>
+      <programlisting language="xml"><![CDATA[<pfx:themeselect>
+  <pfx:theme name="ATheme">...</pfx:theme>
+  <pfx:theme name="default">...</pfx:theme>
+</pfx:themeselect>]]></programlisting>
+      <para>
+        Of course this makes most sense, when the containing include part uses a general theme, so there are
+        specialized themes in the theme fallback queues to select from.
+      </para>
+      <note>
+        <para>
+          This tag is only to be used in very special situations. Normally you would like to use different themes
+          for the include part to register itself correctly with the runtime system.
+        </para>
+      </note>
+    </section>
+    <section xml:id="xslt.consoles">
+      <title>Using the Pustefix console</title>
+      <para>
+        Pustefix provides an edit-console and webservice-console that are helpful during debugging.
+      </para>
+      <para>
+        Those consoles can be included in your pages using the <literal>&lt;pfx:editconsole&gt;</literal> and
+        <literal>&lt;pfx:webserviceconsole&gt;</literal> tags. The webservice-console may also be included within the
+        editconsole using the following form: <literal>&lt;pfx:editconsole webserviceconsole="true"&gt;</literal>.
+      </para>
+    </section>
+  </section>
+
+  <section xml:id="xslt.extensions">
+    <title>XSLT extensions</title>
+
+  <section xml:id="xslt.extensions.xpathfunctions">
+    <title>XPath functions</title>
+    <para>In addition to the standard XPath functions supplied by the XSLT/XPath implementation Pustefix provides some additional framework specific
+          XPath functions in the <literal>xmlns:pfx="http://www.schlund.de/pustefix/core"</literal> namespace:</para>
+    <para>
+    <para>Example:
+    <programlisting language="xml"><![CDATA[<ixsl:if test="pfx:isVisible('mypage')=1">
+  Display if page 'mypage' is accessible 
+</ixsl:test>]]></programlisting>
+    </para>
+    </para>
+
+   <section xml:id="xslt.extensions.xpathfunctions.page">
+      <title>Page functions</title>
+
+    <para>
+      <emphasis role="strong">Function:</emphasis> <emphasis>number</emphasis> <emphasis role="strong">pfx:isVisible</emphasis>(<emphasis>string</emphasis>)
+    </para>
+    <para>
+      The <emphasis role="strong">pfx:isVisible</emphasis> function checks if a page is accessible. The page name is passed as argument.
+      The function returns:
+      <itemizedlist>
+          <listitem><literal>1</literal>, if the page is accessible</listitem>
+          <listitem><literal>0</literal>, if the page isn't accessible</listitem>
+          <listitem><literal>-1</literal>, if the page doesn't exist</listitem>
+      </itemizedlist>
+    </para>
+    <para>
+      <emphasis role="strong">Function:</emphasis> <emphasis>number</emphasis> <emphasis role="strong">pfx:isVisited</emphasis>(<emphasis>string</emphasis>)
+    </para>
+    <para>
+       The <emphasis role="strong">pfx:isVisited</emphasis> function checks if a page has already been visited within the session. The page name is passed as argument.
+      The function returns:
+      <itemizedlist>
+          <listitem><literal>1</literal>, if the page has already been visited</listitem>
+          <listitem><literal>0</literal>, if the page hasn't been visited yet</listitem>
+          <listitem><literal>-1</literal>, if the page isn't configured</listitem>
+      </itemizedlist>
+    </para>
+     <note>
+        <para>
+          You should be aware that doing a boolean check on results of type <literal>number</literal>, <literal>1</literal> and 
+          <literal>-1</literal> both are evaluated as <literal>true</literal>, <literal>0</literal> as <literal>false</literal>.
+        </para>
+     </note>
+    <para xml:id="xslt.extensions.xpathfunctions.getdisplaypagename">
+      <emphasis role="strong">Function:</emphasis> <emphasis>string</emphasis> <emphasis role="strong">pfx:getDisplayPageName</emphasis>()
+    </para>
+    <para>
+       The <emphasis role="strong">pfx:getDisplayPageName</emphasis> function returns the display name of the current page.
+    </para>
+ 
+   </section>
+
+   <section xml:id="xslt.extensions.xpathfunctions.include">
+      <title>Include functions</title>
+
+     <para>
+      <emphasis role="strong">Function:</emphasis> <emphasis>boolean</emphasis> <emphasis role="strong">pfx:checkInclude</emphasis>(<emphasis>string, string, string, string</emphasis>)
+    </para>
+    <para>
+       The <emphasis role="strong">pfx:checkInclude</emphasis> function checks if an include part exists. The function expects four string arguments: href, part, module, search (same semantics as <xref linkend="xslt.pfx.checkinclude"/>).
+      The function returns:
+      <itemizedlist>
+          <listitem><literal>true</literal>, if the include part can be found</listitem>
+          <listitem><literal>false</literal>, if the include part can't be found</listitem>
+      </itemizedlist>
+    </para>
+
+     <para>
+      <emphasis role="strong">Function:</emphasis> <emphasis>node-set</emphasis> <emphasis role="strong">pfx:getIncludeInfo</emphasis>(<emphasis>string, string, string</emphasis>)
+    </para>
+    <para>
+       The <emphasis role="strong">pfx:getIncludeInfo</emphasis> function returns information about the include parts contained in a resource or a set of resources (when doing
+       a dynamic search). The function expects three string arguments: href, module (optional) and search (optional).
+      The function returns a node-set with each node describing a part, e.g. its name.
+<para>Example:
+    <programlisting language="xml"><![CDATA[<!-- iterates over the names of all parts from a file and includes the parts -->
+<pfx:for-each select="pfx:getIncludeInfo('path/to/file.xml','amodule')/part">
+   <pfx:include select-part="@name" href="path/to/file.xml" module="amodule"/>
+</pfx:for-each>]]></programlisting>
+    </para>
+    </para>
+   
+    </section>
+
+    <section xml:id="xslt.extensions.xpathfunctions.string">
+      <title>String functions</title>
+    
+      <para>
+        <emphasis role="strong">Function:</emphasis> <emphasis>boolean</emphasis> <emphasis role="strong">pfx:ends-with</emphasis>(<emphasis>string, string</emphasis>)
+      </para>
+      <para>
+        The <emphasis role="strong">pfx:ends-with</emphasis> function returns true if the first argument string ends with the second argument string, and otherwise returns false.
+      </para>
+
+      <para></para>
+      <para>
+        <emphasis role="strong">Function:</emphasis> <emphasis>string</emphasis> <emphasis role="strong">pfx:lower-case</emphasis>(<emphasis>string</emphasis>)
+      </para>
+      <para>
+        The <emphasis role="strong">pfx:lower-case</emphasis> function converts all of the characters in the arguments string to lower case.
+      </para>
+
+      <para></para>
+      <para>
+        <emphasis role="strong">Function:</emphasis> <emphasis>node-set</emphasis> <emphasis role="strong">pfx:tokenize</emphasis>(<emphasis>string, string</emphasis>)
+      </para>
+      <para>
+        The <emphasis role="strong">pfx:tokenize</emphasis> function splits the first argument string into substrings by using the second argument string as separator (in the form of a regular expression).
+      </para>
+
+      <para></para>
+      <para>
+        <emphasis role="strong">Function:</emphasis> <emphasis>string</emphasis> <emphasis role="strong">pfx:upper-case</emphasis>(<emphasis>string</emphasis>)
+      </para>
+      <para>
+        The <emphasis role="strong">pfx:upper-case</emphasis> function converts all of the characters in the arguments string to upper case.
+      </para>
+
+    </section>
+
+    <section xml:id="xslt.extensions.xpathfunctions.development">
+      <title>Development functions</title>
+
+      <para>
+        <emphasis role="strong">Function:</emphasis> <emphasis>void</emphasis> <emphasis role="strong">pfx:sleep</emphasis>(<emphasis>number</emphasis>)
+      </para>
+      <para>
+        The <emphasis role="strong">pfx:sleep</emphasis> function pauses XSLT processing for the specified number of milliseconds. This function is intended for debugging purpose only.
+      </para>
+
+    </section>
+
+   <section xml:id="xslt.extensions.xpathfunctions.misc">
+      <title>Miscellaneous functions</title>
+
+    <para>
+      <emphasis role="strong">Function:</emphasis> <emphasis>string</emphasis> <emphasis role="strong">pfx:getEnvProperty</emphasis>(<emphasis>string</emphasis>)
+    </para>
+    <para>
+       The <emphasis role="strong">pfx:getEnvProperty</emphasis> function returns then environment property denoted by the passed argument.
+    </para>
+
+    <para></para>
+    <para>
+      <emphasis role="strong">Function:</emphasis> <emphasis>string</emphasis> <emphasis role="strong">pfx:escapeJS</emphasis>(<emphasis>string</emphasis>)
+    </para>
+    <para>
+       The <emphasis role="strong">pfx:escapeJS</emphasis> function escapes Javascript data by replacing non-alphanumeric characters by the according \xHH and \uHHHH escape sequences.
+    </para>
+
+   <para></para>
+    <para>
+      <emphasis role="strong">Function:</emphasis> <emphasis>boolean</emphasis> <emphasis role="strong">pfx:isBot</emphasis>()
+    </para>
+    <para>
+       The <emphasis role="strong">pfx:isBot</emphasis> function returns true if the current request is made by a bot, otherwise it returns false.
+    </para>
+
+   <para></para>
+    <para>
+      <emphasis role="strong">Function:</emphasis> <emphasis>Object</emphasis> <emphasis role="strong">pfx:getBean</emphasis>(<emphasis>string</emphasis>)
+    </para>
+    <para>
+       The <emphasis role="strong">pfx:getBean</emphasis> function gets a bean reference from the Spring ApplicationContext looking it up by its name or type. Thus you can call
+       extension functions on instance level by passing the bean as first method argument, e.g.:
+    </para>
+    <programlisting language="xml"><![CDATA[<ixsl:value-of xmlns:my="java:mypackage.MyClass" select="my:myMethod(pfx:getBean('myname'),'arg1','arg2')"/>]]></programlisting>
+
+    </section>
+
+  </section>
+
+  <section xml:id="xslt.extensions.extensionelements">
+    <title>XSL extension elements</title>
+    <para>In addition to the standard XSL elements Pustefix provides some useful XSL extension elements. They can be used by declaring the namespace
+          <literal>http://pustefixframework.org/org.pustefixframework.xslt.ExtensionElements</literal>, using the prefix <literal>pxsl</literal>
+          and adding the prefix to the <literal>extension-element-prefixes</literal> attribute of the stylesheet:</para>
+      <programlisting language="xml"><![CDATA[<xsl:stylesheet xmlns:xsl="http://www.w3.org/1999/XSL/Transform" 
+                xmlns:pxsl="http://pustefixframework.org/org.pustefixframework.xslt.ExtensionElements"
+                extension-element-prefixes="pxsl" version="1.1">]]></programlisting>
+      <para>
+        There are some extension elements providing extended logging functionality. They work similar to the <literal>&lt;xsl:message/&gt;</literal> 
+        instruction, but additionally support different log levels and can optionally write to a Log4J logger instead of standard output.
+      </para>
+<programlisting language="xml"><![CDATA[<pxsl:log level="DEBUG|INFO|WARN|ERROR"
+              logger="SOME_LOG4J_LOGGER"> 
+  <!-- content -->
+</pxsl:log>
+    
+<!-- shortcuts for specific log levels -->
+<pxsl:debug> <!-- content --> </pxsl:debug>
+<pxsl:info> <!-- content --> </pxsl:info>
+<pxsl:warn> <!-- content --> </pxsl:warn>
+<pxsl:error> <!-- content --> </pxsl:error>]]></programlisting>
+     <para>If you don't specify a logger, the content will be written to standard output. But the log levels are bound to the application mode by default,
+           i.e. the log messages will be filtered. Here's which messages are displayed in which mode:
+     </para>   
+     <itemizedlist>
+          <listitem><literal>prod</literal> => WARN, ERROR</listitem>
+          <listitem><literal>test</literal> or <literal>devel</literal> => DEBUG, INFO, WARN, ERROR</listitem>
+          <listitem>other modes => INFO, WARN, ERROR</listitem>
+      </itemizedlist>
+      <para>
+        The <literal>&lt;pxsl:fail-safe/&gt;</literal> extension element catches an exception thrown during the processing of its child elements and 
+        outputs its stacktrace instead of the content. This element shouldn't be used on normal pages. It's intended for tooling and debugging purposes only.  
+      </para>
+ <programlisting language="xml"><![CDATA[<xsl:variable name="result">
+   <pxsl:fail-safe>
+      <xsl:value-of select="call:someExtensionFunction()"/>
+   </pxsl:fail-safe>
+</xsl:variable>]]></programlisting>
+
+  </section>
+  
+  </section>
+
+</chapter>

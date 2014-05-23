@@ -1,0 +1,17 @@
+body {
+  padding: 10px;
+}
+
+span.error {
+  color: red;
+  padding-left: 10px;
+}
+
+div {
+  padding-bottom: 10px;
+}
+
+span.core_button_invisible {
+   text-decoration: underline;
+   color: #ccc;	
+}

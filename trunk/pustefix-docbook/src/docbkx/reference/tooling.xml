@@ -1,0 +1,107 @@
+<?xml version="1.0"?>
+<chapter xml:id="tooling" xmlns="http://docbook.org/ns/docbook" xmlns:xlink="http://www.w3.org/1999/xlink"
+  xmlns:xi="http://www.w3.org/2001/XInclude" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xsi:schemaLocation="http://docbook.org/ns/docbook http://www.docbook.org/xml/5.0CR7/xsd/docbook.xsd"
+>
+  <title>Tooling</title>
+    <para>
+    </para>
+    <section xml:id="tooling.pfxinternals">
+      <title>Pustefix internals page</title>
+      <para>
+        The Pustefix internals page provides some useful information for application developers (e.g. about configuration and status 
+        of the system, the JVM and Pustefix itself). You can additionally find some useful links triggering actions like scheduling a
+        webapp reload or invalidating all sessions.
+      </para>
+      <para>
+        The page is only available at development time and can be accessed under the URL path <literal>/pfxinternals</literal> (the 
+        <literal>&lt;pfx:editconsole/&gt;</literal> contains an according link too). On the different tabs you can find the following information:
+      </para>
+      <itemizedlist>
+          <listitem><emphasis>Framework:</emphasis> Pustefix version and related links</listitem>
+          <listitem><emphasis>Environment:</emphasis> Pustefix environment and system properties</listitem>
+      </itemizedlist>
+      <figure xml:id="tooling.pfxinternals.framework">
+        <title>Pustefix internals - Framework information</title>
+        <mediaobject>
+          <imageobject>
+            <imagedata fileref="images/reference/pfxinternals-framework.png" format="PNG"/>
+          </imageobject>
+        </mediaobject>
+      </figure>
+       <itemizedlist>
+          <listitem><emphasis>JVM:</emphasis> JVM information and statistics, e.g. memory usage and garbage collection</listitem>
+          <listitem><emphasis>System:</emphasis> Basic system information, like memory usage and CPU load</listitem>
+      </itemizedlist>
+      <figure xml:id="tooling.pfxinternals.jvm">
+        <title>Pustefix internals - JVM information</title>
+        <mediaobject>
+          <imageobject>
+            <imagedata fileref="images/reference/pfxinternals-jvm.png" format="PNG"/>
+          </imageobject>
+        </mediaobject>
+      </figure>
+      <itemizedlist>
+          <listitem><emphasis>Cache:</emphasis> XSL caching statistics</listitem>
+          <listitem><emphasis>Modules:</emphasis> Loaded Pustefix modules</listitem>
+          <listitem><emphasis>Targets:</emphasis> XSL target dependency visualization, list of available XSL templates</listitem>
+      </itemizedlist>
+      <figure xml:id="tooling.pfxinternals.targets">
+        <title>Pustefix internals - Target generator information</title>
+        <mediaobject>
+          <imageobject>
+            <imagedata fileref="images/reference/pfxinternals-targets.png" format="PNG"/>
+          </imageobject>
+        </mediaobject>
+      </figure>
+      <itemizedlist>
+          <listitem><emphasis>Search:</emphasis> Full text search of files within webapp, modules and classpath</listitem>
+      </itemizedlist>
+      <figure xml:id="tooling.pfxinternals.search">
+        <title>Pustefix internals - Full text search</title>
+        <mediaobject>
+          <imageobject>
+            <imagedata fileref="images/reference/pfxinternals-search.png" format="PNG"/>
+          </imageobject>
+        </mediaobject>
+      </figure>
+     <itemizedlist>
+          <listitem><emphasis>Actions:</emphasis> List of available actions, e.g. webapp or target generator reload, session invalidation, etc.</listitem>
+          <listitem><emphasis>Message:</emphasis> Message board showing results of last triggered actions</listitem>
+      </itemizedlist>
+    </section>
+    <section xml:id="tooling.specialparams">
+      <title>Special parameters for development</title>
+      <para>
+        Pustefix supports some special parameters triggering special behaviour/functions useful during development:
+      </para>
+      <table rules="all" frame="box">
+        <caption>Special parameters for development</caption>
+        <thead>
+          <tr>
+            <th>Name</th>
+            <th>Value</th>
+            <th>Description</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td>__xmlonly</td>
+            <td>1|2|3</td>
+            <td>Adding this parameter to an URL the page isn't rendered, but the originating DOM tree model is displayed. 
+                Setting the value to <literal>1</literal> the last DOM tree plus some additional data about the application state is rendered as HTML.
+                Setting the value to <literal>2</literal> the pure XML is returned (always creating a new DOM tree for the current page).
+                Setting the value to <literal>3</literal> the pure XML of the last DOM tree is returned.</td>
+          </tr>
+          <tr>
+            <td>__staticdom</td>
+            <td>-</td>
+            <td>Adding this parameter to an URL the page is rendered using the default DOM tree as created by the default <literal>State</literal> implementation.
+                Not using the designated <literal>State</literal> can be useful for debugging, e.g. when the page isn't reachable because of pageflow or 
+                exception issues.</td>
+          </tr>
+        </tbody>
+      </table>
+    </section>
+      
+</chapter>
