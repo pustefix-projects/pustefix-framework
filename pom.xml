@@ -201,11 +201,13 @@
     </plugins>
   </reporting> 
   <distributionManagement>
+<!--
     <repository>
       <id>sonatype-nexus-staging</id>
       <name>Sonatype Nexus Staging Repository</name>
       <url>https://oss.sonatype.org/service/local/staging/deploy/maven2/</url>
     </repository>
+-->
 <!--
     <snapshotRepository>
       <id>sonatype-nexus-snapshots</id>
@@ -213,9 +215,19 @@
       <url>https://oss.sonatype.org/content/repositories/snapshots/</url>
     </snapshotRepository>
 -->
+<!--
     <snapshotRepository>
       <id>ciso-snapshot</id>
       <url>https://artifactory.1and1.org/artifactory/ciso-snapshot</url>
+    </snapshotRepository>
+-->
+    <repository>
+      <id>localtest-releases</id>
+      <url>file:///home/mleidig/testrepo/releases</url>
+    </repository>
+    <snapshotRepository>
+      <id>localtest-snapshots</id>
+      <url>file:///home/mleidig/testrepo/snapshots</url>
     </snapshotRepository>
     <site>
       <id>pustefix</id>
