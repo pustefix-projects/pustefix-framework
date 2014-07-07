@@ -29,6 +29,7 @@ import org.apache.log4j.PatternLayout;
 import org.junit.Before;
 import org.junit.Test;
 import org.pustefixframework.container.spring.beans.TenantAwareProperties;
+import org.pustefixframework.container.spring.beans.TenantScope;
 import org.springframework.mock.web.MockHttpServletRequest;
 import org.springframework.web.context.request.RequestAttributes;
 import org.springframework.web.context.request.RequestContextHolder;
@@ -103,7 +104,7 @@ public class PropertyFileReaderTest {
         
         Tenant tenant = new Tenant(name);
         MockHttpServletRequest req = new MockHttpServletRequest();
-        req.setAttribute("__PFX_TENANT__", tenant);
+        req.setAttribute(TenantScope.REQUEST_ATTRIBUTE_TENANT, tenant);
         RequestAttributes attributes = new ServletRequestAttributes(req);
         RequestContextHolder.setRequestAttributes(attributes);
     }

@@ -125,6 +125,8 @@
     xsi:schemaLocation="http://www.pustefix-framework.org/2008/namespace/properties-config http://www.pustefix-framework.org/2008/namespace/properties-config.xsd">
     
     <prop name="a.property.name">a.property.value</prop>
+    <!-- if you're using multitenancy, you can set or override properties depending on the tenant
+    <prop name="a.property.name" tenant="a.tenant">a.property.value</prop> -->
   </properties>
   ]]>
         </programlisting>
@@ -260,6 +262,23 @@
     <context-xml-service>
       <!-- Path to the configuration file for the service -->
       <config-file>docroot:/WEB-INF/config.conf.xml</config-file>
+      <!-- Set this to true if you want to skip the last transformation and only get a
+           xml document containing all needed information for an external renderer: -->
+      <!-- <render-external>true</render-external> -->
+      <!-- Set the maximum number of DOMs stored for reusage (default 5): -->
+      <!-- <max-stored-doms>5</max-stored-doms> -->
+      <!-- Set the timeout (in seconds) for removing old DOMs (default 300): -->
+      <choose>
+        <when test="$mode='prod'">
+          <session-cleaner-timeout>20</session-cleaner-timeout>
+        </when>
+        <otherwise>
+          <session-cleaner-timeout>600</session-cleaner-timeout>
+          <!-- Allow viewing of the DOM tree model, which is enabled 
+               by default in all non-production modes -->
+          <!--<show-dom>true</show-dom>-->
+        </otherwise>
+      </choose>
     </context-xml-service>
     
     <direct-output-service>
@@ -1252,7 +1271,7 @@
         <methodname>prerequisitesMet()</methodname>, the page is of 
         course still inaccessible.
         <programlisting language="xml"><![CDATA[
-        <wrapper prefix="AName" class="AClassName" checkactive="true|false"/>
+        <wrapper prefix="AName" class="AClassName" checkactive="true|false" tenant="aTenant"/>
         ]]></programlisting>
         <caution>
           <para>
@@ -1322,6 +1341,10 @@
                 </para>
               </caution>
               </td>
+            </tr>
+            <tr>
+              <td><literal>tenant</literal></td>
+              <td>Optional. Can be used to specify IWrappers for a certain tenant only.</td> 
             </tr>
           </tbody>
         </informaltable>
