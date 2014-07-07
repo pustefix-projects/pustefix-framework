@@ -49,6 +49,7 @@ public class SessionAdmin implements HttpSessionBindingListener, SessionAdminMBe
     public final static String LISTENER = "__SESSION_LISTENER__"; 
     public final static String PARENT_SESS_ID = "__PARENT_SESSION_ID__";
     public final static String SESSION_IS_SECURE = "__SESSION_IS_SECURE__";
+    public final static String SESSION_IS_DEBUG = "__SESSION_IS_DEBUG__";
     private final static Logger LOG = Logger.getLogger(SessionAdmin.class);
     private final static Logger LOGGER_SESSION = Logger.getLogger("LOGGER_SESSION");
     /** Maps session to it's id. */
@@ -254,6 +255,10 @@ public class SessionAdmin implements HttpSessionBindingListener, SessionAdminMBe
         return info.getSession();
     }
 
+    public void debugSession(String id) throws IOException {
+        getSession(id).setAttribute(SESSION_IS_DEBUG, true);
+    }
+    
     /**
      * Returns the total number of sessions from all JMX-registered SessionAdmin instances
      */

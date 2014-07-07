@@ -230,6 +230,9 @@ public class PustefixMergeMojo extends AbstractMojo {
     }
     
     private void processUnextractedModule(File jarFile) throws MojoExecutionException {
+        if(jarFile.isDirectory()) {
+            return;
+        }
         JarFile jar;
         try {
             jar = new JarFile(jarFile);

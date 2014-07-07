@@ -27,5 +27,6 @@ public interface SessionAdminMBean {
     public void invalidateSession(String id) throws IOException;
     public void invalidateSessions() throws IOException;
     public int getSessionNumber();
+    public void debugSession(String id) throws IOException;
     
 }

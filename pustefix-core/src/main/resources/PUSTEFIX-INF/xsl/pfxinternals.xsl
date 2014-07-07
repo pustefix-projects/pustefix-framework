@@ -101,6 +101,15 @@
             color: white;
             font-family: sans-serif;
           }
+          div.messages {
+            border: 1px solid #ddd;
+            border-radius: 5px; 
+            background: #eee;
+            padding: 5px;
+          }  
+          div.msgerror {color:red;}
+          div.msgwarn {color:#ffcc00;}
+          div.msginfo {color:#666;}
           div.actions {
           }
           div.actiongroup {
@@ -114,6 +123,8 @@
             padding-left: 0pt;
             padding-bottom: 10pt;
             font-weight: bold;
+          }
+          div.actionform {
           }
           table.info {
             border-spacing:0px;
@@ -410,12 +421,22 @@
             <span><xsl:if test="$category='includes'"><xsl:attribute name="class">active</xsl:attribute></xsl:if><a href="includes">Includes</a></span>
             <span><xsl:if test="$category='search'"><xsl:attribute name="class">active</xsl:attribute></xsl:if><a href="search">Search</a></span>
             <span><xsl:if test="$category='actions'"><xsl:attribute name="class">active</xsl:attribute></xsl:if><a href="actions">Actions</a></span>
-            <span><xsl:if test="$category='messages'"><xsl:attribute name="class">active</xsl:attribute></xsl:if><a href="messages">Messages</a></span>
           </div>
-          
       
+          <div class="section">
+            
+            <xsl:if test="/pfxinternals/messages/message">
+            <div class="messages">
+              <xsl:for-each select="/pfxinternals/messages/message">
+                <div>
+                  <xsl:attribute name="class">msg<xsl:value-of select="@level"/></xsl:attribute>
+                  <xsl:value-of select="."/>
+                </div>
+              </xsl:for-each>
+            </div>
+            </xsl:if>
+          
           <xsl:if test="not($category) or $category='framework'">
-        <div class="section">
           <table class="info">
             <tr>
               <th>Pustefix version:</th>
@@ -430,11 +451,9 @@
               <td><a href="http://pustefix-framework.org">http://pustefix-framework.org</a></td>
             </tr>
           </table>
-        </div>
         </xsl:if>
       
         <xsl:if test="not($category) or $category='environment'">
-        <div class="section">
           <table class="props">
             <tr>
               <th class="caption" colspan="2">Pustefix environment properties:</th>
@@ -461,11 +480,9 @@
               </tr>
             </xsl:for-each>
           </table>
-        </div>
         </xsl:if>
         
         <xsl:if test="not($category) or $category='jvm'">
-        <div class="section">
           <table class="info">
             <tr>
               <th>Java version:</th>
@@ -526,11 +543,9 @@
               </td>
             </tr>
           </table>
-        </div>
         </xsl:if>
         
         <xsl:if test="not($category) or $category='system'">
-        <div class="section">
           <table class="layout">
             <xsl:variable name="max">
               <xsl:for-each select="/pfxinternals/system/*[name()='memory' or name()='swap']">
@@ -625,11 +640,9 @@
              </tr>
            </table>
          </xsl:for-each>
-        </div>
         </xsl:if>
         
         <xsl:if test="not($category) or $category='cache'">
-        <div class="section">
           <table>
             <tr>
           <xsl:apply-templates select="/pfxinternals/cachestatistic/cache">
@@ -637,23 +650,17 @@
           </xsl:apply-templates>
             </tr>
           </table>
-        </div>
         </xsl:if>
         
         <xsl:if test="not($category) or $category='modules'">
-        <div class="section">
           <xsl:apply-templates select="/pfxinternals/modules"/>
-        </div>
         </xsl:if>
         
         <xsl:if test="not($category) or $category='targets'">
-        <div class="section">
           <xsl:apply-templates select="/pfxinternals/targets"/>
-        </div>
         </xsl:if>
         
         <xsl:if test="not($category) or $category='includes'">
-        <div class="section">
           <div>
             <xsl:apply-templates select="/pfxinternals/targets/targetlist"/>
           </div>
@@ -832,11 +839,9 @@
             
           </script>
           </xsl:if>
-        </div>
         </xsl:if>
         
         <xsl:if test="not($category) or $category='search'">
-        <div class="section">
          <form action="{$__contextpath}/pfxinternals/search">
           <table class="searchform"><tr>
             <td valign="top">
@@ -921,11 +926,9 @@
             </div>
             
           </xsl:for-each>
-        </div>
         </xsl:if>
         
         <xsl:if test="not($category) or $category='actions'">
-        <div class="section">
           <div class="actions">
             <div class="actiongroup">
               <div class="actiongrouptitle">General</div>
@@ -938,14 +941,55 @@
               <div><a href="{$__contextpath}/pfxinternals?action=toolext">Toggle tooling extensions</a></div>
               <div><a href="{$__contextpath}/pfxinternals?action=retarget">Reload with cleared cache</a></div>
             </div>
+            <div class="actiongroup">
+              <div class="actiongrouptitle">Analysis</div>
+              <div class="actionform">
+              <form action="{$__contextpath}/pfxinternals" method="GET" target="_blank">
+                <input type="hidden" name="action" value="senderror"/>
+                <table>
+                  <tr>
+                    <td>
+                      <input type="submit" value="Send HTTP error response"/>
+                    </td>
+                    <td>
+                        statuscode:
+                        <input type="text" name="sc" value="404" size="3" maxlength="3"/>
+                    </td>
+                    <td>
+                        message:
+                        <input type="text" name="msg"/>
+                    </td>
+                  </tr>
+                </table>
+              </form>
+              </div>
+              <div class="actionform">
+              <form action="{$__contextpath}/pfxinternals" method="GET" target="_blank">
+                <input type="hidden" name="action" value="duplicates"/>
+                <table>
+                  <tr>
+                    <td>
+                      <input type="submit" value="Find duplicate classes"/>
+                    </td>
+                    <td>
+                        includes: <input type="text" name="includes" value="*"/>
+                    </td>
+                    <td>
+                        excludes: <input type="text" name="excludes"/>
+                    </td>
+                    <td>
+                      <input type="radio" name="format" value="html" checked="checked">HTML</input>
+                      <input type="radio" name="format" value="text">Text</input>
+                    </td>
+                  </tr>
+                </table>
+              </form>
+              </div>
+            </div>
           </div>
+        </xsl:if>
+
         </div>
-        </xsl:if>
-        
-        <xsl:if test="not($category) or $category='messages'">
-        <xsl:apply-templates select="/pfxinternals/messages"/>
-        </xsl:if>
-        
         </div>
       
       </body>
@@ -1111,27 +1155,6 @@
         <img class="live" src="{$__contextpath}/modules/pustefix-core/img/changes-prevent-grey.png" title="No live classes"/>
       </xsl:otherwise>
     </xsl:choose>
-  </xsl:template>
-
-  <xsl:template match="messages">
-    <div class="section">
-      <table class="info">
-        <tr>
-          <th>Date</th>
-          <th>Level</th>
-          <th>Message</th>
-        </tr>
-        <xsl:apply-templates/>
-      </table>
-    </div>
-  </xsl:template>
-
-  <xsl:template match="message">
-    <tr>
-      <td><xsl:value-of select="@date"/></td>
-      <td><xsl:value-of select="@level"/></td>
-      <td><xsl:apply-templates/></td>
-    </tr>
   </xsl:template>
   
   <xsl:template match="targets">

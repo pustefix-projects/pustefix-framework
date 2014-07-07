@@ -20,6 +20,7 @@ package org.pustefixframework.config.project.parser;
 
 import java.io.IOException;
 import java.util.Collection;
+import java.util.List;
 import java.util.Properties;
 
 import javax.xml.parsers.DocumentBuilder;
@@ -29,6 +30,7 @@ import javax.xml.parsers.ParserConfigurationException;
 import org.pustefixframework.config.Constants;
 import org.pustefixframework.config.contextxmlservice.ContextXMLServletConfig;
 import org.pustefixframework.config.customization.CustomizationAwareParsingHandler;
+import org.pustefixframework.config.customization.CustomizationDOMUtils;
 import org.pustefixframework.config.customization.CustomizationInfo;
 import org.pustefixframework.config.customization.PropertiesBasedCustomizationInfo;
 import org.pustefixframework.config.generic.ParsingUtils;
@@ -68,7 +70,6 @@ import de.schlund.pfixxml.exceptionprocessor.ExceptionProcessingConfiguration;
 import de.schlund.pfixxml.resources.ResourceUtil;
 import de.schlund.pfixxml.serverutil.SessionAdmin;
 import de.schlund.pfixxml.targets.TargetGenerator;
-import de.schlund.pfixxml.targets.cachestat.CacheStatistic;
 
 public class PustefixContextXMLRequestHandlerParsingHandler extends CustomizationAwareParsingHandler {
 
@@ -129,6 +130,15 @@ public class PustefixContextXMLRequestHandlerParsingHandler extends Customizatio
             maxStoredDoms = Integer.parseInt(maxElement.getTextContent().trim());
         }
 
+        boolean showDom = false;
+        List<Element> showDomElems = CustomizationDOMUtils.getChildElementsByLocalName(context, "show-dom");
+        if(!showDomElems.isEmpty()) {
+            showDom = Boolean.parseBoolean(showDomElems.get(0).getTextContent().trim());
+        } else {
+            String mode = EnvironmentProperties.getProperties().getProperty("mode");
+            if(!"prod".equals(mode)) showDom = true; 
+        }
+        
         de.schlund.pfixxml.resources.Resource res = ResourceUtil.getResource(configurationFile);
         if(!res.exists()) {
             throw new ParserException("Context configuration file can't be found: " + res);
@@ -191,6 +201,7 @@ public class PustefixContextXMLRequestHandlerParsingHandler extends Customizatio
         if(additionalTrailInfoRef!=null) 
             beanBuilder.addPropertyValue("additionalTrailInfo", new RuntimeBeanReference(additionalTrailInfoRef));
         beanBuilder.addPropertyValue("maxStoredDoms", maxStoredDoms);
+        beanBuilder.addPropertyValue("showDom", showDom);
         beanBuilder.addPropertyValue("exceptionProcessingConfiguration", new RuntimeBeanReference(ExceptionProcessingConfiguration.class.getName()));
         beanBuilder.addPropertyValue("sessionTrackingStrategy", strategyInfo.getSessionTrackingStrategyInstance());
         if(timeoutInfo != null) {
@@ -205,9 +216,6 @@ public class PustefixContextXMLRequestHandlerParsingHandler extends Customizatio
         
         beanBuilder = BeanDefinitionBuilder.genericBeanDefinition(PustefixInternalsRequestHandler.class);
         beanBuilder.setScope("singleton");
-        beanBuilder.addPropertyValue("sessionAdmin", new RuntimeBeanReference(SessionAdmin.class.getName()));
-        beanBuilder.addPropertyValue("cacheStatistic", new RuntimeBeanReference(CacheStatistic.class.getName()));
-        beanBuilder.addPropertyValue("targetGenerator", new RuntimeBeanReference(TargetGenerator.class.getName()));
         beanDefinition = beanBuilder.getBeanDefinition();
         beanHolder = new BeanDefinitionHolder(beanDefinition, PustefixInternalsRequestHandler.class.getName());
         context.getObjectTreeElement().addObject(beanHolder);
