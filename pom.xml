@@ -29,8 +29,8 @@
   </issueManagement>
 
   <scm>
-    <connection>scm:svn:https://svn.code.sf.net/p/pustefix/code/trunk</connection>
-    <developerConnection>scm:svn:https://svn.code.sf.net/p/pustefix/code/trunk</developerConnection>
+    <connection>scm:svn:https://svn.code.sf.net/p/pustefix/code/branches/pustefix-0.19</connection>
+    <developerConnection>scm:svn:https://svn.code.sf.net/p/pustefix/code/branches/pustefix-0.19</developerConnection>
     <url>http://dev.pustefix-framework.org/browser/trunk</url>
   </scm>
 
