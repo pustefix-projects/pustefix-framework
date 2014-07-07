@@ -89,7 +89,7 @@ public class TenantAwareProperties extends Properties {
         
         RequestAttributes attributes = RequestContextHolder.getRequestAttributes();
         if(attributes != null) {
-            Tenant tenant = (Tenant)attributes.getAttribute(TenantScope.REQUEST_ATTRIBUTE_TENANT, RequestAttributes.SCOPE_REQUEST);
+            Tenant tenant = (Tenant)attributes.getAttribute("__PFX_TENANT__", RequestAttributes.SCOPE_REQUEST);
             if(tenant == null) {
                 return null;
             } else {

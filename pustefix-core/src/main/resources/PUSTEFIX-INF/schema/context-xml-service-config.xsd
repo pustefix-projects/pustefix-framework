@@ -557,7 +557,6 @@
                       <xs:attribute name="checkactive" default="true" type="xs:boolean"/>
                       <xs:attribute name="activeignore" default="false" type="xs:boolean"/>
                       <xs:attribute name="logging" default="false" type="xs:boolean"/>
-                      <xs:attribute name="tenant" use="optional"/>
                     </xs:complexType>
                   </xs:element>
                   <xs:element ref="prop:config-include"/>

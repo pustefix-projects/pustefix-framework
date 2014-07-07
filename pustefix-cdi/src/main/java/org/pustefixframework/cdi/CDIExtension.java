@@ -20,11 +20,11 @@ package org.pustefixframework.cdi;
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Type;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
-import java.util.WeakHashMap;
 
 import javax.enterprise.event.Observes;
 import javax.enterprise.inject.spi.AfterBeanDiscovery;
@@ -41,21 +41,24 @@ import javax.inject.Named;
 
 public class CDIExtension implements Extension {
     
-    private static Map<BeanManager, List<Bean<Object>>> cdiBeanRegistry = new WeakHashMap<BeanManager, List<Bean<Object>>>();   
-    private static Map<BeanManager, List<SpringBean>> unknownBeanRegistry = new WeakHashMap<BeanManager, List<SpringBean>>();
-    private static Map<BeanManager, BeanFactoryAdapter> beanFactoryAdapters = new WeakHashMap<BeanManager, BeanFactoryAdapter>();
+    private static Map<BeanManager, List<Bean<Object>>> cdiBeanRegistry = new HashMap<BeanManager, List<Bean<Object>>>();   
+    private static Map<BeanManager, List<SpringBean>> unknownBeanRegistry = new HashMap<BeanManager, List<SpringBean>>();
+    private static Map<BeanManager, BeanFactoryAdapter> beanFactoryAdapters = new HashMap<BeanManager, BeanFactoryAdapter>();
     
         
-    public void processBean(@Observes ProcessBean<Object> procBean, BeanManager manager) {
+    @SuppressWarnings("unchecked")
+    public <T> void processBean(@Observes ProcessBean<T> procBean, BeanManager manager) {
         //Collect CDI managed beans
-        Bean<Object> bean = procBean.getBean();
+        Bean<T> bean = procBean.getBean();
         if(!(bean instanceof SpringBean))  {
-            getCDIBeans(manager).add(bean);
+            getCDIBeans(manager).add((Bean<Object>)bean);
         }
     }
-    
+
     public void beforeBeanDiscovery(@Observes BeforeBeanDiscovery event, BeanManager manager) {
-        cdiBeanRegistry.put(manager, new ArrayList<Bean<Object>>());
+        synchronized(cdiBeanRegistry) {
+            cdiBeanRegistry.put(manager, new ArrayList<Bean<Object>>());
+        }
         unknownBeanRegistry.put(manager, new ArrayList<SpringBean>());
         beanFactoryAdapters.put(manager, new BeanFactoryAdapter());
     }
@@ -102,10 +105,6 @@ public class CDIExtension implements Extension {
             Named named = annotated.getAnnotation(Named.class);
             if(named != null) {
                 name = named.value();
-                //if(name.equals("")) {
-                //    name = clazz.getSimpleName();
-                //    name = Character.toLowerCase(name.charAt(0)) + name.substring(1);
-                //}
             }
             
             AnnotatedType<?> annotatedType = beanManager.createAnnotatedType(clazz);
@@ -123,7 +122,6 @@ public class CDIExtension implements Extension {
             }
             
             SpringBean bean = new SpringBean(beanFactoryAdapter, name, clazz, beanTypes, qualifiers, stereoTypes);
-            
             getUnknownBeans(beanManager).add(bean);
             
         }

@@ -53,7 +53,6 @@ import javax.servlet.http.HttpSession;
 import org.apache.log4j.Logger;
 import org.pustefixframework.config.contextxmlservice.ServletManagerConfig;
 import org.pustefixframework.config.project.SessionTimeoutInfo;
-import org.pustefixframework.container.spring.beans.TenantScope;
 import org.pustefixframework.container.spring.http.UriProvidingHttpRequestHandler;
 import org.pustefixframework.util.LocaleUtils;
 import org.pustefixframework.util.LogUtils;
@@ -100,6 +99,7 @@ public abstract class AbstractPustefixRequestHandler implements SessionTrackingS
     private static final String SESSION_ATTR_REQUEST_COUNT = "__PFX_REQUEST_COUNT__";
     private static final String SESSION_ATTR_ORIGINAL_TIMEOUT = "__PFX_SESSION_ORIGINAL_TIMEOUT__";
     
+    public static final String REQUEST_ATTR_TENANT = "__PFX_TENANT__";
     public static final String REQUEST_ATTR_LANGUAGE = "__PFX_LANGUAGE__";
     public static final String REQUEST_ATTR_PAGE_ALTERNATIVE = "__PFX_PAGE_ALTERNATIVE__";
     
@@ -254,7 +254,7 @@ public abstract class AbstractPustefixRequestHandler implements SessionTrackingS
         if(tenantParam != null && !"prod".equals(EnvironmentProperties.getProperties().getProperty("mode"))) {
             Tenant tenant = tenantInfo.getTenant(tenantParam);
             if(tenant != null) {
-                res.addCookie(new Cookie(TenantScope.REQUEST_ATTRIBUTE_TENANT, tenant.getName()));
+                res.addCookie(new Cookie("__PFX_TENANT__", tenant.getName()));
             }
             HttpSession session = req.getSession(false);
             if(session != null) {
@@ -286,7 +286,7 @@ public abstract class AbstractPustefixRequestHandler implements SessionTrackingS
             if(matchingTenant == null) {
                 //check if tenant was provided as cookie (only allowed at development time)
                 if(!"prod".equals(EnvironmentProperties.getProperties().getProperty("mode"))) {
-                    String tenantName = getCookieValue(request, TenantScope.REQUEST_ATTRIBUTE_TENANT);
+                    String tenantName = getCookieValue(request, "__PFX_TENANT__");
                     if(tenantName != null) {
                         matchingTenant = tenantInfo.getTenant(tenantName);
                     }
@@ -295,7 +295,7 @@ public abstract class AbstractPustefixRequestHandler implements SessionTrackingS
                     matchingTenant = tenantInfo.getTenants().get(0);
                 }
             }
-            request.setAttribute(TenantScope.REQUEST_ATTRIBUTE_TENANT, matchingTenant);
+            request.setAttribute(AbstractPustefixRequestHandler.REQUEST_ATTR_TENANT, matchingTenant);
             if(LOG.isDebugEnabled()) {
             	LOG.debug("Set tenant " + matchingTenant.getName());
             }
@@ -576,7 +576,7 @@ public abstract class AbstractPustefixRequestHandler implements SessionTrackingS
             pageAlias = pageAlias.substring(ind + 1);
         } else {
             //check if page is language prefix => default page
-            Tenant tenant = (Tenant)request.getAttribute(TenantScope.REQUEST_ATTRIBUTE_TENANT);
+            Tenant tenant = (Tenant)request.getAttribute(REQUEST_ATTR_TENANT);
             if((tenant != null && tenant.getSupportedLanguageByCode(pageAlias) != null) ||
                 (tenant == null && languageInfo.getSupportedLanguageByCode(pageAlias) != null)) {
                 return null;

@@ -159,7 +159,7 @@ public class Test extends TestCase {
         Document doc = OxmTestHelper.createResultDocument();
         Result res = new DOMResult(doc);
         m.marshal(fBean, res);
-        XmlAssert.assertEquals(expDoc, doc);
+        XmlAssert.assertEqualsUnordered(expDoc, doc);
     }
 
     public void testForceElement() throws Exception {

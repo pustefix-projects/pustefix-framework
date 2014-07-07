@@ -35,11 +35,6 @@ import javax.mail.internet.AddressException;
 import javax.mail.internet.InternetAddress;
 import javax.mail.internet.MimeMessage;
 
-import org.apache.oro.text.perl.MalformedPerl5PatternException;
-import org.apache.oro.text.perl.Perl5Util;
-
-
-
 /**
  * Utility class for sending mails via java mail-api.
  *
@@ -241,15 +236,7 @@ public class EmailSender {
         StringBuffer strError = new StringBuffer();
 
         //remove all new lines from subject
-        Perl5Util perl = new Perl5Util();
-        try {
-            String newsubject = perl.substitute("s#\n##", subject);
-            subject = newsubject;
-        } catch (MalformedPerl5PatternException e) {
-            strError.append("Caught " + e.getClass().getName() + "\n");
-            strError.append("Message: " + e.getMessage() + "\n");
-            throw new EmailSenderException(strError.toString());
-        }
+        subject = subject.replace('\n', ' ');
 
         // handle to addresses
         InternetAddress[] toaddresses = new InternetAddress[to.length];

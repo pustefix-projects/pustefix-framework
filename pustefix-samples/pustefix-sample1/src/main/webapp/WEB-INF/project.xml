@@ -84,10 +84,6 @@
         </when>
         <otherwise>
           <session-cleaner-timeout>600</session-cleaner-timeout>
-          <!-- <show-dom>false</show-dom> -->
-          <!-- Allow viewing of the DOM tree model, which is enabled 
-               by default in all non-production modes -->
-          <!-- <show-dom>false</show-dom> -->
         </otherwise>
       </choose>
     </context-xml-service>

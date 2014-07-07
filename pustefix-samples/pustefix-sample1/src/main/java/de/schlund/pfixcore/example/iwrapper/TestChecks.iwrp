@@ -88,12 +88,6 @@
     </precheck>
   </param>
   
-  <param name="Perl5Pattern" type="org.apache.oro.text.regex.Perl5Pattern" occurrence="optional">
-    <caster class="de.schlund.pfixcore.generator.casters.ToInteger">
-      <cparam name="scodeCastError" value="de.schlund.pfixcore.example.StatusCodeLib#checks.PERL5_ERR" />
-    </caster>
-  </param>
-  
   <param name="File" type="java.io.File" occurrence="optional">
     <caster class="de.schlund.pfixcore.generator.casters.ToFile">
       <cparam name="scodeCastError" value="de.schlund.pfixcore.example.StatusCodeLib#checks.FILE_ERR" />

@@ -70,7 +70,7 @@ import de.schlund.pfixxml.RequestParam;
 import de.schlund.pfixxml.SPDocument;
 import de.schlund.pfixxml.SessionCleaner;
 import de.schlund.pfixxml.Variant;
-import de.schlund.pfixxml.serverutil.SessionAdmin;
+import de.schlund.pfixxml.config.EnvironmentProperties;
 import de.schlund.pfixxml.serverutil.SessionHelper;
 import de.schlund.pfixxml.targets.PageInfo;
 import de.schlund.pfixxml.targets.PageTargetTree;
@@ -96,7 +96,7 @@ public abstract class AbstractPustefixXMLRequestHandler extends AbstractPustefix
 
     //~ Instance/static variables ..................................................................
     // how to write xml to the result stream
-    private enum RENDERMODE { RENDER_NORMAL, RENDER_EXTERNAL, RENDER_FONTIFY, RENDER_XMLONLY, RENDER_LASTDOM };
+    private enum RENDERMODE { RENDER_NORMAL, RENDER_EXTERNAL, RENDER_FONTIFY, RENDER_XMLONLY };
 
     private Logger LOGGER_SESSION = Logger.getLogger("LOGGER_SESSION");
     
@@ -105,7 +105,6 @@ public abstract class AbstractPustefixXMLRequestHandler extends AbstractPustefix
     public  static final String PARAM_XMLONLY         = "__xmlonly";
     public  static final String PARAM_XMLONLY_FONTIFY = "1"; // -> RENDER_FONFIFY
     public  static final String PARAM_XMLONLY_XMLONLY = "2"; // -> RENDER_XMLONLY
-    public  static final String PARAM_XMLONLY_LASTDOM = "3"; // -> RENDER_LASTDOM
     public  static final String PARAM_STATIC_DOM      = "__staticdom";
     public  static final String PARAM_ANCHOR          = "__anchor";
     private static final String PARAM_EDITMODE        = "__editmode";
@@ -146,7 +145,6 @@ public abstract class AbstractPustefixXMLRequestHandler extends AbstractPustefix
     public final static String SESS_CLEANUP_FLAG_STAGE2 = "__pfx_session_cleanup_stage2";
     
     private int maxStoredDoms;
-    private boolean showDom;
     
     /**
      * Holds the TargetGenerator which is the XML/XSL Cache for this
@@ -171,6 +169,7 @@ public abstract class AbstractPustefixXMLRequestHandler extends AbstractPustefix
     
     private boolean renderExternal = false;
     private boolean includePartsEditableByDefault = true;
+    private boolean xmlOnlyAllowed = false;
     
     private final static Logger LOGGER_TRAIL = Logger.getLogger("LOGGER_TRAIL");
     private final static Logger LOGGER       = Logger.getLogger(AbstractPustefixXMLRequestHandler.class);
@@ -204,6 +203,9 @@ public abstract class AbstractPustefixXMLRequestHandler extends AbstractPustefix
     private void initValues() throws ServletException {
         servletname = this.getAbstractXMLServletConfig().getServletName();
 
+        String mode = EnvironmentProperties.getProperties().getProperty("mode");
+        if(!"prod".equals(mode)) xmlOnlyAllowed = true; 
+        
         if (generator == null) {
             LOGGER.error("Error: TargetGenerator has not been set.");
             throw new ServletException("TargetGenerator is not set");
@@ -213,7 +215,7 @@ public abstract class AbstractPustefixXMLRequestHandler extends AbstractPustefix
             StringBuffer sb = new StringBuffer(255);
             sb.append("\n").append("AbstractXMLServlet properties after initValues(): \n");
             sb.append("               servletname = ").append(servletname).append("\n");
-            sb.append("                   showDom = ").append(showDom).append("\n");
+            sb.append("            xmlOnlyAllowed = ").append(xmlOnlyAllowed).append("\n");
             sb.append("             maxStoredDoms = ").append(maxStoredDoms).append("\n");
             sb.append("                   timeout = ").append(sessionCleaner.getTimeout()).append("\n");
             sb.append("           render_external = ").append(renderExternal).append("\n");
@@ -406,12 +408,12 @@ public abstract class AbstractPustefixXMLRequestHandler extends AbstractPustefix
         }
         
         handleDocument(preq, res, spdoc, params, doreuse);
-        if (session != null && (getRendering(preq) != RENDERMODE.RENDER_FONTIFY) && 
-                (getRendering(preq) != RENDERMODE.RENDER_LASTDOM) && !doreuse) {
+
+        if (session != null && (getRendering(preq) != RENDERMODE.RENDER_FONTIFY) && !doreuse) {
             // This will store just the last dom, but only when editmode is allowed (so this normally doesn't apply to production mode)
             // This is a seperate place from the SessionCleaner as we don't want to interfere with this, nor do we want to use 
             // the whole queue of possible stored SPDocs only for the viewing of the DOM during development.
-            if ((showDom || isDebugSession(preq)) && preq.getRequestParam(PARAM_RENDER_HREF) == null) {
+            if (xmlOnlyAllowed && preq.getRequestParam(PARAM_RENDER_HREF) == null) {
                 session.setAttribute(ATTR_SHOWXMLDOC, spdoc);
             }
 
@@ -724,7 +726,6 @@ public abstract class AbstractPustefixXMLRequestHandler extends AbstractPustefix
                 renderExternal(spdoc, res, paramhash, stylesheet);
                 break;
             case RENDER_XMLONLY:
-            case RENDER_LASTDOM:
                 renderXmlonly(spdoc, res);
                 break;
             default:
@@ -854,12 +855,10 @@ public abstract class AbstractPustefixXMLRequestHandler extends AbstractPustefix
             rendering = RENDERMODE.RENDER_XMLONLY;
         } else if (value.equals(PARAM_XMLONLY_FONTIFY)) {
             rendering = RENDERMODE.RENDER_FONTIFY;
-        } else if (value.equals(PARAM_XMLONLY_LASTDOM)) {
-            rendering = RENDERMODE.RENDER_LASTDOM;
         } else {
             throw new IllegalArgumentException("invalid value for " + PARAM_XMLONLY + ": " + value);
         }
-        if (showDom || isDebugSession(pfreq)) {
+        if (xmlOnlyAllowed) {
             return rendering;
         } else {
             return RENDERMODE.RENDER_NORMAL;
@@ -1041,7 +1040,7 @@ public abstract class AbstractPustefixXMLRequestHandler extends AbstractPustefix
                     else LOGGER.debug("No SPDocument with key "+reuse.getValue()+" found");
                 }
                 return saved;
-            } else if (getRendering(preq) == RENDERMODE.RENDER_FONTIFY || getRendering(preq) == RENDERMODE.RENDER_LASTDOM) {
+            } else if (getRendering(preq) == RENDERMODE.RENDER_FONTIFY) {
                 return (SPDocument) session.getAttribute(ATTR_SHOWXMLDOC);
             } else {
                 return null;
@@ -1091,16 +1090,6 @@ public abstract class AbstractPustefixXMLRequestHandler extends AbstractPustefix
         }
     }
     
-    private boolean isDebugSession(PfixServletRequest request) {
-        HttpSession session = request.getSession(false);
-        if(session != null) {
-            Boolean value = (Boolean)session.getAttribute(SessionAdmin.SESSION_IS_DEBUG);
-            if(value != null && value) {
-                return true;
-            }
-        }
-        return false;
-    }
     
     /**
      * Called before the XML result tree is rendered. This method can
@@ -1188,10 +1177,6 @@ public abstract class AbstractPustefixXMLRequestHandler extends AbstractPustefix
     
     public void setMaxStoredDoms(int maxStoredDoms) {
         this.maxStoredDoms = maxStoredDoms;
-    }
-    
-    public void setShowDom(boolean showDom) {
-        this.showDom = showDom;
     }
     
     public void setIncludePartsEditableByDefault(boolean includePartsEditableByDefault) {

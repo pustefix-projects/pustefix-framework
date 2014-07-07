@@ -41,8 +41,6 @@ import de.schlund.pfixxml.Tenant;
  */
 public class TenantScope implements Scope, DisposableBean {
 
-    public static final String REQUEST_ATTRIBUTE_TENANT = "__PFX_TENANT__";
-    
     private final ConcurrentHashMap<String, Object> scopedObjects = new ConcurrentHashMap<String, Object>();
     private final Map<String, Runnable> destructionCallbacks = new LinkedHashMap<String, Runnable>();
 
@@ -100,7 +98,7 @@ public class TenantScope implements Scope, DisposableBean {
     private String getTenantKey(String name) {
 
         RequestAttributes attributes = RequestContextHolder.currentRequestAttributes();
-        Tenant tenant = (Tenant)attributes.getAttribute(REQUEST_ATTRIBUTE_TENANT, RequestAttributes.SCOPE_REQUEST);
+        Tenant tenant = (Tenant)attributes.getAttribute("__PFX_TENANT__", RequestAttributes.SCOPE_REQUEST);
         if(tenant == null) {
             return name;
         } else {

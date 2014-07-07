@@ -87,11 +87,10 @@
         <tbody>
           <tr>
             <td>__xmlonly</td>
-            <td>1|2|3</td>
+            <td>1 | 2</td>
             <td>Adding this parameter to an URL the page isn't rendered, but the originating DOM tree model is displayed. 
-                Setting the value to <literal>1</literal> the last DOM tree plus some additional data about the application state is rendered as HTML.
-                Setting the value to <literal>2</literal> the pure XML is returned (always creating a new DOM tree for the current page).
-                Setting the value to <literal>3</literal> the pure XML of the last DOM tree is returned.</td>
+                Setting the value to <literal>1</literal> the DOM tree plus some additional data about the application state is rendered as HTML.
+                Setting the value to <literal>2</literal> the pure XML is returned.</td>
           </tr>
           <tr>
             <td>__staticdom</td>

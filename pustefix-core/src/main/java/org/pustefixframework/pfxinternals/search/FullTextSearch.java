@@ -1,4 +1,4 @@
-package org.pustefixframework.pfxinternals;
+package org.pustefixframework.pfxinternals.search;
 
 import java.io.BufferedReader;
 import java.io.File;

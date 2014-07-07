@@ -143,25 +143,29 @@
         <xsd:sequence>
           <xsd:element name="config-file" type="xsd:string"/>
           <xsd:element name="additional-trail-info" type="xsd:string" minOccurs="0"/>
-          <xsd:choice>
+          <xsd:choice minOccurs="0">
             <xsd:element name="choose">
               <xsd:complexType>
                 <xsd:sequence>
                   <xsd:element name="when" maxOccurs="unbounded">
                     <xsd:complexType>
-                      <xsd:group ref="context-xml-service-choose-group" maxOccurs="unbounded"/>
+                      <xsd:sequence>
+                        <xsd:element name="session-cleaner-timeout" type="xsd:int"/>
+                      </xsd:sequence>
                       <xsd:attribute name="test" type="xsd:string" use="required"/>
                     </xsd:complexType>
                   </xsd:element>
                   <xsd:element name="otherwise" minOccurs="0">
                     <xsd:complexType>
-                      <xsd:group ref="context-xml-service-choose-group" maxOccurs="unbounded"/>
+                      <xsd:sequence>
+                        <xsd:element name="session-cleaner-timeout" type="xsd:int"/>
+                      </xsd:sequence>
                     </xsd:complexType>
                   </xsd:element>
                 </xsd:sequence>
               </xsd:complexType>
             </xsd:element>
-            <xsd:group ref="context-xml-service-choose-group" maxOccurs="unbounded"/>
+            <xsd:element name="session-cleaner-timeout" type="xsd:int"/>
           </xsd:choice>
         </xsd:sequence>
         </xsd:complexType>
@@ -221,13 +225,6 @@
       </xsd:choice>
     </xsd:sequence>
   </xsd:complexType>
-  
-  <xsd:group name="context-xml-service-choose-group">
-    <xsd:choice>
-      <xsd:element name="session-cleaner-timeout" type="xsd:int"/>
-      <xsd:element name="show-dom" type="xsd:boolean"/>
-    </xsd:choice>  
-  </xsd:group>
   
   <xsd:complexType name="exception-processing-type">
     <xsd:sequence>

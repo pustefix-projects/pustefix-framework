@@ -1,4 +1,4 @@
-package org.pustefixframework.pfxinternals;
+package org.pustefixframework.pfxinternals.search;
 
 import junit.framework.TestCase;
 

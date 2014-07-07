@@ -2,7 +2,7 @@
 
 var domElement = document.getElementsByTagName("li")[0],
     domElements = document.getElementsByTagName("li"),
-    currentLocation = document.URL.replace('xmlonly=1','xmlonly=3'),
+    currentLocation = document.URL.replace('xmlonly=1','xmlonly=2'),
     nodeElements = document.getElementsByTagName("a"),
     xpath = document.getElementById("xpath"),
     collapse = document.getElementById("collapse"),

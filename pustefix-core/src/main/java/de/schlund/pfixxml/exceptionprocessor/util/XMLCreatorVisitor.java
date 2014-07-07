@@ -135,7 +135,7 @@ public class XMLCreatorVisitor implements ExceptionDataValueVisitor {
 	                xsltInfo.setAttribute("publicId", locator.getPublicId());
 	                xsltInfo.setAttribute("systemId", locator.getSystemId());
 	                String systemId = locator.getSystemId();
-	                if(systemId != null && systemId.matches("^\\w+:.*")) {
+	                if(systemId.matches("^\\w+:.*")) {
 	                    try {
 	                        URI uri = new URI(systemId);
                             Resource res = ResourceUtil.getResource(uri);
@@ -162,7 +162,7 @@ public class XMLCreatorVisitor implements ExceptionDataValueVisitor {
                 xsltInfo.setAttribute("systemId", spe.getSystemId());
                 if(spe.getLineNumber() > -1) {
                     String systemId = spe.getSystemId();
-                    if(systemId != null && systemId.matches("^\\w+:.*")) {
+                    if(systemId.matches("^\\w+:.*")) {
                         try {
                             URI uri = new URI(systemId);
                             Resource res = ResourceUtil.getResource(uri);

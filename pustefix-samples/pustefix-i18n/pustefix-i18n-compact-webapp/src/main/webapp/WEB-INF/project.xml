@@ -100,10 +100,10 @@
 
   </application>
   
+  <!-- 
   <properties>
-    <!-- Example of tenant-dependent properties -->
-    <prop name="foo">bar</prop>
-    <prop name="foo" tenant="DE_market">baz</prop>
+  
   </properties>
+  -->
   
 </project-config>

@@ -4,7 +4,7 @@
   <parent>
     <groupId>org.pustefixframework.maven.plugins</groupId>
     <artifactId>pustefix-plugins</artifactId>
-    <version>0.18.66-SNAPSHOT</version>
+    <version>0.19.0</version>
     <relativePath>../pom.xml</relativePath>
   </parent>
 
@@ -12,7 +12,7 @@
 
   <groupId>org.pustefixframework.maven.plugins</groupId>
   <artifactId>pustefix-statuscode-plugin</artifactId>
-  <version>0.18.66-SNAPSHOT</version>
+  <version>0.19.0</version>
   <packaging>maven-plugin</packaging>
 
   <dependencies>
@@ -29,7 +29,7 @@
     <dependency>
       <groupId>org.springframework</groupId>
       <artifactId>spring-core</artifactId>
-      <version>3.0.7.RELEASE</version>
+      <version>4.0.3.RELEASE</version>
     </dependency>
     <dependency>
       <groupId>log4j</groupId>

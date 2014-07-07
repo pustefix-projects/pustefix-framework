@@ -29,7 +29,6 @@ import javax.servlet.http.HttpSessionBindingListener;
 import org.pustefixframework.config.contextxmlservice.ContextConfig;
 import org.pustefixframework.config.contextxmlservice.PageRequestConfig;
 import org.pustefixframework.config.project.ProjectInfo;
-import org.pustefixframework.container.spring.beans.TenantScope;
 import org.pustefixframework.http.AbstractPustefixRequestHandler;
 
 import de.schlund.pfixcore.auth.Authentication;
@@ -272,7 +271,7 @@ public class ContextImpl implements AccessibilityChecker, ExtendedContext, Token
     public void prepareForRequest(HttpServletRequest req) {
         // This allows to use OLDER servercontexts during requests
         requestcontextstore.set(new RequestContextImpl(servercontext, this));
-        Tenant matchingTenant = (Tenant)req.getAttribute(TenantScope.REQUEST_ATTRIBUTE_TENANT);
+        Tenant matchingTenant = (Tenant)req.getAttribute(AbstractPustefixRequestHandler.REQUEST_ATTR_TENANT);
         if(matchingTenant != null) {
             Tenant currentTenant = getTenant();
             if(currentTenant == null) {

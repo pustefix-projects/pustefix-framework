@@ -81,7 +81,7 @@ public class TenantPropertyExpressionRegistration implements BeanFactoryPostProc
     public String getTenantProperty(final String param) {
     
         RequestAttributes attributes = RequestContextHolder.currentRequestAttributes();
-        Tenant tenant = (Tenant)attributes.getAttribute(TenantScope.REQUEST_ATTRIBUTE_TENANT, RequestAttributes.SCOPE_REQUEST);
+        Tenant tenant = (Tenant)attributes.getAttribute("__PFX_TENANT__", RequestAttributes.SCOPE_REQUEST);
     
         String propertyName;
         if(tenant == null) {

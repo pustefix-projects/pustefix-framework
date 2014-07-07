@@ -18,18 +18,20 @@
 package de.schlund.pfixcore.example;
 
 import org.junit.Assert;
+import org.junit.Test;
 import org.pustefixframework.test.PustefixWebApplicationContextLoader;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.context.ContextConfiguration;
-import org.springframework.test.context.junit38.AbstractJUnit38SpringContextTests;
+import org.springframework.test.context.junit4.AbstractJUnit4SpringContextTests;
 
 @ContextConfiguration(loader=PustefixWebApplicationContextLoader.class,locations={
     "docroot:/WEB-INF/project.xml", "docroot:/WEB-INF/spring.xml", "classpath:/de/schlund/pfixcore/example/spring-test.xml"})
-public class ResourceTest extends AbstractJUnit38SpringContextTests {
+public class ResourceTest extends AbstractJUnit4SpringContextTests {
     
     @Autowired
     private ResourceTestBean resTest;
     
+    @Test
     public void testResource() throws Exception {
         Assert.assertNotNull(resTest.getResource().getInputStream());
     }

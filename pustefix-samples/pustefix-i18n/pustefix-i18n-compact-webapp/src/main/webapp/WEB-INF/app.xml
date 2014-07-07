@@ -3,7 +3,7 @@
     xmlns="http://www.pustefix-framework.org/2008/namespace/context-xml-service-config" 
     xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
     xsi:schemaLocation="http://www.pustefix-framework.org/2008/namespace/context-xml-service-config 
-                        http://www.pustefix-framework.org/2008/namespace/context-xml-service-config-0_18.xsd"
+                        http://www.pustefix-framework.org/2008/namespace/context-xml-service-config.xsd"
     version="1.0">
   
   <global-config>

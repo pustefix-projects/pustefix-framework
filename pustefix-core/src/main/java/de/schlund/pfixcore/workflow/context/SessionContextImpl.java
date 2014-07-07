@@ -31,9 +31,9 @@ import javax.servlet.http.HttpSessionBindingEvent;
 import javax.servlet.http.HttpSessionBindingListener;
 
 import org.apache.log4j.Logger;
-import org.pustefixframework.container.spring.beans.TenantScope;
 import org.pustefixframework.http.AbstractPustefixRequestHandler;
 import org.pustefixframework.http.AbstractPustefixXMLRequestHandler;
+import org.pustefixframework.http.Constants;
 
 import de.schlund.pfixcore.auth.Authentication;
 import de.schlund.pfixcore.auth.AuthenticationImpl;
@@ -145,7 +145,7 @@ public class SessionContextImpl {
     
     public void setLanguage(String langcode) {
         this.language = langcode;
-        session.setAttribute(AbstractPustefixRequestHandler.REQUEST_ATTR_LANGUAGE, langcode);
+        session.setAttribute(Constants.SESSION_ATTRIBUTE_LANGUAGE, langcode);
     }
 
     public String getLanguage() {
@@ -166,7 +166,7 @@ public class SessionContextImpl {
     
     public void setTenant(Tenant tenant) {
         this.tenant = tenant;
-        session.setAttribute(TenantScope.REQUEST_ATTRIBUTE_TENANT, tenant.getName());
+        session.setAttribute(Constants.SESSION_ATTRIBUTE_TENANT, tenant.getName());
     }
 
     public String getVisitId() {

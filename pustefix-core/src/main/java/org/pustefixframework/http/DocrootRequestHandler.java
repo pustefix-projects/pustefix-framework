@@ -33,7 +33,6 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import org.apache.log4j.Logger;
-import org.pustefixframework.container.spring.beans.TenantScope;
 import org.pustefixframework.container.spring.http.UriProvidingHttpRequestHandler;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.web.context.ServletContextAware;
@@ -140,7 +139,7 @@ public class DocrootRequestHandler implements UriProvidingHttpRequestHandler, Se
             path = path.substring(1);
         }
 
-        Tenant tenant = (Tenant)req.getAttribute(TenantScope.REQUEST_ATTRIBUTE_TENANT);
+        Tenant tenant = (Tenant)req.getAttribute(AbstractPustefixRequestHandler.REQUEST_ATTR_TENANT);
         String tenantName = null;
         if(tenant != null) {
             tenantName = tenant.getName();
