@@ -182,9 +182,8 @@ public class Xslt {
 	    		Resource res = ResourceUtil.getResource(systemId);
 	    		templates = loadTemplates(xsltVersion, res, null, true);
 	    		doTransform(xml, templates, params, result, encoding);
-    		} else {
-    			throw x;
     		}
+    		throw x;
     	}
     }
     
