@@ -21,4 +21,4 @@ pfx.render = function(href, part, module, search, callback, context, requestId) 
    if(search) url += "&__render_search=" + search;
    var httpReq = new pfx.net.HTTPRequest("GET", url, callback, context);
    httpReq.start("", null, requestId);
-}
+};
