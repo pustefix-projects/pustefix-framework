@@ -39,16 +39,22 @@ public class BotSessionTrackingStrategy implements SessionTrackingStrategy {
         
         HttpSession session = null;
         if(context.needsSession()) {
-            session = req.getSession(true);
-            context.registerSession(req, session);
+            session = req.getSession(false);
+            if(session == null) {
+                session = req.getSession(true);
+                context.registerSession(req, session);
+                session.setMaxInactiveInterval(30);
+            } else {
+                if(session.getMaxInactiveInterval() == 30) {
+                    session.setMaxInactiveInterval(5 * 60);
+                }
+            }
             session.setAttribute(STORED_REQUEST, preq);
             session.setAttribute(AbstractPustefixRequestHandler.SESSION_ATTR_COOKIE_SESSION, true);
             preq.updateRequest(req);
         }
         
         context.callProcess(preq, req, res);
-       
-        if(session != null) session.setMaxInactiveInterval(10);
     }
     
 }
