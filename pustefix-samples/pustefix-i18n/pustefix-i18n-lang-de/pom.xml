@@ -4,12 +4,12 @@
   <parent>
     <artifactId>pustefix-i18n</artifactId>
     <groupId>org.pustefixframework.samples</groupId>
-    <version>0.18.67-SNAPSHOT</version>
+    <version>0.18.67</version>
   </parent>
 
   <groupId>org.pustefixframework.samples</groupId>
   <artifactId>pustefix-i18n-lang-de</artifactId>
-  <version>0.18.67-SNAPSHOT</version>
+  <version>0.18.67</version>
   <packaging>jar</packaging>
   <name>Pustefix i18n sample language module de</name>
 
@@ -21,7 +21,7 @@
     <dependency>
       <groupId>org.pustefixframework</groupId>
       <artifactId>pustefix-core</artifactId>
-      <version>0.18.67-SNAPSHOT</version>
+      <version>0.18.67</version>
     </dependency>
     <dependency>
       <groupId>junit</groupId>
@@ -35,7 +35,7 @@
       <plugin>
         <groupId>org.pustefixframework.maven.plugins</groupId>
         <artifactId>pustefix-statuscode-plugin</artifactId>
-        <version>0.18.67-SNAPSHOT</version>
+        <version>0.18.67</version>
         <configuration>
           <module>pustefix-i18n-de</module>
           <includes>
