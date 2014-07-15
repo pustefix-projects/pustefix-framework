@@ -20,12 +20,10 @@ package de.schlund.pfixcore.example;
 import java.util.HashMap;
 import java.util.Iterator;
 
-import org.pustefixframework.container.annotations.Inject;
+import org.pustefixframework.web.mvc.InputHandler;
+import org.springframework.beans.factory.annotation.Autowired;
 
 import de.schlund.pfixcore.example.iwrapper.IndexedTest;
-import de.schlund.pfixcore.generator.IHandler;
-import de.schlund.pfixcore.generator.IWrapper;
-import de.schlund.pfixcore.workflow.Context;
 
 /**
  * Describe class IndexedTestHandler here.
@@ -36,13 +34,11 @@ import de.schlund.pfixcore.workflow.Context;
  * @author <a href="mailto:jtl@schlund.de">Jens Lautenbacher</a>
  * @version 1.0
  */
-public class IndexedTestHandler implements IHandler {
-    // Implementation of de.schlund.pfixcore.generator.IHandler
+public class IndexedTestHandler implements InputHandler<IndexedTest> {
 
     private ContextAdultInfo cai;
     
-    public final void handleSubmittedData(final Context context, final IWrapper wrapper) throws Exception {
-        IndexedTest      itest = (IndexedTest) wrapper;
+    public final void handleSubmittedData(IndexedTest itest) {
         String[]         keys  = itest.getKeysValue();
 
         HashMap<String, String> inmap = new HashMap<String, String>();
@@ -52,8 +48,7 @@ public class IndexedTestHandler implements IHandler {
         cai.setIndexedTest(inmap);
     }
 
-    public final void retrieveCurrentStatus(final Context context, final IWrapper wrapper) throws Exception {
-        IndexedTest             itest  = (IndexedTest) wrapper;
+    public final void retrieveCurrentStatus(IndexedTest itest) {
         HashMap<String, String> outmap = cai.getIndexedTest();
         
         for (Iterator<String> i = outmap.keySet().iterator(); i.hasNext(); ) {
@@ -67,19 +62,19 @@ public class IndexedTestHandler implements IHandler {
         }
     }
 
-    public final boolean prerequisitesMet(final Context context) throws Exception {
+    public final boolean prerequisitesMet() {
         return true;
     }
 
-    public final boolean isActive(final Context context) throws Exception {
+    public final boolean isActive() {
         return true;
     }
 
-    public final boolean needsData(final Context context) throws Exception {
+    public final boolean needsData() {
         return false;
     }
 
-    @Inject
+    @Autowired
     public void setContextAdultInfo(ContextAdultInfo cai) {
         this.cai = cai;
     }

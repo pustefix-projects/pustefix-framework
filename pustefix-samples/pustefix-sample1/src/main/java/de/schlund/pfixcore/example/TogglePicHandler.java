@@ -18,12 +18,10 @@
 
 package de.schlund.pfixcore.example;
 
-import org.pustefixframework.container.annotations.Inject;
+import org.pustefixframework.web.mvc.InputHandler;
+import org.springframework.beans.factory.annotation.Autowired;
 
 import de.schlund.pfixcore.example.iwrapper.TogglePic;
-import de.schlund.pfixcore.generator.IHandler;
-import de.schlund.pfixcore.generator.IWrapper;
-import de.schlund.pfixcore.workflow.Context;
 
 
 /**
@@ -37,38 +35,35 @@ import de.schlund.pfixcore.workflow.Context;
  *
  */
 
-public class TogglePicHandler implements IHandler {
-// implementation of de.schlund.pfixcore.generator.IHandler interface
+public class TogglePicHandler implements InputHandler<TogglePic> {
 
     private ContextTogglePic ctp;
 
-    public void handleSubmittedData(Context context, IWrapper wrapper) throws Exception {
-        TogglePic        tpic = (TogglePic) wrapper;
+    public void handleSubmittedData(TogglePic tpic) {
         Boolean          show = tpic.getToggle();
         if ((show != null) && show.equals(Boolean.TRUE)) {
             ctp.setShow(!ctp.getShow());
         }
     }
 
-    public void retrieveCurrentStatus(Context param1, IWrapper param2) throws Exception {
-        // 
+    public void retrieveCurrentStatus(TogglePic tpic) {
     }
 
-    public boolean prerequisitesMet(Context param1) throws Exception {
+    public boolean prerequisitesMet() {
         return true;
     }
 
-    public boolean isActive(Context param1) throws Exception {
+    public boolean isActive() {
         return true;
     }
 
-    public boolean needsData(Context param1) throws Exception {
+    public boolean needsData() {
         return false;
     }
     
-    @Inject
+    @Autowired
     public void setContextTogglePic(ContextTogglePic ctp) {
         this.ctp = ctp;
     }
 
-}// TogglePicHandler
+}

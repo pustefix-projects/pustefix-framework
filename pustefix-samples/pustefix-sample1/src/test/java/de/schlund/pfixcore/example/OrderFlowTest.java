@@ -90,13 +90,13 @@ public class OrderFlowTest extends AbstractJUnit38SpringContextTests implements 
         Assert.assertFalse(overviewState.isAccessible(pustefixContext, pfxReq));
         
         AdultInfoHandler handler = (AdultInfoHandler)applicationContext.getBean(AdultInfoHandler.class.getName()+"#home#info");
-        Assert.assertTrue(handler.needsData(pustefixContext));
+        Assert.assertTrue(handler.needsData());
         
         AdultInfo adultInfo = new AdultInfo();
         adultInfo.init("info");
         adultInfo.setStringValAdult("false");
         adultInfo.loadFromStringValues();
-        handler.handleSubmittedData(pustefixContext, adultInfo);
+        handler.handleSubmittedData(adultInfo);
         
         TShirtHandler tshirtHandler = (TShirtHandler)applicationContext.getBean(TShirtHandler.class.getName()+"#order#shirt");
         TShirt tshirt = new TShirt();
@@ -105,7 +105,7 @@ public class OrderFlowTest extends AbstractJUnit38SpringContextTests implements 
         tshirt.setStringValSize("XL");
         tshirt.setStringValFeature(new String[] {"0","1","2"});
         tshirt.loadFromStringValues();
-        tshirtHandler.handleSubmittedData(pustefixContext, tshirt);
+        tshirtHandler.handleSubmittedData(tshirt);
         
         Assert.assertTrue(overviewState.isAccessible(pustefixContext, pfxReq));
         

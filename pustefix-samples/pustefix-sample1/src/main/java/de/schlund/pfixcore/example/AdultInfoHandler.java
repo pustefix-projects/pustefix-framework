@@ -18,12 +18,10 @@
 
 package de.schlund.pfixcore.example;
 
-import org.pustefixframework.container.annotations.Inject;
+import org.pustefixframework.web.mvc.InputHandler;
+import org.springframework.beans.factory.annotation.Autowired;
 
 import de.schlund.pfixcore.example.iwrapper.AdultInfo;
-import de.schlund.pfixcore.generator.IHandler;
-import de.schlund.pfixcore.generator.IWrapper;
-import de.schlund.pfixcore.workflow.Context;
 
 /**
  * AdultInfoHandler.java
@@ -36,40 +34,37 @@ import de.schlund.pfixcore.workflow.Context;
  *
  */
 
-public class AdultInfoHandler implements IHandler {
-    // private final static Logger LOG  = Logger.getLogger(AdultInfoHandler.class);
+public class AdultInfoHandler implements InputHandler<AdultInfo> {
 
     private ContextAdultInfo cai;
-    
-    public void handleSubmittedData(Context context, IWrapper wrapper) throws Exception {
-        AdultInfo              info    = (AdultInfo) wrapper;
+
+    public void handleSubmittedData(AdultInfo info) {
         cai.setAdult(info.getAdult());
         cai.setDate(info.getDate());
     }
     
-    public void retrieveCurrentStatus(Context context, IWrapper wrapper) throws Exception {
-        AdultInfo              info = (AdultInfo) wrapper;
+    public void retrieveCurrentStatus(AdultInfo info) {
         if (!cai.needsData()) {
             info.setAdult(cai.getAdult());
         }
         info.setDate(cai.getDate());
     }
     
-    public boolean needsData(Context context) throws Exception{
+    public boolean needsData() {
         return cai.needsData();
     }
     
-    public boolean isActive(Context context) throws Exception{
+    public boolean isActive() {
         return true;
     }
     
-    public boolean prerequisitesMet(Context context) throws Exception{
+    public boolean prerequisitesMet() {
         return true;
     }
 
-    @Inject
+    @Autowired
     public void setContextAdultInfo(ContextAdultInfo cai) {
         this.cai = cai;
     }
 
-}// AdultInfoHandler
+}

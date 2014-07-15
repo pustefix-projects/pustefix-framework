@@ -17,42 +17,41 @@
  */
 package de.schlund.pfixcore.example;
 
+import org.pustefixframework.web.mvc.InputHandler;
+import org.springframework.beans.factory.annotation.Autowired;
+
 import de.schlund.pfixcore.example.iwrapper.EncodingTestWrapper;
-import de.schlund.pfixcore.generator.IHandler;
-import de.schlund.pfixcore.generator.IWrapper;
-import de.schlund.pfixcore.workflow.Context;
 
 /**
  * 
  * @author mleidig@schlund.de
  * 
  */
-public class EncodingTestHandler implements IHandler {
+public class EncodingTestHandler implements InputHandler<EncodingTestWrapper> {
     
-    public void handleSubmittedData(Context context,IWrapper wrapper) throws Exception {
-        EncodingTestWrapper test     = (EncodingTestWrapper)wrapper;
-        String       encoding = test.getEncoding();
+    @Autowired
+    private ContextEncodingTest encTest;
+    
+    public void handleSubmittedData(EncodingTestWrapper test) {
+        String encoding = test.getEncoding();
         if (encoding == null || encoding.trim().equals("") || encoding.equals("none")) {
-            ContextEncodingTest ctx = context.getContextResourceManager().getResource(ContextEncodingTest.class);
-            ctx.setText(test.getText());
+            encTest.setText(test.getText());
         }
     }
     
-    public void retrieveCurrentStatus(Context context,IWrapper wrapper) throws Exception {
-        EncodingTestWrapper        test = (EncodingTestWrapper)wrapper;
-        ContextEncodingTest ctx  = context.getContextResourceManager().getResource(ContextEncodingTest.class);
-        if (ctx.getText() != null) test.setText(ctx.getText());
+    public void retrieveCurrentStatus(EncodingTestWrapper test) {
+        if (encTest.getText() != null) test.setText(encTest.getText());
     }
     
-    public boolean needsData(Context context) throws Exception {
+    public boolean needsData() {
         return false;
     }
     
-    public boolean prerequisitesMet(Context context) throws Exception {
+    public boolean prerequisitesMet() {
         return true;
     }
 
-    public boolean isActive(Context context) throws Exception {
+    public boolean isActive() {
         return true;
     }
     

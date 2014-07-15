@@ -1027,9 +1027,25 @@ public interface State {
         </section>
       </section>
     </section>
-    <section>
-      <title>The <literal>IHandler</literal> interface</title>
+   <section>
+      <title>The <literal>InputHandler</literal> interface</title>
       <para>
+        The <literal>InputHandler</literal> interface is the replacement for the deprecated <literal>IHandler</literal> interface.
+        Its advantages are: you get rid of casting because it's generic, and the methods don't declare to throw <literal>Exception</literal>,
+        which forces sensible exception handling.
+      </para>
+      <programlisting language="java"><![CDATA[public interface InputHandler<T extends IWrapper> {
+    void    handleSubmittedData(T wrapper);
+    void    retrieveCurrentStatus(T wrapper);
+    boolean prerequisitesMet();
+    boolean isActive();
+    boolean needsData();
+}]]></programlisting>
+    </section>
+    <section>
+      <title>The deprecated <literal>IHandler</literal> interface</title>
+      <para>
+        The <literal>IHandler</literal> interface is deprecated. Use <literal>InputHandler</literal> instead.
       </para>
       <programlisting language="java"><![CDATA[public interface IHandler {
     void    handleSubmittedData(Context context, IWrapper wrapper) throws Exception;
@@ -1095,9 +1111,8 @@ public class BankStatusCodes {
 The following login handling example uses the generated StatusCode class to indicate a failed login:
 </para>
 <programlisting language="java"><![CDATA[
-public class LoginHandler implements IHandler {
-    public void handleSubmittedData(Context context, IWrapper wrapper) throws Exception {
-        Login login = (Login) wrapper;
+public class LoginHandler implements InputHandler<Login> {
+    public void handleSubmittedData(Login login) {
         //check login data
         //if invalid
         login.addSCodeUser(BankStatusCodes.ILLEGAL_LOGIN);

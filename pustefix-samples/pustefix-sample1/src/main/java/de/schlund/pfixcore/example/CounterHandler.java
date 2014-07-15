@@ -18,11 +18,10 @@
 
 package de.schlund.pfixcore.example;
 
-import org.pustefixframework.container.annotations.Inject;
+import org.pustefixframework.web.mvc.InputHandler;
+import org.springframework.beans.factory.annotation.Autowired;
 
 import de.schlund.pfixcore.example.iwrapper.Counter;
-import de.schlund.pfixcore.generator.IHandler;
-import de.schlund.pfixcore.generator.IWrapper;
 import de.schlund.pfixcore.workflow.Context;
 
 /**
@@ -34,13 +33,13 @@ import de.schlund.pfixcore.workflow.Context;
  *
  */
 
-public class CounterHandler implements IHandler {
-    // private final static Logger LOG  = Logger.getLogger(CounterHandler.class);
+public class CounterHandler implements InputHandler<Counter> {
 
+    @Autowired
+    private Context context;
     private ContextCounter cc;
     
-    public void handleSubmittedData(Context context, IWrapper wrapper) throws Exception {
-        Counter counter     = (Counter) wrapper;
+    public void handleSubmittedData(Counter counter) {
         Boolean showcounter = counter.getShowCounter();
         Integer count       = counter.getAdd();
 
@@ -65,25 +64,25 @@ public class CounterHandler implements IHandler {
 
     }
 
-    public void retrieveCurrentStatus(Context context, IWrapper wrapper) throws Exception {
+    public void retrieveCurrentStatus(Counter counter) {
         // We do nothing here. There are no form elements that need pre-filling.
     }
 
-    public boolean needsData(Context context) {
+    public boolean needsData() {
         return false;
     }
 
-    public boolean isActive(Context context) {
+    public boolean isActive() {
         return true;
     }
 
-    public boolean prerequisitesMet(Context context) {
+    public boolean prerequisitesMet() {
         return true;
     }
 
-    @Inject
+    @Autowired
     public void setContextCounter(ContextCounter cc) {
         this.cc = cc;
     }
 
-}// CounterHandler
+}
