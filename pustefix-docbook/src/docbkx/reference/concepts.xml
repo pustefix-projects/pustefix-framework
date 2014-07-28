@@ -838,7 +838,7 @@ public interface State {
   xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
   xsi:schemaLocation="http://www.pustefix-framework.org/2008/namespace/iwrapper 
                       http://www.pustefix-framework.org/2008/namespace/iwrapper.xsd"
-  extends="some.other.iwrapper.class">
+  extends="mypackage.MyIWrapperClass">
   <!--
     The class attribute references the associated IHandler class. Alternatively you can
     reference an existing Spring bean using the bean-ref attribute.
@@ -847,7 +847,7 @@ public interface State {
     has been given to the interface node. Normally you will want to specify an ihandler
     class here.
   -->
-  <ihandler class="some.de.schlund.pfixcore.generator.IHandler.class"/>
+  <ihandler class="mypackage.MyIHandlerClass"/>
   <!-- or <ihandler bean-ref="aBean"/> -->
   <!--
     This node can (and usually will) occur multiple times, one for every parameter that
