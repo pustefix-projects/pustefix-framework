@@ -402,6 +402,23 @@ public abstract class AbstractPustefixRequestHandler implements SessionTrackingS
                             e.getClass().getName().equals("org.mortbay.jetty.EofException"))) {
                 LOG.warn("Client aborted request.");
             } else {
+                //Check if exception occurred while having a session which wasn't created by Pustefix,
+                //i.e. the session was created after the Pustefix session timed out and the request thread
+                //tried to access request/session-scoped beans, which let's Spring create a new one.
+                //If no response was written we invalidate the illegal session and make a temporary
+                //redirect to negotiate a new Pustefix session.
+                session = req.getSession(false);
+                if(session != null) {
+                    String visitId = (String)session.getAttribute(VISIT_ID);
+                    if(visitId == null && !res.isCommitted()) {
+                        LOG.warn("Error occurred while using non-Pustefix session '" + session.getId() + 
+                                "' -> invalidate it and redirect for new session negotiation", e);
+                        session.invalidate();
+                        res.sendRedirect(req.getRequestURL().toString());
+                        return;
+                    }
+                }
+                
                 LOG.error("Exception in process", e);
                 ExceptionConfig exconf = exceptionProcessingConfig.getExceptionConfigForThrowable(e.getClass());
                 if(exconf != null && exconf.getProcessor()!= null) { 
