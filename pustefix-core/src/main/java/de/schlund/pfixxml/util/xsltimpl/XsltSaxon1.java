@@ -21,6 +21,7 @@ package de.schlund.pfixxml.util.xsltimpl;
 import java.io.StringReader;
 import java.io.Writer;
 
+import javax.xml.transform.ErrorListener;
 import javax.xml.transform.Source;
 import javax.xml.transform.Templates;
 import javax.xml.transform.Transformer;
@@ -121,4 +122,16 @@ public class XsltSaxon1 implements XsltSupport {
         return w;
     }
     
+    @Override
+    public void doErrorListening(Transformer transformer, boolean traceLocation) {
+        if(traceLocation) {
+            Saxon1LocationTraceListener tl = new Saxon1LocationTraceListener();
+            ErrorListener el = new Saxon1ErrorListener(tl);
+            transformer.setErrorListener(el);
+            ((Controller)transformer).addTraceListener(tl);
+        } else {
+            transformer.setErrorListener(new ErrorListenerBase());
+        }
+    }
+
 }

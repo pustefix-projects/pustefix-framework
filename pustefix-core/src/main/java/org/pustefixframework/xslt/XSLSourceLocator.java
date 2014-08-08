@@ -15,27 +15,25 @@
  * along with Pustefix; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  */
+package org.pustefixframework.xslt;
 
-package de.schlund.pfixxml.util;
-
-import java.io.Writer;
-
-import javax.xml.transform.Templates;
-import javax.xml.transform.Transformer;
-import javax.xml.transform.TransformerFactory;
+import javax.xml.transform.SourceLocator;
 
 /**
- * @author mleidig@schlund.de
+ * Source locator implementation for XSL transformation errors reporting
+ * the XML source location in addition to the XSL source location.
  */
-public interface XsltSupport {
+public class XSLSourceLocator extends XMLSourceLocator {
 
-    public TransformerFactory getSharedTransformerFactory();
-    public TransformerFactory getThreadTransformerFactory();
-    public Templates getPrettyPrinterTemplates();
-    public boolean isInternalTemplate(Templates templates);
-    public void doTracing(Transformer transformer, Writer traceWriter);
-    public String getSystemId(Templates templates);
-    public XsltMessageWriter recordMessages(Transformer transformer);
-    public void doErrorListening(Transformer transformer, boolean traceLocation);
+    private SourceLocator xmlLocator;
     
+    public XSLSourceLocator(SourceLocator xslLocator, SourceLocator xmlLocator) {
+        super(xslLocator);
+        this.xmlLocator = xmlLocator;
+    }
+    
+    public SourceLocator getXmlLocator() {
+        return xmlLocator;
+    }
+
 }
