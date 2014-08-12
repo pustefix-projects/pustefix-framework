@@ -417,8 +417,17 @@ public abstract class AbstractPustefixRequestHandler implements SessionTrackingS
                         res.sendRedirect(req.getRequestURL().toString());
                         return;
                     }
+                } 
+                //Check if IllegalStateException thrown because of accessing already invalidated session.
+                //If no response was written yet make a temporary redirect to get a new Pustefix session.
+                if(needsSession() && session == null && e instanceof IllegalStateException) {
+                    if(!res.isCommitted()) {
+                        LOG.warn("Error occurred while accessing already invalidated session " +
+                                "-> redirect to new Pustefix session", e);
+                        res.sendRedirect(req.getRequestURL().toString());
+                        return;
+                    }
                 }
-                
                 LOG.error("Exception in process", e);
                 ExceptionConfig exconf = exceptionProcessingConfig.getExceptionConfigForThrowable(e.getClass());
                 if(exconf != null && exconf.getProcessor()!= null) { 
