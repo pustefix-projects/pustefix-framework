@@ -596,18 +596,29 @@ public abstract class AbstractPustefixRequestHandler implements SessionTrackingS
     }
     
     public String getPageName(String pageAlias, HttpServletRequest request) {
-        PageLookupResult res = null;
+        
+        String prefix;
         int ind = pageAlias.indexOf('/');
         if(ind > -1) {
-            pageAlias = pageAlias.substring(ind + 1);
+            prefix = pageAlias.substring(0, ind);
         } else {
-            //check if page is language prefix => default page
-            Tenant tenant = (Tenant)request.getAttribute(TenantScope.REQUEST_ATTRIBUTE_TENANT);
-            if((tenant != null && tenant.getSupportedLanguageByCode(pageAlias) != null) ||
-                (tenant == null && languageInfo.getSupportedLanguageByCode(pageAlias) != null)) {
-                return null;
-            }    
+            prefix = pageAlias;
         }
+        
+        //check if pageAlias has language prefix
+        Tenant tenant = (Tenant)request.getAttribute(TenantScope.REQUEST_ATTRIBUTE_TENANT);
+        if((tenant != null && tenant.getSupportedLanguageByCode(prefix) != null) ||
+            (tenant == null && languageInfo.getSupportedLanguageByCode(prefix) != null)) {
+            if(ind > -1) {
+                //remove language prefix
+                pageAlias = pageAlias.substring(ind + 1);
+            } else {
+                //default page
+                return null;
+            }
+        }    
+        
+        PageLookupResult res = null;
         String lang = (String)request.getAttribute(REQUEST_ATTR_LANGUAGE);
         res = siteMap.getPageName(pageAlias, lang);
         if(res.getPageAlternativeKey() != null) {
@@ -632,6 +643,7 @@ public abstract class AbstractPustefixRequestHandler implements SessionTrackingS
                                 pathPrefix = langPart + "/";
                             }
                             String alias = siteMap.getAlias(registeredPage, supportedLanguage);
+                            uris.add("/" + pathPrefix + registeredPage);
                             uris.add("/" + pathPrefix + alias);
                             List<String> pageAltAliases = siteMap.getPageAlternativeAliases(registeredPage, supportedLanguage);
                             if(pageAltAliases != null) {
@@ -649,6 +661,7 @@ public abstract class AbstractPustefixRequestHandler implements SessionTrackingS
                             pathPrefix = langPart + "/";
                         }
                         String alias = siteMap.getAlias(registeredPage, supportedLanguage);
+                        uris.add("/" + pathPrefix + registeredPage);
                         uris.add("/" + pathPrefix + alias);
                         List<String> pageAltAliases = siteMap.getPageAlternativeAliases(registeredPage, supportedLanguage);
                         if(pageAltAliases != null) {

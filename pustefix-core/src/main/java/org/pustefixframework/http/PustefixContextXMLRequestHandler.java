@@ -135,7 +135,11 @@ public class PustefixContextXMLRequestHandler extends AbstractPustefixXMLRequest
             int ind = path.indexOf("/");
             if(ind > -1) {
                 ind = path.indexOf("/", ind + 1);
-                if(ind > -1) return HttpServletResponse.SC_NOT_FOUND;
+                if(ind > -1) {
+                    if(path.substring(ind).contains(".")) {
+                        return HttpServletResponse.SC_NOT_FOUND;
+                    }
+                }
             }
         }
         return 0;
