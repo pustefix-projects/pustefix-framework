@@ -251,7 +251,7 @@ public class DocrootRequestHandler implements UriProvidingHttpRequestHandler, Se
             res.setHeader("Cache-Control", "no-cache, no-store, private, must-revalidate");
             res.setHeader("Pragma", "no-cache");
         } else if(mode==null || mode.equals("") || mode.equals("prod")) {
-            res.setHeader("Cache-Control", "max-age=3000");
+            res.setHeader("Cache-Control", "max-age=3600");
         } else {
             res.setHeader("Cache-Control", "max-age=3, must-revalidate");
         }
