@@ -15,7 +15,6 @@
  * along with Pustefix; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  */
-
 package org.pustefixframework.http;
 
 import java.io.BufferedOutputStream;
@@ -23,7 +22,6 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.util.HashSet;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Set;
 
@@ -42,7 +40,6 @@ import de.schlund.pfixxml.LanguageInfo;
 import de.schlund.pfixxml.Tenant;
 import de.schlund.pfixxml.TenantInfo;
 import de.schlund.pfixxml.resources.FileResource;
-import de.schlund.pfixxml.resources.I18NIterator;
 import de.schlund.pfixxml.resources.I18NResourceUtil;
 import de.schlund.pfixxml.resources.Resource;
 import de.schlund.pfixxml.resources.ResourceUtil;
@@ -150,7 +147,7 @@ public class DocrootRequestHandler implements UriProvidingHttpRequestHandler, Se
         if (passthroughPaths != null) {
             
             for (String prefix : this.passthroughPaths) {
-            	boolean i18n = false;
+                boolean i18n = false;
                 if(i18nPaths != null && i18nPaths.contains(prefix)) {
                     i18n = true;
                 }
@@ -159,7 +156,7 @@ public class DocrootRequestHandler implements UriProvidingHttpRequestHandler, Se
                     if(path.startsWith("modules/") && !extractedPaths.contains(prefix)) {
                         String moduleUri = "module://" + path.substring(8);
                         if(i18n) {
-                        	resource = I18NResourceUtil.getResource(moduleUri, tenantName, language);
+                            resource = I18NResourceUtil.getResource(moduleUri, tenantName, language);
                         } else {
                             resource = ResourceUtil.getResource(moduleUri);
                         }
@@ -185,8 +182,8 @@ public class DocrootRequestHandler implements UriProvidingHttpRequestHandler, Se
                     resource = ResourceUtil.getFileResource(baseResource, path);
                 }
                 if(resource.exists()) {
-            		inputResource = resource;
-            	}
+                    inputResource = resource;
+                }
             }
         }
         
@@ -248,9 +245,13 @@ public class DocrootRequestHandler implements UriProvidingHttpRequestHandler, Se
                 
         String etag = MD5Utils.hex_md5(path+contentLength+lastModified);
         res.setHeader("ETag", etag);
-            
-        if(mode==null || mode.equals("") || mode.equals("prod")) {
-            res.setHeader("Cache-Control", "max-age=3600");
+        
+        Integer errorStatus = (Integer)req.getAttribute("javax.servlet.error.status_code");
+        if(errorStatus != null) {
+            res.setHeader("Cache-Control", "no-cache, no-store, private, must-revalidate");
+            res.setHeader("Pragma", "no-cache");
+        } else if(mode==null || mode.equals("") || mode.equals("prod")) {
+            res.setHeader("Cache-Control", "max-age=3000");
         } else {
             res.setHeader("Cache-Control", "max-age=3, must-revalidate");
         }
@@ -314,13 +315,4 @@ public class DocrootRequestHandler implements UriProvidingHttpRequestHandler, Se
         }
     }
 
-
-    public static void main(String[] args) {
-    	//Iterator<String> it = new I18NIterator("", "en_CA", "img/logo.png");
-    	Iterator<String> it = new I18NIterator("CA", "en_CA", "docroot:/bar.png?foo=bar");
-        while(it.hasNext()) {
-            System.out.println(it.next());
-        }
-    }
-    
 }
