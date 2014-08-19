@@ -4,8 +4,6 @@
             xsi:schemaLocation="http://www.pustefix-framework.org/2008/namespace/properties-config 
                                 http://www.pustefix-framework.org/schema/properties-config.xsd">
     
-    <property name="testdata.defaulttext">foo</property>
-    
     <choose>
       <when test="$mode='prod'">
         <property name="testdata.mode">prod</property>
