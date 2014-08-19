@@ -447,5 +447,16 @@
 
   </section>
 
+  <section xml:id="news.0_18_71">
+    <title>What's new in Pustefix 0.18.71</title>
+
+    <section xml:id="news.0_18_71.spring">
+      <title>Environment-dependent Spring property files</title>
+      <para>
+        Pustefix provides a new <literal>PropertyPlaceholderConfigurer</literal> implementation which can be used to organize Spring properties in different environment-dependent files (see <xref linkend="configuration.spring.envprops"/>).
+      </para>
+    </section>
+
+  </section>
 
 </chapter>
