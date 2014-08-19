@@ -447,6 +447,18 @@
 
   </section>
 
+  <section xml:id="news.0_18_70">
+    <title>What's new in Pustefix 0.18.70</title>
+
+    <section xml:id="news.0_18_70.aliases">
+      <title>Page alias names with slashes</title>
+      <para>
+        Pustefix now supports using slashes in page alias names, e.g. <literal>mysection/mypage</literal>, which can help to create more user- or SEO-friendly URLs.
+      </para>
+    </section>
+
+  </section>
+
   <section xml:id="news.0_18_71">
     <title>What's new in Pustefix 0.18.71</title>
 
