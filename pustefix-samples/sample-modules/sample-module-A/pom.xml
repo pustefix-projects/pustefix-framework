@@ -3,12 +3,12 @@
   <parent>
     <groupId>org.pustefixframework.samples.modules</groupId>
     <artifactId>sample-modules</artifactId>
-    <version>0.18.70-SNAPSHOT</version>
+    <version>0.18.70</version>
   </parent>
 
   <groupId>org.pustefixframework.samples.modules</groupId>
   <artifactId>sample-module-A</artifactId>
-  <version>0.18.70-SNAPSHOT</version>
+  <version>0.18.70</version>
   <packaging>jar</packaging>
 
   <name>Pustefix Sample Module A</name>
@@ -16,7 +16,7 @@
     <dependency>
       <groupId>org.pustefixframework</groupId>
       <artifactId>pustefix-core</artifactId>
-      <version>0.18.70-SNAPSHOT</version>
+      <version>0.18.70</version>
     </dependency>
   </dependencies>
 </project>
