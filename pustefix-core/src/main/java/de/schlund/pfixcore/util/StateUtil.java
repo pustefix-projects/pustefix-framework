@@ -27,6 +27,8 @@ import java.util.Properties;
 import org.apache.log4j.Logger;
 import org.pustefixframework.config.contextxmlservice.StateConfig;
 import org.pustefixframework.util.BytecodeAPIUtils;
+import org.pustefixframework.util.xml.DOMUtils;
+import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 
 import de.schlund.pfixcore.beans.InsertStatus;
@@ -64,9 +66,27 @@ public class StateUtil {
         Map<String, ?> contextResources = config.getContextResources();
         
         for (String nodename : contextResources.keySet()) {
-            Object cr = contextResources.get(nodename);
-            renderContextResource(cr, resdoc, nodename);
+            if(!config.isLazyContextResource(nodename)) {
+                Object cr = contextResources.get(nodename);
+                renderContextResource(cr, resdoc, nodename);
+            }
         }
+    }
+    
+    public static Document renderLazyContextResource(Context context, StateConfig config, String nodeName) throws Exception {
+        
+        if(config.isLazyContextResource(nodeName)) {
+            ResultDocument resDoc = new ResultDocument();
+            Object res = config.getContextResources().get(nodeName);
+            renderContextResource(res, resDoc, nodeName);
+            Document doc = resDoc.getSPDocument().getDocument();
+            Element elem = DOMUtils.getFirstChildByTagName(doc.getDocumentElement(), nodeName);
+            if(elem != null) {
+                doc.replaceChild(elem, doc.getDocumentElement());
+            }
+            return doc;
+        }
+        return null;
     }
     
     @SuppressWarnings("deprecation")

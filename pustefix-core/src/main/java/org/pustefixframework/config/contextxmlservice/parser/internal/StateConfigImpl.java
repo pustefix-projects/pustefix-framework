@@ -21,10 +21,12 @@ package org.pustefixframework.config.contextxmlservice.parser.internal;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Enumeration;
+import java.util.HashSet;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Properties;
+import java.util.Set;
 
 import org.pustefixframework.config.contextxmlservice.IWrapperConfig;
 import org.pustefixframework.config.contextxmlservice.ProcessActionStateConfig;
@@ -48,6 +50,7 @@ public class StateConfigImpl implements Cloneable, StateConfig {
     private String defaultIWrapperStateParentBeanName = null;
     private List<IWrapperConfig> iwrappers = new ArrayList<IWrapperConfig>();
     private Map<String, Object> resources = new LinkedHashMap<String, Object>();
+    private Set<String> lazyResources = new HashSet<String>();
     private Properties props = new Properties();
     private StateConfig.Policy policy = StateConfig.Policy.ANY;
     private boolean requiresToken = false;
@@ -142,8 +145,11 @@ public class StateConfigImpl implements Cloneable, StateConfig {
         return Collections.unmodifiableMap(map);
     }
     
-    public void addContextResource(String prefix, Object resource) {
+    public void addContextResource(String prefix, Object resource, boolean lazy) {
         this.resources.put(prefix, resource);
+        if(lazy) {
+            lazyResources.add(prefix);
+        }
     }
     
     public void setContextResources(Map<String, Object> resources) {
@@ -152,6 +158,18 @@ public class StateConfigImpl implements Cloneable, StateConfig {
     
     public Map<String, ?> getContextResources() {
         return this.resources;
+    }
+    
+    public boolean isLazyContextResource(String prefix) {
+        return lazyResources.contains(prefix);
+    }
+    
+    public void setLazyContextResources(Set<String> lazyResources) {
+        this.lazyResources = lazyResources;
+    }
+    
+    public Set<String> getLazyContextResources() {
+        return lazyResources;
     }
     
     public void setProperties(Properties props) {

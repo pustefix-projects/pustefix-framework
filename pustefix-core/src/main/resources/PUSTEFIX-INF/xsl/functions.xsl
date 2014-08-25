@@ -171,4 +171,9 @@
     <func:result select="callback:getBean($name)"/>
   </func:function>
   
+  <func:function name="pfx:getResource">
+    <xsl:param name="nodeName"/>
+    <func:result select="callback:getResource($__context__, $nodeName, /)"/>
+  </func:function>
+  
 </xsl:stylesheet>
