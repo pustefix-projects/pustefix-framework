@@ -524,7 +524,7 @@
       </xsl:choose>
     </xsl:variable>
     <xsl:choose>
-      <xsl:when test="include:exists($realpath, $part, $__target_gen, $__target_key, $module, $search, $tenant, $lang)">
+      <xsl:when test="include:exists($realpath, $part, $__target_gen, $__target_key, $module_name, $search, $tenant, $lang)">
         <xsl:choose>
           <xsl:when test="pfx:checkpassed">
             <xsl:apply-templates select="pfx:checkpassed/node()"/>
@@ -606,7 +606,7 @@
         </xsl:otherwise>
       </xsl:choose>
     </xsl:variable>
-    <xsl:if test="not(include:exists($realpath, $part, $__target_gen, $__target_key, $module, $search, $tenant, $lang))">
+    <xsl:if test="not(include:exists($realpath, $part, $__target_gen, $__target_key, $module_name, $search, $tenant, $lang))">
       <xsl:apply-templates/>
     </xsl:if>
   </xsl:template>
