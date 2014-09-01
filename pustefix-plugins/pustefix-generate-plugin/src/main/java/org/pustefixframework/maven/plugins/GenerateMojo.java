@@ -21,6 +21,7 @@ import java.io.File;
 import java.lang.reflect.Method;
 import java.net.URL;
 import java.net.URLClassLoader;
+import java.text.DecimalFormat;
 import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -110,6 +111,7 @@ public class GenerateMojo extends AbstractMojo {
         if(cleanup) {
             cleanupFiles(cache);
         }
+        checkFileSize(cache);
     }
 
     /**
@@ -129,6 +131,50 @@ public class GenerateMojo extends AbstractMojo {
                 }
             }
         }
+    }
+    
+    private void checkFileSize(File cacheDir) {
+       
+        getLog().info("================================== XSL size analysis =======================================");
+        File[] files = cacheDir.listFiles();
+        long totalCount = 0;
+        long totalSize = 0;
+        for(File file: files) {
+            String name = file.getName();
+            if(name.endsWith(".xsl")) {
+                totalCount++;
+                totalSize += file.length();
+            }
+        }
+        getLog().info("Generated " + totalCount + " XSL files with total size of " + readableFileSize(totalSize));
+        long avgSize = totalSize / totalCount;
+        getLog().info("Remarkably large files (more than 4x average size of " + readableFileSize(avgSize) + "):");
+        long limit = avgSize * 4;
+        for(File file: files) {
+            String name = file.getName();
+            if(name.endsWith(".xsl")) {
+                if(file.length() > limit) {
+                    getLog().info(file.getName() + " => " + readableFileSize(file.length()));
+                }
+            }
+        }
+        getLog().info("============================================================================================");
+    }
+    
+    private String readableFileSize(long size) {
+        
+        String[] units = new String[] {"B", "KB", "MB", "GB", "TB"};
+        String formatted;
+        if(size > 0) {
+            int ind = (int) (Math.log(size)/Math.log(1024));
+            if(ind >= units.length) {
+                ind = units.length - 1;
+            }
+            formatted = new DecimalFormat("###0.#").format(size/Math.pow(1024, ind)) + " " + units[ind];
+        } else {
+            formatted = "0 " + units[0];
+        }
+        return formatted;
     }
     
     private URLClassLoader getProjectRuntimeClassLoader() throws MojoExecutionException {
