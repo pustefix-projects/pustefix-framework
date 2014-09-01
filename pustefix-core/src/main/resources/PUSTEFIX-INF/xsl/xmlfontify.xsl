@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<xsl:stylesheet xmlns:xsl="http://www.w3.org/1999/XSL/Transform" 
+<xsl:stylesheet xmlns:xsl="http://www.w3.org/1999/XSL/Transform"
+                xmlns:pfx="http://www.schlund.de/pustefix/core" 
                 xmlns:callback="xalan://de.schlund.pfixcore.util.TransformerCallback"
                 xmlns:pxsl="http://pustefixframework.org/org.pustefixframework.xslt.ExtensionElements"
                 extension-element-prefixes="pxsl" version="1.1">
@@ -15,34 +16,16 @@
       <head>
         <title>Last DOM</title>
         <style type="text/css">
-          body {font-family: monospace; }
-          .bracket            {color: #0000cc;}
-          .attribute          {color: #0000cc;}
-          .tag                {color: #dd5522;}
-          .value              {color: #22aa00;}
-          .comment            {color: #666666;}
-          .dimmed             {color: #aaaaaa;}
-          .error              {background-color: #ffff00;}
-          .datatable {border-spacing:0px;color:#000000;padding-left:20px;}
-          .datatable td {padding:4px;}
-          .datatable th {padding:4px;text-align:left;font-weight:normal;border-bottom: 1px solid black;}
-          .rowsep {border-bottom: 1px dotted #888888;}
-          table.info {padding-left: 20px;}
-          table.info th,td {text-align:left; padding:4px;}
+          body { font-family: monospace; }
+          .datatable { border-spacing: 0px; color: #000000; padding-left: 20px; }
+          .datatable td { padding: 4px; }
+          .datatable th { padding: 4px; text-align: left; font-weight: normal; border-bottom: 1px solid black; }
+          .rowsep { border-bottom: 1px dotted #888888; }
+          table.info { padding-left: 20px; }
+          table.info th, td { text-align: left; padding: 4px; }
           table.info td {color: #666666; font-weight: normal;}
           table.info th {color: #000000; font-weight: normal;}
-          ul#formresult { list-style-type: none; margin-left: -10px; }
-          ul#formresult.dblclick {  -moz-user-select: -moz-none; -khtml-user-select: none; -webkit-user-select: none;  }
-          ul#formresult li { list-style-type: none; margin-left: -20px; }
-          ul#formresult li.expanded:before { content: "- "; color: #c90000; font-weight: bold; margin-left: -15px; }
-          ul#formresult li.collapsed:before { content: "+ "; color: #c90000; font-weight: bold; margin-left: -15px; }
-          ul#formresult li.expanded, ul li.collapsed { cursor: pointer; }
-          ul#formresult li.expanded ul { display: block; }
-          ul#formresult li.collapsed ul { display: none; }
-          ul#formresult li div.dots { color: #ccc; display: inline-block; width: 30px; }
-          ul#formresult li.expanded div.dots { display: none; }
-          ul#formresult li.collapsed div.dots { display: inline-block; }
-          .assistent { background: #eeeeee; position: fixed; left: 0; top: 0; right: 0; width: 100%; border-bottom: 2px solid #000000; padding: 5px; }
+          .assistent { background: #eeeeee; position: fixed; left: 0; top: 0; right: 0; width: 100%; border-bottom: 2px solid #000000; padding: 5px; z-index: 1; }
           .assistent input#xpath { border: 1px solid #ccc; padding: 2px; font-family: sans; font-size: 16px; width: 700px; margin-right: 15px; }
           .assistent input#xpath.valid { background: url("/modules/pustefix-core/img/valid.png") no-repeat scroll 8px 4px white; padding-left: 30px; }
           .assistent input#xpath.invalid { background: url("/modules/pustefix-core/img/invalid.png") no-repeat scroll 8px 4px white; padding-left: 30px; }
@@ -51,6 +34,116 @@
           .assistent label { margin-left: 5px; margin-right: 10px; }
           ul a:hover { text-decoration: underline; cursor: pointer; }
           pre.errors {display:none; position:absolute; background:#FF9999; color:#000; border:red; border-radius: 10px; padding: 10px;}
+
+          .error {
+            background-color: #ffff00;
+          }
+
+          .pretty-print {
+            font-family: monospace;
+            font-size: 13px;
+          }
+
+          .indent {
+            margin-left: 1em;
+          }
+
+          .xml-tag-name {
+            color: #dd5522;
+            font-weight: bold;
+          }
+
+          .xml-attribute-name {
+            color: #0000cc;
+          }
+
+          .xml-attribute-value {
+            color: #22aa00;
+          }
+
+          .xml-comment {
+            color: #666666;
+          }
+
+          .dimmed .xml-tag-name,
+          .dimmed .xml-attribute-name,
+          .dimmed .xml-attribute-value,
+          .dimmed .xml-comment {
+            color: #aaaaaa;
+          }
+
+          .collapsible {          
+            position: relative;
+          }
+
+          .collapsible > .xml-tag {
+            cursor: hand;
+          }
+
+          .collapsible:before {
+            width: 0; 
+            height: 0; 
+            border-top: 4px solid transparent;
+            border-bottom: 4px solid transparent;            
+            border-left: 4px solid #bebdbd;
+            position: absolute;
+            content: '';
+            left: -15px;
+            top: 4px;
+          }
+
+          .collapsible > .xml-line,
+          .collapsible > .xml-line-end,
+          .collapsible.expanded > .xml-tag > .xml-tag-end {
+            display: none;
+          }
+
+          .collapsible.expanded > .xml-line,
+          .collapsible.expanded> .xml-line-end {
+            display: block;
+          }
+
+          .collapsible.expanded:before {
+            width: 0; 
+            height: 0; 
+            border-left: 4px solid transparent;
+            border-right: 4px solid transparent;
+            border-top: 4px solid #bebdbd;
+            position: absolute;
+            content: '';
+            left: -15px;
+            top: 6px;
+          }
+
+          .collapsible.active:before {
+            border-left-color: #000;
+          }
+
+          .collapsible.active.expanded:before {
+            border-left-color: transparent;
+            border-top-color: #000;
+          }
+
+          #dom-tree-clone-wrapper-bottom,
+          #dom-tree-clone-wrapper-top {
+            position: absolute;
+            background-color: #fff;
+            top: 0;
+            left: auto;
+            z-index: 2;
+            width: 99%;
+          }
+
+          #dom-tree-clone-blocker-top,
+          #dom-tree-clone-blocker-bottom {
+            background-color: #fff;
+            opacity: 0.75;
+            position: absolute;
+            z-index: 1;
+            width: 99%;
+            top: 0;
+            left: 0;
+          }
         </style>
         <script type="text/javascript">
           function toggleErrors(errElem, id) {
@@ -66,6 +159,14 @@
         </script>
       </head>
       <body>
+        <div id="dom-tree-clone-blocker-top" />
+        <div id="dom-tree-clone-blocker-bottom" />
+        <div id="dom-tree-clone-wrapper-top">
+          <div id="dom-tree-clone-top" class="pretty-print" />
+        </div>
+        <div id="dom-tree-clone-wrapper-bottom">
+          <div id="dom-tree-clone-bottom" class="pretty-print" />
+        </div>
         <div class="assistent"> 
           <label for="xpath">XPath-Expression [<a href="http://www.w3schools.com/xpath/xpath_syntax.asp" target="_blank">?</a>]</label> <input id="xpath" class="valid" value="/formresult" />
           <a href="javascript:void(0);" id="expand">Expand all</a> | <a href="javascript:void(0);" id="collapse">Collapse all</a> | <a href="#XMLData">XML data</a> |  <a href="#PageStatus">Page status</a> | <a href="#IWrappers">IWrappers</a>
@@ -73,7 +174,9 @@
         </div>
         <br /><br />
         <h1 id="XMLData">XML data:</h1>
-        <xsl:apply-templates mode="static_disp" select="/"/>
+        <div id="dom-tree" class="pretty-print">
+          <xsl:apply-templates mode="static_disp" select="/"/>
+        </div>
         <xsl:call-template name="render_iwrappers">
           <xsl:with-param name="tree" select="/"/>
         </xsl:call-template>
@@ -335,14 +438,7 @@
     </xsl:if>
   </xsl:template>
 
-  <xsl:template match="*" mode="static_disp">
-  
-    <xsl:param name="ind">  </xsl:param>
-    <xsl:param name="break">true</xsl:param>
-    <xsl:param name="bold">true</xsl:param>
-    <xsl:param name="parent" />
-    <xsl:param name="count" />
-    
+  <xsl:template match="node()" mode="static_disp">
     <xsl:variable name="dim">
       <xsl:choose>
         <xsl:when test="ancestor-or-self::wrapperstatus[1] and generate-id(ancestor-or-self::wrapperstatus[1]) = generate-id(/formresult/wrapperstatus)">true</xsl:when>
@@ -362,132 +458,112 @@
         <xsl:otherwise>false</xsl:otherwise>
       </xsl:choose>
     </xsl:variable>
-    <xsl:variable name="tagclass"> 
-      <xsl:choose> 
-        <xsl:when test="$dim = 'false'">
-          <xsl:choose>
-            <xsl:when test="$error = 'false'">tag</xsl:when>
-            <xsl:otherwise>tag error</xsl:otherwise>
-          </xsl:choose>
-        </xsl:when>
-        <xsl:otherwise>dimmed</xsl:otherwise>
-      </xsl:choose>
-    </xsl:variable>
-    <xsl:variable name="attrclass">
-      <xsl:choose> 
-        <xsl:when test="$dim = 'false'">attribute</xsl:when>
-        <xsl:otherwise>dimmed</xsl:otherwise>
-      </xsl:choose>
-    </xsl:variable>
-    <xsl:variable name="valueclass">
-      <xsl:choose>
-        <xsl:when test="$dim = 'false'">value</xsl:when>
-        <xsl:otherwise>dimmed</xsl:otherwise>
-      </xsl:choose>
-    </xsl:variable>
     <xsl:variable name="position">
       <xsl:if test="count(parent::node()/child::*[name() = name(current())]) &gt; 1">
         <xsl:value-of select="count(preceding-sibling::node()[name() = name(current())]) + 1" />
       </xsl:if>
     </xsl:variable>
-    
-    <ul>
-    
-      <xsl:if test="name() = 'formresult'">
-        <xsl:attribute name="id">formresult</xsl:attribute>
-      </xsl:if>
-    
-        <!--xsl:if test="count(./*) &gt; 0">
-          <xsl:attribute name="class">parent</xsl:attribute>
-        </xsl:if-->
-    
-      <li>
-       
-        <xsl:attribute name="class">
-          <xsl:choose>
-            <xsl:when test="name() = 'formresult'">
-              <xsl:text>formesult</xsl:text>
-            </xsl:when>
-            <xsl:when test="count(./*) &gt; 0">
-              <xsl:text>expanded</xsl:text>
-            </xsl:when>
-            <xsl:otherwise />
-          </xsl:choose>
-        </xsl:attribute>
 
-        <span class="bracket">&lt;</span>
-        
-        <span class="{$tagclass}">
-        
-          <xsl:if test="$bold = 'true' and $dim = 'false'">
-            <xsl:attribute name="style">font-weight: bold;</xsl:attribute>
-          </xsl:if>
-          
-          <a>
-            <xsl:attribute name="title"><xsl:value-of select="$parent" />/<xsl:value-of select="name()" /><xsl:if test="not($position = '')">[<xsl:value-of select="$position" />]</xsl:if></xsl:attribute>
-            <xsl:value-of select="name()"/></a></span>
-            
-          <xsl:for-each select="@*">
-            <xsl:text> </xsl:text>
-            <span class="{$attrclass}">
-              <a>
-                <xsl:attribute name="title"><xsl:value-of select="$parent" />/<xsl:value-of select="name(parent::node())" /><xsl:if test="not($position = '')">[<xsl:value-of select="$position" />]</xsl:if>/@<xsl:value-of select="name()" /></xsl:attribute>
-                <xsl:value-of select="name()"/>
-              </a>
-            </span>
-            <xsl:text>="</xsl:text>
-            <span class="{$valueclass}">
-              <a>
-                <xsl:attribute name="title"><xsl:value-of select="$parent" />/<xsl:value-of select="name(parent::node())" />[@<xsl:value-of select="name()" />='<xsl:value-of select="." />']</xsl:attribute>
-                <xsl:value-of select="."/>
-              </a>
-            </span>
-            <xsl:text>"</xsl:text>
-          </xsl:for-each>
-          
-        <span class="bracket"><xsl:if test="count(./node()) = 0">/</xsl:if>&gt;</span>
-        
-        <xsl:apply-templates mode="static_disp">
-          <xsl:with-param name="bold">
-            <xsl:choose>
-              <xsl:when test="count(ancestor::node()) &gt; 1">false</xsl:when>
-              <xsl:otherwise>true</xsl:otherwise>
-            </xsl:choose>
-            </xsl:with-param>
-          <xsl:with-param name="break">false</xsl:with-param>
-          <xsl:with-param name="parent"><xsl:value-of select="$parent" />/<xsl:value-of select="name()" /></xsl:with-param>
-        </xsl:apply-templates>
-
-        <xsl:if test="not(count(./node()) = 0)">
-        
-          <!--xsl:if test="not(name() = 'formresult') and count(*) &gt; 0">
-            <div class="dots">...</div>
-          </xsl:if-->
-
-          <span class="bracket">&lt;/</span>
-          <span class="{$tagclass}">
-          
-            <xsl:if test="$bold = 'true' and $dim = 'false'">
-              <xsl:attribute name="style">font-weight: bold;</xsl:attribute>
-            </xsl:if>
-          
-            <xsl:value-of select="name()"/>
-            
-          </span>
-          <span class="bracket">&gt;</span>
+    <div>
+      <xsl:attribute name="data-xpath">
+        <xsl:text>/</xsl:text><xsl:value-of select="name()" />
+        <xsl:choose>
+          <xsl:when test="@id">
+            <xsl:text>[@id = '</xsl:text><xsl:value-of select="@id" /><xsl:text>']</xsl:text>
+          </xsl:when>
+          <xsl:when test="number($position)">
+            <xsl:text>[</xsl:text><xsl:value-of select="$position" /><xsl:text>]</xsl:text>
+          </xsl:when>
+        </xsl:choose>
+      </xsl:attribute>
+      <xsl:attribute name="class">
+        <xsl:text>xml-line indent</xsl:text>
+        <xsl:if test="count(./node()) &gt; 0 and not(./text() or ./comment())">
+          <xsl:text> collapsible expanded</xsl:text>
         </xsl:if>
-        
-      </li>
-    </ul>
-    
+        <xsl:if test="$dim = 'true'">
+          <xsl:text> dimmed</xsl:text>
+        </xsl:if>  
+      </xsl:attribute>
+      <span class="xml-tag">
+        <xsl:text>&lt;</xsl:text>
+        <!-- tag name -->
+        <span>
+          <xsl:attribute name="class">
+            <xsl:text>xml-tag-name</xsl:text>
+            <xsl:if test="$error = 'true'">
+              <xsl:text> error</xsl:text>
+            </xsl:if>    
+          </xsl:attribute>
+          <xsl:value-of select="name()" />
+        </span>
+        <!-- tag attributes -->
+        <xsl:apply-templates select="@*" mode="static_disp" />
+        <!-- end tag -->
+        <xsl:choose>
+          <xsl:when test="count(./node()) = 0">
+            <xsl:text> /</xsl:text>
+          </xsl:when>
+          <xsl:when test="not(./text() or ./comment())">
+            <span class="xml-tag-end">
+              <xsl:text> </xsl:text>
+              <span>
+                <xsl:attribute name="class">
+                  <xsl:text>xml-tag-name</xsl:text>
+                  <xsl:if test="$error = 'true'">
+                    <xsl:text> error</xsl:text>
+                  </xsl:if>     
+                </xsl:attribute>
+                <xsl:text>/</xsl:text>
+              </span>
+            </span>
+          </xsl:when>
+        </xsl:choose>
+        <xsl:text>&gt;</xsl:text>
+      </span>
+      <xsl:if test="count(./node()) &gt; 0">
+        <xsl:apply-templates mode="static_disp" />
+        <span>
+          <xsl:attribute name="class">
+            <xsl:text>xml-tag</xsl:text>
+            <xsl:if test="count(./node()) &gt; 0 and not(./text() or ./comment())">
+              <xsl:text> xml-line-end</xsl:text>
+            </xsl:if>
+          </xsl:attribute>
+          <xsl:text>&lt;</xsl:text>
+          <span class="xml-tag-name">/<xsl:value-of select="name()" /></span>
+          <xsl:text>&gt;</xsl:text>
+        </span>
+      </xsl:if>
+    </div>   
   </xsl:template>
   
   <xsl:template match="text()" mode="static_disp">
     <xsl:value-of select="normalize-space(current())"/>
   </xsl:template>
 
+  <xsl:template match="@*" mode="static_disp">
+    <span class="xml-attribute">
+      <xsl:text> </xsl:text>
+      <span class="xml-attribute-name">
+        <xsl:attribute name="data-xpath">/@<xsl:value-of select="name()" /></xsl:attribute>
+        <xsl:value-of select="name()" />
+      </span>
+      <xsl:text>="</xsl:text>
+      <span class="xml-attribute-value">
+        <xsl:if test="not(name() = 'id')">
+          <xsl:attribute name="data-xpath">[@<xsl:value-of select="name()" /> = '<xsl:value-of select="." />']</xsl:attribute>
+        </xsl:if>
+        <xsl:value-of select="." />
+      </span>
+      <xsl:text>"</xsl:text>
+    </span>
+  </xsl:template>
+
   <xsl:template match="comment()" mode="static_disp">
-    <br/> <span class="comment">&lt;!--<xsl:value-of select="."/>--&gt;</span>
+    <span class="xml-comment">
+      &lt;!--<xsl:value-of select="."/>--&gt;
+    </span>
   </xsl:template>
 
   

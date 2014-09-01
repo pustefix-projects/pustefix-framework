@@ -12,6 +12,23 @@
 
   <context:annotation-config/>
 
+  <bean id="propsConfig" class="org.pustefixframework.container.spring.util.EnvironmentPropertyPlaceholderConfigurer">
+    <!--
+    <property name="locations">
+      <list>
+        <value>classpath*:spring.properties</value>
+        <value>WEB-INF/spring.properties</value>
+      </list>    
+    </property>
+    <property name="parameters">
+      <list>
+        <value>mode</value>
+        <value>locale</value>
+      </list>
+    </property>
+    -->
+  </bean>
+
   <bean id="testdata" class="de.schlund.pfixcore.example.TestData" scope="session" parent="testdata_base">
     <aop:scoped-proxy/>
     <property name="data" ref="${ref.testdata}"/>

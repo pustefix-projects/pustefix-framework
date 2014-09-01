@@ -21,12 +21,10 @@ package de.schlund.pfixcore.example;
 import java.util.Arrays;
 import java.util.HashSet;
 
-import org.pustefixframework.container.annotations.Inject;
+import org.pustefixframework.web.mvc.InputHandler;
+import org.springframework.beans.factory.annotation.Autowired;
 
 import de.schlund.pfixcore.example.iwrapper.Trouser;
-import de.schlund.pfixcore.generator.IHandler;
-import de.schlund.pfixcore.generator.IWrapper;
-import de.schlund.pfixcore.workflow.Context;
 
 /**
  * TrouserHandler.java
@@ -38,13 +36,12 @@ import de.schlund.pfixcore.workflow.Context;
  *
  */
 
-public class TrouserHandler implements IHandler {
+public class TrouserHandler implements InputHandler<Trouser> {
 
     private ContextAdultInfo cai;
     private ContextTrouser ct;
     
-    public void handleSubmittedData(Context context, IWrapper wrapper) throws Exception {
-        Trouser        trouser = (Trouser) wrapper;
+    public void handleSubmittedData(Trouser trouser) {
         Integer        color   = trouser.getColor();
         String         size    = trouser.getSize();
         Integer[]      feature = trouser.getFeature();
@@ -68,8 +65,7 @@ public class TrouserHandler implements IHandler {
         ct.setColor(color);
     }
     
-    public void retrieveCurrentStatus(Context context, IWrapper wrapper) throws Exception {
-        Trouser        trouser = (Trouser) wrapper;
+    public void retrieveCurrentStatus(Trouser trouser) {
 
         // we use the ct.needsData() call to look if the Context Ressource has meaningful content
         // to display. This may be handled differently depending on the case.
@@ -80,15 +76,15 @@ public class TrouserHandler implements IHandler {
         }
     }
     
-    public boolean needsData(Context context) throws Exception{
+    public boolean needsData() {
         return ct.needsData();
     }
     
-    public boolean prerequisitesMet(Context context) throws Exception{
+    public boolean prerequisitesMet() {
         return !cai.needsData();
     }
     
-    public boolean isActive(Context context) throws Exception{
+    public boolean isActive() {
         Boolean adult = cai.getAdult();
         if (adult != null) {
             // Depending on the situation, this may or may not be the right thing to do:
@@ -103,14 +99,14 @@ public class TrouserHandler implements IHandler {
         }
     }
     
-    @Inject
+    @Autowired
     public void setContextTrouser(ContextTrouser ct) {
         this.ct = ct;
     }
 
-    @Inject
+    @Autowired
     public void setContextAdultInfo(ContextAdultInfo cai) {
         this.cai = cai;
     }    
     
-}// TrouserHandler
+}

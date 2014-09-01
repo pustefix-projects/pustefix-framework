@@ -20,7 +20,6 @@ package de.schlund.pfixcore.example;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
-import org.pustefixframework.test.MockContext;
 
 import de.schlund.pfixcore.example.iwrapper.AdultInfo;
 import de.schlund.pfixxml.config.GlobalConfig;
@@ -44,8 +43,6 @@ public class AdultInfoHandlerTest {
     @Test
     public void testHandler() throws Exception {
         
-        MockContext context = new MockContext();
-        
         ContextAdultInfo info = new ContextAdultInfo();
         
         //If ContextResources are retrieved via the ContextResourceManager,
@@ -58,16 +55,16 @@ public class AdultInfoHandlerTest {
         AdultInfoHandler handler = new AdultInfoHandler();
         handler.setContextAdultInfo(info);
         
-        Assert.assertTrue(handler.needsData(context));
+        Assert.assertTrue(handler.needsData());
         
         AdultInfo iwrapper = new AdultInfo();
         iwrapper.init("info");
         iwrapper.setStringValAdult("false");
         iwrapper.loadFromStringValues();
              
-        handler.handleSubmittedData(context, iwrapper);
+        handler.handleSubmittedData(iwrapper);
         
-        Assert.assertFalse(handler.needsData(context));
+        Assert.assertFalse(handler.needsData());
     
     }
     

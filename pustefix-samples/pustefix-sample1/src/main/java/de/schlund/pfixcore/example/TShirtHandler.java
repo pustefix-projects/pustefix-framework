@@ -18,12 +18,10 @@
 
 package de.schlund.pfixcore.example;
 
-import org.pustefixframework.container.annotations.Inject;
+import org.pustefixframework.web.mvc.InputHandler;
+import org.springframework.beans.factory.annotation.Autowired;
 
 import de.schlund.pfixcore.example.iwrapper.TShirt;
-import de.schlund.pfixcore.generator.IHandler;
-import de.schlund.pfixcore.generator.IWrapper;
-import de.schlund.pfixcore.workflow.Context;
 
 /**
  * TShirtHandler.java
@@ -36,12 +34,11 @@ import de.schlund.pfixcore.workflow.Context;
  *
  */
 
-public class TShirtHandler implements IHandler {
+public class TShirtHandler implements InputHandler<TShirt> {
 
     private ContextTShirt cts;
     
-    public void handleSubmittedData(Context context, IWrapper wrapper) throws Exception {
-        TShirt        tshirt  = (TShirt) wrapper;
+    public void handleSubmittedData(TShirt tshirt) {
         Integer       color   = tshirt.getColor();
         String        size    = tshirt.getSize();
         Integer[]     feature = tshirt.getFeature();
@@ -65,9 +62,7 @@ public class TShirtHandler implements IHandler {
         
     }
     
-    public void retrieveCurrentStatus(Context context, IWrapper wrapper) throws Exception {
-        TShirt                 tshirt = (TShirt) wrapper;
-
+    public void retrieveCurrentStatus(TShirt tshirt) {
         if (!cts.needsData()) {
             tshirt.setColor(cts.getColor());
             tshirt.setSize(cts.getSize());
@@ -75,21 +70,21 @@ public class TShirtHandler implements IHandler {
         }
     }
     
-    public boolean needsData(Context context) throws Exception{
+    public boolean needsData() {
         return cts.needsData();
     }
     
-    public boolean prerequisitesMet(Context context) throws Exception{
+    public boolean prerequisitesMet() {
         return true;
     }
 
-    public boolean isActive(Context context) throws Exception{
+    public boolean isActive() {
         return true;
     }
     
-    @Inject
+    @Autowired
     public void setContextTShirt(ContextTShirt cts) {
         this.cts = cts;
     }
 
-}// TShirtHandler
+}

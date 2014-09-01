@@ -29,8 +29,10 @@ import org.apache.log4j.Logger;
 import org.pustefixframework.container.spring.util.PustefixPropertiesPersister;
 import org.pustefixframework.http.internal.PustefixInit;
 import org.pustefixframework.http.internal.PustefixTempDirs;
+import org.pustefixframework.web.mvc.internal.InputHandlerProcessor;
 import org.springframework.beans.BeansException;
 import org.springframework.beans.factory.config.BeanDefinition;
+import org.springframework.beans.factory.config.BeanFactoryPostProcessor;
 import org.springframework.beans.factory.config.PropertyOverrideConfigurer;
 import org.springframework.beans.factory.config.PropertyPlaceholderConfigurer;
 import org.springframework.beans.factory.config.PropertyResourceConfigurer;
@@ -134,11 +136,12 @@ public class PustefixWebApplicationContext extends AbstractRefreshableWebApplica
         }
 
         beanFactory.registerScope("tenant", new TenantScope());
-        addAnnotationBeanDefinitionPostProcessor(beanFactory);
+        addBeanFactoryPostProcessor(AnnotationBeanDefinitionPostProcessor.class, beanFactory);
+        addBeanFactoryPostProcessor(InputHandlerProcessor.class, beanFactory);
     }
-
-    private void addAnnotationBeanDefinitionPostProcessor(BeanDefinitionRegistry registry) {
-        BeanDefinitionBuilder beanBuilder = BeanDefinitionBuilder.genericBeanDefinition(AnnotationBeanDefinitionPostProcessor.class);
+    
+    private void addBeanFactoryPostProcessor(Class<? extends BeanFactoryPostProcessor> processorClass, BeanDefinitionRegistry registry) {
+        BeanDefinitionBuilder beanBuilder = BeanDefinitionBuilder.genericBeanDefinition(processorClass);
         beanBuilder.setScope("singleton");
         BeanDefinition definition = beanBuilder.getBeanDefinition();
         DefaultBeanNameGenerator beanNameGenerator = new DefaultBeanNameGenerator();

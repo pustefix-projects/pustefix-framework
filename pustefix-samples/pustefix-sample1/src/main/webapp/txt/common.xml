@@ -63,5 +63,16 @@
       }
      </theme>
   </part>
+  
+  <part name="searchresult" render="true">
+    <theme name="default">
+       <div style="padding:10px">Search result:</div>
+       <div style="font-style:italic;">
+         <ixsl:for-each select="pfx:getResource('search')//match">
+           <div><ixsl:value-of select="."/></div>
+         </ixsl:for-each>
+       </div>
+    </theme>
+  </part>
 
 </include_parts>

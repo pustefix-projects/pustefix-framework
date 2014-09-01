@@ -9,16 +9,21 @@ if(!window.pfx) pfx={};
 //  callback  - callback function
 //  context   - callback object scope (can be empty)
 //  requestId - request/response assignment id (can be empty)
-pfx.render = function(href, part, module, search, callback, context, requestId) {
+pfx.render = function(href, part, module, search, callback, context, requestId, params) {
    if(!href) throw new Error("Missing parameter: href");
    if(!part) throw new Error("Missing parameter: part");
    if(!callback) throw new Error("Missing parameter: callback");
    var url = window.location.href;
    var ind = url.indexOf('?');
    if(ind > -1) url = url.substring(0, ind);
-   url += "?__render_href=" + href + "&__render_part=" + part;
-   if(module) url += "&__render_module=" + module;
-   if(search) url += "&__render_search=" + search;
+   url += "?__render_href=" + href + "&__render_part=" + encodeURIComponent(part);
+   if(module) url += "&__render_module=" + encodeURIComponent(module);
+   if(search) url += "&__render_search=" + encodeURIComponent(search);
+   if(params) {
+     for(var param in params) {
+	   url += "&" + encodeURIComponent(param) + "=" + encodeURIComponent(params[param]);
+     }
+   }
    var httpReq = new pfx.net.HTTPRequest("GET", url, callback, context);
    httpReq.start("", null, requestId);
-}
+};

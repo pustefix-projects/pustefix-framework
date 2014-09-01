@@ -17,28 +17,28 @@
  */
 package de.schlund.pfixcore.example;
 
-import de.schlund.pfixcore.generator.IHandler;
+import org.pustefixframework.web.mvc.InputHandler;
+
 import de.schlund.pfixcore.generator.IWrapper;
-import de.schlund.pfixcore.workflow.Context;
 
-public class TestChecksHandler implements IHandler {
+public class TestChecksHandler implements InputHandler<IWrapper> {
 
-    public void handleSubmittedData(Context context, IWrapper wrapper) throws Exception {
+    public void handleSubmittedData(IWrapper wrapper) {
     }
 
-    public boolean isActive(Context context) throws Exception {
+    public boolean isActive() {
         return true;
     }
 
-    public boolean needsData(Context context) throws Exception {
+    public boolean needsData() {
         return false;
     }
 
-    public boolean prerequisitesMet(Context context) throws Exception {
+    public boolean prerequisitesMet() {
         return true;
     }
 
-    public void retrieveCurrentStatus(Context context, IWrapper wrapper) throws Exception {
+    public void retrieveCurrentStatus(IWrapper wrapper) {
     }
 
 }
