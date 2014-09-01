@@ -157,6 +157,7 @@ public class WebServiceHttpRequestHandler implements UriProvidingHttpRequestHand
             serviceConfig.setScopeType(Constants.SERVICE_SCOPE_APPLICATION);
             serviceConfig.setSessionType(reg.getSessionType());
             serviceConfig.setAuthConstraintRef(reg.getAuthConstraint());
+            serviceConfig.setSynchronizeOnContext(reg.getSynchronize());
             String ref = reg.getTargetBeanName();
             serviceConfig.setInterfaceName(reg.getInterface());
             Object serviceObject = null;

@@ -191,6 +191,7 @@ public class ContextXMLParsingHandler implements ParsingHandler {
     		Map<String, Object> contextResources = new ManagedMap(outputConfig.getContextResources().size());
     		contextResources.putAll(outputConfig.getContextResources());
     		beanBuilder.addPropertyValue("contextResources", contextResources);
+    		beanBuilder.addPropertyValue("lazyContextResources", outputConfig.getLazyContextResources());
     	}
     	BeanDefinition beanDefinition = beanBuilder.getBeanDefinition();
     	DefaultBeanNameGenerator beanNameGenerator = new DefaultBeanNameGenerator();

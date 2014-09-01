@@ -911,9 +911,19 @@ public class PremiumCustomerCondition implements Condition {
     servicename="MyBean" 
     interface="MyBeanServiceInterface"
     ref="MyBeanId" 
-    protocol="ANY"
   />
- 
+
+  <!-- configuration with optional settings --> 
+  <ws:webservice
+    id="Another_Webservice"
+    servicename="MyService"
+    interface="MySeviceInterface"
+    ref="AnotherBean"
+    protocol="ANY"
+    authconstraint="MyConstraint"
+    synchronize="false"
+  />
+
 </beans>
       ]]></programlisting>
       <para>
@@ -1008,13 +1018,10 @@ public class PremiumCustomerCondition implements Condition {
     <ssl force="true"/>
 
     <!--
-      Set the identifier of the Context the services need to access (from /contextxmlserver/servletinfo/@name
-      in your project's ContextXMLServer configuration file). Via synchronize you can control whether the service
-      requests should be synchronized on the Pustefix Context (default is true).
-      
+      Configure if service requests should be synchronized on the Pustefix Context (default is true).
       [Optional - Default: synchronize="true"]
     -->
-    <context name="pfixcore_project:webservice::servlet:config" synchronize="true"/>
+    <context synchronize="true"/>
 
 
     <!--

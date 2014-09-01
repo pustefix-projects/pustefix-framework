@@ -31,6 +31,7 @@ public class WebServiceRegistration {
     private String protocol;
     private String sessionType;
     private String authConstraint;
+    private Boolean synchronize;
     
     public String getTargetBeanName() {
         return targetBeanName;
@@ -87,5 +88,13 @@ public class WebServiceRegistration {
     public void setAuthConstraint(String authConstraint) {
         this.authConstraint = authConstraint;
     }
+ 
+    public Boolean getSynchronize() {
+        return synchronize;
+    }
     
+    public void setSynchronize(Boolean synchronize) {
+        this.synchronize = synchronize;
+    }
+
 }

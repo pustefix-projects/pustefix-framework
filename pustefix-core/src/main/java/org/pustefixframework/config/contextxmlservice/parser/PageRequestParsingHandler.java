@@ -135,7 +135,7 @@ public class PageRequestParsingHandler implements ParsingHandler {
                     while(it.hasNext()) {
                         String prefix = it.next();
                         Object resource = globalResources.get(prefix);
-                        stateConfig.addContextResource(prefix, resource);
+                        stateConfig.addContextResource(prefix, resource, globalOutputConfig.isLazy(prefix));
                     }
                 }
                 
@@ -230,6 +230,7 @@ public class PageRequestParsingHandler implements ParsingHandler {
                 Map<String, Object> contextResources = new ManagedMap(stateConfig.getContextResources().size());
                 contextResources.putAll(stateConfig.getContextResources());
                 beanBuilder.addPropertyValue("contextResources", contextResources);
+                beanBuilder.addPropertyValue("lazyContextResources", stateConfig.getLazyContextResources());
                 beanBuilder.addPropertyValue("requiresToken", stateConfig.requiresToken());
                 beanBuilder.addPropertyValue("IWrapperPolicy", stateConfig.getIWrapperPolicy());
                 beanBuilder.addPropertyValue("IWrappers", wrapperList);

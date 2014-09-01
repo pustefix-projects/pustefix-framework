@@ -68,6 +68,8 @@ public interface StateConfig {
      * @return mapping of tagname to context resource class
      */
     Map<String, ?> getContextResources();
+    
+    boolean isLazyContextResource(String prefix);
 
     /**
      * Returns properties defined for this state.

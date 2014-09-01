@@ -18,6 +18,7 @@
     interface="de.schlund.pfixcore.example.webservices.Calculator" 
     ref="calcbean" 
     protocol="ANY"
+    synchronize="false"
   />
  
 </beans>

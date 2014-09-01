@@ -55,6 +55,9 @@ public class WebServiceBeanDefinitionParser extends AbstractSingleBeanDefinition
        String authConstraint = element.getAttribute("authconstraint");
        if(authConstraint.length()>0) beanDefBuilder.addPropertyValue("authConstraint", authConstraint);
        
+       String synchronize = element.getAttribute("synchronize");
+       if(synchronize.length()>0) beanDefBuilder.addPropertyValue("synchronize", Boolean.valueOf(synchronize));
+       
        Object target = null;
        if (element.hasAttribute("ref")) { 
            target = new RuntimeBeanReference(element.getAttribute("ref"));

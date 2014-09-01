@@ -2,8 +2,10 @@ package org.pustefixframework.config.contextxmlservice.parser.internal;
 
 import java.util.Collections;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Map;
 import java.util.Properties;
+import java.util.Set;
 
 import org.pustefixframework.config.contextxmlservice.IWrapperConfig;
 import org.pustefixframework.config.contextxmlservice.ProcessActionStateConfig;
@@ -17,18 +19,27 @@ import de.schlund.pfixxml.Tenant;
  *
  */
 public class DefaultStateConfig implements StateConfig {
-	
-	private Class<? extends ConfigurableState> stateType;
-	private Map<String, ?> resources = new HashMap<String, Object>();
-	
-	public Map<String, ?> getContextResources() {
-		return resources;
-	}
-	
-	public void setContextResources(Map<String, ?> resources) {
-		this.resources = resources;
-	}
-
+    
+    private Class<? extends ConfigurableState> stateType;
+    private Map<String, ?> resources = new HashMap<String, Object>();
+    private Set<String> lazyResources = new HashSet<String>();
+    
+    public Map<String, ?> getContextResources() {
+        return resources;
+    }
+    
+    public boolean isLazyContextResource(String prefix) {
+        return lazyResources.contains(prefix);
+    }
+    
+    public void setContextResources(Map<String, ?> resources) {
+        this.resources = resources;
+    }
+    
+    public void setLazyContextResources(Set<String> lazyResources) {
+        this.lazyResources = lazyResources;
+    }
+    
     public Policy getIWrapperPolicy() {
         return Policy.ANY;
     }
@@ -54,7 +65,7 @@ public class DefaultStateConfig implements StateConfig {
     }
      
     public void setState(Class<? extends ConfigurableState> stateType) {
-    	this.stateType = stateType;
+        this.stateType = stateType;
     }
 
     public boolean isExternalBean() {

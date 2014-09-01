@@ -45,6 +45,7 @@
   </webservice>
   
   <webservice name="CallTest">
+    <context synchronize="false"/>
     <interface name="de.schlund.pfixcore.example.webservices.CallTest"/>
     <implementation name="de.schlund.pfixcore.example.webservices.CallTestImpl"/>
   </webservice>
