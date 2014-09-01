@@ -15,15 +15,12 @@
  * along with Pustefix; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  */
-
 package de.schlund.pfixxml;
 
-import java.io.FileNotFoundException;
-import java.net.HttpURLConnection;
+import java.net.MalformedURLException;
 import java.net.URL;
-import java.util.HashMap;
-import java.util.Map;
 import java.util.StringTokenizer;
+import java.util.concurrent.ConcurrentHashMap;
 
 import org.apache.log4j.Logger;
 
@@ -32,69 +29,49 @@ import de.schlund.pfixxml.resources.ResourceUtil;
 
 
 /**
- * ImageGeometry.java
- *
- *
- * Created: Tue Apr 16 23:43:02 2002
- *
- * @author <a href="mailto:jtl@schlund.de">Jens Lautenbacher</a>
- *
- *
+ * XSLT extension functions to get image size.
  */
-
 public class ImageGeometry {
-	
-    private static Map<String, ImageGeometryData> imageinfo = new HashMap<String, ImageGeometryData>();
+
     private final static Logger LOG = Logger.getLogger(ImageGeometry.class); 
     
+    private static ConcurrentHashMap<String, ImageGeometryData> imageinfo = new ConcurrentHashMap<String, ImageGeometryData>();
+    
+  
     public static int getHeight(String path) {
-    	try {
-	        ImageGeometryData data = getImageGeometryData(path);
-	        if (data == null) {
-	            return -1;
-	        } else {
-	            return data.getHeight();
-	        }
-    	} catch(Exception x) {
-    		String msg = "Error while getting height of image: " + path + " [" + x.getMessage() + "]";
-    		LOG.warn(msg);
-    		return -1;
-    	}
+    
+        ImageGeometryData data = getImageGeometryData(path);
+        if (data != null && data.isOK()) {
+            return data.getHeight();
+        } else {
+            return -1;
+        }
     }
     
     public static int getWidth(String path) {
-    	try {
-    		ImageGeometryData data = getImageGeometryData(path);
-    		if (data == null) {
-    			return -1;
-    		} else {
-    			return data.getWidth();
-    		}
-    	} catch(Exception x) {
-    		String msg = "Error while getting width of image: " + path + " [" + x.getMessage() + "]";
-    		LOG.warn(msg);
-    		return -1;
-    	}
+    
+        ImageGeometryData data = getImageGeometryData(path);
+        if (data != null && data.isOK()) {
+            return data.getWidth();
+        } else {
+            return -1;
+        }
     }
 
     public static String getType(String path) {
-    	try {
-	        ImageGeometryData data = getImageGeometryData(path);
-	        if (data == null) {
-	            return null;
-	        } else {
-	            return data.getType();
-	        }
-    	} catch(Exception x) {
-    		String msg = "Error while getting type of image: " + path + " [" + x.getMessage() + "]";
-    		LOG.warn(msg);
-    		return null;
-    	}
+    
+        ImageGeometryData data = getImageGeometryData(path);
+        if (data != null && data.isOK()) {
+            return data.getType();
+        } else {
+            return null;
+        }
     }
     
     public static String getStyleStringForImage(String path, String userStyle, String userWidth, String userHeight) {
-        try {
-	    	ImageGeometryData data = getImageGeometryData(path);
+        
+        ImageGeometryData data = getImageGeometryData(path);
+	    if(data != null && data.isOK()) {
 	        int targetWidth=-1;
 	        int targetHeight=-1;
 	        String targetWidthUnit = "px";
@@ -169,55 +146,43 @@ public class ImageGeometry {
 	        }
 	        
 	        return genStyle.toString();
-        } catch(Exception x) {
-        	String msg = "Error while getting size of image: " + path + " [" + x.getMessage() + "]";
-        	LOG.warn(msg);
+        } else {
         	return userStyle;
     	}
     }
 
-    private static ImageGeometryData getImageGeometryData(String path) throws Exception {
+    private static ImageGeometryData getImageGeometryData(String path) {
+        
     	if(path.startsWith("http") || path.startsWith("//")) {
     		return getRemoteImageGeometryData(path);
     	}
-        synchronized (imageinfo) {
-            if(path.startsWith("modules/")) path = "module://" + path.substring(8);
-            Resource img = ResourceUtil.getResource(path);
-            if (img.exists() && img.canRead() && img.isFile()) {
-                long              mtime = img.lastModified();
-                ImageGeometryData tmp = imageinfo.get(path);
-                if (tmp == null || mtime > tmp.lastModified()) {
-                    // LOG.debug("Cache miss or outdated for: " + path);
-                	tmp = new ImageGeometryData(img);
-                    if (!tmp.isOK()) {
-                        LOG.error("*** Image data wasn't recognized for " + path);
-                        return null;
-                    }
-                    imageinfo.put(path, tmp);
-                }
-                return tmp;
-            } else {
-            	throw new FileNotFoundException("Can't read image: " + path);
-            }
-        }
+    	
+    	if(path.startsWith("modules/")) path = "module://" + path.substring(8);
+    	Resource img = ResourceUtil.getResource(path);
+    	ImageGeometryData tmp = imageinfo.get(path);
+    	if (tmp == null || (img.exists() && img.lastModified() > tmp.lastModified())) {
+    	    tmp = ImageGeometryData.create(img);
+    	    imageinfo.put(path, tmp);
+    	}
+    	return tmp;
     }
     
-    private static ImageGeometryData getRemoteImageGeometryData(String path) throws Exception {
-    	synchronized (imageinfo) {
-    		ImageGeometryData geom = imageinfo.get(path);
-    		if(geom != null) return geom; 
-    	}
-    	String urlStr = path;
-    	if(urlStr.startsWith("https")) urlStr = "http" + urlStr.substring(5);
-    	else if(urlStr.startsWith("//")) urlStr = "http:" + urlStr;
-    	URL url = new URL(urlStr);
-    	HttpURLConnection con=(HttpURLConnection)url.openConnection();
-    	con.setConnectTimeout(2000);
-    	con.setReadTimeout(2000);
-    	ImageGeometryData geom = new ImageGeometryData(con);
-    	//TODO: notice HTTP caching headers
-    	synchronized (imageinfo) {
-    		imageinfo.put(path, geom);
+    private static ImageGeometryData getRemoteImageGeometryData(String path) {
+    	
+        ImageGeometryData geom = imageinfo.get(path);
+        if(geom == null) {
+            String urlStr = path;
+            if(urlStr.startsWith("https")) urlStr = "http" + urlStr.substring(5);
+            else if(urlStr.startsWith("//")) urlStr = "http:" + urlStr;
+            URL url;
+            try {
+                url = new URL(urlStr);
+            } catch(MalformedURLException e) {
+                LOG.warn("Can't get image information: " + path + " [" + e + "]");
+                return null;
+            }
+            geom = ImageGeometryData.create(url);
+            imageinfo.put(path, geom);
     	}
     	return geom;
     }
