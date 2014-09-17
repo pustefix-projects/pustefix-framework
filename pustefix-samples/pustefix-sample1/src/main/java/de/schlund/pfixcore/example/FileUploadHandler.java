@@ -17,38 +17,38 @@
  */
 package de.schlund.pfixcore.example;
 
+import org.pustefixframework.web.mvc.InputHandler;
+import org.springframework.beans.factory.annotation.Autowired;
+
 import de.schlund.pfixcore.example.iwrapper.FileUpload;
-import de.schlund.pfixcore.generator.IHandler;
-import de.schlund.pfixcore.generator.IWrapper;
-import de.schlund.pfixcore.workflow.Context;
 import de.schlund.pfixxml.multipart.UploadFile;
 
 /**
  * @author mleidig@schlund.de
  */
-public class FileUploadHandler implements IHandler {
+public class FileUploadHandler implements InputHandler<FileUpload> {
 
-	public void handleSubmittedData(Context context,IWrapper wrapper) throws Exception {
-	    FileUpload upload=(FileUpload)wrapper;
+    @Autowired
+    private ContextFileUpload ctxUpload;
+    
+	public void handleSubmittedData(FileUpload upload) {
 	    UploadFile file=upload.getFile();
-	    ContextFileUpload ctxUpload=context.getContextResourceManager().getResource(ContextFileUpload.class);
 	    if(upload.getComment()!=null) ctxUpload.setComment(upload.getComment());
 	    if(file!=null) ctxUpload.setFiles(new UploadFile[] {file});
     }
     
-    public void retrieveCurrentStatus(Context context,IWrapper wrapper) throws Exception {
-       
+    public void retrieveCurrentStatus(FileUpload upload) {
     }
     
-    public boolean needsData(Context context) throws Exception {
+    public boolean needsData() {
         return false;
     }
     
-    public boolean prerequisitesMet(Context context) throws Exception {
+    public boolean prerequisitesMet() {
         return true;
     }
 
-    public boolean isActive(Context context) throws Exception {
+    public boolean isActive() {
         return true;
     }
     

@@ -19,40 +19,39 @@ package de.schlund.pfixcore.example;
 
 import java.io.File;
 
+import org.pustefixframework.web.mvc.InputHandler;
+import org.springframework.beans.factory.annotation.Autowired;
+
 import de.schlund.pfixcore.example.iwrapper.EncodingTestUpload;
-import de.schlund.pfixcore.generator.IHandler;
-import de.schlund.pfixcore.generator.IWrapper;
-import de.schlund.pfixcore.workflow.Context;
 
 /**
  * @author mleidig@schlund.de
  */
-public class EncodingTestUploadHandler implements IHandler {
+public class EncodingTestUploadHandler implements InputHandler<EncodingTestUpload> {
 
-	public void handleSubmittedData(Context context,IWrapper wrapper) throws Exception {
-        EncodingTestUpload upload=(EncodingTestUpload)wrapper;
+    @Autowired
+    private ContextEncodingTest encTest;
+    
+	public void handleSubmittedData(EncodingTestUpload upload) {
         File file=upload.getFile();
         String text=upload.getText();
-        ContextEncodingTest ctx=context.getContextResourceManager().getResource(ContextEncodingTest.class);
-        if(text!=null) ctx.setText(text);
-        if(file!=null) ctx.setFile(file);
+        if(text!=null) encTest.setText(text);
+        if(file!=null) encTest.setFile(file);
     }
     
-    public void retrieveCurrentStatus(Context context,IWrapper wrapper) throws Exception {
-        EncodingTestUpload upload=(EncodingTestUpload)wrapper;
-        ContextEncodingTest ctx=context.getContextResourceManager().getResource(ContextEncodingTest.class);
-        if(ctx.getText()!=null) upload.setText(ctx.getText());
+    public void retrieveCurrentStatus(EncodingTestUpload upload) {
+        if(encTest.getText()!=null) upload.setText(encTest.getText());
     }
     
-    public boolean needsData(Context context) throws Exception {
+    public boolean needsData() {
         return false;
     }
     
-    public boolean prerequisitesMet(Context context) throws Exception {
+    public boolean prerequisitesMet() {
         return true;
     }
 
-    public boolean isActive(Context context) throws Exception {
+    public boolean isActive() {
         return true;
     }
     

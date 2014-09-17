@@ -4,13 +4,31 @@
        xmlns:aop="http://www.springframework.org/schema/aop"
        xmlns:context="http://www.springframework.org/schema/context"
        xsi:schemaLocation="http://www.springframework.org/schema/beans 
-                           http://www.springframework.org/schema/beans/spring-beans-2.5.xsd 
+                           http://www.springframework.org/schema/beans/spring-beans-4.0.xsd 
                            http://www.springframework.org/schema/aop 
-                           http://www.springframework.org/schema/aop/spring-aop-2.5.xsd
+                           http://www.springframework.org/schema/aop/spring-aop-4.0.xsd
                            http://www.springframework.org/schema/context 
-                           http://www.springframework.org/schema/context/spring-context-2.5.xsd">
+                           http://www.springframework.org/schema/context/spring-context-4.0.xsd">
 
   <context:annotation-config/>
+
+<beans profile="default">
+  <bean id="propsConfig" class="org.pustefixframework.container.spring.util.EnvironmentPropertyPlaceholderConfigurer">
+    <!--
+    <property name="locations">
+      <list>
+        <value>classpath*:spring.properties</value>
+        <value>WEB-INF/spring.properties</value>
+      </list>    
+    </property>
+    <property name="parameters">
+      <list>
+        <value>mode</value>
+        <value>locale</value>
+      </list>
+    </property>
+    -->
+  </bean>
 
   <bean id="testdata" class="de.schlund.pfixcore.example.TestData" scope="session" parent="testdata_base">
     <aop:scoped-proxy/>
@@ -40,5 +58,37 @@
   <bean id="jaxbTest" class="de.schlund.pfixcore.example.JAXBTest" scope="session">
     <aop:scoped-proxy/>
   </bean>
+</beans>
+<beans profile="prod">
+  <bean id="testdata" class="de.schlund.pfixcore.example.TestData" scope="session" parent="testdata_base">
+    <aop:scoped-proxy/>
+    <property name="data" ref="XXXXXXXXXXXXXXXXXXXXXX"/>
+  </bean>
+  
+  <bean id="global_testdata" class="de.schlund.pfixcore.example.TestData">
+    <property name="text" value="TO_BE_OVERRIDDEN"/>
+  </bean>
+  
+  <bean id="global_testdata_prod" class="de.schlund.pfixcore.example.TestData">
+    <property name="text" value="baz"/>
+  </bean>
+
+  <bean id="default_state" abstract="true">
+     <property name="data" ref="global_testdata"/>
+  </bean>
+
+  <bean id="testdata_base" abstract="true">
+    <property name="text" value="${testdata.defaulttext}"/>
+  </bean>
+  
+  <bean id="enctest_handler" class="de.schlund.pfixcore.example.EncodingTestHandler"/>
+
+  <bean class="de.schlund.pfixcore.example.InvalidationWebRequestInterceptor" />
+  
+  <bean id="jaxbTest" class="de.schlund.pfixcore.example.JAXBTest" scope="session">
+    <aop:scoped-proxy/>
+  </bean>
+</beans>
+
 
 </beans>

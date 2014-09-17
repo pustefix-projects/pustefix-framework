@@ -40,6 +40,7 @@ import org.apache.log4j.Logger;
 import org.pustefixframework.config.contextxmlservice.IWrapperConfig;
 import org.pustefixframework.config.contextxmlservice.PageRequestConfig;
 import org.pustefixframework.config.contextxmlservice.ProcessActionPageRequestConfig;
+import org.pustefixframework.config.contextxmlservice.StateConfig;
 import org.pustefixframework.config.project.ProjectInfo;
 import org.pustefixframework.http.BotDetector;
 import org.pustefixframework.util.FrameworkInfo;
@@ -58,8 +59,10 @@ import de.schlund.pfixcore.auth.AuthConstraint;
 import de.schlund.pfixcore.auth.Authentication;
 import de.schlund.pfixcore.auth.Condition;
 import de.schlund.pfixcore.auth.Role;
+import de.schlund.pfixcore.exception.PustefixCoreException;
 import de.schlund.pfixcore.generator.IWrapper;
 import de.schlund.pfixcore.generator.IWrapperInfo;
+import de.schlund.pfixcore.workflow.ConfigurableState;
 import de.schlund.pfixcore.workflow.Context;
 import de.schlund.pfixcore.workflow.ContextImpl;
 import de.schlund.pfixcore.workflow.IWrapperState;
@@ -596,4 +599,30 @@ public class TransformerCallback {
         }
     }
 
+    public static Node getResource(RequestContextImpl requestContext, String nodeName, Node docNode) throws Exception {
+        
+        try {
+            State state = requestContext.getStateForCurrentPageRequest();
+            if(state instanceof ConfigurableState){
+                StateConfig stateConfig = ((ConfigurableState)state).getConfig();
+                if(stateConfig.isLazyContextResource(nodeName)) {
+                    Document doc = StateUtil.renderLazyContextResource(requestContext.getParentContext(), stateConfig, nodeName);
+                    if(doc != null) {
+                        XsltVersion xsltVersion = Xml.getXsltVersion(docNode);
+                        return Xml.parse(xsltVersion, doc).getDocumentElement();
+                    } else {
+                        throw new PustefixCoreException("No lazy ContextResource XML element '" + nodeName + "' found");
+                    }
+                } else {
+                    throw new PustefixCoreException("No lazy ContextResource for node '" + nodeName + "' found");
+                }
+            } else {
+                throw new PustefixCoreException("Only states implementing ConfigurableState are supporting lazy ContextResources");
+            }
+        } catch(Exception x) {
+            ExtensionFunctionUtils.setExtensionFunctionError(x);
+            throw x;
+        }
+    }
+    
 }

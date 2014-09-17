@@ -20,43 +20,38 @@ package de.schlund.pfixcore.example;
 import org.pustefixframework.web.mvc.InputHandler;
 import org.springframework.beans.factory.annotation.Autowired;
 
-import de.schlund.pfixcore.example.iwrapper.TestSelect;
+import de.schlund.pfixcore.example.iwrapper.Search;
 
-/**
- * Describe class TestSelectHandler here.
- *
- *
- * Created: Tue Jun 13 12:34:23 2006
- *
- * @author <a href="mailto:jtl@schlund.de">Jens Lautenbacher</a>
- * @version 1.0
- */
-public class TestSelectHandler implements InputHandler<TestSelect> {
-
-    @Autowired
-    private ContextSimpleData csd;
+public class SearchHandler implements InputHandler<Search> {
+        
+    private ContextSearch contextSearch;
     
-    public final void handleSubmittedData(TestSelect select) {
-        csd.reset();
-        if (select.getDo_B()) {
-            csd.setValue("call_b", "true");
+    public void handleSubmittedData(Search search) {
+        
+        if(search.getTerm() != null) {
+            contextSearch.setSearchTerm(search.getTerm());
         }
     }
-
-    public final void retrieveCurrentStatus(TestSelect select) {
-        // nothing
+    
+    public void retrieveCurrentStatus(Search search) {
+       
     }
-
-    public final boolean needsData() {
+    
+    public boolean needsData() {
         return false;
     }
-
-    public final boolean prerequisitesMet() {
+    
+    public boolean isActive() {
+        return true;
+    }
+    
+    public boolean prerequisitesMet() {
         return true;
     }
 
-    public final boolean isActive() {
-        return true;
+    @Autowired
+    public void setContextSearch(ContextSearch contextSearch) {
+        this.contextSearch = contextSearch;
     }
-
+    
 }

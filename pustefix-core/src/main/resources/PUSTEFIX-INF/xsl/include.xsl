@@ -205,7 +205,7 @@
   <xsl:template match="pfx:include" name="pfx:include">
     <xsl:param name="__env"/>
     <xsl:param name="computed_inc">false</xsl:param>
-    <xsl:param name="parent_part"><xsl:value-of select="ancestor::part[position() = 1]/@name"/></xsl:param>
+    <xsl:param name="parent_part"><xsl:value-of select="ancestor::part[parent::include_parts]/@name"/></xsl:param>
     <xsl:param name="parent_theme"><xsl:value-of select="ancestor::theme[position() = 1]/@name"/></xsl:param>
     <xsl:param name="noerror"><xsl:value-of select="@noerror"/></xsl:param>
     <xsl:param name="noedit"><xsl:value-of select="@noedit"/></xsl:param>
@@ -524,7 +524,7 @@
       </xsl:choose>
     </xsl:variable>
     <xsl:choose>
-      <xsl:when test="include:exists($realpath, $part, $__target_gen, $__target_key, $module, $search, $tenant, $lang)">
+      <xsl:when test="include:exists($realpath, $part, $__target_gen, $__target_key, $module_name, $search, $tenant, $lang)">
         <xsl:choose>
           <xsl:when test="pfx:checkpassed">
             <xsl:apply-templates select="pfx:checkpassed/node()"/>
@@ -606,7 +606,7 @@
         </xsl:otherwise>
       </xsl:choose>
     </xsl:variable>
-    <xsl:if test="not(include:exists($realpath, $part, $__target_gen, $__target_key, $module, $search, $tenant, $lang))">
+    <xsl:if test="not(include:exists($realpath, $part, $__target_gen, $__target_key, $module_name, $search, $tenant, $lang))">
       <xsl:apply-templates/>
     </xsl:if>
   </xsl:template>
@@ -673,7 +673,7 @@
     <xsl:choose>
       <xsl:when test="($src and not($src = '') and (not($themed-path) or $themed-path = '') and (not($themed-img) or $themed-img = '')) or
                       ((not($src) or $src = '') and $themed-path and not($themed-path = '') and $themed-img and not($themed-img = ''))">
-        <xsl:variable name="parent_part"><xsl:value-of select="ancestor::part[position() = 1]/@name"/></xsl:variable>
+        <xsl:variable name="parent_part"><xsl:value-of select="ancestor::part[parent::include_parts]/@name"/></xsl:variable>
         <xsl:variable name="parent_theme"><xsl:value-of select="ancestor::theme[position() = 1]/@name"/></xsl:variable>
         <xsl:value-of select="image:getSrc(string($src),string($themed-path),string($themed-img),
                               string($parent_part),string($parent_theme),

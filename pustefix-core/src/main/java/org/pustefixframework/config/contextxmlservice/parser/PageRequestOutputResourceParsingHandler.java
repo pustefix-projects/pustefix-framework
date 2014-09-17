@@ -37,7 +37,7 @@ public class PageRequestOutputResourceParsingHandler implements ParsingHandler {
     public void handleNode(HandlerContext context) throws ParserException {
        
         Element element = (Element)context.getNode();
-        ParsingUtils.checkAttributes(element, new String[] {"node"}, new String[] {"class","bean-ref"});
+        ParsingUtils.checkAttributes(element, new String[] {"node"}, new String[] {"class","bean-ref","lazy"});
         
         StateConfigImpl stateConfig = ParsingUtils.getFirstTopObject(StateConfigImpl.class, context, true);
        
@@ -53,6 +53,7 @@ public class PageRequestOutputResourceParsingHandler implements ParsingHandler {
             
         String className = element.getAttribute("class").trim();
         String beanRef = element.getAttribute("bean-ref").trim();
+        boolean lazy = Boolean.parseBoolean(element.getAttribute("lazy"));
         if (className.length() == 0 && beanRef.length() == 0) {
             throw new ParserException("Either attribute 'class' or attribute 'bean-ref' required.");
         } else if (className.length() > 0 && beanRef.length() > 0) {
@@ -71,9 +72,9 @@ public class PageRequestOutputResourceParsingHandler implements ParsingHandler {
             if (resourceConfig == null) {
                 throw new ParserException("Could not find suitable context resource for class or interface \"" + className + "\"!");
             }
-            stateConfig.addContextResource(node, new RuntimeBeanReference(resourceConfig.getBeanName()));
+            stateConfig.addContextResource(node, new RuntimeBeanReference(resourceConfig.getBeanName()), lazy);
         } else if (beanRef.length() > 0) {
-            stateConfig.addContextResource(node, new RuntimeBeanReference(beanRef));
+            stateConfig.addContextResource(node, new RuntimeBeanReference(beanRef), lazy);
         }
         
     }

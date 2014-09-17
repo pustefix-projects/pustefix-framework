@@ -76,6 +76,7 @@ public class WebServiceBeanConfigReader {
                         implName = getImplementation(targetBeanDef);
                     }
                     String authConstraintRef = getStringValue(props,"authConstraint",false);
+                    Boolean synchronize = getBooleanValue(props, "synchronize", false);
                     
                     ServiceConfig serviceConfig = new ServiceConfig(null);
                     serviceConfig.setName(serviceName);
@@ -84,6 +85,7 @@ public class WebServiceBeanConfigReader {
                     serviceConfig.setImplementationName(implName);
                     serviceConfig.setProtocolType(protocol);
                     serviceConfig.setAuthConstraintRef(authConstraintRef);
+                    serviceConfig.setSynchronizeOnContext(synchronize);
                     serviceList.add(serviceConfig);
                 }
                 
@@ -110,6 +112,14 @@ public class WebServiceBeanConfigReader {
             value = value.trim();
             if(value.equals("")) value = null;
         }
+        if(value == null && mandatory) throw new IllegalArgumentException("BeanDefinition property '"+propName+"' is mandatory.");
+        return value;
+    }
+    
+    private static Boolean getBooleanValue(MutablePropertyValues props, String propName, boolean mandatory) {
+        Boolean value = null;
+        PropertyValue prop = props.getPropertyValue(propName);
+        if(prop != null) value = (Boolean)prop.getValue();
         if(value == null && mandatory) throw new IllegalArgumentException("BeanDefinition property '"+propName+"' is mandatory.");
         return value;
     }

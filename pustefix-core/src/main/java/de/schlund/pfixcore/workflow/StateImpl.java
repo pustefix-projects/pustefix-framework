@@ -41,7 +41,7 @@ public abstract class StateImpl implements ConfigurableState {
         this.config = config;
     }
     
-    protected StateConfig getConfig() {
+    public StateConfig getConfig() {
         return this.config;
     }
 

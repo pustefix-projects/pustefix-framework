@@ -1,34 +1,15 @@
 /* DOM */
 
-var domElement = document.getElementsByTagName("li")[0],
-    domElements = document.getElementsByTagName("li"),
-    currentLocation = document.URL.replace('xmlonly=1','xmlonly=3'),
-    nodeElements = document.getElementsByTagName("a"),
+var currentLocation = document.URL.replace('xmlonly=1','xmlonly=3'),
     xpath = document.getElementById("xpath"),
-    collapse = document.getElementById("collapse"),
-    expand = document.getElementById("expand"),
     xml = loadXMLDoc(currentLocation),
-    autocompletion = document.getElementById("autocompletion"),
-    body = document.getElementsByTagName("body")[0];
+    autocompletion = document.getElementById("autocompletion");
     
     
  // ie check
  
  if (!xml.evaluate) {
   xpath.className = '';
-} else {
-  body.onload = function() {
-    xPathChecker();
-    autocompletion.style.display = "none";
-  }
-}
-    
-for (var x = 0; x < nodeElements.length; x+=1) {
-  if (nodeElements[x].addEventListener) {
-    nodeElements[x].addEventListener("click", function(e) { getXpathExpression(e.target); }, false);
-  } else {
-    nodeElements[x].attachEvent("onclick", function(e) { getXpathExpression(e.srcElement); }, false);
-  }
 }
 
 if (xpath.addEventListener) {
@@ -52,36 +33,6 @@ if (autocompletion.addEventListener) {
   autocompletion.attachEvent("onmouseout", function(e) { hideAutoCompletion(); }, false);
 }
 
-if (collapse.addEventListener) {
-  collapse.addEventListener("click", function(e) { collapseAll(); }, false);
-} else {
-  collapse.attachEvent("onclick", function(e) { collapseAll(); }, false);
-}
-
-if (expand.addEventListener) {
-  expand.addEventListener("click", function(e) { expandAll(); }, false);
-} else {
-  expand.attachEvent("onclick", function(e) { expandAll(); }, false);
-}
-
-if (domElement.addEventListener) {
-  domElement.addEventListener("dblclick", function(e) { toggleDomElement(e.target); }, false);
-} else {
-  domElement.attachEvent("ondblclick", function(e) { toggleDomElement(e.srcElement); }, false);
-}
-
-function toggleDomElement(element) {
-
-  while (element != null && element.parentNode != null && element.tagName != "LI") {
-    element = element.parentNode;
-  }
-  
-  if (element.getElementsByTagName("ul").length && element.className.indexOf('formesult') == -1) {
-    element.className = (element.className == "expanded" ? "collapsed" : "expanded");
-  }
-  
-}
-
 function getXpathExpression(element) {
   if (element.title != "") {
     xpath.value = element.title;
@@ -90,27 +41,12 @@ function getXpathExpression(element) {
   }
 }
 
-function collapseAll() {
-  for (var x = 0; x < domElements.length; x+=1) {
-    if (domElements[x].className == "expanded") {
-      domElements[x].className = "collapsed";
-    }
-  }
-}
 
 function hideAutoCompletion() {
   autocompletion.style.display = "none";
 }
 function showAutoCompletion() {
   autocompletion.style.display = "block";
-}
-
-function expandAll() {
-  for (var x = 0; x < domElements.length; x+=1) {
-    if (domElements[x].className == "collapsed") {
-      domElements[x].className = "expanded";
-    }
-  }
 }
 
 function loadXMLDoc(dname) {
@@ -273,3 +209,361 @@ function checkXPathValidation() {
     }
     
 }
+
+// functions
+function registerEvent(element, event, callback) {
+  if (window.addEventListener) {
+    element.addEventListener(event, callback, false);
+  } else {
+    element.attachEvent(event, 'on' + callback, false);
+  }
+}
+
+function getOffset(object) {
+  var offset = { x: 0, y: 0 };
+  var scrolled = { x: 0, y: 0 };
+
+  _getOffset(object, offset);
+  _getScrolled(object, scrolled);
+
+  var posX = offset.x - scrolled.x;
+  var posY = offset.y - scrolled.y;
+
+  return { left: posX, top : posY };
+}
+
+function _getOffset(object, offset) {
+  if (!object) {
+    return;
+  }
+
+  offset.x += object.offsetLeft;
+  offset.y += object.offsetTop;
+
+  _getOffset(object.offsetParent, offset);
+}
+
+function _getScrolled(object, scrolled) {
+  if (!object) {
+    return;
+  }
+
+  scrolled.x += object.scrollLeft;
+  scrolled.y += object.scrollTop;
+
+  if (object.tagName.toLowerCase () != "html") {
+    _getScrolled(object.parentNode, scrolled);
+  }
+}
+
+function mouseOverAndOut(event) {
+  'preventDefault' in event && event.preventDefault();
+
+  toggleClass(getXmlLine(event.target || event.srcElement), 'active');
+}
+
+function getXmlLine(target) {
+  while (target && target.parentNode && !hasClass(target, 'xml-line')) {
+    target = target.parentNode;
+  }
+
+  return target;
+}
+
+function getXmlTag(target) {
+  while (target && target.parentNode && !hasClass(target, 'xml-tag')) {
+    target = target.parentNode;
+  }
+
+  return target;
+}
+
+function domTreeDblClick(event) {
+  clearSelection();
+
+  'preventDefault' in event && event.preventDefault();
+
+  var target = getXmlLine(event.target || event.srcElement);
+
+  if (target && hasClass(target, 'collapsible')) {
+    toggleClass(target, 'expanded');
+  }
+}
+
+function domTreeSingleClick(event) {
+  'preventDefault' in event && event.preventDefault();
+
+  var target = event.target || event.srcElement;
+
+  var expression = [], xpathExpression = null;
+
+  var xmlLine = getXmlLine(target);
+
+  if (xmlLine != target) {
+    if (xpathExpression = target.getAttribute("data-xpath")) {
+      expression.push(xpathExpression);
+    }
+  }
+
+  while (xpathExpression = xmlLine.getAttribute("data-xpath")) {
+    expression.push(xpathExpression);      
+
+    xmlLine = xmlLine.parentNode;
+  }
+
+  if (!!expression.length) {
+    xpath.value = expression.reverse().join('');
+
+    xPathChecker();
+
+    autocompletion.style.display = "none";
+  }
+}
+
+function clearSelection() {
+  if (window.getSelection) {
+    var sel = window.getSelection();
+    sel.removeAllRanges();
+  } else if (document.selection && document.selection.empty) {
+    document.selection.empty();
+  }
+}
+
+function hasClass(target, className) {
+  return new RegExp('(\\s|^)' + className + '(\\s|$)').test(target.className);
+}
+
+function toggleClass(element, className){
+  if (!element || !className) {
+    return;
+  }
+
+  var classString = element.className || '';
+  var nameIndex = classString.indexOf(className);
+
+  if (nameIndex == -1) {
+    classString += ' ' + className;
+  } else {
+    classString = classString.substr(0, nameIndex) + classString.substr(nameIndex + className.length);
+  }
+
+  element.className = classString;
+}
+
+function getElementsByClassName(className, context) {
+  var elements = [];
+
+  var domElements = (context || document).getElementsByTagName('*');
+
+  for (var i = 0; i < domElements.length; i++) {
+    var element = domElements[i];
+
+    if (hasClass(element, className)) {
+      elements.push(element);
+    }
+  }
+
+  return elements;
+}
+
+function expandAll() {
+  getElementsByClassName('collapsible').forEach(function(element) {
+    if (!hasClass(element, 'expanded')) {
+      toggleClass(element, 'expanded');
+    }
+  });
+}
+
+function collapseAll() {
+  getElementsByClassName('collapsible').forEach(function(element) {
+    if (hasClass(element, 'expanded')) {
+      toggleClass(element, 'expanded');
+    }
+  });
+}
+
+function getScrollTop() {
+  return document.documentElement.scrollTop || document.body.scrollTop;
+}
+
+function hasTextSelection() {
+  var selection = undefined;
+
+  if (window.getSelection) {
+    selection = window.getSelection().toString();
+  } else if (document.selection) {
+    selection = document.selection.createRange().text;
+  }
+
+  return !!(selection || '').length;
+}
+
+function registerCurrentDOMElement(event) {
+  event = event || window.event;
+
+  latestDOMElementHovered = (event.target || event.srcElement);
+
+  if (ancestorHighlightNode) {
+    showAncestors(latestDOMElementHovered);
+  }
+}
+
+function showAncestors(domElement) {
+  domElement = domElement || latestDOMElementHovered;
+
+  if (domElement && !hasTextSelection() && ancestorHighlightNode) {
+    var xmlLine = getXmlLine(domElement);
+
+    ancestorShowTimer = window.setTimeout(function() {
+      ancestor = xmlLine.parentNode;
+
+      var ancestors = null;
+      var ancestorsEndTagsArray = [];
+
+      while (hasClass(ancestor, 'xml-line')) {
+        var targetCloneBottom = ancestor.cloneNode(true);
+        var targetCloneTop = ancestor.cloneNode(true);
+        var targetCloneTopChildNodes = targetCloneTop.childNodes;
+        var targetCloneBottomChildNodes = targetCloneBottom.childNodes;
+
+        for (var i = targetCloneTopChildNodes.length - 1; i > 0; --i) {
+          targetCloneTop.removeChild(targetCloneTopChildNodes[i]);
+        }
+
+        for (var i = targetCloneBottomChildNodes.length - 2; i >= 0; --i) {
+          targetCloneBottom.removeChild(targetCloneBottomChildNodes[i]);
+        }
+
+        if (ancestors) {
+          targetCloneTop.appendChild(ancestors);
+        }
+
+        ancestorsEndTagsArray.push(targetCloneBottom);
+
+        ancestors = targetCloneTop;
+
+        ancestor = ancestor.parentNode;
+      }
+
+      if (ancestors) {
+        ancestorsEndTagsArray.reverse();
+
+        var ancestorsEndTags = ancestorsEndTagsArray[0];
+        var laterstChildNode = ancestorsEndTags;
+
+        if (hasClass(ancestorsEndTags, 'collapsible')) {
+          toggleClass(ancestorsEndTags, 'collapsible');
+        }
+
+        for (var i = 1; i <= ancestorsEndTagsArray.length - 1; i++) {
+          ancestorEndTag = ancestorsEndTagsArray[i];
+
+          if (hasClass(ancestorEndTag, 'collapsible')) {
+            toggleClass(ancestorEndTag, 'collapsible');
+          }
+    
+          laterstChildNode.insertBefore(ancestorEndTag, laterstChildNode.firstChild);
+
+          laterstChildNode = ancestorEndTag;
+        };
+
+        domTreeCloneTop.appendChild(ancestors);
+        domTreeCloneBottom.appendChild(ancestorsEndTags);
+
+        var offsetTop = (getScrollTop() + getOffset(xmlLine).top - domTreeCloneWrapperTop.offsetHeight);
+        var offsetBottom = (getScrollTop() + getOffset(xmlLine).top + xmlLine.offsetHeight);
+
+        if (offsetTop >= getScrollTop()) {
+          domTreeCloneWrapperTop.style.top = offsetTop;
+          domTreeCloneWrapperBottom.style.top = offsetBottom;
+
+          domTreeCloneBlockerTop.style.height = offsetTop + 'px';
+
+          domTreeCloneBlockerBottom.style.top =  offsetBottom + 'px';
+          domTreeCloneBlockerBottom.style.height = document.documentElement.offsetHeight - offsetBottom + 'px';
+        } else {
+          hideAncestors();
+        }
+      }
+    }, 50);
+  }
+}
+
+function hideAncestors() {
+  latestDOMElementHovered = null;
+
+  window.clearTimeout(ancestorShowTimer);
+
+  if (domTreeCloneTop.firstChild) {
+    domTreeCloneTop.removeChild(domTreeCloneTop.firstChild);
+    domTreeCloneTop.style.top = 0;
+  }
+
+  if (domTreeCloneBottom.firstChild) {
+    domTreeCloneBottom.removeChild(domTreeCloneBottom.firstChild);
+    domTreeCloneBottom.style.top = 0;
+  }
+
+  domTreeCloneBlockerTop.style.height = 0;
+  domTreeCloneBlockerBottom.style.top = 0;
+  domTreeCloneBlockerBottom.style.height = 0;
+}
+
+function enableAncestorHighlightMode(event) {
+  event = event || window.event;
+  var keyCode = event.keyCode || event.which;
+
+  if (!ancestorHighlightNode) {
+    ancestorHighlightNode = (keyCode == 17);
+
+    if (ancestorHighlightNode) {
+      showAncestors(latestDOMElementHovered);
+    }
+  }
+}
+
+function disableAncestorHighlightMode(event) {
+  event = event || window.event;
+  var keyCode = event.keyCode || event.which;
+
+  if (ancestorHighlightNode) {
+    ancestorHighlightNode = !(keyCode == 17);
+
+    if (!ancestorHighlightNode) {
+      hideAncestors();
+    }
+  }
+}
+
+// variables
+var domTree = document.getElementById('dom-tree');
+var domTreeCloneWrapperTop = document.getElementById('dom-tree-clone-wrapper-top');
+var domTreeCloneWrapperBottom = document.getElementById('dom-tree-clone-wrapper-bottom');
+var domTreeCloneTop = document.getElementById('dom-tree-clone-top');
+var domTreeCloneBottom = document.getElementById('dom-tree-clone-bottom');
+var domTreeCloneBlockerTop = document.getElementById('dom-tree-clone-blocker-top');
+var domTreeCloneBlockerBottom = document.getElementById('dom-tree-clone-blocker-bottom');
+var collapse = document.getElementById("collapse");
+var expand = document.getElementById("expand");
+var ancestorShowTimer = null;
+var ancestorHighlightNode = false;
+var latestDOMElementHovered = null;
+
+// initialize events
+registerEvent(domTree, 'click', domTreeSingleClick);
+registerEvent(domTree, 'dblclick', domTreeDblClick);
+registerEvent(domTree, 'mouseover', mouseOverAndOut);
+registerEvent(domTree, 'mouseout', mouseOverAndOut);
+registerEvent(domTree, 'mouseover', registerCurrentDOMElement);
+registerEvent(domTree, 'mouseout', hideAncestors);
+registerEvent(collapse, 'click', collapseAll);
+registerEvent(expand, 'click', expandAll);
+
+registerEvent(window, 'keyup', disableAncestorHighlightMode);
+registerEvent(window, 'keydown', enableAncestorHighlightMode);
+
+registerEvent(document, document.addEventListener ? 'DOMContentLoaded' : 'readystatechange', function() {
+  xPathChecker();
+
+  autocompletion.style.display = "none";
+});

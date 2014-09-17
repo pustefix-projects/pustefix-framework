@@ -19,8 +19,7 @@
 package de.schlund.pfixcore.beans;
 
 import java.net.URL;
-import java.util.HashMap;
-import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
 
 import org.pustefixframework.util.BytecodeAPIUtils;
 
@@ -34,11 +33,11 @@ import de.schlund.pfixcore.beans.metadata.Locator;
  */
 public class BeanDescriptorFactory {
 
-    Map<Class<?>,BeanDescriptor> descriptors;
+    ConcurrentHashMap<Class<?>,BeanDescriptor> descriptors;
     Beans metadata;
     
     public BeanDescriptorFactory() {
-        descriptors=new HashMap<Class<?>,BeanDescriptor>();
+        descriptors=new ConcurrentHashMap<Class<?>,BeanDescriptor>();
     }
     
     public BeanDescriptorFactory(Beans metadata) {
@@ -56,7 +55,7 @@ public class BeanDescriptorFactory {
     }
     
     @SuppressWarnings("unchecked")
-    public synchronized <T> BeanDescriptor getBeanDescriptor(Class<T> clazz) {
+    public <T> BeanDescriptor getBeanDescriptor(Class<T> clazz) {
         if(BytecodeAPIUtils.isProxy(clazz)) {
             clazz = (Class<T>)clazz.getSuperclass();
         }

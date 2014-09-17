@@ -99,6 +99,14 @@
           </table>
        </pfx:forminput>
        
+       <div class="test">
+         <form id="search" onsubmit="doSearch();return false;">
+           <input type="text" name="search.term" size="20"/>
+           <input type="button" name="search" onclick="doSearch()" value="Search in wikipedia"/>
+         </form>
+         <div id="searchresult"></div>
+       </div>
+       
        <div class="test">  
          Test of deref-server for forms: 
          <pfx:externalform href="http://www.gimp.org">

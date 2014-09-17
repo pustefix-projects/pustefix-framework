@@ -18,11 +18,10 @@
 
 package de.schlund.pfixcore.example;
 
-import org.pustefixframework.container.annotations.Inject;
+import org.pustefixframework.web.mvc.InputHandler;
+import org.springframework.beans.factory.annotation.Autowired;
 
 import de.schlund.pfixcore.example.iwrapper.CounterInput;
-import de.schlund.pfixcore.generator.IHandler;
-import de.schlund.pfixcore.generator.IWrapper;
 import de.schlund.pfixcore.workflow.Context;
 
 /**
@@ -36,13 +35,13 @@ import de.schlund.pfixcore.workflow.Context;
  *
  */
 
-public class CounterSetHandler implements IHandler {
-    // private static final Logger LOG = Logger.getLogger(CounterSetHandler.class);
+public class CounterSetHandler implements InputHandler<CounterInput> {
 
+    @Autowired
+    private Context context;
     private ContextCounter contextCounter;
     
-    public void handleSubmittedData(Context context, IWrapper wrapper) throws Exception {
-        CounterInput counter = (CounterInput) wrapper;
+    public void handleSubmittedData(CounterInput counter) {
         Integer      count = counter.getSet();
         if (count != null) {
             
@@ -60,26 +59,25 @@ public class CounterSetHandler implements IHandler {
         
     }
     
-    public void retrieveCurrentStatus(Context context, IWrapper wrapper) throws Exception {
-        CounterInput counter = (CounterInput) wrapper;
+    public void retrieveCurrentStatus(CounterInput counter) {
         counter.setStringValSet("" + contextCounter.getCounter());
     }
     
-    public boolean needsData(Context context) {
+    public boolean needsData() {
         return false;
     }
     
-    public boolean isActive(Context context) {
+    public boolean isActive() {
         return true;
     }
     
-    public boolean prerequisitesMet(Context context) {
+    public boolean prerequisitesMet() {
         return true;
     }
 
-    @Inject
+    @Autowired
     public void setContextCounter(ContextCounter contextCounter) {
         this.contextCounter = contextCounter;
     }    
 
-}// CounterSetHandler
+}

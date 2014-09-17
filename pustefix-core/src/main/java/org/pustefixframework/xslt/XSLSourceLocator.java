@@ -15,18 +15,25 @@
  * along with Pustefix; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  */
+package org.pustefixframework.xslt;
 
-package de.schlund.pfixcore.workflow;
+import javax.xml.transform.SourceLocator;
 
-import org.pustefixframework.config.contextxmlservice.StateConfig;
+/**
+ * Source locator implementation for XSL transformation errors reporting
+ * the XML source location in addition to the XSL source location.
+ */
+public class XSLSourceLocator extends XMLSourceLocator {
 
-public interface ConfigurableState extends State {
-    /**
-     * Sets the configuration that should be used by this state.
-     * 
-     * @param config configuration object with settings for wrappers, context
-     *  resources, etc.
-     */
-    void setConfig(StateConfig config);
-    StateConfig getConfig();
+    private SourceLocator xmlLocator;
+    
+    public XSLSourceLocator(SourceLocator xslLocator, SourceLocator xmlLocator) {
+        super(xslLocator);
+        this.xmlLocator = xmlLocator;
+    }
+    
+    public SourceLocator getXmlLocator() {
+        return xmlLocator;
+    }
+
 }

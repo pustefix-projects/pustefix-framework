@@ -24,12 +24,10 @@ import java.io.StringWriter;
 import java.net.MalformedURLException;
 import java.net.URI;
 import java.net.URISyntaxException;
-import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
-import javax.xml.transform.ErrorListener;
 import javax.xml.transform.OutputKeys;
 import javax.xml.transform.Result;
 import javax.xml.transform.Source;
@@ -56,6 +54,7 @@ import de.schlund.pfixxml.targets.LeafTarget;
 import de.schlund.pfixxml.targets.Target;
 import de.schlund.pfixxml.targets.TargetGenerationException;
 import de.schlund.pfixxml.targets.TargetImpl;
+import de.schlund.pfixxml.util.xsltimpl.ErrorListenerBase;
 
 public class Xslt {
     
@@ -130,9 +129,9 @@ public class Xslt {
     }
     
     private static Templates loadTemplates(XsltVersion xsltVersion, InputSource input, TargetImpl parent, boolean debug) throws TransformerConfigurationException {
-        Source src = new SAXSource(Xml.createXMLReader(), input);
+        Source src = new SAXSource(Xml.createXMLReader(), input);    
         TransformerFactory factory = XsltProvider.getXsltSupport(xsltVersion).getThreadTransformerFactory();
-        PFErrorListener errorListener = new PFErrorListener();
+        ErrorListenerBase errorListener = new ErrorListenerBase();
         factory.setErrorListener(errorListener);
         factory.setURIResolver(new ResourceResolver(parent,xsltVersion,debug));
         try {
@@ -172,7 +171,7 @@ public class Xslt {
     
     public static void transform(Document xml, Templates templates, Map<String, Object> params, Result result, String encoding) throws TransformerException {
     	try {
-            doTransform(xml, templates, params, result, encoding);
+            doTransform(xml, templates, params, result, encoding, false);
     	} catch(TransformerException x) {
     		LOG.error(x);
     		XsltVersion xsltVersion = getXsltVersion(templates);
@@ -181,16 +180,16 @@ public class Xslt {
     		if(systemId != null) {
 	    		Resource res = ResourceUtil.getResource(systemId);
 	    		templates = loadTemplates(xsltVersion, res, null, true);
-	    		doTransform(xml, templates, params, result, encoding);
-    		} else {
-    			throw x;
+	    		doTransform(xml, templates, params, result, encoding, true);
     		}
+    		throw x;
     	}
     }
     
-    private static void doTransform(Document xml, Templates templates, Map<String, Object> params, Result result, String encoding) throws TransformerException {
+    private static void doTransform(Document xml, Templates templates, Map<String, Object> params, Result result, String encoding, 
+            boolean traceLocation) throws TransformerException {
         try {
-            doTransform(xml,templates,params,result,encoding,false);
+            doTransform(xml,templates,params,result,encoding,traceLocation,false);
         } catch(UnsupportedOperationException x) {
             //workaround for the following sporadically occurring error, which can't be reproduced and normally doesn't occur again after retry:
             //java.lang.UnsupportedOperationException: Cannot create intensional node-set with context dependencies: class com.icl.saxon.expr.PathExpression
@@ -201,25 +200,27 @@ public class Xslt {
                     ByteArrayOutputStream baos=(ByteArrayOutputStream)out;
                     baos.reset();
                     try {
-                        doTransform(xml,templates,params,result,encoding,false);
+                        doTransform(xml,templates,params,result,encoding,traceLocation,true);
                     } catch(UnsupportedOperationException ex) {
                         LOG.error("Try to transform and trace after UnsupportedOperationException",ex);
                         baos.reset();
-                        doTransform(xml,templates,params,result,encoding,true);
+                        doTransform(xml,templates,params,result,encoding,traceLocation,true);
                     }
                 }
             }
         }
     }
     
-    private static void doTransform(Document xml, Templates templates, Map<String, Object> params, Result result, String encoding, boolean trace) throws TransformerException {
+    private static void doTransform(Document xml, Templates templates, Map<String, Object> params, Result result, String encoding, 
+            boolean traceLocation, boolean traceInstructions) throws TransformerException {
+
         XsltVersion xsltVersion=getXsltVersion(templates);
         Transformer trafo = templates.newTransformer();
         if (encoding != null) {
             trafo.setOutputProperty(OutputKeys.ENCODING, encoding);
         }
         StringWriter traceWriter=null;
-        if(trace) {
+        if(traceInstructions) {
            traceWriter=new StringWriter();
            XsltProvider.getXsltSupport(xsltVersion).doTracing(trafo,traceWriter);
         }
@@ -238,10 +239,13 @@ public class Xslt {
             start = System.currentTimeMillis();
         try {
             ExtensionFunctionUtils.setExtensionFunctionError(null);
-            trafo.setErrorListener(new PFErrorListener());
+            XsltProvider.getXsltSupport(xsltVersion).doErrorListening(trafo, traceLocation);
             trafo.transform(new DOMSource(Xml.parse(xsltVersion,xml)), result);
         } catch(TransformerException x) {
-            XsltMessageTempStore.setMessages(x, msgWriter.getMessages());
+            String messages = msgWriter.getMessages();
+            if(!messages.isEmpty()) {
+                XsltMessageTempStore.setMessages(x, messages);
+            }
         	String msg = x.getMessage();
         	Throwable extFuncError = ExtensionFunctionUtils.getExtensionFunctionError();
         	if(extFuncError != null || (msg != null && msg.contains("Exception in extension function"))) {
@@ -267,7 +271,7 @@ public class Xslt {
         	}
             
         } finally {
-           if(trace) {
+           if(traceInstructions) {
               String traceStr=traceWriter.toString();
               int maxSize=10000;
               if(traceStr.length()>maxSize) {
@@ -394,31 +398,4 @@ public class Xslt {
         }
     }
 
-    /**
-     * Implementation of ErrorListener interface.
-     */
-    static class PFErrorListener implements ErrorListener {
-        
-        private List<TransformerException> errors = new ArrayList<TransformerException>();
-        
-        public List<TransformerException> getErrors() {
-            return errors;
-        }
-        
-        public void warning(TransformerException arg) throws TransformerException {
-            LOG.error("WARNING: "+arg.getMessageAndLocation());
-        }
-
-        public void error(TransformerException arg) throws TransformerException {
-            LOG.error("ERROR: "+arg.getMessageAndLocation());
-            errors.add(arg);
-            throw arg;
-        }
-
-        public void fatalError(TransformerException arg) throws TransformerException {
-            LOG.error("FATAL ERROR: "+arg.getMessageAndLocation());
-            errors.add(arg);
-            throw arg;
-        }
-    }
 }

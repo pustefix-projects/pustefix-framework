@@ -44,13 +44,21 @@
       XML/XSLT error at <i><xsl:value-of select="$rootcause/xsltinfo/@systemId"/></i>
       (line <i><xsl:value-of select="$rootcause/xsltinfo/@line"/>, column <xsl:value-of select="$rootcause/xsltinfo/@column"/></i>):<br/>
       <b><xsl:value-of select="$rootcause/@type"/>: <xsl:value-of select="$rootcause/@msg"/></b>
+      <xsl:if test="$rootcause/xsltinfo/xmlinfo/@context">
+        <div style="font-size:80%; padding-top: 0.5em;">XML: <xsl:value-of select="$rootcause/xsltinfo/xmlinfo/@systemId"/></div>
+        <pre style="font-size: 80%; padding: 0.5em; border: 1px dotted #333; margin: 0.2em; background: #ccccee;">
+          <xsl:value-of select="$rootcause/xsltinfo/xmlinfo/@context"/>
+        </pre>
+      </xsl:if>
       <xsl:if test="$rootcause/xsltinfo/@context">
-        <pre style="font-size: 80%; padding: 0.5em; border: 1px dotted #ccccee;">
+        <div style="font-size:80%; padding-top: 0.5em;">XSL: <xsl:value-of select="$rootcause/xsltinfo/@systemId"/></div>
+        <pre style="font-size: 80%; padding: 0.5em; border: 1px dotted #333; margin: 0.2em; background: #ccccee;">
           <xsl:value-of select="$rootcause/xsltinfo/@context"/>
         </pre>
       </xsl:if>
       <xsl:if test="$rootcause/xsltinfo/messages">
-        <pre title="XSL message output" style="font-size: 80%; padding: 0.5em; border: 1px dotted #ccccee;"><xsl:value-of select="$rootcause/xsltinfo/messages"/></pre>
+        <div style="font-size:80%; padding-top: 0.5em;">XSL messages:</div>
+        <pre title="XSL message output" style="font-size: 80%; padding: 0.5em; border: 1px dotted #333; background: #ccccee; margin: 0.2em;"><xsl:value-of select="$rootcause/xsltinfo/messages"/></pre>
       </xsl:if>
       </td></tr>
     </xsl:if>
@@ -60,8 +68,15 @@
       XSLT extension function error at <i><xsl:value-of select="$rootcause/xsltinfo/@systemId"/></i>
       (line <i><xsl:value-of select="$rootcause/xsltinfo/@line"/>, column <xsl:value-of select="$rootcause/xsltinfo/@column"/></i>):<br/>
       <b><xsl:value-of select="$rootcause/@type"/>: <xsl:value-of select="$rootcause/@msg"/></b>
+      <xsl:if test="$rootcause/xsltinfo/xmlinfo/@context">
+        <div style="font-size:80%; padding-top: 0.5em;">XML: <xsl:value-of select="$rootcause/xsltinfo/xmlinfo/@systemId"/></div>
+        <pre style="font-size: 80%; padding: 0.5em; border: 1px dotted #333; margin: 0.2em; background: #ccccee;">
+          <xsl:value-of select="$rootcause/xsltinfo/xmlinfo/@context"/>
+        </pre>
+      </xsl:if>
       <xsl:if test="$rootcause/xsltinfo/@context">
-        <pre style="font-size: 80%">
+        <div style="font-size:80%; padding-top: 0.5em;">XSL: <xsl:value-of select="$rootcause/xsltinfo/@systemId"/></div>
+        <pre style="font-size: 80%; padding: 0.5em; border: 1px dotted #333; margin: 0.2em; background: #ccccee;">
           <xsl:value-of select="$rootcause/xsltinfo/@context"/>
         </pre>
       </xsl:if>

@@ -36,5 +36,6 @@ public interface XsltSupport {
     public void doTracing(Transformer transformer, Writer traceWriter);
     public String getSystemId(Templates templates);
     public XsltMessageWriter recordMessages(Transformer transformer);
+    public void doErrorListening(Transformer transformer, boolean traceLocation);
     
 }

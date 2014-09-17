@@ -31,6 +31,7 @@ import javax.xml.parsers.ParserConfigurationException;
 import javax.xml.transform.SourceLocator;
 import javax.xml.transform.TransformerException;
 
+import org.pustefixframework.xslt.XSLSourceLocator;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.Text;
@@ -130,21 +131,12 @@ public class XMLCreatorVisitor implements ExceptionDataValueVisitor {
                 exElem.appendChild(xsltInfo);
 	            SourceLocator locator = te.getLocator();
 	            if(locator!=null) {
-	                xsltInfo.setAttribute("line", String.valueOf(locator.getLineNumber()));
-	                xsltInfo.setAttribute("column", String.valueOf(locator.getColumnNumber()));
-	                xsltInfo.setAttribute("publicId", locator.getPublicId());
-	                xsltInfo.setAttribute("systemId", locator.getSystemId());
-	                String systemId = locator.getSystemId();
-	                if(systemId != null && systemId.matches("^\\w+:.*")) {
-	                    try {
-	                        URI uri = new URI(systemId);
-                            Resource res = ResourceUtil.getResource(uri);
-	                        String context = cut(res, "utf-8", locator.getLineNumber(), locator.getColumnNumber(), 10, 10, 160);
-	                        xsltInfo.setAttribute("context", context);
-	                    } catch(Exception x) {
-	                        //ignore
-	                    }
+	                if(locator instanceof XSLSourceLocator) {
+	                    Element xmlInfo = doc.createElement("xmlinfo");
+                        xsltInfo.appendChild(xmlInfo);
+                        addLocatorInfo(xmlInfo, ((XSLSourceLocator)locator).getXmlLocator());
 	                }
+	                addLocatorInfo(xsltInfo, locator);
 	            }
 	            String messages = XsltMessageTempStore.removeMessages(te);
 	            if(messages != null) {
@@ -186,6 +178,27 @@ public class XMLCreatorVisitor implements ExceptionDataValueVisitor {
 	        exElem.appendChild(stackElem);
 	        elem.appendChild(exElem);
 	        if(throwable.getCause()!=null) appendThrowable(exElem, throwable.getCause());
+	    }
+	}
+	
+	private void addLocatorInfo(Element info, SourceLocator locator) {
+	    
+	    if(locator != null) {
+    	    info.setAttribute("line", String.valueOf(locator.getLineNumber()));
+            info.setAttribute("column", String.valueOf(locator.getColumnNumber()));
+            info.setAttribute("publicId", locator.getPublicId());
+            info.setAttribute("systemId", locator.getSystemId());
+            String systemId = locator.getSystemId();
+            if(systemId != null && systemId.matches("^\\w+:.*")) {
+                try {
+                    URI uri = new URI(systemId);
+                    Resource res = ResourceUtil.getResource(uri);
+                    String context = cut(res, "utf-8", locator.getLineNumber(), locator.getColumnNumber(), 10, 10, 160);
+                    info.setAttribute("context", context);
+                } catch(Exception x) {
+                    //ignore
+                }
+            }
 	    }
 	}
 	

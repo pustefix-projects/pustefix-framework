@@ -402,6 +402,32 @@ public abstract class AbstractPustefixRequestHandler implements SessionTrackingS
                             e.getClass().getName().equals("org.mortbay.jetty.EofException"))) {
                 LOG.warn("Client aborted request.");
             } else {
+                //Check if exception occurred while having a session which wasn't created by Pustefix,
+                //i.e. the session was created after the Pustefix session timed out and the request thread
+                //tried to access request/session-scoped beans, which let's Spring create a new one.
+                //If no response was written we invalidate the illegal session and make a temporary
+                //redirect to negotiate a new Pustefix session.
+                session = req.getSession(false);
+                if(session != null) {
+                    String visitId = (String)session.getAttribute(VISIT_ID);
+                    if(visitId == null && !res.isCommitted()) {
+                        LOG.warn("Error occurred while using non-Pustefix session '" + session.getId() + 
+                                "' -> invalidate it and redirect for new session negotiation", e);
+                        session.invalidate();
+                        res.sendRedirect(req.getRequestURL().toString());
+                        return;
+                    }
+                } 
+                //Check if IllegalStateException thrown because of accessing already invalidated session.
+                //If no response was written yet make a temporary redirect to get a new Pustefix session.
+                if(needsSession() && session == null && e instanceof IllegalStateException) {
+                    if(!res.isCommitted()) {
+                        LOG.warn("Error occurred while accessing already invalidated session " +
+                                "-> redirect to new Pustefix session", e);
+                        res.sendRedirect(req.getRequestURL().toString());
+                        return;
+                    }
+                }
                 LOG.error("Exception in process", e);
                 ExceptionConfig exconf = exceptionProcessingConfig.getExceptionConfigForThrowable(e.getClass());
                 if(exconf != null && exconf.getProcessor()!= null) { 
@@ -570,18 +596,29 @@ public abstract class AbstractPustefixRequestHandler implements SessionTrackingS
     }
     
     public String getPageName(String pageAlias, HttpServletRequest request) {
-        PageLookupResult res = null;
+        
+        String prefix;
         int ind = pageAlias.indexOf('/');
         if(ind > -1) {
-            pageAlias = pageAlias.substring(ind + 1);
+            prefix = pageAlias.substring(0, ind);
         } else {
-            //check if page is language prefix => default page
-            Tenant tenant = (Tenant)request.getAttribute(TenantScope.REQUEST_ATTRIBUTE_TENANT);
-            if((tenant != null && tenant.getSupportedLanguageByCode(pageAlias) != null) ||
-                (tenant == null && languageInfo.getSupportedLanguageByCode(pageAlias) != null)) {
-                return null;
-            }    
+            prefix = pageAlias;
         }
+        
+        //check if pageAlias has language prefix
+        Tenant tenant = (Tenant)request.getAttribute(TenantScope.REQUEST_ATTRIBUTE_TENANT);
+        if((tenant != null && tenant.getSupportedLanguageByCode(prefix) != null) ||
+            (tenant == null && languageInfo.getSupportedLanguageByCode(prefix) != null)) {
+            if(ind > -1) {
+                //remove language prefix
+                pageAlias = pageAlias.substring(ind + 1);
+            } else {
+                //default page
+                return null;
+            }
+        }    
+        
+        PageLookupResult res = null;
         String lang = (String)request.getAttribute(REQUEST_ATTR_LANGUAGE);
         res = siteMap.getPageName(pageAlias, lang);
         if(res.getPageAlternativeKey() != null) {
@@ -606,6 +643,7 @@ public abstract class AbstractPustefixRequestHandler implements SessionTrackingS
                                 pathPrefix = langPart + "/";
                             }
                             String alias = siteMap.getAlias(registeredPage, supportedLanguage);
+                            uris.add("/" + pathPrefix + registeredPage);
                             uris.add("/" + pathPrefix + alias);
                             List<String> pageAltAliases = siteMap.getPageAlternativeAliases(registeredPage, supportedLanguage);
                             if(pageAltAliases != null) {
@@ -623,6 +661,7 @@ public abstract class AbstractPustefixRequestHandler implements SessionTrackingS
                             pathPrefix = langPart + "/";
                         }
                         String alias = siteMap.getAlias(registeredPage, supportedLanguage);
+                        uris.add("/" + pathPrefix + registeredPage);
                         uris.add("/" + pathPrefix + alias);
                         List<String> pageAltAliases = siteMap.getPageAlternativeAliases(registeredPage, supportedLanguage);
                         if(pageAltAliases != null) {

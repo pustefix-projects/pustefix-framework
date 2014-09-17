@@ -35,6 +35,7 @@ import org.apache.log4j.Logger;
 import org.pustefixframework.config.contextxmlservice.PageRequestConfig;
 import org.pustefixframework.config.contextxmlservice.PreserveParams;
 import org.pustefixframework.config.contextxmlservice.ProcessActionPageRequestConfig;
+import org.pustefixframework.config.contextxmlservice.StateConfig;
 import org.pustefixframework.http.AbstractPustefixRequestHandler;
 import org.pustefixframework.http.AbstractPustefixXMLRequestHandler;
 import org.pustefixframework.http.PustefixContextXMLRequestHandler;
@@ -636,7 +637,14 @@ public class RequestContextImpl implements Cloneable, AuthorizationInterceptor {
         }
         return servercontext.getContextConfig().getPageRequestConfig(currentpagerequest.getName());
     }
-
+    
+    public State getStateForCurrentPageRequest() throws PustefixApplicationException {
+        if (currentpagerequest == null) {
+            throw new IllegalStateException("PageRequest is only available witihin request handling");
+        }
+        return getStateForPageRequest(currentpagerequest);
+    }
+    
     private SPDocument documentFromFlow(boolean startwithflow, boolean stopnextforcurrentrequest) throws PustefixApplicationException, PustefixCoreException {
         SPDocument document = null;
 

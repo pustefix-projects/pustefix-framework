@@ -49,7 +49,6 @@ public class ServiceConfig implements Serializable {
     private String                 itfName;
     private String                 implName;
 
-    private String                 ctxName;
     private Boolean                ctxSync;
     private String                 authConstraintRef;
     private String                 sessType;
@@ -96,15 +95,6 @@ public class ServiceConfig implements Serializable {
 
     public void setImplementationName(String implName) {
         this.implName = implName;
-    }
-
-    public String getContextName() {
-        if (ctxName == null && globConf != null) return globConf.getContextName();
-        return ctxName;
-    }
-
-    public void setContextName(String ctxName) {
-        this.ctxName = ctxName;
     }
     
     public String getAuthConstraintRef() {

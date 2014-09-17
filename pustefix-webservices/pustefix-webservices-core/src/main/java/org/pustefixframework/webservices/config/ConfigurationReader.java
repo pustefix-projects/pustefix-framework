@@ -219,8 +219,6 @@ public class ConfigurationReader extends DefaultHandler {
                 Boolean sslForce=getBooleanAttribute(atts,"force");
                 if(sslForce!=null) srvConf.setSSLForce(sslForce);
             } else if(localName.equals("context")) {
-                String ctxName=getStringAttribute(atts,"name",true);
-                srvConf.setContextName(ctxName);
                 Boolean ctxSync=getBooleanAttribute(atts,"synchronize");
                 if(ctxSync!=null) srvConf.setSynchronizeOnContext(ctxSync);
             } else if(localName.equals("faulthandler")) {

@@ -100,4 +100,9 @@ public class XsltSaxon2 implements XsltSupport {
     	return null;
     }
     
+    @Override
+    public void doErrorListening(Transformer transformer, boolean traceLocation) {
+        transformer.setErrorListener(new ErrorListenerBase());
+    }
+    
 }

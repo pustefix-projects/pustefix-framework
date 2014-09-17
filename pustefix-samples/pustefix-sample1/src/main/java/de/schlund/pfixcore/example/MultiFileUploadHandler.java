@@ -20,20 +20,21 @@ package de.schlund.pfixcore.example;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.pustefixframework.web.mvc.InputHandler;
+import org.springframework.beans.factory.annotation.Autowired;
+
 import de.schlund.pfixcore.example.iwrapper.MultiFileUpload;
-import de.schlund.pfixcore.generator.IHandler;
-import de.schlund.pfixcore.generator.IWrapper;
-import de.schlund.pfixcore.workflow.Context;
 import de.schlund.pfixxml.multipart.UploadFile;
 
 /**
  * @author mleidig@schlund.de
  */
-public class MultiFileUploadHandler implements IHandler {
+public class MultiFileUploadHandler implements InputHandler<MultiFileUpload> {
 
-	public void handleSubmittedData(Context context,IWrapper wrapper) throws Exception {
-	    MultiFileUpload upload=(MultiFileUpload)wrapper;
-	    ContextFileUpload ctxUpload=context.getContextResourceManager().getResource(ContextFileUpload.class);
+    @Autowired
+    private ContextFileUpload ctxUpload;
+    
+	public void handleSubmittedData(MultiFileUpload upload) {
         if(upload.getComment()!=null) ctxUpload.setComment(upload.getComment());
         List<UploadFile> files=new ArrayList<UploadFile>();
 	    String[] keys=upload.getKeysFile();
@@ -47,19 +48,18 @@ public class MultiFileUploadHandler implements IHandler {
 	    }
     }
     
-    public void retrieveCurrentStatus(Context context,IWrapper wrapper) throws Exception {
-       
+    public void retrieveCurrentStatus(MultiFileUpload upload) {
     }
     
-    public boolean needsData(Context context) throws Exception {
+    public boolean needsData() {
         return false;
     }
     
-    public boolean prerequisitesMet(Context context) throws Exception {
+    public boolean prerequisitesMet() {
         return true;
     }
 
-    public boolean isActive(Context context) throws Exception {
+    public boolean isActive() {
         return true;
     }
     

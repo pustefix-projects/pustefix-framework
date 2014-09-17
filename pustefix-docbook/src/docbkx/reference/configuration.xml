@@ -1924,6 +1924,51 @@
       If you want to register your own <literal>PropertyPlaceholderConfigurer</literal> or <literal>PropertyOverrideConfigurer</literal> capable of the Pustefix XML property format, e.g. for tests or child ApplicationContexts, you can do so by creating a <literal>PustefixPropertiesPersister</literal> bean and referencing it from the configurer's <literal>propertiesPersister</literal> property.
     </para>
     </section>
+
+    <section xml:id="configuration.spring.envprops">
+      <title>Environment-dependent Spring property files</title>
+      <para>
+        Pustefix provides a special <literal>PropertyPlaceholderConfigurer</literal> implementation which can be used to organize properties in own files for each environment, e.g. based on the <literal>mode</literal> value. You can enable it by adding an according bean definition to the Spring configuration.
+      </para>
+<programlisting language="xml"><![CDATA[
+<bean id="propConfig" class="org.pustefixframework.container.spring.util.EnvironmentPropertyPlaceholderConfigurer"/>
+]]></programlisting>
+      <para>
+        By default properties will be loaded from <literal>WEB-INF/spring.properties</literal> and <literal>WEB-INF/spring-[MODE].properties</literal>, whereas <literal>[MODE]</literal> will be replaced by the current value of the according context init parameter and mode specific properties will override the general ones.
+      </para>
+      <para>Here's an example of a more complex non-default configuration, where properties are loaded from multiple locations using multiple context init parameters as discriminator:</para>
+<programlisting language="xml"><![CDATA[
+<bean id="propConfig" class="org.pustefixframework.container.spring.util.EnvironmentPropertyPlaceholderConfigurer">
+  <!-- optional property, default: WEB-INF/spring.properties -->
+  <property name="locations">
+    <list>
+      <value>classpath*:spring.properties</value>
+      <value>WEB-INF/spring.properties</value>
+    </list>    
+  </property>
+  <!-- optional property, default: mode -->
+  <property name="parameters">
+    <list>
+      <value>mode</value>
+      <value>locale</value>
+    </list>
+  </property>
+</bean>
+]]></programlisting>
+      <para>If the <literal>mode</literal> param value will be <literal>test</literal> and <literal>locale</literal> will be set to <literal>en_US</literal>, the properties will be loaded from the following locations (same properties in files loaded later will override already read properties, i.e. have higher precedence).
+      </para>
+     <itemizedlist>
+        <listitem><simpara>classpath*:spring.properties</simpara></listitem>
+        <listitem><simpara>classpath*:spring-en_US.properties</simpara></listitem>
+        <listitem><simpara>classpath*:spring-test.properties</simpara></listitem>
+        <listitem><simpara>classpath*:spring-test-en_US.properties</simpara></listitem>
+        <listitem><simpara>WEB-INF/spring.properties</simpara></listitem>
+        <listitem><simpara>WEB-INF/spring-en_US.properties</simpara></listitem>
+        <listitem><simpara>WEB-INF/spring-test.properties</simpara></listitem>
+        <listitem><simpara>WEB-INF/spring-test-en_US.properties</simpara></listitem>
+      </itemizedlist>
+    </section>
+
     <section xml:id="configuration.spring.beannames">
       <title>Reserved Spring bean names</title>
       <para>

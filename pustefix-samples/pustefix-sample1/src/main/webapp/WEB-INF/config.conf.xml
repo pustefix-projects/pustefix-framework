@@ -31,13 +31,14 @@
 <!--      </properties>-->
     </resource>
     <resource bean-name="appinfo" class="de.schlund.pfixcore.example.ContextAppInfo"/>
+    <resource bean-name="search" class="de.schlund.pfixcore.example.ContextSearch"/>
    
     <config-include file="conf/fragments.xml" section="resources" module="animal-module"/>
   </context>
 
   <global-output>
     <resource node="appinfo" bean-ref="appinfo"/>
-   </global-output>
+  </global-output>
 
   <interceptors>
     <start>
@@ -131,20 +132,24 @@
       <input>
         <wrapper prefix="info" class="de.schlund.pfixcore.example.iwrapper.AdultInfo" />
         <wrapper prefix="prefix" class="de.schlund.pfixcore.example.iwrapper.IndexedTest" />
+        <wrapper prefix="search" class="de.schlund.pfixcore.example.iwrapper.Search" />
       </input>
       <output>
         <resource node="adultinfo" class="de.schlund.pfixcore.example.ContextAdultInfo" />
         <resource node="testdata" bean-ref="testdata"/>
         <resource node="jaxbTest" bean-ref="jaxbTest"/>
+        <resource node="search" bean-ref="search" lazy="true" />
       </output>
     </default>
     <variant name="foo:bar:baz">
       <input>
         <wrapper prefix="info" class="de.schlund.pfixcore.example.iwrapper.AdultInfo" />
         <wrapper prefix="prefix" class="de.schlund.pfixcore.example.iwrapper.IndexedTest" />
+        <wrapper prefix="search" class="de.schlund.pfixcore.example.iwrapper.Search" />
       </input>
       <output>
         <resource node="adultinfo" class="de.schlund.pfixcore.example.ContextAdultInfo" />
+        <resource node="search" bean-ref="search" lazy="true" />
       </output>
     </variant>
   </pagerequest>
