@@ -18,8 +18,10 @@
 
 package de.schlund.pfixxml.resources;
 
+import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
+import java.net.URISyntaxException;
 import java.net.URL;
 import java.util.Enumeration;
 import java.util.HashMap;
@@ -77,6 +79,14 @@ public class ResourceIndex {
 			int ind = urlStr.indexOf("/WEB-INF");
 			if(ind > -1) {
 				urlStr = urlStr.substring(0, ind);
+			} else {
+			    ind = urlStr.indexOf("/classes/META-INF");
+			    if(ind > -1) {
+			        String resourceDir = findResourceDir(new URL(urlStr.substring(0, ind)));
+			        if(resourceDir != null) {
+			            urlStr = urlStr.substring(0, ind) + "/" + resourceDir;
+			        }
+			    }
 			}
 			appIndex = index;
 		}
@@ -85,7 +95,6 @@ public class ResourceIndex {
 	}
 	
 	public boolean exists(URL url) throws IOException {
-
 		boolean exists = false;
 		if(url.getProtocol().equals("jar")) {
 			String urlStr = url.toString();
@@ -114,4 +123,26 @@ public class ResourceIndex {
 		boolean exists = appIndex.exists(path);
 		return exists;
 	}
+	
+	private String findResourceDir(URL url) throws IOException {
+	    File dir;
+	    try {
+	        dir = new File(url.toURI());
+	    } catch (URISyntaxException e) {
+	        throw new IOException("Can't find resource directory", e);
+	    }
+	    if(dir.isDirectory()) {
+	        File[] files = dir.listFiles();
+	        for(File file: files) {
+	            if(file.isDirectory()) {
+	                File webInfFile = new File(file, "WEB-INF");
+	                if(webInfFile.exists()) {
+	                    return file.getName();
+	                }
+	            }
+	        }
+	    }
+	    return null;
+	}
+	
 }
