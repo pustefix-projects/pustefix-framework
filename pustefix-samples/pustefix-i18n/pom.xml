@@ -6,12 +6,12 @@
   <parent>
     <groupId>org.pustefixframework</groupId>
     <artifactId>pustefix-samples</artifactId>
-    <version>0.18.72-SNAPSHOT</version>
+    <version>0.18.72</version>
   </parent>
  
   <groupId>org.pustefixframework.samples</groupId>
   <artifactId>pustefix-i18n</artifactId>
-  <version>0.18.72-SNAPSHOT</version>
+  <version>0.18.72</version>
 
   <name>Pustefix i18n sample application</name>
   <packaging>pom</packaging>
