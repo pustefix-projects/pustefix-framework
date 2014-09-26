@@ -59,6 +59,7 @@ import org.pustefixframework.util.LocaleUtils;
 import org.pustefixframework.util.LogUtils;
 import org.pustefixframework.util.NetUtils;
 import org.pustefixframework.util.URLUtils;
+import org.pustefixframework.util.net.IPRangeMatcher;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.web.context.ServletContextAware;
 
@@ -103,6 +104,9 @@ public abstract class AbstractPustefixRequestHandler implements SessionTrackingS
     public static final String REQUEST_ATTR_LANGUAGE = "__PFX_LANGUAGE__";
     public static final String REQUEST_ATTR_PAGE_ALTERNATIVE = "__PFX_PAGE_ALTERNATIVE__";
     
+    private static final IPRangeMatcher privateIPRange = new IPRangeMatcher("10.0.0.0/8", "169.254.0.0/16", 
+            "172.16.0.0/12", "192.168.0.0/16", "fc00::/7");
+    
     private int INC_ID = 0;
     private String TIMESTAMP_ID = "";
     
@@ -119,6 +123,7 @@ public abstract class AbstractPustefixRequestHandler implements SessionTrackingS
     protected TenantInfo tenantInfo;
     protected LanguageInfo languageInfo;
     protected SiteMap siteMap;
+    
     
     public abstract ServletManagerConfig getServletManagerConfig();
 
@@ -144,16 +149,23 @@ public abstract class AbstractPustefixRequestHandler implements SessionTrackingS
     }
     
     public static String getRemoteAddr(HttpServletRequest req) {
+        String remoteIp = req.getRemoteAddr();
         String forward = req.getHeader("X-Forwarded-For");
         if (forward != null && !forward.equals("")) {
-            int ind = forward.indexOf(',');
-            if(ind > -1) forward = forward.substring(0, ind);
-            forward = forward.trim();
-            if(NetUtils.checkIP(forward)) {
-                return forward;
+            if(privateIPRange.matches(remoteIp)) {
+                String[] ips = forward.split(",");
+                for(int i=ips.length - 1; i >= 0; i--) {
+                    String ip = ips[i].trim();
+                    if(ip.length() > 0) {
+                        if(NetUtils.checkIP(ip) && !privateIPRange.matches(ip)) {
+                            remoteIp = ip;
+                            break;
+                        }
+                    }
+                }
             }
-        } 
-        return req.getRemoteAddr();
+        }
+        return remoteIp;
     }
     
     public static int getSSLRedirectPort(int port, Properties props) {
