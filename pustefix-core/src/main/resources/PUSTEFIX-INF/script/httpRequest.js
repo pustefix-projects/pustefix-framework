@@ -194,11 +194,10 @@ pfx.net.HTTPRequest.prototype.start = function( content, headers, reqId ) {
       try {
      
         pfx.net.HTTPRequest._xml[i].open( this.method, this.url, this.callback ? true : false); 
- 
-        for( var j=0; j<this.headers.length; j++ ) {
+        for( var j=0; j<headers.length; j++ ) {
           try {
             // not implemented in Opera 7.6pr1
-            pfx.net.HTTPRequest._xml[i].setRequestHeader( this.headers[j][0], this.headers[j][1] );
+            pfx.net.HTTPRequest._xml[i].setRequestHeader(headers[j][0],headers[j][1] );
           } catch(e) {
           }
         }

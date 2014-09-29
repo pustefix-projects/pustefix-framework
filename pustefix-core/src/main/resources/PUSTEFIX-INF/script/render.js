@@ -27,3 +27,15 @@ pfx.render = function(href, part, module, search, callback, context, requestId, 
    var httpReq = new pfx.net.HTTPRequest("GET", url, callback, context);
    httpReq.start("", null, requestId);
 };
+pfx.renderSubmit = function(callback, context, requestId, form) {
+  var content = "";
+  for(var i = 0; i < form.elements.length; i++) {
+	  content += (i>0?"&":"") + form.elements[i].name + "=" + encodeURIComponent(form.elements[i].value);
+  }
+  var headers = new Array();
+  headers[0] = new Array();
+  headers[0][0] = "Content-Type";
+  headers[0][1] = "application/x-www-form-urlencoded";
+  var httpReq = new pfx.net.HTTPRequest("POST", form.action, callback, context);
+  httpReq.start(content, headers, requestId);
+}
