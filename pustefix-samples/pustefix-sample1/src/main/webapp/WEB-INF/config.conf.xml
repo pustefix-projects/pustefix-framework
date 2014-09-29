@@ -251,6 +251,14 @@
     </output>
   </pagerequest>
   
+  <pagerequest name="search">
+    <input>
+      <wrapper prefix="search" class="de.schlund.pfixcore.example.iwrapper.Search" />
+    </input>
+    <output>
+      <resource node="search" bean-ref="search"/>
+    </output>
+  </pagerequest>
 
   <config-include file="WEB-INF/fragments.xml" section="pagerequests" />
   <config-include file="conf/fragments.xml" section="pagerequests" module="animal-module"/>

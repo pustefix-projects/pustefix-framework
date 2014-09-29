@@ -68,7 +68,7 @@
     <theme name="default">
        <div style="padding:10px">Search result:</div>
        <div style="font-style:italic;">
-         <ixsl:for-each select="pfx:getResource('search')//match">
+         <ixsl:for-each select="/formresult/search/match">
            <div><ixsl:value-of select="."/></div>
          </ixsl:for-each>
        </div>
