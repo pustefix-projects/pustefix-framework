@@ -104,7 +104,7 @@
            <pfx:xinp type="text" name="search.term" size="20"/>
            <input type="hidden" name="__render_href" value="txt/common.xml"/>
            <input type="hidden" name="__render_part" value="searchresult"/>
-           <pfx:submitbutton type="button" name="search" onclick="doSearch()">Search in wikipedia</pfx:submitbutton>
+           <pfx:submitbutton type="button" name="search" onclick="doSearch();return false;">Search in wikipedia</pfx:submitbutton>
          </pfx:forminput>
          <div id="searchresult"></div>
        </div>
