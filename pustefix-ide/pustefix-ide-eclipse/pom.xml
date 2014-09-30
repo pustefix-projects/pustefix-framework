@@ -23,14 +23,14 @@
   </modules>
 
   <properties>
-     <version.tycho>0.10.0</version.tycho>
+     <version.tycho>0.21.0</version.tycho>
   </properties>
 
   <repositories>
     <repository>
-      <id>eclipse-helios</id>
+      <id>eclipse-luna</id>
       <layout>p2</layout>
-      <url>http://download.eclipse.org/releases/helios</url>
+      <url>http://download.eclipse.org/releases/luna</url>
     </repository>
   </repositories>
 
@@ -38,14 +38,14 @@
     <plugins>
 
       <plugin>
-        <groupId>org.sonatype.tycho</groupId>
+        <groupId>org.eclipse.tycho</groupId>
         <artifactId>tycho-maven-plugin</artifactId>
         <version>${version.tycho}</version>
         <extensions>true</extensions>
       </plugin>
 
       <plugin>
-        <groupId>org.sonatype.tycho</groupId>
+        <groupId>org.eclipse.tycho</groupId>
         <artifactId>target-platform-configuration</artifactId>
         <version>${version.tycho}</version>
         <configuration>
