@@ -33,6 +33,13 @@
     <func:result select="xslt2:tokenize($str, $pattern)"/>
   </func:function>
   
+  <func:function name="pfx:format-date">
+    <xsl:param name="dateTime"/>
+    <xsl:param name="datePattern"/>
+    <func:result select="xslt2:formatDate($str, $pattern)"/>
+  </func:function>
+  
+  
   <!-- Development functions -->
   
   <func:function name="pfx:sleep">

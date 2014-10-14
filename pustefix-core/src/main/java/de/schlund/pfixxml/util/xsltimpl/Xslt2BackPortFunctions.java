@@ -1,5 +1,8 @@
 package de.schlund.pfixxml.util.xsltimpl;
 
+import java.text.SimpleDateFormat;
+import java.util.Date;
+
 import com.icl.saxon.Context;
 import com.icl.saxon.expr.XPathException;
 import com.icl.saxon.om.Axis;
@@ -47,6 +50,18 @@ public class Xslt2BackPortFunctions {
             builder.endDocument();
             DocumentInfo doc = builder.getCurrentDocument();
             return doc.getEnumeration(Axis.CHILD, AnyNodeTest.getInstance());
+        } catch (Exception err) {
+            ExtensionFunctionUtils.setExtensionFunctionError(err);
+            throw new XPathException(err);
+        }
+    }
+    
+    public static String formatDate(String dateTime, String datePattern) throws XPathException {
+        
+        try {
+            SimpleDateFormat format = new SimpleDateFormat(datePattern);
+            Date date = new Date(Long.parseLong(dateTime));
+            return format.format(date);
         } catch (Exception err) {
             ExtensionFunctionUtils.setExtensionFunctionError(err);
             throw new XPathException(err);
