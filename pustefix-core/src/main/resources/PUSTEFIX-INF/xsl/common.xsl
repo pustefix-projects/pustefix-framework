@@ -35,8 +35,8 @@
   
   <func:function name="pfx:format-date">
     <xsl:param name="dateTime"/>
-    <xsl:param name="datePattern"/>
-    <func:result select="xslt2:formatDate($str, $pattern)"/>
+    <xsl:param name="datePattern"><xsl:value-of select="$date-format"/></xsl:param>
+    <func:result select="xslt2:formatDate($dateTime, $datePattern)"/>
   </func:function>
   
   
