@@ -2,7 +2,10 @@ package de.schlund.pfixxml.util.xsltimpl;
 
 import java.text.SimpleDateFormat;
 import java.util.Date;
+import java.util.Locale;
 import java.util.TimeZone;
+
+import org.pustefixframework.util.LocaleUtils;
 
 import com.icl.saxon.Context;
 import com.icl.saxon.expr.XPathException;
@@ -57,13 +60,20 @@ public class Xslt2BackPortFunctions {
         }
     }
     
-    public static String formatDate(String dateTime, String datePattern, String timeZone) throws XPathException {
+    public static String formatDate(String dateTime, String datePattern, String timeZone, String dateLocale) throws XPathException {
         
         try {
-            SimpleDateFormat format = new SimpleDateFormat(datePattern);
-            format.setTimeZone(TimeZone.getTimeZone(timeZone));
-            Date date = new Date();
-            return format.format(date);
+            SimpleDateFormat format;
+            if(dateLocale != null && !dateLocale.isEmpty()) {
+                Locale locale = LocaleUtils.getLocale(dateLocale);
+                format = new SimpleDateFormat(datePattern, locale);
+            } else {
+                format = new SimpleDateFormat(datePattern);
+            }
+            if(timeZone != null && !timeZone.isEmpty()) {
+                format.setTimeZone(TimeZone.getTimeZone(timeZone));
+            }
+            return format.format(new Date(Long.parseLong(dateTime)));
         } catch (Exception err) {
             ExtensionFunctionUtils.setExtensionFunctionError(err);
             throw new XPathException(err);
