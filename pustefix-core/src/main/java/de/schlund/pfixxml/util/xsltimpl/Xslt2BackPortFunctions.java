@@ -2,6 +2,7 @@ package de.schlund.pfixxml.util.xsltimpl;
 
 import java.text.SimpleDateFormat;
 import java.util.Date;
+import java.util.TimeZone;
 
 import com.icl.saxon.Context;
 import com.icl.saxon.expr.XPathException;
@@ -56,11 +57,12 @@ public class Xslt2BackPortFunctions {
         }
     }
     
-    public static String formatDate(String dateTime, String datePattern) throws XPathException {
+    public static String formatDate(String dateTime, String datePattern, String timeZone) throws XPathException {
         
         try {
             SimpleDateFormat format = new SimpleDateFormat(datePattern);
-            Date date = new Date(Long.parseLong(dateTime));
+            format.setTimeZone(TimeZone.getTimeZone(timeZone));
+            Date date = new Date();
             return format.format(date);
         } catch (Exception err) {
             ExtensionFunctionUtils.setExtensionFunctionError(err);
