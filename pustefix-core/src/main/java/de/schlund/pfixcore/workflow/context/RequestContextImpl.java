@@ -357,13 +357,13 @@ public class RequestContextImpl implements Cloneable, AuthorizationInterceptor {
         roleAuthDeps = null;
         currentstatus = PageRequestStatus.SELECT;
 
+        processIC(parentcontext.getContextConfig().getStartInterceptors());
+        
         RequestParam swflow = currentpservreq.getRequestParam(PARAM_STARTWITHFLOW);
         boolean startwithflow = false;
         if (swflow != null && swflow.getValue().equals("true")) {
             startwithflow = true;
         }
-
-        processIC(parentcontext.getContextConfig().getStartInterceptors());
 
         String tmppagename = currentpservreq.getPageName();
         if (tmppagename != null) {
