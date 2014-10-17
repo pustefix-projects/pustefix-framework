@@ -341,6 +341,15 @@ public class PfixServletRequestImpl implements PfixServletRequest {
             return null;
         }
     }
+    
+    public void setRequestParam(String name, String[] values) {
+        RequestParam[] params = new RequestParam[values.length];
+        for(int i=0; i<values.length; i++) {
+            RequestParam param = new SimpleRequestParam(values[i]);
+            params[i] = param;
+        }
+        parameters.put(name, params);
+    }
 
     /* (non-Javadoc)
      * @see de.schlund.pfixxml.PfixServletRequest#getAllRequestParams(java.lang.String)
