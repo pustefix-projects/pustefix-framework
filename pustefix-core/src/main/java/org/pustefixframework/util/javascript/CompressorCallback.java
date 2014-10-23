@@ -26,7 +26,7 @@ public class CompressorCallback {
                 compressor.compress(reader, writer);
                 return writer.toString();
             } catch(CompressorException x) {
-                LOG.error("Failed to compress inline javascript", x);
+                LOG.error("Failed to compress inline javascript: " + javascript, x);
             }
         } else {
             LOG.warn("No Javascript compressor found");

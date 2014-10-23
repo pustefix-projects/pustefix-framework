@@ -21,7 +21,13 @@ pfx.render = function(href, part, module, search, callback, context, requestId, 
    if(search) url += "&__render_search=" + encodeURIComponent(search);
    if(params) {
      for(var param in params) {
-	   url += "&" + encodeURIComponent(param) + "=" + encodeURIComponent(params[param]);
+       if(params[param] instanceof Array) {
+         for(var i=0;i<params[param].length;i++) {
+           url += "&" + encodeURIComponent(param) + "=" + encodeURIComponent(params[param][i]);
+         }
+       } else {
+         url += "&" + encodeURIComponent(param) + "=" + encodeURIComponent(params[param]);
+       }
      }
    }
    var httpReq = new pfx.net.HTTPRequest("GET", url, callback, context);
@@ -30,7 +36,7 @@ pfx.render = function(href, part, module, search, callback, context, requestId, 
 pfx.renderSubmit = function(callback, context, requestId, form) {
   var content = "";
   for(var i = 0; i < form.elements.length; i++) {
-	  content += (i>0?"&":"") + form.elements[i].name + "=" + encodeURIComponent(form.elements[i].value);
+    content += (i>0?"&":"") + form.elements[i].name + "=" + encodeURIComponent(form.elements[i].value);
   }
   var headers = new Array();
   headers[0] = new Array();
