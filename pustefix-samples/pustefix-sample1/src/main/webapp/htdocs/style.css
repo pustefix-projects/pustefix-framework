@@ -38,3 +38,5 @@ table.header td.rev { text-align: right; color: #aaa; }
 div.test { border: 1px solid black; padding: 20px; margin: 10px; }
 
 img.small { width:62; height: 47;}
+
+div.footer { text-align:center; font-size: 80%; opacity: 0.7; padding-top: 10px;}

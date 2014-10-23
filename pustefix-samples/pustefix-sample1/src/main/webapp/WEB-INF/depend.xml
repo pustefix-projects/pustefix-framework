@@ -11,7 +11,7 @@
   </namespaces>
 
   <global>
-    <!-- <include stylesheet="xsl/runtime.xsl"/> -->
+    <include stylesheet="xsl/runtime.xsl"/>
     <!-- <param   name="outputmethod"         value="html"/> -->
     <param name="outputdoctype-public" value="-//W3C//DTD HTML 4.01//EN"/>
     <param name="outputdoctype-system" value="http://www.w3.org/TR/html40/strict.dtd"/>
