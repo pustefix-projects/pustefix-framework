@@ -5,7 +5,7 @@
   <parent>
     <groupId>org.pustefixframework.maven.plugins</groupId>
     <artifactId>pustefix-plugins</artifactId>
-    <version>0.18.74</version>
+    <version>0.18.75-SNAPSHOT</version>
     <relativePath>../pom.xml</relativePath>
   </parent>
 
@@ -13,7 +13,7 @@
   
   <groupId>org.pustefixframework.maven.plugins</groupId>
   <artifactId>pustefix-resourceindex-plugin</artifactId>
-  <version>0.18.74</version>
+  <version>0.18.75-SNAPSHOT</version>
   
   <packaging>maven-plugin</packaging>
   
