@@ -150,12 +150,17 @@ pfx.net.HTTPRequest.prototype.start = function( content, headers, reqId ) {
             pfx.net.HTTPRequest._xml[i].onreadystatechange = function() {
               if( pfx.net.HTTPRequest._xml[i].readyState == 4 ) {
                 var reqId;
+                var resInfo = {};
                 try {
                   reqId = pfx.net.HTTPRequest._xml[i].getResponseHeader("Request-Id");
+                  var reuse = pfx.net.HTTPRequest._xml[i].getResponseHeader("x-pfx-reuse");
+                  if(reuse) {
+                    resInfo.reuse = reuse;
+                  }
                 } catch(e) {
                 }
                 var content = self._getResponse(pfx.net.HTTPRequest._xml[i]);
-                if(content!=null) self.callback.call( self.context, content, reqId);
+                if(content!=null) self.callback.call( self.context, content, reqId, resInfo);
                 else if(!pfx.net.HTTPRequest._xml[i].aborted) throw new Error("Empty response");
                 pfx.net.HTTPRequest._xml[i] = null;
               }
@@ -172,12 +177,17 @@ pfx.net.HTTPRequest.prototype.start = function( content, headers, reqId ) {
                   throw new Error("HTTP_Request: Asynchronous call failed" + " (status " + self.status + ", " + self.statusText + ")");
                 }
                 var reqId;
+                var resInfo = {};
                 try {
                   reqId = pfx.net.HTTPRequest._xml[i].getResponseHeader("Request-Id");
+                  var reuse = pfx.net.HTTPRequest._xml[i].getResponseHeader("x-pfx-reuse");
+                  if(reuse) {
+                    resInfo.reuse = reuse;
+                  }
                 } catch(e) {
                 }
                 var content = self._getResponse(pfx.net.HTTPRequest._xml[i]);
-                if(content!=null) self.callback.call( self.context, content, reqId);
+                if(content!=null) self.callback.call( self.context, content, reqId, resInfo);
                 else if(!pfx.net.HTTPRequest._xml[i].aborted) throw new Error("Empty response");
                 pfx.net.HTTPRequest._xml[i] = null;
               }

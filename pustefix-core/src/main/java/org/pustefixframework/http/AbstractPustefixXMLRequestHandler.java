@@ -512,6 +512,7 @@ public abstract class AbstractPustefixXMLRequestHandler extends AbstractPustefix
             if(reqId != null) {
                 res.addHeader("Request-Id", reqId);
             }
+            res.setHeader("x-pfx-reuse", String.valueOf(spdoc.getTimestamp()));
         }
         
         if(!generator.isGetModTimeMaybeUpdateSkipped()) {
