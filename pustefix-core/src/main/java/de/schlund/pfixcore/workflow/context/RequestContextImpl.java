@@ -538,11 +538,13 @@ public class RequestContextImpl implements Cloneable, AuthorizationInterceptor {
             Variant var = getVariant();
             if (var != null) {
                 spdoc.setVariant(var);
-                spdoc.getDocument().getDocumentElement().setAttribute("requested-variant", var.getVariantId());
-                if (currentpagerequest != null)
-                    spdoc.getDocument().getDocumentElement().setAttribute("used-pr", currentpagerequest.getName());
-                if (currentpageflow != null)
-                    spdoc.getDocument().getDocumentElement().setAttribute("used-pf", currentpageflow.getName());
+                if(spdoc.getDocument() != null) {
+                    spdoc.getDocument().getDocumentElement().setAttribute("requested-variant", var.getVariantId());
+                    if (currentpagerequest != null)
+                        spdoc.getDocument().getDocumentElement().setAttribute("used-pr", currentpagerequest.getName());
+                    if (currentpageflow != null)
+                        spdoc.getDocument().getDocumentElement().setAttribute("used-pf", currentpageflow.getName());
+                }
             }
             if(parentcontext.getTenant() != null) {
                 spdoc.setTenant(parentcontext.getTenant());
@@ -609,10 +611,12 @@ public class RequestContextImpl implements Cloneable, AuthorizationInterceptor {
     private void addPageFlowInfo(SPDocument spdoc) {
         if (currentpageflow != null) {
             Document doc = spdoc.getDocument();
-            Element root = doc.createElement("pageflow");
-            doc.getDocumentElement().appendChild(root);
-            root.setAttribute("name", currentpageflow.getRootName());
-            currentpageflow.addPageFlowInfo(currentpagerequest.getRootName(), root);
+            if(doc != null) {
+                Element root = doc.createElement("pageflow");
+                doc.getDocumentElement().appendChild(root);
+                root.setAttribute("name", currentpageflow.getRootName());
+                currentpageflow.addPageFlowInfo(currentpagerequest.getRootName(), root);
+            }
         }
     }
 
