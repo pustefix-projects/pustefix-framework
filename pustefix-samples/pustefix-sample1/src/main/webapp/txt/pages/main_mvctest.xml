@@ -1,0 +1,86 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<include_parts xmlns:ixsl="http://www.w3.org/1999/XSL/Transform" xmlns:pfx="http://www.schlund.de/pustefix/core">
+  
+  <part name="content">
+    <theme name="default">
+    <ixsl:choose>
+    <ixsl:when test="/formresult/data/content">
+    <table>
+      <tr>
+        <th><a href="?page.size={/formresult/data/@size}&amp;page.page={/formresult/data/@number + 1}&amp;page.sort=id&amp;page.sort.dir=asc">ID</a>
+            <ixsl:if test="/formresult/sort/@property='id'">*</ixsl:if></th>
+        <th><a href="?page.size={/formresult/data/@size}&amp;page.page={/formresult/data/@number + 1}&amp;page.sort=name&amp;page.sort.dir=asc">Name</a>
+            <ixsl:if test="/formresult/sort/@property='name'">*</ixsl:if></th>
+        <th><a href="?page.size={/formresult/data/@size}&amp;page.page={/formresult/data/@number + 1}&amp;page.sort=description&amp;page.sort.dir=asc">Description</a>
+            <ixsl:if test="/formresult/sort/@property='description'">*</ixsl:if></th>
+      </tr>
+      <ixsl:for-each select="/formresult/data/content/dataBean">
+        <tr>
+          <td><a href="data/{@id}"><ixsl:value-of select="@id"/></a></td>
+          <td><ixsl:value-of select="@name"/></td>
+          <td><ixsl:value-of select="@description"/></td>
+        </tr>
+      </ixsl:for-each>
+        <tr>
+          <td colspan="3">
+            <form>
+            <ixsl:choose>
+              <ixsl:when test="/formresult/data/@firstPage='false'">
+                <a href="?page.size={/formresult/data/@size}&amp;page.page=1&amp;page.sort={/formresult/sort/@property}&amp;page.sort.dir=asc">|&lt; </a>
+              </ixsl:when>
+              <ixsl:otherwise>
+                <span>|&lt; </span>
+              </ixsl:otherwise>
+            </ixsl:choose>
+            <ixsl:choose>
+              <ixsl:when test="/formresult/data/@firstPage='false'">
+                <a href="?page.size={/formresult/data/@size}&amp;page.page={/formresult/data/@number}&amp;page.sort={/formresult/sort/@property}&amp;page.sort.dir=asc">&lt;&lt; </a>
+              </ixsl:when>
+              <ixsl:otherwise>
+                <span>&lt;&lt; </span>
+              </ixsl:otherwise>
+            </ixsl:choose>
+            [<ixsl:value-of select="/formresult/data/@number + 1"/>/<ixsl:value-of select="/formresult/data/@size"/>]
+            <ixsl:choose>
+              <ixsl:when test="/formresult/data/@lastPage='false'">
+                <a href="?page.size={/formresult/data/@size}&amp;page.page={/formresult/data/@number + 2}&amp;page.sort={/formresult/sort/@property}&amp;page.sort.dir=asc">&gt;&gt; </a>
+              </ixsl:when>
+              <ixsl:otherwise>
+                <span>&gt;&gt; </span>
+              </ixsl:otherwise>
+            </ixsl:choose>
+            <ixsl:choose>
+              <ixsl:when test="/formresult/data/@lastPage='false'">
+                <a href="?page.size={/formresult/data/@size}&amp;page.page={/formresult/data/@totalPages}&amp;page.sort={/formresult/sort/@property}&amp;page.sort.dir=asc">&gt;| </a>
+              </ixsl:when>
+              <ixsl:otherwise>
+                <span>&gt;| </span>
+              </ixsl:otherwise>
+            </ixsl:choose>
+            </form>
+          
+          </td>
+        </tr>
+      </table>
+      </ixsl:when>
+      <ixsl:otherwise>
+        <table>
+          <tr>
+            <th align="left">ID: </th>
+            <td><ixsl:value-of select="/formresult/data/@id"/></td>
+          </tr>
+          <tr>
+            <th align="left">Name: </th>
+            <td><ixsl:value-of select="/formresult/data/@name"/></td>
+          </tr>
+          <tr>
+            <th align="left">Description: </th>
+            <td><ixsl:value-of select="/formresult/data/@description"/></td>
+          </tr>
+        </table>
+      </ixsl:otherwise>
+      </ixsl:choose>
+    </theme>
+  </part>
+  
+</include_parts>

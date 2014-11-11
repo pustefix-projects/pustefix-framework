@@ -157,15 +157,15 @@ function serviceCall() {
   timer.start();
   
   testSync();
-  testSyncEx();
-  testAsync();
-  testAsyncId();
-  testAsyncEx();
-  testAsyncIdEx();
-  testAsyncObj();
-  testAsyncObjId();
-  testAsyncObjEx();
-  testAsyncObjExId();
+  //testSyncEx();
+  //testAsync();
+  //testAsyncId();
+  //testAsyncEx();
+  //testAsyncIdEx();
+  //testAsyncObj();
+  //testAsyncObjId();
+  //testAsyncObjEx();
+  //testAsyncObjExId();
   
 }
 

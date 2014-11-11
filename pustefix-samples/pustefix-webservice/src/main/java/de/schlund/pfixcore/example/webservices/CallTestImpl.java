@@ -23,6 +23,7 @@ import javax.jws.WebService;
 public class CallTestImpl implements CallTest {
 
     public String test(String str) {
+        try {Thread.sleep(10000);} catch(Exception x) {}
         return str;
     }
     

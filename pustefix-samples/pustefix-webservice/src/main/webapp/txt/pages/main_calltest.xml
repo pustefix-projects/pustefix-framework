@@ -17,6 +17,10 @@
 			<div id="console"/>
 		</div>
           
+      <pfx:script>
+        serviceCall();
+      </pfx:script>
+          
       </theme>
   </part>
   

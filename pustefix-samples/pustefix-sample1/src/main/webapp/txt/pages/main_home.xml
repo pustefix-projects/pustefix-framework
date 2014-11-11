@@ -1,8 +1,28 @@
 <?xml version="1.0" encoding="UTF-8"?><include_parts xmlns:ixsl="http://www.w3.org/1999/XSL/Transform" xmlns:pfx="http://www.schlund.de/pustefix/core">
   
+  <part name="langtest">
+    <theme name="default">
+      <table>
+      <tr>
+        <th>ID</th>
+        <th>Name</th>
+        <th>Description</th>
+      </tr>
+      <ixsl:for-each select="/formresult/data/dataList/pageList/dataBean">
+        <tr>
+          <td><ixsl:value-of select="@id"/></td>
+          <td><ixsl:value-of select="@name"/></td>
+          <td><ixsl:value-of select="@description"/></td>
+        </tr>
+      </ixsl:for-each>
+      </table>
+    </theme>
+  </part>
+  
   <part name="content">
     <theme name="default">
       <center>
+      <pfx:include part="langtest"/>
         <pfx:forminput>
           <table width="400">
             <tr>
