@@ -5,12 +5,12 @@
   <parent>
     <groupId>org.pustefixframework</groupId>
     <artifactId>pustefixframework</artifactId>
-    <version>0.19.3</version>
+    <version>0.19.4-SNAPSHOT</version>
   </parent>
 
   <groupId>org.pustefixframework</groupId>
   <artifactId>pustefix-cdi</artifactId>
-  <version>0.19.3</version>
+  <version>0.19.4-SNAPSHOT</version>
   <packaging>jar</packaging>
   <name>Pustefix CDI bridge</name>
   <description>Pustefix CDI bridge</description>
@@ -19,7 +19,7 @@
     <dependency>
       <groupId>org.pustefixframework</groupId>
       <artifactId>pustefix-core</artifactId>
-      <version>0.19.3</version>
+      <version>0.19.4-SNAPSHOT</version>
     </dependency>
     <dependency>
       <groupId>org.jboss.weld</groupId>
