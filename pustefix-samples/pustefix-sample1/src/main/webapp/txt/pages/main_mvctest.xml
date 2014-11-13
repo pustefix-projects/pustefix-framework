@@ -7,26 +7,29 @@
     <ixsl:when test="/formresult/data/content">
     <table>
       <tr>
-        <th><a href="?page.size={/formresult/data/@size}&amp;page.page={/formresult/data/@number + 1}&amp;page.sort=id&amp;page.sort.dir=asc">ID</a>
+        <th><a href="?page.size={/formresult/data/@size}&amp;page.page={/formresult/data/@number + 1}&amp;page.sort=id&amp;page.sort.dir=asc&amp;filter.{/formresult/filter/@property}={/formresult/filter/@value}">ID</a>
             <ixsl:if test="/formresult/sort/@property='id'">*</ixsl:if></th>
-        <th><a href="?page.size={/formresult/data/@size}&amp;page.page={/formresult/data/@number + 1}&amp;page.sort=name&amp;page.sort.dir=asc">Name</a>
+        <th><a href="?page.size={/formresult/data/@size}&amp;page.page={/formresult/data/@number + 1}&amp;page.sort=name&amp;page.sort.dir=asc&amp;filter.{/formresult/filter/@property}={/formresult/filter/@value}">Name</a>
             <ixsl:if test="/formresult/sort/@property='name'">*</ixsl:if></th>
-        <th><a href="?page.size={/formresult/data/@size}&amp;page.page={/formresult/data/@number + 1}&amp;page.sort=description&amp;page.sort.dir=asc">Description</a>
+        <th><a href="?page.size={/formresult/data/@size}&amp;page.page={/formresult/data/@number + 1}&amp;page.sort=description&amp;page.sort.dir=asc&amp;filter.{/formresult/filter/@property}={/formresult/filter/@value}">Description</a>
             <ixsl:if test="/formresult/sort/@property='description'">*</ixsl:if></th>
+        <th><a href="?page.size={/formresult/data/@size}&amp;page.page={/formresult/data/@number + 1}&amp;page.sort=enabled&amp;page.sort.dir=asc&amp;filter.{/formresult/filter/@property}={/formresult/filter/@value}">Enabled</a>
+            <ixsl:if test="/formresult/sort/@property='enabled'">*</ixsl:if></th>
       </tr>
       <ixsl:for-each select="/formresult/data/content/dataBean">
         <tr>
           <td><a href="data/{@id}"><ixsl:value-of select="@id"/></a></td>
           <td><ixsl:value-of select="@name"/></td>
           <td><ixsl:value-of select="@description"/></td>
+          <td><ixsl:value-of select="@enabled"/></td>
         </tr>
       </ixsl:for-each>
         <tr>
-          <td colspan="3">
+          <td colspan="4">
             <form>
             <ixsl:choose>
               <ixsl:when test="/formresult/data/@firstPage='false'">
-                <a href="?page.size={/formresult/data/@size}&amp;page.page=1&amp;page.sort={/formresult/sort/@property}&amp;page.sort.dir=asc">|&lt; </a>
+                <a href="?page.size={/formresult/data/@size}&amp;page.page=1&amp;page.sort={/formresult/sort/@property}&amp;page.sort.dir=asc&amp;filter.{/formresult/filter/@property}={/formresult/filter/@value}">|&lt; </a>
               </ixsl:when>
               <ixsl:otherwise>
                 <span>|&lt; </span>
@@ -34,16 +37,16 @@
             </ixsl:choose>
             <ixsl:choose>
               <ixsl:when test="/formresult/data/@firstPage='false'">
-                <a href="?page.size={/formresult/data/@size}&amp;page.page={/formresult/data/@number}&amp;page.sort={/formresult/sort/@property}&amp;page.sort.dir=asc">&lt;&lt; </a>
+                <a href="?page.size={/formresult/data/@size}&amp;page.page={/formresult/data/@number}&amp;page.sort={/formresult/sort/@property}&amp;page.sort.dir=asc&amp;filter.{/formresult/filter/@property}={/formresult/filter/@value}">&lt;&lt; </a>
               </ixsl:when>
               <ixsl:otherwise>
                 <span>&lt;&lt; </span>
               </ixsl:otherwise>
             </ixsl:choose>
-            [<ixsl:value-of select="/formresult/data/@number + 1"/>/<ixsl:value-of select="/formresult/data/@size"/>]
+            [<ixsl:value-of select="/formresult/data/@number + 1"/>/<ixsl:value-of select="/formresult/data/@totalPages"/>]
             <ixsl:choose>
               <ixsl:when test="/formresult/data/@lastPage='false'">
-                <a href="?page.size={/formresult/data/@size}&amp;page.page={/formresult/data/@number + 2}&amp;page.sort={/formresult/sort/@property}&amp;page.sort.dir=asc">&gt;&gt; </a>
+                <a href="?page.size={/formresult/data/@size}&amp;page.page={/formresult/data/@number + 2}&amp;page.sort={/formresult/sort/@property}&amp;page.sort.dir=asc&amp;filter.{/formresult/filter/@property}={/formresult/filter/@value}">&gt;&gt; </a>
               </ixsl:when>
               <ixsl:otherwise>
                 <span>&gt;&gt; </span>
@@ -51,7 +54,7 @@
             </ixsl:choose>
             <ixsl:choose>
               <ixsl:when test="/formresult/data/@lastPage='false'">
-                <a href="?page.size={/formresult/data/@size}&amp;page.page={/formresult/data/@totalPages}&amp;page.sort={/formresult/sort/@property}&amp;page.sort.dir=asc">&gt;| </a>
+                <a href="?page.size={/formresult/data/@size}&amp;page.page={/formresult/data/@totalPages}&amp;page.sort={/formresult/sort/@property}&amp;page.sort.dir=asc&amp;filter.{/formresult/filter/@property}={/formresult/filter/@value}">&gt;| </a>
               </ixsl:when>
               <ixsl:otherwise>
                 <span>&gt;| </span>

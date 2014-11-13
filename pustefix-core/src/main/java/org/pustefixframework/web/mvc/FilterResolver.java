@@ -1,4 +1,4 @@
-package de.schlund.pfixcore.example;
+package org.pustefixframework.web.mvc;
 
 import java.util.Iterator;
 

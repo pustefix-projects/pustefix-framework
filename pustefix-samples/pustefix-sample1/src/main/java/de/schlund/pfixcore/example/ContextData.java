@@ -4,6 +4,8 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
 
+import org.springframework.beans.BeanWrapper;
+import org.springframework.beans.BeanWrapperImpl;
 import org.springframework.beans.support.MutableSortDefinition;
 import org.springframework.beans.support.PagedListHolder;
 import org.springframework.data.domain.Page;
@@ -38,6 +40,7 @@ public class ContextData {
             dataBean.setId(id);
             dataBean.setName(name.toString());
             dataBean.setDescription(description.toString());
+            dataBean.setEnabled(random.nextBoolean());
             list.add(dataBean);
             dataList = new PagedListHolder<DataBean>(list);
             //dataList.setSort(new MutableSortDefinition("name", true, true));
@@ -47,7 +50,23 @@ public class ContextData {
         
     }
     
-    public Page<DataBean> getDataList(Pageable pageable) {
+    public Page<DataBean> getDataList(Pageable pageable, Filter filter) {
+        
+        if(filter.getProperty() != null) {
+            if(filter.getProperty().equals("enabled")) {
+                List<DataBean> filteredList = new ArrayList<DataBean>();
+                for(DataBean bean: list) {
+                    BeanWrapper beanWrapper = new BeanWrapperImpl(bean);
+                    Object value = beanWrapper.getPropertyValue(filter.getProperty());
+                    if(value != null && String.valueOf(value).equals(filter.getValue())) {
+                        filteredList.add(bean);
+                    }
+                }
+                dataList = new PagedListHolder<DataBean>(filteredList);
+            }
+        } else {
+            dataList = new PagedListHolder<DataBean>(list);
+        }
         
         if(pageable.getSort() != null) {
             Sort.Order order = pageable.getSort().iterator().next();

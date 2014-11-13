@@ -69,7 +69,7 @@
   
   <standardpage name="frames"  xml="xml/manyframes.xml"/>  
   
-  <standardpage name="invalidate" xml="xml/two_frames.xml"/>
+  <standardpage name="invalidate" xml="xml/one_frame.xml"/>
   
   <standardpage name="geninc"   xml="xml/one_frame.xml">
     <include stylesheet="generatedruntime.xsl"/>

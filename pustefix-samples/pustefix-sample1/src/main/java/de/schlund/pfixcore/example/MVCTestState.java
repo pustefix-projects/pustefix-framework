@@ -6,17 +6,23 @@ import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 
-public class MVCTestState extends MVCControllerState {
+import de.schlund.pfixcore.workflow.app.DefaultIWrapperState;
+
+
+public class MVCTestState extends DefaultIWrapperState {
 
     @Autowired
     private ContextData contextData;
     
-    @RequestMapping("/mvctest/data")
-    public void list(Model model, Pageable pageable) {
-    
-        model.addAttribute("data", contextData.getDataList(pageable));
+    @RequestMapping("/mvctest")
+    public void list(Model model, Pageable pageable, Filter filter) {
+      
+        model.addAttribute("data", contextData.getDataList(pageable, filter));
         if(pageable.getSort() != null) {
             model.addAttribute("sort", pageable.getSort().iterator().next());
+        }
+        if(filter.getProperty() != null) {
+            model.addAttribute("filter", filter);
         }
     }
         
