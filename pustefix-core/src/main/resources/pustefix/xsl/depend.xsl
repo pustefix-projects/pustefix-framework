@@ -277,8 +277,11 @@
     <xsl:choose>
       <xsl:when test="contains($variant_tail, ':')">
         <xsl:variable name="curr_list">
-          <xsl:value-of select="substring-before($variant_tail, ':')"/>
+          <xsl:variable name="tmp" select="substring-before($variant_tail, ':')"/>
+          <xsl:if test="not($tmp='*' or $tmp='**')">
+          <xsl:value-of select="$tmp"/>
           <xsl:text> </xsl:text>
+          </xsl:if>
           <xsl:value-of select="$variant_list"/>
         </xsl:variable>
         <xsl:variable name="remain_tail"><xsl:value-of select="substring-after($variant_tail, ':')"/></xsl:variable>

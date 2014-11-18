@@ -20,6 +20,9 @@
         <xsl:when test="ancestor::pfx:forminput[position()=1]/@send-to-page">
           <xsl:value-of select="ancestor::pfx:forminput[position()=1]/@send-to-page" />
         </xsl:when>
+        <xsl:when test="ancestor::pfx:button[position()=1]/pfx:page">
+          <xsl:apply-templates select="ancestor::pfx:button[position()=1]/pfx:page/node()"/>
+        </xsl:when>
         <xsl:when test="ancestor::pfx:button[position()=1]/@page">
           <xsl:value-of select="ancestor::pfx:button[position()=1]/@page"/>
         </xsl:when>
@@ -36,7 +39,7 @@
 
     <ixsl:call-template name="__formwarn">
       <ixsl:with-param name="targetpage">
-        <xsl:value-of select="$targetpage" />
+        <xsl:copy-of select="$targetpage" />
       </ixsl:with-param>
       <ixsl:with-param name="fullname">
         <xsl:value-of select="$fullname" />
@@ -45,7 +48,7 @@
 
     <ixsl:call-template name="__formwarn_command">
       <ixsl:with-param name="targetpage">
-        <xsl:value-of select="$targetpage" />
+        <xsl:copy-of select="$targetpage" />
       </ixsl:with-param>
       <ixsl:with-param name="fullname">
         <xsl:value-of select="$fullname" />
@@ -58,30 +61,40 @@
 
   <xsl:template match="pfx:visited">
     <xsl:param name="thepagename"/>
-    <xsl:variable name="pagename_impl">
+    <ixsl:variable name="page_visited_{generate-id()}">
       <xsl:choose>
-        <xsl:when test="@page">'<xsl:value-of select="@page"/>'</xsl:when>
-        <xsl:when test="$thepagename">'<xsl:value-of select="$thepagename"/>'</xsl:when>
-        <xsl:otherwise>$page</xsl:otherwise>
+        <xsl:when test="pfx:page"><xsl:apply-templates select="pfx:page/node()"/></xsl:when>
+        <xsl:when test="@page"><xsl:value-of select="@page"/></xsl:when>
+        <xsl:when test="$thepagename"><xsl:copy-of select="$thepagename"/></xsl:when>
+        <xsl:otherwise><xsl:value-of select="$page" /></xsl:otherwise>
       </xsl:choose>
-    </xsl:variable>
-    <ixsl:if test="callback:isVisited($__context__, {$pagename_impl}) = 1">
+    </ixsl:variable>
+    <ixsl:if test="callback:isVisited($__context__, normalize-space($page_visited_{generate-id()})) = 1">
       <xsl:apply-templates/>
     </ixsl:if>
   </xsl:template>
 
   <xsl:template match="pfx:unvisited">
     <xsl:param name="thepagename"/>
-    <xsl:variable name="pagename_impl">
+    <ixsl:variable name="page_unvisited_{generate-id()}">
       <xsl:choose>
-        <xsl:when test="@page">'<xsl:value-of select="@page"/>'</xsl:when>
-        <xsl:when test="$thepagename">'<xsl:value-of select="$thepagename"/>'</xsl:when>
-        <xsl:otherwise>$page</xsl:otherwise>
+        <xsl:when test="pfx:page"><xsl:apply-templates select="pfx:page/node()"/></xsl:when>
+        <xsl:when test="@page"><xsl:value-of select="@page"/></xsl:when>
+        <xsl:when test="$thepagename"><xsl:copy-of select="$thepagename"/></xsl:when>
+        <xsl:otherwise><xsl:value-of select="$page" /></xsl:otherwise>
       </xsl:choose>
-    </xsl:variable>
-    <ixsl:if test="callback:isVisited($__context__, {$pagename_impl}) = 0">
+    </ixsl:variable>
+    <ixsl:if test="callback:isVisited($__context__, normalize-space($page_unvisited_{generate-id()})) = 0">
       <xsl:apply-templates/>
     </ixsl:if>
+  </xsl:template>
+
+  <xsl:template name="pfx:button_page_impl">
+    <xsl:choose>
+      <xsl:when test="pfx:page"><xsl:apply-templates select="pfx:page/node()" /></xsl:when>
+      <xsl:when test="@page"><xsl:value-of select="@page" /></xsl:when>
+      <xsl:otherwise><xsl:value-of select="$page" /></xsl:otherwise>
+    </xsl:choose>
   </xsl:template>
   
   <xsl:template match="pfx:button">
@@ -90,12 +103,16 @@
         <xsl:choose>
           <xsl:when test="./pfx:normal">
             <xsl:apply-templates select="./pfx:normal/node()">
-              <xsl:with-param name="thepagename" select="@page"/>
+              <xsl:with-param name="thepagename">
+                <xsl:call-template name="pfx:button_page_impl" />
+              </xsl:with-param>
             </xsl:apply-templates>
           </xsl:when>
           <xsl:otherwise>
             <xsl:apply-templates select="./node()">
-              <xsl:with-param name="thepagename" select="@page"/>
+              <xsl:with-param name="thepagename">
+                <xsl:call-template name="pfx:button_page_impl" />
+              </xsl:with-param>
             </xsl:apply-templates>
           </xsl:otherwise>
         </xsl:choose>
@@ -104,17 +121,23 @@
         <xsl:choose>
           <xsl:when test="./pfx:active">
             <xsl:apply-templates select="./pfx:active/node()">
-              <xsl:with-param name="thepagename" select="@page"/>
+              <xsl:with-param name="thepagename">
+                <xsl:call-template name="pfx:button_page_impl" />
+              </xsl:with-param>
             </xsl:apply-templates>
           </xsl:when>
           <xsl:when test="./pfx:normal">
             <xsl:apply-templates select="./pfx:normal/node()">
-              <xsl:with-param name="thepagename" select="@page"/>
+              <xsl:with-param name="thepagename">
+                <xsl:call-template name="pfx:button_page_impl" />
+              </xsl:with-param>
             </xsl:apply-templates>
           </xsl:when>
           <xsl:otherwise>
             <xsl:apply-templates select="./node()">
-              <xsl:with-param name="thepagename" select="@page"/>
+              <xsl:with-param name="thepagename">
+                <xsl:call-template name="pfx:button_page_impl" />
+              </xsl:with-param>
             </xsl:apply-templates>
           </xsl:otherwise>
         </xsl:choose>
@@ -123,17 +146,23 @@
         <xsl:choose>
           <xsl:when test="./pfx:invisible">
             <xsl:apply-templates select="./pfx:invisible/node()">
-              <xsl:with-param name="thepagename" select="@page"/>
+              <xsl:with-param name="thepagename">
+                <xsl:call-template name="pfx:button_page_impl" />
+              </xsl:with-param>
             </xsl:apply-templates>
           </xsl:when>
           <xsl:when test="./pfx:normal">
             <xsl:apply-templates select="./pfx:normal/node()">
-              <xsl:with-param name="thepagename" select="@page"/>
+              <xsl:with-param name="thepagename">
+                <xsl:call-template name="pfx:button_page_impl" />
+              </xsl:with-param>
             </xsl:apply-templates>
           </xsl:when>
           <xsl:otherwise>
             <xsl:apply-templates select="./node()">
-              <xsl:with-param name="thepagename" select="@page"/>
+              <xsl:with-param name="thepagename">
+                <xsl:call-template name="pfx:button_page_impl" />
+              </xsl:with-param>
             </xsl:apply-templates>
           </xsl:otherwise>
         </xsl:choose>
@@ -164,7 +193,9 @@
         <xsl:choose>
           <xsl:when test="./pfx:altkey">
             <xsl:apply-templates select="./pfx:altkey/node()">
-              <xsl:with-param name="thepagename" select="@page"/>
+              <xsl:with-param name="thepagename">
+                <xsl:call-template name="pfx:button_page_impl" />
+              </xsl:with-param>
             </xsl:apply-templates>
           </xsl:when>
           <xsl:when test="@altkey">
