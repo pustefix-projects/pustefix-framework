@@ -15,25 +15,21 @@
  * along with Pustefix; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  */
-
 package de.schlund.pfixxml;
 
 import java.util.ArrayList;
 import java.util.StringTokenizer;
 
 /**
- * Describe class Variant here.
- *
- *
- * Created: Sun Apr 10 17:41:28 2005
- *
- * @author <a href="mailto:jtl@schlund.de">Jens Lautenbacher</a>
- * @version 1.0
+ * Holds variant value and provides methods for working
+ * with variants, like getting the variant fallback array
+ * or matching it against variant patterns.
  */
 public class Variant {
 
     String variant;
     String[] variant_arr;
+    String[] variantComponents;
         
     public Variant(String var) {
         variant = var;
@@ -42,6 +38,7 @@ public class Variant {
         } else {
             StringTokenizer tokenizer = new StringTokenizer(variant, ":");
             ArrayList<String> arrlist = new ArrayList<String>();
+            ArrayList<String> compList = new ArrayList<String>();
             String          fallback  = "";
             while (tokenizer.hasMoreElements()) {
                 String tok = tokenizer.nextToken();
@@ -50,16 +47,78 @@ public class Variant {
                 }
                 fallback += tok;
                 arrlist.add(0,fallback);
+                compList.add(tok);
             }
             variant_arr = arrlist.toArray(new String[]{});
+            variantComponents = compList.toArray(new String[compList.size()]);
         }
     }
 
+    /**
+     * Get the full variant value, including all subvariants, e.g. "foo:bar:baz".
+     * 
+     */
     public String getVariantId() {
         return variant;
     }
 
+    /**
+     * Get all sub-variants with highest precedence first.
+     * E.g. the variant "foo:bar:baz" will return:
+     * 
+     * <ul>
+     *   <li>foo:bar:baz</li>
+     *   <li>foo:bar</li>
+     *   <li>foo</li>
+     * </ul>
+     *
+     */
     public String[] getVariantFallbackArray() {
         return variant_arr;
     }
+    
+    /**
+     * Checks if variant matches a variant pattern.
+     * Similar to ant-style patterns the operators "*" and "**" are supported
+     * to match a single variant part or a sequence of variant parts.    
+     * E.g. the variant "foo:bar:baz" will be matched by the following patterns:
+     *   
+     * <ul>
+     *   <li>foo:bar:baz</li>
+     *   <li>foo:bar</li>
+     *   <li>foo</li>
+     *   <li>*:bar:baz</li>
+     *   <li>foo:*:baz</li>
+     *   <li>**:baz</li>
+     *   <li>**:bar</li>
+     * </ul>
+     * 
+     */
+    public boolean matches(String variantPattern) {
+        
+        String[] patternComponents = variantPattern.split(":");
+        boolean inSkip = false;
+        int patternIndex = 0;
+        int variantIndex = 0;
+        while(patternIndex < patternComponents.length && variantIndex < variantComponents.length) { 
+            if(patternComponents[patternIndex].equals("*")) {
+                patternIndex++;
+                inSkip = false;
+            } else if(patternComponents[patternIndex].equals("**")) {
+                patternIndex++;
+                inSkip = true;
+            } else if(patternComponents[patternIndex].equals(variantComponents[variantIndex])) {
+                patternIndex++;
+                inSkip = false;
+            } else if(!inSkip) {
+                return false;
+            }
+            variantIndex++;
+        }
+        if(patternIndex < patternComponents.length) {
+            return false;
+        }
+        return true;
+    }
+
 }

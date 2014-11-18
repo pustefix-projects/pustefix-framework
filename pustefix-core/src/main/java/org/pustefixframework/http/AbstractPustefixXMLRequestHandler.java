@@ -33,6 +33,7 @@ import java.util.Iterator;
 import java.util.Map;
 import java.util.Properties;
 import java.util.TreeMap;
+import java.util.TreeSet;
 import java.util.regex.Pattern;
 
 import javax.servlet.ServletException;
@@ -997,6 +998,16 @@ public abstract class AbstractPustefixXMLRequestHandler extends AbstractPustefix
                     target  = pagetree.getTargetForPageInfo(pinfo);
                     if (target != null) {
                         return target.getTargetKey();
+                    }
+                }
+                
+                TreeSet<PageInfo> pageInfos = pagetree.getPageInfoForPageName(pagename);
+                for (PageInfo pageInfo : pageInfos) {
+                    if(pageInfo.getVariant() != null && variant.matches(pageInfo.getVariant())) {
+                        target  = pagetree.getTargetForPageInfo(pageInfo);
+                        if (target != null) {
+                            return target.getTargetKey();
+                        }
                     }
                 }
             }
