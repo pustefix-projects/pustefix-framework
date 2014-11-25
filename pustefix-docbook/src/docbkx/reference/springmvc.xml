@@ -1,0 +1,66 @@
+<?xml version="1.0"?>
+<chapter xml:id="springmvc" xmlns="http://docbook.org/ns/docbook" xmlns:xlink="http://www.w3.org/1999/xlink" xmlns:xi="http://www.w3.org/2001/XInclude" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://docbook.org/ns/docbook http://www.docbook.org/xml/5.0CR7/xsd/docbook.xsd">
+  <title>Using Spring MVC</title>
+
+  <section xml:id="springmvc.controllerstates">
+    <title>Pustefix states as Spring MVC controllers</title>
+    <para>Pustefix <literal>States</literal> are very similar to Spring MVC <literal>Controllers</literal>. They are called for processing request data and return the data model needed to display a page. They are no native <literal>Controllers</literal>, which get automatically picked up by Spring MVC, but Pustefix supports delegating processing to Spring, if a <literal>State</literal> contains according Spring <literal>RequestMapping</literal> annotations.
+    </para>
+<programlisting language="java"><![CDATA[public class TestState extends DefaultIWrapperState {
+
+    @RequestMapping("/test/{myId}")
+    public void list(@PathVariable String myId, Model model) {
+        model.addAttribute("test", myId);
+    }]]></programlisting>
+    <para>
+      A matching <literal>RequestMapping</literal>-annotated method is called after <literal>IHandlers</literal> are processed, but before the <literal>ResultDocument</literal> is created. Data added to the model will be automatically serialized to XML (after the configured output resources/beans are serialized). 
+    </para>
+  </section>
+
+  <section xml:id="springmvc.paginationexample">
+    <title>Example: Pagination</title>
+    <para>
+      The following example shows how you can do pagination using the <literal>Spring Data</literal> approach 
+      (see <link xlink:href="http://docs.spring.io/spring-data/data-commons/docs/current/reference/html/">see reference documentation</link>). 
+    </para>
+    <para>
+      By adding an argument of type <literal>org.springframework.data.domain.Pageable</literal> to the method, paging parameters like page number and page size are automatically bound to that bean.
+      Then you can pass this bean to your backend to return the matching data page implementing <literal>org.springframework.data.domain.Page</literal>. Add the result to the model, so that the data,
+      including some paging meta information, is automatically serialized to XML.
+    </para>
+<programlisting language="java"><![CDATA[public class TestState extends DefaultIWrapperState {
+
+    @Autowired
+    private ContextData contextData;
+
+    @RequestMapping("/test")
+    public void list(Model model, Pageable pageable) {
+
+        if(pageable.getSort() == null) {
+            //initially create default Pageable 
+            pageable = new PageRequest(0, 10, new Sort(Sort.Direction.ASC, "id"));
+        }
+        model.addAttribute("data", contextData.getDataList(pageable));
+    }
+}]]></programlisting>
+     <para>
+       The following parameters are bound to the <literal>Pageable</literal> bean: 
+     </para>
+     <itemizedlist>
+        <listitem>
+          <simpara>page.size - number of items per page</simpara>
+        </listitem>
+        <listitem>
+          <simpara>page.page - the page number, starting with 1</simpara>
+        </listitem>
+        <listitem>
+          <simpara>page.sort - the property to be sorted by</simpara>
+        </listitem>
+        <listitem>
+          <simpara>page.sort.dir - sort direction: asc or desc</simpara>
+        </listitem>
+     </itemizedlist>
+
+  </section>
+
+</chapter>
