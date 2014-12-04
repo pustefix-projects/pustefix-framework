@@ -9,13 +9,28 @@ if(!window.pfx) pfx={};
 //  callback  - callback function
 //  context   - callback object scope (can be empty)
 //  requestId - request/response assignment id (can be empty)
-pfx.render = function(href, part, module, search, callback, context, requestId, params) {
+pfx.render = function(href, part, module, search, callback, context, requestId, params, requestPath) {
    if(!href) throw new Error("Missing parameter: href");
    if(!part) throw new Error("Missing parameter: part");
    if(!callback) throw new Error("Missing parameter: callback");
    var url = window.location.href;
    var ind = url.indexOf('?');
    if(ind > -1) url = url.substring(0, ind);
+   ind = url.indexOf('#');
+   if(ind > -1) url = url.substring(0, ind);
+   if(requestPath) {
+	   if(requestPath.charAt(0) == '/') {
+		   requestPath = requestPath.substring(1);
+	   }
+	   var start = url;
+	   var end = "";
+	   ind = url.indexOf(';');
+	   if(ind > -1) {
+	       start = url.substring(0, ind);
+	       end = url.substring(ind);
+	   }
+       url = start + ( start.charAt(start.length-1) == '/' ? '' : '/' ) + requestPath + end;
+   }
    url += "?__render_href=" + href + "&__render_part=" + encodeURIComponent(part);
    if(module) url += "&__render_module=" + encodeURIComponent(module);
    if(search) url += "&__render_search=" + encodeURIComponent(search);

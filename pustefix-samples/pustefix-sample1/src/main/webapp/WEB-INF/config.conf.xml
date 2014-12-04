@@ -32,6 +32,7 @@
     </resource>
     <resource bean-name="appinfo" class="de.schlund.pfixcore.example.ContextAppInfo"/>
     <resource bean-name="search" class="de.schlund.pfixcore.example.ContextSearch"/>
+    <resource bean-name="data" class="de.schlund.pfixcore.example.ContextData"/>
    
     <config-include file="conf/fragments.xml" section="resources" module="animal-module"/>
   </context>
@@ -260,12 +261,17 @@
     </output>
   </pagerequest>
 
+  <pagerequest name="mvctest">
+    <state class="de.schlund.pfixcore.example.MVCTestState"/>
+  </pagerequest>
+
   <config-include file="WEB-INF/fragments.xml" section="pagerequests" />
   <config-include file="conf/fragments.xml" section="pagerequests" module="animal-module"/>
 
-  <!-- <properties> -->
+  <properties>
+    <prop name="pfixservletrequest.maxpartsize">1</prop>
     <!-- *** some additional properties needed for this application *** -->
     <!-- <prop name="interfacelogging">log</prop> -->
-  <!-- </properties> -->
+  </properties>
 
 </context-xml-service-config>

@@ -29,6 +29,8 @@ import org.apache.log4j.Logger;
 import org.pustefixframework.container.spring.util.PustefixPropertiesPersister;
 import org.pustefixframework.http.internal.PustefixInit;
 import org.pustefixframework.http.internal.PustefixTempDirs;
+import org.pustefixframework.web.mvc.filter.FilterResolver;
+import org.pustefixframework.web.mvc.internal.ControllerStateAdapter;
 import org.pustefixframework.web.mvc.internal.InputHandlerProcessor;
 import org.springframework.beans.BeansException;
 import org.springframework.beans.factory.config.BeanDefinition;
@@ -44,7 +46,10 @@ import org.springframework.beans.factory.xml.ResourceEntityResolver;
 import org.springframework.beans.factory.xml.XmlBeanDefinitionReader;
 import org.springframework.context.ApplicationContextException;
 import org.springframework.core.io.Resource;
+import org.springframework.data.web.PageableArgumentResolver;
+import org.springframework.web.bind.support.WebArgumentResolver;
 import org.springframework.web.context.support.AbstractRefreshableWebApplicationContext;
+import org.springframework.web.servlet.mvc.annotation.AnnotationMethodHandlerAdapter;
 import org.w3c.dom.Document;
 import org.xml.sax.SAXException;
 
@@ -136,6 +141,7 @@ public class PustefixWebApplicationContext extends AbstractRefreshableWebApplica
         }
 
         beanFactory.registerScope("tenant", new TenantScope());
+        addAnnotationMethodHandlerAdapter(beanFactory);
         addBeanFactoryPostProcessor(AnnotationBeanDefinitionPostProcessor.class, beanFactory);
         addBeanFactoryPostProcessor(InputHandlerProcessor.class, beanFactory);
     }
@@ -184,6 +190,19 @@ public class PustefixWebApplicationContext extends AbstractRefreshableWebApplica
         registry.registerBeanDefinition(name, definition);
     }
 
+    private void addAnnotationMethodHandlerAdapter(BeanDefinitionRegistry registry) {
+        BeanDefinitionBuilder beanBuilder = BeanDefinitionBuilder.genericBeanDefinition(ControllerStateAdapter.class);
+        beanBuilder.setScope("singleton");
+        AnnotationMethodHandlerAdapter adapter = new AnnotationMethodHandlerAdapter();
+        WebArgumentResolver[] resolvers = new WebArgumentResolver[] {new PageableArgumentResolver(), new FilterResolver()};
+        adapter.setCustomArgumentResolvers(resolvers);
+        beanBuilder.addPropertyValue("adapter", adapter);
+        BeanDefinition definition = beanBuilder.getBeanDefinition();
+        DefaultBeanNameGenerator beanNameGenerator = new DefaultBeanNameGenerator();
+        String beanName = beanNameGenerator.generateBeanName(definition, registry);
+        registry.registerBeanDefinition(beanName, definition);
+    }
+    
     @Override
     public Resource getResource(String location) {
         if(location.startsWith("module:") || location.startsWith("dynamic:")) {

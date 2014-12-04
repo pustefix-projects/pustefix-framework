@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="utf-8"?>
+<bean-metadata
+  xmlns="http://www.pustefix-framework.org/2008/namespace/bean-metadata"
+>
+	
+  <bean class="org.springframework.beans.support.PagedListHolder">
+    <property name="source" exclude="true"/>
+  </bean>
+  
+</bean-metadata>

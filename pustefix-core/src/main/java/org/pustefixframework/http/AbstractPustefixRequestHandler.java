@@ -54,6 +54,7 @@ import org.apache.log4j.Logger;
 import org.pustefixframework.config.contextxmlservice.ServletManagerConfig;
 import org.pustefixframework.config.project.SessionTimeoutInfo;
 import org.pustefixframework.container.spring.beans.TenantScope;
+import org.pustefixframework.container.spring.http.MVCStateHandlerMapping;
 import org.pustefixframework.container.spring.http.UriProvidingHttpRequestHandler;
 import org.pustefixframework.util.LocaleUtils;
 import org.pustefixframework.util.LogUtils;
@@ -61,9 +62,12 @@ import org.pustefixframework.util.NetUtils;
 import org.pustefixframework.util.URLUtils;
 import org.pustefixframework.util.net.IPRangeMatcher;
 import org.springframework.beans.factory.InitializingBean;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.context.ServletContextAware;
 
+import de.schlund.pfixcore.workflow.PageMap;
 import de.schlund.pfixcore.workflow.SiteMap;
+import de.schlund.pfixcore.workflow.State;
 import de.schlund.pfixcore.workflow.SiteMap.PageLookupResult;
 import de.schlund.pfixxml.LanguageInfo;
 import de.schlund.pfixxml.PfixServletRequest;
@@ -124,6 +128,8 @@ public abstract class AbstractPustefixRequestHandler implements SessionTrackingS
     protected LanguageInfo languageInfo;
     protected SiteMap siteMap;
     
+    @Autowired
+    private PageMap pageMap;
     
     public abstract ServletManagerConfig getServletManagerConfig();
 
@@ -636,7 +642,13 @@ public abstract class AbstractPustefixRequestHandler implements SessionTrackingS
         if(res.getPageAlternativeKey() != null) {
             request.setAttribute(REQUEST_ATTR_PAGE_ALTERNATIVE, res.getPageAlternativeKey());
         }
-        return res.getPageName();
+        
+        ind = res.getPageName().indexOf('/');
+        if(ind > -1) {
+            return res.getPageName().substring(0, ind);
+        } else {
+            return res.getPageName();
+        }
     }
     
     protected void addPageURIs(SortedSet<String> uris) {
@@ -646,6 +658,19 @@ public abstract class AbstractPustefixRequestHandler implements SessionTrackingS
             uris.add("/" + registeredPage);
             if(!processedPages.contains(registeredPage)) {
                 processedPages.add(registeredPage);
+                
+                //Add Spring MVC request mapping URIs
+                //TODO: mapping of page aliases
+                State state = pageMap.getState(registeredPage);
+                if(state != null) {
+                    String[] mvcUris = MVCStateHandlerMapping.determineUrlsForHandlerMethods(state.getClass());
+                    if(mvcUris != null) {
+                        for(String mvcUri: mvcUris) {
+                            uris.add(mvcUri);
+                        }
+                    }
+                }
+                
                 if(!tenantInfo.getTenants().isEmpty()) {
                     for(Tenant tenant: tenantInfo.getTenants()) {
                         for(String supportedLanguage: tenant.getSupportedLanguages()) {

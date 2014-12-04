@@ -64,6 +64,7 @@
   <xi:include href="xslt.xml" />
   <xi:include href="concepts.xml" />
   <xi:include href="advancedtopics.xml" />
+  <xi:include href="springmvc.xml" />
   <xi:include href="module-support.xml" />
   <xi:include href="testing.xml" />
   <xi:include href="tooling.xml" />

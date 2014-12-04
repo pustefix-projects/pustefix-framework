@@ -23,6 +23,13 @@ import java.util.Map;
 import org.pustefixframework.config.contextxmlservice.IWrapperConfig;
 import org.pustefixframework.config.contextxmlservice.StateConfig;
 import org.pustefixframework.generated.CoreStatusCodes;
+import org.pustefixframework.web.mvc.internal.ControllerResponseWrapper;
+import org.pustefixframework.web.mvc.internal.ControllerStateAdapter;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.ui.ModelMap;
+import org.springframework.validation.BindingResult;
+import org.springframework.web.servlet.ModelAndView;
+import org.springframework.web.servlet.mvc.multiaction.NoSuchRequestHandlingMethodException;
 
 import de.schlund.pfixcore.scriptedflow.vm.VirtualHttpServletRequest;
 import de.schlund.pfixcore.util.TokenManager;
@@ -50,6 +57,9 @@ public class DefaultIWrapperState extends StateImpl implements IWrapperState, Re
 
     private final static String IHDL_CONT_MANAGER = "de.schlund.pfixcore.workflow.app.IHandlerContainerManager";
 
+    @Autowired
+    private ControllerStateAdapter adapter;
+    
     /**
      * @see de.schlund.pfixcore.workflow.State#isAccessible(Context,
      *      PfixServletRequest)
@@ -154,6 +164,14 @@ public class DefaultIWrapperState extends StateImpl implements IWrapperState, Re
             throw new XMLException("This should not happen: No submit trigger, no direct trigger, no final page and no workflow???");
         }
 
+        ModelAndView modelAndView = null;
+        try {
+            ControllerResponseWrapper responseWrapper = new ControllerResponseWrapper();
+            modelAndView = adapter.getAdapter().handle(preq.getRequest(), responseWrapper, this);
+        } catch(NoSuchRequestHandlingMethodException x) {
+            //let implementing a handler method be optional and ignore this exception
+        }
+        
         // We want to optimize away the case where the context tells us that we
         // don't need to supply a full document as the context will - because of
         // the current state of
@@ -173,6 +191,17 @@ public class DefaultIWrapperState extends StateImpl implements IWrapperState, Re
             wrp_container.addErrorCodes();
             wrp_container.addIWrapperStatus();
             renderContextResources(context, resdoc);
+            if(modelAndView != null) {
+                ModelMap modelMap = modelAndView.getModelMap();
+                for(String key: modelMap.keySet()) {
+                    Object value = modelMap.get(key);
+                    if(value instanceof BindingResult) {
+                        //TODO: add serializer
+                    } else {
+                        ResultDocument.addObject(resdoc.getRootElement(), key, modelMap.get(key));
+                    }
+                }
+            }
             addResponseHeadersAndType(context, resdoc);
         }
         return resdoc;
