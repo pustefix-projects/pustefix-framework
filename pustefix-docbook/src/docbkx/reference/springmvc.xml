@@ -34,13 +34,14 @@
     private ContextData contextData;
 
     @RequestMapping("/test")
-    public void list(Model model, Pageable pageable) {
+    public void list(Model model, Pageable pageable, Filter filter) {
 
         if(pageable.getSort() == null) {
             //initially create default Pageable 
             pageable = new PageRequest(0, 10, new Sort(Sort.Direction.ASC, "id"));
         }
         model.addAttribute("data", contextData.getDataList(pageable));
+        model.addAttribute("filter", filter);
     }
 }]]></programlisting>
      <para>
@@ -60,6 +61,27 @@
           <simpara>page.sort.dir - sort direction: asc or desc</simpara>
         </listitem>
      </itemizedlist>
+     <para>
+       Often you not just want to paginate and sort data, but you also want to filter it, e.g. based on single property values or more complex conditions. Therefor Pustefix introduced the
+       <literal>org.pustefixframework.web.mvc.filter.Filter</literal> interface. Filter parameters are also automatically bound, multiple parameters having the same name are interpreted as disjunction,
+       different parameters as conjunction.
+     </para>
+     <itemizedlist>
+        <listitem>
+          <simpara>filter.foo=x</simpara>
+        </listitem>
+        <listitem>
+          <simpara>filter.foo=y</simpara>
+        </listitem>
+        <listitem>
+          <simpara>filter.bar=123</simpara>
+        </listitem>
+     </itemizedlist>
+     <para>
+       The filter parameters above will result in a Filter data structure representing the logical expression <literal>( foo=x OR foo=y ) AND bar=123</literal>, i.e. by matching objects with 
+       property <literal>foo</literal> set to <literal>x</literal> or <literal>y</literal> and property <literal>bar</literal> set to <literal>123</literal>. The default implementation supports
+       checking an object candidate using the method <literal>Filter.isSatisfiedBy(candidate)</literal>.
+     </para>
 
   </section>
 
