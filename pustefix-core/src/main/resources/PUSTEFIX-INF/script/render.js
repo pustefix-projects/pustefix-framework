@@ -19,11 +19,17 @@ pfx.render = function(href, part, module, search, callback, context, requestId, 
    ind = url.indexOf('#');
    if(ind > -1) url = url.substring(0, ind);
    if(requestPath) {
-	   if(requestPath.indexOf('/') == 0) {
-           url = url.replace("//g", requestPath);
-	   } else {
-           url = url + "/" + requestPath;
+	   if(requestPath.charAt(0) == '/') {
+		   requestPath = requestPath.substring(1);
 	   }
+	   var start = url;
+	   var end = "";
+	   ind = url.indexOf(';');
+	   if(ind > -1) {
+	       start = url.substring(0, ind);
+	       end = url.substring(ind);
+	   }
+       url = start + ( start.charAt(start.length-1) == '/' ? '' : '/' ) + requestPath + end;
    }
    url += "?__render_href=" + href + "&__render_part=" + encodeURIComponent(part);
    if(module) url += "&__render_module=" + encodeURIComponent(module);
@@ -39,7 +45,6 @@ pfx.render = function(href, part, module, search, callback, context, requestId, 
        }
      }
    }
-   https?://[^/]+
    alert("URL: "+url);
    var httpReq = new pfx.net.HTTPRequest("GET", url, callback, context);
    httpReq.start("", null, requestId);
