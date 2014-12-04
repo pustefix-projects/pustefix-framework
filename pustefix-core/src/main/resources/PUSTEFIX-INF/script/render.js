@@ -45,7 +45,6 @@ pfx.render = function(href, part, module, search, callback, context, requestId, 
        }
      }
    }
-   alert("URL: "+url);
    var httpReq = new pfx.net.HTTPRequest("GET", url, callback, context);
    httpReq.start("", null, requestId);
 };
