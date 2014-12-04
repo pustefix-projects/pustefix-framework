@@ -4,8 +4,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
 
-import org.springframework.beans.BeanWrapper;
-import org.springframework.beans.BeanWrapperImpl;
+import org.pustefixframework.web.mvc.filter.Filter;
 import org.springframework.beans.support.MutableSortDefinition;
 import org.springframework.beans.support.PagedListHolder;
 import org.springframework.data.domain.Page;
@@ -52,15 +51,11 @@ public class ContextData {
     
     public Page<DataBean> getDataList(Pageable pageable, Filter filter) {
         
-        if(filter.getProperty() != null) {
-            if(filter.getProperty().equals("enabled")) {
-                List<DataBean> filteredList = new ArrayList<DataBean>();
-                for(DataBean bean: list) {
-                    BeanWrapper beanWrapper = new BeanWrapperImpl(bean);
-                    Object value = beanWrapper.getPropertyValue(filter.getProperty());
-                    if(value != null && String.valueOf(value).equals(filter.getValue())) {
-                        filteredList.add(bean);
-                    }
+        if(filter != null) {
+            List<DataBean> filteredList = new ArrayList<DataBean>();
+            for(DataBean bean: list) {
+                if(filter.isSatisfiedBy(bean)) {
+                    filteredList.add(bean);
                 }
                 dataList = new PagedListHolder<DataBean>(filteredList);
             }
@@ -73,6 +68,7 @@ public class ContextData {
             dataList.setSort(new MutableSortDefinition(order.getProperty(), true, order.isAscending()));
             dataList.resort();
         }
+        
         dataList.setPageSize(pageable.getPageSize());
         dataList.setPage(pageable.getPageNumber());
         return new PageImpl<DataBean>(dataList.getPageList(), pageable, dataList.getSource().size());
