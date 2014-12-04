@@ -9,13 +9,22 @@ if(!window.pfx) pfx={};
 //  callback  - callback function
 //  context   - callback object scope (can be empty)
 //  requestId - request/response assignment id (can be empty)
-pfx.render = function(href, part, module, search, callback, context, requestId, params) {
+pfx.render = function(href, part, module, search, callback, context, requestId, params, requestPath) {
    if(!href) throw new Error("Missing parameter: href");
    if(!part) throw new Error("Missing parameter: part");
    if(!callback) throw new Error("Missing parameter: callback");
    var url = window.location.href;
    var ind = url.indexOf('?');
    if(ind > -1) url = url.substring(0, ind);
+   ind = url.indexOf('#');
+   if(ind > -1) url = url.substring(0, ind);
+   if(requestPath) {
+	   if(requestPath.indexOf('/') == 0) {
+           url = url.replace("//g", requestPath);
+	   } else {
+           url = url + "/" + requestPath;
+	   }
+   }
    url += "?__render_href=" + href + "&__render_part=" + encodeURIComponent(part);
    if(module) url += "&__render_module=" + encodeURIComponent(module);
    if(search) url += "&__render_search=" + encodeURIComponent(search);
@@ -30,6 +39,8 @@ pfx.render = function(href, part, module, search, callback, context, requestId, 
        }
      }
    }
+   https?://[^/]+
+   alert("URL: "+url);
    var httpReq = new pfx.net.HTTPRequest("GET", url, callback, context);
    httpReq.start("", null, requestId);
 };
