@@ -17,6 +17,20 @@
     </para>
   </section>
 
+  <section xml:id="springmvc.annotationmethodhandleradapter">
+    <title>AnnotationMethodHandlerAdapter customization</title>
+    <para>Spring MVC's request mapping and parameter binding can be customized by configuring the responsible <literal>AnnotationMethodHandlerAdapter</literal> instance. Pustefix by default registers such an instance, which can be customized by adding a bean definition of type <literal>org.pustefixframework.web.mvc.AnnotationMethodHandlerAdapterConfig</literal> to the Spring configuration. See the following example which configures two argument resolvers:
+    </para>
+<programlisting language="xml"><![CDATA[<bean class="org.pustefixframework.web.mvc.AnnotationMethodHandlerAdapterConfig">
+   <property name="customArgumentResolvers">
+      <list>
+         <bean class="org.springframework.data.web.PageableArgumentResolver"/>
+         <bean class="org.pustefixframework.web.mvc.filter.FilterResolver"/>
+      </list>
+   </property>
+</bean>]]></programlisting>
+  </section>
+
   <section xml:id="springmvc.paginationexample">
     <title>Example: Pagination</title>
     <para>
