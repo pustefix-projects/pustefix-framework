@@ -24,6 +24,7 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
 import java.util.Set;
+import java.util.concurrent.ConcurrentHashMap;
 
 import de.schlund.pfixcore.beans.BeanDescriptor;
 import de.schlund.pfixcore.beans.BeanDescriptorFactory;
@@ -40,13 +41,13 @@ import de.schlund.pfixcore.oxm.impl.XMLWriter;
 public class BeanSerializer implements ComplexTypeSerializer {
 
     BeanDescriptorFactory beanDescFactory;
-    Map<Class<?>, Map<String, SimpleTypeSerializer>> customSimpleSerializerCache;
-    Map<Class<?>, Map<String, ComplexTypeSerializer>> customComplexSerializerCache;
+    ConcurrentHashMap<Class<?>, Map<String, SimpleTypeSerializer>> customSimpleSerializerCache;
+    ConcurrentHashMap<Class<?>, Map<String, ComplexTypeSerializer>> customComplexSerializerCache;
 
     public BeanSerializer(BeanDescriptorFactory beanDescFactory) {
         this.beanDescFactory = beanDescFactory;
-        customSimpleSerializerCache = new HashMap<Class<?>, Map<String, SimpleTypeSerializer>>();
-        customComplexSerializerCache = new HashMap<Class<?>, Map<String, ComplexTypeSerializer>>();
+        customSimpleSerializerCache = new ConcurrentHashMap<Class<?>, Map<String, SimpleTypeSerializer>>();
+        customComplexSerializerCache = new ConcurrentHashMap<Class<?>, Map<String, ComplexTypeSerializer>>();
     }
 
     public void serialize(Object obj, SerializationContext ctx, XMLWriter writer) {
@@ -185,7 +186,7 @@ public class BeanSerializer implements ComplexTypeSerializer {
                 throw new RuntimeException("Error during serialization.", x);
             }
         }
-        customSimpleSerializerCache.put(clazz, simpleSerializers);
-        customComplexSerializerCache.put(clazz, complexSerializers);
+        customSimpleSerializerCache.putIfAbsent(clazz, simpleSerializers);
+        customComplexSerializerCache.putIfAbsent(clazz, complexSerializers);
     }
 }
