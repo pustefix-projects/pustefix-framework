@@ -23,13 +23,11 @@ import java.util.Map;
 import org.pustefixframework.config.contextxmlservice.IWrapperConfig;
 import org.pustefixframework.config.contextxmlservice.StateConfig;
 import org.pustefixframework.generated.CoreStatusCodes;
-import org.pustefixframework.web.mvc.internal.ControllerResponseWrapper;
 import org.pustefixframework.web.mvc.internal.ControllerStateAdapter;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.ui.ModelMap;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.servlet.ModelAndView;
-import org.springframework.web.servlet.mvc.multiaction.NoSuchRequestHandlingMethodException;
 
 import de.schlund.pfixcore.scriptedflow.vm.VirtualHttpServletRequest;
 import de.schlund.pfixcore.util.TokenManager;
@@ -164,13 +162,7 @@ public class DefaultIWrapperState extends StateImpl implements IWrapperState, Re
             throw new XMLException("This should not happen: No submit trigger, no direct trigger, no final page and no workflow???");
         }
 
-        ModelAndView modelAndView = null;
-        try {
-            ControllerResponseWrapper responseWrapper = new ControllerResponseWrapper();
-            modelAndView = adapter.getAdapter().handle(preq.getRequest(), responseWrapper, this);
-        } catch(NoSuchRequestHandlingMethodException x) {
-            //let implementing a handler method be optional and ignore this exception
-        }
+        ModelAndView modelAndView = adapter.tryHandle(preq.getRequest(), this);
         
         // We want to optimize away the case where the context tells us that we
         // don't need to supply a full document as the context will - because of
