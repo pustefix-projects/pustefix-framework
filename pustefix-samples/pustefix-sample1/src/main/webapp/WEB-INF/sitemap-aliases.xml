@@ -3,4 +3,5 @@
   <alias page="home">Start</alias>
   <alias page="order">Bestellung</alias>
   <alias page="overview">Uebersicht</alias>
+  <alias page="mvctest">mymvc</alias>
 </sitemap-aliases>
