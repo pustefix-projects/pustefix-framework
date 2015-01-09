@@ -107,6 +107,7 @@ public abstract class AbstractPustefixRequestHandler implements SessionTrackingS
     
     public static final String REQUEST_ATTR_LANGUAGE = "__PFX_LANGUAGE__";
     public static final String REQUEST_ATTR_PAGE_ALTERNATIVE = "__PFX_PAGE_ALTERNATIVE__";
+    public static final String REQUEST_ATTR_PAGE_ADDITIONAL_PATH = "__PFX_PAGE_ADDITIONAL_PATH__";
     
     private static final IPRangeMatcher privateIPRange = new IPRangeMatcher("10.0.0.0/8", "169.254.0.0/16", 
             "172.16.0.0/12", "192.168.0.0/16", "fc00::/7");
@@ -638,7 +639,12 @@ public abstract class AbstractPustefixRequestHandler implements SessionTrackingS
         
         PageLookupResult res = null;
         String lang = (String)request.getAttribute(REQUEST_ATTR_LANGUAGE);
+        
         res = siteMap.getPageName(pageAlias, lang);
+        if(pageAlias.startsWith(res.getAliasPageName()) && pageAlias.length() > res.getAliasPageName().length()) {
+            String additionalPath = pageAlias.substring(pageAlias.indexOf(res.getAliasPageName()) + res.getAliasPageName().length());
+            request.setAttribute(REQUEST_ATTR_PAGE_ADDITIONAL_PATH, additionalPath);
+        }
         if(res.getPageAlternativeKey() != null) {
             request.setAttribute(REQUEST_ATTR_PAGE_ALTERNATIVE, res.getPageAlternativeKey());
         }
@@ -659,14 +665,19 @@ public abstract class AbstractPustefixRequestHandler implements SessionTrackingS
             if(!processedPages.contains(registeredPage)) {
                 processedPages.add(registeredPage);
                 
-                //Add Spring MVC request mapping URIs
-                //TODO: mapping of page aliases
+                List<String> mvcSuffixes = new ArrayList<String>();
                 State state = pageMap.getState(registeredPage);
                 if(state != null) {
                     String[] mvcUris = MVCStateHandlerMapping.determineUrlsForHandlerMethods(state.getClass());
                     if(mvcUris != null) {
                         for(String mvcUri: mvcUris) {
                             uris.add(mvcUri);
+                            if(mvcUri.startsWith("/" + registeredPage)) {
+                                String suffix = mvcUri.substring(registeredPage.length() + 1);
+                                if(suffix.length() > 0) {
+                                    mvcSuffixes.add(suffix);
+                                }
+                            }
                         }
                     }
                 }
@@ -680,12 +691,12 @@ public abstract class AbstractPustefixRequestHandler implements SessionTrackingS
                                 pathPrefix = langPart + "/";
                             }
                             String alias = siteMap.getAlias(registeredPage, supportedLanguage);
-                            uris.add("/" + pathPrefix + registeredPage);
-                            uris.add("/" + pathPrefix + alias);
+                            addUri(uris, "/" + pathPrefix + registeredPage, mvcSuffixes);
+                            addUri(uris, "/" + pathPrefix + alias, mvcSuffixes);
                             List<String> pageAltAliases = siteMap.getPageAlternativeAliases(registeredPage, supportedLanguage);
                             if(pageAltAliases != null) {
                                 for(String pageAltAlias: pageAltAliases) {
-                                    uris.add("/" + pathPrefix + pageAltAlias);
+                                    addUri(uris, "/" + pathPrefix + pageAltAlias, mvcSuffixes);
                                 }
                             }
                         }
@@ -698,28 +709,35 @@ public abstract class AbstractPustefixRequestHandler implements SessionTrackingS
                             pathPrefix = langPart + "/";
                         }
                         String alias = siteMap.getAlias(registeredPage, supportedLanguage);
-                        uris.add("/" + pathPrefix + registeredPage);
-                        uris.add("/" + pathPrefix + alias);
+                        addUri(uris, "/" + pathPrefix + registeredPage, mvcSuffixes);
+                        addUri(uris, "/" + pathPrefix + alias, mvcSuffixes);
                         List<String> pageAltAliases = siteMap.getPageAlternativeAliases(registeredPage, supportedLanguage);
                         if(pageAltAliases != null) {
                             for(String pageAltAlias: pageAltAliases) {
-                                uris.add("/" + pathPrefix + pageAltAlias);
+                                addUri(uris, "/" + pathPrefix + pageAltAlias, mvcSuffixes);
                             }
                         }
                     }
                 } else {
                 	String alias = siteMap.getAlias(registeredPage, null);
                 	if(alias != null && !registeredPage.equals(alias)) {
-                		uris.add("/" + alias);
+                		addUri(uris, "/" + alias, mvcSuffixes);
                 	}
                     List<String> pageAltAliases = siteMap.getPageAlternativeAliases(registeredPage, null);
                     if(pageAltAliases != null) {
                         for(String pageAltAlias: pageAltAliases) {
-                            uris.add("/" + pageAltAlias);
+                            addUri(uris, "/" + pageAltAlias, mvcSuffixes);
                         }
                     }
                 }
             }
+        }
+    }
+    
+    private void addUri(Set<String> uris, String uri, List<String> mvcSuffixes) {
+        uris.add(uri);
+        for(String mvcSuffix: mvcSuffixes) {
+            uris.add(uri + mvcSuffix);
         }
     }
     

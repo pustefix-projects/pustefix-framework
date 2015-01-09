@@ -17,8 +17,11 @@
  */
 package org.pustefixframework.web.mvc.internal;
 
-import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletRequestWrapper;
+
+import org.pustefixframework.http.AbstractPustefixRequestHandler;
+
+import de.schlund.pfixxml.PfixServletRequest;
 
 /**
  * A HttpServletRequest wrapper used to fulfill AnnotationMethodHandlerAdapter's
@@ -26,14 +29,21 @@ import javax.servlet.http.HttpServletRequestWrapper;
  */
 public class ControllerRequestWrapper extends HttpServletRequestWrapper {
     
-    public ControllerRequestWrapper(HttpServletRequest request) {
-        super(request);
+    private PfixServletRequest pfixRequest;
+    
+    public ControllerRequestWrapper(PfixServletRequest pfixRequest) {
+        super(pfixRequest.getRequest());
+        this.pfixRequest = pfixRequest;
     }
 
     @Override
-    public String getPathInfo() {
-        //TODO: map alias path to internal path
-        return super.getPathInfo();
+    public String getRequestURI() {
+        String uri = "/" + pfixRequest.getPageName();
+        String additionalPath = (String)pfixRequest.getRequest().getAttribute(AbstractPustefixRequestHandler.REQUEST_ATTR_PAGE_ADDITIONAL_PATH);
+        if(additionalPath != null && additionalPath.length() > 0) {
+            uri += additionalPath;
+        }
+        return uri;
     }
-    
+
 }

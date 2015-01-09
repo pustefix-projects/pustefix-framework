@@ -162,7 +162,7 @@ public class DefaultIWrapperState extends StateImpl implements IWrapperState, Re
             throw new XMLException("This should not happen: No submit trigger, no direct trigger, no final page and no workflow???");
         }
 
-        ModelAndView modelAndView = adapter.tryHandle(preq.getRequest(), this);
+        ModelAndView modelAndView = adapter.tryHandle(preq, this);
         
         // We want to optimize away the case where the context tells us that we
         // don't need to supply a full document as the context will - because of

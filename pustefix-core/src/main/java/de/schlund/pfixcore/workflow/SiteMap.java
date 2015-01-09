@@ -447,6 +447,7 @@ public class SiteMap {
     }
     
     public PageLookupResult getPageName(String alias, String lang) {
+        String aliasPageName = alias;
         String page = null;
         String aliasKey = null;
         if(lang != null) {
@@ -490,7 +491,11 @@ public class SiteMap {
             	}
             }
         }
-        return new PageLookupResult(page, aliasKey);
+        if(page.equals(alias) && page.contains("/")) {
+            aliasPageName = page.substring(0, page.lastIndexOf('/'));
+            return getPageName(aliasPageName, lang);
+        }
+        return new PageLookupResult(page, aliasKey, aliasPageName);
     }
     
     public Element getSiteMapXMLElement(XsltVersion xsltVersion, String language) {
@@ -545,13 +550,15 @@ public class SiteMap {
     
     public class PageLookupResult {
         
-        PageLookupResult(String pageName, String pageAlternativeKey) {
+        PageLookupResult(String pageName, String pageAlternativeKey, String aliasPageName) {
             this.pageName = pageName;
             this.pageAlternativeKey = pageAlternativeKey;
+            this.aliasPageName = aliasPageName;
         }
         
         String pageName;
         String pageAlternativeKey;
+        String aliasPageName;
         
         public String getPageName() {
             return pageName;
@@ -559,6 +566,10 @@ public class SiteMap {
         
         public String getPageAlternativeKey() {
             return pageAlternativeKey;
+        }
+        
+        public String getAliasPageName() {
+            return aliasPageName;
         }
     
     }

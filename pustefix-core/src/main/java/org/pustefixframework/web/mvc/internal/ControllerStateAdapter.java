@@ -20,8 +20,6 @@ package org.pustefixframework.web.mvc.internal;
 import java.lang.reflect.Method;
 import java.util.concurrent.ConcurrentHashMap;
 
-import javax.servlet.http.HttpServletRequest;
-
 import org.pustefixframework.web.mvc.AnnotationMethodHandlerAdapterConfig;
 import org.pustefixframework.web.mvc.filter.FilterResolver;
 import org.springframework.beans.factory.InitializingBean;
@@ -32,6 +30,8 @@ import org.springframework.web.bind.support.WebArgumentResolver;
 import org.springframework.web.servlet.ModelAndView;
 import org.springframework.web.servlet.mvc.annotation.AnnotationMethodHandlerAdapter;
 import org.springframework.web.servlet.mvc.multiaction.NoSuchRequestHandlingMethodException;
+
+import de.schlund.pfixxml.PfixServletRequest;
 
 /**
  * Bridge to Spring MVC's AnnotationMethodHandlerAdapter.
@@ -55,11 +55,12 @@ public class ControllerStateAdapter implements InitializingBean {
     /**
      * Call AnnotationMethodHandlerAdapter if State class contains request mappings.
      */
-    public ModelAndView tryHandle(HttpServletRequest request, Object handler) throws Exception {
+    public ModelAndView tryHandle(PfixServletRequest request, Object handler) throws Exception {
         if(hasRequestMapping(handler.getClass())) {
             try {
+                ControllerRequestWrapper wrappedRequest = new ControllerRequestWrapper(request);
                 ControllerResponseWrapper response = new ControllerResponseWrapper();
-                return adapter.handle(request, response, handler);
+                return adapter.handle(wrappedRequest, response, handler);
             } catch(NoSuchRequestHandlingMethodException x) {
                 //let implementing a handler method be optional and ignore this exception
             }
