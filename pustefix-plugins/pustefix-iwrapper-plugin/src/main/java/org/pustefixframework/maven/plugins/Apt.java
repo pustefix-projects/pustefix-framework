@@ -133,6 +133,13 @@ public class Apt implements DiagnosticListener<JavaFileObject> {
             sb.append(url.getFile()).append(File.pathSeparator);
         }
         sb.append(srcDir.getAbsolutePath());
+        List<?> elements = mavenProject.getCompileSourceRoots();
+        for (int i = 0; i < elements.size(); i++) {
+            String srcPath = (String)elements.get(i);
+            if(!srcPath.equals(srcDir.getAbsolutePath())) {
+                sb.append(File.pathSeparator).append(srcPath);
+            }
+        }
         options.add(sb.toString());
         options.add("-proc:only");
         options.add("-s");
@@ -145,8 +152,6 @@ public class Apt implements DiagnosticListener<JavaFileObject> {
         processors.add(new IWrapperAnnotationProcessor());
         task.setProcessors(processors);
         task.call();
-        
-      
         
         File[] aptFiles = aptDir.listFiles();
         if(aptFiles == null) {
@@ -169,7 +174,7 @@ public class Apt implements DiagnosticListener<JavaFileObject> {
             throw new MojoExecutionException("Can't create project runtime classloader", x);
         }
     }
-
+    
     public void report(Diagnostic<? extends JavaFileObject> diagnostic) {
         Diagnostic.Kind kind = diagnostic.getKind();
         if(kind == Diagnostic.Kind.NOTE || kind == Diagnostic.Kind.OTHER) {
