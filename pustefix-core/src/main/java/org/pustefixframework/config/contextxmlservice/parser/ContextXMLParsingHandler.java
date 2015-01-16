@@ -93,7 +93,7 @@ public class ContextXMLParsingHandler implements ParsingHandler {
             beanBuilder.setScope("singleton");
             beanBuilder.addPropertyValue("map", pageMap);
             beanDefinition = beanBuilder.getBeanDefinition();
-            String pageMapBeanName = beanNameGenerator.generateBeanName(beanDefinition, beanRegistry);
+            String pageMapBeanName = PageMap.class.getName();
             beanRegistry.registerBeanDefinition(pageMapBeanName, beanDefinition);
             
             @SuppressWarnings({"unchecked","rawtypes"})

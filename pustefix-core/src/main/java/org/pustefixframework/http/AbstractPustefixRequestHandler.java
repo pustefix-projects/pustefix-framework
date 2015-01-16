@@ -62,13 +62,12 @@ import org.pustefixframework.util.NetUtils;
 import org.pustefixframework.util.URLUtils;
 import org.pustefixframework.util.net.IPRangeMatcher;
 import org.springframework.beans.factory.InitializingBean;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.context.ServletContextAware;
 
 import de.schlund.pfixcore.workflow.PageMap;
 import de.schlund.pfixcore.workflow.SiteMap;
-import de.schlund.pfixcore.workflow.State;
 import de.schlund.pfixcore.workflow.SiteMap.PageLookupResult;
+import de.schlund.pfixcore.workflow.State;
 import de.schlund.pfixxml.LanguageInfo;
 import de.schlund.pfixxml.PfixServletRequest;
 import de.schlund.pfixxml.Tenant;
@@ -128,8 +127,6 @@ public abstract class AbstractPustefixRequestHandler implements SessionTrackingS
     protected TenantInfo tenantInfo;
     protected LanguageInfo languageInfo;
     protected SiteMap siteMap;
-    
-    @Autowired
     private PageMap pageMap;
     
     public abstract ServletManagerConfig getServletManagerConfig();
@@ -793,4 +790,7 @@ public abstract class AbstractPustefixRequestHandler implements SessionTrackingS
         this.siteMap = siteMap;
     }
     
+    public void setPageMap(PageMap pageMap) {
+        this.pageMap = pageMap;
+    }
 }
