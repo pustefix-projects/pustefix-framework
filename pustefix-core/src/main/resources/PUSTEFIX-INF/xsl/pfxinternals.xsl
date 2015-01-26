@@ -18,7 +18,7 @@
             margin: 0;
             padding: 0;
             font-family: monospace;
-            background: #fff url(../../modules/pustefix-core/img/background.png) 0 0 repeat-x;
+            background: #fff url(<xsl:value-of select="$__contextpath"/>/modules/pustefix-core/img/background.png) 0 0 repeat-x;
           }
           div.header {
 	        clear: both;
