@@ -141,7 +141,9 @@ public class CookieOnlySessionTrackingStrategy implements SessionTrackingStrateg
                         if(cookie != null && cookie.getValue().equals(req.getRequestedSessionId())) resetTry = true;
                         
                         String forcelocal = req.getParameter(PARAM_FORCELOCAL);
-                        if (req.getMethod().equals("POST") || resetTry || (forcelocal != null && 
+                        String active = (String)req.getAttribute("JK_LB_ACTIVATION");
+                        if ((req.getMethod().equals("POST") && (active == null || active.equals("ACT")))  
+                                || resetTry || (forcelocal != null && 
                                 (forcelocal.equals("1") || forcelocal.equals("true") || forcelocal.equals("yes")))) {
                             
                             createSession(req, res);

@@ -125,9 +125,10 @@ public class CookieSessionTrackingStrategy implements SessionTrackingStrategy {
                 // course if we are running in a cluster of servers behind a balancer that chooses the right server
                 // based on the session id included in the URL.
                 String forcelocal = req.getParameter(PARAM_FORCELOCAL);
+                String active = (String)req.getAttribute("JK_LB_ACTIVATION");
                 if (forcelocal != null && (forcelocal.equals("1") || forcelocal.equals("true") || forcelocal.equals("yes"))) {
                     LOG.debug("    ... but found __forcelocal parameter to be set.");
-                } else if(req.getMethod().equals("POST")) {
+                } else if(req.getMethod().equals("POST") && (active == null || active.equals("ACT"))) {
                     LOG.debug("    ... but is POST.");
                 } else {
                     boolean resetTry = false;
