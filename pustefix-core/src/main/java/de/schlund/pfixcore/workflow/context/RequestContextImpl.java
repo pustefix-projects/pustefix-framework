@@ -58,6 +58,7 @@ import de.schlund.pfixcore.workflow.PageRequest;
 import de.schlund.pfixcore.workflow.PageRequestStatus;
 import de.schlund.pfixcore.workflow.State;
 import de.schlund.pfixcore.workflow.VariantManager;
+import de.schlund.pfixcore.workflow.SiteMap.PageLookupResult;
 import de.schlund.pfixxml.PfixServletRequest;
 import de.schlund.pfixxml.RequestParam;
 import de.schlund.pfixxml.ResultDocument;
@@ -747,6 +748,11 @@ public class RequestContextImpl implements Cloneable, AuthorizationInterceptor {
 
     private SPDocument doJump(boolean stopnextforcurrentrequest) throws PustefixApplicationException, PustefixCoreException {
         LOG.debug("* [" + currentpagerequest + "] signalled success, jumptopage is set as [" + jumptopage + "].");
+        PageLookupResult result = servercontext.getSiteMap().getPageName(jumptopage, getLanguage());
+        jumptopage = result.getPageName();
+        if(result.getPageAlternativeKey() != null) {
+            pageAlternativeKey = result.getPageAlternativeKey();
+        }
         currentpagerequest = createPageRequest(jumptopage);
         currentstatus = PageRequestStatus.JUMP;
         if (jumptopageflow != null) {

@@ -24,6 +24,7 @@ import org.pustefixframework.config.contextxmlservice.ContextConfig;
 import org.pustefixframework.config.project.ProjectInfo;
 
 import de.schlund.pfixcore.workflow.PageMap;
+import de.schlund.pfixcore.workflow.SiteMap;
 import de.schlund.pfixcore.workflow.VariantManager;
 import de.schlund.pfixxml.Variant;
 
@@ -42,6 +43,7 @@ public class ServerContextImpl {
     private VariantManager variantmanager;
     private PageMap pagemap;
     private ProjectInfo projectInfo;
+    private SiteMap siteMap;
     
     public void init() throws Exception {
         if (config == null || pagemap == null) {
@@ -98,6 +100,14 @@ public class ServerContextImpl {
     
     public void setProjectInfo(ProjectInfo projectInfo) {
         this.projectInfo = projectInfo;
+    }
+
+    public SiteMap getSiteMap() {
+        return siteMap;
+    }
+
+    public void setSiteMap(SiteMap siteMap) {
+        this.siteMap = siteMap;
     }
 
 }
