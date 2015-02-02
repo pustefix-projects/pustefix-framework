@@ -5,12 +5,12 @@
   <parent>
     <groupId>org.pustefixframework</groupId>
     <artifactId>pustefixframework</artifactId>
-    <version>0.18.80</version>
+    <version>0.18.81-SNAPSHOT</version>
   </parent>
 
   <groupId>org.pustefixframework</groupId>
   <artifactId>pustefix-live</artifactId>
-  <version>0.18.80</version>
+  <version>0.18.81-SNAPSHOT</version>
   <packaging>jar</packaging>
   <name>Pustefix Live</name>
   <description>Tools to support Pustefix Live mechanism.</description>
