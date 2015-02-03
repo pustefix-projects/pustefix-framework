@@ -31,6 +31,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+import javax.xml.parsers.DocumentBuilderFactory;
+import javax.xml.parsers.ParserConfigurationException;
 import javax.xml.transform.TransformerConfigurationException;
 import javax.xml.transform.TransformerFactory;
 import javax.xml.transform.dom.DOMResult;
@@ -58,10 +60,13 @@ import de.schlund.pfixxml.config.includes.IncludesResolver;
 import de.schlund.pfixxml.resources.Resource;
 import de.schlund.pfixxml.resources.ResourceUtil;
 import de.schlund.pfixxml.util.TransformerHandlerAdapter;
+import de.schlund.pfixxml.util.XMLUtils;
 import de.schlund.pfixxml.util.Xml;
 import de.schlund.pfixxml.util.XsltVersion;
 
 public class SiteMap {
+    
+    public final static String XMLNS = "http://www.pustefix-framework.org/2011/namespace/sitemap";
     
     private Logger LOG = Logger.getLogger(SiteMap.class);
     
@@ -105,7 +110,6 @@ public class SiteMap {
             lastFileModTime = siteMapFile.lastModified();
             Document siteMapDoc = Xml.parseMutable(siteMapFile);
             
-            IncludesResolver iresolver = new IncludesResolver(null, "config-include");
             // Make sure list of dependencies only contains the file itself
             fileDependencies.clear();
             fileDependencies.add(siteMapFile);
@@ -116,6 +120,10 @@ public class SiteMap {
                 }
     
             };
+            IncludesResolver iresolver = new IncludesResolver(null, "config-include");
+            iresolver.registerListener(listener);
+            iresolver.resolveIncludes(siteMapDoc);
+            iresolver = new IncludesResolver(XMLNS, "config-include");
             iresolver.registerListener(listener);
             iresolver.resolveIncludes(siteMapDoc);
             
@@ -128,7 +136,13 @@ public class SiteMap {
                 } catch (TransformerConfigurationException e) {
                    throw new XMLException("Error reading sitemap", e);
                 }
-                DOMResult dr = new DOMResult();
+                Document doc;
+                try {
+                    doc = DocumentBuilderFactory.newInstance().newDocumentBuilder().newDocument();
+                } catch (ParserConfigurationException e) {
+                    throw new XMLException("Error creating sitemap document", e);
+                }
+                DOMResult dr = new DOMResult(doc);
                 th.setResult(dr);
                 DefaultHandler dh = new TransformerHandlerAdapter(th);
                 DefaultHandler ch = new CustomizationHandler(dh);
@@ -150,6 +164,7 @@ public class SiteMap {
                 throw new RuntimeException("TransformerFactory instance does not provide SAXTransformerFactory!");
             }
             
+            DOMUtils.mergeChildElements(siteMapDoc.getDocumentElement(), "page", "name");
             readSiteMap(siteMapDoc.getDocumentElement());
             
             Resource res = ResourceUtil.getResource("/WEB-INF/sitemap-aliases.xml");

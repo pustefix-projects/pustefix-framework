@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="utf-8"?>
+<root>
+  <child id="foo" x="y" y="z">
+    <item name="a"/>
+    <item name="b"/>  
+    <item name="c"/>
+  </child>
+  <child id="bar">
+    <item name="d"/>
+  </child>
+  <child id="baz"/>
+</root>
