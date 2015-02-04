@@ -299,6 +299,9 @@ public class PustefixContextXMLRequestHandler extends AbstractPustefixXMLRequest
                             }
                         }
                     }
+                    if(preq.getRequestParam("__lf") == null && ((ContextImpl) context).needsLastFlow(spdoc.getPagename(), context.getCurrentPageFlow().getRootName())) {
+                        redirectURL += "&__lf=" + context.getCurrentPageFlow().getRootName();
+                    }
                     spdoc.setRedirect(redirectURL, isAlias);
                 }
             }

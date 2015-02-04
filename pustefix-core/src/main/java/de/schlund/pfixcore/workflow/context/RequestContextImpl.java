@@ -339,6 +339,9 @@ public class RequestContextImpl implements Cloneable, AuthorizationInterceptor {
                     }
                 }
             }
+            if(preq.getRequestParam(PARAM_LASTFLOW) == null && needsLastFlow(spdoc.getPagename(), currentpageflow.getRootName())) {
+                redirectURL += "&__lf=" + currentpageflow.getRootName();
+            }
             spdoc.setRedirect(redirectURL);
 
         }
