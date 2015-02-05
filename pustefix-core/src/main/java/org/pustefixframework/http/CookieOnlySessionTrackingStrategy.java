@@ -179,7 +179,7 @@ public class CookieOnlySessionTrackingStrategy implements SessionTrackingStrateg
                     
                         //possibly has a secure session, so let's redirect to SSL and see if session is sent
                         addCookie(COOKIE_SESSION_SSL_CHECK, "true", req, res);
-                        redirectToSSL(req, res, HttpServletResponse.SC_MOVED_TEMPORARILY);
+                        redirectToSSLCheck(req, res, HttpServletResponse.SC_MOVED_TEMPORARILY);
                         return;
                     
                     }
@@ -258,6 +258,19 @@ public class CookieOnlySessionTrackingStrategy implements SessionTrackingStrateg
     
     private void redirectToSSL(HttpServletRequest req, HttpServletResponse res, int statusCode) {
         redirect(req, res, statusCode, "https");
+    }
+    
+    private void redirectToSSLCheck(HttpServletRequest req, HttpServletResponse res, int statusCode) {
+        String redirect_uri = SessionHelper.getClearedURL("https", AbstractPustefixRequestHandler.getServerName(req), req, context.getServletManagerConfig().getProperties());
+        if(req.getMethod().equals("POST") && req.getParameter("__lf") != null) {
+            if(req.getQueryString() == null) {
+                redirect_uri += ("?");
+            } else {
+                redirect_uri += ("&");
+            }
+            redirect_uri += ("__lf=" + req.getParameter("__lf"));
+        }
+        AbstractPustefixRequestHandler.relocate(res, statusCode, redirect_uri);
     }
     
     private void redirect(HttpServletRequest req, HttpServletResponse res, int statusCode, String scheme) {
