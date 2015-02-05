@@ -4,12 +4,12 @@
   <parent>
     <groupId>org.pustefixframework</groupId>
     <artifactId>pustefix-samples</artifactId>
-    <version>0.18.83</version>
+    <version>0.18.84-SNAPSHOT</version>
   </parent>
 
   <groupId>org.pustefixframework</groupId>
   <artifactId>pustefix-webservice</artifactId>
-  <version>0.18.83</version>
+  <version>0.18.84-SNAPSHOT</version>
   <packaging>war</packaging>
 
   <name>Pustefix Webservice</name>
@@ -18,22 +18,22 @@
     <dependency>
       <groupId>org.pustefixframework</groupId>
       <artifactId>pustefix-core</artifactId>
-      <version>0.18.83</version>
+      <version>0.18.84-SNAPSHOT</version>
     </dependency>
     <dependency>
       <groupId>org.pustefixframework.webservices</groupId>
       <artifactId>pustefix-webservices-core</artifactId>
-      <version>0.18.83</version>      
+      <version>0.18.84-SNAPSHOT</version>      
     </dependency>
     <dependency>
       <groupId>org.pustefixframework.webservices</groupId>
       <artifactId>pustefix-webservices-jaxws</artifactId>
-      <version>0.18.83</version>      
+      <version>0.18.84-SNAPSHOT</version>      
     </dependency>
     <dependency>
       <groupId>org.pustefixframework.webservices</groupId>
       <artifactId>pustefix-webservices-jsonws</artifactId>
-      <version>0.18.83</version>
+      <version>0.18.84-SNAPSHOT</version>
     </dependency>
     <dependency>
       <groupId>org.tuckey</groupId>
@@ -49,7 +49,7 @@
       <plugin>
         <groupId>org.pustefixframework.maven.plugins</groupId>
         <artifactId>pustefix-statuscode-plugin</artifactId>
-        <version>0.18.83</version>
+        <version>0.18.84-SNAPSHOT</version>
         <executions>
           <execution>
             <goals>
@@ -61,7 +61,7 @@
       <plugin>
         <groupId>org.pustefixframework.maven.plugins</groupId>
         <artifactId>pustefix-iwrapper-plugin</artifactId>
-        <version>0.18.83</version>
+        <version>0.18.84-SNAPSHOT</version>
         <executions>
           <execution>
             <goals>
@@ -73,7 +73,7 @@
       <plugin>
         <groupId>org.pustefixframework.maven.plugins</groupId>
         <artifactId>pustefix-webservice-plugin</artifactId>
-        <version>0.18.83</version>
+        <version>0.18.84-SNAPSHOT</version>
         <executions>
           <execution>
             <goals>
