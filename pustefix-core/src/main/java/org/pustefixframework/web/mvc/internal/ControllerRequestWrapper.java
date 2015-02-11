@@ -30,15 +30,17 @@ import de.schlund.pfixxml.PfixServletRequest;
 public class ControllerRequestWrapper extends HttpServletRequestWrapper {
     
     private PfixServletRequest pfixRequest;
+    private String pageName;
     
-    public ControllerRequestWrapper(PfixServletRequest pfixRequest) {
+    public ControllerRequestWrapper(PfixServletRequest pfixRequest, String pageName) {
         super(pfixRequest.getRequest());
         this.pfixRequest = pfixRequest;
+        this.pageName = pageName;
     }
 
     @Override
     public String getRequestURI() {
-        String uri = "/" + pfixRequest.getPageName();
+        String uri = "/" + pageName;
         String additionalPath = (String)pfixRequest.getRequest().getAttribute(AbstractPustefixRequestHandler.REQUEST_ATTR_PAGE_ADDITIONAL_PATH);
         if(additionalPath != null && additionalPath.length() > 0) {
             uri += additionalPath;

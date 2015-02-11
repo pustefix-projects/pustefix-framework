@@ -55,10 +55,10 @@ public class ControllerStateAdapter implements InitializingBean {
     /**
      * Call AnnotationMethodHandlerAdapter if State class contains request mappings.
      */
-    public ModelAndView tryHandle(PfixServletRequest request, Object handler) throws Exception {
+    public ModelAndView tryHandle(PfixServletRequest request, Object handler, String pageName) throws Exception {
         if(hasRequestMapping(handler.getClass())) {
             try {
-                ControllerRequestWrapper wrappedRequest = new ControllerRequestWrapper(request);
+                ControllerRequestWrapper wrappedRequest = new ControllerRequestWrapper(request, pageName);
                 ControllerResponseWrapper response = new ControllerResponseWrapper();
                 return adapter.handle(wrappedRequest, response, handler);
             } catch(NoSuchRequestHandlingMethodException x) {
