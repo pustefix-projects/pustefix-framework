@@ -26,6 +26,7 @@ import java.util.Properties;
 
 import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletResponse;
+import javax.servlet.http.HttpSession;
 
 import org.apache.log4j.Logger;
 import org.w3c.dom.Document;
@@ -527,6 +528,15 @@ public class RequestContextImpl implements Cloneable, AuthorizationInterceptor {
             insertPageMessages(spdoc);
             storeCookies(spdoc);
             spdoc.setProperty(ContextXMLServlet.XSLPARAM_REQUESTCONTEXT, this);
+            HttpSession session = preq.getSession(false);
+            if(session != null) {
+            	if(session.getAttribute(ServletManager.ATTR_INSECURE_SESSION) != null) {
+            		spdoc.setSecureSession(false);
+            	} else {
+            		spdoc.setSecureSession(true);
+            	}
+            }	
+            		
         }
 
         // Save pagerequest and pageflow

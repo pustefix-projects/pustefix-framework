@@ -134,6 +134,15 @@ public class SPDocument {
             root.appendChild(elem);
         }
     }
+    
+    public void setSecureSession(boolean enabled) {
+    	if(document != null) {
+    		Element root = document.getDocumentElement();
+    		if(!enabled) {
+    			root.setAttribute("secureSession", String.valueOf(enabled));
+    		}
+    	}
+    }
 
     /**
      * Returns timestamp that was created on construction

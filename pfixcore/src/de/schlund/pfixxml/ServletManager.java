@@ -80,6 +80,8 @@ public abstract class ServletManager extends HttpServlet {
     private static final String          PARAM_FORCELOCAL              = "__forcelocal";
     private static final String          ATTR_USER_AGENT               = "__PFX_USER_AGENT__";
     private static final String          ATTR_REMOTE_IP                = "__PFX_REMOTE_IP__";
+    private static final String          ATTR_INSECURE_SESSION_CHECK   = "__PFX_INSECURE_SESSION_CHECK__";
+    public static final String           ATTR_INSECURE_SESSION         = "__PFX_INSECURE_SESSION__";
     public static final String           PROP_COOKIE_SEC_NOT_ENFORCED  = "servletmanager.cookie_security_not_enforced";
     public static final String           PROP_P3PHEADER                = "servletmanager.p3p";
     private static final String          PROP_EXCEPTION                = "exception";
@@ -182,6 +184,8 @@ public abstract class ServletManager extends HttpServlet {
         boolean force_jump_back_to_ssl = false;
         boolean force_reuse_visit_id = false;
         boolean does_cookies = false;
+        boolean no_secure_cookie_check = false;
+        boolean no_secure_cookie_support = false;
         
         // Set P3P-Header if needed to make sure it is 
         // set for every response (even redirects).
@@ -309,17 +313,17 @@ public abstract class ServletManager extends HttpServlet {
                                 has_session = false;
                             }
                         } else {
-                            // We don't do cookies, so we simply have to believe it
-                            // or check IP and User-Agent header at least
-                            boolean ok = checkClientIdentity(req);
-                            if(!ok) {
-                                LOG.warn("Invalidate session " + session.getId() + " because client identity changed!");
-                                LOGGER_SESSION.info("Invalidate session IV: " + session.getId() + dumpRequest(req));
-                                session.invalidate();
-                                has_session = false;
-                            } else {
-                                has_ssl_session_secure = true;
-                            }
+                        	if(session.getAttribute(ATTR_INSECURE_SESSION_CHECK) == null) {
+                        		LOGGER_SESSION.info("Invalidate insecure session I: " + session.getId());
+                        		session.invalidate();
+                            	no_secure_cookie_check = true;
+                            	has_session = false;
+                        	} else {
+                        		LOGGER_SESSION.info("Invalidate insecure session II: " + session.getId());
+                        		session.invalidate();
+                        		no_secure_cookie_support = true;
+                        		has_session = false;
+                        	}
                         }
                     } else {
                         LOG.debug("    ... but session is insecure!");
@@ -397,6 +401,18 @@ public abstract class ServletManager extends HttpServlet {
 
         // End of initialization. Now we handle all cases where we need to redirect.
 
+        if (no_secure_cookie_check && allowSessionCreate()) {
+        	redirectToSession(preq, req, res);
+        	HttpSession newSession = req.getSession();
+        	newSession.setAttribute(ATTR_INSECURE_SESSION_CHECK, true);
+        	return;
+        } else if (no_secure_cookie_support && allowSessionCreate()) {
+        	createInsecureSession(preq, req, res);
+        	HttpSession newSession = req.getSession();
+        	newSession.setAttribute(ATTR_INSECURE_SESSION, true);
+        	preq.updateRequest(req);
+        } else {
+
         if (force_jump_back_to_ssl && allowSessionCreate()) {
             LOG.debug("=> I");
             forceRedirectBackToInsecureSSL(preq, req, res);
@@ -432,6 +448,7 @@ public abstract class ServletManager extends HttpServlet {
             redirectToSSL(req, res);
             return;
             // End of request cycle.
+        }
         }
 
         LOG.debug("*** >>> End of redirection management, handling request now.... <<< ***\n");
@@ -643,6 +660,16 @@ public abstract class ServletManager extends HttpServlet {
         relocate(res, redirect_uri);
     }
 
+    private void createInsecureSession(PfixServletRequest preq, HttpServletRequest req, HttpServletResponse res) {
+        HttpSession session = req.getSession(true);
+        storeClientIdentity(req);
+        session.setAttribute(SessionHelper.SESSION_ID_URL, SessionHelper.getURLSessionId(req));
+        registerSession(req, session);
+        createTestCookie(req, res);
+        session.setAttribute(STORED_REQUEST, preq);
+    }
+
+    
     private boolean doCookieTest(HttpServletRequest req, HttpServletResponse res, HttpSession sess) {
         if (sess == null) {
             sess = req.getSession(false);
