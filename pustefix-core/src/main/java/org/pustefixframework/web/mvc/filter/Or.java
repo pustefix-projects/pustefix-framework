@@ -9,7 +9,7 @@ public class Or extends Junction {
     @Override
     public boolean isSatisfiedBy(Object candidate) {
         for(Filter filter: getFilters()) {
-            if(!filter.isSatisfiedBy(candidate)) {
+            if(filter.isSatisfiedBy(candidate)) {
                 return true;
             }
         }
