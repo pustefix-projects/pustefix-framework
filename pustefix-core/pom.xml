@@ -106,6 +106,7 @@
       <groupId>org.springframework</groupId>
       <artifactId>spring-test</artifactId>
       <version>3.0.7.RELEASE</version>
+      <optional>true</optional>
     </dependency>
 
     <dependency>
