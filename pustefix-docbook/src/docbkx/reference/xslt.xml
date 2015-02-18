@@ -876,6 +876,18 @@
 </pfx:choose>
 ]]></programlisting>
       <para>
+        Basically these tags are working similar to the according XSLT base tags, i.e. the templates matching these tags, are internally calling the suitable XSLT statements. But you have to be aware that there's a difference between applying templates on XML tags and directly executing XSLT statements. Here's the list of all supported tags:
+      </para>
+      <itemizedlist>
+        <listitem>pfx:value-of</listitem>
+        <listitem>pfx:copy-of</listitem>
+        <listitem>pfx:if</listitem>
+        <listitem>pfx:choose / pfx:when / pfx:otherwise</listitem>
+        <listitem>pfx:for-each / pfx:sort</listitem>
+        <listitem>pfx:element</listitem>
+        <listitem>pfx:attr</listitem>
+      </itemizedlist>
+      <para>
         Besides these special templates some of Pustefix's core templates also have support for include parameters, i.e. the according elements provide
         attributes which support include parameters or XPath expressions. Usually these attributes are prefixed with <literal>select-</literal>.
       </para>
