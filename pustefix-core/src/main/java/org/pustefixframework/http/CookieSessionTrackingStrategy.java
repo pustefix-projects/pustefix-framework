@@ -36,6 +36,7 @@ public class CookieSessionTrackingStrategy implements SessionTrackingStrategy {
     //Cookie indicates that session under HTTPS exists. That's necessary because HTTPS sessions have secure flag set
     //and going back in the browser to a non-HTTPS session won't send the session cookie
     private static final String COOKIE_SESSION_SSL = "__PFIX_SSL_";
+    private static final String COOKIE_TEST = "__PFIX_TST_";
     
     private SessionTrackingStrategyContext context;
     
@@ -55,6 +56,10 @@ public class CookieSessionTrackingStrategy implements SessionTrackingStrategy {
         boolean used_ssl = false;
         
         Cookie[] cookies = CookieUtils.getCookies(req);
+        if(cookies == null) {
+            addTestCookie(req, res);
+        }
+        
         used_ssl = (getCookie(cookies, COOKIE_SESSION_SSL) != null);
         
         if (req.isRequestedSessionIdValid()) {
@@ -76,7 +81,15 @@ public class CookieSessionTrackingStrategy implements SessionTrackingStrategy {
                 if (req.isSecure()) {
                     LOG.debug("*** Found running under SSL");
                     if (secure != null && secure.booleanValue()) {
-                        has_ssl_session_secure = true;
+                        if(req.isRequestedSessionIdFromURL() && cookies != null) {
+                            LOG.debug("*** Found secure session in URL but cookies enabled => Destroying session.");
+                            LOGGER_SESSION.info("Invalidate session VII: " + session.getId());
+                            if(LOGGER_SESSION.isDebugEnabled()) LOGGER_SESSION.debug(dumpRequest(req));
+                            SessionUtils.invalidate(session);
+                            has_session = false;
+                        } else {
+                            has_ssl_session_secure = true;
+                        }
                     } else {
                         LOG.debug("    ... but session is insecure!");
                         has_ssl_session_insecure = true;
@@ -411,6 +424,13 @@ public class CookieSessionTrackingStrategy implements SessionTrackingStrategy {
     
     private static void addSSLCookie(HttpServletRequest req, HttpServletResponse res) {
         Cookie resetCookie = new Cookie(COOKIE_SESSION_SSL, "true");
+        resetCookie.setMaxAge(-1);
+        resetCookie.setPath((req.getContextPath().equals("")) ? "/" : req.getContextPath());
+        res.addCookie(resetCookie);
+    }
+    
+    private static void addTestCookie(HttpServletRequest req, HttpServletResponse res) {
+        Cookie resetCookie = new Cookie(COOKIE_TEST, "true");
         resetCookie.setMaxAge(-1);
         resetCookie.setPath((req.getContextPath().equals("")) ? "/" : req.getContextPath());
         res.addCookie(resetCookie);
