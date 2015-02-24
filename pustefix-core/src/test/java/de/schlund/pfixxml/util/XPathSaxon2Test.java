@@ -20,7 +20,6 @@ package de.schlund.pfixxml.util;
 
 import javax.xml.parsers.DocumentBuilderFactory;
 
-import net.sf.saxon.dom.DocumentBuilderFactoryImpl;
 
 import org.w3c.dom.Document;
 import org.w3c.dom.Node;
@@ -29,7 +28,7 @@ public class XPathSaxon2Test extends XPathTest {
 
     @Override
     protected Document createDOM(String xml) throws Exception {
-        DocumentBuilderFactory dbf=new DocumentBuilderFactoryImpl();
+        DocumentBuilderFactory dbf = DocumentBuilderFactory.newInstance();
         return createDOM(dbf,xml);
     }
     

@@ -10,12 +10,11 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.SessionAttributes;
 
-import de.schlund.pfixcore.workflow.app.DefaultIWrapperState;
+import de.schlund.pfixcore.workflow.app.StaticState;
 
 @SessionAttributes("myfilter")
-public class MVCTestState extends DefaultIWrapperState {
+public class MVCTestState extends StaticState {
 
-    @Autowired
     private ContextData contextData;
 
     @ModelAttribute("myfilter")
@@ -40,6 +39,11 @@ public class MVCTestState extends DefaultIWrapperState {
     @RequestMapping("/mvctest/data/{dataId}")
     public void details(@PathVariable long dataId, Model model) {
         model.addAttribute("data", contextData.getData(dataId));
+    }
+    
+    @Autowired
+    public void setContextData(ContextData contextData) {
+        this.contextData = contextData;
     }
 
 }
