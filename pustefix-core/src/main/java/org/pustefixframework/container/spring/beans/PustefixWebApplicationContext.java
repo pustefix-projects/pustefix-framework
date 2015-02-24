@@ -190,8 +190,7 @@ public class PustefixWebApplicationContext extends AbstractRefreshableWebApplica
         BeanDefinitionBuilder beanBuilder = BeanDefinitionBuilder.genericBeanDefinition(ControllerStateAdapter.class);
         beanBuilder.setScope("singleton");
         BeanDefinition definition = beanBuilder.getBeanDefinition();
-        DefaultBeanNameGenerator beanNameGenerator = new DefaultBeanNameGenerator();
-        String beanName = beanNameGenerator.generateBeanName(definition, registry);
+        String beanName = ControllerStateAdapter.class.getName();
         registry.registerBeanDefinition(beanName, definition);
     }
     

@@ -33,6 +33,7 @@ import org.pustefixframework.config.contextxmlservice.parser.internal.PageReques
 import org.pustefixframework.config.contextxmlservice.parser.internal.StateConfigImpl;
 import org.pustefixframework.config.generic.ParsingUtils;
 import org.pustefixframework.web.mvc.InputHandler;
+import org.pustefixframework.web.mvc.internal.ControllerStateAdapter;
 import org.pustefixframework.web.mvc.internal.InputHandlerAdapter;
 import org.springframework.aop.scope.ScopedProxyUtils;
 import org.springframework.beans.factory.config.BeanDefinition;
@@ -247,6 +248,7 @@ public class PageRequestParsingHandler implements ParsingHandler {
                 }
                 beanBuilder.setScope(stateConfig.getScope());
                 beanBuilder.addPropertyReference("config", configBeanName);
+                beanBuilder.addPropertyReference("adapter", ControllerStateAdapter.class.getName());
                 beanDefinition = beanBuilder.getBeanDefinition();
                 if (pageConfig.getBeanName() != null && pageConfig.getBeanName().length() > 0) {
                     stateBeanName = pageConfig.getBeanName();

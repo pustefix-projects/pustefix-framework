@@ -23,11 +23,6 @@ import java.util.Map;
 import org.pustefixframework.config.contextxmlservice.IWrapperConfig;
 import org.pustefixframework.config.contextxmlservice.StateConfig;
 import org.pustefixframework.generated.CoreStatusCodes;
-import org.pustefixframework.web.mvc.internal.ControllerStateAdapter;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.ui.ModelMap;
-import org.springframework.validation.BindingResult;
-import org.springframework.web.servlet.ModelAndView;
 
 import de.schlund.pfixcore.scriptedflow.vm.VirtualHttpServletRequest;
 import de.schlund.pfixcore.util.TokenManager;
@@ -54,9 +49,6 @@ import de.schlund.pfixxml.XMLException;
 public class DefaultIWrapperState extends StateImpl implements IWrapperState, RequestTokenAwareState {
 
     private final static String IHDL_CONT_MANAGER = "de.schlund.pfixcore.workflow.app.IHandlerContainerManager";
-
-    @Autowired
-    private ControllerStateAdapter adapter;
     
     /**
      * @see de.schlund.pfixcore.workflow.State#isAccessible(Context,
@@ -161,8 +153,6 @@ public class DefaultIWrapperState extends StateImpl implements IWrapperState, Re
         } else {
             throw new XMLException("This should not happen: No submit trigger, no direct trigger, no final page and no workflow???");
         }
-
-        ModelAndView modelAndView = adapter.tryHandle(preq, this, context.getCurrentPageRequest().getRootName());
         
         // We want to optimize away the case where the context tells us that we
         // don't need to supply a full document as the context will - because of
@@ -183,17 +173,7 @@ public class DefaultIWrapperState extends StateImpl implements IWrapperState, Re
             wrp_container.addErrorCodes();
             wrp_container.addIWrapperStatus();
             renderContextResources(context, resdoc);
-            if(modelAndView != null) {
-                ModelMap modelMap = modelAndView.getModelMap();
-                for(String key: modelMap.keySet()) {
-                    Object value = modelMap.get(key);
-                    if(value instanceof BindingResult) {
-                        //TODO: add serializer
-                    } else {
-                        ResultDocument.addObject(resdoc.getRootElement(), key, modelMap.get(key));
-                    }
-                }
-            }
+            renderMVCModel(context, resdoc, preq);
             addResponseHeadersAndType(context, resdoc);
         }
         return resdoc;
@@ -214,4 +194,5 @@ public class DefaultIWrapperState extends StateImpl implements IWrapperState, Re
     public boolean requiresToken() {
         return getConfig().requiresToken();
     }
-}// DefaultIWrapperState
+
+}

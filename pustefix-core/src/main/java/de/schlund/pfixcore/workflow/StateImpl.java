@@ -20,6 +20,10 @@ package de.schlund.pfixcore.workflow;
 
 import org.apache.log4j.Logger;
 import org.pustefixframework.config.contextxmlservice.StateConfig;
+import org.pustefixframework.web.mvc.internal.ControllerStateAdapter;
+import org.springframework.ui.ModelMap;
+import org.springframework.validation.BindingResult;
+import org.springframework.web.servlet.ModelAndView;
 
 import de.schlund.pfixcore.util.StateUtil;
 import de.schlund.pfixxml.PfixServletRequest;
@@ -36,6 +40,7 @@ public abstract class StateImpl implements ConfigurableState {
     public  static final String PROP_INSERTCR = "insertcr";
     
     protected StateConfig config;
+    protected ControllerStateAdapter adapter;
     
     public void setConfig(StateConfig config) {
         this.config = config;
@@ -43,6 +48,10 @@ public abstract class StateImpl implements ConfigurableState {
     
     public StateConfig getConfig() {
         return this.config;
+    }
+    
+    public void setAdapter(ControllerStateAdapter adapter) {
+        this.adapter = adapter;
     }
 
     /**
@@ -91,6 +100,23 @@ public abstract class StateImpl implements ConfigurableState {
         StateUtil.renderContextResources(context, resdoc, getConfig());
     }
 
+    
+    protected void renderMVCModel(Context context, ResultDocument resdoc,PfixServletRequest preq) throws Exception {
+        if(adapter != null) {
+            ModelAndView modelAndView = adapter.tryHandle(preq, this, context.getCurrentPageRequest().getRootName());
+            if(modelAndView != null) {
+                ModelMap modelMap = modelAndView.getModelMap();
+                for(String key: modelMap.keySet()) {
+                    Object value = modelMap.get(key);
+                    if(value instanceof BindingResult) {
+                        //TODO: add serializer
+                    } else {
+                        ResultDocument.addObject(resdoc.getRootElement(), key, modelMap.get(key));
+                    }
+                }
+            }
+        }
+    }
     
     /**
      * @see de.schlund.pfixcore.util.StateUtil#addResponseHeadersAndType(Context, ResultDocument)
