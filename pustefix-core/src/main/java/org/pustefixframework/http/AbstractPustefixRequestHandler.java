@@ -103,6 +103,8 @@ public abstract class AbstractPustefixRequestHandler implements SessionTrackingS
     public static final String SESSION_ATTR_COOKIE_SESSION = "__PFX_SESSION_FROM_COOKIE__";
     private static final String SESSION_ATTR_REQUEST_COUNT = "__PFX_REQUEST_COUNT__";
     private static final String SESSION_ATTR_ORIGINAL_TIMEOUT = "__PFX_SESSION_ORIGINAL_TIMEOUT__";
+    private static final String SESSION_ATTR_USER_AGENT = "__PFX_USER_AGENT__";
+    private static final String SESSION_ATTR_REMOTE_IP = "__PFX_REMOTE_IP__";
     
     public static final String REQUEST_ATTR_LANGUAGE = "__PFX_LANGUAGE__";
     public static final String REQUEST_ATTR_PAGE_ALTERNATIVE = "__PFX_PAGE_ALTERNATIVE__";
@@ -226,6 +228,43 @@ public abstract class AbstractPustefixRequestHandler implements SessionTrackingS
         return Integer.valueOf(redirectPort);
     }
 
+    public static boolean checkClientIdentity(HttpServletRequest req) {
+        HttpSession session = req.getSession(false);
+        if(session != null) {
+            String storedIp = (String)session.getAttribute(SESSION_ATTR_REMOTE_IP);
+            if(storedIp != null) {
+                String ip = AbstractPustefixRequestHandler.getRemoteAddr(req);
+                if(!ip.equals(storedIp)) {
+                    LOG.warn("Differing client IP: " + ip + " " + storedIp);
+                    return false;
+                }
+            }
+            String storedUserAgent = (String)session.getAttribute(SESSION_ATTR_USER_AGENT);
+            if(storedUserAgent != null) {
+                String userAgent = req.getHeader("User-Agent");
+                if(userAgent == null) userAgent = "-";
+                if(!userAgent.equals(storedUserAgent)) {
+                    LOG.warn("Differing client useragent: " + userAgent + " " + storedUserAgent);
+                    return false;
+                }
+            }
+        }
+        return true;
+    }
+    
+    public static void storeClientIdentity(HttpServletRequest req) {
+        HttpSession session = req.getSession(false);
+        if(session != null) {
+            String ip = AbstractPustefixRequestHandler.getRemoteAddr(req);
+            session.setAttribute(SESSION_ATTR_REMOTE_IP, ip);
+            String userAgent = req.getHeader("User-Agent");
+            if(userAgent == null) {
+                userAgent = "-";
+            }
+            session.setAttribute(SESSION_ATTR_USER_AGENT, userAgent);
+        }
+    }
+    
     public void setHandlerURI(String uri) {
         this.handlerURI = uri;
     }
