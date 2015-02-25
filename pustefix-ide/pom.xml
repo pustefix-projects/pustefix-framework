@@ -8,12 +8,12 @@
   <parent>
     <groupId>org.pustefixframework</groupId>
     <artifactId>pustefixframework</artifactId>
-    <version>0.18.85-SNAPSHOT</version>
+    <version>0.18.86-SNAPSHOT</version>
   </parent>
 
   <groupId>org.pustefixframework</groupId>
   <artifactId>pustefix-ide</artifactId>
-  <version>0.18.85-SNAPSHOT</version>
+  <version>0.18.86-SNAPSHOT</version>
   <packaging>pom</packaging>
   <name>Pustefix IDE support</name>
 
