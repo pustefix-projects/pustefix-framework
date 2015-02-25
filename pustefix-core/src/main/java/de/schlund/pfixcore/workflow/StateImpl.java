@@ -103,7 +103,13 @@ public abstract class StateImpl implements ConfigurableState {
     
     protected void renderMVCModel(Context context, ResultDocument resdoc,PfixServletRequest preq) throws Exception {
         if(adapter != null) {
-            ModelAndView modelAndView = adapter.tryHandle(preq, this, context.getCurrentPageRequest().getRootName());
+            String pageName;
+            if(context.getCurrentPageRequest() != null) {
+                pageName = context.getCurrentPageRequest().getRootName();
+            } else {
+                pageName = preq.getPageName();
+            }
+            ModelAndView modelAndView = adapter.tryHandle(preq, this, pageName);
             if(modelAndView != null) {
                 ModelMap modelMap = modelAndView.getModelMap();
                 for(String key: modelMap.keySet()) {
