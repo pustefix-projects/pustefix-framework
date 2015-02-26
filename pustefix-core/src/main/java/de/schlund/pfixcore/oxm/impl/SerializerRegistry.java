@@ -35,7 +35,6 @@ import org.pustefixframework.web.mvc.filter.And;
 import org.pustefixframework.web.mvc.filter.Not;
 import org.pustefixframework.web.mvc.filter.Or;
 import org.pustefixframework.web.mvc.filter.Property;
-import org.springframework.data.domain.Sort;
 
 import de.schlund.pfixcore.beans.BeanDescriptor;
 import de.schlund.pfixcore.beans.BeanDescriptorFactory;
@@ -112,7 +111,13 @@ public class SerializerRegistry {
         simpleSerializers.put(Class.class, new ClassSerializer());
 
         complexSerializers.put(Properties.class, new PropertiesSerializer());
-        complexSerializers.put(Sort.class, new SortSerializer());
+        
+        try {
+            Class<?> sortClass = Class.forName("org.springframework.data.domain.Sort");
+            complexSerializers.put(sortClass, new SortSerializer());
+        } catch (ClassNotFoundException e) {
+            //ignore optional serializer
+        }
         
         FilterSerializer filterSer = new FilterSerializer();
         complexSerializers.put(And.class, filterSer);

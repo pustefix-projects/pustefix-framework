@@ -24,7 +24,6 @@ import org.pustefixframework.web.mvc.AnnotationMethodHandlerAdapterConfig;
 import org.pustefixframework.web.mvc.filter.FilterResolver;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.data.web.PageableArgumentResolver;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.support.WebArgumentResolver;
 import org.springframework.web.servlet.ModelAndView;
@@ -72,8 +71,14 @@ public class ControllerStateAdapter implements InitializingBean {
     public void afterPropertiesSet() throws Exception {
         if(adapterConfig == null) {
             adapterConfig = new AnnotationMethodHandlerAdapterConfig();
-            WebArgumentResolver[] resolvers = new WebArgumentResolver[] {new PageableArgumentResolver(), new FilterResolver()};
-            adapterConfig.setCustomArgumentResolvers(resolvers);
+            try {
+                Class<?> clazz = Class.forName("org.springframework.data.web.PageableArgumentResolver");
+                WebArgumentResolver resolver = (WebArgumentResolver)clazz.newInstance();
+                WebArgumentResolver[] resolvers = new WebArgumentResolver[] {resolver, new FilterResolver()};
+                adapterConfig.setCustomArgumentResolvers(resolvers);
+            } catch(ClassNotFoundException x) {
+                //ignore optional resolver
+            }
         }
         adapter = new AnnotationMethodHandlerAdapter();
         adapter.setCustomArgumentResolvers(adapterConfig.getCustomArgumentResolvers());
