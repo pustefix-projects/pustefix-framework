@@ -7,6 +7,10 @@
                 xmlns:xslt2="java:de.schlund.pfixxml.util.xsltimpl.Xslt2BackPortFunctions"
                 exclude-result-prefixes="pfx func callback xslt2">
   
+  <xsl:param name="date-format"/>
+  <xsl:param name="date-timezone"/>
+  <xsl:param name="date-locale"/>
+  
   <!-- XPath functions available on all transformation levels -->
   
   <!-- String functions -->
@@ -32,6 +36,45 @@
     <xsl:param name="pattern"/>
     <func:result select="xslt2:tokenize($str, $pattern)"/>
   </func:function>
+  
+  <func:function name="pfx:format-date">
+    <xsl:param name="dateTime"/>
+    <xsl:param name="dateFormat"/>
+    <xsl:param name="dateTimeZone"/>
+    <xsl:param name="dateLocale"/>
+    <xsl:variable name="format">
+      <xsl:choose>
+        <xsl:when test="$dateFormat">
+          <xsl:value-of select="$dateFormat"/>
+        </xsl:when>
+        <xsl:otherwise>
+          <xsl:value-of select="$date-format"/>
+        </xsl:otherwise>
+      </xsl:choose>
+    </xsl:variable>
+    <xsl:variable name="timeZone">
+      <xsl:choose>
+        <xsl:when test="$dateTimeZone">
+          <xsl:value-of select="$dateTimeZone"/>
+        </xsl:when>
+        <xsl:otherwise>
+          <xsl:value-of select="$date-timezone"/>
+        </xsl:otherwise>
+      </xsl:choose>
+    </xsl:variable>
+    <xsl:variable name="locale">
+      <xsl:choose>
+        <xsl:when test="$dateLocale">
+          <xsl:value-of select="$dateLocale"/>
+        </xsl:when>
+        <xsl:otherwise>
+          <xsl:value-of select="$date-locale"/>
+        </xsl:otherwise>
+      </xsl:choose>
+    </xsl:variable>
+    <func:result select="xslt2:formatDate($dateTime, $format, $timeZone, $locale)"/>
+  </func:function>
+  
   
   <!-- Development functions -->
   

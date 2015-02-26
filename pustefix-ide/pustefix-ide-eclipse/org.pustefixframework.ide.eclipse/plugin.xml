@@ -190,6 +190,19 @@
             value="true">
       </persistent>
    </extension>
-   
+   <extension
+         id="org.pustefixframework.ide.eclipse.plugin.includelink"
+         name="Include part"
+         point="org.eclipse.ui.workbench.texteditor.hyperlinkDetectors">
+      <super
+            type="org.pustefixframework.ide.eclipse.plugin.includelink">
+      </super>
+      <super
+            type="org.eclipse.ui.workbench.texteditor.hyperlinkDetectors">
+      </super>
+      <persistent
+            value="true">
+      </persistent>
+   </extension>
 
 </plugin>

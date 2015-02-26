@@ -33,8 +33,6 @@ import org.pustefixframework.container.spring.http.UriProvidingHttpRequestHandle
 import org.pustefixframework.util.LocaleUtils;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.ApplicationContextAware;
-import org.springframework.mock.web.MockHttpServletRequest;
-import org.springframework.mock.web.MockHttpSession;
 import org.springframework.web.context.ServletContextAware;
 import org.springframework.web.context.request.RequestContextHolder;
 import org.springframework.web.context.request.ServletRequestAttributes;
@@ -112,16 +110,18 @@ public class SiteMapRequestHandler implements UriProvidingHttpRequestHandler, Se
                 Document doc = getSearchEngineSitemap(tenant, scheme, host, port, mobile);
                 Transformer trf = TransformerFactory.newInstance().newTransformer();
                 trf.setOutputProperty(OutputKeys.INDENT, "yes");
-                FileOutputStream out = new FileOutputStream(entry.file);
                 MessageDigest digest;
+                FileOutputStream out = new FileOutputStream(entry.file);
                 try {
                     digest = MessageDigest.getInstance("MD5");
+                    DigestOutputStream digestOutput = new DigestOutputStream(out, digest);
+                    trf.transform(new DOMSource(doc), new StreamResult(digestOutput));
+                    digestOutput.close();
                 } catch(NoSuchAlgorithmException x) {
                     throw new RuntimeException("Can't create message digest", x);
+                } finally {
+                    out.close();
                 }
-                DigestOutputStream digestOutput = new DigestOutputStream(out, digest);    
-                trf.transform(new DOMSource(doc), new StreamResult(digestOutput));
-                digestOutput.close();
                 byte[] digestBytes = digest.digest();
                 entry.etag = MD5Utils.byteToHex(digestBytes);
                 cacheEntries.put(cacheKey, entry);
@@ -168,10 +168,10 @@ public class SiteMapRequestHandler implements UriProvidingHttpRequestHandler, Se
     private Set<String> getAccessiblePages() {
         
         Set<String> accPages = new LinkedHashSet<String>();
-        MockHttpServletRequest req = new MockHttpServletRequest();
+        VirtualHttpServletRequest req = new VirtualHttpServletRequest();
         req.setPathInfo("/home");
         req.setMethod("GET");
-        MockHttpSession session = new MockHttpSession(servletContext);
+        VirtualHttpSession session = new VirtualHttpSession(servletContext);
         req.setSession(session);
         RequestContextHolder.setRequestAttributes(new ServletRequestAttributes(req));
         PfixServletRequest pfxReq = new PfixServletRequestImpl(req,new Properties());

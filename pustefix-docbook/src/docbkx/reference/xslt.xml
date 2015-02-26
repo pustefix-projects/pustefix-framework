@@ -876,6 +876,18 @@
 </pfx:choose>
 ]]></programlisting>
       <para>
+        Basically these tags are working similar to the according XSLT base tags, i.e. the templates matching these tags, are internally calling the suitable XSLT statements. But you have to be aware that there's a difference between applying templates on XML tags and directly executing XSLT statements. Here's the list of all supported tags:
+      </para>
+      <itemizedlist>
+        <listitem>pfx:value-of</listitem>
+        <listitem>pfx:copy-of</listitem>
+        <listitem>pfx:if</listitem>
+        <listitem>pfx:choose / pfx:when / pfx:otherwise</listitem>
+        <listitem>pfx:for-each / pfx:sort</listitem>
+        <listitem>pfx:element</listitem>
+        <listitem>pfx:attr</listitem>
+      </itemizedlist>
+      <para>
         Besides these special templates some of Pustefix's core templates also have support for include parameters, i.e. the according elements provide
         attributes which support include parameters or XPath expressions. Usually these attributes are prefixed with <literal>select-</literal>.
       </para>
@@ -1989,6 +2001,30 @@
       </para>
 
     </section>
+
+    <section xml:id="xslt.extensions.xpathfunctions.date">
+      <title>Date functions</title>
+    
+      <para>
+        <emphasis role="strong">Function:</emphasis> <emphasis>string</emphasis> <emphasis role="strong">pfx:format-date</emphasis>(<emphasis>string, string?, string?, string?</emphasis>)
+      </para>
+      <para>
+        The <emphasis role="strong">pfx:format-date</emphasis> function formats a timestamp passed as first argument, using the date format pattern, timezone and locale, which can be optionally passed as further arguments.
+      </para>
+<programlisting language="xml"><![CDATA[<ixsl:value-of select="pfx:format-date(/formresult/path/to/@time)"/>
+<ixsl:value-of select="pfx:format-date(/formresult/path/to/@time, '', 'Europe/Berlin')"/>
+<ixsl:value-of select="pfx:format-date(/formresult/path/to/@time, 'EEE, d MMM yyyy HH:mm:ss Z', 'Europe/Berlin', 'de-DE')"/>]]></programlisting>
+      <para>
+        You can set sensible default values for the optional arguments by adding them as top-level XSL parameters:
+      </para>
+<programlisting language="xml"><![CDATA[<xsl:param name="date-format">EEE, d MMM yyyy HH:mm:ss Z</xsl:param>
+<xsl:param name="date-timezone">Europe/Berlin</xsl:param>
+<xsl:param name="date-locale">de-DE</xsl:param>]]></programlisting>
+    </section>
+     <para>
+       The syntax of all arguments is conforming to the Java standard, see the class 
+       <link xlink:href="http://docs.oracle.com/javase/7/docs/api/java/text/SimpleDateFormat.html">java.text.SimpleDateFormat</link> for reference.
+     </para>
 
     <section xml:id="xslt.extensions.xpathfunctions.development">
       <title>Development functions</title>

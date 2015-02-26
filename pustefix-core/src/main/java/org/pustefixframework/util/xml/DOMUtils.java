@@ -1,7 +1,9 @@
 package org.pustefixframework.util.xml;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import org.w3c.dom.Element;
 import org.w3c.dom.NamedNodeMap;
@@ -82,6 +84,49 @@ public class DOMUtils {
             newElem.appendChild(cloned);
         }
         return newElem;
+    }
+
+    public static void mergeChildElements(Element parent, String tagName, String keyAttrName) {
+        Map<String, Element> procElems = new HashMap<String, Element>();
+        NodeList nodes = parent.getChildNodes();
+        for(int i=0; i<nodes.getLength(); i++) {
+            Node node = nodes.item(i);
+            if(node.getNodeType() == Node.ELEMENT_NODE && node.getNodeName().equals(tagName)) {
+                String attr = ((Element)node).getAttribute(keyAttrName);
+                Element procElem = procElems.get(attr);
+                if(procElem == null) {
+                    procElems.put(attr, (Element)node);
+                } else {
+                    while(node.hasChildNodes()) {
+                        Node childNode = node.getFirstChild();
+                        node.removeChild(childNode);
+                        procElem.appendChild(childNode);
+                    }
+                    NamedNodeMap attrs = ((Element)node).getAttributes();
+                    for(int j=0; j<attrs.getLength(); j++) {
+                        Node attrNode = attrs.item(j);
+                        procElem.setAttribute(attrNode.getNodeName(), attrNode.getNodeValue());
+                    }
+                    parent.removeChild(node);
+                }
+            }
+        }
+    }
+ 
+    public static void removeWhitespace(Node parent) {
+        parent.normalize();
+        NodeList nodes = parent.getChildNodes();
+        if(nodes != null) {
+            for(int i=0; i<nodes.getLength(); i++) {
+                Node node = nodes.item(i);
+                if(node.getNodeType() == Node.ELEMENT_NODE) {
+                    removeWhitespace((Element)node);
+                } else if(node.getNodeType() == Node.TEXT_NODE) {
+                    String text = node.getNodeValue().trim();
+                    node.setNodeValue(text);
+                }
+            }
+        }
     }
 
 }

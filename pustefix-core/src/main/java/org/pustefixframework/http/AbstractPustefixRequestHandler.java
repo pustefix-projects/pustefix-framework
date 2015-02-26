@@ -54,16 +54,20 @@ import org.apache.log4j.Logger;
 import org.pustefixframework.config.contextxmlservice.ServletManagerConfig;
 import org.pustefixframework.config.project.SessionTimeoutInfo;
 import org.pustefixframework.container.spring.beans.TenantScope;
+import org.pustefixframework.container.spring.http.MVCStateHandlerMapping;
 import org.pustefixframework.container.spring.http.UriProvidingHttpRequestHandler;
 import org.pustefixframework.util.LocaleUtils;
 import org.pustefixframework.util.LogUtils;
 import org.pustefixframework.util.NetUtils;
 import org.pustefixframework.util.URLUtils;
+import org.pustefixframework.util.net.IPRangeMatcher;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.web.context.ServletContextAware;
 
+import de.schlund.pfixcore.workflow.PageMap;
 import de.schlund.pfixcore.workflow.SiteMap;
 import de.schlund.pfixcore.workflow.SiteMap.PageLookupResult;
+import de.schlund.pfixcore.workflow.State;
 import de.schlund.pfixxml.LanguageInfo;
 import de.schlund.pfixxml.PfixServletRequest;
 import de.schlund.pfixxml.Tenant;
@@ -99,9 +103,15 @@ public abstract class AbstractPustefixRequestHandler implements SessionTrackingS
     public static final String SESSION_ATTR_COOKIE_SESSION = "__PFX_SESSION_FROM_COOKIE__";
     private static final String SESSION_ATTR_REQUEST_COUNT = "__PFX_REQUEST_COUNT__";
     private static final String SESSION_ATTR_ORIGINAL_TIMEOUT = "__PFX_SESSION_ORIGINAL_TIMEOUT__";
+    private static final String SESSION_ATTR_USER_AGENT = "__PFX_USER_AGENT__";
+    private static final String SESSION_ATTR_REMOTE_IP = "__PFX_REMOTE_IP__";
     
     public static final String REQUEST_ATTR_LANGUAGE = "__PFX_LANGUAGE__";
     public static final String REQUEST_ATTR_PAGE_ALTERNATIVE = "__PFX_PAGE_ALTERNATIVE__";
+    public static final String REQUEST_ATTR_PAGE_ADDITIONAL_PATH = "__PFX_PAGE_ADDITIONAL_PATH__";
+    
+    private static final IPRangeMatcher privateIPRange = new IPRangeMatcher("10.0.0.0/8", "169.254.0.0/16", 
+            "172.16.0.0/12", "192.168.0.0/16", "fc00::/7");
     
     private int INC_ID = 0;
     private String TIMESTAMP_ID = "";
@@ -119,6 +129,7 @@ public abstract class AbstractPustefixRequestHandler implements SessionTrackingS
     protected TenantInfo tenantInfo;
     protected LanguageInfo languageInfo;
     protected SiteMap siteMap;
+    private PageMap pageMap;
     
     public abstract ServletManagerConfig getServletManagerConfig();
 
@@ -144,16 +155,23 @@ public abstract class AbstractPustefixRequestHandler implements SessionTrackingS
     }
     
     public static String getRemoteAddr(HttpServletRequest req) {
+        String remoteIp = req.getRemoteAddr();
         String forward = req.getHeader("X-Forwarded-For");
         if (forward != null && !forward.equals("")) {
-            int ind = forward.indexOf(',');
-            if(ind > -1) forward = forward.substring(0, ind);
-            forward = forward.trim();
-            if(NetUtils.checkIP(forward)) {
-                return forward;
+            if(privateIPRange.matches(remoteIp)) {
+                String[] ips = forward.split(",");
+                for(int i=ips.length - 1; i >= 0; i--) {
+                    String ip = ips[i].trim();
+                    if(ip.length() > 0) {
+                        if(NetUtils.checkIP(ip) && !privateIPRange.matches(ip)) {
+                            remoteIp = ip;
+                            break;
+                        }
+                    }
+                }
             }
-        } 
-        return req.getRemoteAddr();
+        }
+        return remoteIp;
     }
     
     public static int getSSLRedirectPort(int port, Properties props) {
@@ -210,6 +228,43 @@ public abstract class AbstractPustefixRequestHandler implements SessionTrackingS
         return Integer.valueOf(redirectPort);
     }
 
+    public static boolean checkClientIdentity(HttpServletRequest req) {
+        HttpSession session = req.getSession(false);
+        if(session != null) {
+            String storedIp = (String)session.getAttribute(SESSION_ATTR_REMOTE_IP);
+            if(storedIp != null) {
+                String ip = AbstractPustefixRequestHandler.getRemoteAddr(req);
+                if(!ip.equals(storedIp)) {
+                    LOG.warn("Differing client IP: " + ip + " " + storedIp);
+                    return false;
+                }
+            }
+            String storedUserAgent = (String)session.getAttribute(SESSION_ATTR_USER_AGENT);
+            if(storedUserAgent != null) {
+                String userAgent = req.getHeader("User-Agent");
+                if(userAgent == null) userAgent = "-";
+                if(!userAgent.equals(storedUserAgent)) {
+                    LOG.warn("Differing client useragent: " + userAgent + " " + storedUserAgent);
+                    return false;
+                }
+            }
+        }
+        return true;
+    }
+    
+    public static void storeClientIdentity(HttpServletRequest req) {
+        HttpSession session = req.getSession(false);
+        if(session != null) {
+            String ip = AbstractPustefixRequestHandler.getRemoteAddr(req);
+            session.setAttribute(SESSION_ATTR_REMOTE_IP, ip);
+            String userAgent = req.getHeader("User-Agent");
+            if(userAgent == null) {
+                userAgent = "-";
+            }
+            session.setAttribute(SESSION_ATTR_USER_AGENT, userAgent);
+        }
+    }
+    
     public void setHandlerURI(String uri) {
         this.handlerURI = uri;
     }
@@ -620,11 +675,22 @@ public abstract class AbstractPustefixRequestHandler implements SessionTrackingS
         
         PageLookupResult res = null;
         String lang = (String)request.getAttribute(REQUEST_ATTR_LANGUAGE);
+        
         res = siteMap.getPageName(pageAlias, lang);
+        if(pageAlias.startsWith(res.getAliasPageName()) && pageAlias.length() > res.getAliasPageName().length()) {
+            String additionalPath = pageAlias.substring(pageAlias.indexOf(res.getAliasPageName()) + res.getAliasPageName().length());
+            request.setAttribute(REQUEST_ATTR_PAGE_ADDITIONAL_PATH, additionalPath);
+        }
         if(res.getPageAlternativeKey() != null) {
             request.setAttribute(REQUEST_ATTR_PAGE_ALTERNATIVE, res.getPageAlternativeKey());
         }
-        return res.getPageName();
+        
+        ind = res.getPageName().indexOf('/');
+        if(ind > -1) {
+            return res.getPageName().substring(0, ind);
+        } else {
+            return res.getPageName();
+        }
     }
     
     protected void addPageURIs(SortedSet<String> uris) {
@@ -634,6 +700,24 @@ public abstract class AbstractPustefixRequestHandler implements SessionTrackingS
             uris.add("/" + registeredPage);
             if(!processedPages.contains(registeredPage)) {
                 processedPages.add(registeredPage);
+                
+                List<String> mvcSuffixes = new ArrayList<String>();
+                State state = pageMap.getState(registeredPage);
+                if(state != null) {
+                    String[] mvcUris = MVCStateHandlerMapping.determineUrlsForHandlerMethods(state.getClass());
+                    if(mvcUris != null) {
+                        for(String mvcUri: mvcUris) {
+                            uris.add(mvcUri);
+                            if(mvcUri.startsWith("/" + registeredPage)) {
+                                String suffix = mvcUri.substring(registeredPage.length() + 1);
+                                if(suffix.length() > 0) {
+                                    mvcSuffixes.add(suffix);
+                                }
+                            }
+                        }
+                    }
+                }
+                
                 if(!tenantInfo.getTenants().isEmpty()) {
                     for(Tenant tenant: tenantInfo.getTenants()) {
                         for(String supportedLanguage: tenant.getSupportedLanguages()) {
@@ -643,12 +727,12 @@ public abstract class AbstractPustefixRequestHandler implements SessionTrackingS
                                 pathPrefix = langPart + "/";
                             }
                             String alias = siteMap.getAlias(registeredPage, supportedLanguage);
-                            uris.add("/" + pathPrefix + registeredPage);
-                            uris.add("/" + pathPrefix + alias);
+                            addUri(uris, "/" + pathPrefix + registeredPage, mvcSuffixes);
+                            addUri(uris, "/" + pathPrefix + alias, mvcSuffixes);
                             List<String> pageAltAliases = siteMap.getPageAlternativeAliases(registeredPage, supportedLanguage);
                             if(pageAltAliases != null) {
                                 for(String pageAltAlias: pageAltAliases) {
-                                    uris.add("/" + pathPrefix + pageAltAlias);
+                                    addUri(uris, "/" + pathPrefix + pageAltAlias, mvcSuffixes);
                                 }
                             }
                         }
@@ -661,28 +745,35 @@ public abstract class AbstractPustefixRequestHandler implements SessionTrackingS
                             pathPrefix = langPart + "/";
                         }
                         String alias = siteMap.getAlias(registeredPage, supportedLanguage);
-                        uris.add("/" + pathPrefix + registeredPage);
-                        uris.add("/" + pathPrefix + alias);
+                        addUri(uris, "/" + pathPrefix + registeredPage, mvcSuffixes);
+                        addUri(uris, "/" + pathPrefix + alias, mvcSuffixes);
                         List<String> pageAltAliases = siteMap.getPageAlternativeAliases(registeredPage, supportedLanguage);
                         if(pageAltAliases != null) {
                             for(String pageAltAlias: pageAltAliases) {
-                                uris.add("/" + pathPrefix + pageAltAlias);
+                                addUri(uris, "/" + pathPrefix + pageAltAlias, mvcSuffixes);
                             }
                         }
                     }
                 } else {
                 	String alias = siteMap.getAlias(registeredPage, null);
                 	if(alias != null && !registeredPage.equals(alias)) {
-                		uris.add("/" + alias);
+                		addUri(uris, "/" + alias, mvcSuffixes);
                 	}
                     List<String> pageAltAliases = siteMap.getPageAlternativeAliases(registeredPage, null);
                     if(pageAltAliases != null) {
                         for(String pageAltAlias: pageAltAliases) {
-                            uris.add("/" + pageAltAlias);
+                            addUri(uris, "/" + pageAltAlias, mvcSuffixes);
                         }
                     }
                 }
             }
+        }
+    }
+    
+    private void addUri(Set<String> uris, String uri, List<String> mvcSuffixes) {
+        uris.add(uri);
+        for(String mvcSuffix: mvcSuffixes) {
+            uris.add(uri + mvcSuffix);
         }
     }
     
@@ -738,4 +829,7 @@ public abstract class AbstractPustefixRequestHandler implements SessionTrackingS
         this.siteMap = siteMap;
     }
     
+    public void setPageMap(PageMap pageMap) {
+        this.pageMap = pageMap;
+    }
 }

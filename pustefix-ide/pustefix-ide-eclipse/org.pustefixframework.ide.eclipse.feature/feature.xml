@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <feature
-      id="org.pustefixframework.ide.eclipse.plugin"
+      id="org.pustefixframework.ide.eclipse.feature"
       label="Pustefix Eclipse Plugin"
       version="1.0.0"
       provider-name="Pustefix">
@@ -21,7 +21,7 @@ under the GNU Lesser General Public License (LGPL).
    </license>
 
    <plugin
-         id="org.pustefixframework.ide.eclipse.plugin"
+         id="org.pustefixframework.ide.eclipse"
          download-size="0"
          install-size="0"
          version="1.0.0"

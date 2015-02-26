@@ -17,6 +17,9 @@
       <br/>
       <pfx:maincontent part="content" path="txt/pages" prefix="main_"/>
       <pfx:editconsole/>
+      <div class="footer">
+        <ixsl:value-of select="pfx:format-date(/formresult/appinfo/@time)"/>
+      </div>
     </body>
   </html>
 </pfx:document>

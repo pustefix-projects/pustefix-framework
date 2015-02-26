@@ -29,6 +29,7 @@ import org.apache.log4j.Logger;
 import org.pustefixframework.container.spring.util.PustefixPropertiesPersister;
 import org.pustefixframework.http.internal.PustefixInit;
 import org.pustefixframework.http.internal.PustefixTempDirs;
+import org.pustefixframework.web.mvc.internal.ControllerStateAdapter;
 import org.pustefixframework.web.mvc.internal.InputHandlerProcessor;
 import org.springframework.beans.BeansException;
 import org.springframework.beans.factory.config.BeanDefinition;
@@ -136,6 +137,7 @@ public class PustefixWebApplicationContext extends AbstractRefreshableWebApplica
         }
 
         beanFactory.registerScope("tenant", new TenantScope());
+        addAnnotationMethodHandlerAdapter(beanFactory);
         addBeanFactoryPostProcessor(AnnotationBeanDefinitionPostProcessor.class, beanFactory);
         addBeanFactoryPostProcessor(InputHandlerProcessor.class, beanFactory);
     }
@@ -184,6 +186,14 @@ public class PustefixWebApplicationContext extends AbstractRefreshableWebApplica
         registry.registerBeanDefinition(name, definition);
     }
 
+    private void addAnnotationMethodHandlerAdapter(BeanDefinitionRegistry registry) {
+        BeanDefinitionBuilder beanBuilder = BeanDefinitionBuilder.genericBeanDefinition(ControllerStateAdapter.class);
+        beanBuilder.setScope("singleton");
+        BeanDefinition definition = beanBuilder.getBeanDefinition();
+        String beanName = ControllerStateAdapter.class.getName();
+        registry.registerBeanDefinition(beanName, definition);
+    }
+    
     @Override
     public Resource getResource(String location) {
         if(location.startsWith("module:") || location.startsWith("dynamic:")) {

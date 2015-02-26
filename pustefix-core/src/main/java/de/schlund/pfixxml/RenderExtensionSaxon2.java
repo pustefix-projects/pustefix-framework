@@ -22,7 +22,7 @@ public class RenderExtensionSaxon2 {
             RenderContextSaxon2 saxonRenderContext = (RenderContextSaxon2)renderContext;
             if(saxonRenderContext.getResult() == null) {
                 saxonRenderContext.setResult(saxonContext.getController().getPrincipalResult());
-                saxonRenderContext.setProperties(saxonContext.getController().getOutputProperties());
+                //saxonRenderContext.setProperties(saxonContext.getController().getOutputProperties());
             }
            
             return RenderExtension.render(targetGenerator, href, part, module, search,

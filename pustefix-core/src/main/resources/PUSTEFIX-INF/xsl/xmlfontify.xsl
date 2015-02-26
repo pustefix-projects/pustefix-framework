@@ -10,8 +10,25 @@
   <xsl:param name="sitemap" select="$__sitemap"/>
   <xsl:param name="__target_gen"/>
   <xsl:param name="__contextpath"/>
+  <xsl:param name="__querystring"/>
 
   <xsl:template match="/">
+<xsl:choose>
+  <xsl:when test="contains($__querystring,'pagestatus')">
+    <table cellpadding="4" cellspacing="0" style="padding-left:20px;">
+      <tr>
+        <td style="border-bottom: 1px solid black;">Page name</td>
+        <td style="border-bottom: 1px solid black;">Alias</td>
+        <td style="border-bottom: 1px solid black;">Visited?</td>
+        <td style="border-bottom: 1px solid black;">Accessible?</td>
+        <td style="border-bottom: 1px solid black;">Authorized?</td>
+      </tr>
+      <xsl:call-template name="render_pages">
+        <xsl:with-param name="thepages" select="$sitemap/page"/>
+      </xsl:call-template>
+    </table>
+  </xsl:when>
+  <xsl:otherwise>
     <html>
       <head>
         <title>Last DOM</title>
@@ -144,6 +161,24 @@
             top: 0;
             left: 0;
           }
+          
+          #pagestatus_loader {
+            padding-left: 10px;
+            text-decoration: underline;
+            cursor: pointer;
+          }
+          @keyframes color_change {
+            from { color: #000; }
+            to { color: #aaa; }
+          }
+          #pagestatus_progress {
+            padding-left: 10px;
+            -webkit-animation: color_change 1s infinite alternate;
+            -moz-animation: color_change 1s infinite alternate;
+            -ms-animation: color_change 1s infinite alternate;
+            -o-animation: color_change 1s infinite alternate;
+            animation: color_change 1s infinite alternate;
+          }
         </style>
         <script type="text/javascript">
           function toggleErrors(errElem, id) {
@@ -155,6 +190,22 @@
               elem.style.display='block';
               errElem.innerHTML="[-]";
             }
+          }
+          function pageStatusCallback() {
+            document.getElementById('pagestatus_content').innerHTML = this.responseText;
+          }
+          function loadPageStatus() {
+            document.getElementById('pagestatus_content').innerHTML = "&lt;div id='pagestatus_progress'&gt;Loading page status...&lt;/div&gt;";
+            var req = new XMLHttpRequest();
+            req.onload = pageStatusCallback;
+            var href = window.location.href;
+            var ind = href.indexOf("#");
+            if(ind > 0) {
+              href = href.substring(0,ind);
+            }
+            href += "&amp;pagestatus"
+            req.open("GET", href, true);
+            req.send();
           }
         </script>
       </head>
@@ -169,7 +220,7 @@
         </div>
         <div class="assistent"> 
           <label for="xpath">XPath-Expression [<a href="http://www.w3schools.com/xpath/xpath_syntax.asp" target="_blank">?</a>]</label> <input id="xpath" class="valid" value="/formresult" />
-          <a href="javascript:void(0);" id="expand">Expand all</a> | <a href="javascript:void(0);" id="collapse">Collapse all</a> | <a href="#XMLData">XML data</a> |  <a href="#PageStatus">Page status</a> | <a href="#IWrappers">IWrappers</a>
+          <a href="javascript:void(0);" id="expand">Expand all</a> | <a href="javascript:void(0);" id="collapse">Collapse all</a> | <a href="#XMLData">XML data</a> | <a href="#IWrappers">IWrappers</a> | <a href="#PageStatus">Page status</a>
           <div id="autocompletion"></div>
         </div>
         <br /><br />
@@ -183,20 +234,15 @@
         <xsl:call-template name="render_roles"/>
         <br/>
         <h1 id="PageStatus">Page status:</h1>
-        <table cellpadding="4" cellspacing="0" style="padding-left:20px;">
-        <tr>
-        <td style="border-bottom: 1px solid black;">Page name</td>
-        <td style="border-bottom: 1px solid black;">Alias</td>
-        <td style="border-bottom: 1px solid black;">Visited?</td>
-        <td style="border-bottom: 1px solid black;">Accessible?</td>
-        <td style="border-bottom: 1px solid black;">Authorized?</td></tr>
-        <xsl:call-template name="render_pages">
-          <xsl:with-param name="thepages" select="$sitemap/page"/>
-        </xsl:call-template>
-        </table>
+        <div id="pagestatus_content">
+          <div id="pagestatus_loader" onclick="loadPageStatus();return false;">Load page status</div>
+        </div>
+        <br/><br/>
         <script type="text/javascript" src="{$__contextpath}/modules/pustefix-core/script/dom.js"></script>
       </body>
     </html>
+  </xsl:otherwise>
+</xsl:choose>
   </xsl:template>
 
   <xsl:template name="render_pages">

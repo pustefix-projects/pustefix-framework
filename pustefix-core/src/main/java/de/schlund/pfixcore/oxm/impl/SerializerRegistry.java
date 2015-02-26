@@ -31,6 +31,12 @@ import java.util.Map;
 import java.util.Properties;
 import java.util.Set;
 
+import org.pustefixframework.web.mvc.filter.And;
+import org.pustefixframework.web.mvc.filter.Not;
+import org.pustefixframework.web.mvc.filter.Or;
+import org.pustefixframework.web.mvc.filter.Property;
+import org.springframework.data.domain.Sort;
+
 import de.schlund.pfixcore.beans.BeanDescriptor;
 import de.schlund.pfixcore.beans.BeanDescriptorFactory;
 import de.schlund.pfixcore.oxm.impl.serializers.ArraySerializer;
@@ -39,11 +45,13 @@ import de.schlund.pfixcore.oxm.impl.serializers.ClassSerializer;
 import de.schlund.pfixcore.oxm.impl.serializers.CollectionSerializer;
 import de.schlund.pfixcore.oxm.impl.serializers.ComplexEnumSerializer;
 import de.schlund.pfixcore.oxm.impl.serializers.DateSerializer;
+import de.schlund.pfixcore.oxm.impl.serializers.FilterSerializer;
 import de.schlund.pfixcore.oxm.impl.serializers.MapSerializer;
 import de.schlund.pfixcore.oxm.impl.serializers.ObjectToStringSerializer;
 import de.schlund.pfixcore.oxm.impl.serializers.PropertiesSerializer;
 import de.schlund.pfixcore.oxm.impl.serializers.SetSerializer;
 import de.schlund.pfixcore.oxm.impl.serializers.SimpleEnumSerializer;
+import de.schlund.pfixcore.oxm.impl.serializers.SortSerializer;
 
 /**
  * @author mleidig@schlund.de
@@ -104,7 +112,13 @@ public class SerializerRegistry {
         simpleSerializers.put(Class.class, new ClassSerializer());
 
         complexSerializers.put(Properties.class, new PropertiesSerializer());
-
+        complexSerializers.put(Sort.class, new SortSerializer());
+        
+        FilterSerializer filterSer = new FilterSerializer();
+        complexSerializers.put(And.class, filterSer);
+        complexSerializers.put(Or.class, filterSer);
+        complexSerializers.put(Not.class, filterSer);
+        complexSerializers.put(Property.class, filterSer);
     }
 
     public ComplexTypeSerializer getSerializer(Class<?> clazz) {

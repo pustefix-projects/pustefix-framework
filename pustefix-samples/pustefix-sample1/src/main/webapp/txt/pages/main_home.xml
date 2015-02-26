@@ -100,10 +100,12 @@
        </pfx:forminput>
        
        <div class="test">
-         <form id="search" onsubmit="doSearch();return false;">
-           <input type="text" name="search.term" size="20"/>
-           <input type="button" name="search" onclick="doSearch()" value="Search in wikipedia"/>
-         </form>
+         <pfx:forminput id="search" send-to-page="search" onsubmit="doSearch();return false;">
+           <pfx:xinp type="text" name="search.term" size="20"/>
+           <input type="hidden" name="__render_href" value="txt/common.xml"/>
+           <input type="hidden" name="__render_part" value="searchresult"/>
+           <pfx:submitbutton type="button" name="search" onclick="doSearch();return false;">Search in wikipedia</pfx:submitbutton>
+         </pfx:forminput>
          <div id="searchresult"></div>
        </div>
        

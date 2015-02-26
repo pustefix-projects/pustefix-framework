@@ -1,5 +1,12 @@
 package de.schlund.pfixxml.util.xsltimpl;
 
+import java.text.SimpleDateFormat;
+import java.util.Date;
+import java.util.Locale;
+import java.util.TimeZone;
+
+import org.pustefixframework.util.LocaleUtils;
+
 import com.icl.saxon.Context;
 import com.icl.saxon.expr.XPathException;
 import com.icl.saxon.om.Axis;
@@ -47,6 +54,26 @@ public class Xslt2BackPortFunctions {
             builder.endDocument();
             DocumentInfo doc = builder.getCurrentDocument();
             return doc.getEnumeration(Axis.CHILD, AnyNodeTest.getInstance());
+        } catch (Exception err) {
+            ExtensionFunctionUtils.setExtensionFunctionError(err);
+            throw new XPathException(err);
+        }
+    }
+    
+    public static String formatDate(String dateTime, String datePattern, String timeZone, String dateLocale) throws XPathException {
+        
+        try {
+            SimpleDateFormat format;
+            if(dateLocale != null && !dateLocale.isEmpty()) {
+                Locale locale = LocaleUtils.getLocale(dateLocale);
+                format = new SimpleDateFormat(datePattern, locale);
+            } else {
+                format = new SimpleDateFormat(datePattern);
+            }
+            if(timeZone != null && !timeZone.isEmpty()) {
+                format.setTimeZone(TimeZone.getTimeZone(timeZone));
+            }
+            return format.format(new Date(Long.parseLong(dateTime)));
         } catch (Exception err) {
             ExtensionFunctionUtils.setExtensionFunctionError(err);
             throw new XPathException(err);

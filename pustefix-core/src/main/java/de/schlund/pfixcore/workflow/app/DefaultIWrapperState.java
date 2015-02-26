@@ -49,7 +49,7 @@ import de.schlund.pfixxml.XMLException;
 public class DefaultIWrapperState extends StateImpl implements IWrapperState, RequestTokenAwareState {
 
     private final static String IHDL_CONT_MANAGER = "de.schlund.pfixcore.workflow.app.IHandlerContainerManager";
-
+    
     /**
      * @see de.schlund.pfixcore.workflow.State#isAccessible(Context,
      *      PfixServletRequest)
@@ -153,7 +153,7 @@ public class DefaultIWrapperState extends StateImpl implements IWrapperState, Re
         } else {
             throw new XMLException("This should not happen: No submit trigger, no direct trigger, no final page and no workflow???");
         }
-
+        
         // We want to optimize away the case where the context tells us that we
         // don't need to supply a full document as the context will - because of
         // the current state of
@@ -173,6 +173,7 @@ public class DefaultIWrapperState extends StateImpl implements IWrapperState, Re
             wrp_container.addErrorCodes();
             wrp_container.addIWrapperStatus();
             renderContextResources(context, resdoc);
+            renderMVCModel(context, resdoc, preq);
             addResponseHeadersAndType(context, resdoc);
         }
         return resdoc;
@@ -193,4 +194,5 @@ public class DefaultIWrapperState extends StateImpl implements IWrapperState, Re
     public boolean requiresToken() {
         return getConfig().requiresToken();
     }
-}// DefaultIWrapperState
+
+}

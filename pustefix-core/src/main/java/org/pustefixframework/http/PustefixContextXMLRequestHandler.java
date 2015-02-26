@@ -35,7 +35,9 @@ import org.pustefixframework.config.contextxmlservice.AbstractXMLServletConfig;
 import org.pustefixframework.config.contextxmlservice.ContextXMLServletConfig;
 import org.pustefixframework.config.contextxmlservice.PageRequestConfig;
 import org.pustefixframework.config.contextxmlservice.PreserveParams;
+import org.pustefixframework.container.spring.http.MVCStateHandlerMapping;
 import org.pustefixframework.util.LocaleUtils;
+import org.springframework.beans.factory.annotation.Autowired;
 
 import de.schlund.pfixcore.exception.PustefixApplicationException;
 import de.schlund.pfixcore.exception.PustefixCoreException;
@@ -49,6 +51,8 @@ import de.schlund.pfixcore.scriptedflow.vm.VirtualHttpServletRequest;
 import de.schlund.pfixcore.workflow.ContextImpl;
 import de.schlund.pfixcore.workflow.ContextInterceptor;
 import de.schlund.pfixcore.workflow.ExtendedContext;
+import de.schlund.pfixcore.workflow.PageMap;
+import de.schlund.pfixcore.workflow.State;
 import de.schlund.pfixcore.workflow.context.RequestContextImpl;
 import de.schlund.pfixxml.PfixServletRequest;
 import de.schlund.pfixxml.PfixServletRequestImpl;
@@ -264,9 +268,13 @@ public class PustefixContextXMLRequestHandler extends AbstractPustefixXMLRequest
                     isAlias = true;
                 }
                 String requestedPageName = preq.getRequestedPageName();
-                if( ( expectedPageName != null  && !expectedPageName.equals(requestedPageName)) ||
-                    ( expectedPageName == null && requestedPageName != null)) { 
-                    // Make sure all requests that don't encode an explicite pagename
+                if( (expectedPageName == null && requestedPageName != null) ||
+                    (expectedPageName != null && requestedPageName == null) ||
+                    (expectedPageName != null && requestedPageName != null && 
+                        (!( expectedPageName.equals(requestedPageName) || 
+                            (requestedPageName.startsWith(expectedPageName) && 
+                             requestedPageName.charAt(expectedPageName.length()) == '/'))))) {
+                    // Make sure all requests that don't encode an explicit pagename
                     // (this normally is only the case for the first request)
                     // OR pages that have the "wrong" pagename in their request 
                     // (this applies to pages selected by stepping ahead in the page flow)
@@ -290,6 +298,10 @@ public class PustefixContextXMLRequestHandler extends AbstractPustefixXMLRequest
                                 redirectURL += "&" + paramName + "=" + rp.getValue();
                             }
                         }
+                    }
+                    if(preq.getRequestParam("__lf") == null && context.getCurrentPageFlow() != null &&
+                            ((ContextImpl) context).needsLastFlow(spdoc.getPagename(), context.getCurrentPageFlow().getRootName())) {
+                        redirectURL += "&__lf=" + context.getCurrentPageFlow().getRootName();
                     }
                     spdoc.setRedirect(redirectURL, isAlias);
                 }

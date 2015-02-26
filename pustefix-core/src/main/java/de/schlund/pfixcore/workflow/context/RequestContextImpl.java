@@ -35,7 +35,6 @@ import org.apache.log4j.Logger;
 import org.pustefixframework.config.contextxmlservice.PageRequestConfig;
 import org.pustefixframework.config.contextxmlservice.PreserveParams;
 import org.pustefixframework.config.contextxmlservice.ProcessActionPageRequestConfig;
-import org.pustefixframework.config.contextxmlservice.StateConfig;
 import org.pustefixframework.http.AbstractPustefixRequestHandler;
 import org.pustefixframework.http.AbstractPustefixXMLRequestHandler;
 import org.pustefixframework.http.PustefixContextXMLRequestHandler;
@@ -59,6 +58,7 @@ import de.schlund.pfixcore.workflow.PageRequest;
 import de.schlund.pfixcore.workflow.PageRequestStatus;
 import de.schlund.pfixcore.workflow.State;
 import de.schlund.pfixcore.workflow.VariantManager;
+import de.schlund.pfixcore.workflow.SiteMap.PageLookupResult;
 import de.schlund.pfixxml.PfixServletRequest;
 import de.schlund.pfixxml.RequestParam;
 import de.schlund.pfixxml.ResultDocument;
@@ -339,6 +339,10 @@ public class RequestContextImpl implements Cloneable, AuthorizationInterceptor {
                     }
                 }
             }
+            if(preq.getRequestParam(PARAM_LASTFLOW) == null && currentpageflow != null &&
+                    needsLastFlow(spdoc.getPagename(), currentpageflow.getRootName())) {
+                redirectURL += "&__lf=" + currentpageflow.getRootName();
+            }
             spdoc.setRedirect(redirectURL);
 
         }
@@ -358,13 +362,13 @@ public class RequestContextImpl implements Cloneable, AuthorizationInterceptor {
         roleAuthDeps = null;
         currentstatus = PageRequestStatus.SELECT;
 
+        processIC(parentcontext.getContextConfig().getStartInterceptors());
+        
         RequestParam swflow = currentpservreq.getRequestParam(PARAM_STARTWITHFLOW);
         boolean startwithflow = false;
         if (swflow != null && swflow.getValue().equals("true")) {
             startwithflow = true;
         }
-
-        processIC(parentcontext.getContextConfig().getStartInterceptors());
 
         String tmppagename = currentpservreq.getPageName();
         if (tmppagename != null) {
@@ -496,8 +500,11 @@ public class RequestContextImpl implements Cloneable, AuthorizationInterceptor {
             if(checkPageAuthorization() == null && checkIsAccessible(currentpagerequest)) {
                 spdoc = documentFromCurrentStep().getSPDocument();
             } else {
-                throw new PustefixCoreException("Can't get result document for render part because page '" + 
-                        currentpagerequest.getName() + "' isn't accessible.");
+                spdoc = new SPDocument();
+                spdoc.setResponseError(403);
+                spdoc.setResponseErrorText("Page is not accessible");
+                LOG.warn("Can't get result document for render part because page '" + 
+                            currentpagerequest.getName() + "' isn't accessible.");
             }
         } else if(currentpservreq.getRequestParam(AbstractPustefixXMLRequestHandler.PARAM_STATIC_DOM) != null
                 && !"prod".equals(EnvironmentProperties.getProperties().getProperty("mode"))) {
@@ -536,11 +543,13 @@ public class RequestContextImpl implements Cloneable, AuthorizationInterceptor {
             Variant var = getVariant();
             if (var != null) {
                 spdoc.setVariant(var);
-                spdoc.getDocument().getDocumentElement().setAttribute("requested-variant", var.getVariantId());
-                if (currentpagerequest != null)
-                    spdoc.getDocument().getDocumentElement().setAttribute("used-pr", currentpagerequest.getName());
-                if (currentpageflow != null)
-                    spdoc.getDocument().getDocumentElement().setAttribute("used-pf", currentpageflow.getName());
+                if(spdoc.getDocument() != null) {
+                    spdoc.getDocument().getDocumentElement().setAttribute("requested-variant", var.getVariantId());
+                    if (currentpagerequest != null)
+                        spdoc.getDocument().getDocumentElement().setAttribute("used-pr", currentpagerequest.getName());
+                    if (currentpageflow != null)
+                        spdoc.getDocument().getDocumentElement().setAttribute("used-pf", currentpageflow.getName());
+                }
             }
             if(parentcontext.getTenant() != null) {
                 spdoc.setTenant(parentcontext.getTenant());
@@ -607,10 +616,12 @@ public class RequestContextImpl implements Cloneable, AuthorizationInterceptor {
     private void addPageFlowInfo(SPDocument spdoc) {
         if (currentpageflow != null) {
             Document doc = spdoc.getDocument();
-            Element root = doc.createElement("pageflow");
-            doc.getDocumentElement().appendChild(root);
-            root.setAttribute("name", currentpageflow.getRootName());
-            currentpageflow.addPageFlowInfo(currentpagerequest.getRootName(), root);
+            if(doc != null) {
+                Element root = doc.createElement("pageflow");
+                doc.getDocumentElement().appendChild(root);
+                root.setAttribute("name", currentpageflow.getRootName());
+                currentpageflow.addPageFlowInfo(currentpagerequest.getRootName(), root);
+            }
         }
     }
 
@@ -741,6 +752,11 @@ public class RequestContextImpl implements Cloneable, AuthorizationInterceptor {
 
     private SPDocument doJump(boolean stopnextforcurrentrequest) throws PustefixApplicationException, PustefixCoreException {
         LOG.debug("* [" + currentpagerequest + "] signalled success, jumptopage is set as [" + jumptopage + "].");
+        PageLookupResult result = servercontext.getSiteMap().getPageName(jumptopage, getLanguage());
+        jumptopage = result.getPageName();
+        if(result.getPageAlternativeKey() != null) {
+            pageAlternativeKey = result.getPageAlternativeKey();
+        }
         currentpagerequest = createPageRequest(jumptopage);
         currentstatus = PageRequestStatus.JUMP;
         if (jumptopageflow != null) {

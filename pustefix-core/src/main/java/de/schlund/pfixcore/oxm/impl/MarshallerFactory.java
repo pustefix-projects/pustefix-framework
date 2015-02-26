@@ -22,6 +22,8 @@ import javax.xml.bind.annotation.XmlRootElement;
 import org.pustefixframework.util.BytecodeAPIUtils;
 
 import de.schlund.pfixcore.beans.BeanDescriptorFactory;
+import de.schlund.pfixcore.beans.InitException;
+import de.schlund.pfixcore.beans.metadata.DefaultLocator;
 import de.schlund.pfixcore.oxm.Marshaller;
 
 public class MarshallerFactory {
@@ -30,7 +32,12 @@ public class MarshallerFactory {
     private static Marshaller jaxbMarshaller;
 
     static {
-        BeanDescriptorFactory factory = new BeanDescriptorFactory();
+        BeanDescriptorFactory factory;
+        try {
+            factory = new BeanDescriptorFactory(new DefaultLocator());
+        } catch (InitException e) {
+            throw new RuntimeException("Error initializing bean descriptors", e);
+        }
         SerializerRegistry registry = new SerializerRegistry(factory);
         defaultMarshaller = new MarshallerImpl(registry);
         jaxbMarshaller = new de.schlund.pfixcore.oxm.impl.JAXBMarshaller();

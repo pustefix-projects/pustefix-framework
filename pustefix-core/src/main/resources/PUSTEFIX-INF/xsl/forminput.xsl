@@ -175,7 +175,7 @@
       </xsl:choose>
     </xsl:variable>
     <form method="post">
-      <xsl:copy-of select="./@*[name()!='send-to-page' and name()!='send-to-pageflow' and name()!='type']"/>
+      <xsl:copy-of select="./@*[name()!='send-to-page' and name()!='send-to-pageflow' and name()!='type' and name()!='anchor']"/>
       <ixsl:attribute name="action">
         <ixsl:value-of select="$__contextpath"/>
         <xsl:choose>
@@ -199,6 +199,14 @@
               </xsl:otherwise>
             </xsl:choose>
           </xsl:otherwise>
+        </xsl:choose>
+        <xsl:choose>
+          <xsl:when test="pfx:anchor">
+            <ixsl:text>#</ixsl:text><xsl:apply-templates select="pfx:anchor/node()"/>
+          </xsl:when>
+          <xsl:when test="@anchor">
+            <ixsl:text>#<xsl:value-of select="@anchor"/></ixsl:text>
+          </xsl:when>
         </xsl:choose>
       </ixsl:attribute>
       <xsl:if test="not(.//pfx:hiddenfields)">

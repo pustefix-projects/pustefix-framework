@@ -24,6 +24,10 @@ public class ContextAppInfo {
 		return null;
 	}
 	
+	public long getTime() {
+	    return System.currentTimeMillis();
+	}
+	
 	@Autowired
 	public void setContext(Context context) {
 		this.context = context;

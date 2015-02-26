@@ -6,7 +6,7 @@
                               version="1.0">
   
   <global-config>
-    <force-ssl>true</force-ssl>
+    <!-- <force-ssl>true</force-ssl> -->
     <!-- <force-serial-requests>true</force-serial-requests> -->
   </global-config>
   

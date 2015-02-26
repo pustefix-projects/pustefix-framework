@@ -33,6 +33,7 @@ import java.util.Iterator;
 import java.util.Map;
 import java.util.Properties;
 import java.util.TreeMap;
+import java.util.TreeSet;
 import java.util.regex.Pattern;
 
 import javax.servlet.ServletException;
@@ -512,6 +513,7 @@ public abstract class AbstractPustefixXMLRequestHandler extends AbstractPustefix
             if(reqId != null) {
                 res.addHeader("Request-Id", reqId);
             }
+            res.setHeader("x-pfx-reuse", String.valueOf(spdoc.getTimestamp()));
         }
         
         if(!generator.isGetModTimeMaybeUpdateSkipped()) {
@@ -991,12 +993,37 @@ public abstract class AbstractPustefixXMLRequestHandler extends AbstractPustefix
                     variant_id = variants[i];
                     if(spdoc.getPageAlternative() != null) variant_id += ":" + spdoc.getPageAlternative();
                     if(spdoc.getTenant() != null) variant_id += ":" + spdoc.getTenant().getName() + "-" + spdoc.getLanguage();
-                    LOGGER.info("   ** Trying variant '" + variant_id + "' **");
                     pinfo   = generator.getPageInfoFactory().getPage(pagename, variant_id);
                     target  = pagetree.getTargetForPageInfo(pinfo);
                     if (target != null) {
                         return target.getTargetKey();
                     }
+                }
+                int bestWeight = -1;
+                String bestTargetKey = null;
+                for (int i = 0; i < variants.length; i++) {
+                    variant_id = variants[i];
+                    if(spdoc.getPageAlternative() != null) variant_id += ":" + spdoc.getPageAlternative();
+                    if(spdoc.getTenant() != null) variant_id += ":" + spdoc.getTenant().getName() + "-" + spdoc.getLanguage();
+                    Variant newVariant = new Variant(variant_id);
+                    TreeSet<PageInfo> pageInfos = pagetree.getPageInfoForPageName(pagename);
+                    if(pageInfos != null) {
+                        for (PageInfo pageInfo : pageInfos) {
+                            if(pageInfo.getVariant() != null && newVariant.matches(pageInfo.getVariant())) {
+                                target  = pagetree.getTargetForPageInfo(pageInfo);
+                                if (target != null) {
+                                    int weight = pageInfo.getVariant().split(":").length;
+                                    if(weight > bestWeight) {
+                                        bestTargetKey = target.getTargetKey();
+                                        bestWeight = weight;
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+                if(bestTargetKey != null) {
+                    return bestTargetKey;
                 }
             }
             if (target == null) {
@@ -1009,12 +1036,10 @@ public abstract class AbstractPustefixXMLRequestHandler extends AbstractPustefix
                         variantId += ":" + spdoc.getTenant().getName() + "-" + spdoc.getLanguage();
                     }
                 }
-                LOGGER.info("   ** Trying root variant: " + variantId + " **");
                 pinfo = generator.getPageInfoFactory().getPage(pagename, variantId);
                 target = pagetree.getTargetForPageInfo(pinfo);
             }
             if (target == null) {
-                LOGGER.warn("\n********************** NO TARGET ******************************");
                 return null;
             } else {
                 return target.getTargetKey();

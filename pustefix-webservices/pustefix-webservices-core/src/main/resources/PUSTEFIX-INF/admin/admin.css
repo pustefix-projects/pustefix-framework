@@ -1,0 +1,8 @@
+span.returntype {font-stretch: condensed; color: #333333;}
+span.paramtype {font-stretch: condensed; color: #333333;}
+span.method {font-weight: bold;}
+ul.srvmeth {font-size: 100%;}
+ul.srvmeth li {padding-bottom: 10px;}
+ul.srvmeth ul {list-style-type: none; padding-top: 10px;}
+a.srvlink {color: #666666;}
+div.runtest {border: 1px solid #999; border-radius: 4px; background: #aaa; cursor: pointer; padding: 2px; font-size: 70%; color: #fff; display: inline-block;}

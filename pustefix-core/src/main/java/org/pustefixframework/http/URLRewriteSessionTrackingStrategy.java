@@ -34,8 +34,6 @@ public class URLRewriteSessionTrackingStrategy implements SessionTrackingStrateg
     private static final String COOKIE_VALUE_SEPARATOR_OLD = ":";
     private static final int MAX_PARALLEL_SEC_SESSIONS = 10;
     private static final String PARAM_FORCELOCAL = "__forcelocal";
-    private static final String ATTR_USER_AGENT = "__PFX_USER_AGENT__";
-    private static final String ATTR_REMOTE_IP = "__PFX_REMOTE_IP__";
     private static final String RAND_SESS_COOKIE_VALUE = "__RAND_SESS_COOKIE_VALUE__";
     private static final String SECURE_SESS_COOKIE = "__PFIX_SSC_";
     private static final String SECURE_SESS_COOKIE_OLD = "__PFIX_SEC_";
@@ -85,6 +83,8 @@ public class URLRewriteSessionTrackingStrategy implements SessionTrackingStrateg
                     }
                 }
             }
+        } else {
+            createTestCookie(req, res);
         }
         
         if (req.isRequestedSessionIdValid()) {
@@ -175,7 +175,7 @@ public class URLRewriteSessionTrackingStrategy implements SessionTrackingStrateg
                         } else {
                             // We don't do cookies, so we simply have to believe it
                             // or check IP and User-Agent header at least
-                            boolean ok = checkClientIdentity(req);
+                            boolean ok = AbstractPustefixRequestHandler.checkClientIdentity(req);
                             if(!ok) {
                                 LOG.warn("Invalidate session " + session.getId() + " because client identity changed!");
                                 LOGGER_SESSION.info("Invalidate session IV: " + session.getId() + dumpRequest(req));
@@ -388,7 +388,7 @@ public class URLRewriteSessionTrackingStrategy implements SessionTrackingStrateg
     
     private void redirectToInsecureSSLSession(PfixServletRequest preq, HttpServletRequest req, HttpServletResponse res) {
         HttpSession session = req.getSession(true);
-        storeClientIdentity(req);
+        AbstractPustefixRequestHandler.storeClientIdentity(req);
         context.registerSession(req, session);
 
         LOG.debug("*** Setting INSECURE flag in session (Id: " + session.getId() + ")");
@@ -404,7 +404,7 @@ public class URLRewriteSessionTrackingStrategy implements SessionTrackingStrateg
     
     private void redirectToSession(PfixServletRequest preq, HttpServletRequest req, HttpServletResponse res) {
         HttpSession session = req.getSession(true);
-        storeClientIdentity(req);
+        AbstractPustefixRequestHandler.storeClientIdentity(req);
         context.registerSession(req, session);
         createTestCookie(req, res);
 
@@ -468,7 +468,7 @@ public class URLRewriteSessionTrackingStrategy implements SessionTrackingStrateg
         LOGGER_SESSION.info("Invalidate session VI: " + session.getId() + dumpRequest(req));
         SessionUtils.invalidate(session);
         session = req.getSession(true);
-        storeClientIdentity(req);
+        AbstractPustefixRequestHandler.storeClientIdentity(req);
 
         // First of all we put the old session id into the new session (__PARENT_SESSION_ID__)
         session.setAttribute(SessionAdmin.PARENT_SESS_ID, old_id);
@@ -596,7 +596,7 @@ public class URLRewriteSessionTrackingStrategy implements SessionTrackingStrateg
         // only used for the jump to SSL so we can get the cookie to check the identity of the caller.
         String parentid = req.getRequestedSessionId();
         HttpSession session = req.getSession(true);
-        storeClientIdentity(req);
+        AbstractPustefixRequestHandler.storeClientIdentity(req);
         session.setAttribute(CHECK_FOR_RUNNING_SSL_SESSION, parentid);
         LOG.debug("*** Setting INSECURE flag in session (Id: " + session.getId() + ")");
         session.setAttribute(SessionAdmin.SESSION_IS_SECURE, Boolean.FALSE);
@@ -625,7 +625,7 @@ public class URLRewriteSessionTrackingStrategy implements SessionTrackingStrateg
         HttpSession child = context.getSessionAdmin().getChildSessionForParentId(parentid);
         String curr_visit_id = (String) child.getAttribute(AbstractPustefixRequestHandler.VISIT_ID);
         HttpSession session = req.getSession(true);
-        storeClientIdentity(req);
+        AbstractPustefixRequestHandler.storeClientIdentity(req);
         String testrand = (String) child.getAttribute(RAND_SESS_COOKIE_VALUE);
         if (testrand == null || testrand.equals("")) {
             // Make sure a test cookie is created
@@ -675,44 +675,7 @@ public class URLRewriteSessionTrackingStrategy implements SessionTrackingStrateg
         }
         return null;
     }
- 
-    private static void storeClientIdentity(HttpServletRequest req) {
-        HttpSession session = req.getSession(false);
-        if(session != null) {
-            String ip = AbstractPustefixRequestHandler.getRemoteAddr(req);
-            session.setAttribute(ATTR_REMOTE_IP, ip);
-            String userAgent = req.getHeader("User-Agent");
-            if(userAgent == null) {
-                userAgent = "-";
-            }
-            session.setAttribute(ATTR_USER_AGENT, userAgent);
-        }
-    }
-             
-    private static boolean checkClientIdentity(HttpServletRequest req) {
-        HttpSession session = req.getSession(false);
-        if(session != null) {
-            String storedIp = (String)session.getAttribute(ATTR_REMOTE_IP);
-            if(storedIp != null) {
-                String ip = AbstractPustefixRequestHandler.getRemoteAddr(req);
-                if(!ip.equals(storedIp)) {
-                    LOG.warn("Differing client IP: " + ip + " " + storedIp);
-                    return false;
-                }
-            }
-            String storedUserAgent = (String)session.getAttribute(ATTR_USER_AGENT);
-            if(storedUserAgent != null) {
-                String userAgent = req.getHeader("User-Agent");
-                if(userAgent == null) userAgent = "-";
-                if(!userAgent.equals(storedUserAgent)) {
-                    LOG.warn("Differing client useragent: " + userAgent + " " + storedUserAgent);
-                    return false;
-                }
-            }
-        }
-        return true;
-    }
-    
+
     private static String dumpRequest(HttpServletRequest req) {
         StringBuilder sb = new StringBuilder();
         sb.append("\n");

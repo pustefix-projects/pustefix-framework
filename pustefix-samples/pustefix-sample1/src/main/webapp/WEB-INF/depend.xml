@@ -11,7 +11,7 @@
   </namespaces>
 
   <global>
-    <!-- <include stylesheet="xsl/runtime.xsl"/> -->
+    <include stylesheet="xsl/runtime.xsl"/>
     <!-- <param   name="outputmethod"         value="html"/> -->
     <param name="outputdoctype-public" value="-//W3C//DTD HTML 4.01//EN"/>
     <param name="outputdoctype-system" value="http://www.w3.org/TR/html40/strict.dtd"/>
@@ -63,13 +63,13 @@
   <standardpage name="encoding" xml="xml/one_frame.xml"/>
   <standardpage name="upload" xml="xml/one_frame.xml"/>
   <standardpage name="test"     xml="xml/one_frame.xml"/>
-  <standardpage name="img"     xml="xml/one_frame.xml"/>
+  <!--<standardpage name="img"     xml="xml/one_frame.xml"/>-->
   <standardpage name="tokenerror"    xml="xml/one_frame.xml"/>
   <standardpage name="iwrapperinfo" xml="xml/one_frame.xml"/>
   
   <standardpage name="frames"  xml="xml/manyframes.xml"/>  
   
-  <standardpage name="invalidate" xml="xml/two_frames.xml"/>
+  <standardpage name="invalidate" xml="xml/one_frame.xml"/>
   
   <standardpage name="geninc"   xml="xml/one_frame.xml">
     <include stylesheet="generatedruntime.xsl"/>
@@ -78,6 +78,8 @@
   <standardpage name="testchecks" xml="xml/one_frame.xml"/> 
 
   <standardpage name="moduletest" xml="xml/frame.xml" module="common-module"/>
+
+  <standardpage name="mvctest" xml="xml/one_frame_navi.xml"/>
 
   <target name="generatedruntime.xsl" type="xml">
     <depxml name="xsl/generatedruntime.xsl"/>

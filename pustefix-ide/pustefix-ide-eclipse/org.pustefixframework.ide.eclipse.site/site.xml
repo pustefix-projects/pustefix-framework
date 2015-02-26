@@ -8,5 +8,5 @@
    <feature url="features/org.pustefixframework.ide.eclipse.plugin_0.2.0.jar" id="org.pustefixframework.ide.eclipse.plugin" version="0.2.0"/>
    <feature url="features/org.pustefixframework.ide.eclipse.plugin_0.3.0.jar" id="org.pustefixframework.ide.eclipse.plugin" version="0.3.0"/>
    -->
-   <feature url="features/org.pustefixframework.ide.eclipse.plugin_1.0.0.jar" id="org.pustefixframework.ide.eclipse.plugin" version="1.0.0"/>
+   <feature url="features/org.pustefixframework.ide.eclipse.feature_1.0.0.jar" id="org.pustefixframework.ide.eclipse.feature" version="1.0.0"/>
 </site>

@@ -150,12 +150,17 @@ pfx.net.HTTPRequest.prototype.start = function( content, headers, reqId ) {
             pfx.net.HTTPRequest._xml[i].onreadystatechange = function() {
               if( pfx.net.HTTPRequest._xml[i].readyState == 4 ) {
                 var reqId;
+                var resInfo = {};
                 try {
                   reqId = pfx.net.HTTPRequest._xml[i].getResponseHeader("Request-Id");
+                  var reuse = pfx.net.HTTPRequest._xml[i].getResponseHeader("x-pfx-reuse");
+                  if(reuse) {
+                    resInfo.reuse = reuse;
+                  }
                 } catch(e) {
                 }
                 var content = self._getResponse(pfx.net.HTTPRequest._xml[i]);
-                if(content!=null) self.callback.call( self.context, content, reqId);
+                if(content!=null) self.callback.call( self.context, content, reqId, resInfo);
                 else if(!pfx.net.HTTPRequest._xml[i].aborted) throw new Error("Empty response");
                 pfx.net.HTTPRequest._xml[i] = null;
               }
@@ -172,12 +177,17 @@ pfx.net.HTTPRequest.prototype.start = function( content, headers, reqId ) {
                   throw new Error("HTTP_Request: Asynchronous call failed" + " (status " + self.status + ", " + self.statusText + ")");
                 }
                 var reqId;
+                var resInfo = {};
                 try {
                   reqId = pfx.net.HTTPRequest._xml[i].getResponseHeader("Request-Id");
+                  var reuse = pfx.net.HTTPRequest._xml[i].getResponseHeader("x-pfx-reuse");
+                  if(reuse) {
+                    resInfo.reuse = reuse;
+                  }
                 } catch(e) {
                 }
                 var content = self._getResponse(pfx.net.HTTPRequest._xml[i]);
-                if(content!=null) self.callback.call( self.context, content, reqId);
+                if(content!=null) self.callback.call( self.context, content, reqId, resInfo);
                 else if(!pfx.net.HTTPRequest._xml[i].aborted) throw new Error("Empty response");
                 pfx.net.HTTPRequest._xml[i] = null;
               }
@@ -194,13 +204,19 @@ pfx.net.HTTPRequest.prototype.start = function( content, headers, reqId ) {
       try {
      
         pfx.net.HTTPRequest._xml[i].open( this.method, this.url, this.callback ? true : false); 
- 
-        for( var j=0; j<this.headers.length; j++ ) {
-          try {
-            // not implemented in Opera 7.6pr1
-            pfx.net.HTTPRequest._xml[i].setRequestHeader( this.headers[j][0], this.headers[j][1] );
-          } catch(e) {
-          }
+        if(this.headers) {
+          for( var j=0; j<this.headers.length; j++ ) {
+            try {
+              pfx.net.HTTPRequest._xml[i].setRequestHeader(this.headers[j][0],this.headers[j][1] );
+            } catch(e) {}
+          }        
+        }
+        if(headers) {
+          for( var j=0; j<headers.length; j++ ) {
+            try {
+              pfx.net.HTTPRequest._xml[i].setRequestHeader(headers[j][0],headers[j][1] );
+            } catch(e) {}
+          }        
         }
 
         if( this.callback && typeof reqId != "undefined" ) {

@@ -20,6 +20,8 @@ package de.schlund.pfixcore.workflow.app;
 
 import java.util.Properties;
 
+import org.springframework.web.servlet.ModelAndView;
+
 import de.schlund.pfixcore.workflow.Context;
 import de.schlund.pfixcore.workflow.StateImpl;
 import de.schlund.pfixxml.PfixServletRequest;
@@ -47,6 +49,7 @@ public class StaticState extends StateImpl {
     public ResultDocument getDocument(Context context, PfixServletRequest preq) throws Exception {
         ResultDocument resdoc = createDefaultResultDocument(context);
         context.prohibitContinue();
+        renderMVCModel(context, resdoc, preq);
         return resdoc;
     }
 

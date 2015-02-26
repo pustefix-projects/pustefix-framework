@@ -1,0 +1,8 @@
+table.overview td,th {padding-bottom: 5pt; padding-right: 15pt;}
+table.overview tr.nosel {cursor: pointer; color: #666666;}
+table.overview tr.sel {cursor: pointer; color: #000000;}
+table.reqres {width: 100%; table-layout: fixed; padding-top: 10px;}
+table.reqres td {width: 50%; vertical-align: top; border: 1px solid #000000;}
+table.reqres th {text-align: left;}
+div.body {overflow: auto; background-color: #FFFFFF; padding: 5px;}
+div.detailentry {display:none;}
