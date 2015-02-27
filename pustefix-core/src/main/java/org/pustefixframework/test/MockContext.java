@@ -77,6 +77,7 @@ public class MockContext implements Context {
     private Authentication authentication;
     private PageRequest pageRequest;
     private PageRequestStatus pageRequestStatus;
+    private PageFlow currentPageFlow;
     private List<StatusCodeInfo> messages   = new ArrayList<StatusCodeInfo>();
     private Map<Object,Properties> contextResourceProps = new HashMap<Object,Properties>();
     private Set<String> pageNeedsDataSet = new HashSet<String>();
@@ -121,7 +122,11 @@ public class MockContext implements Context {
     }
 
     public PageFlow getCurrentPageFlow() {
-        throw new UnsupportedOperationException("Method isn't supported any more");
+        return currentPageFlow; 
+    }
+
+    public void setCurrentPageFlow(PageFlow currentPageFlow) {
+        this.currentPageFlow = currentPageFlow;
     }
     
     public PageRequestStatus getCurrentStatus() {
