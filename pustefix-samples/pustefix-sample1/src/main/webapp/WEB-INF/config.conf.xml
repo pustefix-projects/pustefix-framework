@@ -269,7 +269,8 @@
   <config-include file="conf/fragments.xml" section="pagerequests" module="animal-module"/>
 
   <properties>
-    <prop name="pfixservletrequest.maxpartsize">1</prop>
+    <!-- *** limit file upload size *** -->
+    <!--<prop name="pfixservletrequest.maxpartsize">100000000</prop>-->
     <!-- *** some additional properties needed for this application *** -->
     <!-- <prop name="interfacelogging">log</prop> -->
   </properties>
