@@ -730,8 +730,20 @@
           <xsl:otherwise>1</xsl:otherwise>
         </xsl:choose>
       </xsl:variable>
+      <xsl:if test="pfx:default">
+        <xsl:apply-templates/>
+      </xsl:if>
       <ixsl:choose>
-        <ixsl:when test="not($__root/formresult/formvalues/param[@name=string($pfx_name)][position() = {$pos}])"><xsl:apply-templates/></ixsl:when>
+        <ixsl:when test="not($__root/formresult/formvalues/param[@name=string($pfx_name)][position() = {$pos}])">
+          <xsl:choose>
+            <xsl:when test="pfx:default">
+              <xsl:apply-templates select="pfx:default/node()"/>
+            </xsl:when>
+            <xsl:otherwise>
+              <xsl:apply-templates/>
+            </xsl:otherwise>
+          </xsl:choose>
+        </ixsl:when>
         <ixsl:otherwise><ixsl:value-of select="$__root/formresult/formvalues/param[@name=string($pfx_name)][position() = {$pos}]"/></ixsl:otherwise>
       </ixsl:choose>
     </textarea>
