@@ -471,4 +471,16 @@
 
   </section>
 
+  <section xml:id="news.0_18_87">
+    <title>What's new in Pustefix 0.18.87</title>
+
+    <section xml:id="news.0_18_87.xslt">
+      <title>New XPath string functions using pattern matching</title>
+      <para>
+        Pustefix provides the new XPath functions <literal>pfx:matches()</literal> and <literal>pfx:replace()</literal>, which basically are a backport of the according XPath 2.0 function, making pattern matching available in XSLT 1 (see <xref linkend="xslt.extensions.xpathfunctions.string"/>).
+      </para>
+    </section>
+
+  </section>
+
 </chapter>

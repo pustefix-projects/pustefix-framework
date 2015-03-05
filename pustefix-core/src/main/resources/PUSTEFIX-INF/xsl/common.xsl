@@ -31,6 +31,21 @@
     <func:result select="xslt2:upperCase($str)"/>
   </func:function>
   
+  <func:function name="pfx:matches">
+    <xsl:param name="input"/>
+    <xsl:param name="pattern"/>
+    <xsl:param name="flags"/>
+    <func:result select="xslt2:matches($input, $pattern, $flags)"/>
+  </func:function>
+  
+  <func:function name="pfx:replace">
+    <xsl:param name="input"/>
+    <xsl:param name="pattern"/>
+    <xsl:param name="replacement"/>
+    <xsl:param name="flags"/>
+    <func:result select="xslt2:replace($input, $pattern, $replacement, $flags)"/>
+  </func:function>
+  
   <func:function name="pfx:tokenize">
     <xsl:param name="str"/>
     <xsl:param name="pattern"/>

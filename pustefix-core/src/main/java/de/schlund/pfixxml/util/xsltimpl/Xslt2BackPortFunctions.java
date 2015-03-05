@@ -4,6 +4,7 @@ import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.Locale;
 import java.util.TimeZone;
+import java.util.regex.Pattern;
 
 import org.pustefixframework.util.LocaleUtils;
 
@@ -36,7 +37,39 @@ public class Xslt2BackPortFunctions {
     public static String lowerCase(String str) {
         return str.toLowerCase();
     }
-
+    
+    public static boolean matches(String input, String pattern) {
+        return Pattern.compile(pattern).matcher(input).find();
+    }
+    
+    public static boolean matches(String input, String pattern, String flags) {
+        int flagMask = getPatternFlags(flags);
+        return Pattern.compile(pattern, flagMask).matcher(input).find();
+    }
+    
+    public static String replace(String input, String pattern, String replacement) {
+        return Pattern.compile(pattern).matcher(input).replaceAll(replacement);
+    }
+    
+    public static String replace(String input, String pattern, String replacement, String flags) {
+        int flagMask = getPatternFlags(flags);
+        return Pattern.compile(pattern, flagMask).matcher(input).replaceAll(replacement);
+    }
+        
+    private static int getPatternFlags(String flags) {
+        int flagMask = 0;
+        for(int i=0; i<flags.length(); i++) {
+            char ch = flags.charAt(i);
+            switch(ch) {
+                case 's': flagMask |= Pattern.DOTALL;
+                case 'm': flagMask |= Pattern.MULTILINE;
+                case 'i': flagMask |= Pattern.CASE_INSENSITIVE;
+                case 'x': flagMask |= Pattern.COMMENTS;
+            }
+        }
+        return flagMask;
+    }
+    
     public static NodeEnumeration tokenize(Context context, String str, String pattern) throws XPathException {
         try {
             Builder builder = context.getController().makeBuilder();
