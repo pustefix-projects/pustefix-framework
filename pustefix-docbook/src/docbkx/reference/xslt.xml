@@ -1352,9 +1352,14 @@
         </para>
         <para>
           Basically the same attributes as for <literal>&lt;pfx:xinp type="text"&gt;</literal>, with the exception
-          that there's no default attribute or child node. The same way as it works for the html textarea tag, the content
+          that there's no default attribute. The same way as it works for the html textarea tag, the content
           of the element (minus the special <literal>&lt;pfx:name&gt;</literal> child) becomes the default value
           for the form input element.
+        </para>
+        <para>
+          If you plan to mix the content with additional non-content markup, you should put the default content into
+          a <literal>&lt;pfx:default&gt;</literal> element. Thus the non-content markup is copied through, even if the
+          default content isn't applied because of existing content from the DOM tree.
         </para>
       </section>
       <section xml:id="xslt.forms.elements.password">
@@ -1998,6 +2003,22 @@
       </para>
       <para>
         The <emphasis role="strong">pfx:upper-case</emphasis> function converts all of the characters in the arguments string to upper case.
+      </para>
+
+      <para></para>
+      <para>
+        <emphasis role="strong">Function:</emphasis> <emphasis>boolean</emphasis> <emphasis role="strong">pfx:matches</emphasis>(<emphasis>string, string, string?</emphasis>)
+      </para>
+      <para>
+        The <emphasis role="strong">pfx:matches</emphasis> function returns true if the text passed as first argument is matched by the pattern passed as second argument. You can optionally specify one or more pattern mode flags as third argument ('s' dot-all mode, 'm' multi-line mode, 'i' case-insensitive mode, 'x' pattern-whitespace-ignoring mode). The function basically works like the according XPath 2.0 function (see <link xlink:href="http://www.w3.org/TR/xpath-functions/#func-matches"/>). 
+      </para>
+
+      <para></para>
+      <para>
+        <emphasis role="strong">Function:</emphasis> <emphasis>string</emphasis> <emphasis role="strong">pfx:replace</emphasis>(<emphasis>string, string, string, string?</emphasis>)
+      </para>
+      <para>
+        The <emphasis role="strong">pfx:replace</emphasis> function replaces all substrings of the text passed as first argument, which match the pattern passed a second argument, with the replacement passed as third argument. You can optionally specify one or more pattern mode flags as third argument ('s' dot-all mode, 'm' multi-line mode, 'i' case-insensitive mode, 'x' pattern-whitespace-ignoring mode). The function basically works like the according XPath 2.0 function (see <link xlink:href="http://www.w3.org/TR/xpath-functions/#func-replace"/>). 
       </para>
 
     </section>
