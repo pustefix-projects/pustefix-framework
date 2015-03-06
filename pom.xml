@@ -213,16 +213,10 @@
   </reporting> 
   <distributionManagement>
     <repository>
-      <id>ciso-release</id>
-      <url>https://artifactory.1and1.org/artifactory/ciso-release</url>
-    </repository>
-<!--
-    <repository>
       <id>sonatype-nexus-staging</id>
       <name>Sonatype Nexus Staging Repository</name>
       <url>https://oss.sonatype.org/service/local/staging/deploy/maven2/</url>
     </repository>
--->
 <!--
     <snapshotRepository>
       <id>sonatype-nexus-snapshots</id>
