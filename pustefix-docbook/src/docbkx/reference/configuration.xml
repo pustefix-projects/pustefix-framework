@@ -47,28 +47,27 @@
       <itemizedlist>
         <listitem>
           <para>
-            <literal>mode</literal>: Set to the property 
-            <literal>makemode</literal> specified when running Ant.
-            If no explicit <literal>makemode</literal> is specified
-            <literal>prod</literal> is used.
+            <literal>mode</literal>: The execution environment mode, e.g. 
+            <literal>test</literal>, <literal>stage</literal> or
+            <literal>prod</literal>.
           </para>
         </listitem>
         <listitem>
           <para>
-            <literal>uid</literal>: The name of the user that 
-            executed Ant.
+            <literal>uid</literal>: The name of the OS user running 
+            the application.
           </para>
         </listitem>
         <listitem>
           <para>
             <literal>fqdn</literal>: The fully qualified domain name
-            of the machine the build process was run on.
+            of the machine where the application is running.
           </para>
         </listitem>
         <listitem>
           <para>
             <literal>machine</literal>: The host name of the machine
-            the build process was run on.
+            where the application is running.
           </para>
         </listitem>
         <listitem>
