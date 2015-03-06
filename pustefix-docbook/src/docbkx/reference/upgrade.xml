@@ -5,6 +5,37 @@
 >
   <title>Upgrading to a newer Pustefix version</title>
 
+  <section xml:id="upgrade.0_18_to_0_19">
+    <title>Upgrading from Pustefix 0.18 to 0.19</title>
+
+    <section xml:id="upgrade.0_18_to_0_19.dependencies">
+      <title>Library dependencies</title>
+      <para>
+        Pustefix 0.19 itself is completely backwards compatible, i.e. neither API, behaviour, configuration or XSL templates have changed.
+        But some of its dependencies on other Java libraries have changed. 
+      </para>
+      <para>
+        The main change is the upgrade to Spring 4, i.e. if your application is relying on the transitive Maven dependencies of Pustefix, it
+        will get Spring 4 after the upgrade too. If your application requires an older version of Spring, it has to explicitely specify
+        an alternative version in its Maven POM now.
+      </para>
+      <para>
+        Another dependency change, that possibly affects your application, is the removal of the Apache ORO library. The library was used for
+        regular expression checks in IWrappers and was replaced by using the JDK standard library. While Apache ORO regular expressions only slightly
+        differ from the JDK ones, and Pustefix automatically tries to convert them on the fly, there's still a small chance that you're using
+        some special expression which isn't compatible or can't be converted correctly.
+      </para>
+      <para>
+        To support you in finding these incompatible regular expressions, Pustefix, since version 0.18.64, checks regular expressions in IWrappers 
+        for compatibility and logs if they can't be converted or behave different. Just search your application's <literal>pustefix-servlet.log</literal> for 
+        occurrences of <literal>INCOMPATIBLE_REGEX</literal> (different result) or <literal>REGEX_ERROR</literal> (conversion error) to fix them manually
+        (you should ensure first, that Log4J is configured accordingly, i.e. that warnings from logger 
+        <literal>de.schlund.pfixcore.generator.prechecks.RegexpCheck</literal> are really logged).
+      </para>
+    </section>
+   
+  </section>
+
   <section xml:id="upgrade.0_17_to_0_18">
     <title>Upgrading from Pustefix 0.17 to 0.18</title>
 

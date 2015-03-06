@@ -4,14 +4,14 @@
   <parent>
     <artifactId>pustefix-editor</artifactId>
     <groupId>org.pustefixframework.editor</groupId>
-    <version>0.18.88-SNAPSHOT</version>
+    <version>0.19.4-SNAPSHOT</version>
   </parent>
 
   <name>Pustefix Editor Backend Code</name>
 
   <groupId>org.pustefixframework.editor</groupId>
   <artifactId>pustefix-editor-backend</artifactId>
-  <version>0.18.88-SNAPSHOT</version>
+  <version>0.19.4-SNAPSHOT</version>
   
   <dependencies>
     <dependency>
@@ -22,22 +22,22 @@
     <dependency>
       <groupId>org.pustefixframework.editor</groupId>
       <artifactId>pustefix-editor-common</artifactId>
-      <version>0.18.88-SNAPSHOT</version>
+      <version>0.19.4-SNAPSHOT</version>
     </dependency>
     <dependency>
       <groupId>com.caucho</groupId>
       <artifactId>hessian</artifactId>
-      <version>3.1.5</version>
+      <version>4.0.33</version>
     </dependency>
     <dependency>
       <groupId>org.springframework</groupId>
       <artifactId>spring-webmvc</artifactId>
-      <version>3.0.7.RELEASE</version>
+      <version>4.1.5.RELEASE</version>
     </dependency>
     <dependency>
       <groupId>javax.mail</groupId>
       <artifactId>mail</artifactId>
-      <version>1.4.1</version>
+      <version>1.4.7</version>
     </dependency>
   </dependencies>
   

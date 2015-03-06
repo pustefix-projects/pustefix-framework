@@ -4,7 +4,7 @@
 
   <groupId>org.pustefixframework</groupId>
   <artifactId>pustefixframework</artifactId>
-  <version>0.18.88-SNAPSHOT</version>
+  <version>0.19.4-SNAPSHOT</version>
   <packaging>pom</packaging>
   <name>Pustefix Framework</name>
   <url>http://pustefix-framework.org</url>
@@ -29,8 +29,8 @@
   </issueManagement>
 
   <scm>
-    <connection>scm:svn:https://svn.code.sf.net/p/pustefix/code/trunk</connection>
-    <developerConnection>scm:svn:https://svn.code.sf.net/p/pustefix/code/trunk</developerConnection>
+    <connection>scm:svn:https://svn.code.sf.net/p/pustefix/code/branches/pustefix-0.19</connection>
+    <developerConnection>scm:svn:https://svn.code.sf.net/p/pustefix/code/branches/pustefix-0.19</developerConnection>
     <url>http://dev.pustefix-framework.org/browser/trunk</url>
   </scm>
 
@@ -42,7 +42,7 @@
     <dependency>
       <groupId>junit</groupId>
       <artifactId>junit</artifactId>
-      <version>4.8.1</version>
+      <version>4.12</version>
       <scope>test</scope>
     </dependency>
   </dependencies>
@@ -176,6 +176,7 @@
            <configuration>
              <!-- Workaround for http://jira.codehaus.org/browse/MRELEASE-271 -->
              <preparationGoals>clean install</preparationGoals>
+             <goals>deploy</goals>
            </configuration>
          </plugin>
          <plugin>
@@ -212,10 +213,16 @@
   </reporting> 
   <distributionManagement>
     <repository>
+      <id>ciso-release</id>
+      <url>https://artifactory.1and1.org/artifactory/ciso-release</url>
+    </repository>
+<!--
+    <repository>
       <id>sonatype-nexus-staging</id>
       <name>Sonatype Nexus Staging Repository</name>
       <url>https://oss.sonatype.org/service/local/staging/deploy/maven2/</url>
     </repository>
+-->
 <!--
     <snapshotRepository>
       <id>sonatype-nexus-snapshots</id>

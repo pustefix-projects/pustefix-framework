@@ -18,18 +18,21 @@
 
 package de.schlund.pfixxml.util;
 
-import javax.xml.parsers.DocumentBuilderFactory;
+import java.io.StringReader;
 
+import javax.xml.transform.stream.StreamSource;
 
 import org.w3c.dom.Document;
 import org.w3c.dom.Node;
+
+import de.schlund.pfixxml.util.xsltimpl.XmlSaxon2;
 
 public class XPathSaxon2Test extends XPathTest {
 
     @Override
     protected Document createDOM(String xml) throws Exception {
-        DocumentBuilderFactory dbf = DocumentBuilderFactory.newInstance();
-        return createDOM(dbf,xml);
+        StringReader reader = new StringReader(xml);
+        return (new XmlSaxon2()).createInternalDOM(new StreamSource(reader));
     }
     
     @Override

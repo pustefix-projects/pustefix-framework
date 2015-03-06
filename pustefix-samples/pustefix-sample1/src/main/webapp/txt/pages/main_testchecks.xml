@@ -69,12 +69,6 @@
         </pfx:checkfield>
         <br/>
 
-        Perl5Pattern: <pfx:xinp type="text" name="checks.Perl5Pattern" />
-        <pfx:checkfield name="checks.Perl5Pattern">
-          <pfx:error><pfx:scode/></pfx:error>
-        </pfx:checkfield>
-        <br/>
-        
         File: <input type="file" name="checks.File" />
         <pfx:checkfield name="checks.File">
           <pfx:error><pfx:scode/></pfx:error>
