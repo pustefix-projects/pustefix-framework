@@ -6,3 +6,4 @@ table.reqres td {width: 50%; vertical-align: top; border: 1px solid #000000;}
 table.reqres th {text-align: left;}
 div.body {overflow: auto; background-color: #FFFFFF; padding: 5px;}
 div.detailentry {display:none;}
+div.sessionwarn {border-radius: 4px; padding: 5px; background: red; color:white;}

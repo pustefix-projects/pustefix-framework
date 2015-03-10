@@ -6,3 +6,4 @@ ul.srvmeth li {padding-bottom: 10px;}
 ul.srvmeth ul {list-style-type: none; padding-top: 10px;}
 a.srvlink {color: #666666;}
 div.runtest {border: 1px solid #999; border-radius: 4px; background: #aaa; cursor: pointer; padding: 2px; font-size: 70%; color: #fff; display: inline-block;}
+div.sessionwarn {border-radius: 4px; padding: 5px; background: red; color:white;}

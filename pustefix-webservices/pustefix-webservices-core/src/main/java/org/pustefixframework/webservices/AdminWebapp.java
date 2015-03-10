@@ -110,11 +110,11 @@ public class AdminWebapp {
                 } else sendError(req,res);
             } else sendForbidden(req,res);
         } else if(qs.equalsIgnoreCase("monitor")) {
-            if(session!=null && runtime.getConfiguration().getGlobalServiceConfig().getMonitoringEnabled()) {
+            if(runtime.getConfiguration().getGlobalServiceConfig().getMonitoringEnabled()) {
                 sendMonitor(req,res);
             } else sendForbidden(req,res);
         } else if(qs.equalsIgnoreCase("admin")) {
-            if(session!=null && runtime.getConfiguration().getGlobalServiceConfig().getAdminEnabled()) {
+            if(runtime.getConfiguration().getGlobalServiceConfig().getAdminEnabled()) {
                 sendAdmin(req,res);
             } else sendForbidden(req,res);
         } else if(qs.startsWith("test")) {
@@ -158,20 +158,24 @@ public class AdminWebapp {
     public void sendAdmin(HttpServletRequest req,HttpServletResponse res) throws IOException {  
         PrintWriter writer=res.getWriter();
         //TODO: source out html
-        HttpSession session=req.getSession(false);
-        if(session!=null && runtime.getConfiguration().getGlobalServiceConfig().getAdminEnabled()) {
+        if(runtime.getConfiguration().getGlobalServiceConfig().getAdminEnabled()) {
             res.setStatus(HttpURLConnection.HTTP_OK);
             res.setCharacterEncoding("utf-8");
             res.setContentType("text/html");
             addHeader(req, res, writer, "admin");
             writer.println("<div class=\"content\">");
+            if(req.getSession(false) == null) {
+                writer.println("<div class=\"sessionwarn\">You requested the page without a valid session. The functionality " +
+                        "will be limited (e.g. testing services accessing session scoped beans can't work without a valid session). " +
+                        "</div><br/>");
+            }
             for(ServiceConfig srvConf:runtime.getConfiguration().getServiceConfig()) {
                 String name=srvConf.getName();
                 writer.println("<div>");
                 writer.println("<b>"+name+"</b>");
                 if(srvConf.getProtocolType().equals(Constants.PROTOCOL_TYPE_ANY)||
                         srvConf.getProtocolType().equals(Constants.PROTOCOL_TYPE_SOAP)) {
-                    String wsdlUri=req.getRequestURI()+"/"+name+";jsessionid="+session.getId()+"?WSDL";
+                    String wsdlUri=req.getRequestURI()+"/"+name+SessionHelper.getSessionIdPath(req)+"?WSDL";
                     writer.println("&nbsp;&nbsp;<a class=\"srvlink\" target=\"_blank\" href=\""+wsdlUri+"\" title=\"Show generated WSDL\">WSDL</a>");
                     String soapUri=req.getRequestURI()+"?wsscript&amp;name="+srvConf.getName()+"&amp;type=soap";
                     writer.println("&nbsp;&nbsp;<a class=\"srvlink\" target=\"_blank\" href=\""+soapUri+"\" title=\"Show generated SOAP Javascript stub\">SOAP JS</a>");
@@ -383,6 +387,11 @@ public class AdminWebapp {
             SimpleDateFormat format=new SimpleDateFormat("MM-dd-yyyy HH:mm:ss");
             addHeader(req, res, writer, "monitor");
             writer.println("<div class=\"content\">");
+            if(req.getSession(false) == null) {
+                writer.println("<div class=\"sessionwarn\">You requested the page without a valid session. The functionality " +
+                        "will be limited. " +
+                        "</div><br/>");
+            }
             writer.println("<table class=\"overview\">");
             writer.println("<tr>");
             writer.println("<th align=\"left\" title=\"Date/time of receipt\">Start</th>");
