@@ -19,12 +19,9 @@ public class BytecodeAPIUtils {
     private final static String PROXYCHECK_CLASS_JAVASSIST = "javassist.util.proxy.ProxyFactory";
     private final static String PROXYCHECK_METHOD_JAVASSIST = "isProxyClass";
     
-    private final static String PROXYCHECK_CLASS_WELD = "org.jboss.weld.bean.proxy.ProxyObject";
-    
     private static Method cglibProxyCheckMethod;
     private static Method cglibSpringProxyCheckMethod;
     private static Method javassistProxyCheckMethod;
-    private static Class<?> weldProxyCheckClass;
     
     static {
         try {
@@ -49,11 +46,6 @@ public class BytecodeAPIUtils {
         } catch(ClassNotFoundException x) {
             //ignore
         } catch(NoSuchMethodException x) {
-            //ignore
-        }
-        try {
-            weldProxyCheckClass = Class.forName(PROXYCHECK_CLASS_WELD);
-        } catch(ClassNotFoundException x) {
             //ignore
         }
     }
@@ -96,12 +88,7 @@ public class BytecodeAPIUtils {
                 //ignore
             }
         }
-        if(weldProxyCheckClass != null) {
-            if(weldProxyCheckClass.isAssignableFrom(clazz)) {
-                return true;
-            }
-        }
         return false;
     }
-
+    
 }

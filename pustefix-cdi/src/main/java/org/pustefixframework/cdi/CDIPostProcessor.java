@@ -40,14 +40,18 @@ public class CDIPostProcessor implements BeanFactoryPostProcessor {
     private List<Bean<Object>> cdiBeans;
      
     public CDIPostProcessor() {
-        
         try {
             InitialContext jndiCtx = new InitialContext();
+            //Object obj = jndiCtx.lookup("java:comp/BeanManager");
+            
             beanManager = (BeanManager)jndiCtx.lookup("java:comp/env/BeanManager");
+          
             cdiBeans = CDIExtension.getCDIBeans(beanManager);
-
+            
+          
         } catch(NamingException x) {
-            throw new RuntimeException("Error during CDI bridge initialization", x);
+            //TODO
+            x.printStackTrace();
         }
     }
     
@@ -78,9 +82,11 @@ public class CDIPostProcessor implements BeanFactoryPostProcessor {
             CDIScope cdiScope = new CDIScope(beanManager, beans);
             beanFactory.registerScope(CDIScope.class.getName(), cdiScope);
         }
+         
+        
     }
 
-    private BeanDefinition createBeanDefinition(Bean<?> bean) {
+    private BeanDefinition createBeanDefinition(Bean<Object> bean) {
         GenericBeanDefinition beanDefinition = new GenericBeanDefinition();
         beanDefinition.setBeanClass(bean.getBeanClass());
         beanDefinition.setScope(CDIScope.class.getName());
@@ -88,7 +94,7 @@ public class CDIPostProcessor implements BeanFactoryPostProcessor {
         return beanDefinition;
     }
     
-    private String createBeanName(Bean<?> bean, BeanDefinition beanDefinition, BeanDefinitionRegistry registry) {
+    private String createBeanName(Bean<Object> bean, BeanDefinition beanDefinition, BeanDefinitionRegistry registry) {
         String beanName = bean.getName();
         if (beanName == null) {
             beanName = BeanDefinitionReaderUtils.generateBeanName(beanDefinition, registry);

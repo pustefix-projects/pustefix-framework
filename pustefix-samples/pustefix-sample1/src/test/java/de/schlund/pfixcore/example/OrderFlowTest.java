@@ -22,7 +22,6 @@ import java.util.Properties;
 import javax.servlet.ServletContext;
 
 import org.junit.Assert;
-import org.junit.Test;
 import org.pustefixframework.test.PustefixWebApplicationContextLoader;
 import org.pustefixframework.test.XmlAssert;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -31,7 +30,7 @@ import org.springframework.context.ApplicationContextAware;
 import org.springframework.mock.web.MockHttpServletRequest;
 import org.springframework.mock.web.MockHttpSession;
 import org.springframework.test.context.ContextConfiguration;
-import org.springframework.test.context.junit4.AbstractJUnit4SpringContextTests;
+import org.springframework.test.context.junit38.AbstractJUnit38SpringContextTests;
 import org.springframework.web.context.ServletContextAware;
 import org.springframework.web.context.request.RequestContextHolder;
 import org.springframework.web.context.request.ServletRequestAttributes;
@@ -48,7 +47,7 @@ import de.schlund.pfixxml.ResultDocument;
 import de.schlund.pfixxml.util.XMLUtils;
 
 @ContextConfiguration(loader=PustefixWebApplicationContextLoader.class,locations={"docroot:/WEB-INF/project.xml","docroot:/WEB-INF/spring.xml"})
-public class OrderFlowTest extends AbstractJUnit4SpringContextTests implements ServletContextAware, ApplicationContextAware {
+public class OrderFlowTest extends AbstractJUnit38SpringContextTests implements ServletContextAware, ApplicationContextAware {
     
     private ServletContext servletContext;
     
@@ -66,17 +65,14 @@ public class OrderFlowTest extends AbstractJUnit4SpringContextTests implements S
         this.servletContext = servletContext;
     }
     
-    @Test
     public void testSingletonBean() {
         Assert.assertEquals(testData.getText(), "bar");
     }
     
-    @Test
     public void testSessionBean() {
         Assert.assertEquals(testData.getText(), "bar");
     }
     
-    @Test
     public void testHandler() throws Exception {
         MockHttpServletRequest req = new MockHttpServletRequest();
         req.setPathInfo("/home");

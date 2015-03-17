@@ -22,9 +22,7 @@ import javax.xml.transform.Source;
 import javax.xml.transform.Transformer;
 import javax.xml.transform.TransformerException;
 
-import net.sf.saxon.Configuration;
 import net.sf.saxon.dom.NodeOverNodeInfo;
-import net.sf.saxon.event.PipelineConfiguration;
 import net.sf.saxon.lib.SaxonOutputKeys;
 import net.sf.saxon.om.NodeInfo;
 import net.sf.saxon.tree.tiny.TinyBuilder;
@@ -42,9 +40,7 @@ import de.schlund.pfixxml.util.XsltVersion;
 public class XmlSaxon2 implements XmlSupport {
 
     public Document createInternalDOM(Source input) throws TransformerException {
-        Configuration config = new Configuration();
-        PipelineConfiguration pipeConfig = new PipelineConfiguration(config);
-        TinyBuilder builder = new TinyBuilder(pipeConfig);
+        TinyBuilder builder = new TinyBuilder(null);
         Transformer t = Xslt.createIdentityTransformer(XsltVersion.XSLT2);
         t.transform(input, builder);
         NodeInfo node = builder.getCurrentRoot();

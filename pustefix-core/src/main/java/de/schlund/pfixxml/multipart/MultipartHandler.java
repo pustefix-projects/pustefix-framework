@@ -45,6 +45,7 @@ import javax.servlet.ServletInputStream;
 import javax.servlet.http.HttpServletRequest;
 
 import org.apache.log4j.Logger;
+import org.apache.oro.text.perl.Perl5Util;
 import org.pustefixframework.http.AbstractPustefixXMLRequestHandler;
 
 /**
@@ -70,8 +71,7 @@ public class MultipartHandler {
     public static final String READ_DATE_PARAM = "read-date";
     public static final String SIZE_PARAM = "size";
     public static final String FNAME_PATTERN = "00000000";
-    public static final String REMOVE_FILEPATH_PATTERN = "(filename=\")([^\"]+[/\\\\])?([^\"]+\")";
-    
+
     private final static Object lock = new Object();
     private final static DecimalFormat format = new DecimalFormat(FNAME_PATTERN);
 
@@ -414,8 +414,9 @@ public class MultipartHandler {
                 String[] valArr = headers.getHeader(name);
                 if (valArr != null && 0 < valArr.length) {
                     if (name.equals("Content-Disposition")) {
-                        //remove path components from filename (e.g. added by some IE versions)
-                        valArr[0] = valArr[0].replaceAll(REMOVE_FILEPATH_PATTERN, "$1$3");
+                        //System.out.println("val before:"+valArr[0]);
+                        valArr[0] = removeIEDirtyPath(valArr[0]);
+                        //System.out.println("val after :"+valArr[0]);
                     }
                     String value = MimeUtility.decodeText(valArr[0]);
                     int idx = value.indexOf(';');
@@ -460,6 +461,30 @@ public class MultipartHandler {
      */
     public void setMaxPartSize(long maxPartSize) {
         this.maxPartSize = maxPartSize;
+    }
+
+    private String removeIEDirtyPath(String str) {
+        Perl5Util perl = new Perl5Util();
+        String ret = str;
+
+        int fnindex = str.indexOf("filename");
+        if (fnindex != -1) {
+            int blindex = str.indexOf("\\"); 
+            if(blindex > -1 && blindex > fnindex ) {
+                perl.match("/filename=\"(.*[^\"])\"/", str);
+                String fullpath = "";
+                fullpath = perl.group(1);
+
+                int index = fullpath.lastIndexOf("\\");
+                if (index != -1) {
+                    String file = "";
+                    file = fullpath.substring(index + 1);
+                    file = "\"" + file + "\"";
+                    ret = perl.substitute("s/filename=\"(.*[^\"])\"/filename=" + file + "/", str);
+                } 
+            }
+        }
+        return ret;
     }
 
 }

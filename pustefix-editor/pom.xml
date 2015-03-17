@@ -6,13 +6,13 @@
   <parent>
     <groupId>org.pustefixframework</groupId>
     <artifactId>pustefixframework</artifactId>
-    <version>0.19.5-SNAPSHOT</version>
+    <version>0.18.88</version>
   </parent>
   
   <groupId>org.pustefixframework.editor</groupId>
   <artifactId>pustefix-editor</artifactId>
   <packaging>pom</packaging>
-  <version>0.19.5-SNAPSHOT</version>
+  <version>0.18.88</version>
   <name>Pustefix Editor</name>
   <url>http://pustefixframework.org</url>
   
@@ -20,7 +20,7 @@
     <dependency>
       <groupId>org.pustefixframework</groupId>
       <artifactId>pustefix-core</artifactId>
-      <version>0.19.5-SNAPSHOT</version>
+      <version>0.18.88</version>
     </dependency>
     <dependency>
       <groupId>log4j</groupId>
@@ -29,8 +29,8 @@
     </dependency>
     <dependency>
       <groupId>javax.servlet</groupId>
-      <artifactId>javax.servlet-api</artifactId>
-      <version>3.0.1</version>
+      <artifactId>servlet-api</artifactId>
+      <version>2.4</version>
       <scope>provided</scope>
     </dependency>
   </dependencies>

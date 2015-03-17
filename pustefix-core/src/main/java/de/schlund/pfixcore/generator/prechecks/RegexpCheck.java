@@ -15,11 +15,15 @@
  * along with Pustefix; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  */
-package de.schlund.pfixcore.generator.prechecks;
 
+package de.schlund.pfixcore.generator.prechecks;
 import java.util.regex.Pattern;
 
+import org.apache.log4j.Logger;
+import org.apache.oro.text.PatternCacheLRU;
+import org.apache.oro.text.perl.Perl5Util;
 import org.pustefixframework.generated.CoreStatusCodes;
+import org.pustefixframework.util.LogUtils;
 
 import de.schlund.pfixcore.generator.IWrapperParamPreCheck;
 import de.schlund.pfixcore.generator.SimpleCheck;
@@ -30,14 +34,17 @@ import de.schlund.util.statuscodes.StatusCodeHelper;
 /**
  * Regular expression check using Java Patterns (or Perl5 regex for backwards compatibility).
  * 
- * Patterns of the form "/.../" (Perl5-style) are checked using Pattern.matcher().find() 
+ * Patterns of the form "/.../" are checked using Perl5Util, future versions will use Pattern.matcher().find() 
  * Other patterns will be evaluated using Pattern.matcher().matches()
  *
  */
-public class RegexpCheck extends SimpleCheck implements IWrapperParamPreCheck {
+public class RegexpCheck  extends SimpleCheck implements IWrapperParamPreCheck {
     
-    private String regexp;
-    private StatusCode scode;
+    private Logger LOG = Logger.getLogger(RegexpCheck.class);
+    
+    private final static Perl5Util p5 = new Perl5Util(new PatternCacheLRU(20));
+    private        String     regexp = null;
+    private        StatusCode scode;
     
     public RegexpCheck() {
         scode = CoreStatusCodes.PRECHECK_REGEXP_NO_MATCH;
@@ -53,24 +60,38 @@ public class RegexpCheck extends SimpleCheck implements IWrapperParamPreCheck {
     
     public void check(RequestParam[] value) {
         reset();
-        Pattern pattern = null;
-        if(regexp.startsWith("/")) {
-            pattern = Pattern.compile(perl5ToJavaRegex(regexp));
-        } else {
-            pattern = Pattern.compile(regexp);
-        }
         for (int i = 0; i < value.length; i++) {
             if(regexp.startsWith("/")) {
-                if (!pattern.matcher(value[i].getValue()).find()) {
+                boolean p5Match = p5.match(regexp, value[i].getValue());
+                checkJavaRegexMatch(regexp, value[i].getValue(), p5Match);
+                if (!p5Match) {
                     addSCode(scode);
                     break;
                 }
             } else {
-                if (!pattern.matcher(value[i].getValue()).matches()) {
+                if (!Pattern.matches(regexp, value[i].getValue())) {
                     addSCode(scode);
                     break;
                 }
             }
+        }
+    }
+    
+    /**
+     * Convert the perl5 regex to a Java pattern and log out
+     * result when they don't match equally.
+     * This code will be removed after having migrated from 
+     * perl5 to Java patterns in Pustefix 0.19.
+     */
+    private void checkJavaRegexMatch(String regex, String value, boolean expected) {
+        try {
+            Pattern pattern = Pattern.compile(perl5ToJavaRegex(regex));
+            boolean actual = pattern.matcher(value).find();
+            if(actual != expected) {
+                LOG.warn("INCOMPATIBLE_REGEX|" + regex + "|" + LogUtils.makeLogSafe(value) + "|" + expected + "|" + actual);
+            }
+        } catch(Exception x) {
+            LOG.warn("REGEX_ERROR|" + regex + "|" + LogUtils.makeLogSafe(value) + "|" + expected + "|" + x.getMessage(), x);
         }
     }
     
@@ -94,4 +115,4 @@ public class RegexpCheck extends SimpleCheck implements IWrapperParamPreCheck {
         return perl5Regex;
     }
     
-}
+}// RegexpCheck

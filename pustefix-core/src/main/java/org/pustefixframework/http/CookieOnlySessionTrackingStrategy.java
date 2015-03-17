@@ -94,7 +94,6 @@ public class CookieOnlySessionTrackingStrategy implements SessionTrackingStrateg
                         
                         Boolean hasSecureFlag = (Boolean)session.getAttribute(SessionAdmin.SESSION_IS_SECURE);
                         if(hasSecureFlag != Boolean.TRUE) { //session isn't secure
-                            
                             //copy existing session data into new secure session
                             session = copySession(session, req);
                             addCookie(COOKIE_SESSION_SSL, "true", req, res);
@@ -129,7 +128,6 @@ public class CookieOnlySessionTrackingStrategy implements SessionTrackingStrateg
                 } else {
                     
                     if(context.needsSSL(preq) && !req.isSecure()) { //requires SSL and has no SSL
-                        
                         resetSession(req, res);
                         redirectToSSL(req, res, HttpServletResponse.SC_MOVED_PERMANENTLY);
                         return;
@@ -152,7 +150,6 @@ public class CookieOnlySessionTrackingStrategy implements SessionTrackingStrateg
                             }
                                 
                         } else {
-                            
                             resetSession(req, res);
                             redirect(req, res, HttpServletResponse.SC_MOVED_PERMANENTLY, req.getScheme());
                             return;
@@ -167,13 +164,21 @@ public class CookieOnlySessionTrackingStrategy implements SessionTrackingStrateg
                 
                 if(getCookie(cookies, COOKIE_SESSION_SSL) != null) { //was running under SSL
                     
-                    if(req.isSecure() && getCookie(cookies, COOKIE_SESSION_SSL_CHECK) != null) {
+                    if(req.isSecure()) {
                         
-                        //was redirected to SSL to check for secure session
-                        //let's redirect back to http because no secure session was found
-                        resetCookie(COOKIE_SESSION_SSL, req, res);
-                        redirect(req, res, HttpServletResponse.SC_MOVED_TEMPORARILY, "http");
-                        return;
+                        if(getCookie(cookies, COOKIE_SESSION_SSL_CHECK) != null) {
+                        
+                            //was redirected to SSL to check for secure session
+                            //let's redirect back to http because no secure session was found
+                            resetCookie(COOKIE_SESSION_SSL, req, res);
+                            redirect(req, res, HttpServletResponse.SC_MOVED_TEMPORARILY, "http");
+                            return;
+                      
+                        } else {
+
+                            createSession(req, res);
+
+                        }
                         
                     } else {
                     

@@ -3,24 +3,38 @@
   <parent>
     <artifactId>pustefix-webservices</artifactId>
     <groupId>org.pustefixframework.webservices</groupId>
-    <version>0.19.5-SNAPSHOT</version>
+    <version>0.18.88</version>
   </parent>
 
   <name>Pustefix Webservices Jaxws</name>
 
   <groupId>org.pustefixframework.webservices</groupId>
   <artifactId>pustefix-webservices-jaxws</artifactId>
-  <version>0.19.5-SNAPSHOT</version>
+  <version>0.18.88</version>
 
   <dependencies>
     <dependency>
       <groupId>org.pustefixframework.webservices</groupId>
       <artifactId>pustefix-webservices-core</artifactId>
-      <version>0.19.5-SNAPSHOT</version>
+      <version>0.18.88</version>
     </dependency> 
   </dependencies>
   
   <profiles>
+    <profile>
+      <id>jaxws1_6</id>
+      <activation>
+        <activeByDefault>true</activeByDefault> 
+        <jdk>1.6</jdk>
+      </activation>
+      <dependencies>
+        <dependency>
+          <groupId>com.sun.xml.ws</groupId>
+          <artifactId>jaxws-tools</artifactId>
+          <version>2.1.4</version>
+        </dependency>
+      </dependencies>  
+    </profile>
     <profile>
       <id>jaxws1_7</id>
       <activation>
@@ -31,19 +45,6 @@
           <groupId>com.sun.xml.ws</groupId>
           <artifactId>jaxws-tools</artifactId>
           <version>2.2.5</version>
-        </dependency>
-      </dependencies>  
-    </profile>
-    <profile>
-      <id>jaxws1_8</id>
-      <activation>
-        <jdk>1.8</jdk>
-      </activation>
-      <dependencies>
-        <dependency>
-          <groupId>com.sun.xml.ws</groupId>
-          <artifactId>jaxws-tools</artifactId>
-          <version>2.2.8</version>
         </dependency>
       </dependencies>  
     </profile>

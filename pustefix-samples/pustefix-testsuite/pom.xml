@@ -4,12 +4,12 @@
   <parent>
     <groupId>org.pustefixframework</groupId>
     <artifactId>pustefix-samples</artifactId>
-    <version>0.19.5-SNAPSHOT</version>
+    <version>0.18.88</version>
   </parent>
 
   <groupId>org.pustefixframework</groupId>
   <artifactId>pustefix-testsuite</artifactId>
-  <version>0.19.5-SNAPSHOT</version>
+  <version>0.18.88</version>
   <packaging>war</packaging>
 
   <name>Pustefix Testsuite</name>
@@ -18,12 +18,24 @@
     <dependency>
       <groupId>org.pustefixframework</groupId>
       <artifactId>pustefix-core</artifactId>
-      <version>0.19.5-SNAPSHOT</version>
+      <version>0.18.88</version>
     </dependency>
     <dependency>
       <groupId>org.pustefixframework.webservices</groupId>
       <artifactId>pustefix-webservices-core</artifactId>
-      <version>0.19.5-SNAPSHOT</version>      
+      <version>0.18.88</version>      
+    </dependency>
+
+
+    <dependency>
+      <groupId>rhino</groupId>
+      <artifactId>js</artifactId>
+      <version>1.5R3</version>
+    </dependency>
+    <dependency>
+      <groupId>org.beanshell</groupId>
+      <artifactId>bsh</artifactId>
+      <version>2.0b4</version>
     </dependency>
   </dependencies>
  
@@ -32,7 +44,7 @@
       <plugin>
         <groupId>org.pustefixframework.maven.plugins</groupId>
         <artifactId>pustefix-statuscode-plugin</artifactId>
-        <version>0.19.5-SNAPSHOT</version>
+        <version>0.18.88</version>
         <executions>
           <execution>
             <goals>
@@ -44,7 +56,7 @@
       <plugin>
         <groupId>org.pustefixframework.maven.plugins</groupId>
         <artifactId>pustefix-iwrapper-plugin</artifactId>
-        <version>0.19.5-SNAPSHOT</version>
+        <version>0.18.88</version>
         <executions>
           <execution>
             <goals>
