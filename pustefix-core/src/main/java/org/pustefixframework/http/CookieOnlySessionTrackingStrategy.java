@@ -167,17 +167,27 @@ public class CookieOnlySessionTrackingStrategy implements SessionTrackingStrateg
                 
                 if(getCookie(cookies, COOKIE_SESSION_SSL) != null) { //was running under SSL
                     
-                    if(req.isSecure() && getCookie(cookies, COOKIE_SESSION_SSL_CHECK) != null) {
+                    if(req.isSecure()) {
                         
-                        //was redirected to SSL to check for secure session
-                        //let's redirect back to http because no secure session was found
-                        resetCookie(COOKIE_SESSION_SSL, req, res);
-                        redirect(req, res, HttpServletResponse.SC_MOVED_TEMPORARILY, "http");
-                        return;
+                        if(getCookie(cookies, COOKIE_SESSION_SSL_CHECK) != null) {
+                    
+                            //was redirected to SSL to check for secure session
+                            //let's redirect back to http because no secure session was found
+                            resetCookie(COOKIE_SESSION_SSL, req, res);
+                            redirect(req, res, HttpServletResponse.SC_MOVED_TEMPORARILY, "http");
+                            return;
+                            
+                        } else {
+                            
+                            createSession(req, res);
+                            
+                        }
+                       
                         
                     } else {
                     
                         //possibly has a secure session, so let's redirect to SSL and see if session is sent
+                        
                         addCookie(COOKIE_SESSION_SSL_CHECK, "true", req, res);
                         redirectToSSLCheck(req, res, HttpServletResponse.SC_MOVED_TEMPORARILY);
                         return;

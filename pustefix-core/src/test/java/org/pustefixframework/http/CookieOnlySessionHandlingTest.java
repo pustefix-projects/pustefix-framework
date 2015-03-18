@@ -393,6 +393,9 @@ public class CookieOnlySessionHandlingTest extends AbstractSessionHandlingTest {
         Cookie cookie = new Cookie("localhost", "JSESSIONID", "xyz");
         cookie.setPath("/");
         client.getState().addCookie(cookie);
+        cookie = new Cookie("localhost", "_PFXSSL_", "true");
+        cookie.setPath("/");
+        client.getState().addCookie(cookie);
 
         HttpMethod method = new GetMethod("https://localhost:"+HTTPS_PORT+"?foo=bar");
         method.setFollowRedirects(false);
@@ -683,13 +686,13 @@ public class CookieOnlySessionHandlingTest extends AbstractSessionHandlingTest {
         assertTrue(method.getResponseBodyAsString().contains("<!--foo=bar-->"));
         assertEquals(3, getCount(method.getResponseBodyAsString()));
     }
-    
+
     public static String getSession(String url) {
         Matcher matcher = PATTERN_URL.matcher(url);
         if(matcher.matches()) return matcher.group(8);
         return null;
     }
-    
+
     public static String getSessionFromResponseCookie(HttpMethod method) {
         Header[] headers = method.getResponseHeaders("Set-Cookie");
         for(Header header: headers) {
