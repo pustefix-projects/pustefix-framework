@@ -123,9 +123,9 @@ public class TargetGenerator implements ResourceVisitor, ServletContextAware, In
     private boolean isGetModTimeMaybeUpdateSkipped = false;
     private boolean toolingExtensions = true;
 
-    private long config_mtime = 0;
-
     private Set<Resource> configFileDependencies = new HashSet<Resource>();
+    private long configMaxModtime = -1;
+    private long configReadTime;
 
     private String name;
     
@@ -452,19 +452,15 @@ public class TargetGenerator implements ResourceVisitor, ServletContextAware, In
 
     private boolean needsReload() {
         for (Resource file : configFileDependencies) {
-            if (file.lastModified() > config_mtime) {
+            if (file.lastModified() > configReadTime) {
                 return true;
             }
         }
         return false;
     }
     
-    protected long getConfigMaxModTime() {
-        long tmptime = -1;
-        for (Resource file: configFileDependencies) {
-            tmptime = Math.max(file.lastModified(), tmptime);
-        }
-        return tmptime;
+    protected synchronized long getConfigMaxModTime() {
+        return configMaxModtime;
     }
 
     private void fireConfigurationChangeEvent() {
@@ -475,7 +471,7 @@ public class TargetGenerator implements ResourceVisitor, ServletContextAware, In
     }
 
     private void loadConfig(Resource configFile) throws XMLException, IOException, SAXException {
-        config_mtime = System.currentTimeMillis();
+        configReadTime = System.currentTimeMillis();
         String path = configFile.toURI().toString();
         LOG.info("\n***** CAUTION! ***** loading config " + path + "...");
         
@@ -489,10 +485,12 @@ public class TargetGenerator implements ResourceVisitor, ServletContextAware, In
         // Make sure list of dependencies only contains the file itself
         configFileDependencies.clear();
         configFileDependencies.add(configFile);
+        configMaxModtime = configFile.lastModified();
         FileIncludeEventListener listener = new FileIncludeEventListener() {
 
             public void fileIncluded(FileIncludeEvent event) {
                 configFileDependencies.add(event.getIncludedFile());
+                configMaxModtime = Math.max(event.getIncludedFile().lastModified(), configMaxModtime);
             }
 
         };
