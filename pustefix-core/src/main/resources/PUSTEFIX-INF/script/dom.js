@@ -511,27 +511,29 @@ function hideAncestors() {
 
 function enableAncestorHighlightMode(event) {
   event = event || window.event;
+
   var keyCode = event.keyCode || event.which;
+  var ctrlKey = event.ctrlKey || event.metaKey;
 
-  if (!ancestorHighlightNode) {
-    ancestorHighlightNode = (keyCode == 17);
+  ancestorHighlightNode = (keyCode === 17 && ctrlKey);
 
-    if (ancestorHighlightNode) {
-      showAncestors(latestDOMElementHovered);
-    }
+  if (ancestorHighlightNode) {
+    showAncestors(latestDOMElementHovered);
+  } else {
+    hideAncestors();
   }
 }
 
 function disableAncestorHighlightMode(event) {
   event = event || window.event;
+
   var keyCode = event.keyCode || event.which;
+  var ctrlKey = event.ctrlKey || event.metaKey;
 
-  if (ancestorHighlightNode) {
-    ancestorHighlightNode = !(keyCode == 17);
+  ancestorHighlightNode = !!(keyCode === 17 && ctrlKey);
 
-    if (!ancestorHighlightNode) {
-      hideAncestors();
-    }
+  if (!ancestorHighlightNode) {
+    hideAncestors();
   }
 }
 
