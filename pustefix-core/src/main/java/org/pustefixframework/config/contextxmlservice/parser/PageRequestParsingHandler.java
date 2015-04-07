@@ -54,6 +54,7 @@ import com.marsching.flexiparse.parser.exception.ParserException;
 import de.schlund.pfixcore.generator.IWrapper;
 import de.schlund.pfixcore.generator.UseHandlerBeanRef;
 import de.schlund.pfixcore.generator.UseHandlerClass;
+import de.schlund.pfixcore.workflow.StateImpl;
 
 
 public class PageRequestParsingHandler implements ParsingHandler {
@@ -248,7 +249,9 @@ public class PageRequestParsingHandler implements ParsingHandler {
                 }
                 beanBuilder.setScope(stateConfig.getScope());
                 beanBuilder.addPropertyReference("config", configBeanName);
-                beanBuilder.addPropertyReference("adapter", ControllerStateAdapter.class.getName());
+                if(StateImpl.class.isAssignableFrom(stateConfig.getState())) {
+                    beanBuilder.addPropertyReference("adapter", ControllerStateAdapter.class.getName());
+                }
                 beanDefinition = beanBuilder.getBeanDefinition();
                 if (pageConfig.getBeanName() != null && pageConfig.getBeanName().length() > 0) {
                     stateBeanName = pageConfig.getBeanName();
