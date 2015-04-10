@@ -42,28 +42,31 @@ public class InputHandlerProcessor implements BeanFactoryPostProcessor {
     public void postProcessBeanFactory(ConfigurableListableBeanFactory beanFactory) throws BeansException {
         
         DefaultBeanNameGenerator nameGenerator = new DefaultBeanNameGenerator();
-        String[] beanNames = beanFactory.getBeanNamesForType(IWrapperConfigImpl.class);
+        String[] beanNames = beanFactory.getBeanDefinitionNames();
+        
         for(String beanName: beanNames) {
             BeanDefinition beanDef = beanFactory.getBeanDefinition(beanName);
-            PropertyValue propVal = beanDef.getPropertyValues().getPropertyValue("handler");
-            if(propVal != null) {
-                Object val = propVal.getValue();
-                if(val != null && val instanceof RuntimeBeanReference) {
-                    RuntimeBeanReference ref = (RuntimeBeanReference)val;
-                    BeanDefinition refDef = beanFactory.getBeanDefinition(ref.getBeanName());
-                    refDef = getOriginatingBeanDefinition(refDef);
-                    try {
-                        Class<?> refClass = Class.forName(refDef.getBeanClassName());
-                        if(InputHandler.class.isAssignableFrom(refClass)) {
-                            BeanDefinitionBuilder beanBuilder = BeanDefinitionBuilder.genericBeanDefinition(InputHandlerAdapter.class);
-                            beanBuilder.addPropertyReference("delegate", ref.getBeanName());
-                            BeanDefinition beanDefinition = beanBuilder.getBeanDefinition();
-                            String handlerBeanName = nameGenerator.generateBeanName(beanDefinition, (DefaultListableBeanFactory)beanFactory);
-                            ((DefaultListableBeanFactory)beanFactory).registerBeanDefinition(handlerBeanName, beanDefinition);
-                            beanDef.getPropertyValues().addPropertyValue("handler", new RuntimeBeanReference(handlerBeanName));
+            if(IWrapperConfigImpl.class.getName().equals(beanDef.getBeanClassName())) {
+                PropertyValue propVal = beanDef.getPropertyValues().getPropertyValue("handler");
+                if(propVal != null) {
+                    Object val = propVal.getValue();
+                    if(val != null && val instanceof RuntimeBeanReference) {
+                        RuntimeBeanReference ref = (RuntimeBeanReference)val;
+                        BeanDefinition refDef = beanFactory.getBeanDefinition(ref.getBeanName());
+                        refDef = getOriginatingBeanDefinition(refDef);
+                        try {
+                            Class<?> refClass = Class.forName(refDef.getBeanClassName());
+                            if(InputHandler.class.isAssignableFrom(refClass)) {
+                                BeanDefinitionBuilder beanBuilder = BeanDefinitionBuilder.genericBeanDefinition(InputHandlerAdapter.class);
+                                beanBuilder.addPropertyReference("delegate", ref.getBeanName());
+                                BeanDefinition beanDefinition = beanBuilder.getBeanDefinition();
+                                String handlerBeanName = nameGenerator.generateBeanName(beanDefinition, (DefaultListableBeanFactory)beanFactory);
+                                ((DefaultListableBeanFactory)beanFactory).registerBeanDefinition(handlerBeanName, beanDefinition);
+                                beanDef.getPropertyValues().addPropertyValue("handler", new RuntimeBeanReference(handlerBeanName));
+                            }
+                        } catch (ClassNotFoundException e) {
+                            throw new FatalBeanException("Error while post processing bean defintions for InputHandler setup", e);
                         }
-                    } catch (ClassNotFoundException e) {
-                        throw new FatalBeanException("Error while post processing bean defintions for InputHandler setup", e);
                     }
                 }
             }
