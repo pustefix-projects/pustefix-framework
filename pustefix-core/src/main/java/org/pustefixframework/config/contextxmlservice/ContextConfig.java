@@ -94,6 +94,8 @@ public interface ContextConfig {
      */
     PageFlow getPageFlow(String name);
 
+    boolean getPageFlowPassThrough();
+    
     /**
      * Returns a list of configurations for all pagerequests.
      * 

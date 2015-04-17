@@ -430,4 +430,11 @@ public class ContextImpl implements AccessibilityChecker, ExtendedContext, Token
         return getRequestContextForCurrentThreadWithError().needsLastFlow(pageName, lastFlowName);
     }
     
+    public String getLastFlow() {
+        return sessioncontext.getLastFlow();
+    }
+    
+    public void setLastFlow(String lastFlow) {
+        sessioncontext.setLastFlow(lastFlow);
+    }
 }
