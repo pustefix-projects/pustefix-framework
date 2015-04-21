@@ -38,6 +38,9 @@
         <xs:element ref="prop:config-include"/>
       </xs:choice>
       <xs:element ref="prop:preserve-params" minOccurs="0"/>
+      <xs:element name="disable-pageflow-passthrough" minOccurs="0">
+        <xs:complexType/>
+      </xs:element>
       <xs:choice minOccurs="1" maxOccurs="unbounded">
         <xs:element ref="prop:pageflow"/>
         <xs:element ref="prop:pagerequest"/>
@@ -134,6 +137,7 @@
             <xs:attribute name="class" use="optional"/>
             <xs:attribute name="node" use="required"/>
             <xs:attribute name="bean-ref" use="optional"/>
+            <xs:attribute name="lazy" default="false" type="xs:boolean"/>
           </xs:complexType>
         </xs:element>
       </xs:sequence>
@@ -633,6 +637,7 @@
                     <xs:attribute name="class" use="optional"/>
                     <xs:attribute name="node" use="required"/>
                     <xs:attribute name="bean-ref" use="optional"/>
+                    <xs:attribute name="lazy" default="false" type="xs:boolean"/>
                   </xs:complexType>
                 </xs:element>
               </xs:sequence>

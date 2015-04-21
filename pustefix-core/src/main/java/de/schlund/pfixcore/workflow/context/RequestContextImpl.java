@@ -471,11 +471,19 @@ public class RequestContextImpl implements Cloneable, AuthorizationInterceptor {
             }
         }
 
-        PageFlow lastflow = null;
-        if (currentpservreq.getRequestParam(PARAM_LASTFLOW) != null) {
-            lastflow = pageflowmanager.getPageFlowByName(currentpservreq.getRequestParam(PARAM_LASTFLOW).getValue(), getVariant());
+        PageFlow lastFlow = null;
+        PageFlow lastFlowFromSession = null;
+        if(parentcontext.getLastFlow() != null) {
+            lastFlowFromSession = pageflowmanager.getPageFlowByName(parentcontext.getLastFlow(), getVariant());
         }
-
+        if(!parentcontext.getContextConfig().getPageFlowPassThrough()) {
+            lastFlow = lastFlowFromSession;
+        } else {
+            if (currentpservreq.getRequestParam(PARAM_LASTFLOW) != null) {
+                lastFlow = pageflowmanager.getPageFlowByName(currentpservreq.getRequestParam(PARAM_LASTFLOW).getValue(), getVariant());
+            }
+        }
+        
         RequestParam pageflow = currentpservreq.getRequestParam(PARAM_FLOW);
         if (pageflow != null && !pageflow.getValue().equals("") && pageflowmanager.getPageFlowByName(pageflow.getValue(), getVariant()) != null) {
             currentpageflow = pageflowmanager.getPageFlowByName(pageflow.getValue(), getVariant());
@@ -485,14 +493,22 @@ public class RequestContextImpl implements Cloneable, AuthorizationInterceptor {
             LOG.debug("===> Got pageflow from action [" + action.getName() + "] as [" + currentpageflow.getName() + "]");
         } else {
             LOG.debug("===> Searching matching pageflow to page [" + currentpagerequest.getName() + "]...");
-            if (lastflow != null) {
-                LOG.debug("     ...prefering flow [" + lastflow.getName() + "]...");
+            if (lastFlow != null) {
+                LOG.debug("     ...prefering flow [" + lastFlow.getName() + "]...");
             }
-            currentpageflow = pageflowmanager.pageFlowToPageRequest(lastflow, currentpagerequest, getVariant());
+            currentpageflow = pageflowmanager.pageFlowToPageRequest(lastFlow, currentpagerequest, getVariant());
             if (currentpageflow != null) {
                 LOG.debug("     ...got pageflow [" + currentpageflow.getName() + "] as matching flow.");
             } else {
                 LOG.debug("     ...got no matching pageflow for page [" + currentpagerequest.getName() + "]");
+            }
+            if(parentcontext.getContextConfig().getPageFlowPassThrough()) {
+                PageFlow flowBySession = pageflowmanager.pageFlowToPageRequest(lastFlowFromSession, currentpagerequest, getVariant());
+                if( !( ( currentpageflow == null && flowBySession == null ) || 
+                       ( currentpageflow != null && flowBySession != null && currentpageflow.getRootName().equals(flowBySession.getRootName())) ) ) {
+                    LOG.warn("PAGEFLOW_PASSTHROUGH_DIFF|" + ( currentpageflow == null ? "-" : currentpageflow.getName() ) + "|" 
+                            + ( flowBySession == null ? "-" : flowBySession.getName()));
+                }
             }
         }
         SPDocument spdoc = null;
@@ -536,8 +552,9 @@ public class RequestContextImpl implements Cloneable, AuthorizationInterceptor {
                 spdoc.setProperty(PARAM_LASTFLOW, currentpageflow.getRootName());
                 spdoc.setProperty("pageflow", currentpageflow.getRootName());
                 addPageFlowInfo(spdoc);
-            } else if (lastflow != null) {
-                spdoc.setProperty(PARAM_LASTFLOW, lastflow.getRootName());
+                parentcontext.setLastFlow(currentpageflow.getRootName());
+            } else if (lastFlow != null) {
+                spdoc.setProperty(PARAM_LASTFLOW, lastFlow.getRootName());
             }
 
             Variant var = getVariant();
@@ -1061,6 +1078,9 @@ public class RequestContextImpl implements Cloneable, AuthorizationInterceptor {
     }
     
     public boolean needsLastFlow(String pageName, String lastFlowName) {
+        if(!parentcontext.getContextConfig().getPageFlowPassThrough()) {
+            return false;
+        }
         if(lastFlowName != null && !lastFlowName.equals("")) {
             PageFlow lastFlow = pageflowmanager.getPageFlowByName(lastFlowName, variant);
             if(lastFlow != null) {

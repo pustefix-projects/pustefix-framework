@@ -110,6 +110,10 @@
     <match>/c:context-xml-service-config/c:preserve-params</match>
   </handler>
     
+  <handler class="org.pustefixframework.config.contextxmlservice.parser.PageFlowPassThroughParsingHandler">
+    <match>c:context-xml-service-config/c:disable-pageflow-passthrough</match>
+  </handler>
+ 
   <!--  pageflows -->
   
   <handler class="org.pustefixframework.config.contextxmlservice.parser.PageFlowParsingHandler">

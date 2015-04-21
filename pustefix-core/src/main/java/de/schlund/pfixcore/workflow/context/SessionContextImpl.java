@@ -70,6 +70,7 @@ public class SessionContextImpl {
     private Authentication             authentication;
     private Set<String>                visitedPages = Collections.synchronizedSet(new HashSet<String>());
     private Map<String, String>        tokens;
+    private String                     lastFlow;
 
     private class SessionEndNotificator implements HttpSessionBindingListener {
         private LinkedHashSet<SessionStatusListener> sessionListeners = new LinkedHashSet<SessionStatusListener>();
@@ -222,6 +223,14 @@ public class SessionContextImpl {
         return authentication;
     }
 
+    public String getLastFlow() {
+        return lastFlow;
+    }
+    
+    public void setLastFlow(String lastFlow) {
+        this.lastFlow = lastFlow;
+    }
+    
     @Override
     public String toString() {
         StringBuffer contextbuf = new StringBuffer("\n");

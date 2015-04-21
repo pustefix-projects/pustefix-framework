@@ -166,79 +166,81 @@ public class PustefixContextXMLRequestHandler extends AbstractPustefixXMLRequest
             SPDocument spdoc;
 
             ScriptedFlowInfo info = getScriptedFlowInfo(preq);
-            if (preq.getRequestParam(PARAM_SCRIPTEDFLOW) != null && preq.getRequestParam(PARAM_SCRIPTEDFLOW).getValue() != null) {
-                String scriptedFlowName = preq.getRequestParam(PARAM_SCRIPTEDFLOW).getValue();
-                
-                // Do a virtual request without any request parameters
-                // to get an initial SPDocument
-                PfixServletRequest vpreq = new PfixServletRequestImpl(VirtualHttpServletRequest.getVoidRequest(preq.getRequest()), getContextXMLServletConfig().getProperties(), this);
-                spdoc = context.handleRequest(vpreq);
+            synchronized(info) {
+                if (preq.getRequestParam(PARAM_SCRIPTEDFLOW) != null && preq.getRequestParam(PARAM_SCRIPTEDFLOW).getValue() != null) {
+                    String scriptedFlowName = preq.getRequestParam(PARAM_SCRIPTEDFLOW).getValue();
 
-                // Reset current scripted flow state
-                info.reset();
+                    // Do a virtual request without any request parameters
+                    // to get an initial SPDocument
+                    PfixServletRequest vpreq = new PfixServletRequestImpl(VirtualHttpServletRequest.getVoidRequest(preq.getRequest()), getContextXMLServletConfig().getProperties(), this);
+                    spdoc = context.handleRequest(vpreq);
 
-                // Lookup script name
-                Script script;
-                try {
-                    script = getScriptedFlowByName(scriptedFlowName);
-                } catch (CompilerException e) {
-                    throw new PustefixCoreException("Could not compile scripted flow " + scriptedFlowName, e);
-                }
+                    // Reset current scripted flow state
+                    info.reset();
 
-                if (script != null) {
-                    // Remember running script
-                    info.isScriptRunning(true);
+                    // Lookup script name
+                    Script script;
+                    try {
+                        script = getScriptedFlowByName(scriptedFlowName);
+                    } catch (CompilerException e) {
+                        throw new PustefixCoreException("Could not compile scripted flow " + scriptedFlowName, e);
+                    }
 
-                    // Get parameters for scripted flow:
-                    // They have the form __scriptedflow.<name>=<value>
-                    String[] paramNames = preq.getRequestParamNames();
-                    for (int i = 0; i < paramNames.length; i++) {
-                        if (!paramNames[i].equals(PARAM_SCRIPTEDFLOW)) {
-                            String paramName = paramNames[i];
-                            String paramValue = preq.getRequestParam(paramName).getValue();
-                            info.addParam(paramName, paramValue);
+                    if (script != null) {
+                        // Remember running script
+                        info.isScriptRunning(true);
+
+                        // Get parameters for scripted flow:
+                        // They have the form __scriptedflow.<name>=<value>
+                        String[] paramNames = preq.getRequestParamNames();
+                        for (int i = 0; i < paramNames.length; i++) {
+                            if (!paramNames[i].equals(PARAM_SCRIPTEDFLOW)) {
+                                String paramName = paramNames[i];
+                                String paramValue = preq.getRequestParam(paramName).getValue();
+                                info.addParam(paramName, paramValue);
+                            }
+                        }
+
+                        // Create VM and run script
+                        ScriptVM vm = new ScriptVM();
+                        vm.setPageAliasResolver(this);
+                        vm.setScript(script);
+                        try {
+                            spdoc = vm.run(preq, spdoc, context, info.getParams());
+                        } finally {
+                            // Make sure this is done even if an error has occured
+                            if (vm.isExitState()) {
+                                info.reset();
+                            } else {
+                                info.setState(vm.saveVMState());
+                            }
                         }
                     }
 
+                } else if (info.isScriptRunning()) {
+                    // First handle user request, then use result document
+                    // as base for further processing
+                    spdoc = context.handleRequest(preq);
+
                     // Create VM and run script
                     ScriptVM vm = new ScriptVM();
-                    vm.setPageAliasResolver(this);
-                    vm.setScript(script);
+                    vm.loadVMState(info.getState());
                     try {
                         spdoc = vm.run(preq, spdoc, context, info.getParams());
                     } finally {
-                        // Make sure this is done even if an error has occured
                         if (vm.isExitState()) {
                             info.reset();
                         } else {
                             info.setState(vm.saveVMState());
                         }
                     }
+                } else {
+                    // No scripted flow request
+                    // handle as usual
+                    spdoc = context.handleRequest(preq);
                 }
-
-            } else if (info.isScriptRunning()) {
-                // First handle user request, then use result document
-                // as base for further processing
-                spdoc = context.handleRequest(preq);
-
-                // Create VM and run script
-                ScriptVM vm = new ScriptVM();
-                vm.loadVMState(info.getState());
-                try {
-                    spdoc = vm.run(preq, spdoc, context, info.getParams());
-                } finally {
-                    if (vm.isExitState()) {
-                        info.reset();
-                    } else {
-                        info.setState(vm.saveVMState());
-                    }
-                }
-            } else {
-                // No scripted flow request
-                // handle as usual
-                spdoc = context.handleRequest(preq);
             }
-            
+
             if(spdoc != null) {
                 if(spdoc.getPageAlternative() != null) {
                     Set<String> pageAltKeys = siteMap.getPageAlternativeKeys(spdoc.getPagename());

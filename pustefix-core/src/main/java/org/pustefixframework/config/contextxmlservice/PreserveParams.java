@@ -45,4 +45,8 @@ public class PreserveParams {
         return params.contains(paramName);
     }
     
+    public void removeParam(String paramName) {
+    	params.remove(paramName);
+    }
+    
 }

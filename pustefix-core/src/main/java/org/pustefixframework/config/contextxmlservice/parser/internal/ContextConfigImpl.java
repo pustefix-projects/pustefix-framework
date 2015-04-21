@@ -88,6 +88,7 @@ public class ContextConfigImpl implements ContextConfig {
     private List<String> startInterceptorBeans = new ArrayList<String>();
     private List<String> endInterceptorBeans = new ArrayList<String>();
     private List<String> postRenderInterceptorBeans = new ArrayList<String>();
+    private boolean pageFlowPassThrough = true;
     
     public ContextConfigImpl() {
         // Default constructor
@@ -124,6 +125,7 @@ public class ContextConfigImpl implements ContextConfig {
         this.startinterceptors = ref.startinterceptors;
         this.synchronize = ref.synchronize;
         this.variantToDefaultPage = ref.variantToDefaultPage;
+        this.pageFlowPassThrough = ref.pageFlowPassThrough;
     }
     
     public void setDefaultPage(String page) {
@@ -226,6 +228,14 @@ public class ContextConfigImpl implements ContextConfig {
     
     public PageFlow getPageFlow(String name) {
         return this.pageflows.get(name);
+    }
+    
+    public boolean getPageFlowPassThrough() {
+    	return pageFlowPassThrough;
+    }
+    
+    public void setPageFlowPassThrough(boolean pageFlowPassThrough) {
+    	this.pageFlowPassThrough = pageFlowPassThrough;
     }
     
     public void addPageRequest(PageRequestConfigImpl config) {
