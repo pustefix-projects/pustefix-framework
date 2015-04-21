@@ -102,7 +102,7 @@ public class BotSessionHandlingTest extends AbstractSessionHandlingTest {
             
         int statusCode = client.executeMethod(method);
 
-        assertEquals(HttpStatus.SC_MOVED_TEMPORARILY, statusCode);
+        assertEquals(HttpStatus.SC_MOVED_PERMANENTLY, statusCode);
         String location = method.getResponseHeader("Location").getValue();
         assertEquals("https", getProtocol(location));
         assertEquals(HTTPS_PORT, getPort(location));
@@ -129,7 +129,7 @@ public class BotSessionHandlingTest extends AbstractSessionHandlingTest {
             
         int statusCode = client.executeMethod(method);
         
-        assertEquals(HttpStatus.SC_MOVED_TEMPORARILY, statusCode);
+        assertEquals(HttpStatus.SC_MOVED_PERMANENTLY, statusCode);
         String location = method.getResponseHeader("Location").getValue();
         assertEquals("https", getProtocol(location));
         assertEquals(HTTPS_PORT, getPort(location));
@@ -330,7 +330,7 @@ public class BotSessionHandlingTest extends AbstractSessionHandlingTest {
         statusCode = client.executeMethod(method);
         
         
-        assertEquals(HttpStatus.SC_MOVED_TEMPORARILY, statusCode);
+        assertEquals(HttpStatus.SC_MOVED_PERMANENTLY, statusCode);
         location = method.getResponseHeader("Location").getValue();
         assertNull(getSession(location));
         assertEquals("https", getProtocol(location));
@@ -371,7 +371,7 @@ public class BotSessionHandlingTest extends AbstractSessionHandlingTest {
             
         statusCode = client.executeMethod(method);
         
-        assertEquals(HttpStatus.SC_MOVED_TEMPORARILY, statusCode);
+        assertEquals(HttpStatus.SC_MOVED_PERMANENTLY, statusCode);
         location = method.getResponseHeader("Location").getValue();
         assertEquals("https", getProtocol(location));
         assertEquals(HTTPS_PORT, getPort(location));
