@@ -60,6 +60,11 @@
   </preserve-params> 
   -->
 
+  <!-- Disable passing through last flow via __lf parameter -->
+  <!--
+  <disable-pageflow-passthrough/>
+  -->
+
   <!-- <pageflow name="OrderFlow" stopnext="true"> -->
   <pageflow name="OrderFlow" final="home">
     <default>
