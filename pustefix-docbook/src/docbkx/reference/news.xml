@@ -29,4 +29,12 @@
     </para>
   </section>
 
+  <section xml:id="news.0_19_8">
+    <title>What's new in Pustefix 0.19.8</title>
+  
+    <para>Passing through the last pageflow using the <literal>__lf</literal> URL parameter has become optional. It can be disabled using the new configuration switch
+          <literal>&lt;disable-pageflow-passthrough/&gt;</literal> (see <link linkend="configuration.servlet.contextxml.passthrough">configuration section</link>).
+    </para>
+  </section>
+
 </chapter>

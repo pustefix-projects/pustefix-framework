@@ -1000,6 +1000,15 @@
          Sometimes request parameters should be preserved when redirecting after a request has been processed,
          e.g. for passing tracking information. Here you can configure a global list of such parameters.
          <!-- TODO Add link here -->
+         <programlisting language="xml" xml:id="configuration.servlet.contextxml.passthrough"><![CDATA[
+    <disable-pageflow-passthrough/>
+         ]]></programlisting>
+         Pustefix by default passes through the name of the last pageflow using the <literal>__lf</literal> URL
+         parameter, thus indicating the preferred pageflow when a page is part of multiple flows. You can get rid
+         of this parameter (e.g. for SEO reasons) by disabling the passthrough, which lets Pustefix store the name
+         of the last flow in the session instead. You should be aware that disabling the passthrough can result
+         in a different pageflow chosen under certain conditions (search for <literal>PAGEFLOW_PASSTHROUGH_DIFF</literal>
+         in <literal>pustefix-servlet.log</literal> to find out these cases before disabling the passthrough).
          <programlisting language="xml"><![CDATA[
     <pageflow name="AName" final="APageName" stopnext="true|false">
          ]]></programlisting>
