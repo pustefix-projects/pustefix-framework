@@ -22,14 +22,13 @@ public abstract class RenderContext {
     //Second-level template cache only available within the current transformation
     private SimpleCacheLRU<String, Templates> templatesCache = new SimpleCacheLRU<String, Templates>(10);
     private Map<String, Boolean> templateToContextual = new HashMap<String, Boolean>();
+    //Caching of callback function results within the current transformation
+    private Map<Object, Object> callbackCache = new HashMap<Object, Object>();
     
     private long templateCreationTime;
     private long transformationTime;
     
     private Stack<Node> contextNodes = new Stack<Node>();
-    
-    public RenderContext() {
-    }
     
     public Map<String, Object> getParameters() {
         return parameters;
@@ -76,6 +75,10 @@ public abstract class RenderContext {
     public Node getContextNode() {
     	if(contextNodes.empty()) return null;
     	return contextNodes.peek();
+    }
+    
+    public Map<Object, Object> getCallbackCache() {
+        return callbackCache;
     }
     
     public static RenderContext create(XsltVersion xsltVersion) {

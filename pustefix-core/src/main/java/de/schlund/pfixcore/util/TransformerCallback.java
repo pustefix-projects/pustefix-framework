@@ -47,6 +47,7 @@ import org.pustefixframework.util.FrameworkInfo;
 import org.pustefixframework.util.LocaleUtils;
 import org.pustefixframework.util.javascript.JSUtils;
 import org.springframework.beans.factory.NoSuchBeanDefinitionException;
+import org.springframework.cache.interceptor.SimpleKeyGenerator;
 import org.springframework.context.ApplicationContext;
 import org.springframework.web.context.request.RequestContextHolder;
 import org.springframework.web.context.request.ServletRequestAttributes;
@@ -72,6 +73,7 @@ import de.schlund.pfixcore.workflow.State;
 import de.schlund.pfixcore.workflow.context.AccessibilityChecker;
 import de.schlund.pfixcore.workflow.context.RequestContextImpl;
 import de.schlund.pfixxml.PfixServletRequest;
+import de.schlund.pfixxml.RenderContext;
 import de.schlund.pfixxml.ResultDocument;
 import de.schlund.pfixxml.Tenant;
 import de.schlund.pfixxml.TenantInfo;
@@ -599,8 +601,19 @@ public class TransformerCallback {
         }
     }
 
-    public static Node getResource(RequestContextImpl requestContext, String nodeName, Node docNode) throws Exception {
+    public static Node getResource(RenderContext renderContext, RequestContextImpl requestContext, String nodeName, Node docNode) throws Exception {
         
+        Object key = SimpleKeyGenerator.generateKey(TransformerCallback.class.getName(), "getResource", nodeName);
+        Node node = (Node)renderContext.getCallbackCache().get(key);
+        if(node == null) {
+            node = getResourceUncached(renderContext, requestContext, nodeName, docNode);
+            renderContext.getCallbackCache().put(key, node);
+        }
+        return node;
+    }
+
+    public static Node getResourceUncached(RenderContext renderContext, RequestContextImpl requestContext, String nodeName, Node docNode) throws Exception {
+
         try {
             State state = requestContext.getStateForCurrentPageRequest();
             if(state instanceof ConfigurableState){
@@ -609,10 +622,11 @@ public class TransformerCallback {
                     Document doc = StateUtil.renderLazyContextResource(requestContext.getParentContext(), stateConfig, nodeName);
                     if(doc != null) {
                         XsltVersion xsltVersion = Xml.getXsltVersion(docNode);
-                        return Xml.parse(xsltVersion, doc).getDocumentElement();
+                        Node node = Xml.parse(xsltVersion, doc).getDocumentElement();
+                        return node;
                     } else {
                         throw new PustefixCoreException("No lazy ContextResource XML element '" + nodeName + "' found");
-                    }
+                    }            
                 } else {
                     throw new PustefixCoreException("No lazy ContextResource for node '" + nodeName + "' found");
                 }
