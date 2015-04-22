@@ -4,12 +4,12 @@
   <parent>
     <groupId>org.pustefixframework</groupId>
     <artifactId>pustefix-samples</artifactId>
-    <version>0.18.89</version>
+    <version>0.18.90-SNAPSHOT</version>
   </parent>
 
   <groupId>org.pustefixframework</groupId>
   <artifactId>pustefix-cditest</artifactId>
-  <version>0.18.89</version>
+  <version>0.18.90-SNAPSHOT</version>
   <packaging>war</packaging>
 
   <name>Pustefix CDI/Spring bridge test application</name>
@@ -18,14 +18,14 @@
     <dependency>
       <groupId>org.pustefixframework</groupId>
       <artifactId>pustefix-core</artifactId>
-      <version>0.18.89</version>
+      <version>0.18.90-SNAPSHOT</version>
     </dependency>
         
     <!-- CDI -->
     <dependency>
       <groupId>org.pustefixframework</groupId>
       <artifactId>pustefix-cdi</artifactId>
-      <version>0.18.89</version>      
+      <version>0.18.90-SNAPSHOT</version>      
     </dependency>
     <dependency>
       <groupId>org.jboss.weld</groupId>
@@ -74,7 +74,7 @@
       <plugin>
         <groupId>org.pustefixframework.maven.plugins</groupId>
         <artifactId>pustefix-webapp-plugin</artifactId>
-        <version>0.18.89</version>
+        <version>0.18.90-SNAPSHOT</version>
         <executions>
           <execution>
             <goals>
@@ -86,7 +86,7 @@
       <plugin>
         <groupId>org.pustefixframework.maven.plugins</groupId>
         <artifactId>pustefix-statuscode-plugin</artifactId>
-        <version>0.18.89</version>
+        <version>0.18.90-SNAPSHOT</version>
         <executions>
           <execution>
             <goals>
@@ -98,7 +98,7 @@
       <plugin>
         <groupId>org.pustefixframework.maven.plugins</groupId>
         <artifactId>pustefix-iwrapper-plugin</artifactId>
-        <version>0.18.89</version>
+        <version>0.18.90-SNAPSHOT</version>
         <executions>
           <execution>
             <goals>

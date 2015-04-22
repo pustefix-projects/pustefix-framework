@@ -5,12 +5,12 @@
   <parent>
     <groupId>org.pustefixframework</groupId>
     <artifactId>pustefixframework</artifactId>
-    <version>0.18.89</version>
+    <version>0.18.90-SNAPSHOT</version>
   </parent>
 
   <groupId>org.pustefixframework</groupId>
   <artifactId>pustefix-agent</artifactId>
-  <version>0.18.89</version>
+  <version>0.18.90-SNAPSHOT</version>
   <packaging>jar</packaging>
   <name>Pustefix Java Agent</name>
   <description>Pustefix Java Agent</description>
