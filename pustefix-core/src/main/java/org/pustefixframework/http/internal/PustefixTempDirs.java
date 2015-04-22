@@ -14,6 +14,7 @@ public class PustefixTempDirs {
     
     private File baseTempDir;
     private List<File> tempDirs = new ArrayList<File>();
+    private Thread shutdownHook;
     
     public PustefixTempDirs(ServletContext servletContext) {
         baseTempDir = (File)servletContext.getAttribute("javax.servlet.context.tempdir");
@@ -34,8 +35,28 @@ public class PustefixTempDirs {
     }
     
     public void dispose() {
+        cleanup();
+        unregisterShutdownHook();
+    }
+    
+    private void cleanup() {
         for(File tempDir: tempDirs) {
             FileUtils.delete(tempDir);
+        }
+    }
+    
+    private void registerShutdownHook() {
+        shutdownHook = new Thread() {
+            public void run() {
+                cleanup();
+            };
+        };
+        Runtime.getRuntime().addShutdownHook(shutdownHook);
+    }
+    
+    private void unregisterShutdownHook() {
+        if(shutdownHook != null) {
+            Runtime.getRuntime().removeShutdownHook(shutdownHook);
         }
     }
     
@@ -43,6 +64,7 @@ public class PustefixTempDirs {
         PustefixTempDirs creator = (PustefixTempDirs)servletContext.getAttribute(PustefixTempDirs.class.getName());
         if(creator == null) {
             creator = new PustefixTempDirs(servletContext);
+            creator.registerShutdownHook();
             servletContext.setAttribute(PustefixTempDirs.class.getName(), creator);
         }
         return creator;
