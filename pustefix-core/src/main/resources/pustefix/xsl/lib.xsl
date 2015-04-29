@@ -29,7 +29,16 @@
   <!-- include other files -->
   <xsl:template match="cus:include">
     <xsl:param name="href"><xsl:value-of select="@name"/></xsl:param>
-    <xsl:param name="path"><xsl:value-of select="concat($docroot, '/', $href)"/></xsl:param>
+    <xsl:param name="path">
+      <xsl:choose>
+        <xsl:when test="starts-with($href, 'classpath:') or starts-with($href, 'module:')">
+          <xsl:value-of select="$href"/>
+        </xsl:when>
+        <xsl:otherwise>
+          <xsl:value-of select="concat($docroot, '/', $href)"/>
+        </xsl:otherwise>
+      </xsl:choose>
+    </xsl:param>
     <xsl:apply-templates select="document($path)/node()"/>
   </xsl:template>
 
