@@ -56,7 +56,11 @@ public class PustefixTempDirs {
     
     private void unregisterShutdownHook() {
         if(shutdownHook != null) {
-            Runtime.getRuntime().removeShutdownHook(shutdownHook);
+            try {
+                Runtime.getRuntime().removeShutdownHook(shutdownHook);
+            } catch(IllegalStateException x) {
+                //ignore if JVM is already in shutdown process
+            }
         }
     }
     
