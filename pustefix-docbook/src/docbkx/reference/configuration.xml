@@ -2065,6 +2065,21 @@
    ...
 </web-app>
 ]]></programlisting>
+    <para xml:id="configuration.logging.includes">
+      The Pustefix customization mechanism can also be used to modularize the logging configuration. Using the customization tag <literal>&lt;cus:include&gt;</literal> you can include logging configurations from the classpath or other modules:
+    </para>
+<programlisting language="xml"><![CDATA[<log4j:configuration xmlns:log4j="http://jakarta.apache.org/log4j/" xmlns:cus="http://www.schlund.de/pustefix/customize">
+
+  <cus:include name="module://pustefix-core/pfixlog.xml"/>
+  <cus:include name="classpath:META-INF/pfixlog.xml"/>
+  
+  <!-- additional or overriding appenders/loggers -->
+
+</log4j:configuration>
+]]></programlisting>
+    <para>
+      Such includes can be placed as top-level elements in your logging configuration. Included configurations can contain includes themselves. If loggers/appenders are configured multiple times, the last occurrence will have precedence. Thus you can later override settings included before, e.g. if you include the default configuration from the Pustefix framework, you can override application specific settings afterwards (see example above).
+    </para>
   </section>
   
       

@@ -37,4 +37,14 @@
     </para>
   </section>
 
+  <section xml:id="news.0_19_9">
+    <title>What's new in Pustefix 0.19.9</title>
+  
+    <para>Pustefix now supports modularized log4j configurations and provides an appropriate default configuration, which helps keeping the logging configuration
+          up-to-date with the latest Pustefix version and simplifies the maintenance of complex application logging configurations 
+          (see <link linkend="configuration.logging.includes">logging configuration</link>). Additionally Pustefix now allows changing of log levels at runtime
+          via JMX.
+    </para>
+  </section>
+
 </chapter>

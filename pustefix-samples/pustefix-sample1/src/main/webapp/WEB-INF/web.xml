@@ -4,6 +4,11 @@
      <param-name>mode</param-name>
      <param-value>test</param-value>
    </context-param>
+   <!--
+   <listener>
+     <listener-class>org.pustefixframework.http.Log4jConfigListener</listener-class>
+   </listener>
+   -->
    <filter>
      <filter-name>CharacterEncodingFilter</filter-name>
      <filter-class>org.springframework.web.filter.CharacterEncodingFilter</filter-class>

@@ -1,0 +1,196 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<log4j:configuration xmlns:log4j="http://jakarta.apache.org/log4j/"
+                     xmlns:cus="http://www.schlund.de/pustefix/customize">
+  
+  <!-- 
+    Default log4j configuration suitable for most applications. It can be included
+    in the main log4j configuration of an application using the cus:include element. 
+    Appenders and categories can be added or overridden (last entry has precedence)
+  --> 
+
+  <!-- Appenders -->
+
+  <appender name="LOGGER_GENERAL" class="org.apache.log4j.RollingFileAppender">
+    <param name="File"><cus:logroot/>pustefix-servlet.log</param>
+    <param name="MaxFileSize" value="10MB"/>
+    <layout class="org.apache.log4j.PatternLayout">
+      <param name="ConversionPattern" value="%d{ISO8601} [%t] %-5p %c [%M():%L] %x - %m\n"/>
+    </layout>
+  </appender>
+
+  <appender name="LOGGER_VISIT" class="org.apache.log4j.RollingFileAppender">
+    <param name="File"><cus:logroot/>pustefix-visit.log</param>
+    <param name="MaxFileSize" value="10MB"/>
+    <layout class="org.apache.log4j.PatternLayout">
+      <param name="ConversionPattern" value="%d{ISO8601}|%m\n"/>
+    </layout>
+  </appender>
+  
+  <appender name="LOGGER_TRAIL" class="org.apache.log4j.RollingFileAppender">
+    <param name="File"><cus:logroot/>pustefix-trail.log</param>
+    <param name="MaxFileSize" value="10MB"/>
+    <layout class="org.apache.log4j.PatternLayout">
+      <param name="ConversionPattern" value="%d{ISO8601}|%m\n"/>
+    </layout>
+  </appender>
+  
+  <appender name="LOGGER_WSTRAIL" class="org.apache.log4j.RollingFileAppender">
+    <param name="File"><cus:logroot/>pustefix-wstrail.log</param>
+    <param name="MaxFileSize" value="10MB"/>
+    <layout class="org.apache.log4j.PatternLayout">
+      <param name="ConversionPattern" value="%d{ISO8601}|%m\n"/>
+    </layout>
+  </appender>
+
+  <appender name="LOGGER_DEREF" class="org.apache.log4j.RollingFileAppender">
+    <param name="File"><cus:logroot/>pustefix-deref.log</param>
+    <param name="MaxFileSize" value="10MB"/>
+    <layout class="org.apache.log4j.PatternLayout">
+      <param name="ConversionPattern" value="%d{ISO8601}|%m\n"/>
+    </layout>
+  </appender>
+  
+  <appender name="LOGGER_SESSION" class="org.apache.log4j.RollingFileAppender">
+    <param name="File"><cus:logroot/>pustefix-session.log</param>
+    <param name="MaxFileSize" value="10MB"/>
+    <layout class="org.apache.log4j.PatternLayout">
+      <param name="ConversionPattern" value="%d{ISO8601}|%m\n"/>
+    </layout>
+  </appender>
+  
+  <appender name="LOGGER_EDITOR" class="org.apache.log4j.RollingFileAppender">
+    <param name="File"><cus:logroot/>pustefix-editor.log</param>
+    <param name="MaxFileSize" value="10MB"/>
+    <layout class="org.apache.log4j.PatternLayout">
+      <param name="ConversionPattern" value="%d{ISO8601} %m\n"/>
+    </layout>
+  </appender>
+  
+  <appender name="LOGGER_USAGE" class="org.apache.log4j.RollingFileAppender">
+    <param name="File"><cus:logroot/>pustefix-usage.log</param>
+    <param name="MaxFileSize" value="10MB"/>
+    <layout class="org.apache.log4j.PatternLayout">
+      <param name="ConversionPattern" value="%d{ISO8601} %m\n"/>
+    </layout>
+  </appender>
+  
+  
+  <!-- Categories -->
+
+  <!-- Make some very verbose packages quiet by default --> 
+  
+  <category name="org.apache" additivity="false">
+     <priority value="WARN"/>
+    <appender-ref ref="LOGGER_GENERAL"/>
+  </category>
+  
+  <category name="org.springframework" additivity="false">
+     <priority value="WARN"/>
+    <appender-ref ref="LOGGER_GENERAL"/>
+  </category>
+ 
+  <!-- Disable logging of Pustefix debug/info messages by default -->
+
+  <category name="org.pustefixframework" additivity="false">
+    <priority value="WARN"/>
+    <appender-ref ref="LOGGER_GENERAL"/>
+  </category>
+ 
+  <category name="de.schlund.pfixcore" additivity="false">
+    <priority value="WARN"/>
+    <appender-ref ref="LOGGER_GENERAL"/>
+  </category>
+  
+  <category name="de.schlund.pfixxml" additivity="false">
+    <priority value="WARN"/>
+    <appender-ref ref="LOGGER_GENERAL"/>
+  </category>
+  
+  <!-- Enable verbose logging of Pustefix pageflow stuff in non-prod environments -->
+  
+  <category name="de.schlund.pfixcore.workflow" additivity="false">
+    <cus:choose>
+      <cus:when test="$mode = 'prod'"><priority value="WARN"/></cus:when>
+      <cus:otherwise><priority value="DEBUG"/></cus:otherwise>
+    </cus:choose>
+    <appender-ref ref="LOGGER_GENERAL"/>
+  </category>
+  
+  <!-- Enable verbose logging of Pustefix DOM rendering in non-prod environments -->
+  
+  <category name="org.pustefixframework.http" additivity="false">
+    <cus:choose>
+      <cus:when test="$mode = 'prod'"><priority value="WARN"/></cus:when>
+      <cus:otherwise><priority value="DEBUG"/></cus:otherwise>
+    </cus:choose>
+    <appender-ref ref="LOGGER_GENERAL"/>
+  </category>
+  
+  <category name="org.pustefixframework.http.DocrootRequestHandler" additivity="false">
+    <priority value="WARN"/>
+    <appender-ref ref="LOGGER_GENERAL"/>
+  </category>
+  
+  <!--  Enable verbose logging of HTTP requests in non-prod environments -->
+  
+  <category name="de.schlund.pfixxml.PfixServletRequestImpl" additivity="false">
+    <cus:choose>
+      <cus:when test="$mode = 'prod'"><priority value="WARN"/></cus:when>
+      <cus:otherwise><priority value="DEBUG"/></cus:otherwise>
+    </cus:choose>
+    <appender-ref ref="LOGGER_GENERAL"/>
+  </category>
+  
+  <!-- Special categories for Pustefix statistics log files -->
+  
+  <category name="LOGGER_VISIT" additivity="false">
+    <priority value="WARN"/>
+    <appender-ref ref="LOGGER_VISIT"/>
+  </category>
+  
+  <category name="LOGGER_TRAIL" additivity="false">
+    <priority value="WARN"/>
+    <appender-ref ref="LOGGER_TRAIL"/>
+  </category>
+  
+  <category name="LOGGER_WSTRAIL" additivity="false">
+    <priority value="WARN"/>
+    <appender-ref ref="LOGGER_WSTRAIL"/>
+  </category>
+
+  <category name="LOGGER_DEREF" additivity="false">
+    <priority value="WARN"/>
+    <appender-ref ref="LOGGER_DEREF"/>
+  </category>
+
+  <category name="LOGGER_SESSION" additivity="false">
+    <priority value="INFO"/>
+    <appender-ref ref="LOGGER_SESSION"/>
+  </category>
+  
+  <category name="LOGGER_EDITOR" additivity="false">
+    <priority value="WARN"/>
+    <appender-ref ref="LOGGER_EDITOR"/>
+  </category>
+  
+  <category name="LOGGER_PFXUSAGE" additivity="false">
+    <priority value="INFO"/>
+    <appender-ref ref="LOGGER_USAGE"/>
+  </category>
+
+
+  <!-- Default category -->
+
+  <root>
+    <cus:choose>
+      <cus:when test="$mode = 'prod'">
+        <priority value="WARN"/>
+      </cus:when>
+      <cus:otherwise>
+        <priority value="INFO"/>
+      </cus:otherwise>
+    </cus:choose>
+    <appender-ref ref="LOGGER_GENERAL"/>
+  </root>
+  
+</log4j:configuration>

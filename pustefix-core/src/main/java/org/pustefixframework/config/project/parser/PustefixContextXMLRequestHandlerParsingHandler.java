@@ -42,12 +42,18 @@ import org.pustefixframework.http.AdditionalTrailInfo;
 import org.pustefixframework.http.DefaultAdditionalTrailInfoImpl;
 import org.pustefixframework.http.PustefixContextXMLRequestHandler;
 import org.pustefixframework.http.PustefixInternalsRequestHandler;
+import org.pustefixframework.http.internal.Log4jAdmin;
 import org.springframework.beans.factory.BeanDefinitionStoreException;
 import org.springframework.beans.factory.config.BeanDefinition;
 import org.springframework.beans.factory.config.BeanDefinitionHolder;
 import org.springframework.beans.factory.config.RuntimeBeanReference;
 import org.springframework.beans.factory.support.BeanDefinitionBuilder;
 import org.springframework.beans.factory.support.BeanDefinitionRegistry;
+import org.springframework.beans.factory.support.DefaultBeanNameGenerator;
+import org.springframework.beans.factory.support.ManagedMap;
+import org.springframework.jmx.export.MBeanExporter;
+import org.springframework.jmx.export.annotation.AnnotationJmxAttributeSource;
+import org.springframework.jmx.export.assembler.MetadataMBeanInfoAssembler;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.xml.sax.SAXException;
@@ -220,6 +226,13 @@ public class PustefixContextXMLRequestHandlerParsingHandler extends Customizatio
         beanBuilder.setScope("singleton");
         beanDefinition = beanBuilder.getBeanDefinition();
         beanHolder = new BeanDefinitionHolder(beanDefinition, PustefixInternalsRequestHandler.class.getName());
+        context.getObjectTreeElement().addObject(beanHolder);
+        
+        beanBuilder = BeanDefinitionBuilder.genericBeanDefinition(Log4jAdmin.class);
+        beanBuilder.setScope("singleton");
+        beanBuilder.addPropertyValue("projectName", projectInfo.getProjectName());
+        beanDefinition = beanBuilder.getBeanDefinition();
+        beanHolder = new BeanDefinitionHolder(beanDefinition, Log4jAdmin.class.getName());
         context.getObjectTreeElement().addObject(beanHolder);
         
     }
