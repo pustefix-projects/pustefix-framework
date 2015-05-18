@@ -524,7 +524,7 @@
       </xsl:attribute>
       <xsl:attribute name="class">
         <xsl:text>xml-line indent</xsl:text>
-        <xsl:if test="count(./node()) &gt; 0 and not(./text() or ./comment())">
+        <xsl:if test="*">
           <xsl:text> collapsible expanded</xsl:text>
         </xsl:if>
         <xsl:if test="$dim = 'true'">
@@ -572,7 +572,7 @@
         <span>
           <xsl:attribute name="class">
             <xsl:text>xml-tag</xsl:text>
-            <xsl:if test="count(./node()) &gt; 0 and not(./text() or ./comment())">
+            <xsl:if test="*">
               <xsl:text> xml-line-end</xsl:text>
             </xsl:if>
           </xsl:attribute>
