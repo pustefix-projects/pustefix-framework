@@ -74,6 +74,7 @@ import de.schlund.pfixxml.resources.FileResource;
 import de.schlund.pfixxml.resources.Resource;
 import de.schlund.pfixxml.resources.ResourceUtil;
 import de.schlund.pfixxml.util.TransformerHandlerAdapter;
+import de.schlund.pfixxml.util.XsltProvider;
 
 /**
  * This Servlet is just there to have it's init method called on startup of the
@@ -196,7 +197,7 @@ public class PustefixInit {
             throws SAXException, FileNotFoundException, IOException {
         
         XMLReader xreader = XMLReaderFactory.createXMLReader();
-        TransformerFactory tf = TransformerFactory.newInstance();
+        TransformerFactory tf = XsltProvider.getXsltSupport(XsltProvider.getPreferredXsltVersion()).getThreadTransformerFactory();
         SAXTransformerFactory stf = (SAXTransformerFactory) tf;
         TransformerHandler th;
         try {
