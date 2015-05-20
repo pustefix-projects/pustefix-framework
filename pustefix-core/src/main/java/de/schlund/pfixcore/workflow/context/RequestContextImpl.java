@@ -38,6 +38,7 @@ import org.pustefixframework.config.contextxmlservice.ProcessActionPageRequestCo
 import org.pustefixframework.http.AbstractPustefixRequestHandler;
 import org.pustefixframework.http.AbstractPustefixXMLRequestHandler;
 import org.pustefixframework.http.PustefixContextXMLRequestHandler;
+import org.pustefixframework.util.LogUtils;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 
@@ -506,8 +507,11 @@ public class RequestContextImpl implements Cloneable, AuthorizationInterceptor {
                 PageFlow flowBySession = pageflowmanager.pageFlowToPageRequest(lastFlowFromSession, currentpagerequest, getVariant());
                 if( !( ( currentpageflow == null && flowBySession == null ) || 
                        ( currentpageflow != null && flowBySession != null && currentpageflow.getRootName().equals(flowBySession.getRootName())) ) ) {
-                    LOG.warn("PAGEFLOW_PASSTHROUGH_DIFF|" + ( currentpageflow == null ? "-" : currentpageflow.getName() ) + "|" 
-                            + ( flowBySession == null ? "-" : flowBySession.getName()));
+               
+                    LOG.warn("PAGEFLOW_PASSTHROUGH_DIFF|" + currentpagerequest.getName() + "|"
+                       + ( currentpageflow == null ? "-" : currentpageflow.getName() ) + "|" 
+                       + ( flowBySession == null ? "-" : flowBySession.getName() ) + "|"
+                       + LogUtils.makeLogSafe(preq.getRequest().getHeader("Referer")) );
                 }
             }
         }
