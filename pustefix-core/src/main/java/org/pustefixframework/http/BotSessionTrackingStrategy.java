@@ -33,7 +33,7 @@ public class BotSessionTrackingStrategy implements SessionTrackingStrategy {
         
         if(!req.isSecure() && context.needsSSL(preq)) {
             String redirect_uri = SessionHelper.getClearedURL("https", AbstractPustefixRequestHandler.getServerName(req), req, context.getServletManagerConfig().getProperties());
-            AbstractPustefixRequestHandler.relocate(res, redirect_uri);
+            AbstractPustefixRequestHandler.relocate(res, HttpServletResponse.SC_MOVED_PERMANENTLY, redirect_uri);
             return;
         }
         

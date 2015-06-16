@@ -208,7 +208,7 @@ public class CookieOnlySessionHandlingTest extends AbstractSessionHandlingTest {
             
         int statusCode = client.executeMethod(method);
 
-        assertEquals(HttpStatus.SC_MOVED_TEMPORARILY, statusCode);
+        assertEquals(HttpStatus.SC_MOVED_PERMANENTLY, statusCode);
         String location = method.getResponseHeader("Location").getValue();
         String insecureSession = getSessionFromResponseCookie(method);
         assertNull(insecureSession);
@@ -239,7 +239,7 @@ public class CookieOnlySessionHandlingTest extends AbstractSessionHandlingTest {
             
         int statusCode = client.executeMethod(method);
 
-        assertEquals(HttpStatus.SC_MOVED_TEMPORARILY, statusCode);
+        assertEquals(HttpStatus.SC_MOVED_PERMANENTLY, statusCode);
         String location = method.getResponseHeader("Location").getValue();
         String insecureSession = getSessionFromResponseCookie(method);
         assertNotNull(insecureSession);
@@ -271,7 +271,7 @@ public class CookieOnlySessionHandlingTest extends AbstractSessionHandlingTest {
             
         int statusCode = client.executeMethod(method);
         
-        assertEquals(HttpStatus.SC_MOVED_TEMPORARILY, statusCode);
+        assertEquals(HttpStatus.SC_MOVED_PERMANENTLY, statusCode);
         String location = method.getResponseHeader("Location").getValue();
         String insecureSession = getSessionFromResponseCookie(method);
         assertNull(insecureSession);
@@ -391,6 +391,9 @@ public class CookieOnlySessionHandlingTest extends AbstractSessionHandlingTest {
         HttpClient client = new HttpClient();
         
         Cookie cookie = new Cookie("localhost", "JSESSIONID", "xyz");
+        cookie.setPath("/");
+        client.getState().addCookie(cookie);
+        cookie = new Cookie("localhost", "_PFXSSL_", "true");
         cookie.setPath("/");
         client.getState().addCookie(cookie);
 

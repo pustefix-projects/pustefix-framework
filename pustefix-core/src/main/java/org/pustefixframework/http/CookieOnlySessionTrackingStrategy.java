@@ -208,7 +208,7 @@ public class CookieOnlySessionTrackingStrategy implements SessionTrackingStrateg
                                 
                             }
                             
-                            redirectToSSL(req, res, HttpServletResponse.SC_MOVED_TEMPORARILY);
+                            redirectToSSL(req, res, HttpServletResponse.SC_MOVED_PERMANENTLY);
                             return;
                             
                         }
@@ -228,7 +228,7 @@ public class CookieOnlySessionTrackingStrategy implements SessionTrackingStrateg
             if(context.needsSSL(preq) && !req.isSecure()) { //requires SSL, but has no SSL
                             
                 //redirecting to SSL
-                redirectToSSL(req, res, HttpServletResponse.SC_MOVED_TEMPORARILY);
+                redirectToSSL(req, res, HttpServletResponse.SC_MOVED_PERMANENTLY);
                 return;
                     
             }
