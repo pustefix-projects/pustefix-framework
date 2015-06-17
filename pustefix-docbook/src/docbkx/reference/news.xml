@@ -47,4 +47,12 @@
     </para>
   </section>
 
+  <section xml:id="news.0_19_11">
+    <title>What's new in Pustefix 0.19.11</title>
+  
+    <para>Extended form error checking tag by optionally supporting IWrapper parameter prefix/name and request trigger conditions, and adding a new tag
+          with inverted semantics (see <link linkend="xslt.forms.errors.fields">tag reference</link>).
+    </para>
+  </section>
+
 </chapter>

@@ -51,6 +51,7 @@ import de.schlund.pfixcore.exception.PustefixApplicationException;
 import de.schlund.pfixcore.exception.PustefixCoreException;
 import de.schlund.pfixcore.exception.PustefixRuntimeException;
 import de.schlund.pfixcore.generator.StatusCodeInfo;
+import de.schlund.pfixcore.util.StateUtil;
 import de.schlund.pfixcore.workflow.Context;
 import de.schlund.pfixcore.workflow.ContextImpl;
 import de.schlund.pfixcore.workflow.ContextInterceptor;
@@ -572,6 +573,17 @@ public class RequestContextImpl implements Cloneable, AuthorizationInterceptor {
                         spdoc.getDocument().getDocumentElement().setAttribute("used-pf", currentpageflow.getName());
                 }
             }
+            
+            if(spdoc.getDocument() != null) {
+                if(StateUtil.isSubmitTrigger(getParentContext(), preq)) {
+                    spdoc.getDocument().getDocumentElement().setAttribute("trigger", "submit");
+                } else if(StateUtil.isDirectTrigger(getParentContext(), preq)) {
+                    spdoc.getDocument().getDocumentElement().setAttribute("trigger", "direct");
+                } else if(StateUtil.isPageFlowRunning(getParentContext())) {
+                    spdoc.getDocument().getDocumentElement().setAttribute("trigger", "flow");
+                }
+            }
+            
             if(parentcontext.getTenant() != null) {
                 spdoc.setTenant(parentcontext.getTenant());
                 parentcontext.getTenant().toXML(spdoc.getDocument().getDocumentElement());

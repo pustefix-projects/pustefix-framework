@@ -88,19 +88,18 @@
     </ixsl:if>
   </xsl:template>
 
-  <xsl:template match="pfx:checkerror">
-    <ixsl:if test="true()">
-      <ixsl:variable name="pfx_allerrors_check">
-        <xsl:attribute name="select">
-          <xsl:choose>
-            <xsl:when test="@level">$__root/formresult/formerrors/error[@level = '<xsl:value-of select="string(@level)"/>']</xsl:when>
-            <xsl:otherwise>$__root/formresult/formerrors/error</xsl:otherwise>
-          </xsl:choose>
-        </xsl:attribute>
-      </ixsl:variable>
-      <ixsl:if test="$pfx_allerrors_check">
-        <xsl:apply-templates/>
-      </ixsl:if>
+  <xsl:template match="pfx:checkerror|pfx:checknoerror">
+    <ixsl:if>
+      <xsl:attribute name="test">
+        <xsl:if test="@trigger">pfx:matches($__root/formresult/@trigger,'<xsl:value-of select="@trigger"/>') and </xsl:if>
+        <xsl:if test="self::pfx:checknoerror">not(</xsl:if>
+        <xsl:text>$__root/formresult/formerrors/error</xsl:text>
+        <xsl:if test="@level">[@level='<xsl:value-of select="@level"/>']</xsl:if>
+        <xsl:if test="@prefix">[starts-with(@name,concat('<xsl:value-of select="@prefix"/>','.'))]</xsl:if>
+        <xsl:if test="@name">[pfx:matches(@name,'<xsl:value-of select="@name"/>')]</xsl:if>
+        <xsl:if test="self::pfx:checknoerror">)</xsl:if>
+      </xsl:attribute>
+      <xsl:apply-templates/>
     </ixsl:if>
   </xsl:template>
 

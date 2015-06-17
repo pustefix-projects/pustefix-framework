@@ -84,7 +84,7 @@
         <td>This tag supplies content depending on the error state of a special form field, see <xref linkend="xslt.forms.errors.fields"/></td>
       </tr>
       <tr>
-        <td>pfx:checkerror</td>
+        <td>pfx:checkerror, pfx:checknoerror</td>
         <td>Used to check for the presence of any error condition, see <xref linkend="xslt.forms.errors.fields"/></td>
       </tr>
       <tr>
@@ -1599,15 +1599,25 @@
         <title>Errors attached to a field</title>
         <para>
           The <literal>&lt;pfx:checkerror&gt;</literal> tag is used to display content depending on the fact if a field error
-          (or possibly a field error with a special level attribute) is present in the runtime DOM tree.
+          (or possibly a field error with a special level, prefix or name attribute) is present in the runtime DOM tree. Optionally
+          you can restrict displaying on the request trigger type (<literal>direct</literal>, <literal>flow</literal> or <literal>submit</literal>).
+          There's also a tag with the inverted semantics, <literal>&lt;pfx:checknoerror&gt;</literal>, displaying content if the conditions
+          above don't apply:
         </para>
-        <programlisting language="xml"><![CDATA[<pfx:checkerror level="AString">
+        <programlisting language="xml"><![CDATA[<pfx:checkerror level="ALevel" prefix="APrefix" name="APrefixedName" trigger="direct|flow|submit">
   <!--
-    Content to be displayed when any error with the matching level attribute is present in the
-    runtime DOM tree. The level attribute is optional, when it's missing, any error will trigger
-    the display of the content of the pfx:checkerror tag.
+    Content to be displayed when any error with the matching level, prefix or name attribute is present in the
+    runtime DOM tree. All attributes are optional, without restricting attributes, any error will trigger
+    the display of the content of the pfx:checkerror tag. If a trigger attribute is set, the content will be only
+    displayed if the trigger causing the DOM creation matches the attribute value.
   -->
-</pfx:checkerror>]]></programlisting>
+</pfx:checkerror>
+
+<pfx:checknoerror level="ALevel" prefix="APrefix" name="APrefixedName" trigger="direct|flow|submit">
+  <!-- 
+    Inverted semantics as pfx:checkerror: content is displayed if no errors (matching the optional conditions) are found.
+  -->
+</pfx:checknoerror>]]></programlisting>
         <para>
           The <literal>&lt;pfx:checkfield&gt;</literal> tag is used to display error messages depending on the form
           field they are attached to.
