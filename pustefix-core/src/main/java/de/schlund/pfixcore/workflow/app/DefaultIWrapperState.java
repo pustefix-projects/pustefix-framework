@@ -23,6 +23,7 @@ import java.util.Map;
 import org.pustefixframework.config.contextxmlservice.IWrapperConfig;
 import org.pustefixframework.config.contextxmlservice.StateConfig;
 import org.pustefixframework.generated.CoreStatusCodes;
+import org.springframework.web.servlet.ModelAndView;
 
 import de.schlund.pfixcore.scriptedflow.vm.VirtualHttpServletRequest;
 import de.schlund.pfixcore.util.TokenManager;
@@ -154,6 +155,8 @@ public class DefaultIWrapperState extends StateImpl implements IWrapperState, Re
             throw new XMLException("This should not happen: No submit trigger, no direct trigger, no final page and no workflow???");
         }
         
+        ModelAndView modelAndView = processMVC(context, preq);
+        
         // We want to optimize away the case where the context tells us that we
         // don't need to supply a full document as the context will - because of
         // the current state of
@@ -172,7 +175,7 @@ public class DefaultIWrapperState extends StateImpl implements IWrapperState, Re
             wrp_container.addStringValues();
             wrp_container.addErrorCodes();
             wrp_container.addIWrapperStatus();
-            renderMVCModel(context, resdoc, preq);
+            renderMVC(resdoc, modelAndView);
             renderContextResources(context, resdoc);
             addResponseHeadersAndType(context, resdoc);
         }

@@ -100,8 +100,7 @@ public abstract class StateImpl implements ConfigurableState {
         StateUtil.renderContextResources(context, resdoc, getConfig());
     }
 
-    
-    protected void renderMVCModel(Context context, ResultDocument resdoc,PfixServletRequest preq) throws Exception {
+    protected ModelAndView processMVC(Context context, PfixServletRequest preq) throws Exception {
         if(adapter != null) {
             String pageName;
             if(context.getCurrentPageRequest() != null) {
@@ -110,15 +109,20 @@ public abstract class StateImpl implements ConfigurableState {
                 pageName = preq.getPageName();
             }
             ModelAndView modelAndView = adapter.tryHandle(preq, this, pageName);
-            if(modelAndView != null) {
-                ModelMap modelMap = modelAndView.getModelMap();
-                for(String key: modelMap.keySet()) {
-                    Object value = modelMap.get(key);
-                    if(value instanceof BindingResult) {
-                        //TODO: add serializer
-                    } else {
-                        ResultDocument.addObject(resdoc.getRootElement(), key, modelMap.get(key));
-                    }
+            return modelAndView;
+        }
+        return null;
+    }
+    
+    protected void renderMVC(ResultDocument resdoc, ModelAndView modelAndView) throws Exception {
+        if(modelAndView != null) {
+            ModelMap modelMap = modelAndView.getModelMap();
+            for(String key: modelMap.keySet()) {
+                Object value = modelMap.get(key);
+                if(value instanceof BindingResult) {
+                    //TODO: add serializer
+                } else {
+                    ResultDocument.addObject(resdoc.getRootElement(), key, modelMap.get(key));
                 }
             }
         }
