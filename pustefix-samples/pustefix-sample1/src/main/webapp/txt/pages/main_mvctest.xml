@@ -24,7 +24,7 @@
       </tr>
       <ixsl:for-each select="/formresult/data/content/dataBean">
         <tr>
-          <td><a href="data/{@id}"><ixsl:value-of select="@id"/></a></td>
+          <td><a href="{$__contextpath}/mvctest/data/{@id}"><ixsl:value-of select="@id"/></a></td>
           <td><ixsl:value-of select="@name"/></td>
           <td><ixsl:value-of select="@description"/></td>
           <td><ixsl:value-of select="@enabled"/></td>
