@@ -172,8 +172,8 @@ public class DefaultIWrapperState extends StateImpl implements IWrapperState, Re
             wrp_container.addStringValues();
             wrp_container.addErrorCodes();
             wrp_container.addIWrapperStatus();
-            renderMVCModel(context, resdoc, preq);
             renderContextResources(context, resdoc);
+            renderMVCModel(context, resdoc, preq);
             addResponseHeadersAndType(context, resdoc);
         }
         return resdoc;
