@@ -47,9 +47,10 @@ public class StaticState extends StateImpl {
      */
     @Override
     public ResultDocument getDocument(Context context, PfixServletRequest preq) throws Exception {
+        ModelAndView modelAndView = processMVC(context, preq);
         ResultDocument resdoc = createDefaultResultDocument(context);
         context.prohibitContinue();
-        renderMVCModel(context, resdoc, preq);
+        renderMVC(resdoc, modelAndView);
         return resdoc;
     }
 
