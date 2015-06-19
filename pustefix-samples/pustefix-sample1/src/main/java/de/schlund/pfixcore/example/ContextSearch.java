@@ -43,7 +43,7 @@ public class ContextSearch {
             //TODO: find better example, e.g. search wikipedia using REST API
             BufferedReader in = null;
             try {
-                URL url = new URL("http://en.wikipedia.org");
+                URL url = new URL("https://en.wikipedia.org");
                 HttpURLConnection con = (HttpURLConnection)url.openConnection();
                 con.setConnectTimeout(2000);
                 con.setReadTimeout(5000);

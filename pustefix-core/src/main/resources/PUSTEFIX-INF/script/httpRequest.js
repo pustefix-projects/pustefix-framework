@@ -35,7 +35,10 @@ pfx.net.HTTPRequest=function() {
   this.url      = arguments[1];
   this.callback = arguments[2];
   this.context  = arguments[3];
-
+  this.errorCallback = arguments[4];
+  if(!this.errorCallback && pfx.net.HTTPRequest.errorCallback) {
+    this.errorCallback = pfx.net.HTTPRequest.errorCallback;
+  }
   this.headers = [];
   this.errors = [];
   this.status = 0;
@@ -174,7 +177,13 @@ pfx.net.HTTPRequest.prototype.start = function( content, headers, reqId ) {
                 } catch(e) {
                 }
                 if( self.status && self.status >= 400 ) {
-                  throw new Error("HTTP_Request: Asynchronous call failed" + " (status " + self.status + ", " + self.statusText + ")");
+                  if(self.errorCallback) {
+                    var err = { "status": self.status, "statusText": self.statusText};
+                    self.errorCallback.call(self.context, err);
+                    return;
+                  } else {
+                    throw new Error("HTTP_Request: Asynchronous call failed" + " (status " + self.status + ", " + self.statusText + ")");
+                  }
                 }
                 var reqId;
                 var resInfo = {};

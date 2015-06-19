@@ -791,16 +791,49 @@
         Render include parts not just can be rendered as part of another page within the main transformation, but they can be also  
         rendered standalone. Therefor Pustefix provides a Javascript API which lets you easily request a part via AJAX. 
       </para>
-      <programlisting language="xml"><![CDATA[<script type="text/javascript" src="{$__contextpath}/modules/pustefix-core/script/httpRequest.js"></script>
+      <programlisting language="xml" xml:id="xslt.renderextensions.javascript"><![CDATA[<script type="text/javascript" src="{$__contextpath}/modules/pustefix-core/script/httpRequest.js"></script>
 <script type="text/javascript" src="{$__contextpath}/modules/pustefix-core/script/render.js"></script>
 
 <script type="text/javascript">
+
    function callback(result) {
       document.getElementById("result").innerHTML = result;
    }
+
+   function errorCallback(res) {
+      if(res.status == 403) {
+         window.location.reload();  
+      } else {
+	 //do something else
+      }
+   }
+
    function test() {
-      //pfx.render(href, part, module, search, callback, context, requestId)
-      pfx.render("txt/common.xml", "Foo", "", "", callback, null, "1");
+      // Remotely renders an include part and passes the output to a callback function.
+      // Arguments can be passed as list (deprecated) or as single JSON object argument:
+      //   href          - path to include file
+      //   part          - include part name
+      //   module        - module name (optional)
+      //   search        - search type (optional)
+      //   callback      - callback function (optional)
+      //   context       - callback object scope (optional)
+      //   requestId     - request/response assignment id (optional)
+      //   params        - additional request parameters (optional)
+      //   requestPath   - alternative request URL path (optional)
+      //   errorCallback - callback function for HTTP errors (optional)
+      // Deprecated version:
+      //   pfx.render("txt/common.xml", "Foo", "", "", callback, null, "1", null, null, errorCallback);
+      // Recommended version:
+      var args = { "href": "txt/common.xml",
+                   "part": "Foo", 
+                   "callback": callback, 
+                   "requestId": "1", 
+		   "errorCallback": errorCallback };
+      pfx.render(args);
+
+      // you can alternatively set a global error function which is called
+      // for all HTTP request errors in the abscence of a specific funtion:
+      pfx.net.HTTPRequest.errorCallback = function(res) { alert(JSON.stringify(res)); };
    }
 </script>]]></programlisting>
     </section>

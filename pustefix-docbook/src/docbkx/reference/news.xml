@@ -53,6 +53,9 @@
     <para>Extended form error checking tag by optionally supporting IWrapper parameter prefix/name and request trigger conditions, and adding a new tag
           with inverted semantics (see <link linkend="xslt.forms.errors.fields">tag reference</link>).
     </para>
+    <para>Improved render include Javascript library: support for passing arguments as JSON object, HTTP error callback functions
+          (see <link linkend="xslt.renderextensions.javascript">Javascript example</link>).
+    </para>
   </section>
 
 </chapter>
