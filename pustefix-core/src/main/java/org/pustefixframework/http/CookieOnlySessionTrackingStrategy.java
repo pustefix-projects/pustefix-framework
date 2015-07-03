@@ -325,8 +325,12 @@ public class CookieOnlySessionTrackingStrategy implements SessionTrackingStrateg
            	 	newSession.setAttribute(SessionAdmin.SESSION_IS_SECURE, Boolean.TRUE);
             }
             
-            context.getSessionAdmin().registerSession(newSession, traillog, infostruct.getData().getServerName(), infostruct.getData().getRemoteAddr());
-         
+            if(infostruct == null) {
+                context.registerSession(req, newSession);
+            } else {
+                context.getSessionAdmin().registerSession(newSession, traillog, infostruct.getData().getServerName(), infostruct.getData().getRemoteAddr());
+            }
+                
             SessionHelper.copySessionData(map, newSession);
             return newSession;
         
