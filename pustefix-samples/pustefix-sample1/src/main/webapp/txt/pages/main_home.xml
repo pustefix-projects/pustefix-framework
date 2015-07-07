@@ -140,6 +140,7 @@
         <pfx:button page="install">Download README.1st (text/plain)</pfx:button>  
         <pfx:elink href="ftp://ftp.scc.kit.edu/" target="_popup">
         Goto FTP UniKa!</pfx:elink>
+        &#160;&#160;<a href="{$__contextpath}/wiki/Java_(programming_language)">Wikipedia-Proxy</a>
         <br/>
         <pfx:button page="geninc">Test generated runtime stylesheet include</pfx:button>&#160;&#160;
         <pfx:button page="invalidate" target="_top">Invalidate this session</pfx:button>&#160;&#160;

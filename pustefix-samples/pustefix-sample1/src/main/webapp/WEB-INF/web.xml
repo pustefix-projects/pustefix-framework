@@ -44,9 +44,21 @@
       </init-param>
       <load-on-startup>1</load-on-startup>
    </servlet>
+   <servlet>
+      <servlet-name>proxy</servlet-name>
+      <servlet-class>org.pustefixframework.http.HttpProxyServlet</servlet-class>
+      <init-param>
+         <param-name>url</param-name>
+         <param-value>https://en.wikipedia.org/wiki</param-value>
+      </init-param>
+   </servlet>
    <servlet-mapping>
       <servlet-name>dispatcher</servlet-name>
       <url-pattern>/*</url-pattern>
+   </servlet-mapping>
+   <servlet-mapping>
+      <servlet-name>proxy</servlet-name>
+      <url-pattern>/wiki/*</url-pattern>
    </servlet-mapping>
    <session-config>
       <session-timeout>60</session-timeout>
