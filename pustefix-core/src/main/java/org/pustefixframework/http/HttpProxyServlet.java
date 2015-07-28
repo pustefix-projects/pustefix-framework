@@ -118,7 +118,7 @@ public class HttpProxyServlet extends HttpServlet {
                 }
             }
         }
-        
+ 
         if(con.getContentLengthLong() > 0 || con.getContentLengthLong() == -1) {
             InputStream in;
             if(status >= 400) {
