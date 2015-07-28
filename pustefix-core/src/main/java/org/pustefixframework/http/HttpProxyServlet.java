@@ -44,6 +44,9 @@ public class HttpProxyServlet extends HttpServlet {
         if(req.getPathInfo() != null) {
             urlBuilder.append(req.getPathInfo().substring(1));
         }
+        if(req.getRequestedSessionId() != null && req.isRequestedSessionIdFromURL()) {
+            urlBuilder.append(";jsessionid=").append(req.getRequestedSessionId());
+        }
         if(req.getQueryString() != null) {
             urlBuilder.append("?").append(req.getQueryString());
         }
@@ -81,19 +84,42 @@ public class HttpProxyServlet extends HttpServlet {
             con.setRequestProperty("X-Forwarded-For", req.getRemoteAddr());
         }
 
+        if(req.getMethod().equals("POST")) {
+            con.setDoOutput(true);
+            InputStream in = req.getInputStream();
+            if(in != null) {
+                OutputStream out = con.getOutputStream();
+                byte[] buffer = new byte[4096];
+                int no = 0;
+                try {
+                    while ((no = in.read(buffer)) != -1) {
+                        out.write(buffer, 0, no);
+                    }
+                    out.flush();
+                } finally {
+                    in.close();
+                    out.close();
+                }
+            }
+        }
+
         int status = con.getResponseCode();
-        res.setStatus(status);;
+        res.setStatus(status);
         Map<String, List<String>> headerFields = con.getHeaderFields();
+        boolean chunked = false;
+        if("chunked".equalsIgnoreCase(con.getHeaderField("Transfer-Encoding")) && con.getHeaderField("Content-Length") == null) {
+            chunked = true;
+        }
         for(Map.Entry<String, List<String>> headerField : headerFields.entrySet()) {
-            for(String headerValue : headerField.getValue()) {
-                if(headerField.getKey() != null) {
+            if(headerField.getKey() != null && !(headerField.getKey().equals("Transfer-Encoding") && chunked)) {
+                for(String headerValue : headerField.getValue()) {
                     headerValue = headerValue.replace(proxyURL, rewriteURL);
                     res.addHeader(headerField.getKey(), headerValue);
                 }
             }
         }
-
-        if(con.getContentLengthLong() > 0) {
+        
+        if(con.getContentLengthLong() > 0 || con.getContentLengthLong() == -1) {
             InputStream in;
             if(status >= 400) {
                 in = con.getErrorStream();
@@ -104,8 +130,9 @@ public class HttpProxyServlet extends HttpServlet {
             byte[] buffer = new byte[4096];
             int no = 0;
             try {
-                while ((no = in.read(buffer)) != -1)
+                while ((no = in.read(buffer)) != -1) {
                     out.write(buffer, 0, no);
+                }
             } finally {
                 in.close();
                 out.close();
