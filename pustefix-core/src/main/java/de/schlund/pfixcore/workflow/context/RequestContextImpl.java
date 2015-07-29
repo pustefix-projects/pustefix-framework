@@ -593,6 +593,11 @@ public class RequestContextImpl implements Cloneable, AuthorizationInterceptor {
             }
             if(pageAlternativeKey != null) {
                 spdoc.setPageAlternative(getPageAlternative());
+            } else {
+                if(currentpagerequest != null) {
+                    PageLookupResult result = servercontext.getSiteMap().getPageName(currentpagerequest.getRootName(), getLanguage());
+                    spdoc.setPageAlternative(result.getPageAlternativeKey());
+                }
             }
             
             if (spdoc.getResponseError() == 0 && parentcontext.getContextConfig().getPageRequestConfig(spdoc.getPagename()) != null) {
