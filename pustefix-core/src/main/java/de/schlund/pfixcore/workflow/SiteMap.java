@@ -535,6 +535,14 @@ public class SiteMap {
         return false;
     }
     
+    public String getDefaultPageAlternativeKey(String pageName) {
+        Page page = pageNameToPage.get(pageName);
+        if(page != null) {
+            return page.defaultPageAlt.key;
+        }
+        return null;
+    }
+    
     public class Page {
         
         String name;
