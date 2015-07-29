@@ -537,7 +537,7 @@ public class SiteMap {
     
     public String getDefaultPageAlternativeKey(String pageName) {
         Page page = pageNameToPage.get(pageName);
-        if(page != null) {
+        if(page != null && page.defaultPageAlt != null) {
             return page.defaultPageAlt.key;
         }
         return null;
