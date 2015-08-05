@@ -39,6 +39,9 @@ public class CookieUtils {
         //In this case we directly parse the cookie header by calling the utility
         //method CookieUtils.getCookies().
         Cookie[] cookies = request.getCookies();
+        if(cookies != null && cookies.length == 0) {
+            cookies = null;
+        }
         if(cookies == null) {
             String header = request.getHeader("Cookie");
             if(header != null) {
