@@ -19,7 +19,8 @@
 package de.schlund.pfixcore.workflow;
 
 import java.util.Iterator;
-import java.util.Vector;
+import java.util.List;
+import java.util.concurrent.CopyOnWriteArrayList;
 
 import org.apache.log4j.Logger;
 
@@ -32,9 +33,9 @@ import org.apache.log4j.Logger;
  *
  *
  */
-
 public abstract class ObservableContextResourceImpl implements ObservableContextResource {
-    private Vector<ContextResourceObserver> observers = new Vector<ContextResourceObserver>();
+
+    private List<ContextResourceObserver> observers = new CopyOnWriteArrayList<ContextResourceObserver>();
     private Logger LOG = Logger.getLogger(this.getClass());
 
     /**
@@ -42,7 +43,7 @@ public abstract class ObservableContextResourceImpl implements ObservableContext
      *
      * @param obj an <code>ContextResourceObserver</code> value
      */
-    public synchronized void addObserver(ContextResourceObserver obj) {
+    public void addObserver(ContextResourceObserver obj) {
         LOG.debug("Adding observer " + obj.getClass().getName());
         observers.add(obj);
     }
@@ -51,7 +52,7 @@ public abstract class ObservableContextResourceImpl implements ObservableContext
      * Notifies all registered observers by calling update(this).
      *
      */
-    public synchronized void notifyObservers() throws Exception {
+    public void notifyObservers() throws Exception {
         Iterator<ContextResourceObserver> iter = observers.iterator();
         while (iter.hasNext()) {
             ContextResourceObserver obj = iter.next();
