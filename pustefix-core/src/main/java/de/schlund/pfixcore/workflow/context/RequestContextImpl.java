@@ -261,7 +261,7 @@ public class RequestContextImpl implements Cloneable, AuthorizationInterceptor {
     public String getPageAlternative() {
         return currentPageAlternative;
     }
-    
+
     public Variant getVariant() {
         return variant;
     }
@@ -394,7 +394,7 @@ public class RequestContextImpl implements Cloneable, AuthorizationInterceptor {
                 String authPageName = authConst.getAuthPage(parentcontext);
                 if (authPageName != null) {
                     currentpagerequest = createPageRequest(authPageName);
-                    currentPageAlternative = null;
+                    currentPageAlternative = servercontext.getSiteMap().getDefaultPageAlternativeKey(authPageName);
                     if (!roleAuthTarget.equals(authPageName)) {
                         if(authConst.getAuthJump()) {
                             setJumpToPage(roleAuthTarget);
@@ -718,7 +718,7 @@ public class RequestContextImpl implements Cloneable, AuthorizationInterceptor {
                     String nextPage = currentpageflow.findNextPage(this.parentcontext, currentpagerequest.getRootName(), false, stopnextforcurrentrequest);
                     if(nextPage != null) {
                         currentpagerequest = createPageRequest(nextPage);
-                        currentPageAlternative = null;
+                        currentPageAlternative = servercontext.getSiteMap().getDefaultPageAlternativeKey(nextPage);
                         foundNext = true;
                     }
                     currentstatus = saved;
@@ -727,7 +727,7 @@ public class RequestContextImpl implements Cloneable, AuthorizationInterceptor {
                     String defpage = parentcontext.getContextConfig().getDefaultPage(variant);
                     LOG.warn("[" + currentpagerequest + "]: ...but trying to use the default page " + defpage); 
                     currentpagerequest = createPageRequest(defpage);
-                    currentPageAlternative = null;
+                    currentPageAlternative = servercontext.getSiteMap().getDefaultPageAlternativeKey(defpage);
                     if (!checkIsAccessible(currentpagerequest)) {
                         LOG.warn("[" + currentpagerequest + "]: Page is not accessible...");
                         currentpageflow = pageflowmanager.pageFlowToPageRequest(currentpageflow, currentpagerequest, variant);
@@ -739,7 +739,7 @@ public class RequestContextImpl implements Cloneable, AuthorizationInterceptor {
                             String nextPage = currentpageflow.findNextPage(this.parentcontext, currentpagerequest.getRootName(), false, stopnextforcurrentrequest);
                             if(nextPage != null) {
                                 currentpagerequest = createPageRequest(nextPage);
-                                currentPageAlternative = null;
+                                currentPageAlternative = servercontext.getSiteMap().getDefaultPageAlternativeKey(nextPage);
                                 foundNext = true;
                             }
                             currentstatus = saved;
@@ -790,6 +790,9 @@ public class RequestContextImpl implements Cloneable, AuthorizationInterceptor {
         PageLookupResult result = servercontext.getSiteMap().getPageName(jumptopage, getLanguage());
         jumptopage = result.getPageName();
         currentPageAlternative = result.getPageAlternativeKey();
+        if(currentPageAlternative == null) {
+            currentPageAlternative = servercontext.getSiteMap().getDefaultPageAlternativeKey(jumptopage);
+        }
         currentpagerequest = createPageRequest(jumptopage);
         currentstatus = PageRequestStatus.JUMP;
         if (jumptopageflow != null) {
@@ -812,7 +815,7 @@ public class RequestContextImpl implements Cloneable, AuthorizationInterceptor {
         String nextPage = currentpageflow.findNextPage(this.parentcontext, currentpagerequest.getRootName(), stopatcurrentpage, stopatnextaftercurrentpage);
         if(nextPage == null) throw new PustefixApplicationException("Can't get an accessible page from pageflow '" + currentpageflow.getName() + "'.");
         currentpagerequest = createPageRequest(nextPage);
-        currentPageAlternative = null;
+        currentPageAlternative = servercontext.getSiteMap().getDefaultPageAlternativeKey(nextPage);
 
         resdoc = documentFromCurrentStep();
         document = resdoc.getSPDocument();
