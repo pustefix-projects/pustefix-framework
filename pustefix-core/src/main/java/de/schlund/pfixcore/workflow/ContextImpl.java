@@ -218,12 +218,22 @@ public class ContextImpl implements AccessibilityChecker, ExtendedContext, Token
         }
     }
 
+    @Deprecated
     public void setPageAlternative(String key) {
-        getRequestContextForCurrentThreadWithError().setPageAlternative(key);
+        setCurrentPageAlternative(key);
     }
     
+    public void setCurrentPageAlternative(String key) {
+        getRequestContextForCurrentThreadWithError().setCurrentPageAlternative(key);
+    }
+    
+    @Deprecated
     public String getPageAlternative() {
-        return getRequestContextForCurrentThreadWithError().getPageAlternative();
+        return getCurrentPageAlternative();
+    }
+    
+    public String getCurrentPageAlternative() {
+        return getRequestContextForCurrentThreadWithError().getCurrentPageAlternative();
     }
     
     public void setVariant(Variant variant) {

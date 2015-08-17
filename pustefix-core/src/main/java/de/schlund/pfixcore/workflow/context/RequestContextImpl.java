@@ -283,11 +283,11 @@ public class RequestContextImpl implements Cloneable, AuthorizationInterceptor {
         language = lang;
     }
     
-    public void setPageAlternative(String key) {
+    public void setCurrentPageAlternative(String key) {
         currentPageAlternative = key;
     }
     
-    public String getPageAlternative() {
+    public String getCurrentPageAlternative() {
         return currentPageAlternative;
     }
 

@@ -140,6 +140,14 @@ public class MockContext implements Context {
     public void setCurrentStatus(PageRequestStatus pageRequestStatus) {
         this.pageRequestStatus = pageRequestStatus;
     }
+    
+    public String getCurrentPageAlternative() {
+        return pageAltKey;
+    }
+    
+    public void setCurrentPageAlternative(String pageAltKey) {
+        this.pageAltKey = pageAltKey;
+    }
 
     public String getLanguage() {
         return lang;
