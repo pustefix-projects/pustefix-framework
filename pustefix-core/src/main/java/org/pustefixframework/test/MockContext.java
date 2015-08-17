@@ -120,6 +120,10 @@ public class MockContext implements Context {
     public void setCurrentPageRequest(PageRequest pageRequest) {
         this.pageRequest = pageRequest;
     }
+    
+    public String getCurrentDisplayPageName() {
+        return pageRequest.getRootName();
+    }
 
     public PageFlow getCurrentPageFlow() {
         return currentPageFlow; 

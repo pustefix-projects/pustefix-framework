@@ -35,9 +35,11 @@ import org.apache.log4j.Logger;
 import org.pustefixframework.config.contextxmlservice.PageRequestConfig;
 import org.pustefixframework.config.contextxmlservice.PreserveParams;
 import org.pustefixframework.config.contextxmlservice.ProcessActionPageRequestConfig;
+import org.pustefixframework.config.project.ProjectInfo;
 import org.pustefixframework.http.AbstractPustefixRequestHandler;
 import org.pustefixframework.http.AbstractPustefixXMLRequestHandler;
 import org.pustefixframework.http.PustefixContextXMLRequestHandler;
+import org.pustefixframework.util.LocaleUtils;
 import org.pustefixframework.util.LogUtils;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
@@ -58,13 +60,14 @@ import de.schlund.pfixcore.workflow.ContextInterceptor;
 import de.schlund.pfixcore.workflow.PageMap;
 import de.schlund.pfixcore.workflow.PageRequest;
 import de.schlund.pfixcore.workflow.PageRequestStatus;
+import de.schlund.pfixcore.workflow.SiteMap.PageLookupResult;
 import de.schlund.pfixcore.workflow.State;
 import de.schlund.pfixcore.workflow.VariantManager;
-import de.schlund.pfixcore.workflow.SiteMap.PageLookupResult;
 import de.schlund.pfixxml.PfixServletRequest;
 import de.schlund.pfixxml.RequestParam;
 import de.schlund.pfixxml.ResultDocument;
 import de.schlund.pfixxml.SPDocument;
+import de.schlund.pfixxml.Tenant;
 import de.schlund.pfixxml.Variant;
 import de.schlund.pfixxml.config.EnvironmentProperties;
 import de.schlund.util.statuscodes.StatusCode;
@@ -144,6 +147,32 @@ public class RequestContextImpl implements Cloneable, AuthorizationInterceptor {
 
     public PageRequest getCurrentPageRequest() {
         return currentpagerequest;
+    }
+    
+    public String getCurrentDisplayPageName() {
+        return getDisplayPageName(currentpagerequest.getRootName(), getLanguage(), currentPageAlternative);
+    }
+    
+    private String getDisplayPageName(String pageName, String language, String pageAlternative) {
+        
+        String langPrefix = "";
+        Tenant tenant = parentcontext.getTenant();
+        String lang = getLanguage();
+        ProjectInfo projectInfo = parentcontext.getProjectInfo();
+        if((tenant != null && !lang.equals(tenant.getDefaultLanguage())) ||
+                (tenant == null && projectInfo.getSupportedLanguages().size() > 1 && !lang.equals(projectInfo.getDefaultLanguage()))) {
+            langPrefix = LocaleUtils.getLanguagePart(lang);
+        }
+        String defaultPage = parentcontext.getContextConfig().getDefaultPage(parentcontext.getVariant());
+        if(defaultPage.equals(pageName)) {
+            return langPrefix;
+        } else {
+            String alias = servercontext.getSiteMap().getAlias(pageName, lang, pageAlternative);
+            if(langPrefix.length() > 0) {
+                alias = langPrefix + "/" + alias;
+            }
+            return alias;
+        }
     }
 
     public PageRequestStatus getCurrentStatus() {

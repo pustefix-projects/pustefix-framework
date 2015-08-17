@@ -114,6 +114,10 @@ public class ContextImpl implements AccessibilityChecker, ExtendedContext, Token
         return getRequestContextForCurrentThreadWithError().getCurrentPageRequest();
     }
 
+    public String getCurrentDisplayPageName() {
+        return getRequestContextForCurrentThreadWithError().getCurrentDisplayPageName();
+    }
+    
     public PageRequestStatus getCurrentStatus() {
         return getRequestContextForCurrentThreadWithError().getCurrentStatus();
     }

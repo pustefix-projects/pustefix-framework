@@ -46,6 +46,40 @@ public interface Context extends PageFlowContext {
     PageRequest getCurrentPageRequest();
     PageFlow getCurrentPageFlow();
     PageRequestStatus getCurrentStatus();
+    
+    /**
+     * Get the display name of the current page.
+     * 
+     * The display name of a page will differ from the internal name
+     * if there's configured a general alias, or aliases depending on 
+     * the currently set language, tenant or page alternative.
+     * 
+     * @return  current display page name
+     */
+    String getCurrentDisplayPageName();
+    
+    /**
+     * Returns the currently set page alternative.
+     * 
+     * You have to be aware that the current value can be subject to change
+     * depending on the moment within the request processing lifecycle when
+     * you're calling this method, e.g. the value will be updated during a 
+     * pageflow process or after a page jump.
+     *
+     * @return  current page alternative key
+     */
+    String getCurrentPageAlternative();
+    
+    /**
+     * Set the current page alternative.
+     * 
+     * You have to be aware that setting the current value only applies
+     * to the currently set page, i.e. if a pageflow process or page jump
+     * happens afterwards, the value will be reset or changed.
+     * 
+     * @param  pageAlternativeKey  The current page alternative key
+     */
+    void setCurrentPageAlternative(String pageAlternativeKey);
 
     boolean checkIsAccessible(PageRequest page) throws PustefixApplicationException;
     boolean checkNeedsData(PageRequest page) throws PustefixApplicationException;
@@ -69,7 +103,16 @@ public interface Context extends PageFlowContext {
     void setLanguage(String lang);
     String getLanguage();
     
+    /**
+     * @deprecated  As of release 0.19.13, replaced by {@link #setCurrentPageAlternative(String)}
+     */
+    @Deprecated
     void setPageAlternative(String key);
+
+    /**
+     * @deprecated  As of release 0.19.13, replaced by {@link #getCurrentPageAlternative()}
+     */
+    @Deprecated
     String getPageAlternative();
 
     void addCookie(Cookie cookie);
