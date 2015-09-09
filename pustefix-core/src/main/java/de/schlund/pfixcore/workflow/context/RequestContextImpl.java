@@ -359,20 +359,32 @@ public class RequestContextImpl implements Cloneable, AuthorizationInterceptor {
             }
             String redirectURL = "https://" + AbstractPustefixRequestHandler.getServerName(preq.getRequest()) 
                     + ( port == 443 ? "" : ":" + port ) + preq.getContextPath()
-                    + preq.getServletPath() + "/" + spdoc.getPagename() + sessionIdPath + "?__reuse="
-                    + spdoc.getTimestamp();
+                    + preq.getServletPath() + "/" + spdoc.getPagename() + sessionIdPath;
+            boolean firstParam = true;
             PreserveParams preserveParams = parentcontext.getContextConfig().getPreserveParams();
             for(String paramName: preq.getRequestParamNames()) {
                 if(preserveParams.containsParam(paramName)) {
                     RequestParam rp = preq.getRequestParam(paramName);
                     if (rp != null && rp.getValue() != null && !rp.getValue().equals("")) {
-                        redirectURL += "&" + paramName + "=" + rp.getValue();
+                        if(firstParam) {
+                            redirectURL += "?";
+                            firstParam = false;
+                        } else {
+                            redirectURL += "&";
+                        }
+                        redirectURL += paramName + "=" + rp.getValue();
                     }
                 }
             }
             if(preq.getRequestParam(PARAM_LASTFLOW) == null && currentpageflow != null &&
                     needsLastFlow(spdoc.getPagename(), currentpageflow.getRootName())) {
-                redirectURL += "&__lf=" + currentpageflow.getRootName();
+                if(firstParam) {
+                    redirectURL += "?";
+                    firstParam = false;
+                } else {
+                    redirectURL += "&";
+                }
+                redirectURL += "__lf=" + currentpageflow.getRootName();
             }
             spdoc.setRedirect(redirectURL);
 

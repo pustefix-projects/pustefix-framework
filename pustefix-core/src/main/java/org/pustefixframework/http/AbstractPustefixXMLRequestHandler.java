@@ -56,6 +56,11 @@ import org.pustefixframework.container.spring.http.PustefixHandlerMapping;
 import org.pustefixframework.util.LogUtils;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.ApplicationContextAware;
+import org.springframework.web.servlet.FlashMap;
+import org.springframework.web.servlet.FlashMapManager;
+import org.springframework.web.servlet.support.RequestContextUtils;
+import org.springframework.web.util.UriComponents;
+import org.springframework.web.util.UriComponentsBuilder;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 
@@ -273,7 +278,7 @@ public abstract class AbstractPustefixXMLRequestHandler extends AbstractPustefix
                 session.setAttribute(servletname + SUFFIX_SAVEDDOM, storeddoms);
             }
         }
-        SPDocument spdoc   = doReuse(preq, storeddoms);
+        SPDocument spdoc   = doReuse(preq, res, storeddoms);
         boolean    doreuse = false;
         if (spdoc != null) {
             doreuse = true;
@@ -423,6 +428,25 @@ public abstract class AbstractPustefixXMLRequestHandler extends AbstractPustefix
 //                    LOGGER.info("**** Storing because SPDoc wants us to. ****");
 //                }
                 sessionCleaner.storeSPDocument(spdoc, storeddoms);
+                
+                //Store reuse parameter in Spring's flash attributes
+                FlashMap flashMap = RequestContextUtils.getOutputFlashMap(preq.getRequest());
+                if(flashMap != null) {
+                    flashMap.put("__reuse", String.valueOf(spdoc.getTimestamp()));
+                    String location = spdoc.getResponseHeader().get("Location");
+                    UriComponents uriComponents = UriComponentsBuilder.fromUriString(location).build();
+                    flashMap.setTargetRequestPath(uriComponents.getPath());
+                    flashMap.addTargetRequestParams(uriComponents.getQueryParams());
+                    flashMap.startExpirationPeriod(30); //30 seconds for redirect request to return
+                    FlashMapManager flashMapManager = RequestContextUtils.getFlashMapManager(preq.getRequest());
+                    if (flashMapManager == null) {
+                        throw new IllegalStateException("FlashMapManager not found despite output FlashMap has been set");
+                    }
+                    flashMapManager.saveOutputFlashMap(flashMap, preq.getRequest(), res);
+                } else {
+                    LOGGER.warn("No output FlashMap found. Flash attribute '__reuse' wont't work.");
+                }
+                
             } else {
                 LOGGER.info("**** Not storing because no redirect... ****");
             }
@@ -1050,20 +1074,33 @@ public abstract class AbstractPustefixXMLRequestHandler extends AbstractPustefix
         }
     }
 
-    private SPDocument doReuse(PfixServletRequest preq, CacheValueLRU<String,SPDocument> storeddoms) {
+    private SPDocument doReuse(PfixServletRequest preq, HttpServletResponse res, CacheValueLRU<String,SPDocument> storeddoms) {        
+        
         HttpSession session = preq.getSession(false);
         if (session != null) {
-            RequestParam reuse = preq.getRequestParam(PARAM_REUSE);
-            if (reuse != null && reuse.getValue() != null) {
-                SPDocument saved = storeddoms.get(reuse.getValue());
+        
+            //Get reuse parameter, first try to get it from request, if not set, try to get it from flash attributes
+            String reuse = null;
+            RequestParam param = preq.getRequestParam(PARAM_REUSE);
+            if(param != null && param.getValue() != null) {
+                reuse = param.getValue();
+            } else {
+                Map<String, ?> flashMap = RequestContextUtils.getInputFlashMap(preq.getRequest());
+                if(flashMap != null) {
+                    reuse = (String)flashMap.get("__reuse");
+                }
+            }
+            
+            if (reuse != null) {
+                SPDocument saved = storeddoms.get(reuse);
                 if (preq.getPageName() != null && saved!=null && saved.getPagename() != null && !preq.getPageName().equals(saved.getPagename())) {
                     if (LOGGER.isDebugEnabled()) 
                         LOGGER.debug("Don't reuse SPDocument because pagenames differ: " + preq.getPageName() + " -> " + saved.getPagename());
                     saved = null;
                 }
                 if(LOGGER.isDebugEnabled()) {
-                    if(saved!=null) LOGGER.debug("Reuse SPDocument "+saved.getTimestamp()+" restored with key "+reuse.getValue());
-                    else LOGGER.debug("No SPDocument with key "+reuse.getValue()+" found");
+                    if(saved!=null) LOGGER.debug("Reuse SPDocument "+saved.getTimestamp()+" restored with key "+reuse);
+                    else LOGGER.debug("No SPDocument with key "+reuse+" found");
                 }
                 return saved;
             } else if (getRendering(preq) == RENDERMODE.RENDER_FONTIFY || getRendering(preq) == RENDERMODE.RENDER_LASTDOM) {
