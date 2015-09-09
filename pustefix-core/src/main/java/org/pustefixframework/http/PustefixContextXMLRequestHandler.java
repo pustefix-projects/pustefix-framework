@@ -35,9 +35,7 @@ import org.pustefixframework.config.contextxmlservice.AbstractXMLServletConfig;
 import org.pustefixframework.config.contextxmlservice.ContextXMLServletConfig;
 import org.pustefixframework.config.contextxmlservice.PageRequestConfig;
 import org.pustefixframework.config.contextxmlservice.PreserveParams;
-import org.pustefixframework.container.spring.http.MVCStateHandlerMapping;
 import org.pustefixframework.util.LocaleUtils;
-import org.springframework.beans.factory.annotation.Autowired;
 
 import de.schlund.pfixcore.exception.PustefixApplicationException;
 import de.schlund.pfixcore.exception.PustefixCoreException;
@@ -51,8 +49,6 @@ import de.schlund.pfixcore.scriptedflow.vm.VirtualHttpServletRequest;
 import de.schlund.pfixcore.workflow.ContextImpl;
 import de.schlund.pfixcore.workflow.ContextInterceptor;
 import de.schlund.pfixcore.workflow.ExtendedContext;
-import de.schlund.pfixcore.workflow.PageMap;
-import de.schlund.pfixcore.workflow.State;
 import de.schlund.pfixcore.workflow.context.RequestContextImpl;
 import de.schlund.pfixxml.PfixServletRequest;
 import de.schlund.pfixxml.PfixServletRequestImpl;
@@ -291,19 +287,32 @@ public class PustefixContextXMLRequestHandler extends AbstractPustefixXMLRequest
                     String redirectURL = scheme + "://" + getServerName(preq.getRequest()) 
                         + ":" + port + preq.getContextPath() + preq.getServletPath() + "/" 
                         + (expectedPageName == null ? "" : expectedPageName)
-                        + sessionIdPath + "?__reuse=" + spdoc.getTimestamp();
+                        + sessionIdPath;
+                    boolean firstParam = true;
                     PreserveParams preserveParams = context.getContextConfig().getPreserveParams();
                     for(String paramName: preq.getRequestParamNames()) {
                         if(preserveParams.containsParam(paramName)) {
                             RequestParam rp = preq.getRequestParam(paramName);
                             if (rp != null && rp.getValue() != null && !rp.getValue().equals("")) {
-                                redirectURL += "&" + paramName + "=" + rp.getValue();
+                                if(firstParam) {
+                                    redirectURL += "?";
+                                    firstParam = false;
+                                } else {
+                                    redirectURL += "&";
+                                }
+                                redirectURL += paramName + "=" + rp.getValue();
                             }
                         }
                     }
                     if(preq.getRequestParam("__lf") == null && context.getCurrentPageFlow() != null &&
                             ((ContextImpl) context).needsLastFlow(spdoc.getPagename(), context.getCurrentPageFlow().getRootName())) {
-                        redirectURL += "&__lf=" + context.getCurrentPageFlow().getRootName();
+                        if(firstParam) {
+                            redirectURL += "?";
+                            firstParam = false;
+                        }else {
+                            redirectURL += "&";
+                        }
+                        redirectURL += "__lf=" + context.getCurrentPageFlow().getRootName();
                     }
                     spdoc.setRedirect(redirectURL, isAlias);
                 }
