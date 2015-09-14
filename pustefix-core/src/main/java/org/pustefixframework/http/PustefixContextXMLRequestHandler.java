@@ -162,8 +162,8 @@ public class PustefixContextXMLRequestHandler extends AbstractPustefixXMLRequest
             SPDocument spdoc;
 
             ScriptedFlowInfo info = getScriptedFlowInfo(preq);
-            synchronized(info) {
-                if (preq.getRequestParam(PARAM_SCRIPTEDFLOW) != null && preq.getRequestParam(PARAM_SCRIPTEDFLOW).getValue() != null) {
+            if (preq.getRequestParam(PARAM_SCRIPTEDFLOW) != null && preq.getRequestParam(PARAM_SCRIPTEDFLOW).getValue() != null) {
+                synchronized(info) {
                     String scriptedFlowName = preq.getRequestParam(PARAM_SCRIPTEDFLOW).getValue();
 
                     // Do a virtual request without any request parameters
@@ -212,8 +212,9 @@ public class PustefixContextXMLRequestHandler extends AbstractPustefixXMLRequest
                             }
                         }
                     }
-
-                } else if (info.isScriptRunning()) {
+                }
+            } else if (info.isScriptRunning()) {
+                synchronized(info) {
                     // First handle user request, then use result document
                     // as base for further processing
                     spdoc = context.handleRequest(preq);
@@ -230,11 +231,11 @@ public class PustefixContextXMLRequestHandler extends AbstractPustefixXMLRequest
                             info.setState(vm.saveVMState());
                         }
                     }
-                } else {
-                    // No scripted flow request
-                    // handle as usual
-                    spdoc = context.handleRequest(preq);
                 }
+            } else {
+                // No scripted flow request
+                // handle as usual
+                spdoc = context.handleRequest(preq);
             }
 
             if(spdoc != null) {
