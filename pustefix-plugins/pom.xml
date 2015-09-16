@@ -27,6 +27,7 @@
     <module>pustefix-xslt-plugin</module>
     <module>pustefix-agent-plugin</module>
     <module>pustefix-resourceindex-plugin</module>
+    <module>pustefix-pagelist-plugin</module>
   </modules>
 
   <profiles>
