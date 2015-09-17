@@ -23,6 +23,8 @@ import java.util.Date;
 import java.util.HashMap;
 
 import org.apache.log4j.Logger;
+import org.pustefixframework.eventbus.EventBus;
+import org.springframework.beans.factory.annotation.Autowired;
 
 import de.schlund.pfixcore.beans.Exclude;
 
@@ -47,6 +49,9 @@ public class ContextAdultInfo implements Serializable {
     private Date date = null;
     private HashMap<String, String> test  = new HashMap<String, String>();
     
+    @Autowired
+    EventBus eventBus;
+    
     public void setIndexedTest(HashMap<String, String> inmap) {
         test = inmap;
     }
@@ -60,6 +65,7 @@ public class ContextAdultInfo implements Serializable {
 
     public void setAdult(Boolean adult) {
         this.adult = adult;
+        eventBus.publish(new AdultInfoChangeEvent(adult, this));
     }
     
     public void setDate(Date date) {
