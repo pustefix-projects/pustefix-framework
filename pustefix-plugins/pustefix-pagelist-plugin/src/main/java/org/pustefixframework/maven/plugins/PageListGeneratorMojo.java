@@ -32,7 +32,7 @@ import org.apache.maven.project.MavenProject;
  * Generates list with display names of all pages.
  *
  * @goal generate
- * @phase prepare-package
+ * @phase generate-test-resources
  *
  * @requiresDependencyResolution compile
  */
