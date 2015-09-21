@@ -22,6 +22,7 @@ import java.io.File;
 import java.io.IOException;
 import java.io.OutputStream;
 import java.io.OutputStreamWriter;
+import java.io.PrintWriter;
 import java.net.SocketException;
 import java.security.DigestOutputStream;
 import java.security.MessageDigest;
@@ -689,13 +690,23 @@ public abstract class AbstractPustefixXMLRequestHandler extends AbstractPustefix
     }
 
     private void sendError(SPDocument spdoc, HttpServletResponse res) throws IOException {
-         String errtxt;
-         int err = spdoc.getResponseError();
-         setCookies(spdoc,res);
-         if ((errtxt = spdoc.getResponseErrorText()) != null) {
-             res.sendError(err, errtxt);
+
+         int statusCode = spdoc.getResponseError();
+         String errorMessage = spdoc.getResponseErrorText();
+         setCookies(spdoc, res);
+         if (spdoc.isResponseErrorPageOverride()) {
+             res.setStatus(statusCode);
+             res.setContentType("text/plain");
+             res.setCharacterEncoding(getServletEncoding());
+             if (errorMessage != null) {
+                 PrintWriter writer = res.getWriter();
+                 writer.write(errorMessage);
+                 writer.close();
+             }
+         } else if (errorMessage != null) {
+             res.sendError(statusCode, errorMessage);
          } else {
-             res.sendError(err);
+             res.sendError(statusCode);
          }
     }
     
