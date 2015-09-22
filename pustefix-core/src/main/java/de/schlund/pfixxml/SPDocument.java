@@ -56,6 +56,7 @@ public class SPDocument {
     private int       error          = 0;
     private String    errortext      = null;
     private boolean   errorPageOverride;
+    private int       responseStatus = HttpServletResponse.SC_OK;
     private String    contenttype    = null;
     private HashMap<String, String> header  = new HashMap<String, String>();
     private ArrayList<Cookie> cookies = new ArrayList<Cookie>();
@@ -161,6 +162,27 @@ public class SPDocument {
      */
     public boolean isResponseErrorPageOverride() {
         return errorPageOverride;
+    }
+    
+    /**
+     * Set the status code of the response.
+     * 
+     * Setting the response status code is only necessary, if you want the response page to be
+     * rendered normally, but delivered with a non-default status code, i.e other than "200 OK".
+     *
+     * @param status  HTTP status code of the response
+     */
+    public void setResponseStatus(int status) {
+        responseStatus = status;
+    }
+    
+    /**
+     * Get the status code of the response. 
+     * 
+     * @return  HTTP status code of the response
+     */
+    public int getResponseStatus() {
+        return responseStatus;
     }
     
     public void addResponseHeader(String key, String val) {

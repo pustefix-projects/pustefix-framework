@@ -742,6 +742,7 @@ public abstract class AbstractPustefixXMLRequestHandler extends AbstractPustefix
             LOGGER.info("*** Reusing UI: " + spdoc.getPagename());
             modified_or_no_etag = false;
         } else {
+            res.setStatus(spdoc.getResponseStatus());
             output.writeTo(res.getOutputStream());
         }
         
