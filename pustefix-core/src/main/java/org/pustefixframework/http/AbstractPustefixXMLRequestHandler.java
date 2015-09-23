@@ -430,22 +430,24 @@ public abstract class AbstractPustefixXMLRequestHandler extends AbstractPustefix
 //                }
                 sessionCleaner.storeSPDocument(spdoc, storeddoms);
                 
-                //Store reuse parameter in Spring's flash attributes
-                FlashMap flashMap = RequestContextUtils.getOutputFlashMap(preq.getRequest());
-                if(flashMap != null) {
-                    flashMap.put("__reuse", String.valueOf(spdoc.getTimestamp()));
-                    String location = spdoc.getResponseHeader().get("Location");
-                    UriComponents uriComponents = UriComponentsBuilder.fromUriString(location).build();
-                    flashMap.setTargetRequestPath(uriComponents.getPath());
-                    flashMap.addTargetRequestParams(uriComponents.getQueryParams());
-                    flashMap.startExpirationPeriod(30); //30 seconds for redirect request to return
-                    FlashMapManager flashMapManager = RequestContextUtils.getFlashMapManager(preq.getRequest());
-                    if (flashMapManager == null) {
-                        throw new IllegalStateException("FlashMapManager not found despite output FlashMap has been set");
+                if(spdoc.getReuse()) {
+                    //Store reuse parameter in Spring's flash attributes
+                    FlashMap flashMap = RequestContextUtils.getOutputFlashMap(preq.getRequest());
+                    if(flashMap != null) {
+                        flashMap.put("__reuse", String.valueOf(spdoc.getTimestamp()));
+                        String location = spdoc.getResponseHeader().get("Location");
+                        UriComponents uriComponents = UriComponentsBuilder.fromUriString(location).build();
+                        flashMap.setTargetRequestPath(uriComponents.getPath());
+                        flashMap.addTargetRequestParams(uriComponents.getQueryParams());
+                        flashMap.startExpirationPeriod(30); //30 seconds for redirect request to return
+                        FlashMapManager flashMapManager = RequestContextUtils.getFlashMapManager(preq.getRequest());
+                        if (flashMapManager == null) {
+                            throw new IllegalStateException("FlashMapManager not found despite output FlashMap has been set");
+                        }
+                        flashMapManager.saveOutputFlashMap(flashMap, preq.getRequest(), res);
+                    } else {
+                        LOGGER.warn("No output FlashMap found. Flash attribute '__reuse' wont't work.");
                     }
-                    flashMapManager.saveOutputFlashMap(flashMap, preq.getRequest(), res);
-                } else {
-                    LOGGER.warn("No output FlashMap found. Flash attribute '__reuse' wont't work.");
                 }
                 
             } else {

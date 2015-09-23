@@ -64,6 +64,7 @@ public class SPDocument {
     private boolean permanentRedirect = false;
     private boolean trailLogged;
     private long creationTime;
+    private boolean reuse;
 
     //~ Methods ....................................................................................
 
@@ -345,6 +346,14 @@ public class SPDocument {
     
     public long getCreationTime() {
         return creationTime;
+    }
+    
+    public void setReuse(boolean reuse) {
+        this.reuse = reuse;
+    }
+    
+    public boolean getReuse() {
+        return reuse;
     }
 
     /**

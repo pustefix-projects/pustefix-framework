@@ -316,6 +316,7 @@ public class PustefixContextXMLRequestHandler extends AbstractPustefixXMLRequest
                         redirectURL += "__lf=" + context.getCurrentPageFlow().getRootName();
                     }
                     spdoc.setRedirect(redirectURL, isAlias);
+                    spdoc.setReuse(true);
                 }
             }
             return spdoc;

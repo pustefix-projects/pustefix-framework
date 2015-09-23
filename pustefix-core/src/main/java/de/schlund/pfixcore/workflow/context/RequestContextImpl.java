@@ -387,6 +387,7 @@ public class RequestContextImpl implements Cloneable, AuthorizationInterceptor {
                 redirectURL += "__lf=" + currentpageflow.getRootName();
             }
             spdoc.setRedirect(redirectURL);
+            spdoc.setReuse(true);
 
         }
 
