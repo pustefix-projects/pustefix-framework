@@ -3,20 +3,20 @@
   <parent>
     <artifactId>pustefix-webservices</artifactId>
     <groupId>org.pustefixframework.webservices</groupId>
-    <version>0.19.16-SNAPSHOT</version>
+    <version>0.19.16</version>
   </parent>
 
   <name>Pustefix Webservices Jaxws</name>
 
   <groupId>org.pustefixframework.webservices</groupId>
   <artifactId>pustefix-webservices-jaxws</artifactId>
-  <version>0.19.16-SNAPSHOT</version>
+  <version>0.19.16</version>
 
   <dependencies>
     <dependency>
       <groupId>org.pustefixframework.webservices</groupId>
       <artifactId>pustefix-webservices-core</artifactId>
-      <version>0.19.16-SNAPSHOT</version>
+      <version>0.19.16</version>
     </dependency> 
   </dependencies>
   
