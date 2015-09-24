@@ -61,12 +61,10 @@
   -->
 
   <!-- Disable passing through last flow via __lf parameter -->
-  <!--
   <disable-pageflow-passthrough/>
-  -->
 
   <!-- <pageflow name="OrderFlow" stopnext="true"> -->
-  <pageflow name="OrderFlow" final="home">
+  <pageflow name="OrderFlow" final="home" pathprefix="true">
     <default>
       <flowstep name="home" />
       <flowstep name="order">
@@ -110,7 +108,13 @@
     <flowstep name="C" />
   </pageflow>
   
+  <pageflow name="encflow" final="encoding">
+    <flowstep name="encoding"/>
+  </pageflow>
+  
   <config-include file="conf/fragments.xml" section="pageflows" module="animal-module"/>
+
+  <pagerequest name="test"/>
 
   <!-- *** PageRequests and associated properties *** -->
 

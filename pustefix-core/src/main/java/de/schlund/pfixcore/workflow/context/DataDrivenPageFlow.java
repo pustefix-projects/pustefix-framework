@@ -40,11 +40,13 @@ import de.schlund.pfixxml.ResultDocument;
  */
 
 public class DataDrivenPageFlow implements PageFlow {
+	
     private String    flowname;
     private String    rootname;
     private ArrayList<FlowStep> allsteps = new ArrayList<FlowStep>();
     private HashMap<String, FlowStep> stepmap = new HashMap<String, FlowStep>();
     private String    finalpage;
+    private boolean pathPrefix;
     
     private final static Logger LOG = Logger.getLogger(DataDrivenPageFlow.class);
     
@@ -63,6 +65,8 @@ public class DataDrivenPageFlow implements PageFlow {
             allsteps.add(step);
             stepmap.put(step.getPageName(), step);
         }
+        
+        pathPrefix = config.isPathPrefix();
         
         if (LOG.isDebugEnabled()) {
             for (int i = 0; i < allsteps.size(); i++) {
@@ -215,4 +219,8 @@ public class DataDrivenPageFlow implements PageFlow {
         return (FlowStep[]) allsteps.toArray(new FlowStep[] {});
     }
 
+    public boolean isPathPrefix() {
+    	return pathPrefix;
+    }
+    
 }

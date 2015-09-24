@@ -60,5 +60,12 @@ public interface PageFlowConfig {
      * @return configurations of the flow steps
      */
     List<? extends PageFlowStepConfig> getFlowSteps();
+    
+    /**
+     * Returns if pageflow name should be inserted into URL path as prefix.
+     * 
+     * @return if used as URL path prefix
+     */
+    boolean isPathPrefix();
 
 }

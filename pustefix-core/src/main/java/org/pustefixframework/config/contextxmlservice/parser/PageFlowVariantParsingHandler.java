@@ -60,6 +60,7 @@ public class PageFlowVariantParsingHandler implements ParsingHandler {
             PageFlowConfigImpl flowConfig = new PageFlowConfigImpl(defaultConfig.getFlowName() + "::" + variantName);
             flowConfig.setFinalPage(defaultConfig.getFinalPage());
             flowConfig.setStopNext(defaultConfig.isStopNext());
+            flowConfig.setPathPrefix(defaultConfig.isPathPrefix());
             context.getObjectTreeElement().addObject(flowConfig);
             
             BeanDefinitionRegistry beanRegistry = ParsingUtils.getSingleTopObject(BeanDefinitionRegistry.class, context);

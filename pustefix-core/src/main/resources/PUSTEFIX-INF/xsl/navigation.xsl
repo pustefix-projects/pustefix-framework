@@ -301,7 +301,7 @@
       </xsl:choose>
     </xsl:variable>
     <xsl:variable name="fulllink">
-      <ixsl:value-of select="$__contextpath"/>/<ixsl:value-of select="pfx:__omitPage($page_{generate-id()}, $lang, $tmpaltkey_{generate-id()})"/><ixsl:value-of select="$__sessionIdPath"/>
+      <ixsl:value-of select="$__contextpath"/>/<ixsl:value-of select="pfx:__omitPage($page_{generate-id()}, $lang, $tmpaltkey_{generate-id()}, '{$pageflow}')"/><ixsl:value-of select="$__sessionIdPath"/>
       <ixsl:variable name="params">
       <xsl:if test="not($frame_impl='')">__frame=<xsl:value-of select="$frame_impl"/></xsl:if>
       <ixsl:if test="not($__lf = '') and pfx:__needsLastFlow($page_{generate-id()},$__lf)">&amp;__lf=<ixsl:value-of select="$__lf"/></ixsl:if>
@@ -309,7 +309,7 @@
       <xsl:for-each select="$args">&amp;<xsl:value-of select="./@name"/>=<ixsl:call-template name="__enc"><ixsl:with-param name="in"><xsl:apply-templates select="./node()"/></ixsl:with-param></ixsl:call-template></xsl:for-each>
       <xsl:if test="$jumptopage">&amp;__jumptopage=<xsl:value-of select="$jumptopage"/></xsl:if>
       <xsl:if test="$jumptopageflow">&amp;__jumptopageflow=<xsl:value-of select="$jumptopageflow"/></xsl:if>
-      <xsl:if test="$pageflow">&amp;__pageflow=<xsl:value-of select="$pageflow"/></xsl:if>
+      <xsl:if test="$pageflow"><ixsl:if test="pfx:__needsPageFlow($page_{generate-id()},'{$pageflow}')">&amp;__pageflow=<xsl:value-of select="$pageflow"/></ixsl:if></xsl:if>
       <xsl:if test="$startwithflow">&amp;__startwithflow=<xsl:value-of select="$startwithflow"/></xsl:if>
       <xsl:if test="$forcestop">&amp;__forcestop=<xsl:value-of select="$forcestop"/></xsl:if>
       <xsl:if test="$action">&amp;__action=<xsl:value-of select="$action"/></xsl:if>

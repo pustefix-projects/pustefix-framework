@@ -109,6 +109,7 @@ public abstract class AbstractPustefixRequestHandler implements SessionTrackingS
     public static final String REQUEST_ATTR_LANGUAGE = "__PFX_LANGUAGE__";
     public static final String REQUEST_ATTR_PAGE_ALTERNATIVE = "__PFX_PAGE_ALTERNATIVE__";
     public static final String REQUEST_ATTR_PAGE_ADDITIONAL_PATH = "__PFX_PAGE_ADDITIONAL_PATH__";
+    public static final String REQUEST_ATTR_PAGEFLOW = "__PFX_PAGEFLOW__";
     
     private static final IPRangeMatcher privateIPRange = new IPRangeMatcher("10.0.0.0/8", "169.254.0.0/16", 
             "172.16.0.0/12", "192.168.0.0/16", "fc00::/7");
@@ -650,14 +651,16 @@ public abstract class AbstractPustefixRequestHandler implements SessionTrackingS
         return null;
     }
     
-    public String getPageName(String pageAlias, HttpServletRequest request) {
+    public String getPageName(final String pageAlias, final HttpServletRequest request) {
+        
+        String pageName = pageAlias;
         
         String prefix;
-        int ind = pageAlias.indexOf('/');
+        int ind = pageName.indexOf('/');
         if(ind > -1) {
-            prefix = pageAlias.substring(0, ind);
+            prefix = pageName.substring(0, ind);
         } else {
-            prefix = pageAlias;
+            prefix = pageName;
         }
         
         //check if pageAlias has language prefix
@@ -666,19 +669,24 @@ public abstract class AbstractPustefixRequestHandler implements SessionTrackingS
             (tenant == null && languageInfo.getSupportedLanguageByCode(prefix) != null)) {
             if(ind > -1) {
                 //remove language prefix
-                pageAlias = pageAlias.substring(ind + 1);
+                pageName = pageName.substring(ind + 1);
             } else {
                 //default page
                 return null;
             }
         }    
         
+        pageName = resolvePrefix(pageName, request);
+        if(pageName == null) {
+            return null;
+        }
+        
+        //check page alias
         PageLookupResult res = null;
         String lang = (String)request.getAttribute(REQUEST_ATTR_LANGUAGE);
-        
-        res = siteMap.getPageName(pageAlias, lang);
-        if(pageAlias.startsWith(res.getAliasPageName()) && pageAlias.length() > res.getAliasPageName().length()) {
-            String additionalPath = pageAlias.substring(pageAlias.indexOf(res.getAliasPageName()) + res.getAliasPageName().length());
+        res = siteMap.getPageName(pageName, lang);
+        if(pageName.startsWith(res.getAliasPageName()) && pageName.length() > res.getAliasPageName().length()) {
+            String additionalPath = pageName.substring(pageName.indexOf(res.getAliasPageName()) + res.getAliasPageName().length());
             request.setAttribute(REQUEST_ATTR_PAGE_ADDITIONAL_PATH, additionalPath);
         }
         if(res.getPageAlternativeKey() != null) {
@@ -691,6 +699,10 @@ public abstract class AbstractPustefixRequestHandler implements SessionTrackingS
         } else {
             return res.getPageName();
         }
+    }
+    
+    protected String resolvePrefix(final String pageAlias, final HttpServletRequest request) {
+        return pageAlias;
     }
     
     protected void addPageURIs(SortedSet<String> uris) {
@@ -768,6 +780,39 @@ public abstract class AbstractPustefixRequestHandler implements SessionTrackingS
                 }
             }
         }
+        
+        String[] registeredPrefixes = getRegisteredPrefixes();
+    	for(String registeredPrefix : registeredPrefixes) {
+    		if(!tenantInfo.getTenants().isEmpty()) {
+    			for(Tenant tenant: tenantInfo.getTenants()) {
+    				for(String supportedLanguage: tenant.getSupportedLanguages()) {
+    					String langPart = LocaleUtils.getLanguagePart(supportedLanguage);
+    					String pathPrefix = "";
+    					if(!supportedLanguage.equals(tenant.getDefaultLanguage())) {
+    						pathPrefix = langPart + "/";
+    					}
+    					String alias = siteMap.getPageFlowAlias(registeredPrefix, supportedLanguage);
+    					uris.add("/" + pathPrefix + registeredPrefix + "/**");
+    					uris.add("/" + pathPrefix + registeredPrefix);
+    				}
+    			}
+    		} else if(languageInfo.getSupportedLanguages().size() > 1) {
+    			for(String supportedLanguage: languageInfo.getSupportedLanguages()) {
+    				String langPart = LocaleUtils.getLanguagePart(supportedLanguage);
+                    String pathPrefix = "";
+                    if(!supportedLanguage.equals(languageInfo.getDefaultLanguage())) {
+                        pathPrefix = langPart + "/";
+                    }
+                    String alias = siteMap.getPageFlowAlias(registeredPrefix, supportedLanguage);
+                    uris.add("/" + pathPrefix + alias + "/**");
+                    uris.add("/" + pathPrefix + alias);
+    			}
+    		} else {
+    		    String alias = siteMap.getPageFlowAlias(registeredPrefix, null);
+    			uris.add("/" + alias + "/**");
+    			uris.add("/" + alias);
+    		}
+    	}
     }
     
     private void addUri(Set<String> uris, String uri, List<String> mvcSuffixes) {
@@ -778,7 +823,11 @@ public abstract class AbstractPustefixRequestHandler implements SessionTrackingS
     }
     
     public String[] getRegisteredPages() {
-        return new String[0];
+    	return new String[0];
+    }
+    
+    public String[] getRegisteredPrefixes() {
+    	return new String[0];
     }
     
     public void setServletEncoding(String encoding) {

@@ -49,11 +49,6 @@ import org.springframework.beans.factory.config.BeanDefinitionHolder;
 import org.springframework.beans.factory.config.RuntimeBeanReference;
 import org.springframework.beans.factory.support.BeanDefinitionBuilder;
 import org.springframework.beans.factory.support.BeanDefinitionRegistry;
-import org.springframework.beans.factory.support.DefaultBeanNameGenerator;
-import org.springframework.beans.factory.support.ManagedMap;
-import org.springframework.jmx.export.MBeanExporter;
-import org.springframework.jmx.export.annotation.AnnotationJmxAttributeSource;
-import org.springframework.jmx.export.assembler.MetadataMBeanInfoAssembler;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.xml.sax.SAXException;
@@ -68,6 +63,7 @@ import com.marsching.flexiparse.parser.exception.ParserException;
 import de.schlund.pfixcore.workflow.ContextImpl;
 import de.schlund.pfixcore.workflow.PageMap;
 import de.schlund.pfixcore.workflow.SiteMap;
+import de.schlund.pfixcore.workflow.context.ServerContextImpl;
 import de.schlund.pfixxml.LanguageInfo;
 import de.schlund.pfixxml.SessionCleaner;
 import de.schlund.pfixxml.TenantInfo;
@@ -197,6 +193,7 @@ public class PustefixContextXMLRequestHandlerParsingHandler extends Customizatio
         beanBuilder.addPropertyValue("targetGenerator", new RuntimeBeanReference(TargetGenerator.class.getName()));
         if(path != null && !path.equals("") && !path.equals("/")) beanBuilder.addPropertyValue("handlerURI", path + "/**");
         beanBuilder.addPropertyValue("context", new RuntimeBeanReference(ContextImpl.class.getName()));
+        beanBuilder.addPropertyValue("serverContext", new RuntimeBeanReference(ServerContextImpl.class.getName()));
         beanBuilder.addPropertyValue("configuration", config);
         beanBuilder.addPropertyValue("sessionAdmin", new RuntimeBeanReference(SessionAdmin.class.getName()));
         if(editorInfo != null && editorInfo.getLocation() != null) {

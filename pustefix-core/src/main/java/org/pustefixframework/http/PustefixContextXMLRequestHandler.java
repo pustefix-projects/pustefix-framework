@@ -19,6 +19,8 @@
 package org.pustefixframework.http;
 
 import java.io.ByteArrayOutputStream;
+import java.util.Collection;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 import java.util.SortedSet;
@@ -35,9 +37,8 @@ import org.pustefixframework.config.contextxmlservice.AbstractXMLServletConfig;
 import org.pustefixframework.config.contextxmlservice.ContextXMLServletConfig;
 import org.pustefixframework.config.contextxmlservice.PageRequestConfig;
 import org.pustefixframework.config.contextxmlservice.PreserveParams;
-import org.pustefixframework.container.spring.http.MVCStateHandlerMapping;
+import org.pustefixframework.container.spring.beans.TenantScope;
 import org.pustefixframework.util.LocaleUtils;
-import org.springframework.beans.factory.annotation.Autowired;
 
 import de.schlund.pfixcore.exception.PustefixApplicationException;
 import de.schlund.pfixcore.exception.PustefixCoreException;
@@ -51,9 +52,9 @@ import de.schlund.pfixcore.scriptedflow.vm.VirtualHttpServletRequest;
 import de.schlund.pfixcore.workflow.ContextImpl;
 import de.schlund.pfixcore.workflow.ContextInterceptor;
 import de.schlund.pfixcore.workflow.ExtendedContext;
-import de.schlund.pfixcore.workflow.PageMap;
-import de.schlund.pfixcore.workflow.State;
+import de.schlund.pfixcore.workflow.context.PageFlow;
 import de.schlund.pfixcore.workflow.context.RequestContextImpl;
+import de.schlund.pfixcore.workflow.context.ServerContextImpl;
 import de.schlund.pfixxml.PfixServletRequest;
 import de.schlund.pfixxml.PfixServletRequestImpl;
 import de.schlund.pfixxml.RenderOutputListener;
@@ -87,12 +88,18 @@ public class PustefixContextXMLRequestHandler extends AbstractPustefixXMLRequest
     
     private RenderOutputListener renderOutputListener;
     
+    private ServerContextImpl serverContext;
+    
     protected ContextXMLServletConfig getContextXMLServletConfig() {
         return this.config;
     }
 
     public void setConfiguration(ContextXMLServletConfig config) {
         this.config = config;
+    }
+    
+    public void setServerContext(ServerContextImpl serverContext) {
+    	this.serverContext = serverContext;
     }
     
     @Override
@@ -253,21 +260,34 @@ public class PustefixContextXMLRequestHandler extends AbstractPustefixXMLRequest
             if(spdoc != null && !spdoc.isRedirect()) {
                 String expectedPageName = null;
                 boolean isAlias = false;
-                String langPrefix = null;
+                String prefix = "";
                 Tenant tenant = spdoc.getTenant();
                 if((tenant != null && !spdoc.getLanguage().equals(tenant.getDefaultLanguage())) ||
                         tenant == null && languageInfo.getSupportedLanguages().size() > 1 && !spdoc.getLanguage().equals(languageInfo.getDefaultLanguage())) {
-                    langPrefix = LocaleUtils.getLanguagePart(spdoc.getLanguage());
+                    prefix = LocaleUtils.getLanguagePart(spdoc.getLanguage());
                 }
+            	String pageFlowName = (String)spdoc.getProperties().get("pageflow");
+            	if(pageFlowName != null) {
+            	    PageFlow pageFlow = serverContext.getPageFlowManager().getPageFlowByName(pageFlowName, spdoc.getVariant());
+            	    if(pageFlow != null && pageFlow.isPathPrefix()) {
+            	        if(!prefix.isEmpty()) {
+            	            prefix += "/";
+            	        }
+            	        prefix += siteMap.getPageFlowAlias(pageFlowName, spdoc.getLanguage());
+            	    }
+            	}
                 if(context.getContextConfig().getDefaultPage(context.getVariant()).equals(spdoc.getPagename())) {
-                    expectedPageName = langPrefix;
+                    expectedPageName = prefix;
                 } else {
-                    String alias = siteMap.getAlias(spdoc.getPagename(), spdoc.getLanguage(), spdoc.getPageAlternative());
-                    if(langPrefix != null) {
-                        alias = langPrefix + "/" + alias;
+                	String alias = siteMap.getAlias(spdoc.getPagename(), spdoc.getLanguage(), spdoc.getPageAlternative());
+                    if(!prefix.isEmpty()) {
+                        alias = prefix + "/" + alias;
                     }
                     expectedPageName = alias;
                     isAlias = true;
+                }
+                if(expectedPageName.equals("")) {
+                	expectedPageName = null;
                 }
                 String requestedPageName = preq.getRequestedPageName();
                 if( (expectedPageName == null && requestedPageName != null) ||
@@ -291,19 +311,33 @@ public class PustefixContextXMLRequestHandler extends AbstractPustefixXMLRequest
                     String redirectURL = scheme + "://" + getServerName(preq.getRequest()) 
                         + ":" + port + preq.getContextPath() + preq.getServletPath() + "/" 
                         + (expectedPageName == null ? "" : expectedPageName)
-                        + sessionIdPath + "?__reuse=" + spdoc.getTimestamp();
+                        + sessionIdPath;
+                    boolean firstParam = true;
+                    
                     PreserveParams preserveParams = context.getContextConfig().getPreserveParams();
                     for(String paramName: preq.getRequestParamNames()) {
                         if(preserveParams.containsParam(paramName)) {
                             RequestParam rp = preq.getRequestParam(paramName);
                             if (rp != null && rp.getValue() != null && !rp.getValue().equals("")) {
-                                redirectURL += "&" + paramName + "=" + rp.getValue();
+                                if(firstParam) {
+                                    redirectURL += "?";
+                                    firstParam = false;
+                                } else {
+                                    redirectURL += "&";
+                                }
+                                redirectURL += paramName + "=" + rp.getValue();
                             }
                         }
                     }
-                    if(preq.getRequestParam("__lf") == null && context.getCurrentPageFlow() != null &&
-                            ((ContextImpl) context).needsLastFlow(spdoc.getPagename(), context.getCurrentPageFlow().getRootName())) {
-                        redirectURL += "&__lf=" + context.getCurrentPageFlow().getRootName();
+                    if(context.getCurrentPageFlow() != null &&
+                            ((ContextImpl) context).needsLastFlowParameter(spdoc.getPagename(), context.getCurrentPageFlow().getRootName())) {
+                        if(firstParam) {
+                            redirectURL += "?";
+                            firstParam = false;
+                        }else {
+                            redirectURL += "&";
+                        }
+                        redirectURL += "__lf=" + context.getCurrentPageFlow().getRootName();
                     }
                     spdoc.setRedirect(redirectURL, isAlias);
                 }
@@ -443,6 +477,7 @@ public class PustefixContextXMLRequestHandler extends AbstractPustefixXMLRequest
         
         //add pages from configured pagerequests
         List<? extends PageRequestConfig> pageConfigs = config.getContextConfig().getPageRequestConfigs();
+       
         for(PageRequestConfig pageConfig: pageConfigs) {
             pages.add(pageConfig.getPageName());
         }
@@ -455,6 +490,49 @@ public class PustefixContextXMLRequestHandler extends AbstractPustefixXMLRequest
         
         String[] pageArr = pages.toArray(new String[pages.size()]);
         return pageArr;
+    }
+    
+    @Override
+    public String[] getRegisteredPrefixes() {
+    	
+    	Set<String> prefixes = new HashSet<>();
+    	Collection<PageFlow> pageFlows = serverContext.getPageFlowManager().getPageFlows();
+    	for(PageFlow pageFlow : pageFlows) {
+    		if(pageFlow.isPathPrefix()) {
+    			prefixes.add(pageFlow.getRootName());
+    		}
+    	}
+    	return prefixes.toArray(new String[prefixes.size()]);
+    }
+    
+    @Override
+    protected String resolvePrefix(final String pageAlias, final HttpServletRequest request) {
+       
+        String pageName = pageAlias;
+        
+        //check if pageName has page flow prefix
+        String prefix;
+        int ind = pageName.indexOf('/');
+        if(ind > -1) {
+            prefix = pageName.substring(0, ind);
+        } else {
+            prefix = pageName;
+        }
+        String lang = (String)request.getAttribute(REQUEST_ATTR_LANGUAGE);
+        String pageFlowName = siteMap.getPageFlow(prefix, lang);
+        PageFlow pageFlow = serverContext.getPageFlowManager().getPageFlowByName(pageFlowName, null);
+        if(pageFlow != null && pageFlow.isPathPrefix()) {
+            request.setAttribute(REQUEST_ATTR_PAGEFLOW, pageFlowName);
+            if(ind > -1) {
+                //remove page flow prefix
+                pageName = pageName.substring(ind + 1);
+            } else {
+                //default page
+                return null;
+            }
+        }
+        
+        return pageName;
     }
     
 }

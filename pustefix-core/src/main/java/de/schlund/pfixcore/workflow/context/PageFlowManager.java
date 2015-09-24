@@ -18,6 +18,7 @@
 
 package de.schlund.pfixcore.workflow.context;
 
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
@@ -138,7 +139,7 @@ public class PageFlowManager {
         }
     }
     
-    protected PageFlow getPageFlowByName(String rootname, Variant variant) {
+    public PageFlow getPageFlowByName(String rootname, Variant variant) {
         return getPageFlowByName(vmanager.getVariantMatchingPageFlowName(rootname, variant));
     }
     
@@ -158,6 +159,10 @@ public class PageFlowManager {
             }
         }
         return true;
+    }
+ 
+    public Collection<PageFlow> getPageFlows() {
+    	return flowmap.values();
     }
     
 }

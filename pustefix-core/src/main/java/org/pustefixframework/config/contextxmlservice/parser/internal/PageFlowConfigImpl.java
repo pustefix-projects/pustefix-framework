@@ -36,6 +36,7 @@ public class PageFlowConfigImpl implements PageFlowConfig {
     private String finalPage = null;
     private boolean stopNext = false;
     private ArrayList<PageFlowStepConfigImpl> flowSteps = new ArrayList<PageFlowStepConfigImpl>();
+    private boolean pathPrefix = false;
     
     public PageFlowConfigImpl(String name) {
         this.flowName = name;
@@ -79,5 +80,13 @@ public class PageFlowConfigImpl implements PageFlowConfig {
      */
     public List<PageFlowStepConfigImpl> getFlowSteps() {
         return Collections.unmodifiableList(this.flowSteps);
+    }
+    
+    public void setPathPrefix(boolean pathPrefix) {
+    	this.pathPrefix = pathPrefix;
+    }
+    
+    public boolean isPathPrefix() {
+    	return pathPrefix;
     }
 }

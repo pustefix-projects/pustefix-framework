@@ -11,7 +11,7 @@
     </page>
     <page name="scripting"/>
     <page name="scriptingstate"/>
-    <page name="encoding" alias="encodingpage">
+    <page name="encoding" alias="tests/encode-decode">
        <alt key="xencoding" name="xencodingpage"/>
     </page>
     <page name="upload"/>
@@ -32,6 +32,8 @@
     <page name="testchecks"/>
     
     <page name="moduletest"/>
+    
+    <pageflow name="OrderFlow" prefix="myorder"/>
 
     <config-include file="WEB-INF/fragments.xml" section="sitemap"/>
     <config-include file="conf/fragments.xml" section="sitemap" module="animal-module"/>

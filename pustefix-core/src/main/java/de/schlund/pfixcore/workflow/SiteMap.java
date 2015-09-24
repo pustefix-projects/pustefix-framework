@@ -60,7 +60,6 @@ import de.schlund.pfixxml.config.includes.IncludesResolver;
 import de.schlund.pfixxml.resources.Resource;
 import de.schlund.pfixxml.resources.ResourceUtil;
 import de.schlund.pfixxml.util.TransformerHandlerAdapter;
-import de.schlund.pfixxml.util.XMLUtils;
 import de.schlund.pfixxml.util.Xml;
 import de.schlund.pfixxml.util.XsltVersion;
 
@@ -81,6 +80,8 @@ public class SiteMap {
     private Map<String, Map<String, String>> pageMaps = new HashMap<String, Map<String, String>>();
     private Map<String, Page> pageAlternativeToPage = new HashMap<String, Page>();
     private Map<String, Page> pageAliasToPage = new HashMap<String, Page>();
+    private Map<String, String> pageFlowToPrefix = new HashMap<>();
+    private Map<String, String> prefixToPageFlow = new HashMap<>();
     private boolean provided;
     
     public SiteMap(File siteMapFile, File[] siteMapAliasFiles) throws IOException, SAXException {
@@ -233,6 +234,15 @@ public class SiteMap {
         for(Element pageElem: pageElems) {
             Page page = readPage(pageElem);
             pageList.add(page);
+        }
+        List<Element> pageFlowElems = DOMUtils.getChildElementsByTagName(siteMapElem, "pageflow");
+        for(Element pageFlowElem: pageFlowElems) {
+            String name = pageFlowElem.getAttribute("name").trim();
+            if(!name.isEmpty()) {
+            	String prefix = pageFlowElem.getAttribute("prefix").trim();
+            	pageFlowToPrefix.put(name, prefix);
+            	prefixToPageFlow.put(prefix, name);
+            }
         }
     }
     
@@ -451,6 +461,10 @@ public class SiteMap {
         return null;
     }
     
+    public Map<String, String> getPageFlowPrefixes() {
+    	return pageFlowToPrefix;
+    }
+    
     public Set<String> getPageAlternativeKeys(String pageName) {
         if(pageName != null) {
             Page page = pageNameToPage.get(pageName);
@@ -459,6 +473,26 @@ public class SiteMap {
             }
         }
         return null;
+    }
+    
+    public String getPageFlowAlias(String name, String lang) {
+    	//TODO: language alias support
+    	String alias = pageFlowToPrefix.get(name);
+    	if(alias != null) {
+    		return alias;
+    	} else {
+    		return name;
+    	}
+    }
+    
+    public String getPageFlow(String alias, String lang) {
+    	//TODO: language alias support
+    	String pageFlow = prefixToPageFlow.get(alias);
+    	if(pageFlow == null) {
+    	    return alias;
+    	} else {
+    	    return pageFlow;
+    	}
     }
     
     public PageLookupResult getPageName(String alias, String lang) {

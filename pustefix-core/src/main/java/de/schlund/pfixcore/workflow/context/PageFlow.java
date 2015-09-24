@@ -148,4 +148,11 @@ public interface PageFlow {
      */
     void addPageFlowInfo(String currentpagename, Element root);
 
+    /**
+     * Returns if pageflow name should be inserted into URL path as prefix.
+     * 
+     * @return if used as URL path prefix
+     */
+    boolean isPathPrefix();
+    
 }

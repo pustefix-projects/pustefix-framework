@@ -34,7 +34,7 @@ public class PreserveParams {
         params = new HashSet<String>();
         //add built-in default parameters
         params.add("__frame");
-        params.add("__lf");
+        //params.add("__lf");
     }
     
     public void addParam(String paramName) {

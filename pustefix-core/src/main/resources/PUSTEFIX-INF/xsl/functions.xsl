@@ -123,14 +123,21 @@
   <func:function name="pfx:__needsLastFlow">
     <xsl:param name="pageName"/>
     <xsl:param name="lastFlow"/>
-    <func:result select="callback:needsLastFlow($__context__,$pageName,$lastFlow)"/>
+    <func:result select="callback:needsLastFlowParameter($__context__,$pageName,$lastFlow)"/>
+  </func:function>
+  
+  <func:function name="pfx:__needsPageFlow">
+    <xsl:param name="pageName"/>
+    <xsl:param name="flowName"/>
+    <func:result select="callback:needsPageFlowParameter($__context__,$pageName,$flowName)"/>
   </func:function>
   
   <func:function name="pfx:__omitPage">
     <xsl:param name="pageName"/>
     <xsl:param name="language"><xsl:value-of select="$lang"/></xsl:param>
     <xsl:param name="altKey"><xsl:if test="$page=$pageName and $pageAlternative"><xsl:value-of select="$pageAlternative"/></xsl:if></xsl:param>
-    <func:result select="callback:omitPage($__context__,$__target_gen,$pageName,$language,$altKey)"/>
+    <xsl:param name="pageFlow"/>
+    <func:result select="callback:omitPage($__context__,$__target_gen,$pageName,$language,$altKey,$__lf,$pageFlow)"/>
   </func:function>
   
   <func:function name="pfx:getHomePage">

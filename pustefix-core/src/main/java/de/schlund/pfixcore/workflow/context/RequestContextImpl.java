@@ -359,20 +359,32 @@ public class RequestContextImpl implements Cloneable, AuthorizationInterceptor {
             }
             String redirectURL = "https://" + AbstractPustefixRequestHandler.getServerName(preq.getRequest()) 
                     + ( port == 443 ? "" : ":" + port ) + preq.getContextPath()
-                    + preq.getServletPath() + "/" + spdoc.getPagename() + sessionIdPath + "?__reuse="
-                    + spdoc.getTimestamp();
+                    + preq.getServletPath() + "/" + spdoc.getPagename() + sessionIdPath;
+            boolean firstParam = true;
             PreserveParams preserveParams = parentcontext.getContextConfig().getPreserveParams();
             for(String paramName: preq.getRequestParamNames()) {
                 if(preserveParams.containsParam(paramName)) {
                     RequestParam rp = preq.getRequestParam(paramName);
                     if (rp != null && rp.getValue() != null && !rp.getValue().equals("")) {
-                        redirectURL += "&" + paramName + "=" + rp.getValue();
+                        if(firstParam) {
+                            redirectURL += "?";
+                            firstParam = false;
+                        } else {
+                            redirectURL += "&";
+                        }
+                        redirectURL += paramName + "=" + rp.getValue();
                     }
                 }
             }
             if(preq.getRequestParam(PARAM_LASTFLOW) == null && currentpageflow != null &&
-                    needsLastFlow(spdoc.getPagename(), currentpageflow.getRootName())) {
-                redirectURL += "&__lf=" + currentpageflow.getRootName();
+                    needsLastFlowParameter(spdoc.getPagename(), currentpageflow.getRootName())) {
+                if(firstParam) {
+                    redirectURL += "?";
+                    firstParam = false;
+                } else {
+                    redirectURL += "&";
+                }
+                redirectURL += "__lf=" + currentpageflow.getRootName();
             }
             spdoc.setRedirect(redirectURL);
 
@@ -516,10 +528,13 @@ public class RequestContextImpl implements Cloneable, AuthorizationInterceptor {
             }
         }
         
+        String flowFromPrefix = (String)preq.getRequest().getAttribute(AbstractPustefixRequestHandler.REQUEST_ATTR_PAGEFLOW);
         RequestParam pageflow = currentpservreq.getRequestParam(PARAM_FLOW);
         if (pageflow != null && !pageflow.getValue().equals("") && pageflowmanager.getPageFlowByName(pageflow.getValue(), getVariant()) != null) {
             currentpageflow = pageflowmanager.getPageFlowByName(pageflow.getValue(), getVariant());
             LOG.debug("===> Got pageflow from request parameter as [" + currentpageflow.getName() + "]");
+        } else if (flowFromPrefix != null) {
+        	currentpageflow = pageflowmanager.getPageFlowByName(flowFromPrefix, getVariant());
         } else if (action != null && action.getPageflow() != null && pageflowmanager.getPageFlowByName(action.getPageflow(), getVariant()) != null) {
             currentpageflow = pageflowmanager.getPageFlowByName(action.getPageflow(), getVariant());
             LOG.debug("===> Got pageflow from action [" + action.getName() + "] as [" + currentpageflow.getName() + "]");
@@ -1126,18 +1141,53 @@ public class RequestContextImpl implements Cloneable, AuthorizationInterceptor {
         return state;
     }
     
-    public boolean needsLastFlow(String pageName, String lastFlowName) {
-        if(!parentcontext.getContextConfig().getPageFlowPassThrough()) {
+    public boolean needsLastFlowParameter(String pageName, String lastFlowName) {
+
+    	//Passing page flow as __lf parameter is disabled
+    	if(!parentcontext.getContextConfig().getPageFlowPassThrough()) {
             return false;
         }
-        if(lastFlowName != null && !lastFlowName.equals("")) {
-            PageFlow lastFlow = pageflowmanager.getPageFlowByName(lastFlowName, variant);
-            if(lastFlow != null) {
+    	return needsPageFlowParameter(pageName, lastFlowName);
+    }
+    
+    public boolean needsPageFlowParameter(String pageName, String flowName) {
+    	
+    	//Page name starts with page flow prefix
+    	int ind = pageName.indexOf('/');
+    	if(ind > -1) {
+    		String prefix = pageName.substring(0, ind);
+    		if(servercontext.getSiteMap().getPageFlow(prefix, language) != null) {
+    			return false;
+    		} else {
+    			PageFlow flow = pageflowmanager.getPageFlowByName(prefix, variant);
+    			if(flow.isPathPrefix()) {
+    				return false;
+    			}
+    		}
+    	}
+    	
+    	//Selected page flow is passed as flow prefix
+    	PageFlow flow = getPageFlow(pageName, flowName);
+    	if(flow != null && flow.isPathPrefix()) {
+    		return false;
+    	}
+    	
+    	//Check if passing no page flow will automatically select right flow 
+        if(flowName != null && !flowName.equals("")) {
+            flow = pageflowmanager.getPageFlowByName(flowName, variant);
+            if(flow != null) {
                 PageRequest page = createPageRequest(pageName);
-                return pageflowmanager.needsLastFlow(lastFlow, page);
+                return pageflowmanager.needsLastFlow(flow, page);
             }
         }
         return false;
+    }
+    
+    public PageFlow getPageFlow(String pageName, String lastFlowName) {
+    	
+    	PageFlow lastFlow = pageflowmanager.getPageFlowByName(lastFlowName, variant);
+    	PageRequest page = createPageRequest(pageName);
+    	return pageflowmanager.pageFlowToPageRequest(lastFlow, page, variant);
     }
 
 }
