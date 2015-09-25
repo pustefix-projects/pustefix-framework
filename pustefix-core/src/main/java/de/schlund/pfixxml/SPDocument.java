@@ -55,6 +55,8 @@ public class SPDocument {
     private long      timestamp      = System.currentTimeMillis();
     private int       error          = 0;
     private String    errortext      = null;
+    private boolean   errorPageOverride;
+    private int       responseStatus = HttpServletResponse.SC_OK;
     private String    contenttype    = null;
     private HashMap<String, String> header  = new HashMap<String, String>();
     private ArrayList<Cookie> cookies = new ArrayList<Cookie>();
@@ -62,6 +64,7 @@ public class SPDocument {
     private boolean permanentRedirect = false;
     private boolean trailLogged;
     private long creationTime;
+    private boolean reuse;
 
     //~ Methods ....................................................................................
 
@@ -142,6 +145,47 @@ public class SPDocument {
         }
     }
 
+    /**
+     * Set if an error response should be written directly, i.e. if a declared custom web application 
+     * error-page should be ignored and the error message should served as is, without modification by 
+     * the servlet container.   
+     * 
+     * @param override  true if declared error-page should be overridden, false otherwise
+     */
+    public void setResponseErrorPageOverride(boolean override) {
+        errorPageOverride = override;
+    }
+    
+    /**
+     * Returns if a declared custom web application error-page should be overridden.
+     * 
+     * @return  true if error-page should be overridden, false otherwise
+     */
+    public boolean isResponseErrorPageOverride() {
+        return errorPageOverride;
+    }
+    
+    /**
+     * Set the status code of the response.
+     * 
+     * Setting the response status code is only necessary, if you want the response page to be
+     * rendered normally, but delivered with a non-default status code, i.e other than "200 OK".
+     *
+     * @param status  HTTP status code of the response
+     */
+    public void setResponseStatus(int status) {
+        responseStatus = status;
+    }
+    
+    /**
+     * Get the status code of the response. 
+     * 
+     * @return  HTTP status code of the response
+     */
+    public int getResponseStatus() {
+        return responseStatus;
+    }
+    
     public void addResponseHeader(String key, String val) {
         header.put(key, val);
     }
@@ -302,6 +346,14 @@ public class SPDocument {
     
     public long getCreationTime() {
         return creationTime;
+    }
+    
+    public void setReuse(boolean reuse) {
+        this.reuse = reuse;
+    }
+    
+    public boolean getReuse() {
+        return reuse;
     }
 
     /**

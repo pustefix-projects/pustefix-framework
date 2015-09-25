@@ -18,7 +18,17 @@
       <pfx:maincontent part="content" path="txt/pages" prefix="main_"/>
       <pfx:editconsole/>
       <div class="footer">
-        <ixsl:value-of select="pfx:format-date(/formresult/appinfo/@time)"/>
+        Page rendered at <ixsl:value-of select="pfx:format-date(/formresult/appinfo/@time)"/> | 
+        Session started at <ixsl:value-of select="pfx:format-date(/formresult/appinfo/@startTime)"/> |
+        Adult info changed at
+          <ixsl:choose>
+            <ixsl:when test="/formresult/appinfo/@changeTime &gt; 0">
+              <ixsl:value-of select="pfx:format-date(/formresult/appinfo/@changeTime)"/>
+            </ixsl:when>
+            <ixsl:otherwise>
+              <ixsl:text>-</ixsl:text>
+            </ixsl:otherwise>
+          </ixsl:choose> 
       </div>
     </body>
   </html>

@@ -5,13 +5,13 @@
   <parent>
     <groupId>org.pustefixframework</groupId>
     <artifactId>pustefixframework</artifactId>
-    <version>0.19.14-SNAPSHOT</version>
+    <version>0.19.17-SNAPSHOT</version>
   </parent>
 
   <groupId>org.pustefixframework.maven.plugins</groupId>
   <artifactId>pustefix-plugins</artifactId>
   <packaging>pom</packaging>
-  <version>0.19.14-SNAPSHOT</version>
+  <version>0.19.17-SNAPSHOT</version>
 
   <name>Pustefix Plugins</name>
   <description>Pustefix Plugins</description>
@@ -27,6 +27,7 @@
     <module>pustefix-xslt-plugin</module>
     <module>pustefix-agent-plugin</module>
     <module>pustefix-resourceindex-plugin</module>
+    <module>pustefix-pagelist-plugin</module>
   </modules>
 
   <profiles>

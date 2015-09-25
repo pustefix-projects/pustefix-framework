@@ -103,5 +103,35 @@
         </tbody>
       </table>
     </section>
+    <section xml:id="tooling.mavenplugins">
+       <title>Maven plugins</title>
+       <para>Pustefix provides various Maven plugins, e.g. for generating code (IWrapper beans, Status code constants), for generating 
+             all pages of the view (XSL stylesheets) and other optional plugins.</para>
+       <section xml:id="tooling.mavenplugins.pagelist">
+          <title>Pustefix Pagelist Plugin</title>
+          <para>This plugin generates a complete list with the display names of all renderable pages (respecting alias names, page alternatives, languages and tenants).</para>
+          <para>By default the plugin will be bound to the <literal>generate-test-resources</literal> phase and will write the pagelist to 
+                <literal>target/generated-test-resources</literal>.</para>
+          <programlisting language="xml"><![CDATA[      <plugin>
+        <groupId>org.pustefixframework.maven.plugins</groupId>
+        <artifactId>pustefix-pagelist-plugin</artifactId>
+        <version>${pustefix.version}</version>
+        <executions>
+          <execution>
+            <goals>
+              <goal>generate</goal>
+            </goals>
+          </execution>
+        </executions>
+      </plugin>]]></programlisting>
+           <para>The plugin usage can be customized using the following configuration options (here showing the default values):</para>
+           <programlisting language="xml"><![CDATA[      <configuration>
+        <docroot>${basedir}/src/main/webapp</docroot>
+        <mode>prod</mode>
+        <outputDirectory>${project.build.directory}/generated-test-resources</outputDirectory>
+      </configuration>]]></programlisting>
+
+       </section>
+    </section>
       
 </chapter>

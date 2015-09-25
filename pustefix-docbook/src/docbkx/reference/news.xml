@@ -58,4 +58,15 @@
     </para>
   </section>
 
+  <section xml:id="news.0_19_14">
+    <title>What's new in Pustefix 0.19.14</title>
+  
+    <para>Added new Maven plugin for generating a complete list with display names of all renderable pages, e.g. can be used for automatic testing.
+          (see <xref linkend="tooling.mavenplugins.pagelist"/>).
+    </para>
+    <para>Beautified and more SEO-friendly URLs by removing the <literal>__reuse</literal> parameter from redirect URLs (replaced by Spring flash attributes).</para>
+    <para>Pustefix now provides a simple Spring/annotation-based event mechanism. It should replace the deprecated way of coupling <literal>ContextResources</literal>
+          using the <literal>ContextResourceObserver</literal> and <literal>ObservableContextResource</literal> interfaces.</para>
+  </section>
+
 </chapter>

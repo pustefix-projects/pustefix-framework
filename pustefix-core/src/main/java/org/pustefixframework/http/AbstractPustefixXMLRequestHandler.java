@@ -22,6 +22,7 @@ import java.io.File;
 import java.io.IOException;
 import java.io.OutputStream;
 import java.io.OutputStreamWriter;
+import java.io.PrintWriter;
 import java.net.SocketException;
 import java.security.DigestOutputStream;
 import java.security.MessageDigest;
@@ -429,22 +430,24 @@ public abstract class AbstractPustefixXMLRequestHandler extends AbstractPustefix
 //                }
                 sessionCleaner.storeSPDocument(spdoc, storeddoms);
                 
-                //Store reuse parameter in Spring's flash attributes
-                FlashMap flashMap = RequestContextUtils.getOutputFlashMap(preq.getRequest());
-                if(flashMap != null) {
-                    flashMap.put("__reuse", String.valueOf(spdoc.getTimestamp()));
-                    String location = spdoc.getResponseHeader().get("Location");
-                    UriComponents uriComponents = UriComponentsBuilder.fromUriString(location).build();
-                    flashMap.setTargetRequestPath(uriComponents.getPath());
-                    flashMap.addTargetRequestParams(uriComponents.getQueryParams());
-                    flashMap.startExpirationPeriod(30); //30 seconds for redirect request to return
-                    FlashMapManager flashMapManager = RequestContextUtils.getFlashMapManager(preq.getRequest());
-                    if (flashMapManager == null) {
-                        throw new IllegalStateException("FlashMapManager not found despite output FlashMap has been set");
+                if(spdoc.getReuse()) {
+                    //Store reuse parameter in Spring's flash attributes
+                    FlashMap flashMap = RequestContextUtils.getOutputFlashMap(preq.getRequest());
+                    if(flashMap != null) {
+                        flashMap.put("__reuse", String.valueOf(spdoc.getTimestamp()));
+                        String location = spdoc.getResponseHeader().get("Location");
+                        UriComponents uriComponents = UriComponentsBuilder.fromUriString(location).build();
+                        flashMap.setTargetRequestPath(uriComponents.getPath());
+                        flashMap.addTargetRequestParams(uriComponents.getQueryParams());
+                        flashMap.startExpirationPeriod(30); //30 seconds for redirect request to return
+                        FlashMapManager flashMapManager = RequestContextUtils.getFlashMapManager(preq.getRequest());
+                        if (flashMapManager == null) {
+                            throw new IllegalStateException("FlashMapManager not found despite output FlashMap has been set");
+                        }
+                        flashMapManager.saveOutputFlashMap(flashMap, preq.getRequest(), res);
+                    } else {
+                        LOGGER.warn("No output FlashMap found. Flash attribute '__reuse' wont't work.");
                     }
-                    flashMapManager.saveOutputFlashMap(flashMap, preq.getRequest(), res);
-                } else {
-                    LOGGER.warn("No output FlashMap found. Flash attribute '__reuse' wont't work.");
                 }
                 
             } else {
@@ -689,13 +692,23 @@ public abstract class AbstractPustefixXMLRequestHandler extends AbstractPustefix
     }
 
     private void sendError(SPDocument spdoc, HttpServletResponse res) throws IOException {
-         String errtxt;
-         int err = spdoc.getResponseError();
-         setCookies(spdoc,res);
-         if ((errtxt = spdoc.getResponseErrorText()) != null) {
-             res.sendError(err, errtxt);
+
+         int statusCode = spdoc.getResponseError();
+         String errorMessage = spdoc.getResponseErrorText();
+         setCookies(spdoc, res);
+         if (spdoc.isResponseErrorPageOverride()) {
+             res.setStatus(statusCode);
+             res.setContentType("text/plain");
+             res.setCharacterEncoding(getServletEncoding());
+             if (errorMessage != null) {
+                 PrintWriter writer = res.getWriter();
+                 writer.write(errorMessage);
+                 writer.close();
+             }
+         } else if (errorMessage != null) {
+             res.sendError(statusCode, errorMessage);
          } else {
-             res.sendError(err);
+             res.sendError(statusCode);
          }
     }
     
@@ -731,6 +744,7 @@ public abstract class AbstractPustefixXMLRequestHandler extends AbstractPustefix
             LOGGER.info("*** Reusing UI: " + spdoc.getPagename());
             modified_or_no_etag = false;
         } else {
+            res.setStatus(spdoc.getResponseStatus());
             output.writeTo(res.getOutputStream());
         }
         

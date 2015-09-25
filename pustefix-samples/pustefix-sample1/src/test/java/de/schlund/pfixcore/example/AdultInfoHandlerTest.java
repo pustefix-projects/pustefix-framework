@@ -20,6 +20,7 @@ package de.schlund.pfixcore.example;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
+import org.pustefixframework.eventbus.EventBus;
 
 import de.schlund.pfixcore.example.iwrapper.AdultInfo;
 import de.schlund.pfixxml.config.GlobalConfig;
@@ -44,6 +45,7 @@ public class AdultInfoHandlerTest {
     public void testHandler() throws Exception {
         
         ContextAdultInfo info = new ContextAdultInfo();
+        info.eventBus = new EventBus();
         
         //If ContextResources are retrieved via the ContextResourceManager,
         //you have to set up a mock object and add the required ContextResources:
