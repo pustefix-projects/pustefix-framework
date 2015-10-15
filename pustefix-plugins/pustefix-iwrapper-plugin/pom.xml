@@ -5,7 +5,7 @@
   <parent>
     <groupId>org.pustefixframework.maven.plugins</groupId>
     <artifactId>pustefix-plugins</artifactId>
-    <version>0.19.17-SNAPSHOT</version>
+    <version>0.19.17</version>
     <relativePath>../pom.xml</relativePath>
   </parent>
 
@@ -13,7 +13,7 @@
   
   <groupId>org.pustefixframework.maven.plugins</groupId>
   <artifactId>pustefix-iwrapper-plugin</artifactId>
-  <version>0.19.17-SNAPSHOT</version>
+  <version>0.19.17</version>
   
   <packaging>maven-plugin</packaging>
   
@@ -36,7 +36,7 @@
     <dependency>
       <groupId>org.pustefixframework</groupId>
       <artifactId>pustefix-core</artifactId>
-      <version>0.19.17-SNAPSHOT</version>
+      <version>0.19.17</version>
     </dependency>
     <dependency>
       <groupId>org.apache.ant</groupId>
