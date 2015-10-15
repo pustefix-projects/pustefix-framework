@@ -69,4 +69,18 @@
           using the <literal>ContextResourceObserver</literal> and <literal>ObservableContextResource</literal> interfaces.</para>
   </section>
 
+  <section xml:id="news.0_19_15">
+    <title>What's new in Pustefix 0.19.15</title>
+    <para>Added support for rendering pages with non-200 status code (see <literal>SPDocument.setResponseStatus()</literal>) and 
+          overriding declared error pages (see <literal>SPDocument.setResponseErrorPageOverride()</literal>).
+    </para>
+  </section>
+
+  <section xml:id="news.0_19_17">
+    <title>What's new in Pustefix 0.19.17</title>
+    <para>Added support for Spring profiles. Pustefix now by default activates a profile for the current execution environment mode
+          (see <xref linkend="configuration.spring.profiles"/>).
+    </para>
+  </section>
+
 </chapter>

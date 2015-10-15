@@ -71,7 +71,7 @@ public class PustefixWebApplicationContext extends AbstractRefreshableWebApplica
 
     @Override
     protected void loadBeanDefinitions(DefaultListableBeanFactory beanFactory) throws IOException, BeansException {
-
+        
         //disable bean definition overriding as it turned out to be more cumbersome
         //finding errors caused by this feature, than that it's bringing real benefit
         //beanFactory.setAllowBeanDefinitionOverriding(false);
@@ -87,6 +87,9 @@ public class PustefixWebApplicationContext extends AbstractRefreshableWebApplica
             }
         }
 
+        //activate mode profile (using Pustefix execution environment mode as profile name)
+        getEnvironment().addActiveProfile(EnvironmentProperties.getProperties().getProperty("mode"));
+        
         if(LOG.isInfoEnabled()) {
             Properties props = EnvironmentProperties.getProperties();
             LOG.info("Initializing Pustefix with runtime properties: " +
@@ -107,6 +110,8 @@ public class PustefixWebApplicationContext extends AbstractRefreshableWebApplica
         XmlBeanDefinitionReader springReader = new XmlBeanDefinitionReader(beanFactory);
         springReader.setResourceLoader(this);
         springReader.setEntityResolver(new ResourceEntityResolver(this));
+        springReader.setEnvironment(getEnvironment());
+        
 
         PustefixProjectBeanDefinitionReader pustefixReader = new PustefixProjectBeanDefinitionReader(beanFactory);
         pustefixReader.setResourceLoader(this);

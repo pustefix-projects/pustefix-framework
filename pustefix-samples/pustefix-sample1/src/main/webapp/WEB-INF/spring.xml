@@ -3,11 +3,11 @@
        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
        xmlns:aop="http://www.springframework.org/schema/aop"
        xmlns:context="http://www.springframework.org/schema/context"
-       xsi:schemaLocation="http://www.springframework.org/schema/beans 
-                           http://www.springframework.org/schema/beans/spring-beans-4.0.xsd 
-                           http://www.springframework.org/schema/aop 
+       xsi:schemaLocation="http://www.springframework.org/schema/beans
+                           http://www.springframework.org/schema/beans/spring-beans-4.0.xsd
+                           http://www.springframework.org/schema/aop
                            http://www.springframework.org/schema/aop/spring-aop-4.0.xsd
-                           http://www.springframework.org/schema/context 
+                           http://www.springframework.org/schema/context
                            http://www.springframework.org/schema/context/spring-context-4.0.xsd">
 
   <context:annotation-config/>
@@ -57,11 +57,11 @@
   <bean id="enctest_handler" class="de.schlund.pfixcore.example.EncodingTestHandler"/>
 
   <bean class="de.schlund.pfixcore.example.InvalidationWebRequestInterceptor" />
-  
+   
   <bean id="jaxbTest" class="de.schlund.pfixcore.example.JAXBTest" scope="session">
     <aop:scoped-proxy/>
   </bean>
-
+  
   <!-- 
   <bean class="org.pustefixframework.web.mvc.AnnotationMethodHandlerAdapterConfig">
     <property name="customArgumentResolvers">
@@ -72,5 +72,12 @@
     </property>
   </bean> 
   -->
+   
+  <beans profile="test">
+    <bean id="jaxbTest" class="de.schlund.pfixcore.example.JAXBTest" scope="session">
+      <aop:scoped-proxy/>
+      <property name="number" value="5"/>
+    </bean>
+  </beans>
 
 </beans>
