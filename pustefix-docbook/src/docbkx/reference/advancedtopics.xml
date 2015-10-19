@@ -2396,6 +2396,59 @@ public class Account {
     </section>
   </section>
 
+  <section xml:id="advanced.eventbus">
+    <title>The Pustefix EventBus</title>
+    <para>
+      Pustefix provides a simple Spring/annotation-based event mechanism following the publish-subscribe principle.
+    </para>
+    <para>
+      The event system is enabled by adding two bean definitions to the Spring configuration. A <literal>BeanPostProcessor</literal> for
+      automatic registration of event subscribers (based on method annotations) and an <literal>EventBus</literal> responsible for 
+      publishing events to their subscribers.
+    </para>
+<programlisting language="xml"><![CDATA[
+  <bean id="eventPostProcessor" class="org.pustefixframework.eventbus.EventSubscriberBeanPostProcessor"/>
+  <bean id="eventBus" class="org.pustefixframework.eventbus.EventBus"/>
+]]></programlisting>
+    <para>
+      A Spring bean can subcribe to an event by adding the <literal>@Subscribe</literal> method annotation. The method signature requires
+      a single parameter of the event's type (subtypes or interfaces are supported too).
+    </para>
+<programlisting language="java"><![CDATA[
+import org.pustefixframework.eventbus.Subscribe;
+
+public class MySubscriberBean {
+
+    @Subscribe
+    public void listen(MyEvent event) {
+        //process event 
+    }
+
+}
+]]></programlisting>
+    <para>
+      An event can be published by calling the <literal>publish</literal> method at the <literal>EventBus</literal>,
+      The passed event object can be of an arbitrary type. The <literal>EventBus</literal> will immediately publish the
+      event to all registered listeners, i.e. to all listeners which are registered for the event type, a subtype or
+      one of its implemented interfaces.
+    </para>
+<programlisting language="java"><![CDATA[
+import org.pustefixframework.eventbus.EventBus;
+
+public class MyPublisherBean {
+    
+    @Autowired
+    EventBus eventBus;
+    
+    public void doSomething() {
+        //do something
+        eventBus.publish(new MyEvent());
+    }
+    
+}
+]]></programlisting>
+  </section>
+
   <section xml:id="advanced.editor">
     <title>The Pustefix Editor</title>
     <para>
