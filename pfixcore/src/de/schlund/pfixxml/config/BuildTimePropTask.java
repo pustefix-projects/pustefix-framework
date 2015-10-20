@@ -78,9 +78,9 @@ public class BuildTimePropTask extends Task {
             props.setProperty("fqdn", fqdn);
             props.setProperty("uid", uid);
             
-            Hashtable<String, String> antProps = this.getProject().getProperties();
+            Hashtable<String, Object> antProps = this.getProject().getProperties();
             for (String key : antProps.keySet()) {
-                props.setProperty("__antprop_" + key, antProps.get(key));
+                props.setProperty("__antprop_" + key, (String)antProps.get(key));
             }
             
             props.store(new FileOutputStream(file),

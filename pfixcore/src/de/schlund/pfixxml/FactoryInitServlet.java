@@ -179,9 +179,11 @@ public class FactoryInitServlet extends HttpServlet {
                 warMode = true;
             }
         }
-
         // Setup global configuration before doing anything else
         if (docrootstr != null) {
+            if(!docrootstr.endsWith("/")) {
+                docrootstr += "/";
+            }
             GlobalConfigurator.setDocroot(docrootstr);
         }
         if (warMode) {
