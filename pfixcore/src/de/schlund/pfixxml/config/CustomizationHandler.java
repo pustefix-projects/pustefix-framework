@@ -22,6 +22,7 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Properties;
 
+import javax.servlet.ServletContext;
 import javax.xml.namespace.QName;
 import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.ParserConfigurationException;
@@ -53,6 +54,8 @@ public class CustomizationHandler extends DefaultHandler {
     private final static String DEFAULT_CHOOSE_ELEMENTNAME = "choose";
 
     private final static String DEFAULT_DOCROOT_ELEMENTNAME = "docroot";
+    
+    private final static String DEFAULT_LOGROOT_ELEMENTNAME = "logroot";
 
     private final static String DEFAULT_FQDN_ELEMENTNAME = "fqdn";
 
@@ -102,6 +105,8 @@ public class CustomizationHandler extends DefaultHandler {
 
     private String docroot;
 
+    private String logroot;
+    
     private String fqdn;
 
     private String machine;
@@ -115,6 +120,8 @@ public class CustomizationHandler extends DefaultHandler {
     private String elementChoose = DEFAULT_CHOOSE_ELEMENTNAME;
 
     private String elementDocroot = DEFAULT_DOCROOT_ELEMENTNAME;
+    
+    private String elementLogroot = DEFAULT_LOGROOT_ELEMENTNAME;
 
     private String elementFqdn = DEFAULT_FQDN_ELEMENTNAME;
 
@@ -135,6 +142,17 @@ public class CustomizationHandler extends DefaultHandler {
         this(targetHandler, DEFAULT_CUS_NS);
     }
 
+    public CustomizationHandler(DefaultHandler targetHandler, ServletContext servletContext) {
+    	this(targetHandler, DEFAULT_CUS_NS);
+    	String logrootParam = servletContext.getInitParameter("logroot");
+    	if(logrootParam != null) {
+    		logroot = logrootParam;
+    		if(!logroot.endsWith("/")) {
+    			logroot += "/";
+    		}
+    	}
+    }
+    
     /**
      * Creates a new customization handler using the supplied arguments
      * 
@@ -213,6 +231,7 @@ public class CustomizationHandler extends DefaultHandler {
         this.xpfac.setXPathVariableResolver(new PropertiesVariableResolver(
                 props));
         this.docroot = docroot;
+        this.logroot = docroot + "servletconf/log/";
         this.fqdn = props.getProperty("fqdn");
         this.machine = props.getProperty("machine");
         this.uid = props.getProperty("uid");
@@ -312,6 +331,14 @@ public class CustomizationHandler extends DefaultHandler {
                     && uri.equals(this.namespaceContent)) {
                 if (docroot != null) {
                     targetHandler.characters(docroot.toCharArray(), 0, docroot.length());
+                } else {
+                    throw new SAXException("Element \"" + qName + "\" is not allowed in packed WAR mode. Please change your configuration to use relative paths instead.");
+                }
+            } else if (this.namespaceContent != null
+                    && localName.equals(this.elementLogroot)
+                    && uri.equals(this.namespaceContent)) {
+                if (logroot != null) {
+                    targetHandler.characters(logroot.toCharArray(), 0, logroot.length());
                 } else {
                     throw new SAXException("Element \"" + qName + "\" is not allowed in packed WAR mode. Please change your configuration to use relative paths instead.");
                 }

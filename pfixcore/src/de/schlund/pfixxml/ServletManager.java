@@ -395,8 +395,8 @@ public abstract class ServletManager extends HttpServlet {
             LOG.debug("*** Creating PfixServletRequest object.");
             preq = new PfixServletRequestImpl(req, this.getServletManagerConfig().getProperties());
         }
-
-        FactoryInitServlet.tryReloadLog4j();
+        
+        FactoryInitServlet.tryReloadLog4j(getServletContext());
         tryReloadProperties(preq);
 
         // End of initialization. Now we handle all cases where we need to redirect.

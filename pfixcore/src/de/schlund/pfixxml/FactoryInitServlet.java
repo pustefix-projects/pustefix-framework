@@ -29,6 +29,7 @@ import java.util.Properties;
 import java.util.TreeSet;
 
 import javax.servlet.ServletConfig;
+import javax.servlet.ServletContext;
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
@@ -130,7 +131,7 @@ public class FactoryInitServlet extends HttpServlet {
         throw new ServletException("This servlet can't be called interactively");
     }
 
-    public static void tryReloadLog4j() {
+    public static void tryReloadLog4j(ServletContext servletContext) {
         if (log4jconfig != null) {
             FileResource l4jfile = ResourceUtil.getFileResourceFromDocroot(log4jconfig);
             long tmpmtime = l4jfile.lastModified();
@@ -139,7 +140,7 @@ public class FactoryInitServlet extends HttpServlet {
                         + "#### Reloading log4j config ####\n"
                         + "################################\n");
                 try {
-                    configureLog4j(l4jfile);
+                    configureLog4j(l4jfile, servletContext);
                 } catch (FileNotFoundException e) {
                     Logger.getLogger(FactoryInitServlet.class).error(
                             "Reloading log4j config failed!", e);
@@ -223,7 +224,7 @@ public class FactoryInitServlet extends HttpServlet {
 
         synchronized (LOCK) {
             if (!configured) {
-                configureLogging(properties);
+                configureLogging(properties, getServletContext());
 
                 LOG.debug(">>>> LOG4J Init OK <<<<");
                 HashMap to_init = PropertiesUtils.selectProperties(properties,
@@ -278,7 +279,7 @@ public class FactoryInitServlet extends HttpServlet {
         }
     }
 
-    private void configureLogging(Properties properties) throws ServletException {
+    private void configureLogging(Properties properties, ServletContext servletContext) throws ServletException {
         String containerProp = properties.getProperty(PROP_PREFER_CONTAINER_LOGGING);
         if (warMode || (!standaloneMode && (containerProp != null && containerProp.toLowerCase().equals("true")))) {
             ProxyLogUtil.getInstance().configureLog4jProxy();
@@ -290,7 +291,7 @@ public class FactoryInitServlet extends HttpServlet {
             }
             FileResource l4jfile = ResourceUtil.getFileResourceFromDocroot(log4jconfig);
             try {
-                configureLog4j(l4jfile);
+                configureLog4j(l4jfile, servletContext);
             } catch (FileNotFoundException e) {
                 throw new ServletException("File for log4j configuration not found!", e);
             } catch (SAXException e) {
@@ -302,7 +303,7 @@ public class FactoryInitServlet extends HttpServlet {
         }
     }
 
-    private static void configureLog4j(FileResource configFile) throws SAXException, FileNotFoundException, IOException {
+    private static void configureLog4j(FileResource configFile, ServletContext servletContext) throws SAXException, FileNotFoundException, IOException {
         log4jmtime = configFile.lastModified();
         XMLReader xreader = XMLReaderFactory.createXMLReader();
         TransformerFactory tf = SAXTransformerFactory.newInstance();
@@ -318,7 +319,7 @@ public class FactoryInitServlet extends HttpServlet {
             DOMResult dr = new DOMResult();
             th.setResult(dr);
             DefaultHandler dh = new TransformerHandlerAdapter(th);
-            DefaultHandler cushandler = new CustomizationHandler(dh);
+            DefaultHandler cushandler = new CustomizationHandler(dh, servletContext);
             xreader.setContentHandler(cushandler);
             xreader.setDTDHandler(cushandler);
             xreader.setErrorHandler(cushandler);
