@@ -3,6 +3,7 @@
          xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
          xsi:schemaLocation="http://www.pustefix-framework.org/2011/namespace/sitemap 
                              http://www.pustefix-framework.org/2011/namespace/sitemap.xsd">
+                    
                              
     <page name="home">
       <page name="order"/>
@@ -25,9 +26,18 @@
     <page name="geninc"/>
     <page name="invalidate"/>
 
-    <page name="A"/>
-    <page name="B"/>
-    <page name="C"/>
+    <page-group key="smartphones" name="smartphones">
+      <page-group key="private" name="private">
+        <page name="A"/>
+        <page name="B"/>
+      </page-group>
+      <page-group key="business" name="business">
+        <page name="A"/>
+        <page name="B"/>
+      </page-group>
+      <page name="C"/>
+      
+    </page-group>
 
     <page name="testchecks"/>
     

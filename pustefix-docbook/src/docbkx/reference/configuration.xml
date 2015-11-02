@@ -1977,6 +1977,25 @@
       </itemizedlist>
     </section>
 
+    <section xml:id="configuration.spring.profiles">
+       <title>Environment-dependent Spring profiles</title>
+       <para>
+          Pustefix by default activates a Spring profile for the current execution environment mode (using the mode name as profile name).
+          Thus you can easily use bean definition profiles or <literal>@Profile</literal> Java configuration without having to take care of the profile activation.
+       </para>
+<programlisting language="xml"><![CDATA[
+<beans xmlns="http://www.springframework.org/schema/beans">
+   
+   <bean name="mybean" class="mypackage.MyBean"/>
+
+   <beans profile="prod">
+      <bean name="mybean" class="mypackage.MyBeanAlternative"/>
+   </beans>
+
+</beans>
+]]></programlisting>
+    </section>
+
     <section xml:id="configuration.spring.beannames">
       <title>Reserved Spring bean names</title>
       <para>

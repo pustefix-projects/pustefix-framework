@@ -271,7 +271,6 @@ public class SiteMap {
         List<Element> childPages = DOMUtils.getChildElementsByTagName(pageGroupElem, "page");
         for(Element childPage: childPages) {
             Page page = readPage(childPage);
-            page.pageGroups.add(pageGroup);
             pageGroup.pages.add(page);
         }
         return pageGroup;
@@ -650,7 +649,6 @@ public class SiteMap {
         Map<String, String> pageNameToAltKey = new HashMap<String, String>();
         Map<String, PageAlternative> pageAltKeyMap = new LinkedHashMap<String, PageAlternative>();
         PageAlternative defaultPageAlt;
-        List<PageGroup> pageGroups = new ArrayList<>();
         
         Page(String name) {
             this.name = name;
@@ -690,13 +688,13 @@ public class SiteMap {
         }
         
         PageGroup lookup(PageGroup pageGroup, String pageName) {
-            for(Page page: pages) {
+            for(Page page: pageGroup.pages) {
                 if(page.name.equals(pageName)) {
                     return pageGroup;
                 }
             }
-            if(parent != null) {
-                return lookup(parent, pageName);
+            if(pageGroup.parent != null) {
+                return lookup(pageGroup.parent, pageName);
             } else {
                 return null;
             }

@@ -469,7 +469,10 @@ public class TransformerCallback {
         if(pageGroup != null && !pageGroup.isEmpty()) {
             PageGroup group = gen.getSiteMap().getPageGroup(pageGroup);
             if(group != null) {
-                prefix += group.getPrefix();
+                group = group.lookup(pageName);
+                if(group != null) {
+                    prefix += group.getPrefix();
+                }
             }
         }
         //add page flow prefix
