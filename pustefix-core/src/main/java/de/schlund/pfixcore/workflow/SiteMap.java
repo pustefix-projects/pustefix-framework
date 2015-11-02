@@ -85,6 +85,7 @@ public class SiteMap {
     private List<PageGroup> pageGroups = new ArrayList<>();
     private Map<String, PageGroup> prefixToPageGroup = new HashMap<>();
     private Map<String, PageGroup> keyToPageGroup = new HashMap<>();
+    private Map<String, PageGroup> defaultPageGroups = new HashMap<>();
     private boolean provided;
     
     public SiteMap(File siteMapFile, File[] siteMapAliasFiles) throws IOException, SAXException {
@@ -272,6 +273,9 @@ public class SiteMap {
         for(Element childPage: childPages) {
             Page page = readPage(childPage);
             pageGroup.pages.add(page);
+            if(!defaultPageGroups.containsKey(page.name)) {
+                defaultPageGroups.put(page.name, pageGroup);
+            }
         }
         return pageGroup;
     }
@@ -529,6 +533,14 @@ public class SiteMap {
         return pageGroups;
     }
     
+    public PageGroup getDefaultPageGroup(String pageName) {
+        if(pageName == null) {
+            return null;
+        } else {
+            return defaultPageGroups.get(pageName);
+        }
+    }
+    
     public PageGroup getPageGroup(String key) {
         return keyToPageGroup.get(key);
     }
@@ -684,7 +696,11 @@ public class SiteMap {
         }
         
         public PageGroup lookup(String pageName) {
-            return lookup(this, pageName);
+            if(pageName == null) {
+                return null;
+            } else {
+                return lookup(this, pageName);
+            }
         }
         
         PageGroup lookup(PageGroup pageGroup, String pageName) {

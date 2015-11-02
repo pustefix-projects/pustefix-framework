@@ -634,9 +634,12 @@ public class RequestContextImpl implements Cloneable, AuthorizationInterceptor {
             PageGroup pageGroup = (PageGroup)preq.getRequest().getAttribute(AbstractPustefixRequestHandler.REQUEST_ATTR_PAGEGROUP);
             if(pageGroup != null) {
                 pageGroup = pageGroup.lookup(spdoc.getPagename());
-                if(pageGroup != null) {
-                    spdoc.setProperty("pagegroup", pageGroup);
-                }
+            }
+            if(pageGroup == null) {
+                pageGroup = servercontext.getSiteMap().getDefaultPageGroup(spdoc.getPagename());
+            }
+            if(pageGroup != null) {
+                spdoc.setProperty("pagegroup", pageGroup);
             }
             
             if(parentcontext.getTenant() != null) {

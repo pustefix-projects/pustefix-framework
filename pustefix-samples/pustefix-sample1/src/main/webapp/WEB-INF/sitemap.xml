@@ -26,6 +26,8 @@
     <page name="geninc"/>
     <page name="invalidate"/>
 
+    <page name="A" alias="fooA"/>
+
     <page-group key="smartphones" name="smartphones">
       <page-group key="private" name="private">
         <page name="A"/>

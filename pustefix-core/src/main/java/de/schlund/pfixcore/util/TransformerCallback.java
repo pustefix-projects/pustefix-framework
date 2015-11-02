@@ -465,14 +465,17 @@ public class TransformerCallback {
                 (tenant == null && projectInfo.getSupportedLanguages().size() > 1 && !lang.equals(projectInfo.getDefaultLanguage()))) {
             prefix = LocaleUtils.getLanguagePart(lang);
         }
-        //addd page group prefix
+        //add page group prefix
+        PageGroup group = null;
         if(pageGroup != null && !pageGroup.isEmpty()) {
-            PageGroup group = gen.getSiteMap().getPageGroup(pageGroup);
+            group = gen.getSiteMap().getPageGroup(pageGroup);
+        } else {
+            group = gen.getSiteMap().getDefaultPageGroup(pageName);
+        }
+        if(group != null) {
+            group = group.lookup(pageName);
             if(group != null) {
-                group = group.lookup(pageName);
-                if(group != null) {
-                    prefix += group.getPrefix();
-                }
+                prefix += group.getPrefix();
             }
         }
         //add page flow prefix
