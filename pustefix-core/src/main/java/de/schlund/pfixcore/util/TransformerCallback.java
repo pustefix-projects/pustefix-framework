@@ -69,6 +69,7 @@ import de.schlund.pfixcore.workflow.ContextImpl;
 import de.schlund.pfixcore.workflow.IWrapperState;
 import de.schlund.pfixcore.workflow.PageRequest;
 import de.schlund.pfixcore.workflow.RequestTokenAwareState;
+import de.schlund.pfixcore.workflow.SiteMap.PageGroup;
 import de.schlund.pfixcore.workflow.State;
 import de.schlund.pfixcore.workflow.context.AccessibilityChecker;
 import de.schlund.pfixcore.workflow.context.PageFlow;
@@ -440,7 +441,7 @@ public class TransformerCallback {
     }
 
     public static String omitPage(RequestContextImpl requestContext, TargetGenerator gen, String pageName, 
-            String lang, String altKey, String lastFlow, String pageFlow) throws Exception {
+            String lang, String altKey, String lastFlow, String pageFlow, String pageGroup) throws Exception {
         try {
             ContextImpl context = requestContext.getParentContext();
             Tenant tenant = context.getTenant();
@@ -448,7 +449,7 @@ public class TransformerCallback {
             String defaultPage = context.getContextConfig().getDefaultPage(context.getVariant());
             PageFlow flow = requestContext.getPageFlow(pageName, pageFlow == null ? lastFlow : pageFlow);
             return omitPage(gen, pageName, lang, altKey, tenant, projectInfo, defaultPage, 
-                    flow == null || !flow.isPathPrefix() ? null:flow.getRootName());
+                    flow == null || !flow.isPathPrefix() ? null:flow.getRootName(), pageGroup);
         } catch (Exception x) {
             ExtensionFunctionUtils.setExtensionFunctionError(x);
             throw x;
@@ -456,13 +457,20 @@ public class TransformerCallback {
     }
 
     private static String omitPage(TargetGenerator gen, String pageName, String lang, String altKey, Tenant tenant, 
-            ProjectInfo projectInfo, String defaultPage, String pageFlow) throws Exception {
+            ProjectInfo projectInfo, String defaultPage, String pageFlow, String pageGroup) throws Exception {
         
         //add language prefix
         String prefix = "";
         if((tenant != null && !lang.equals(tenant.getDefaultLanguage())) ||
                 (tenant == null && projectInfo.getSupportedLanguages().size() > 1 && !lang.equals(projectInfo.getDefaultLanguage()))) {
             prefix = LocaleUtils.getLanguagePart(lang);
+        }
+        //addd page group prefix
+        if(pageGroup != null && !pageGroup.isEmpty()) {
+            PageGroup group = gen.getSiteMap().getPageGroup(pageGroup);
+            if(group != null) {
+                prefix += group.getPrefix();
+            }
         }
         //add page flow prefix
         if(pageFlow != null) {
@@ -554,7 +562,7 @@ public class TransformerCallback {
                 Element tenantElem = tenant.toXML(root);
                 String domainPrefix = tenantToDomainPrefix.get(tenant);
                 String prefixedServerName = domainPrefix + "." + serverName;
-                String page = omitPage(gen, pageName, tenant.getDefaultLanguage(), null, tenant, projectInfo, defaultPage, flowName);
+                String page = omitPage(gen, pageName, tenant.getDefaultLanguage(), null, tenant, projectInfo, defaultPage, flowName, null);
                 try {
                     //check if prefixed servername can be resolved by DNS, otherwise
                     //use servername without prefix and pass tenant as parameter

@@ -82,6 +82,9 @@ public class SiteMap {
     private Map<String, Page> pageAliasToPage = new HashMap<String, Page>();
     private Map<String, String> pageFlowToPrefix = new HashMap<>();
     private Map<String, String> prefixToPageFlow = new HashMap<>();
+    private List<PageGroup> pageGroups = new ArrayList<>();
+    private Map<String, PageGroup> prefixToPageGroup = new HashMap<>();
+    private Map<String, PageGroup> keyToPageGroup = new HashMap<>();
     private boolean provided;
     
     public SiteMap(File siteMapFile, File[] siteMapAliasFiles) throws IOException, SAXException {
@@ -230,6 +233,13 @@ public class SiteMap {
     }
     
     private void readSiteMap(Element siteMapElem) {
+        List<Element> pageGroupElems = DOMUtils.getChildElementsByTagName(siteMapElem, "page-group");
+        for(Element pageGroupElem: pageGroupElems) {
+            PageGroup pageGroup = readPageGroup(pageGroupElem, null);
+            pageGroups.add(pageGroup);
+            prefixToPageGroup.put(pageGroup.name, pageGroup);
+            keyToPageGroup.put(pageGroup.key, pageGroup);
+        }
         List<Element> pageElems = DOMUtils.getChildElementsByTagName(siteMapElem, "page");
         for(Element pageElem: pageElems) {
             Page page = readPage(pageElem);
@@ -244,6 +254,27 @@ public class SiteMap {
             	prefixToPageFlow.put(prefix, name);
             }
         }
+    }
+    
+    private PageGroup readPageGroup(Element pageGroupElem, PageGroup parentPageGroup) {
+        PageGroup pageGroup = new PageGroup();
+        pageGroup.key = pageGroupElem.getAttribute("key").trim();
+        pageGroup.name = pageGroupElem.getAttribute("name").trim();
+        pageGroup.parent = parentPageGroup;
+        List<Element> childGroups = DOMUtils.getChildElementsByTagName(pageGroupElem, "page-group");
+        for(Element childGroup: childGroups) {
+            PageGroup subGroup = readPageGroup(childGroup, pageGroup);
+            pageGroup.pageGroups.add(subGroup);
+            prefixToPageGroup.put(subGroup.name, subGroup);
+            keyToPageGroup.put(subGroup.key, subGroup);
+        }
+        List<Element> childPages = DOMUtils.getChildElementsByTagName(pageGroupElem, "page");
+        for(Element childPage: childPages) {
+            Page page = readPage(childPage);
+            page.pageGroups.add(pageGroup);
+            pageGroup.pages.add(page);
+        }
+        return pageGroup;
     }
     
     private Page readPage(Element pageElem) {
@@ -495,6 +526,37 @@ public class SiteMap {
     	}
     }
     
+    public List<PageGroup> getPageGroups() {
+        return pageGroups;
+    }
+    
+    public PageGroup getPageGroup(String key) {
+        return keyToPageGroup.get(key);
+    }
+    
+    public PageGroup getPageGroup(String alias, String lang) {
+        
+        //TODO: language alias support
+        PageGroup pageGroup = null;
+        String[] groups = alias.split("/");
+        if(groups.length > 0) {
+            pageGroup = prefixToPageGroup.get(groups[0]);
+            if(pageGroup != null) {
+                if(groups.length > 1) {
+                    for(int i = 1; i < groups.length; i++) {
+                        pageGroup = pageGroup.getPageGroup(groups[i]);
+                        if(pageGroup == null) {
+                            return null;
+                        }
+                    }
+                }
+            }
+        }
+        return pageGroup;
+    } 
+    
+    
+    
     public PageLookupResult getPageName(String alias, String lang) {
         String aliasPageName = alias;
         String page = null;
@@ -588,6 +650,7 @@ public class SiteMap {
         Map<String, String> pageNameToAltKey = new HashMap<String, String>();
         Map<String, PageAlternative> pageAltKeyMap = new LinkedHashMap<String, PageAlternative>();
         PageAlternative defaultPageAlt;
+        List<PageGroup> pageGroups = new ArrayList<>();
         
         Page(String name) {
             this.name = name;
@@ -604,6 +667,52 @@ public class SiteMap {
     	
     }
     
+    public class PageGroup {
+        
+        public String key;
+        public String name;
+        public PageGroup parent;
+        
+        public List<PageGroup> pageGroups = new ArrayList<>();
+        List<Page> pages = new ArrayList<>();
+
+        PageGroup getPageGroup(String name) {
+            for(PageGroup pageGroup: pageGroups) {
+                if(pageGroup.name.equals(name)) {
+                    return pageGroup;
+                }
+            }
+            return null;
+        }
+        
+        public PageGroup lookup(String pageName) {
+            return lookup(this, pageName);
+        }
+        
+        PageGroup lookup(PageGroup pageGroup, String pageName) {
+            for(Page page: pages) {
+                if(page.name.equals(pageName)) {
+                    return pageGroup;
+                }
+            }
+            if(parent != null) {
+                return lookup(parent, pageName);
+            } else {
+                return null;
+            }
+        }
+        
+        public String getPrefix() {
+            String prefix = null;
+            PageGroup group = this;
+            while(group != null) {
+                prefix = group.name + (prefix == null ? "" : "/" + prefix);
+                group = group.parent;
+            }
+            return prefix;
+        }
+          
+    }
     
     public class PageLookupResult {
         

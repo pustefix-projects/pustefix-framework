@@ -60,6 +60,7 @@ import de.schlund.pfixcore.workflow.ContextInterceptor;
 import de.schlund.pfixcore.workflow.PageMap;
 import de.schlund.pfixcore.workflow.PageRequest;
 import de.schlund.pfixcore.workflow.PageRequestStatus;
+import de.schlund.pfixcore.workflow.SiteMap.PageGroup;
 import de.schlund.pfixcore.workflow.SiteMap.PageLookupResult;
 import de.schlund.pfixcore.workflow.State;
 import de.schlund.pfixcore.workflow.VariantManager;
@@ -627,6 +628,14 @@ public class RequestContextImpl implements Cloneable, AuthorizationInterceptor {
                     spdoc.getDocument().getDocumentElement().setAttribute("trigger", "direct");
                 } else if(StateUtil.isPageFlowRunning(getParentContext())) {
                     spdoc.getDocument().getDocumentElement().setAttribute("trigger", "flow");
+                }
+            }
+            
+            PageGroup pageGroup = (PageGroup)preq.getRequest().getAttribute(AbstractPustefixRequestHandler.REQUEST_ATTR_PAGEGROUP);
+            if(pageGroup != null) {
+                pageGroup = pageGroup.lookup(spdoc.getPagename());
+                if(pageGroup != null) {
+                    spdoc.setProperty("pagegroup", pageGroup);
                 }
             }
             

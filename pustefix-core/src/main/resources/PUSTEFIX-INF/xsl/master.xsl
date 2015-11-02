@@ -169,6 +169,7 @@
       
       <ixsl:param name="__lf"/>
       <ixsl:param name="pageflow"/>
+      <ixsl:param name="pageGroup"/>
       
       <ixsl:param name="tenant"><xsl:value-of select="$tenant"/></ixsl:param>
       <ixsl:param name="lang"><xsl:value-of select="$lang"/></ixsl:param>

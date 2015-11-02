@@ -66,6 +66,7 @@ import org.springframework.web.context.ServletContextAware;
 
 import de.schlund.pfixcore.workflow.PageMap;
 import de.schlund.pfixcore.workflow.SiteMap;
+import de.schlund.pfixcore.workflow.SiteMap.PageGroup;
 import de.schlund.pfixcore.workflow.SiteMap.PageLookupResult;
 import de.schlund.pfixcore.workflow.State;
 import de.schlund.pfixxml.LanguageInfo;
@@ -110,6 +111,7 @@ public abstract class AbstractPustefixRequestHandler implements SessionTrackingS
     public static final String REQUEST_ATTR_PAGE_ALTERNATIVE = "__PFX_PAGE_ALTERNATIVE__";
     public static final String REQUEST_ATTR_PAGE_ADDITIONAL_PATH = "__PFX_PAGE_ADDITIONAL_PATH__";
     public static final String REQUEST_ATTR_PAGEFLOW = "__PFX_PAGEFLOW__";
+    public static final String REQUEST_ATTR_PAGEGROUP = "__PFX_PAGEGROUP__";
     
     private static final IPRangeMatcher privateIPRange = new IPRangeMatcher("10.0.0.0/8", "169.254.0.0/16", 
             "172.16.0.0/12", "192.168.0.0/16", "fc00::/7");
@@ -676,6 +678,11 @@ public abstract class AbstractPustefixRequestHandler implements SessionTrackingS
             }
         }    
         
+        pageName = resolvePageGroup(pageName, request);
+        if(pageName == null) {
+            return null;
+        }
+        
         pageName = resolvePrefix(pageName, request);
         if(pageName == null) {
             return null;
@@ -699,6 +706,10 @@ public abstract class AbstractPustefixRequestHandler implements SessionTrackingS
         } else {
             return res.getPageName();
         }
+    }
+    
+    protected String resolvePageGroup(final String pageAlias, final HttpServletRequest request) {
+        return pageAlias;
     }
     
     protected String resolvePrefix(final String pageAlias, final HttpServletRequest request) {
@@ -792,8 +803,8 @@ public abstract class AbstractPustefixRequestHandler implements SessionTrackingS
     						pathPrefix = langPart + "/";
     					}
     					String alias = siteMap.getPageFlowAlias(registeredPrefix, supportedLanguage);
-    					uris.add("/" + pathPrefix + registeredPrefix + "/**");
-    					uris.add("/" + pathPrefix + registeredPrefix);
+    					uris.add("/" + pathPrefix + alias + "/**");
+    					uris.add("/" + pathPrefix + alias);
     				}
     			}
     		} else if(languageInfo.getSupportedLanguages().size() > 1) {

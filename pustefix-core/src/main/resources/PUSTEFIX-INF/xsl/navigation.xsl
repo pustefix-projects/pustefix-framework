@@ -203,6 +203,7 @@
           </xsl:when>
         </xsl:choose>
       </xsl:with-param>
+      <xsl:with-param name="pagegroup" select="@pagegroup"/>
     </xsl:call-template>
   </xsl:template>
 
@@ -254,6 +255,7 @@
     <xsl:param name="popupfeatures"/>
     <xsl:param name="popupid"/>
     <xsl:param name="altkey"/>
+    <xsl:param name="pagegroup"/>
     <xsl:param name="nodata"/>
     <xsl:param name="args"/>
     <xsl:param name="cmds"/>
@@ -301,7 +303,7 @@
       </xsl:choose>
     </xsl:variable>
     <xsl:variable name="fulllink">
-      <ixsl:value-of select="$__contextpath"/>/<ixsl:value-of select="pfx:__omitPage($page_{generate-id()}, $lang, $tmpaltkey_{generate-id()}, '{$pageflow}')"/><ixsl:value-of select="$__sessionIdPath"/>
+      <ixsl:value-of select="$__contextpath"/>/<ixsl:value-of select="pfx:__omitPage($page_{generate-id()}, $lang, $tmpaltkey_{generate-id()}, '{$pageflow}', '{$pagegroup}')"/><ixsl:value-of select="$__sessionIdPath"/>
       <ixsl:variable name="params">
       <xsl:if test="not($frame_impl='')">__frame=<xsl:value-of select="$frame_impl"/></xsl:if>
       <ixsl:if test="not($__lf = '') and pfx:__needsLastFlow($page_{generate-id()},$__lf)">&amp;__lf=<ixsl:value-of select="$__lf"/></ixsl:if>

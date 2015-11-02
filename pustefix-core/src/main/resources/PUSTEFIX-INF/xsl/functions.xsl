@@ -137,7 +137,18 @@
     <xsl:param name="language"><xsl:value-of select="$lang"/></xsl:param>
     <xsl:param name="altKey"><xsl:if test="$page=$pageName and $pageAlternative"><xsl:value-of select="$pageAlternative"/></xsl:if></xsl:param>
     <xsl:param name="pageFlow"/>
-    <func:result select="callback:omitPage($__context__,$__target_gen,$pageName,$language,$altKey,$__lf,$pageFlow)"/>
+    <xsl:param name="pageGroupKey"/>
+    <xsl:variable name="groupKey">
+      <xsl:choose>
+        <xsl:when test="$pageGroupKey = ''">
+          <xsl:value-of select="$pageGroup"/>
+        </xsl:when>
+        <xsl:otherwise>
+          <xsl:value-of select="$pageGroupKey"/>
+        </xsl:otherwise>
+      </xsl:choose>
+    </xsl:variable>
+    <func:result select="callback:omitPage($__context__,$__target_gen,$pageName,$language,$altKey,$__lf,$pageFlow,$groupKey)"/>
   </func:function>
   
   <func:function name="pfx:getHomePage">
