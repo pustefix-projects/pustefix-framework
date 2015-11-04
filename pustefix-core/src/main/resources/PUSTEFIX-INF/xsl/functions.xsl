@@ -162,7 +162,7 @@
   </func:function>
   
   <func:function name="pfx:getDisplayPageName">
-    <func:result select="callback:omitPage($__context__,$__target_gen,$page,$lang,$pageAlternative)"/>
+    <func:result select="callback:omitPage($__context__,$__target_gen,$page,$lang,$pageAlternative,$__lf,$pageflow,$pageGroup)"/>
   </func:function>
   
   <func:function name="pfx:getEnvProperty">
