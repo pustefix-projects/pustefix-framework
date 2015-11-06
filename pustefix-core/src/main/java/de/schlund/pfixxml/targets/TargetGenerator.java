@@ -565,7 +565,7 @@ public class TargetGenerator implements ResourceVisitor, ServletContextAware, In
         for(int i = 0; i < pageNodes.getLength(); i++) {
             Element pageElem = (Element)pageNodes.item(i);
             String pageName = pageElem.getAttribute("name").trim();
-            Set<String> altKeys = siteMap.getPageAlternativeKeys(pageName);
+            Set<String> altKeys = siteMap.getAllPageAlternativeKeys(pageName);
             if(altKeys != null && !altKeys.isEmpty()) {
                 List<Element> altElems = DOMUtils.getChildElementsByTagName(pageElem, "standardpage-alternative");
                 if(altElems.isEmpty()) {

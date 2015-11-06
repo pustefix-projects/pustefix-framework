@@ -43,8 +43,8 @@ import org.pustefixframework.config.contextxmlservice.ProcessActionPageRequestCo
 import org.pustefixframework.config.contextxmlservice.StateConfig;
 import org.pustefixframework.config.project.ProjectInfo;
 import org.pustefixframework.http.BotDetector;
+import org.pustefixframework.http.PathMapping;
 import org.pustefixframework.util.FrameworkInfo;
-import org.pustefixframework.util.LocaleUtils;
 import org.pustefixframework.util.javascript.JSUtils;
 import org.springframework.beans.factory.NoSuchBeanDefinitionException;
 import org.springframework.cache.interceptor.SimpleKeyGenerator;
@@ -69,7 +69,6 @@ import de.schlund.pfixcore.workflow.ContextImpl;
 import de.schlund.pfixcore.workflow.IWrapperState;
 import de.schlund.pfixcore.workflow.PageRequest;
 import de.schlund.pfixcore.workflow.RequestTokenAwareState;
-import de.schlund.pfixcore.workflow.SiteMap.PageGroup;
 import de.schlund.pfixcore.workflow.State;
 import de.schlund.pfixcore.workflow.context.AccessibilityChecker;
 import de.schlund.pfixcore.workflow.context.PageFlow;
@@ -448,59 +447,23 @@ public class TransformerCallback {
             ProjectInfo projectInfo = context.getProjectInfo();
             String defaultPage = context.getContextConfig().getDefaultPage(context.getVariant());
             PageFlow flow = requestContext.getPageFlow(pageName, pageFlow == null ? lastFlow : pageFlow);
-            return omitPage(gen, pageName, lang, altKey, tenant, projectInfo, defaultPage, 
-                    flow == null || !flow.isPathPrefix() ? null:flow.getRootName(), pageGroup);
+            String flowName = ( flow == null || !flow.isPathPrefix() ? null : flow.getRootName());
+            String defaultLanguage = null;
+            if(tenant != null) {
+                defaultLanguage = tenant.getDefaultLanguage();
+            } else if(tenant == null && projectInfo.getSupportedLanguages().size() > 1) {
+                defaultLanguage = projectInfo.getDefaultLanguage();
+            }
+            return PathMapping.getURLPath(pageName, altKey, pageGroup, flowName, lang, defaultPage, defaultLanguage, gen.getSiteMap());
         } catch (Exception x) {
             ExtensionFunctionUtils.setExtensionFunctionError(x);
             throw x;
         }
     }
 
-    private static String omitPage(TargetGenerator gen, String pageName, String lang, String altKey, Tenant tenant, 
-            ProjectInfo projectInfo, String defaultPage, String pageFlow, String pageGroup) throws Exception {
-        
-        //add language prefix
-        String prefix = "";
-        if((tenant != null && !lang.equals(tenant.getDefaultLanguage())) ||
-                (tenant == null && projectInfo.getSupportedLanguages().size() > 1 && !lang.equals(projectInfo.getDefaultLanguage()))) {
-            prefix = LocaleUtils.getLanguagePart(lang);
-        }
-        //add page group prefix
-        PageGroup group = null;
-        if(pageGroup != null && !pageGroup.isEmpty()) {
-            group = gen.getSiteMap().getPageGroup(pageGroup);
-        } else {
-            group = gen.getSiteMap().getDefaultPageGroup(pageName);
-        }
-        if(group != null) {
-            group = group.lookup(pageName);
-            if(group != null) {
-                prefix += group.getPrefix();
-            }
-        }
-        //add page flow prefix
-        if(pageFlow != null) {
-            if(!prefix.isEmpty()) {
-                prefix += "/";
-            }
-            prefix += gen.getSiteMap().getPageFlowAlias(pageFlow, lang);
-        }
-        if(defaultPage.equals(pageName)) {
-            return prefix;
-        } else {
-            //get page alias
-            String alias = gen.getSiteMap().getAlias(pageName, lang, altKey);
-            if(!prefix.isEmpty()) {
-                return prefix + "/" + alias;
-            } else {
-                return alias;
-            }
-        }
-    }
-
     public static String getPageAlias(TargetGenerator gen, String pageName, String lang) throws Exception {
         try {
-            return gen.getSiteMap().getAlias(pageName, lang);
+            return gen.getSiteMap().getAlias(pageName, lang, null, null);
         } catch (Exception x) {
             ExtensionFunctionUtils.setExtensionFunctionError(x);
             throw x;
@@ -540,7 +503,6 @@ public class TransformerCallback {
             String pageName = requestContext.getCurrentPageRequest().getRootName();
             Tenant currentTenant = requestContext.getParentContext().getTenant();
             ContextImpl context = requestContext.getParentContext();
-            ProjectInfo projectInfo = context.getProjectInfo();
             String defaultPage = context.getContextConfig().getDefaultPage(context.getVariant());
             PageFlow pageFlow = requestContext.getPageFlow(defaultPage, null);
             String flowName = pageFlow != null && pageFlow.isPathPrefix() ? pageFlow.getRootName() : null;
@@ -568,7 +530,8 @@ public class TransformerCallback {
                 Element tenantElem = tenant.toXML(root);
                 String domainPrefix = tenantToDomainPrefix.get(tenant);
                 String prefixedServerName = domainPrefix + "." + serverName;
-                String page = omitPage(gen, pageName, tenant.getDefaultLanguage(), null, tenant, projectInfo, defaultPage, flowName, null);
+                String lang = tenant.getDefaultLanguage();
+                String page = PathMapping.getURLPath(pageName, null, null, flowName, lang, defaultPage, lang, gen.getSiteMap());
                 try {
                     //check if prefixed servername can be resolved by DNS, otherwise
                     //use servername without prefix and pass tenant as parameter

@@ -1,0 +1,57 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<sitemap xmlns="http://www.pustefix-framework.org/2011/namespace/sitemap"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://www.pustefix-framework.org/2011/namespace/sitemap 
+                             http://www.pustefix-framework.org/2011/namespace/sitemap.xsd">
+    
+    <page name="home"/>                
+             
+    <page name="foo"/>
+    <page name="bar" alias="baz"/>
+    
+    <page name="hey">
+      <alt key="ho" name="heyho"/>
+      <alt key="hi" name="hihey"/>
+    </page>
+    <page name="defhey">
+      <alt key="ho" name="defheyho"/>
+      <alt key="hi" name="hidefhey" default="true"/>
+    </page>
+    
+    <page name="x">
+      <alt key="k4" name="x-k4"/>
+    </page>
+    
+    <page-group key="main" name="main">
+      <page-group key="one" name="one">
+        <page name="x">
+          <alt key="k1" name="x-k1" default="true"/>
+          <alt key="k2" name="x-k2"/>
+        </page>
+        <page name="y"/>
+      </page-group>
+      <page-group key="two" name="two">
+        <page name="x">
+          <alt key="k3" name="x-k3"/>
+        </page>
+      </page-group>
+      <page name="z"/>
+    </page-group>
+    
+    <page-group key="key_s" name="group_s">
+      <page name="page_s"/>
+    </page-group>
+    
+    <page-group key="key_m" name="group_m">
+      <page-group key="key_m1" name="group_m1">
+        <page name="page_m"/>
+      </page-group>
+      <page-group key="key_m2" name="group_m2">
+        <page name="page_m"/>
+      </page-group>
+      <page name="page_m"/>
+    </page-group>
+    
+    <pageflow name="flow" alias="myflow"/>
+
+</sitemap>

@@ -69,7 +69,6 @@ import de.schlund.pfixcore.exception.PustefixApplicationException;
 import de.schlund.pfixcore.exception.PustefixCoreException;
 import de.schlund.pfixcore.exception.PustefixRuntimeException;
 import de.schlund.pfixcore.workflow.PageProvider;
-import de.schlund.pfixcore.workflow.SiteMap.PageGroup;
 import de.schlund.pfixxml.IncludePartsInfoParsingException;
 import de.schlund.pfixxml.PfixServletRequest;
 import de.schlund.pfixxml.RenderContext;
@@ -805,9 +804,8 @@ public abstract class AbstractPustefixXMLRequestHandler extends AbstractPustefix
         if(spdoc.getPageAlternative() != null) {
         	paramhash.put("pageAlternative", spdoc.getPageAlternative());
         }
-        PageGroup pageGroup = (PageGroup)spdoc.getProperties().get("pagegroup");
-        if(pageGroup != null) {
-            paramhash.put("pageGroup", pageGroup.name);
+        if(spdoc.getPageGroup() != null) {
+            paramhash.put("pageGroup", spdoc.getPageGroup());
         }
         RenderContext renderContext = RenderContext.create(generator.getXsltVersion());
         paramhash.put("__rendercontext__", renderContext);

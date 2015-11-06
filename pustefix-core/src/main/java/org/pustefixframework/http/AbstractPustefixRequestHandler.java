@@ -66,7 +66,6 @@ import org.springframework.web.context.ServletContextAware;
 
 import de.schlund.pfixcore.workflow.PageMap;
 import de.schlund.pfixcore.workflow.SiteMap;
-import de.schlund.pfixcore.workflow.SiteMap.PageGroup;
 import de.schlund.pfixcore.workflow.SiteMap.PageLookupResult;
 import de.schlund.pfixcore.workflow.State;
 import de.schlund.pfixxml.LanguageInfo;
@@ -678,11 +677,6 @@ public abstract class AbstractPustefixRequestHandler implements SessionTrackingS
             }
         }    
         
-        pageName = resolvePageGroup(pageName, request);
-        if(pageName == null) {
-            return null;
-        }
-        
         pageName = resolvePrefix(pageName, request);
         if(pageName == null) {
             return null;
@@ -699,7 +693,9 @@ public abstract class AbstractPustefixRequestHandler implements SessionTrackingS
         if(res.getPageAlternativeKey() != null) {
             request.setAttribute(REQUEST_ATTR_PAGE_ALTERNATIVE, res.getPageAlternativeKey());
         }
-        
+        if(res.getPageGroup() != null) {
+            request.setAttribute(REQUEST_ATTR_PAGEGROUP, res.getPageGroup());
+        }
         ind = res.getPageName().indexOf('/');
         if(ind > -1) {
             return res.getPageName().substring(0, ind);
@@ -707,11 +703,7 @@ public abstract class AbstractPustefixRequestHandler implements SessionTrackingS
             return res.getPageName();
         }
     }
-    
-    protected String resolvePageGroup(final String pageAlias, final HttpServletRequest request) {
-        return pageAlias;
-    }
-    
+
     protected String resolvePrefix(final String pageAlias, final HttpServletRequest request) {
         return pageAlias;
     }
@@ -749,14 +741,10 @@ public abstract class AbstractPustefixRequestHandler implements SessionTrackingS
                             if(!supportedLanguage.equals(tenant.getDefaultLanguage())) {
                                 pathPrefix = langPart + "/";
                             }
-                            String alias = siteMap.getAlias(registeredPage, supportedLanguage);
                             addUri(uris, "/" + pathPrefix + registeredPage, mvcSuffixes);
-                            addUri(uris, "/" + pathPrefix + alias, mvcSuffixes);
-                            List<String> pageAltAliases = siteMap.getPageAlternativeAliases(registeredPage, supportedLanguage);
-                            if(pageAltAliases != null) {
-                                for(String pageAltAlias: pageAltAliases) {
-                                    addUri(uris, "/" + pathPrefix + pageAltAlias, mvcSuffixes);
-                                }
+                            Set<String> pageAltAliases = siteMap.getAllPageAliases(registeredPage, supportedLanguage);
+                            for(String pageAltAlias: pageAltAliases) {
+                                addUri(uris, "/" + pathPrefix + pageAltAlias, mvcSuffixes);
                             }
                         }
                     }
@@ -767,26 +755,16 @@ public abstract class AbstractPustefixRequestHandler implements SessionTrackingS
                         if(!supportedLanguage.equals(languageInfo.getDefaultLanguage())) {
                             pathPrefix = langPart + "/";
                         }
-                        String alias = siteMap.getAlias(registeredPage, supportedLanguage);
                         addUri(uris, "/" + pathPrefix + registeredPage, mvcSuffixes);
-                        addUri(uris, "/" + pathPrefix + alias, mvcSuffixes);
-                        List<String> pageAltAliases = siteMap.getPageAlternativeAliases(registeredPage, supportedLanguage);
-                        if(pageAltAliases != null) {
-                            for(String pageAltAlias: pageAltAliases) {
-                                addUri(uris, "/" + pathPrefix + pageAltAlias, mvcSuffixes);
-                            }
+                        Set<String> pageAltAliases = siteMap.getAllPageAliases(registeredPage, supportedLanguage);
+                        for(String pageAltAlias: pageAltAliases) {
+                            addUri(uris, "/" + pathPrefix + pageAltAlias, mvcSuffixes);
                         }
                     }
                 } else {
-                	String alias = siteMap.getAlias(registeredPage, null);
-                	if(alias != null && !registeredPage.equals(alias)) {
-                		addUri(uris, "/" + alias, mvcSuffixes);
-                	}
-                    List<String> pageAltAliases = siteMap.getPageAlternativeAliases(registeredPage, null);
-                    if(pageAltAliases != null) {
-                        for(String pageAltAlias: pageAltAliases) {
-                            addUri(uris, "/" + pageAltAlias, mvcSuffixes);
-                        }
+                    Set<String> pageAltAliases = siteMap.getAllPageAliases(registeredPage, null);
+                    for(String pageAltAlias: pageAltAliases) {
+                        addUri(uris, "/" + pageAltAlias, mvcSuffixes);
                     }
                 }
             }

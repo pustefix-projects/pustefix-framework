@@ -179,7 +179,7 @@ public class SiteMapRequestHandler implements UriProvidingHttpRequestHandler, Se
         ((ContextImpl)pustefixContext).setPfixServletRequest(pfxReq);
         
         if(siteMap.isProvided()) {
-            List<String> pageNames = siteMap.getPageNames(true);
+            Set<String> pageNames = siteMap.getPageNames(true);
             for(String page: pageNames) {
                 try {
                     if(pustefixContext.checkIsAccessible(new PageRequest(page))) {
@@ -253,45 +253,30 @@ public class SiteMapRequestHandler implements UriProvidingHttpRequestHandler, Se
     }
     
     private void addURL(String page, Element parent, String lang, boolean defaultLang, String baseUrl, String defaultPage, boolean mobile) {
-        Element urlElem = parent.getOwnerDocument().createElement("url");
-        if(!siteMap.hasDefaultPageAlternative(page)) parent.appendChild(urlElem);
-        Element locElem = parent.getOwnerDocument().createElement("loc");
-        urlElem.appendChild(locElem);
-        String alias;
-        String langPrefix = "";
-        if(lang == null) {
-        	if(page.equals(defaultPage)) {
-        		alias="";
-        	} else {
-        		alias = siteMap.getAlias(page, null);
-        	}
-        } else {
-        	if(page.equals(defaultPage)) {
-        		alias="";
-        	} else {
-        		alias = siteMap.getAlias(page, lang);
-        	}
-            if(!defaultLang) langPrefix = LocaleUtils.getLanguagePart(lang) + "/";
-        }
         
-        locElem.setTextContent(baseUrl + "/" + langPrefix + alias);
-        Element cfElem = parent.getOwnerDocument().createElement("changefreq");
-        urlElem.appendChild(cfElem);
-        cfElem.setTextContent("weekly");
-        Element prioElem = parent.getOwnerDocument().createElement("priority");
-        urlElem.appendChild(prioElem);
-        prioElem.setTextContent("0.5");
-        if(mobile) {
-        	Element mobileElem = parent.getOwnerDocument().createElementNS(NS_SITEMAP_MOBILE, "mobile:mobile");
-        	urlElem.appendChild(mobileElem);
-        }
-        Set<String> pageAlts = siteMap.getPageAlternativeKeys(page);
-        if(pageAlts != null) {
-            for(String pageAltKey: pageAlts) {
-                Element cloned = (Element)urlElem.cloneNode(true);
-                alias = siteMap.getAlias(page, lang, pageAltKey);
-                ((Element)cloned.getFirstChild()).setTextContent(baseUrl + "/" + langPrefix + alias);
-                parent.appendChild(cloned);
+        Set<String> pageAliases = siteMap.getAllPageAliases(page, lang);
+        for(String pageAlias: pageAliases) {
+            Element urlElem = parent.getOwnerDocument().createElement("url");
+            Element locElem = parent.getOwnerDocument().createElement("loc");
+            urlElem.appendChild(locElem);
+            String alias = pageAlias;
+            String langPrefix = "";
+            if(lang != null && !defaultLang) {
+                langPrefix = LocaleUtils.getLanguagePart(lang) + "/";
+            }
+            if(page.equals(defaultPage)) {
+                alias="";
+            } 
+            locElem.setTextContent(baseUrl + "/" + langPrefix + alias);
+            Element cfElem = parent.getOwnerDocument().createElement("changefreq");
+            urlElem.appendChild(cfElem);
+            cfElem.setTextContent("weekly");
+            Element prioElem = parent.getOwnerDocument().createElement("priority");
+            urlElem.appendChild(prioElem);
+            prioElem.setTextContent("0.5");
+            if(mobile) {
+                Element mobileElem = parent.getOwnerDocument().createElementNS(NS_SITEMAP_MOBILE, "mobile:mobile");
+                urlElem.appendChild(mobileElem);
             }
         }
     }

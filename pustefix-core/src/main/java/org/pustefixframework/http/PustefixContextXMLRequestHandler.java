@@ -48,10 +48,10 @@ import de.schlund.pfixcore.scriptedflow.compiler.CompilerException;
 import de.schlund.pfixcore.scriptedflow.vm.Script;
 import de.schlund.pfixcore.scriptedflow.vm.ScriptVM;
 import de.schlund.pfixcore.scriptedflow.vm.VirtualHttpServletRequest;
+import de.schlund.pfixcore.util.StateUtil;
 import de.schlund.pfixcore.workflow.ContextImpl;
 import de.schlund.pfixcore.workflow.ContextInterceptor;
 import de.schlund.pfixcore.workflow.ExtendedContext;
-import de.schlund.pfixcore.workflow.SiteMap.PageGroup;
 import de.schlund.pfixcore.workflow.context.PageFlow;
 import de.schlund.pfixcore.workflow.context.RequestContextImpl;
 import de.schlund.pfixcore.workflow.context.ServerContextImpl;
@@ -251,7 +251,7 @@ public class PustefixContextXMLRequestHandler extends AbstractPustefixXMLRequest
 
             if(spdoc != null) {
                 if(spdoc.getPageAlternative() != null) {
-                    Set<String> pageAltKeys = siteMap.getPageAlternativeKeys(spdoc.getPagename());
+                    Set<String> pageAltKeys = siteMap.getPageAlternativeKeys(spdoc.getPagename(), spdoc.getPageGroup());
                     if(pageAltKeys == null || !pageAltKeys.contains(spdoc.getPageAlternative())) {
                         spdoc.setPageAlternative(null);
                     }
@@ -259,44 +259,35 @@ public class PustefixContextXMLRequestHandler extends AbstractPustefixXMLRequest
             }
             
             if(spdoc != null && !spdoc.isRedirect()) {
-                String expectedPageName = null;
-                boolean isAlias = false;
-                String prefix = "";
+                
+                String prefixedPageFlow = null;
+                String pageFlow = (String)spdoc.getProperties().get("pageflow");
+                if(pageFlow != null) {
+                    PageFlow flow = serverContext.getPageFlowManager().getPageFlowByName(pageFlow, spdoc.getVariant());
+                    if(flow != null && flow.isPathPrefix()) {
+                        prefixedPageFlow = flow.getRootName();
+                    }
+                }
                 Tenant tenant = spdoc.getTenant();
-                if((tenant != null && !spdoc.getLanguage().equals(tenant.getDefaultLanguage())) ||
-                        tenant == null && languageInfo.getSupportedLanguages().size() > 1 && !spdoc.getLanguage().equals(languageInfo.getDefaultLanguage())) {
-                    prefix = LocaleUtils.getLanguagePart(spdoc.getLanguage());
+                String defaultLanguage = null;
+                if(tenant != null) {
+                    defaultLanguage = tenant.getDefaultLanguage();
+                } else if(tenant == null && languageInfo.getSupportedLanguages().size() > 1) {
+                    defaultLanguage = languageInfo.getDefaultLanguage();
                 }
-                PageGroup pageGroup = (PageGroup)spdoc.getProperties().get("pagegroup");
-                if(pageGroup != null) {
-                    if(!prefix.isEmpty()) {
-                        prefix += "/";
-                    }
-                    prefix += pageGroup.getPrefix();
-                }
-            	String pageFlowName = (String)spdoc.getProperties().get("pageflow");
-            	if(pageFlowName != null) {
-            	    PageFlow pageFlow = serverContext.getPageFlowManager().getPageFlowByName(pageFlowName, spdoc.getVariant());
-            	    if(pageFlow != null && pageFlow.isPathPrefix()) {
-            	        if(!prefix.isEmpty()) {
-            	            prefix += "/";
-            	        }
-            	        prefix += siteMap.getPageFlowAlias(pageFlowName, spdoc.getLanguage());
-            	    }
-            	}
-                if(context.getContextConfig().getDefaultPage(context.getVariant()).equals(spdoc.getPagename())) {
-                    expectedPageName = prefix;
-                } else {
-                	String alias = siteMap.getAlias(spdoc.getPagename(), spdoc.getLanguage(), spdoc.getPageAlternative());
-                    if(!prefix.isEmpty()) {
-                        alias = prefix + "/" + alias;
-                    }
-                    expectedPageName = alias;
-                    isAlias = true;
-                }
+                String expectedPageName = PathMapping.getURLPath(
+                        spdoc.getPagename(), 
+                        spdoc.getPageAlternative(), 
+                        spdoc.getPageGroup(),
+                        prefixedPageFlow,
+                        spdoc.getLanguage(), 
+                        context.getContextConfig().getDefaultPage(context.getVariant()), 
+                        defaultLanguage, 
+                        siteMap);
                 if(expectedPageName.equals("")) {
-                	expectedPageName = null;
+                    expectedPageName = null;
                 }
+                
                 String requestedPageName = preq.getRequestedPageName();
                 if( (expectedPageName == null && requestedPageName != null) ||
                     (expectedPageName != null && requestedPageName == null) ||
@@ -347,7 +338,8 @@ public class PustefixContextXMLRequestHandler extends AbstractPustefixXMLRequest
                         }
                         redirectURL += "__lf=" + context.getCurrentPageFlow().getRootName();
                     }
-                    spdoc.setRedirect(redirectURL, isAlias);
+                    boolean permanent = StateUtil.isDirectTrigger(context, preq) && spdoc.getPagename().equals(preq.getPageName());
+                    spdoc.setRedirect(redirectURL, permanent);
                     spdoc.setReuse(true);
                 }
             }
@@ -471,54 +463,8 @@ public class PustefixContextXMLRequestHandler extends AbstractPustefixXMLRequest
             }
         }
         
-        for(PageGroup pageGroup: siteMap.getPageGroups()) {
-            addPageURIs(pageGroup, null, uris);
-        }
-        
         String[] uriArr = uris.toArray(new String[uris.size()]);
         return uriArr;
-    }
-    
-    private void addPageURIs(PageGroup pageGroup, String pageGroupPrefix, SortedSet<String> uris) {
-        if(!tenantInfo.getTenants().isEmpty()) {
-            for(Tenant tenant: tenantInfo.getTenants()) {
-                for(String supportedLanguage: tenant.getSupportedLanguages()) {
-                    String langPart = LocaleUtils.getLanguagePart(supportedLanguage);
-                    String pathPrefix = "";
-                    if(!supportedLanguage.equals(tenant.getDefaultLanguage())) {
-                        pathPrefix = langPart + "/";
-                    }
-                    String alias = (pageGroupPrefix == null ? "" : pageGroupPrefix + "/") + pageGroup.name;
-                    uris.add("/" + pathPrefix + alias + "/**");
-                    uris.add("/" + pathPrefix + alias);
-                    for(PageGroup childGroup:pageGroup.pageGroups) {
-                        addPageURIs(childGroup, alias, uris);
-                    }
-                }
-            }
-        } else if(languageInfo.getSupportedLanguages().size() > 1) {
-            for(String supportedLanguage: languageInfo.getSupportedLanguages()) {
-                String langPart = LocaleUtils.getLanguagePart(supportedLanguage);
-                String pathPrefix = "";
-                if(!supportedLanguage.equals(languageInfo.getDefaultLanguage())) {
-                    pathPrefix = langPart + "/";
-                }
-                String alias = (pageGroupPrefix == null ? "" : pageGroupPrefix + "/") + pageGroup.name;
-                uris.add("/" + pathPrefix + alias + "/**");
-                uris.add("/" + pathPrefix + alias);
-                for(PageGroup childGroup:pageGroup.pageGroups) {
-                    addPageURIs(childGroup, alias, uris);
-                }
-            }
-        } else {
-            String alias = (pageGroupPrefix == null ? "" : pageGroupPrefix + "/") + pageGroup.name;
-            uris.add("/" + alias + "/**");
-            uris.add("/" + alias);
-            for(PageGroup childGroup:pageGroup.pageGroups) {
-                addPageURIs(childGroup, alias, uris);
-            }
-        }
-        
     }
     
     @Override
@@ -556,29 +502,6 @@ public class PustefixContextXMLRequestHandler extends AbstractPustefixXMLRequest
     		}
     	}
     	return prefixes.toArray(new String[prefixes.size()]);
-    }
-    
-    @Override
-    protected String resolvePageGroup(final String pageAlias, final HttpServletRequest request) {
-       
-        String pageName = pageAlias;
-        String lang = (String)request.getAttribute(REQUEST_ATTR_LANGUAGE);
-        PageGroup pageGroup;
-        int ind = pageAlias.length();
-        do {
-            String prefix = pageAlias.substring(0, ind);   
-            pageGroup = siteMap.getPageGroup(prefix, lang);
-            if(pageGroup != null) {
-                request.setAttribute(REQUEST_ATTR_PAGEGROUP, pageGroup);
-                if(pageAlias.length() > ind + 1) {
-                    pageName = pageAlias.substring(ind + 1);
-                } else {
-                    pageName = null;
-                }
-                break;
-            }
-        } while((ind = pageAlias.lastIndexOf('/', ind - 1))  > -1);
-        return pageName;
     }
     
     @Override
