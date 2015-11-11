@@ -42,8 +42,7 @@ public class IPRangeMatcher {
                 if(matchedIPCount.get() < maxCachedIPs) {
                     Boolean old = matchedIPs.putIfAbsent(ip, Boolean.TRUE);
                     if(old == null) {
-                        int cnt = matchedIPCount.incrementAndGet();
-                        System.out.println("COUNT: "+cnt+" "+ip);
+                        matchedIPCount.incrementAndGet();
                     }
                 }
                 return true;
