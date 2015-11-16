@@ -29,6 +29,7 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 import java.util.Stack;
+import java.util.regex.Pattern;
 
 import javax.xml.parsers.SAXParser;
 import javax.xml.parsers.SAXParserFactory;
@@ -254,9 +255,18 @@ public class ConfigurationReader extends DefaultHandler {
                 if(path!=null&&!path.equals("")) globSrvConf.setRequestPath(path);
             }
         } else if(context instanceof ServiceConfig) {
+            ServiceConfig srvConf = (ServiceConfig)context;
             if(localName.equals("webservice")) {
                 resetContext();
-            } 
+            } else if(localName.equals("whitelist")) {
+                String text = getContent();
+                String[] values = text.split("[,\\s]+");
+                List<Pattern> patterns = new ArrayList<>();
+                for(String value: values) {
+                    patterns.add(Pattern.compile(value));
+                }
+                srvConf.setDeserializationWhiteList(patterns);
+            }
         } else if(context instanceof FaultHandler) {
             if(localName.equals("faulthandler")) {
                 FaultHandler faultHandler=(FaultHandler)context;

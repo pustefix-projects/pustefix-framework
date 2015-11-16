@@ -20,6 +20,7 @@ package org.pustefixframework.webservices.spring;
 import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.regex.Pattern;
 
 import org.pustefixframework.webservices.Constants;
 import org.pustefixframework.webservices.config.ServiceConfig;
@@ -77,6 +78,7 @@ public class WebServiceBeanConfigReader {
                     }
                     String authConstraintRef = getStringValue(props,"authConstraint",false);
                     Boolean synchronize = getBooleanValue(props, "synchronize", false);
+                    List<Pattern> whitelist = getPatternValue(props, "whitelist", false);
                     
                     ServiceConfig serviceConfig = new ServiceConfig(null);
                     serviceConfig.setName(serviceName);
@@ -86,6 +88,8 @@ public class WebServiceBeanConfigReader {
                     serviceConfig.setProtocolType(protocol);
                     serviceConfig.setAuthConstraintRef(authConstraintRef);
                     serviceConfig.setSynchronizeOnContext(synchronize);
+                    serviceConfig.setDeserializationWhiteList(whitelist);
+                    
                     serviceList.add(serviceConfig);
                 }
                 
@@ -120,6 +124,14 @@ public class WebServiceBeanConfigReader {
         Boolean value = null;
         PropertyValue prop = props.getPropertyValue(propName);
         if(prop != null) value = (Boolean)prop.getValue();
+        if(value == null && mandatory) throw new IllegalArgumentException("BeanDefinition property '"+propName+"' is mandatory.");
+        return value;
+    }
+    
+    private static List<Pattern> getPatternValue(MutablePropertyValues props, String propName, boolean mandatory) {
+        List<Pattern> value = null;
+        PropertyValue prop = props.getPropertyValue(propName);
+        if(prop != null) value = (List<Pattern>)prop.getValue();
         if(value == null && mandatory) throw new IllegalArgumentException("BeanDefinition property '"+propName+"' is mandatory.");
         return value;
     }

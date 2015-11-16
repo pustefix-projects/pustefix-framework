@@ -21,4 +21,20 @@
     synchronize="false"
   />
  
+  <!--
+  <bean id="typebean" class="de.schlund.pfixcore.example.webservices.TypeTestImpl">
+    <aop:scoped-proxy/>
+  </bean>
+ 
+  <ws:webservice 
+    id="Webservice_TypeTest" 
+    servicename="TypeTest" 
+    interface="de.schlund.pfixcore.example.webservices.TypeTest" 
+    ref="typebean" 
+    protocol="ANY"
+    synchronize="false"
+    whitelist="de.schlund.pfixcore.example.webservices.Bean.*"
+  />
+  -->
+
 </beans>

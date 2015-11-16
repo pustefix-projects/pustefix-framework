@@ -19,6 +19,8 @@
 package org.pustefixframework.webservices.jsonws;
 
 import java.lang.reflect.Type;
+import java.util.List;
+import java.util.regex.Pattern;
 
 /**
  * @author mleidig@schlund.de
@@ -26,18 +28,24 @@ import java.lang.reflect.Type;
 public class JSONDeserializer {
 
     DeserializerRegistry registry;
+    List<Pattern> deserializationWhiteList;
     
     public JSONDeserializer(DeserializerRegistry registry) {
         this.registry=registry;
     }
     
+    public JSONDeserializer(DeserializerRegistry registry, List<Pattern> deserializationWhiteList) {
+        this.registry=registry;
+        this.deserializationWhiteList = deserializationWhiteList;
+    }
+    
     public boolean canDeserialize(Object jsonObj,Type targetType)  throws DeserializationException {
-        DeserializationContext ctx=new DeserializationContext(registry); 
+        DeserializationContext ctx=new DeserializationContext(registry, deserializationWhiteList); 
         return ctx.canDeserialize(jsonObj, targetType);
     }
     
     public Object deserialize(Object jsonObj,Type targetType) throws DeserializationException {
-        DeserializationContext ctx=new DeserializationContext(registry); 
+        DeserializationContext ctx=new DeserializationContext(registry, deserializationWhiteList); 
         return ctx.deserialize(jsonObj,targetType);
     }
     

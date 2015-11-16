@@ -25,6 +25,8 @@ import java.io.Serializable;
 import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
 import java.util.HashMap;
+import java.util.List;
+import java.util.regex.Pattern;
 
 import org.pustefixframework.webservices.fault.FaultHandler;
 
@@ -58,6 +60,7 @@ public class ServiceConfig implements Serializable {
     private String                 encStyle;
     private String                 encUse;
     private Boolean                jsonClassHinting;
+    private List<Pattern>          deserWhiteList;
     private transient FaultHandler faultHandler;
     private String                 jsNamespace;
 
@@ -179,6 +182,14 @@ public class ServiceConfig implements Serializable {
         this.jsonClassHinting = jsonClassHinting;
     }
 
+    public void setDeserializationWhiteList(List<Pattern> deserWhiteList) {
+        this.deserWhiteList = deserWhiteList;
+    }
+    
+    public List<Pattern> getDeserializationWhiteList() {
+        return deserWhiteList;
+    }
+    
     public String getStubJSNamespace() {
         if (jsNamespace == null && globConf != null) return globConf.getStubJSNamespace();
         return jsNamespace;
