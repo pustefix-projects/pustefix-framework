@@ -2073,7 +2073,7 @@
         <emphasis role="strong">Function:</emphasis> <emphasis>string</emphasis> <emphasis role="strong">pfx:format-date</emphasis>(<emphasis>string, string?, string?, string?</emphasis>)
       </para>
       <para>
-        The <emphasis role="strong">pfx:format-date</emphasis> function formats a timestamp passed as first argument, using the date format pattern, timezone and locale, which can be optionally passed as further arguments.
+        The <emphasis role="strong">pfx:format-date</emphasis> function formats a timestamp (UNIX time in milliseconds) passed as first argument, using the date format pattern, timezone and locale, which can be optionally passed as further arguments.
       </para>
 <programlisting language="xml"><![CDATA[<ixsl:value-of select="pfx:format-date(/formresult/path/to/@time)"/>
 <ixsl:value-of select="pfx:format-date(/formresult/path/to/@time, '', 'Europe/Berlin')"/>
