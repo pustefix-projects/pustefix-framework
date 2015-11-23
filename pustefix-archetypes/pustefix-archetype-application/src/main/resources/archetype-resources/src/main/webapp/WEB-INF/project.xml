@@ -33,7 +33,7 @@
     <docroot-path>docroot:/htdocs</docroot-path>
 
     <context-xml-service>
-      <config-file>docroot:/WEB-INF/app.conf.xml</config-file>
+      <config-file>docroot:/WEB-INF/app.xml</config-file>
       <choose>
         <when test="$mode='prod'">
           <session-cleaner-timeout>20</session-cleaner-timeout>
