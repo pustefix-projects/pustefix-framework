@@ -27,6 +27,7 @@
           <xsd:simpleType>
             <xsd:restriction base="xsd:string">
               <xsd:enumeration value="COOKIE"/>
+              <xsd:enumeration value="COOKIEONLY"/>
               <xsd:enumeration value="URL"/>
             </xsd:restriction>
           </xsd:simpleType>
