@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <make xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-      xsi:noNamespaceSchemaLocation="http://www.pustefix-framework.org/2008/namespace/xml-generator-config-0_16.xsd"
+      xsi:noNamespaceSchemaLocation="http://www.pustefix-framework.org/2008/namespace/xml-generator-config.xsd"
       project="sample1"
       lang="en_GB">
 
