@@ -73,7 +73,7 @@ public class XSLTMojo extends AbstractMojo {
     private Map<String,String> params;
     
     /**
-     * @parameter expression="${project}"
+     * @parameter property="project"
      * @required
      */
     private MavenProject mavenProject;

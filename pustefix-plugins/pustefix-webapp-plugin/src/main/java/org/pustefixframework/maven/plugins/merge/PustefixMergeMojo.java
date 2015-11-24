@@ -94,7 +94,7 @@ public class PustefixMergeMojo extends AbstractMojo {
     private String[] includes;
 
     /**
-     * @parameter expression="${project}"
+     * @parameter property="project"
      * @required
      * @readonly
      */

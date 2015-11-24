@@ -55,7 +55,7 @@ public class ResourceIndexMojo extends AbstractMojo {
     private File buildOutputDir;
 
     /**
-     * @parameter expression="${project}"
+     * @parameter property="project"
      * @required
      */
     private MavenProject project;

@@ -45,7 +45,7 @@ public class PustefixWebappMojo extends AbstractMojo {
     private String docroot;
     
     /**
-     * @parameter expression="${project}"
+     * @parameter property="project"
      * @required
      * @readonly
      */

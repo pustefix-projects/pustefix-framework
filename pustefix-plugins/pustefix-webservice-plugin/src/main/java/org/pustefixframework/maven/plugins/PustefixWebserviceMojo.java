@@ -96,7 +96,7 @@ public class PustefixWebserviceMojo extends AbstractMojo {
     private File prjFile;
     
     /**
-     * @parameter expression="${project}"
+     * @parameter property="project"
      * @required
      * @readonly
      */

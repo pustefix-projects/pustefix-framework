@@ -38,7 +38,7 @@ import com.sun.tools.attach.VirtualMachine;
 public class RegisterLiveAgentMojo extends AbstractMojo {
     
     /** 
-      * @parameter expression="${plugin.artifacts}" 
+      * @parameter property="plugin.artifacts" 
       * @required 
       */ 
     private List<Artifact> pluginArtifacts; 
