@@ -89,8 +89,9 @@ public class HighScore implements ServletContextAware, Serializable, Initializin
             if(tmpDir != null && tmpDir.exists()) {
                 File dataFile = new File(tmpDir, "highscore.ser");
                 if(dataFile.exists()) {
-                    ObjectInputStream in = new ObjectInputStream(new FileInputStream(dataFile));
-                    scores = (SortedSet<Score>)in.readObject();
+                    try (ObjectInputStream in = new ObjectInputStream(new FileInputStream(dataFile))) {
+                        scores = (SortedSet<Score>)in.readObject();
+                    }
                 }
             }
         } catch(Exception x) {

@@ -23,7 +23,6 @@ import org.xml.sax.helpers.XMLReaderFactory;
  */
 public class ValidatorMojo extends AbstractMojo {
 
-    private int validations;
     private int warnings;
     private int errors;
     private int fatalErrors;
@@ -69,7 +68,6 @@ public class ValidatorMojo extends AbstractMojo {
         } catch(IOException e) {
             throw new MojoExecutionException("Can't validate file: " + file.getPath(), e);
         } finally {
-            validations++;
             warnings += handler.getWarnings();
             errors += handler.getErrors();
             fatalErrors += handler.getFatalErrors();

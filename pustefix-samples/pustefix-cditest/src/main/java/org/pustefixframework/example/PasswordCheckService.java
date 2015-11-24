@@ -4,6 +4,8 @@ import java.io.Serializable;
 
 public class PasswordCheckService implements Serializable {
     
+    private static final long serialVersionUID = 1L;
+    
     private int strength;
     
     public boolean check(String password) {

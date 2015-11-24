@@ -3,6 +3,7 @@ package org.pustefixframework.samples.moduletest.contextresources;
 import org.pustefixframework.samples.moduletest.User;
 import org.w3c.dom.Element;
 
+import de.schlund.pfixcore.beans.InsertStatus;
 import de.schlund.pfixcore.workflow.Context;
 import de.schlund.pfixxml.ResultDocument;
 
@@ -23,6 +24,7 @@ public class ContextUserImpl implements ContextUser {
 
     }
 
+    @InsertStatus
     public void insertStatus(ResultDocument document, Element element)
             throws Exception {
         if (this.user == null) {
