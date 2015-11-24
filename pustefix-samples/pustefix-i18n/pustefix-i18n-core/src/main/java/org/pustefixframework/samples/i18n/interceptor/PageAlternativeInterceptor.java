@@ -13,7 +13,7 @@ public class PageAlternativeInterceptor implements ContextInterceptor {
             if(param != null) {
                 String category = param.getValue().trim();
                 if(category.length() > 0) {
-                    context.setPageAlternative(category);
+                    context.setCurrentPageAlternative(category);
                 }
             }
         }
