@@ -50,7 +50,6 @@ import de.schlund.pfixxml.targets.TargetGenerator;
 import de.schlund.pfixxml.targets.VirtualTarget;
 import de.schlund.pfixxml.util.ExtensionFunctionUtils;
 import de.schlund.pfixxml.util.URIParameters;
-import de.schlund.pfixxml.util.XPath;
 import de.schlund.pfixxml.util.Xml;
 import de.schlund.pfixxml.util.Xslt.ResourceResolver;
 import de.schlund.pfixxml.util.XsltContext;
@@ -70,9 +69,6 @@ public final class IncludeDocumentExtension {
     // ..................................................................
     private static final Logger       LOG        = Logger.getLogger(IncludeDocumentExtension.class);
     private static final String NOTARGET   = "__NONE__";
-    private static final String XPPARTNAME = "/include_parts/part[@name='";
-    private static final String XTHEMENAME = "/theme[@name = '";
-    private static final String XPNAMEEND  = "']";
     
     private static ThreadLocal<String> resolvedUri = new ThreadLocal<String>();
     
@@ -143,7 +139,6 @@ public final class IncludeDocumentExtension {
             boolean            dolog       = !targetkey.equals(NOTARGET);
             int                length      = 0;
             IncludeDocument    iDoc        = null;
-            Document           doc;
 
             VirtualTarget target = (VirtualTarget) targetgen.getTarget(targetkey);
 
@@ -187,11 +182,10 @@ public final class IncludeDocumentExtension {
                 target.setStoredException(saxex);
                 throw saxex;
             }
-            doc = iDoc.getDocument();
             // Get the part
             List<Node> ns;
             try {
-                ns = XPath.select(doc, XPPARTNAME + part + XPNAMEEND);
+                ns = iDoc.getNodes(part);
             } catch (TransformerException e) {
                 if (dolog)
                     DependencyTracker.logTyped("text", path, part, DEF_THEME,
@@ -228,7 +222,7 @@ public final class IncludeDocumentExtension {
                 LOG.debug("     => Trying to find theme branch for theme '" + curr_theme + "'");
                 
                 try {
-                    ns = XPath.select(doc, XPPARTNAME + part + XPNAMEEND + XTHEMENAME + curr_theme + XPNAMEEND);
+                    ns = iDoc.getNodes(part, curr_theme);
                 } catch (TransformerException e) {
                     if (dolog)
                         DependencyTracker.logTyped("text", path, part, DEF_THEME,
