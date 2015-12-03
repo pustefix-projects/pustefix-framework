@@ -12,7 +12,6 @@ import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.util.HashMap;
 import java.util.LinkedHashSet;
-import java.util.List;
 import java.util.Map;
 import java.util.Properties;
 import java.util.Set;
@@ -254,7 +253,7 @@ public class SiteMapRequestHandler implements UriProvidingHttpRequestHandler, Se
     
     private void addURL(String page, Element parent, String lang, boolean defaultLang, String baseUrl, String defaultPage, boolean mobile) {
         
-        Set<String> pageAliases = siteMap.getAllPageAliases(page, lang);
+        Set<String> pageAliases = siteMap.getAllPageAliases(page, lang, false);
         for(String pageAlias: pageAliases) {
             Element urlElem = parent.getOwnerDocument().createElement("url");
             Element locElem = parent.getOwnerDocument().createElement("loc");

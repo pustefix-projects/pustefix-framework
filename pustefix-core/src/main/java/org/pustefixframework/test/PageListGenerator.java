@@ -131,7 +131,7 @@ public class PageListGenerator {
                                 if(!language.equals(tenant.getDefaultLanguage())) {
                                     pathPrefix = langPart + "/";
                                 }
-                                Set<String> aliases = siteMap.getAllPageAliases(pageName, language);
+                                Set<String> aliases = siteMap.getAllPageAliases(pageName, language, false);
                                 for(String alias: aliases) {
                                     String aliasName = pathPrefix + alias;
                                     if(pages.add(aliasName)) {
@@ -155,7 +155,7 @@ public class PageListGenerator {
                                 if(!language.equals(languageInfo.getDefaultLanguage())) {
                                     pathPrefix = langPart + "/";
                                 }
-                                Set<String> aliases = siteMap.getAllPageAliases(pageName, language);
+                                Set<String> aliases = siteMap.getAllPageAliases(pageName, language, false);
                                 if(aliases != null) {
                                     for(String alias : aliases) {
                                         String aliasName = pathPrefix + alias;
@@ -166,7 +166,7 @@ public class PageListGenerator {
                                 }
                             }
                         } else {
-                            Set<String> aliases = siteMap.getAllPageAliases(pageName, null);
+                            Set<String> aliases = siteMap.getAllPageAliases(pageName, null, false);
                             if(aliases != null) {
                                 for(String alias: aliases) {
                                     if(pages.add(alias)) {

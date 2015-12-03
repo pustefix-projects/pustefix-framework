@@ -24,9 +24,9 @@
     
     <page-group key="main" name="main">
       <page-group key="one" name="one">
-        <page name="x">
-          <alt key="k1" name="x-k1" default="true"/>
-          <alt key="k2" name="x-k2"/>
+        <page name="x" default="true">
+          <alt key="k1" name="x-k1"/>
+          <alt key="k2" name="x-k2" default="true"/>
         </page>
         <page name="y"/>
       </page-group>
@@ -35,7 +35,12 @@
           <alt key="k3" name="x-k3"/>
         </page>
       </page-group>
-      <page name="z"/>
+      <page-group key="three" name="g3">
+        <page name="u"/>
+        <page name="v" default="true"/>
+      </page-group>
+      <page name="z" alias="zz"/>
+      <page name="t" default="true"/>
     </page-group>
     
     <page-group key="key_s" name="group_s">
@@ -50,6 +55,10 @@
         <page name="page_m"/>
       </page-group>
       <page name="page_m"/>
+    </page-group>
+    
+    <page-group key="main">
+      <page name="merged"/>
     </page-group>
     
     <pageflow name="flow" alias="myflow"/>

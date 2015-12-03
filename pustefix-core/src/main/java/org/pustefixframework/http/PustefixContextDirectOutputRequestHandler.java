@@ -21,6 +21,7 @@ package org.pustefixframework.http;
 import java.util.List;
 import java.util.Map;
 import java.util.Properties;
+import java.util.Set;
 import java.util.SortedSet;
 import java.util.TreeSet;
 
@@ -32,6 +33,7 @@ import org.apache.log4j.Logger;
 import org.pustefixframework.config.contextxmlservice.ServletManagerConfig;
 import org.pustefixframework.config.directoutputservice.DirectOutputPageRequestConfig;
 import org.pustefixframework.config.directoutputservice.DirectOutputServiceConfig;
+import org.pustefixframework.util.LocaleUtils;
 import org.springframework.aop.framework.Advised;
 
 import de.schlund.pfixcore.auth.AuthConstraint;
@@ -41,6 +43,7 @@ import de.schlund.pfixcore.workflow.DirectOutputState;
 import de.schlund.pfixcore.workflow.PageProvider;
 import de.schlund.pfixcore.workflow.PageRequest;
 import de.schlund.pfixxml.PfixServletRequest;
+import de.schlund.pfixxml.Tenant;
 import de.schlund.pfixxml.resources.FileResource;
 
 /**
@@ -227,8 +230,44 @@ public class PustefixContextDirectOutputRequestHandler extends AbstractPustefixR
         String[] regUris = super.getRegisteredURIs();
         for(String regUri: regUris) uris.add(regUri);
         
-        addPageURIs(uris);
-        
+        String[] registeredPages = getRegisteredPages();
+        for(String registeredPage: registeredPages) {
+            uris.add("/" + registeredPage);
+
+            if(!tenantInfo.getTenants().isEmpty()) {
+                for(Tenant tenant: tenantInfo.getTenants()) {
+                    for(String supportedLanguage: tenant.getSupportedLanguages()) {
+                        String langPart = LocaleUtils.getLanguagePart(supportedLanguage);
+                        String pathPrefix = "";
+                        if(!supportedLanguage.equals(tenant.getDefaultLanguage())) {
+                            pathPrefix = langPart + "/";
+                        }
+                        Set<String> pageAliases = siteMap.getAllPageAliases(registeredPage, supportedLanguage, true);
+                        for(String pageAlias: pageAliases) {
+                            uris.add("/" + pathPrefix + pageAlias);
+                        }
+                    }
+                }
+            } else if(languageInfo.getSupportedLanguages().size() > 1) {
+                for(String supportedLanguage: languageInfo.getSupportedLanguages()) {
+                    String langPart = LocaleUtils.getLanguagePart(supportedLanguage);
+                    String pathPrefix = "";
+                    if(!supportedLanguage.equals(languageInfo.getDefaultLanguage())) {
+                        pathPrefix = langPart + "/";
+                    }
+                    Set<String> pageAliases = siteMap.getAllPageAliases(registeredPage, supportedLanguage, true);
+                    for(String pageAlias: pageAliases) {
+                        uris.add("/" + pathPrefix + pageAlias);
+                    }
+                }
+            } else {
+                Set<String> pageAliases = siteMap.getAllPageAliases(registeredPage, null, true);
+                for(String pageAlias: pageAliases) {
+                    uris.add("/" + pageAlias);
+                }
+            }
+        }
+
         String[] uriArr = uris.toArray(new String[uris.size()]);
         return uriArr;
         

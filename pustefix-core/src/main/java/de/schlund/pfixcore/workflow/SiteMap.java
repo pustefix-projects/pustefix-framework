@@ -96,6 +96,8 @@ public class SiteMap {
     public SiteMap(File siteMapFile, File[] siteMapAliasFiles) throws IOException, SAXException {
         if(siteMapFile.exists()) {
             Document siteMapDoc = Xml.parseMutable(siteMapFile);
+            DOMUtils.mergeChildElements(siteMapDoc.getDocumentElement(), "page", "name");
+            DOMUtils.mergeChildElements(siteMapDoc.getDocumentElement(), "page-group", "key");
             readSiteMap(siteMapDoc.getDocumentElement());
             for(File siteMapAliasFile: siteMapAliasFiles) {
                 readSiteMapAliases(Xml.parseMutable(siteMapAliasFile));
@@ -175,6 +177,7 @@ public class SiteMap {
             }
             
             DOMUtils.mergeChildElements(siteMapDoc.getDocumentElement(), "page", "name");
+            DOMUtils.mergeChildElements(siteMapDoc.getDocumentElement(), "page-group", "key");
             readSiteMap(siteMapDoc.getDocumentElement());
             
             Resource res = ResourceUtil.getResource("/WEB-INF/sitemap-aliases.xml");
@@ -296,6 +299,10 @@ public class SiteMap {
         String internal = pageElem.getAttribute("internal").trim();
         if(internal.length() > 0) {
             page.internal = Boolean.valueOf(internal);
+        }
+        String defaultAttr = pageElem.getAttribute("default").trim();
+        if(defaultAttr.equals("true")) {
+            pageGroup.defaultPage = page;
         }
         NamedNodeMap map = pageElem.getAttributes();
         if(map != null) {
@@ -514,7 +521,10 @@ public class SiteMap {
     }
     
     public String getAlias(String name, String lang, String pageAlternativeKey, String pageGroupKey) {
-        
+        return getAlias(name, lang, pageAlternativeKey, pageGroupKey, true);
+    }
+    
+    private String getAlias(final String name, final String lang, String pageAlternativeKey, String pageGroupKey, boolean resolveName) {
         if(name == null) {
             return "";
         }
@@ -524,6 +534,9 @@ public class SiteMap {
             pageGroup = keyToPageGroup.get(pageGroupKey);
             if(pageGroup != null) {
                 pageGroup = pageGroup.lookup(name);
+                if(pageGroup != null) {
+                    pageGroupKey = pageGroup.key;
+                }
             }
         }
         Page page;
@@ -531,7 +544,8 @@ public class SiteMap {
             page = pageNameToPage.get(name);
             if(page == null) {
                 pageGroup = defaultPageGroups.get(name);
-                page = getPageByName(name, pageGroup == null ? null : pageGroup.key);
+                pageGroupKey = ( pageGroup == null ? null : pageGroup.key );
+                page = getPageByName(name, pageGroupKey);
             }
         } else {
             page = getPageByName(name, pageGroupKey);
@@ -542,17 +556,23 @@ public class SiteMap {
         }
         if(pageAlternativeKey == null || pageAlternativeKey.equals("")) {
         	if(page == null || page.defaultPageAlt == null) {
-        		return prefix + getNameAlias(name, lang, pageGroupKey);
+        	    if(resolveName && pageGroup != null && pageGroup.defaultPage == page) {
+        	        return pageGroup.getPrefix();
+        	    }
+        		return prefix + ( resolveName ? getNameAlias(name, lang, pageGroupKey) : name );
         	} else {
         		pageAlternativeKey = page.defaultPageAlt.key;
         	}
+        }
+        if(resolveName && pageGroup != null && pageGroup.defaultPage == page && ( page.defaultPageAlt == null || page.defaultPageAlt.key.equals(pageAlternativeKey))) {
+            return pageGroup.getPrefix();
         }
         String pageName = name;
         String altPageName = getPageAlternative(name, pageAlternativeKey, pageGroupKey);
         if(altPageName != null) {
         	pageName = altPageName;
         }
-        return prefix + getNameAlias(pageName, lang, pageGroupKey);
+        return prefix + ( resolveName ? getNameAlias(pageName, lang, pageGroupKey) : pageName );
     }
     
     private String getPageAlternative(String pageName, String pageAlternativeKey, String pageGroupKey) {
@@ -563,32 +583,59 @@ public class SiteMap {
         return null;
     }
     
-    public Set<String> getAllPageAliases(String pageName, String lang) {
+    public Set<String> getAllPageGroupPrefixes(String lang) {
+        Set<String> prefixes = new HashSet<String>();
+        for(PageGroup pageGroup: pageGroups) {
+            prefixes.add(pageGroup.getPrefix());
+        }
+        return prefixes;
+    }
+    
+    public Set<String> getAllPageAliases(String pageName, String lang, boolean includeInternalPages) {
         Set<String> aliases = new HashSet<>();
         Page page = pageNameToPage.get(pageName);
         if(page != null) {
             aliases.add(getAlias(pageName, lang, null, null));
+            if(includeInternalPages) {
+                aliases.add(getAlias(pageName, lang, null, null, false));
+            }
             for(String pageAltKey: page.pageAltKeyToName.keySet()) {
                 aliases.add(getAlias(pageName, lang, pageAltKey, null));
+                if(includeInternalPages) {
+                    aliases.add(getAlias(pageName, lang, pageAltKey, null, false));
+                }
             }
         }
         for(PageGroup pageGroup: pageGroups) {
-            getAllPageAliases(pageName, lang, pageGroup, aliases);
+            getAllPageAliases(pageName, lang, pageGroup, aliases, includeInternalPages);
+        }
+        if(aliases.isEmpty()) {
+            aliases.add(pageName);
         }
         return aliases;
     }
     
-    private void getAllPageAliases(String pageName, String lang, PageGroup pageGroup, Set<String> aliases) {
+    private void getAllPageAliases(String pageName, String lang, PageGroup pageGroup, Set<String> aliases, boolean includeInternalPages) {
         for(Page page: pageGroup.pages) {
             if(page.name.equals(pageName)) {
                 aliases.add(getAlias(pageName, lang, null, pageGroup.key));
+                if(includeInternalPages) {
+                    aliases.add(getAlias(pageName, lang, null, pageGroup.key, false));
+                    if(pageGroup.defaultPage == page || ( pageGroup.defaultPage == null && pageGroup.pages.get(0).name.equals(pageName))) {
+                        aliases.add(pageGroup.getPrefix());
+                        aliases.add(pageGroup.getPrefix() + "/");
+                    }
+                }
                 for(String pageAltKey: page.pageAltKeyToName.keySet()) {
                     aliases.add(getAlias(pageName, lang, pageAltKey, pageGroup.key));
+                    if(includeInternalPages) {
+                        aliases.add(getAlias(pageName, lang, pageAltKey, pageGroup.key, false));
+                    }
                 }
             }
         }
         for(PageGroup subGroup: pageGroup.pageGroups) {
-            getAllPageAliases(pageName, lang, subGroup, aliases);
+            getAllPageAliases(pageName, lang, subGroup, aliases, includeInternalPages);
         }
     }
 
@@ -674,10 +721,7 @@ public class SiteMap {
     
     public PageLookupResult getPageName(String alias, String lang) {
         
-        String page = null;
-        String aliasKey = null;
         String pageGroupKey = null;
-        
         String fullAlias = alias;
         int ind = fullAlias.length();
         do {
@@ -687,6 +731,10 @@ public class SiteMap {
                 pageGroupKey = pageGroup.key;
                 if(fullAlias.length() > ind + 1) {
                     alias = fullAlias.substring(ind + 1);
+                } else if(pageGroup.defaultPage != null) {
+                    alias = pageGroup.defaultPage.name;
+                } else if(!pageGroup.pages.isEmpty()) {
+                    alias = pageGroup.pages.get(0).name;
                 } else {
                     alias = null;
                 }
@@ -694,6 +742,8 @@ public class SiteMap {
             }
         } while((ind = fullAlias.lastIndexOf('/', ind - 1))  > -1);
         
+        String page = null;
+        String aliasKey = null;
         if(lang != null) {
             Map<String, String> pages = pageMaps.get(lang);
             if(pages != null) {
@@ -736,7 +786,7 @@ public class SiteMap {
             }
         }
         String aliasPageName = alias;
-        if(page.equals(alias) && page.contains("/")) {
+        if(page != null && page.equals(alias) && page.contains("/")) {
             aliasPageName = page.substring(0, page.lastIndexOf('/'));
             return getPageName(aliasPageName, lang);
         }
@@ -813,6 +863,7 @@ public class SiteMap {
         public String key;
         public String name;
         public PageGroup parent;
+        public Page defaultPage;
         
         public List<PageGroup> pageGroups = new ArrayList<>();
         List<Page> pages = new ArrayList<>();

@@ -33,6 +33,7 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
 import java.util.Properties;
+import java.util.Set;
 import java.util.TreeMap;
 import java.util.TreeSet;
 import java.util.regex.Pattern;
@@ -99,7 +100,7 @@ import de.schlund.pfixxml.util.Xslt;
  * getDom(HttpServletRequest req, HttpServletResponse res)
  * which returns a SPDocument. <br>
  */
-public abstract class AbstractPustefixXMLRequestHandler extends AbstractPustefixRequestHandler implements PageProvider, ApplicationContextAware {
+public abstract class AbstractPustefixXMLRequestHandler extends AbstractPustefixRequestHandler implements ApplicationContextAware {
 
     //~ Instance/static variables ..................................................................
     // how to write xml to the result stream
@@ -860,23 +861,27 @@ public abstract class AbstractPustefixXMLRequestHandler extends AbstractPustefix
 
     private void renderFontify(SPDocument spdoc, HttpServletResponse res, TreeMap<String, Object> paramhash) throws TargetGenerationException, TransformerException, IOException {
         Templates stylevalue = (Templates) generator.createXSLLeafTarget(FONTIFY_SSHEET).getValue();
-        if(!siteMap.isProvided()) {
-            //if application doesn't provide a sitemap, generate a temporary one 
-            //from the list of registered pages for displaying the page status
-            Document doc = Xml.createDocument();
-            Element siteMapElem = doc.createElement("sitemap");
-            doc.appendChild(siteMapElem);
-            for(PageProvider pageProvider: applicationContext.getBeansOfType(PageProvider.class).values()) {
-                String[] pages = pageProvider.getRegisteredPages();
-                for(String page: pages) {
-                    Element pageElem = doc.createElement("page");
-                    doc.getDocumentElement().appendChild(pageElem);
-                    pageElem.setAttribute("name", page);
+        Document doc = Xml.createDocument();
+        Element siteMapElem = doc.createElement("sitemap");
+        doc.appendChild(siteMapElem);
+        for(PageProvider pageProvider: applicationContext.getBeansOfType(PageProvider.class).values()) {
+            String[] pages = pageProvider.getRegisteredPages();
+            for(String page: pages) {
+                Element pageElem = doc.createElement("page");
+                doc.getDocumentElement().appendChild(pageElem);
+                pageElem.setAttribute("name", page);
+                Set<String> aliases = siteMap.getAllPageAliases(page, spdoc.getLanguage(), false);
+                for(String alias: aliases) {
+                    if(!page.equals(alias)) {
+                        Element aliasElem = doc.createElement("alias");
+                        aliasElem.setTextContent(alias);
+                        pageElem.appendChild(aliasElem);
+                    }
                 }
             }
-            doc = Xml.parse(generator.getXsltVersion(), doc);
-            paramhash.put(TargetGenerator.XSLPARAM_SITEMAP, doc.getDocumentElement());
         }
+        doc = Xml.parse(generator.getXsltVersion(), doc);
+        paramhash.put(TargetGenerator.XSLPARAM_SITEMAP, doc.getDocumentElement());
         Xslt.transform(spdoc.getDocument(), stylevalue, paramhash, new StreamResult(res.getOutputStream()));
     }
 

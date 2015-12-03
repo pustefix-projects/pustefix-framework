@@ -19,8 +19,8 @@
 package org.pustefixframework.http;
 
 import java.io.ByteArrayOutputStream;
+import java.util.ArrayList;
 import java.util.Collection;
-import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 import java.util.SortedSet;
@@ -37,6 +37,7 @@ import org.pustefixframework.config.contextxmlservice.AbstractXMLServletConfig;
 import org.pustefixframework.config.contextxmlservice.ContextXMLServletConfig;
 import org.pustefixframework.config.contextxmlservice.PageRequestConfig;
 import org.pustefixframework.config.contextxmlservice.PreserveParams;
+import org.pustefixframework.container.spring.http.MVCStateHandlerMapping;
 import org.pustefixframework.util.LocaleUtils;
 
 import de.schlund.pfixcore.exception.PustefixApplicationException;
@@ -52,6 +53,7 @@ import de.schlund.pfixcore.util.StateUtil;
 import de.schlund.pfixcore.workflow.ContextImpl;
 import de.schlund.pfixcore.workflow.ContextInterceptor;
 import de.schlund.pfixcore.workflow.ExtendedContext;
+import de.schlund.pfixcore.workflow.State;
 import de.schlund.pfixcore.workflow.context.PageFlow;
 import de.schlund.pfixcore.workflow.context.RequestContextImpl;
 import de.schlund.pfixcore.workflow.context.ServerContextImpl;
@@ -287,7 +289,6 @@ public class PustefixContextXMLRequestHandler extends AbstractPustefixXMLRequest
                 if(expectedPageName.equals("")) {
                     expectedPageName = null;
                 }
-                
                 String requestedPageName = preq.getRequestedPageName();
                 if( (expectedPageName == null && requestedPageName != null) ||
                     (expectedPageName != null && requestedPageName == null) ||
@@ -437,6 +438,9 @@ public class PustefixContextXMLRequestHandler extends AbstractPustefixXMLRequest
     public String[] getRegisteredURIs() {
 
         SortedSet<String> uris = new TreeSet<String>();
+        for(String uri: super.getRegisteredURIs()) {
+            uris.add(uri);
+        }
         
         uris.add("/");
         
@@ -444,9 +448,7 @@ public class PustefixContextXMLRequestHandler extends AbstractPustefixXMLRequest
         String[] regUris = super.getRegisteredURIs();
         for(String regUri: regUris) uris.add(regUri);
         
-        addPageURIs(uris);
-        
-        //add lang default page mappings
+        //add language default and page group mappings
         if(!tenantInfo.getTenants().isEmpty()) {
             for(Tenant tenant: tenantInfo.getTenants()) {
                 for(String supportedLanguage: tenant.getSupportedLanguages()) {
@@ -463,45 +465,115 @@ public class PustefixContextXMLRequestHandler extends AbstractPustefixXMLRequest
             }
         }
         
+        String[] registeredPages = getRegisteredPages();
+        for(String registeredPage: registeredPages) {
+            uris.add("/" + registeredPage);
+                
+            List<String> mvcSuffixes = new ArrayList<String>();
+            State state = pageMap.getState(registeredPage);
+            if(state != null) {
+                String[] mvcUris = MVCStateHandlerMapping.determineUrlsForHandlerMethods(state.getClass());
+                if(mvcUris != null) {
+                    for(String mvcUri: mvcUris) {
+                        uris.add(mvcUri);
+                        if(mvcUri.startsWith("/" + registeredPage)) {
+                            String suffix = mvcUri.substring(registeredPage.length() + 1);
+                            if(suffix.length() > 0) {
+                                mvcSuffixes.add(suffix);
+                            }
+                        }
+                    }
+                }
+            }
+                
+            if(!tenantInfo.getTenants().isEmpty()) {
+                for(Tenant tenant: tenantInfo.getTenants()) {
+                    for(String supportedLanguage: tenant.getSupportedLanguages()) {
+                        String langPart = LocaleUtils.getLanguagePart(supportedLanguage);
+                        String pathPrefix = "";
+                        if(!supportedLanguage.equals(tenant.getDefaultLanguage())) {
+                            pathPrefix = langPart + "/";
+                        }
+                        Set<String> pageAliases = siteMap.getAllPageAliases(registeredPage, supportedLanguage, true);
+                        for(String pageAlias: pageAliases) {
+                            addUri(uris, "/" + pathPrefix + pageAlias, mvcSuffixes);
+                            for(String pageFlow: getPageFlows(registeredPage)) {
+                                addUri(uris, "/"+ pathPrefix + siteMap.getPageFlowAlias(pageFlow, supportedLanguage) + "/" + pageAlias, mvcSuffixes);
+                                uris.add("/"+ pathPrefix + siteMap.getPageFlowAlias(pageFlow, supportedLanguage));
+                            }
+                        }
+                    }
+                }
+            } else if(languageInfo.getSupportedLanguages().size() > 1) {
+                for(String supportedLanguage: languageInfo.getSupportedLanguages()) {
+                    String langPart = LocaleUtils.getLanguagePart(supportedLanguage);
+                    String pathPrefix = "";
+                    if(!supportedLanguage.equals(languageInfo.getDefaultLanguage())) {
+                        pathPrefix = langPart + "/";
+                    }
+                    Set<String> pageAliases = siteMap.getAllPageAliases(registeredPage, supportedLanguage, true);
+                    for(String pageAlias: pageAliases) {
+                        addUri(uris, "/" + pathPrefix + pageAlias, mvcSuffixes);
+                        for(String pageFlow: getPageFlows(registeredPage)) {
+                            addUri(uris, "/"+ pathPrefix + siteMap.getPageFlowAlias(pageFlow, supportedLanguage) + "/" + pageAlias, mvcSuffixes);
+                            uris.add("/"+ pathPrefix + siteMap.getPageFlowAlias(pageFlow, supportedLanguage));
+                        }
+                    }
+                }
+            } else {
+                Set<String> pageAliases = siteMap.getAllPageAliases(registeredPage, null, true);
+                for(String pageAlias: pageAliases) {
+                    addUri(uris, "/" + pageAlias, mvcSuffixes);
+                    for(String pageFlow: getPageFlows(registeredPage)) {
+                        addUri(uris, "/"+ siteMap.getPageFlowAlias(pageFlow, null) + "/" + pageAlias, mvcSuffixes);
+                        uris.add("/"+ siteMap.getPageFlowAlias(pageFlow, null));
+                    }
+                }
+            }
+        }
+        
         String[] uriArr = uris.toArray(new String[uris.size()]);
         return uriArr;
+    }
+    
+    private List<String> getPageFlows(String pageName) {
+        
+        List<String> flowNames = new ArrayList<String>();
+        Collection<PageFlow> pageFlows = serverContext.getPageFlowManager().getPageFlows();
+        for(PageFlow pageFlow : pageFlows) {
+            if(pageFlow.isPathPrefix()) {
+                if(pageFlow.containsPage(pageName)) {
+                    flowNames.add(pageFlow.getRootName());
+                }
+            }
+        }
+        return flowNames;
     }
     
     @Override
     public String[] getRegisteredPages() {
 
         SortedSet<String> pages = new TreeSet<String>();
-        
         pages.add("pfxsession");
-        
         //add pages from configured pagerequests
         List<? extends PageRequestConfig> pageConfigs = config.getContextConfig().getPageRequestConfigs();
-       
         for(PageRequestConfig pageConfig: pageConfigs) {
             pages.add(pageConfig.getPageName());
         }
-        
         //add page mappings for standardpages
         Set<PageInfo> pageInfos = generator.getPageTargetTree().getPageInfos();
         for(PageInfo pageInfo: pageInfos) {
             pages.add(pageInfo.getName());
         }
-        
         String[] pageArr = pages.toArray(new String[pages.size()]);
         return pageArr;
     }
-    
-    @Override
-    public String[] getRegisteredPrefixes() {
-    	
-    	Set<String> prefixes = new HashSet<>();
-    	Collection<PageFlow> pageFlows = serverContext.getPageFlowManager().getPageFlows();
-    	for(PageFlow pageFlow : pageFlows) {
-    		if(pageFlow.isPathPrefix()) {
-    			prefixes.add(pageFlow.getRootName());
-    		}
-    	}
-    	return prefixes.toArray(new String[prefixes.size()]);
+
+    private void addUri(Set<String> uris, String uri, List<String> mvcSuffixes) {
+        uris.add(uri);
+        for(String mvcSuffix: mvcSuffixes) {
+            uris.add(uri + mvcSuffix);
+        }
     }
     
     @Override

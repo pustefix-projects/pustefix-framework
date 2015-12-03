@@ -215,7 +215,7 @@ public class DataDrivenPageFlow implements PageFlow {
     }
 
 
-    private FlowStep[] getAllSteps() {
+    public FlowStep[] getAllSteps() {
         return (FlowStep[]) allsteps.toArray(new FlowStep[] {});
     }
 

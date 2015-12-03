@@ -15,13 +15,13 @@
   <xsl:template match="/">
 <xsl:choose>
   <xsl:when test="contains($__querystring,'pagestatus')">
-    <table cellpadding="4" cellspacing="0" style="padding-left:20px;">
+    <table class="datatable">
       <tr>
-        <td style="border-bottom: 1px solid black;">Page name</td>
-        <td style="border-bottom: 1px solid black;">Alias</td>
-        <td style="border-bottom: 1px solid black;">Visited?</td>
-        <td style="border-bottom: 1px solid black;">Accessible?</td>
-        <td style="border-bottom: 1px solid black;">Authorized?</td>
+        <th>Page name</th>
+        <th>Alias</th>
+        <th>Visited?</th>
+        <th>Accessible?</th>
+        <th>Authorized?</th>
       </tr>
       <xsl:call-template name="render_pages">
         <xsl:with-param name="thepages" select="$sitemap/page"/>
@@ -35,8 +35,10 @@
         <style type="text/css">
           body { font-family: monospace; }
           .datatable { border-spacing: 0px; color: #000000; padding-left: 20px; }
-          .datatable td { padding: 4px; }
-          .datatable th { padding: 4px; text-align: left; font-weight: normal; border-bottom: 1px solid black; }
+          .datatable tr.odd-row {background:#EEE;}
+          .datatable tr.even-row {background:#FFF;}
+          .datatable td { padding: 4px; padding-right: 20px;}
+          .datatable th { padding: 4px; padding-right: 20px; text-align: left; font-weight: bold; border-bottom: 1px solid black; }
           .rowsep { border-bottom: 1px dotted #888888; }
           table.info { padding-left: 20px; }
           table.info th, td { text-align: left; padding: 4px; }
@@ -311,16 +313,21 @@
         </xsl:otherwise>
       </xsl:choose>
     </xsl:variable>
-    <tr>
-      <td>  
+    <tr class="even-row">
+      <xsl:if test="position() mod 2">
+        <xsl:attribute name="class">odd-row</xsl:attribute>
+      </xsl:if>
+      <td valign="top">  
         <xsl:value-of select="$ind"/><xsl:value-of select="@name"/>
       </td>
-      <td>
-        <xsl:value-of select="@alias"/>
+      <td valign="top">
+        <xsl:for-each select="alias">
+          <xsl:value-of select="."/><br/>
+        </xsl:for-each>
       </td>
-      <td align="center" style="font-family: sans;"><xsl:copy-of select="$visited"/></td>
-      <td align="center"><xsl:copy-of select="$visible"/></td>
-      <td align="center"><xsl:copy-of select="$authorized"/></td>
+      <td align="center" valign="top" style="font-family: sans;"><xsl:copy-of select="$visited"/></td>
+      <td align="center" valign="top"><xsl:copy-of select="$visible"/></td>
+      <td align="center" valign="top"><xsl:copy-of select="$authorized"/></td>
     </tr>
   </xsl:template>
   
@@ -332,12 +339,12 @@
       <h1 id="IWrappers">IWrappers:</h1>
       <table cellspacing="0" class="datatable">
         <tr>
-          <th><b>Parameter</b></th>
-          <th><b>Occurrence</b></th>
-          <th><b>Frequency</b></th>
-          <th><b>Type</b></th>
-          <th><b>checkactive?</b></th>
-          <th><b>active?</b></th>               
+          <th>Parameter</th>
+          <th>Occurrence</th>
+          <th>Frequency</th>
+          <th>Type</th>
+          <th>checkactive?</th>
+          <th>active?</th>               
         </tr>
         <xsl:for-each select="$iwrappers/iwrappers/iwrapper">
           <xsl:variable name="iwrp" select="callback:getIWrapperInfo($__context__,/,'',@prefix)/iwrapper"/>
@@ -398,13 +405,13 @@
       <h1>Actions:</h1>
       <table class="datatable" cellspacing="1">
         <tr>
-          <th><b>Name</b></th>
-          <th><b>submit</b></th>
-          <th><b>retrieve</b></th>
-          <th><b>pageflow</b></th>
-          <th><b>forcestop</b></th>
-          <th><b>jumptopage</b></th>
-          <th><b>jumptopageflow</b></th>  
+          <th>Name</th>
+          <th>submit</th>
+          <th>retrieve</th>
+          <th>pageflow</th>
+          <th>forcestop</th>
+          <th>jumptopage</th>
+          <th>jumptopageflow</th>  
         </tr>
       <xsl:for-each select="$iwrappers/iwrappers/actions/action">
         <tr valign="top">
