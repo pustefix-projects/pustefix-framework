@@ -28,6 +28,7 @@
     <module>pustefix-agent-plugin</module>
     <module>pustefix-resourceindex-plugin</module>
     <module>pustefix-pagelist-plugin</module>
+    <module>pustefix-patch-plugin</module>
   </modules>
 
   <profiles>
