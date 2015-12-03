@@ -238,7 +238,7 @@ public class Xslt {
         if (LOG.isDebugEnabled())
             start = System.currentTimeMillis();
         try {
-            ExtensionFunctionUtils.setExtensionFunctionError(null);
+            ExtensionFunctionUtils.reset();
             XsltProvider.getXsltSupport(xsltVersion).doErrorListening(trafo, traceLocation);
             trafo.transform(new DOMSource(Xml.parse(xsltVersion,xml)), result);
         } catch(TransformerException x) {

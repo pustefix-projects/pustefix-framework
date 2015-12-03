@@ -85,6 +85,7 @@ import de.schlund.pfixxml.targets.Target;
 import de.schlund.pfixxml.targets.TargetGenerationException;
 import de.schlund.pfixxml.targets.TargetGenerator;
 import de.schlund.pfixxml.util.CacheValueLRU;
+import de.schlund.pfixxml.util.ExtensionFunctionUtils;
 import de.schlund.pfixxml.util.MD5Utils;
 import de.schlund.pfixxml.util.Xml;
 import de.schlund.pfixxml.util.Xslt;
@@ -148,6 +149,7 @@ public abstract class AbstractPustefixXMLRequestHandler extends AbstractPustefix
     public static final String GETDOMTIME  = "__GETDOMTIME__";
     public static final String TRAFOTIME   = "__TRAFOTIME__";
     public static final String RENDEREXTTIME = "__RENDEREXTTIME__";
+    public static final String EXTFUNCTIME = "__EXTFUNCTIME__";
     
     public final static String SESS_CLEANUP_FLAG_STAGE1 = "__pfx_session_cleanup_stage1";
     public final static String SESS_CLEANUP_FLAG_STAGE2 = "__pfx_session_cleanup_stage2";
@@ -814,6 +816,10 @@ public abstract class AbstractPustefixXMLRequestHandler extends AbstractPustefix
             if(LOGGER.isDebugEnabled()) LOGGER.debug("Transformation time => Total: " + (t2-t1) + " REX-Create: " + 
                     renderContext.getTemplateCreationTime() + " REX-Trafo: " + renderContext.getTransformationTime());
             preq.getRequest().setAttribute(RENDEREXTTIME, renderContext.getTemplateCreationTime() + renderContext.getTransformationTime());
+            Long extFuncTime = ExtensionFunctionUtils.getExtensionFunctionTime();
+            if(extFuncTime != null) {
+                preq.getRequest().setAttribute(EXTFUNCTIME, extFuncTime / 1000000);
+            }
         } catch (TransformerException e) {
             Throwable inner = e.getException();
             Throwable cause = null;

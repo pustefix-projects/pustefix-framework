@@ -17,6 +17,15 @@
  */
 package de.schlund.pfixxml.util;
 
+import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.Method;
+
+import org.apache.log4j.Logger;
+import org.pustefixframework.util.LogUtils;
+import org.springframework.util.ClassUtils;
+
+import de.schlund.pfixxml.RenderExtensionSaxon1;
+
 /**
  * This class provides generic XSLT extension function support, 
  * which can be used by extension function implementors:
@@ -34,7 +43,10 @@ package de.schlund.pfixxml.util;
  */
 public class ExtensionFunctionUtils {
 
-    private static ThreadLocal<Throwable> extFuncError=new ThreadLocal<Throwable>();
+    private static ThreadLocal<Throwable> extFuncError=new ThreadLocal<>();
+    private static ThreadLocal<Long> extFuncTime = new ThreadLocal<>();
+    
+    private static Logger LOG = Logger.getLogger(ExtensionFunctionUtils.class);
     
     public static void setExtensionFunctionError(Throwable t) {
         extFuncError.set(t);
@@ -44,4 +56,61 @@ public class ExtensionFunctionUtils {
         return extFuncError.get();
     }
     
+    public static Long getExtensionFunctionTime() {
+        return extFuncTime.get();
+    }
+    
+    public static void reset() {
+        extFuncError.set(null);
+        extFuncTime.set(null);
+    }
+    
+    public static Object invokeFunction(Method method, Object source, Object[] args) throws IllegalAccessException, IllegalArgumentException, InvocationTargetException {
+        long t1 = 0, t2 = 0;
+        if(LOG.isInfoEnabled()) {
+            t1 = System.nanoTime();
+        }
+        try {
+            return method.invoke(source, args);
+        } finally {
+            if(LOG.isInfoEnabled()) {
+                t2 = System.nanoTime();
+                Long totalTime = extFuncTime.get();
+                if(totalTime == null) {
+                    totalTime = new Long(t2 - t1);
+                } else {
+                    totalTime = totalTime + t2 - t1;
+                }
+                extFuncTime.set(totalTime);
+            }
+            if(LOG.isDebugEnabled()) {
+                if(method.getDeclaringClass() != RenderExtensionSaxon1.class) {
+                    StringBuilder sb = new StringBuilder();
+                    sb.append(method.getDeclaringClass().getName()).append(".");
+                    sb.append(method.getName()).append("(");
+                    for(int i=0; i<args.length; i++) {
+                        if(args[i] == null) {
+                            sb.append("null");
+                        } else if(args[i].getClass() == String.class) {
+                            sb.append("'").append(LogUtils.makeLogSafe(args[i].toString())).append("'");
+                        } else if(ClassUtils.isPrimitiveOrWrapper(args[i].getClass())) {
+                            sb.append(args[i].toString());
+                        } else {
+                            sb.append("<").append(args[i].getClass().getSimpleName()).append(">");
+                        }
+                        if(i<args.length-1) {
+                            sb.append(",");
+                        }
+                    }
+                    sb.append(") ");
+                    String argStr = sb.toString();
+                    if(argStr.length() > 130) {
+                        argStr = argStr.substring(0, 127) + "...";
+                    }
+                    LOG.debug(String.format("%-130s %10.3fms\n", argStr, (float)(t2 - t1) / 1000000));
+                }
+            }
+        }
+    }
+
 }
