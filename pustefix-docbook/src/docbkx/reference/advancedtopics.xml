@@ -906,7 +906,7 @@ public class PremiumCustomerCondition implements Condition {
     <aop:scoped-proxy/>
   </bean>
   
-  <ws:webservie
+  <ws:webservice
     id="Webservice_MyBean" 
     servicename="MyBean" 
     interface="MyBeanServiceInterface"
