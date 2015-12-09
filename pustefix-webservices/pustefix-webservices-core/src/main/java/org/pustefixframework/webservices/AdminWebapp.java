@@ -118,6 +118,7 @@ public class AdminWebapp {
                 sendAdmin(req,res);
             } else sendForbidden(req,res);
         } else if(qs.startsWith("test")) {
+            // FIXME Configuration might be session="none", but we send 403 anyway.
             if(session!=null && runtime.getConfiguration().getGlobalServiceConfig().getAdminEnabled()) {
                 sendTest(req,res);
             } else sendForbidden(req,res);
