@@ -17,12 +17,8 @@ import org.pustefixframework.util.javascript.Compressor;
 import org.pustefixframework.util.javascript.CompressorException;
 
 /**
- * 
  * Adapter to the YUI Javascript compressor, which can handle conflicting
  * Rhino versions in the classpath (problem with patched Rhino bundled with YUI).
- * 
- * @author mleidig@schlund.de
- *
  */
 public class YUICompressorAdapter implements Compressor {
     

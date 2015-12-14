@@ -7,11 +7,7 @@ import org.apache.log4j.Logger;
 import org.pustefixframework.util.javascript.internal.CompressorLocator;
 
 /**
- * 
  * XSLT extension functions for Javascript compression.
- * 
- * @author mleidig@schlund.de
- *
  */
 public class CompressorCallback {
 
@@ -28,8 +24,6 @@ public class CompressorCallback {
             } catch(CompressorException x) {
                 LOG.error("Failed to compress inline javascript: " + javascript, x);
             }
-        } else {
-            LOG.warn("No Javascript compressor found");
         }
         return javascript;
     }

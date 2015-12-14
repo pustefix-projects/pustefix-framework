@@ -363,10 +363,16 @@
     overwrite params in the standardpage tag for a single page.
   -->
   <global>
-    <param name="AName" value="AValue"/>
     <include stylesheet="path/to/AStyleSheet"/>
     <!-- Stylesheets from module jars can be directly included by setting the module attribute. -->
     <!-- <include stylesheet="path/to/AStyleSheetFromModule" module="modulename"/> -->
+    <param name="AName" value="AValue"/>
+    <!-- Enable compressing of inline Javascript (requires YUI compressor or Google Closure Compiler in classpath) -->
+    <cus:choose>
+      <cus:when test="$mode = 'prod'">
+        <param name="compress-inline-javascript" value="true"/>
+      </cus:when>
+    </cus:choose>
   </global>
 
   <config-include file="conf/myfile.xml" section="targets" module="mymodule"/>

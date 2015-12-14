@@ -4,11 +4,7 @@ import java.io.Reader;
 import java.io.Writer;
 
 /**
- * 
- * Interface to Javascript compression implementations.
- * 
- * @author mleidig@schlund.de
- *
+ * Interface to be implemented by adapter for Javascript compressor implementation.
  */
 public interface Compressor {
 

@@ -83,4 +83,10 @@
     </para>
   </section>
 
+  <section xml:id="news.0_19_21">
+    <title>What's new in Pustefix 0.19.21</title>
+    <para>Added support for using Google Closure Compiler to compress inline Javascript (default compressor will be the YUI compressor, if available in the classpath).
+    </para>
+  </section>
+
 </chapter>
