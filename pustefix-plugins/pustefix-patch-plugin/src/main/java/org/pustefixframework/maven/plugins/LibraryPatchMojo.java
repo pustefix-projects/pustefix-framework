@@ -29,8 +29,6 @@ import javassist.CannotCompileException;
 import javassist.ClassPool;
 import javassist.CtClass;
 import javassist.CtMethod;
-import javassist.CtNewMethod;
-import javassist.NotFoundException;
 import javassist.expr.ExprEditor;
 import javassist.expr.MethodCall;
 
@@ -46,18 +44,7 @@ import javassist.expr.MethodCall;
 public class LibraryPatchMojo extends AbstractMojo {
 
     /**
-     * @parameter default-value="${basedir}/src/main/webapp"
-     * @required
-     */
-    private File docroot;
-    
-    /**
-     * @parameter default-value="prod"
-     */
-    private String mode;
-
-    /**
-     * @parameter default-value="${project.build.directory}/${project.build.finalName}/WEB-INF/classes"
+     * @parameter default-value="${project.build.directory}/classes"
      */
     private File outputDirectory;
 
