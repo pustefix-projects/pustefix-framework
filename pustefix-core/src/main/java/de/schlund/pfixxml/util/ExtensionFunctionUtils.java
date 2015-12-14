@@ -107,7 +107,7 @@ public class ExtensionFunctionUtils {
                     if(argStr.length() > 130) {
                         argStr = argStr.substring(0, 127) + "...";
                     }
-                    LOG.debug(String.format("%-130s %10.3fms\n", argStr, (float)(t2 - t1) / 1000000));
+                    LOG.debug(String.format("%-130s %10.3fms", argStr, (float)(t2 - t1) / 1000000));
                 }
             }
         }
