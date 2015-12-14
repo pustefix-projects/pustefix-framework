@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<xsd:schema xmlns:xsd="http://www.w3.org/2001/XMLSchema" 
+<xsd:schema xmlns:xsd="http://www.w3.org/2001/XMLSchema"
             elementFormDefault="qualified" attributeFormDefault="unqualified">
             
   <xsd:element name="make">
@@ -10,9 +10,11 @@
         <xsd:choice minOccurs="1" maxOccurs="unbounded">
           <xsd:element name="standardmaster" type="standardmaster-type"/>
           <xsd:element name="standardmetatags" type="standardmetatags-type"/>
-          <xsd:element name="standardpage" type="standardpage-type"/>
+          <xsd:element name="standardpage-variant" type="xsd:string"/>
+          <xsd:element ref="standardpage"/>
           <xsd:element name="target" type="target-type"/>
           <xsd:element name="config-include" type="config-include-type"/>
+          <xsd:any namespace="http://www.schlund.de/pustefix/customize" minOccurs="0" maxOccurs="unbounded" processContents="lax"/>
         </xsd:choice>
       </xsd:sequence>
       <xsd:attribute name="lang" type="xsd:string" use="required"/>
@@ -35,10 +37,13 @@
   
   <xsd:complexType name="global-type">
     <xsd:choice minOccurs="0" maxOccurs="unbounded">
-      <xsd:element name="include" type="include-type"/>
-      <xsd:element name="param" type="param-type"/>
+      <xsd:element ref="include"/>
+      <xsd:element ref="param"/>
+      <xsd:any namespace="http://www.schlund.de/pustefix/customize" minOccurs="0" maxOccurs="unbounded" processContents="lax"/>
     </xsd:choice>
   </xsd:complexType>
+  
+  <xsd:element name="choose"  />
   
   <xsd:complexType name="namespaces-type">
     <xsd:sequence>
@@ -53,8 +58,8 @@
   
   <xsd:complexType name="standardmaster-type">
     <xsd:choice minOccurs="0" maxOccurs="unbounded">
-      <xsd:element name="include" type="include-type"/>
-      <xsd:element name="param" type="param-type"/>
+      <xsd:element ref="include"/>
+      <xsd:element ref="param"/>
       <xsd:element name="depaux" type="depaux-type"/>
     </xsd:choice>
     <xsd:attribute name="name" type="xsd:string"/>
@@ -63,45 +68,51 @@
   
   <xsd:complexType name="standardmetatags-type">
     <xsd:choice minOccurs="0" maxOccurs="unbounded">
-      <xsd:element name="include" type="include-type"/>
-      <xsd:element name="param" type="param-type"/>
+      <xsd:element ref="include"/>
+      <xsd:element ref="param"/>
       <xsd:element name="depaux" type="depaux-type"/>
     </xsd:choice>
     <xsd:attribute name="name" type="xsd:string"/>
     <xsd:attribute name="themes" type="xsd:string"/>
   </xsd:complexType>
   
-  <xsd:complexType name="standardpage-type">
-    <xsd:choice minOccurs="0" maxOccurs="unbounded">
-      <xsd:element name="include" type="include-type"/>
-      <xsd:element name="param" type="param-type"/>
-    </xsd:choice>
-    <xsd:attribute name="name" type="xsd:string" use="required"/>
-    <xsd:attribute name="xml" type="xsd:string" use="required"/>
-    <xsd:attribute name="module" type="xsd:string"/>
-    <xsd:attribute name="master" type="xsd:string"/>
-    <xsd:attribute name="metatags" type="xsd:string"/>
-    <xsd:attribute name="variant" type="xsd:string"/>
-    <xsd:attribute name="themes" type="xsd:string"/>
-    <xsd:anyAttribute namespace="##any" processContents="lax"/>
-  </xsd:complexType>
+  <xsd:element name="standardpage">
+    <xsd:complexType>
+      <xsd:choice minOccurs="0" maxOccurs="unbounded">
+        <xsd:element ref="include"/>
+        <xsd:element ref="param"/>
+      </xsd:choice>
+      <xsd:attribute name="name" type="xsd:string" use="required"/>
+      <xsd:attribute name="xml" type="xsd:string" use="required"/>
+      <xsd:attribute name="module" type="xsd:string"/>
+      <xsd:attribute name="master" type="xsd:string"/>
+      <xsd:attribute name="metatags" type="xsd:string"/>
+      <xsd:attribute name="variant" type="xsd:string"/>
+      <xsd:attribute name="themes" type="xsd:string"/>
+      <xsd:anyAttribute namespace="##any" processContents="lax"/>
+    </xsd:complexType>
+  </xsd:element>
   
-  <xsd:complexType name="include-type">
-    <xsd:attribute name="stylesheet" type="xsd:string" use="required"/>
-    <xsd:attribute name="module" type="xsd:string"/>
-  </xsd:complexType>
+  <xsd:element name="include">
+    <xsd:complexType>
+      <xsd:attribute name="stylesheet" type="xsd:string" use="required"/>
+      <xsd:attribute name="module" type="xsd:string"/>
+    </xsd:complexType>
+  </xsd:element>
     
-  <xsd:complexType name="param-type">
-    <xsd:attribute name="name" type="xsd:string" use="required"/>
-    <xsd:attribute name="value" type="xsd:string" use="required"/>
-  </xsd:complexType>
+  <xsd:element name="param">
+    <xsd:complexType>
+      <xsd:attribute name="name" type="xsd:string" use="required"/>
+      <xsd:attribute name="value" type="xsd:string" use="required"/>
+    </xsd:complexType>
+  </xsd:element>
   
   <xsd:complexType name="target-type">
     <xsd:sequence>
       <xsd:element name="depxml" type="depxml-type"/>
       <xsd:element name="depxsl" type="depxsl-type"/>
       <xsd:element name="depaux" type="depaux-type" minOccurs="0" maxOccurs="unbounded"/>
-      <xsd:element name="param" type="param-type" minOccurs="0" maxOccurs="unbounded"/>
+      <xsd:element ref="param" minOccurs="0" maxOccurs="unbounded"/>
     </xsd:sequence>
     <xsd:attribute name="name" type="xsd:string" use="required"/>
     <xsd:attribute name="type">
