@@ -811,6 +811,7 @@ public abstract class AbstractPustefixXMLRequestHandler extends AbstractPustefix
         renderContext.setParameters(Collections.unmodifiableMap(paramhash));
         try {
             long t1 = System.currentTimeMillis();
+            ExtensionFunctionUtils.resetExtensionFunctionTime();
             Xslt.transform(spdoc.getDocument(), stylevalue, paramhash, new StreamResult(output), getServletEncoding());
             long t2 = System.currentTimeMillis();
             if(LOGGER.isDebugEnabled()) LOGGER.debug("Transformation time => Total: " + (t2-t1) + " REX-Create: " + 
@@ -833,6 +834,8 @@ public abstract class AbstractPustefixXMLRequestHandler extends AbstractPustefix
             } else {
                 throw e;
             }
+        } finally {
+            ExtensionFunctionUtils.resetExtensionFunctionTime();
         }
     }
 

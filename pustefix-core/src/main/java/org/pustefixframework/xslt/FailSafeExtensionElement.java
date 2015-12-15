@@ -57,7 +57,7 @@ public class FailSafeExtensionElement extends StyleElement {
             if(throwable == null) {
                 throwable = x;
             } else {
-                ExtensionFunctionUtils.setExtensionFunctionError(null);
+                ExtensionFunctionUtils.resetExtensionFunctionError();
             }
             StringWriter sw = new StringWriter();
             PrintWriter pw = new PrintWriter(sw);

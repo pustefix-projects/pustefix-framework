@@ -255,6 +255,26 @@
          </plugins>
        </build>
      </profile>
+     <profile>
+       <id>profile-xslt</id>
+       <build>
+         <plugins>
+           <plugin>
+             <groupId>org.pustefixframework.maven.plugins</groupId>
+             <artifactId>pustefix-patch-plugin</artifactId>
+             <version>0.19.22-SNAPSHOT</version>
+             <executions>
+               <execution>
+                 <goals>
+                   <goal>patch</goal>
+                 </goals>
+               </execution>
+             </executions>
+           </plugin>
+         </plugins>
+       </build>
+    </profile>
+
   </profiles>
   
 </project>

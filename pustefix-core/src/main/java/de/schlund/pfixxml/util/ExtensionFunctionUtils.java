@@ -60,8 +60,11 @@ public class ExtensionFunctionUtils {
         return extFuncTime.get();
     }
     
-    public static void reset() {
+    public static void resetExtensionFunctionError() {
         extFuncError.set(null);
+    }
+    
+    public static void resetExtensionFunctionTime() {
         extFuncTime.set(null);
     }
     
