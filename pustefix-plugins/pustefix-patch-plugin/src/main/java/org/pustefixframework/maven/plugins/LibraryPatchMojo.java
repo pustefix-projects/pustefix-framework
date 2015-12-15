@@ -77,16 +77,18 @@ public class LibraryPatchMojo extends AbstractMojo {
             }
                             
             CtClass cl = classPool.get("com.icl.saxon.expr.FunctionProxy");
-            CtMethod[] methods = cl.getDeclaredMethods();
-            for (int i = 0; i < methods.length; i++) {
-                if (methods[i].getName().equals("call")) {
-                    methods[i].instrument(new ExprEditor() {
-                        public void edit(final MethodCall m) throws CannotCompileException {
-                            if ("java.lang.reflect.Method".equals(m.getClassName()) && "invoke".equals(m.getMethodName())) {
-                                m.replace("{$_ = de.schlund.pfixxml.util.ExtensionFunctionUtils.invokeFunction($0, $$);}");
+            if(!cl.isFrozen()) {
+                CtMethod[] methods = cl.getDeclaredMethods();
+                for (int i = 0; i < methods.length; i++) {
+                    if (methods[i].getName().equals("call")) {
+                        methods[i].instrument(new ExprEditor() {
+                            public void edit(final MethodCall m) throws CannotCompileException {
+                                if ("java.lang.reflect.Method".equals(m.getClassName()) && "invoke".equals(m.getMethodName())) {
+                                    m.replace("{$_ = de.schlund.pfixxml.util.ExtensionFunctionUtils.invokeFunction($0, $$);}");
+                                }
                             }
-                        }
-                    });
+                        });
+                    }
                 }
             }
             byte[] bytes = cl.toBytecode();
