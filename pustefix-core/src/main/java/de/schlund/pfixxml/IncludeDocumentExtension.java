@@ -35,6 +35,7 @@ import javax.xml.transform.URIResolver;
 
 import org.apache.log4j.Logger;
 import org.pustefixframework.util.LocaleUtils;
+import org.springframework.cache.interceptor.SimpleKeyGenerator;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.Node;
@@ -515,6 +516,21 @@ public final class IncludeDocumentExtension {
     }
     
     public static Node getIncludeInfo(XsltContext context, String path, String module, String search, 
+            String tenant, String language) throws Exception {
+        
+        Object cacheKey = SimpleKeyGenerator.generateKey(IncludeDocumentExtension.class.getName(), 
+                "getIncludeInfo", path, module, search, tenant, language);
+        Node cachedResult = (Node)ExtensionFunctionUtils.getCacheValue(cacheKey);
+        if(cachedResult != null) {
+            return cachedResult;
+        } else {
+            Node result = getIncludeInfoNoCache(context, path, module, search, tenant, language);
+            ExtensionFunctionUtils.setCacheValue(cacheKey, result);
+            return result;
+        }
+    }
+    
+    private static Node getIncludeInfoNoCache(XsltContext context, String path, String module, String search, 
             String tenant, String language) throws Exception {
         
         try {

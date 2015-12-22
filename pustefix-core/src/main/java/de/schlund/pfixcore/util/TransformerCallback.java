@@ -104,6 +104,20 @@ public class TransformerCallback {
     // }
 
     public static int isAccessible(RequestContextImpl requestcontext, TargetGenerator targetgen, String pagename) throws Exception {
+        
+        Object cacheKey = SimpleKeyGenerator.generateKey(TransformerCallback.class.getName(), "isAccessible", pagename);
+        Integer cachedResult = (Integer)ExtensionFunctionUtils.getCacheValue(cacheKey);
+        if(cachedResult != null) {
+            return cachedResult;
+        } else {
+            int result = isAccessibleNoCache(requestcontext, targetgen, pagename);
+            ExtensionFunctionUtils.setCacheValue(cacheKey, result);
+            return result;
+        }
+    }
+    
+    private static int isAccessibleNoCache(RequestContextImpl requestcontext, TargetGenerator targetgen, String pagename) throws Exception {
+
         try {
             ContextImpl context = requestcontext.getParentContext();
             
@@ -419,6 +433,21 @@ public class TransformerCallback {
     }
     
     public static boolean needsLastFlow(RequestContextImpl requestContext, String pageName, String lastFlowName) throws Exception {
+        
+        Object cacheKey = SimpleKeyGenerator.generateKey(TransformerCallback.class.getName(), "needsLastFlow", pageName, lastFlowName);
+        Boolean cachedResult = (Boolean)ExtensionFunctionUtils.getCacheValue(cacheKey);
+        if(cachedResult != null) {
+            return cachedResult;
+        } else {
+            boolean result = needsLastFlowNoCache(requestContext, pageName, lastFlowName);
+            ExtensionFunctionUtils.setCacheValue(cacheKey, result);
+            return result;
+        }
+        
+    }
+    
+    private static boolean needsLastFlowNoCache(RequestContextImpl requestContext, String pageName, String lastFlowName) throws Exception {
+        
         try {
             ContextImpl context = requestContext.getParentContext();
             return context.needsLastFlow(pageName, lastFlowName);

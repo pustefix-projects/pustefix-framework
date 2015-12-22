@@ -19,6 +19,8 @@ package de.schlund.pfixxml.util;
 
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
+import java.util.HashMap;
+import java.util.Map;
 
 import org.apache.log4j.Logger;
 import org.pustefixframework.util.LogUtils;
@@ -45,6 +47,7 @@ public class ExtensionFunctionUtils {
 
     private static ThreadLocal<Throwable> extFuncError=new ThreadLocal<>();
     private static ThreadLocal<Long> extFuncTime = new ThreadLocal<>();
+    private static ThreadLocal<Map<Object, Object>> extFuncCache = new ThreadLocal<>();
     
     private static Logger LOG = Logger.getLogger(ExtensionFunctionUtils.class);
     
@@ -114,6 +117,29 @@ public class ExtensionFunctionUtils {
                 }
             }
         }
+    }
+
+    public static Object getCacheValue(Object key) {
+        Map<Object, Object> map = extFuncCache.get();
+        if(map != null) {
+            return map.get(key);
+        }
+        return null;
+    }
+    
+    public static void setCacheValue(Object key, Object value) {
+        Map<Object, Object> map = extFuncCache.get();
+        if(map != null) {
+            map.put(key, value);
+        }
+    }
+    
+    public static void initCache() {
+        extFuncCache.set(new HashMap<Object, Object>());
+    }
+    
+    public static void resetCache() {
+        extFuncCache.set(null);
     }
 
 }

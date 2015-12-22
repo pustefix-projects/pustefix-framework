@@ -39,5 +39,16 @@ public class URLUtils {
             return null;
         }
     }
+    
+    public static String removePathAttributes(String path) {
+        int ind = path.indexOf(';');
+        while(ind > -1) {
+            String start = path.substring(0, ind);
+            int to = path.indexOf('/', ind);
+            path = (to > -1) ? start + path.substring(to) : start;
+            ind = path.indexOf(';', ind);
+        }
+        return path;
+    }
 
 }

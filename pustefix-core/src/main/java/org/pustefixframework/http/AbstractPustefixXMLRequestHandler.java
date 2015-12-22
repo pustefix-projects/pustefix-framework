@@ -55,6 +55,7 @@ import org.pustefixframework.config.contextxmlservice.AbstractXMLServletConfig;
 import org.pustefixframework.config.contextxmlservice.ServletManagerConfig;
 import org.pustefixframework.container.spring.http.PustefixHandlerMapping;
 import org.pustefixframework.util.LogUtils;
+import org.pustefixframework.util.URLUtils;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.ApplicationContextAware;
 import org.springframework.web.servlet.FlashMap;
@@ -439,7 +440,8 @@ public abstract class AbstractPustefixXMLRequestHandler extends AbstractPustefix
                         flashMap.put("__reuse", String.valueOf(spdoc.getTimestamp()));
                         String location = spdoc.getResponseHeader().get("Location");
                         UriComponents uriComponents = UriComponentsBuilder.fromUriString(location).build();
-                        flashMap.setTargetRequestPath(uriComponents.getPath());
+                        String targetPath = URLUtils.removePathAttributes(uriComponents.getPath());
+                        flashMap.setTargetRequestPath(targetPath);
                         flashMap.addTargetRequestParams(uriComponents.getQueryParams());
                         flashMap.startExpirationPeriod(30); //30 seconds for redirect request to return
                         FlashMapManager flashMapManager = RequestContextUtils.getFlashMapManager(preq.getRequest());
@@ -465,7 +467,6 @@ public abstract class AbstractPustefixXMLRequestHandler extends AbstractPustefix
                 // This is obviously not thread-safe. However, no problems should
                 // arise if the session is invalidated twice.
                 session.setAttribute(SESS_CLEANUP_FLAG_STAGE2, true);
-                
                 sessionCleaner.invalidateSession(session);
             } else {
                 // Invalidate immediately
@@ -754,6 +755,8 @@ public abstract class AbstractPustefixXMLRequestHandler extends AbstractPustefix
     }
     
     private void render(SPDocument spdoc, RENDERMODE rendering, HttpServletResponse res, TreeMap<String, Object> paramhash, String stylesheet, OutputStream output, PfixServletRequest preq) throws RenderingException {
+        
+        ExtensionFunctionUtils.initCache();
         try {
         switch (rendering) {
             case RENDER_NORMAL:
@@ -780,6 +783,8 @@ public abstract class AbstractPustefixXMLRequestHandler extends AbstractPustefix
             throw new RenderingException("Exception while rendering page " + spdoc.getPagename() + " with stylesheet " + stylesheet, e);
         } catch (TransformerException e) {
             throw new RenderingException("Exception while rendering page " + spdoc.getPagename() + " with stylesheet " + stylesheet, e);
+        } finally {
+            ExtensionFunctionUtils.resetCache();
         }
     }
 
@@ -1305,7 +1310,7 @@ public abstract class AbstractPustefixXMLRequestHandler extends AbstractPustefix
             	super.writeTo(out);
             }
         }
-        
+
     }
-    
+
 }
