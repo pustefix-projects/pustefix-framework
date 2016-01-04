@@ -19,6 +19,7 @@
 package de.schlund.pfixcore.workflow.app;
 import org.pustefixframework.config.contextxmlservice.StateConfig;
 
+import de.schlund.pfixcore.generator.IWrapper;
 import de.schlund.pfixcore.workflow.Context;
 import de.schlund.pfixxml.PfixServletRequest;
 import de.schlund.pfixxml.ResultDocument;
@@ -38,6 +39,7 @@ public interface IWrapperContainer {
     void    addStringValues() throws Exception;
     void    addIWrapperStatus() throws Exception;
     boolean errorHappened() throws Exception;
+    IWrapper[] getIWrappersWithError();
     @Deprecated
     Context getAssociatedContext();
 }

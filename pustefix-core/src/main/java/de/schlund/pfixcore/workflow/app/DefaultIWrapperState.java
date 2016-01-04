@@ -25,6 +25,7 @@ import org.pustefixframework.config.contextxmlservice.StateConfig;
 import org.pustefixframework.generated.CoreStatusCodes;
 import org.springframework.web.servlet.ModelAndView;
 
+import de.schlund.pfixcore.generator.IWrapper;
 import de.schlund.pfixcore.scriptedflow.vm.VirtualHttpServletRequest;
 import de.schlund.pfixcore.util.TokenManager;
 import de.schlund.pfixcore.workflow.Context;
@@ -131,6 +132,7 @@ public class DefaultIWrapperState extends StateImpl implements IWrapperState, Re
                 wrp_container.handleSubmittedData();
 
                 if (wrp_container.errorHappened()) {
+                    handleWrapperErrors(wrp_container.getIWrappersWithError());
                     CAT.debug("    => Can't continue, as errors happened during load/work.");
                     context.prohibitContinue();
                 } else {
@@ -196,6 +198,16 @@ public class DefaultIWrapperState extends StateImpl implements IWrapperState, Re
 
     public boolean requiresToken() {
         return getConfig().requiresToken();
+    }
+
+    /**
+     * Handle IWrapper validation errors.
+     * 
+     * The default implementation does nothing, but can be overridden, e.g. for error logging.
+     * 
+     * @param wrappers all wrappers with validation errors
+     */
+    public void handleWrapperErrors(IWrapper[] wrappers) {
     }
 
 }
