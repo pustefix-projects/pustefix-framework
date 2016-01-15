@@ -35,7 +35,7 @@ public class DirectOutputAuthConstraintParsingHandler implements ParsingHandler 
         
         String constraintRef = element.getAttribute("ref").trim();
         if (!constraintRef.equals("")) {
-            DirectOutputServiceConfigImpl config = ParsingUtils.getSingleTopObject(DirectOutputServiceConfigImpl.class, context);
+            DirectOutputServiceConfigImpl config = context.getObjectTreeElement().getObjectsOfTypeFromTopTree(DirectOutputServiceConfigImpl.class).iterator().next();
             config.setAuthConstraintRef(constraintRef);
         }
     }
