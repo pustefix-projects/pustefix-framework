@@ -389,6 +389,10 @@ public class ContextImpl implements AccessibilityChecker, ExtendedContext, Token
     public void markSessionForCleanup() {
         this.sessioncontext.markSessionForCleanup();
     }
+    
+    public void invalidateSessionAfterCompletion() {
+        this.sessioncontext.invalidateSessionAfterCompletion();
+    }
 
     public void addSessionStatusListener(SessionStatusListener l) {
         this.sessioncontext.addSessionStatusListener(l);

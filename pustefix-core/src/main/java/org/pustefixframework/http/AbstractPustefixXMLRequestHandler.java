@@ -106,8 +106,6 @@ public abstract class AbstractPustefixXMLRequestHandler extends AbstractPustefix
     //~ Instance/static variables ..................................................................
     // how to write xml to the result stream
     private enum RENDERMODE { RENDER_NORMAL, RENDER_EXTERNAL, RENDER_FONTIFY, RENDER_XMLONLY, RENDER_LASTDOM };
-
-    private Logger LOGGER_SESSION = Logger.getLogger("LOGGER_SESSION");
     
     public static final String DEF_PROP_TMPDIR = "java.io.tmpdir";
     private static final String FONTIFY_SSHEET        = "module://pustefix-core/xsl/xmlfontify.xsl";

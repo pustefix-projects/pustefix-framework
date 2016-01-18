@@ -212,6 +212,10 @@ public class MockContext implements Context {
         // do nothing
     }
 
+    @Override
+    public void invalidateSessionAfterCompletion() {
+        // do nothing   
+    }
     
     public boolean precedingFlowNeedsData() throws PustefixApplicationException {
         return precedingFlowNeedsData;
