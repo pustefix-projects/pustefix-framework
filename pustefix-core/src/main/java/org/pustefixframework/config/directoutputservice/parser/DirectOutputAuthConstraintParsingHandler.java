@@ -17,7 +17,7 @@
  */
 package org.pustefixframework.config.directoutputservice.parser;
 
-import org.pustefixframework.config.directoutputservice.parser.internal.DirectOutputServiceConfigImpl;
+import org.pustefixframework.config.directoutputservice.parser.internal.DirectOutputPageRequestConfigImpl;
 import org.pustefixframework.config.generic.ParsingUtils;
 import org.w3c.dom.Element;
 
@@ -35,7 +35,7 @@ public class DirectOutputAuthConstraintParsingHandler implements ParsingHandler 
         
         String constraintRef = element.getAttribute("ref").trim();
         if (!constraintRef.equals("")) {
-            DirectOutputServiceConfigImpl config = context.getObjectTreeElement().getObjectsOfTypeFromTopTree(DirectOutputServiceConfigImpl.class).iterator().next();
+            DirectOutputPageRequestConfigImpl config = ParsingUtils.getSingleTopObject(DirectOutputPageRequestConfigImpl.class, context);
             config.setAuthConstraintRef(constraintRef);
         }
     }
