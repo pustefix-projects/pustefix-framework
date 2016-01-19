@@ -25,7 +25,7 @@ public class CookieOnlySessionTrackingStrategy implements SessionTrackingStrateg
 
     private Logger LOGGER_SESSION = Logger.getLogger("LOGGER_SESSION");
     
-    static final String STORED_REQUEST = "__STORED_PFIXSERVLETREQUEST__";
+    private static final String STORED_REQUEST = "__STORED_PFIXSERVLETREQUEST__";
     static final String COOKIE_SESSION_SSL = "_PFXSSL_";
     static final String COOKIE_SESSION_SSL_CHECK = "_PFXSSLCHK_";
     static final String COOKIE_SESSION_RESET = "_PFXRST_";
@@ -61,7 +61,9 @@ public class CookieOnlySessionTrackingStrategy implements SessionTrackingStrateg
             return;
         }
         
-        PfixServletRequest preq;
+        PfixServletRequest preq = null;
+        try {
+        
         HttpSession session = req.getSession(false);
         
         if(session == null) {
@@ -251,6 +253,11 @@ public class CookieOnlySessionTrackingStrategy implements SessionTrackingStrateg
         preq.updateRequest(req);
         context.callProcess(preq, req, res);
         
+        } finally {
+            if(preq != null) {
+                preq.resetRequest();
+            }
+        }
     }
     
     private void resetSession(HttpServletRequest req, HttpServletResponse res) {

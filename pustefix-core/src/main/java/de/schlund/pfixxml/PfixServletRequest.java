@@ -82,6 +82,8 @@ public interface PfixServletRequest {
      */
     public void updateRequest(HttpServletRequest req);
 
+    public void resetRequest();
+    
     /**
      * Retrieve the current request.
      * @return the current request.

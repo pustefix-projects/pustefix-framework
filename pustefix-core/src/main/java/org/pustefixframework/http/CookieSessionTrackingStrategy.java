@@ -172,6 +172,8 @@ public class CookieSessionTrackingStrategy implements SessionTrackingStrategy {
         }
 
         PfixServletRequest preq = null;
+        try {
+
         if (has_session) {
             preq = (PfixServletRequest) session.getAttribute(STORED_REQUEST);
             if (preq != null) {
@@ -274,6 +276,12 @@ public class CookieSessionTrackingStrategy implements SessionTrackingStrategy {
         }
         
         context.callProcess(preq, req, res);
+        
+        } finally {
+            if(preq != null) {
+                preq.resetRequest();
+            }
+        }
     }
 
     private void redirectToClearedRequest(HttpServletRequest req, HttpServletResponse res, boolean usedSSL) {
