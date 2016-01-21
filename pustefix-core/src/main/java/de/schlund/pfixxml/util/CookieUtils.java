@@ -26,31 +26,32 @@ import javax.servlet.http.HttpServletRequest;
 import org.apache.log4j.Logger;
 
 /**
- * @author mleidig@schlund.de
+ * Provides basic manual cookie parsing.
+ * Checks request object mix-up problems by detecting
+ * request objects, which return no Cookies, but have
+ * a non-empty Cookie header.
  */
 public class CookieUtils {
     
     private static Logger LOG = Logger.getLogger(CookieUtils.class);
     
     public static Cookie[] getCookies(HttpServletRequest request) {
-        //Workaround for cookie loss problem: 
-        //Despite receiving a non-empty request cookie header from the browser Tomcat
-        //sometimes inexplicably returns null calling HttpServletRequest.getCookies().
-        //In this case we directly parse the cookie header by calling the utility
-        //method CookieUtils.getCookies().
-        Cookie[] cookies = request.getCookies();
-        if(cookies != null && cookies.length == 0) {
-            cookies = null;
-        }
-        if(cookies == null) {
-            String header = request.getHeader("Cookie");
-            if(header != null) {
-                cookies=getCookies(header);
-                if(cookies != null) {
+        
+        final Cookie[] cookies = request.getCookies();
+        if(cookies == null || cookies.length == 0) {
+            String cookieHeader = request.getHeader("Cookie");
+            if(cookieHeader != null) {
+                Cookie[] parsedCookies = getCookies(cookieHeader);
+                if(parsedCookies != null) {
+                    //If a Cookie header is found and it contains cookies,
+                    //but you don't get them via the Servlet API, this can
+                    //indicate that something goes fundamentally wrong,
+                    //e.g. an application bug with storing/using HttpServletRequest
+                    //objects outside of the current request thread,
+                    //see org.apache.catalina.connector. RECYCLE_FACADES for details.
                     String userAgent = request.getHeader("User-Agent");
                     if (userAgent == null) userAgent = "-";
-                    String cookieHeader = request.getHeader("Cookie");
-                    LOG.warn("COOKIE_LOSS_WORKAROUND|" + userAgent + "|" + cookieHeader);
+                    LOG.warn("COOKIE_LOSS_PROBLEM|" + userAgent + "|" + cookieHeader);
                 }
             }
         }
