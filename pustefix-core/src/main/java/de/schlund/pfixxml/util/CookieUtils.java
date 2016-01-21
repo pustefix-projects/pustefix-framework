@@ -37,8 +37,14 @@ public class CookieUtils {
     
     public static Cookie[] getCookies(HttpServletRequest request) {
         
-        final Cookie[] cookies = request.getCookies();
-        if(cookies == null || cookies.length == 0) {
+        Cookie[] cookies = request.getCookies();
+        if(cookies != null && cookies.length == 0) {
+            //Servlet API specifies to return null if no cookies
+            //were sent, but some implementations return empty array
+            //instead. Make them compatible by returning null too.
+            cookies = null;
+        }
+        if(cookies == null) {
             String cookieHeader = request.getHeader("Cookie");
             if(cookieHeader != null) {
                 Cookie[] parsedCookies = getCookies(cookieHeader);
