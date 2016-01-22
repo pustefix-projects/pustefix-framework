@@ -43,6 +43,7 @@ import javax.xml.transform.stream.StreamResult;
 import javax.xml.transform.stream.StreamSource;
 
 import org.apache.log4j.Logger;
+import org.pustefixframework.xml.tools.XSLTracing;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.xml.sax.InputSource;
@@ -223,6 +224,10 @@ public class Xslt {
         if(traceInstructions) {
            traceWriter=new StringWriter();
            XsltProvider.getXsltSupport(xsltVersion).doTracing(trafo,traceWriter);
+        }
+
+        if(XSLTracing.getInstance().isEnabled() && params.containsKey("__spdoc__")) {
+            XsltProvider.getXsltSupport(xsltVersion).doPerformanceTracing(trafo, templates);
         }
         XsltMessageWriter msgWriter = XsltProvider.getXsltSupport(xsltVersion).recordMessages(trafo);
         long start = 0;

@@ -34,6 +34,7 @@ public interface XsltSupport {
     public Templates getPrettyPrinterTemplates();
     public boolean isInternalTemplate(Templates templates);
     public void doTracing(Transformer transformer, Writer traceWriter);
+    public void doPerformanceTracing(Transformer transformer, Templates templates);
     public String getSystemId(Templates templates);
     public XsltMessageWriter recordMessages(Transformer transformer);
     public void doErrorListening(Transformer transformer, boolean traceLocation);

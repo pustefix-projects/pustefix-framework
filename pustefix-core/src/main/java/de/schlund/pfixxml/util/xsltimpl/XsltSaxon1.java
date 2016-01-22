@@ -96,6 +96,14 @@ public class XsltSaxon1 implements XsltSupport {
         c.setLineNumbering(true);
     }
     
+    public void doPerformanceTracing(Transformer transformer, Templates templates) {
+        String systemId = ((PreparedStyleSheet)templates).getStyleSheetDocument().getSystemId();
+        Saxon1XSLTraceListener tl=new Saxon1XSLTraceListener(systemId);
+        Controller c=(Controller)transformer;
+        c.setTraceListener(tl);
+        c.setLineNumbering(true);
+    }
+    
     public String getSystemId(Templates templates) {
     	if(templates instanceof PreparedStyleSheet) {
     		DocumentImpl doc = ((PreparedStyleSheet)templates).getStyleSheetDocument();
