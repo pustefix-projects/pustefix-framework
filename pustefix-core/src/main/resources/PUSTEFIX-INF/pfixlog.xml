@@ -82,6 +82,14 @@
     </layout>
   </appender> 
 
+  <appender name="LOGGER_PFXPERF" class="org.apache.log4j.RollingFileAppender">
+    <param name="File"><cus:logroot/>pustefix-perf.log</param>
+    <param name="MaxFileSize" value="10MB"/>
+    <layout class="org.apache.log4j.PatternLayout">
+      <param name="ConversionPattern" value="%d{ISO8601}|%m\n"/>
+    </layout>
+  </appender>
+
   <!-- Categories -->
 
   <!-- Make some very verbose packages quiet by default --> 
@@ -156,6 +164,13 @@
       <cus:otherwise><priority value="DEBUG"/></cus:otherwise>
     </cus:choose>
     <appender-ref ref="LOGGER_XSLT"/>
+  </category>
+
+  <!--  Enable request performance logging done by ServletFilter -->
+  
+  <category name="org.pustefixframework.http.PerformanceLoggingFilter" additivity="false">
+    <priority value="INFO"/>
+    <appender-ref ref="LOGGER_PFXPERF"/>
   </category>
 
   <!-- Special categories for Pustefix statistics log files -->
