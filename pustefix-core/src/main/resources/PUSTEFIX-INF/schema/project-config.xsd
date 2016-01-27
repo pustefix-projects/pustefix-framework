@@ -132,6 +132,12 @@
           <xsd:attribute name="class" type="xsd:string"/>
         </xsd:complexType>
       </xsd:element>
+      <xsd:element name="extension-cache">
+        <xsd:complexType>
+          <xsd:attribute name="capacity" type="xsd:int" use="required"/>
+          <xsd:attribute name="class" type="xsd:string"/>
+        </xsd:complexType>
+      </xsd:element>
     </xsd:choice>  
   </xsd:group>
   

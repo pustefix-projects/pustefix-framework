@@ -25,6 +25,8 @@ import java.text.MessageFormat;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.ConcurrentMap;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -46,6 +48,7 @@ import de.schlund.pfixxml.resources.DynamicResourceProvider;
 import de.schlund.pfixxml.resources.Resource;
 import de.schlund.pfixxml.resources.ResourceProviderRegistry;
 import de.schlund.pfixxml.resources.ResourceUtil;
+import de.schlund.pfixxml.targets.SPCache;
 import de.schlund.pfixxml.targets.Target;
 import de.schlund.pfixxml.targets.TargetGenerator;
 import de.schlund.pfixxml.targets.VirtualTarget;
@@ -79,6 +82,30 @@ public final class IncludeDocumentExtension {
     
     private static DocumentBuilderFactory docBuilderFactory = DocumentBuilderFactory.newInstance();
     
+    public static final Object get(XsltContext context, String path_str, String part,
+            TargetGenerator targetgen, String targetkey,
+            String parent_part_in, String parent_theme_in, String computed_inc,
+            String module, String search, String tenant, String language) throws Exception {
+
+        if(NOTARGET.equals(targetkey) && targetgen.getCacheFactory().getExtensionCache() != null) {
+            ConcurrentMap<Object, Object> cache = getExtensionCacheMap(context, targetgen);
+            Object cacheKey = SimpleKeyGenerator.generateKey(IncludeDocumentExtension.class.getName(), 
+                    "get", path_str, part, parent_part_in, parent_theme_in, computed_inc, module, search, tenant, language);
+            Object cachedResult = cache.get(cacheKey);
+            if(cachedResult != null) {
+                return cachedResult;
+            } else {
+                Object result = getNoCache(context, path_str, part, targetgen, targetkey, parent_part_in, parent_theme_in, 
+                        computed_inc, module, search, tenant, language);
+                cache.putIfAbsent(cacheKey, result);
+                return result;
+            }
+        } else {
+            return getNoCache(context, path_str, part, targetgen, targetkey, parent_part_in, parent_theme_in, 
+                    computed_inc, module, search, tenant, language);
+        }
+    }
+    
     //~ Methods
     // ....................................................................................
     /**
@@ -99,7 +126,7 @@ public final class IncludeDocumentExtension {
      * @return a list of nodes understood by the current transformer(currently saxon)
      * @throws Exception on all errors
      */
-    public static final Object get(XsltContext context, String path_str, String part,
+    public static final Object getNoCache(XsltContext context, String path_str, String part,
                                    TargetGenerator targetgen, String targetkey,
                                    String parent_part_in, String parent_theme_in, String computed_inc,
                                    String module, String search, String tenant, String language) throws Exception {
@@ -378,6 +405,26 @@ public final class IncludeDocumentExtension {
     }
     
     public static final boolean exists(XsltContext context, String path_str, String part, TargetGenerator targetgen, 
+            String targetkey, String module, String search, String tenant, String language) throws Exception {
+        
+        if(NOTARGET.equals(targetkey) && targetgen.getCacheFactory().getExtensionCache() != null) {
+            ConcurrentMap<Object, Object> cache = getExtensionCacheMap(context, targetgen);
+            Object cacheKey = SimpleKeyGenerator.generateKey(IncludeDocumentExtension.class.getName(), 
+                    "exists", path_str, part, module, search, tenant, language);
+            Boolean cachedResult = (Boolean)cache.get(cacheKey);
+            if(cachedResult != null) {
+                return cachedResult;
+            } else {
+                boolean result = existsNoCache(context, path_str, part, targetgen, targetkey, module, search, tenant, language);
+                cache.putIfAbsent(cacheKey, result);
+                return result;
+            }
+        } else {
+            return existsNoCache(context, path_str, part, targetgen, targetkey, module, search, tenant, language);
+        }
+    }
+    
+    public static final boolean existsNoCache(XsltContext context, String path_str, String part, TargetGenerator targetgen, 
                                        String targetkey, String module, String search, String tenant, String language) throws Exception {
 
         if(path_str.startsWith("docroot:")) path_str = path_str.substring(9);
@@ -516,17 +563,22 @@ public final class IncludeDocumentExtension {
     }
     
     public static Node getIncludeInfo(XsltContext context, String path, String module, String search, 
-            String tenant, String language) throws Exception {
+            String tenant, String language, String targetkey, TargetGenerator targetgen) throws Exception {
         
-        Object cacheKey = SimpleKeyGenerator.generateKey(IncludeDocumentExtension.class.getName(), 
-                "getIncludeInfo", path, module, search, tenant, language);
-        Node cachedResult = (Node)ExtensionFunctionUtils.getCacheValue(cacheKey);
-        if(cachedResult != null) {
-            return cachedResult;
+        if(NOTARGET.equals(targetkey) && targetgen.getCacheFactory().getExtensionCache() != null) {
+            ConcurrentMap<Object, Object> cache = getExtensionCacheMap(context, targetgen);
+            Object cacheKey = SimpleKeyGenerator.generateKey(IncludeDocumentExtension.class.getName(), 
+                    "getIncludeInfo", path, module, search, tenant, language);
+            Node cachedResult = (Node)cache.get(cacheKey);
+            if(cachedResult != null) {
+                return cachedResult;
+            } else {
+                Node result = getIncludeInfoNoCache(context, path, module, search, tenant, language);
+                cache.put(cacheKey, result);
+                return result;
+            }
         } else {
-            Node result = getIncludeInfoNoCache(context, path, module, search, tenant, language);
-            ExtensionFunctionUtils.setCacheValue(cacheKey, result);
-            return result;
+            return getIncludeInfoNoCache(context, path, module, search, tenant, language);
         }
     }
     
@@ -596,6 +648,17 @@ public final class IncludeDocumentExtension {
             ExtensionFunctionUtils.setExtensionFunctionError(x);
             throw x;
         }
+    }
+    
+    private static ConcurrentMap<Object, Object> getExtensionCacheMap(XsltContext context, TargetGenerator targetgen) {
+        String mapKey = context.getStylesheetSystemId();
+        SPCache<String, ConcurrentMap<Object, Object>> extCache = targetgen.getCacheFactory().getExtensionCache();
+        ConcurrentMap<Object, Object> cache = extCache.getValue(mapKey);
+        if(cache == null) {
+            cache = new ConcurrentHashMap<Object, Object>();
+            extCache.setValue(mapKey, cache);
+        }
+        return cache;
     }
 
 }

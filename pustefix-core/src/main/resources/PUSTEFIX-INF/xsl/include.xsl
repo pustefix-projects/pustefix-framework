@@ -879,7 +879,7 @@
     <xsl:param name="search"/>
     <xsl:param name="tenant"><xsl:value-of select="$tenant"/></xsl:param>
     <xsl:param name="lang"><xsl:value-of select="$lang"/></xsl:param>
-    <func:result select="include:getIncludeInfo($href, $module, $search, $tenant, $lang)/parts"/>
+    <func:result select="include:getIncludeInfo($href, $module, $search, $tenant, $lang, $__target_key, $__target_gen)/parts"/>
   </func:function>
  
   <!-- include parameter stuff -->

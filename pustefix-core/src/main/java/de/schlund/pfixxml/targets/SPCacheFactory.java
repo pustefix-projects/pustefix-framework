@@ -18,6 +18,7 @@
 
 package de.schlund.pfixxml.targets;
 import java.lang.reflect.Constructor;
+import java.util.concurrent.ConcurrentMap;
 
 import org.apache.log4j.Logger;
 
@@ -50,14 +51,17 @@ public class SPCacheFactory {
     private SPCache<Object, Object> targetCache;
     private SPCache<String, IncludeDocument> documentCache;
     private SPCache<Object, Object> renderCache;
+    private SPCache<String, ConcurrentMap<Object, Object>> extensionCache;
 
     private int targetCacheCapacity = 30;
     private int includeCacheCapacity = 30;
     private int renderCacheCapacity = 150;
+    private int extensionCacheCapacity = 0;
     
     private String targetCacheClass = LRUCache.class.getName();
     private String includeCacheClass = LRUCache.class.getName();
     private String renderCacheClass = LRUCache.class.getName();
+    private String extensionCacheClass = LRUCache.class.getName();
     
     private CacheStatistic cacheStatistic;
     
@@ -71,11 +75,15 @@ public class SPCacheFactory {
         targetCache = getCache(targetCacheClass, targetCacheCapacity, "target");
         documentCache = getCache(includeCacheClass, includeCacheCapacity, "include");
         renderCache = getCache(renderCacheClass, renderCacheCapacity, "render");
+        if(extensionCacheCapacity > 0) {
+            extensionCache = getCache(extensionCacheClass, extensionCacheCapacity, "extension");
+        }
         if(LOG.isInfoEnabled()) {
         	LOG.info("SPCacheFactory initialized: ");
-        	LOG.info("  TargetCache   : Class="+targetCache.getClass().getName()+" Capacity=" + targetCache.getCapacity() + " Size="+targetCache.getSize());
-        	LOG.info("  DocumentCache : Class="+documentCache.getClass().getName()+" Capacity=" + documentCache.getCapacity() + " Size="+documentCache.getSize());
-        	LOG.info("  RenderCache   : Class="+renderCache.getClass().getName()+" Capacity=" + renderCache.getCapacity() + " Size="+renderCache.getSize());
+        	LOG.info("  TargetCache    : Class="+targetCache.getClass().getName()+" Capacity=" + targetCache.getCapacity() + " Size="+targetCache.getSize());
+        	LOG.info("  DocumentCache  : Class="+documentCache.getClass().getName()+" Capacity=" + documentCache.getCapacity() + " Size="+documentCache.getSize());
+        	LOG.info("  RenderCache    : Class="+renderCache.getClass().getName()+" Capacity=" + renderCache.getCapacity() + " Size="+renderCache.getSize());
+        	LOG.info("  ExtensionCache : Class="+extensionCache.getClass().getName()+" Capacity=" + extensionCache.getCapacity() + " Size="+extensionCache.getSize());
         }
         return this;
     }
@@ -115,6 +123,10 @@ public class SPCacheFactory {
     	return documentCache;
     }
     
+    public SPCache<String, ConcurrentMap<Object, Object>> getExtensionCache() {
+        return extensionCache;
+    }
+    
     /**
      * To be used with care! If you need it, take care to throw away your old instance of SPCache retrieved 
      * through getCache() and getDocumentCache()!
@@ -138,6 +150,10 @@ public class SPCacheFactory {
     	 this.includeCacheCapacity = includeCacheCapacity;
      }
      
+     public void setExtensionCacheCapacity(int extensionCacheCapacity) {
+         this.extensionCacheCapacity = extensionCacheCapacity;
+     }
+     
      public void setTargetCacheClass(String targetCacheClass) {
     	 this.targetCacheClass = targetCacheClass;
      }
@@ -148,6 +164,10 @@ public class SPCacheFactory {
      
      public void setIncludeCacheClass(String includeCacheClass) {
     	 this.includeCacheClass = includeCacheClass;
+     }
+     
+     public void setExtensionCacheClass(String extensionCacheClass) {
+         this.extensionCacheClass = extensionCacheClass;
      }
      
      public void setCacheStatistic(CacheStatistic cacheStatistic) {

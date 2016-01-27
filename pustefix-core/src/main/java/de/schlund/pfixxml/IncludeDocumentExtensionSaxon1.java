@@ -99,9 +99,9 @@ public class IncludeDocumentExtensionSaxon1 {
     }
     
     public static Node getIncludeInfo(Context context, String path, String module, String search, 
-            String tenant, String language) throws Exception {
+            String tenant, String language, String targetkey, TargetGenerator targetgen) throws Exception {
         XsltContext xsltContext=new XsltContextSaxon1(context);
-        return IncludeDocumentExtension.getIncludeInfo(xsltContext, path, module, search, tenant, language);
+        return IncludeDocumentExtension.getIncludeInfo(xsltContext, path, module, search, tenant, language, targetkey, targetgen);
     }
 
 }

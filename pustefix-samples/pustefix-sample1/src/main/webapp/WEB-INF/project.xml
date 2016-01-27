@@ -37,6 +37,7 @@
         <include-cache capacity="50"/>
         <target-cache capacity="50"/>
         <render-cache capacity="50"/>
+        <extension-cache capacity="50"/>
       </when>
       <when test="$mode='prelive'">
         <!-- Enable/disable development tooling extensions (dynamic include info, console, etc.) 

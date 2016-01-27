@@ -801,6 +801,7 @@ public abstract class AbstractPustefixXMLRequestHandler extends AbstractPustefix
             LOGGER.warn("stylevalue MUST NOT be null: stylesheet=" + stylesheet + "; " +
                      ((spdoc != null) ? ("pagename=" +  spdoc.getPagename()) : "spdoc==null")); 
         }
+        paramhash.put("__stylesheet", stylesheet);
         paramhash.put("page", spdoc.getPagename());
         String definingModule = generator.getDefiningModule(spdoc.getPagename());
         if(definingModule != null) {
