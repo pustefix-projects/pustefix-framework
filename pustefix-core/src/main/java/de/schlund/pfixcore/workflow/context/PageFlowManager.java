@@ -138,7 +138,7 @@ public class PageFlowManager {
         }
     }
     
-    protected PageFlow getPageFlowByName(String rootname, Variant variant) {
+    public PageFlow getPageFlowByName(String rootname, Variant variant) {
         return getPageFlowByName(vmanager.getVariantMatchingPageFlowName(rootname, variant));
     }
     
@@ -146,8 +146,7 @@ public class PageFlowManager {
         return flowmap.get(fullname);
     }
     
-    protected boolean needsLastFlow(PageFlow lastFlow, PageRequest page) {
-      
+    public boolean needsLastFlow(PageFlow lastFlow, PageRequest page) {
         if(pagesInNoVariantFlows.contains(page.getRootName())) {
             PageFlow flowWithLast = pageFlowToPageRequest(lastFlow, page, null);
             PageFlow flowWithoutLast = pageFlowToPageRequest(null, page, null);

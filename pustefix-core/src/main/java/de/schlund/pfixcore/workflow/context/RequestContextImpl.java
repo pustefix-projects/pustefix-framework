@@ -377,7 +377,7 @@ public class RequestContextImpl implements Cloneable, AuthorizationInterceptor {
                 }
             }
             if(preq.getRequestParam(PARAM_LASTFLOW) == null && currentpageflow != null &&
-                    needsLastFlow(spdoc.getPagename(), currentpageflow.getRootName())) {
+                    parentcontext.needsLastFlow(spdoc.getPagename(), currentpageflow.getRootName())) {
                 if(firstParam) {
                     redirectURL += "?";
                     firstParam = false;
@@ -1140,19 +1140,10 @@ public class RequestContextImpl implements Cloneable, AuthorizationInterceptor {
         }
         return state;
     }
-    
+
+    @Deprecated
     public boolean needsLastFlow(String pageName, String lastFlowName) {
-        if(!parentcontext.getContextConfig().getPageFlowPassThrough()) {
-            return false;
-        }
-        if(lastFlowName != null && !lastFlowName.equals("")) {
-            PageFlow lastFlow = pageflowmanager.getPageFlowByName(lastFlowName, variant);
-            if(lastFlow != null) {
-                PageRequest page = createPageRequest(pageName);
-                return pageflowmanager.needsLastFlow(lastFlow, page);
-            }
-        }
-        return false;
+        return parentcontext.needsLastFlow(pageName, lastFlowName);
     }
 
 }
