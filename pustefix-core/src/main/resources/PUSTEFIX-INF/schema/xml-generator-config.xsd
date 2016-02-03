@@ -54,6 +54,7 @@
   <xsd:complexType name="namespace-declaration-type">
     <xsd:attribute name="prefix" type="xsd:string" use="required"/>
     <xsd:attribute name="url" type="xsd:string" use="required"/>
+    <xsd:attribute name="exclude-result-prefix" type="xsd:boolean" use="optional"/>
   </xsd:complexType>
   
   <xsd:complexType name="standardmaster-type">
