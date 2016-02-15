@@ -5,8 +5,8 @@
     xmlns:ws="http://pustefixframework.org/schema/webservices"
     xmlns:aop="http://www.springframework.org/schema/aop"
     xsi:schemaLocation="
-        http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-2.0.xsd
-        http://www.springframework.org/schema/aop http://www.springframework.org/schema/aop/spring-aop-2.5.xsd
+        http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd
+        http://www.springframework.org/schema/aop http://www.springframework.org/schema/aop/spring-aop.xsd
         http://pustefixframework.org/schema/webservices http://pustefixframework.org/schema/webservices/pustefix-webservices.xsd"
 >
 
