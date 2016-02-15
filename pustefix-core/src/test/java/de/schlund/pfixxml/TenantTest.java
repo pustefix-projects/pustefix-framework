@@ -1,10 +1,7 @@
 package de.schlund.pfixxml;
 
 import junit.framework.TestCase;
-
 import org.springframework.mock.web.MockHttpServletRequest;
-
-import de.schlund.pfixxml.Tenant;
 
 public class TenantTest extends TestCase {
 
@@ -30,6 +27,18 @@ public class TenantTest extends TestCase {
         assertTrue(variant.matches(req));
         req.setServerName("localhost-us");
         assertFalse(variant.matches(req));
+
+        variant.setHostPattern("(int\\.)?(login|account).1and1.mx");
+        req.setServerName("account.1and1.mx");
+        assertTrue(variant.matches(req));
+        req.setServerName("login.1and1.mx");
+        assertTrue(variant.matches(req));
+        req.setServerName("int.account.1and1.mx");
+        assertTrue(variant.matches(req));
+        req.setServerName("int.login.1and1.mx");
+        assertTrue(variant.matches(req));
+        req.setServerName("mx.int.login.1and1.mx");
+        assertFalse(variant.matches(req));
     }
-    
+
 }
