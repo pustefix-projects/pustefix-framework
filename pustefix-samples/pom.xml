@@ -43,6 +43,7 @@
             <configuration>
               <configDir>src</configDir>
               <recursive>true</recursive>
+              <cacheEntities>true</cacheEntities>
               <failOnWarning>true</failOnWarning>
             </configuration>
           </execution>
