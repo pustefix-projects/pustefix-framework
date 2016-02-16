@@ -42,6 +42,7 @@
     </context-xml-service>
     
     <static>
+      <path>img</path>
     </static>
     
     <choose>

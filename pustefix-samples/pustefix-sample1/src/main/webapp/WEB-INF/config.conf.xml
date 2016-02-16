@@ -278,6 +278,7 @@
     <!--<prop name="pfixservletrequest.maxpartsize">100000000</prop>-->
     <!-- *** some additional properties needed for this application *** -->
     <!-- <prop name="interfacelogging">log</prop> -->
+    <prop name="foo">bar</prop>
   </properties>
 
 </context-xml-service-config>

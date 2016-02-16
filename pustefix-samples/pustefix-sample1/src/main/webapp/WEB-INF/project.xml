@@ -94,7 +94,6 @@
     </context-xml-service>
     
     <direct-output-service>
-      <!-- <path>/xml/download</path>-->
       <config-file>docroot:/WEB-INF/direct.conf.xml</config-file>
     </direct-output-service>
    
@@ -102,7 +101,6 @@
          it, if you want to override one of its default settings: -->
     <!--
     <deref-service>
-      <path>/xml/deref</path>
       <validtime>3600</validtime>
       <mustsign>true</mustsign>
     </deref-service>
