@@ -4,12 +4,12 @@
   <parent>
     <groupId>org.pustefixframework</groupId>
     <artifactId>pustefix-samples</artifactId>
-    <version>0.19.31-SNAPSHOT</version>
+    <version>0.19.30-SNAPSHOT</version>
   </parent>
 
   <groupId>org.pustefixframework</groupId>
   <artifactId>pustefix-sample1</artifactId>
-  <version>0.19.31-SNAPSHOT</version>
+  <version>0.19.30-SNAPSHOT</version>
   <packaging>war</packaging>
 
   <name>Pustefix Sample 1</name>
@@ -22,12 +22,12 @@
     <dependency>
       <groupId>org.pustefixframework</groupId>
       <artifactId>pustefix-core</artifactId>
-      <version>0.19.31-SNAPSHOT</version>
+      <version>0.19.30-SNAPSHOT</version>
     </dependency>
     <dependency>
       <groupId>org.pustefixframework.webservices</groupId>
       <artifactId>pustefix-webservices-core</artifactId>
-      <version>0.19.31-SNAPSHOT</version>      
+      <version>0.19.30-SNAPSHOT</version>      
     </dependency>
     <dependency>
       <groupId>javax.servlet</groupId>
@@ -39,12 +39,12 @@
     <dependency>
       <groupId>org.pustefixframework.samples.modules</groupId>
       <artifactId>animal-module</artifactId>
-      <version>0.19.31-SNAPSHOT</version>
+      <version>0.19.30-SNAPSHOT</version>
     </dependency>
     <dependency>
       <groupId>org.pustefixframework.samples.modules</groupId>
       <artifactId>common-module</artifactId>
-      <version>0.19.31-SNAPSHOT</version>
+      <version>0.19.30-SNAPSHOT</version>
     </dependency>
 
     <dependency>
@@ -155,7 +155,7 @@
       <plugin>
         <groupId>org.pustefixframework.maven.plugins</groupId>
         <artifactId>pustefix-webapp-plugin</artifactId>
-        <version>0.19.31-SNAPSHOT</version>
+        <version>0.19.30-SNAPSHOT</version>
         <executions>
           <execution>
             <goals>
@@ -167,7 +167,7 @@
       <plugin>
         <groupId>org.pustefixframework.maven.plugins</groupId>
         <artifactId>pustefix-statuscode-plugin</artifactId>
-        <version>0.19.31-SNAPSHOT</version>
+        <version>0.19.30-SNAPSHOT</version>
         <executions>
           <execution>
             <goals>
@@ -179,7 +179,7 @@
       <plugin>
         <groupId>org.pustefixframework.maven.plugins</groupId>
         <artifactId>pustefix-iwrapper-plugin</artifactId>
-        <version>0.19.31-SNAPSHOT</version>
+        <version>0.19.30-SNAPSHOT</version>
         <executions>
           <execution>
             <goals>
@@ -191,7 +191,7 @@
       <plugin>
         <groupId>org.pustefixframework.maven.plugins</groupId>
         <artifactId>pustefix-pagelist-plugin</artifactId>
-        <version>0.19.31-SNAPSHOT</version>
+        <version>0.19.30-SNAPSHOT</version>
         <!--
         <configuration>
           <docroot>${basedir}/src/main/webapp</docroot>
@@ -262,7 +262,7 @@
            <plugin>
              <groupId>org.pustefixframework.maven.plugins</groupId>
              <artifactId>pustefix-patch-plugin</artifactId>
-             <version>0.19.31-SNAPSHOT</version>
+             <version>0.19.30-SNAPSHOT</version>
              <executions>
                <execution>
                  <goals>
