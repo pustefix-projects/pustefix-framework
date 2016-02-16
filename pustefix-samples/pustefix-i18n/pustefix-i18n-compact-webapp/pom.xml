@@ -6,12 +6,12 @@
   <parent>
     <groupId>org.pustefixframework.samples</groupId>
     <artifactId>pustefix-i18n</artifactId>
-    <version>0.19.30-SNAPSHOT</version>
+    <version>0.19.30</version>
   </parent>
 
   <groupId>org.pustefixframework.samples</groupId>
   <artifactId>pustefix-i18n-compact-webapp</artifactId>
-  <version>0.19.30-SNAPSHOT</version>
+  <version>0.19.30</version>
   <packaging>war</packaging>
 
   <name>Pustefix i18n sample webapp</name>
@@ -24,7 +24,7 @@
     <dependency>
       <groupId>org.pustefixframework</groupId>
       <artifactId>pustefix-core</artifactId>
-      <version>0.19.30-SNAPSHOT</version>
+      <version>0.19.30</version>
     </dependency>
   </dependencies>
  
@@ -42,7 +42,7 @@
       <plugin>
         <groupId>org.pustefixframework.maven.plugins</groupId>
         <artifactId>pustefix-iwrapper-plugin</artifactId>
-        <version>0.19.30-SNAPSHOT</version>
+        <version>0.19.30</version>
         <executions>
           <execution>
             <goals>
@@ -54,7 +54,7 @@
       <plugin>
         <groupId>org.pustefixframework.maven.plugins</groupId>
         <artifactId>pustefix-statuscode-plugin</artifactId>
-        <version>0.19.30-SNAPSHOT</version>
+        <version>0.19.30</version>
         <executions>
           <execution>
             <goals>
@@ -73,7 +73,7 @@
         <dependency>
           <groupId>org.pustefixframework.editor</groupId>
           <artifactId>pustefix-editor-backend</artifactId>
-          <version>0.19.30-SNAPSHOT</version>
+          <version>0.19.30</version>
         </dependency>
       </dependencies>
     </profile>
@@ -90,7 +90,7 @@
           <plugin>
             <groupId>org.pustefixframework.maven.plugins</groupId>
             <artifactId>pustefix-generate-plugin</artifactId>
-            <version>0.19.30-SNAPSHOT</version>
+            <version>0.19.30</version>
             <executions>
               <execution>
                 <goals>

@@ -5,12 +5,12 @@
   <parent>
     <groupId>org.pustefixframework</groupId>
     <artifactId>pustefixframework</artifactId>
-    <version>0.19.30-SNAPSHOT</version>
+    <version>0.19.30</version>
   </parent>
 
   <groupId>org.pustefixframework</groupId>
   <artifactId>pustefix-security</artifactId>
-  <version>0.19.30-SNAPSHOT</version>
+  <version>0.19.30</version>
   <packaging>jar</packaging>
   <name>Pustefix Application Security</name>
   <description>Pustefix Application Security</description>
