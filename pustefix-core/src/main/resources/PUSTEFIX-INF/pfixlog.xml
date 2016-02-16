@@ -30,7 +30,7 @@
     <param name="File"><cus:logroot/>pustefix-trail.log</param>
     <param name="MaxFileSize" value="10MB"/>
     <layout class="org.apache.log4j.PatternLayout">
-      <param name="ConversionPattern" value="%d{ISO8601}|%m\n"/>
+      <param name="ConversionPattern" value="%d{ISO8601}|%m|%X{requestId}\n"/>
     </layout>
   </appender>
   
