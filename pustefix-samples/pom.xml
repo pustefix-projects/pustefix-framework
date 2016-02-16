@@ -5,12 +5,12 @@
   <parent>
     <groupId>org.pustefixframework</groupId>
     <artifactId>pustefixframework</artifactId>
-    <version>0.19.30</version>
+    <version>0.19.31-SNAPSHOT</version>
   </parent>
 
   <groupId>org.pustefixframework</groupId>
   <artifactId>pustefix-samples</artifactId>
-  <version>0.19.30</version>
+  <version>0.19.31-SNAPSHOT</version>
 
   <packaging>pom</packaging>
   <name>Pustefix Samples</name>
@@ -34,7 +34,7 @@
       <plugin>
         <groupId>org.pustefixframework.maven.plugins</groupId>
         <artifactId>pustefix-validator-plugin</artifactId>
-        <version>0.19.30</version>
+        <version>0.19.31-SNAPSHOT</version>
         <executions>
           <execution>
             <goals>
