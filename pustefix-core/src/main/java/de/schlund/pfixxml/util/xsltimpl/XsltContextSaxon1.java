@@ -23,6 +23,7 @@ import javax.xml.transform.URIResolver;
 import org.w3c.dom.Document;
 
 import com.icl.saxon.Context;
+import com.icl.saxon.expr.StringValue;
 import com.icl.saxon.om.NodeInfo;
 
 import de.schlund.pfixxml.util.XsltContext;
@@ -42,6 +43,14 @@ public class XsltContextSaxon1 implements XsltContext {
     public String getSystemId() {
         NodeInfo info=context.getContextNodeInfo();
         return info.getSystemId();
+    }
+    
+    public String getStylesheetSystemId() {
+        StringValue value = ((StringValue)context.getController().getParameter("__stylesheet"));
+        if(value != null) {
+            return value.asString();
+        }
+        return null;
     }
     
     public String getDocumentElementName() {

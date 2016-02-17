@@ -2,7 +2,8 @@
 <webservice-config
   xmlns="http://www.pustefix-framework.org/2008/namespace/webservice-config"
   xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-  xsi:schemaLocation="http://www.pustefix-framework.org/2008/namespace/webservice-config ../../core/schema/webservice-config.xsd">
+  xsi:schemaLocation="http://www.pustefix-framework.org/2008/namespace/webservice-config
+                      http://www.pustefix-framework.org/2008/namespace/webservice-config.xsd">
 
   <import href="WEB-INF/webservice-import.xml"/>
 
@@ -42,6 +43,10 @@
   <webservice name="TypeTest">
     <interface name="de.schlund.pfixcore.example.webservices.TypeTest"/>
     <implementation name="de.schlund.pfixcore.example.webservices.TypeTestImpl"/>
+    <whitelist>
+      de.schlund.pfixcore.example.webservices.BeanImpl
+      de.schlund.pfixcore.example.webservices.BeanSubImpl  
+    </whitelist>
   </webservice>
   
   <webservice name="CallTest">

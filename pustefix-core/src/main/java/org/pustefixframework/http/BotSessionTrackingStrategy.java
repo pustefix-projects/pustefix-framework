@@ -13,8 +13,6 @@ import de.schlund.pfixxml.serverutil.SessionHelper;
 
 public class BotSessionTrackingStrategy implements SessionTrackingStrategy {
     
-    private static final String STORED_REQUEST = "__STORED_PFIXSERVLETREQUEST__";
-    
     private SessionTrackingStrategyContext context;
     
     public void init(SessionTrackingStrategyContext context) {
@@ -49,7 +47,6 @@ public class BotSessionTrackingStrategy implements SessionTrackingStrategy {
                     session.setMaxInactiveInterval(5 * 60);
                 }
             }
-            session.setAttribute(STORED_REQUEST, preq);
             session.setAttribute(AbstractPustefixRequestHandler.SESSION_ATTR_COOKIE_SESSION, true);
             preq.updateRequest(req);
         }

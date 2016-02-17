@@ -1,12 +1,8 @@
 package org.pustefixframework.util.javascript;
 
 /**
- * 
  * General exception thrown by Javascript compressors if
  * compression of Javascript fails. 
- * 
- * @author mleidig@schlund.de
- *
  */
 public class CompressorException extends Exception {
 

@@ -112,11 +112,12 @@
             <xsd:attribute name="name" type="ClassType" use="required"/>
     	  </xsd:complexType>    
     	</xsd:element>
-      <xsd:element name="stubgeneration" minOccurs="0">
-        <xsd:complexType>
-          <xsd:attribute name="jsnamespace" type="xsd:string"/>
-        </xsd:complexType>
-      </xsd:element>
+        <xsd:element name="whitelist" type="xsd:string" minOccurs="0"/>
+        <xsd:element name="stubgeneration" minOccurs="0">
+          <xsd:complexType>
+            <xsd:attribute name="jsnamespace" type="xsd:string"/>
+          </xsd:complexType>
+        </xsd:element>
         <xsd:element ref="protocol" minOccurs="0"/>
         <xsd:element ref="encoding" minOccurs="0"/>
         <xsd:element ref="json" minOccurs="0"/>

@@ -72,7 +72,7 @@ public class PustefixStatuscodeMojo extends AbstractMojo {
     private String[] excludes;
     
     /**
-     * @parameter expression="${project}"
+     * @parameter property="project"
      * @required
      */
     private MavenProject project;

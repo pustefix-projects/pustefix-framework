@@ -27,6 +27,7 @@
           <xsd:simpleType>
             <xsd:restriction base="xsd:string">
               <xsd:enumeration value="COOKIE"/>
+              <xsd:enumeration value="COOKIEONLY"/>
               <xsd:enumeration value="URL"/>
             </xsd:restriction>
           </xsd:simpleType>
@@ -131,6 +132,12 @@
           <xsd:attribute name="class" type="xsd:string"/>
         </xsd:complexType>
       </xsd:element>
+      <xsd:element name="extension-cache">
+        <xsd:complexType>
+          <xsd:attribute name="capacity" type="xsd:int" use="required"/>
+          <xsd:attribute name="class" type="xsd:string"/>
+        </xsd:complexType>
+      </xsd:element>
     </xsd:choice>  
   </xsd:group>
   
@@ -143,7 +150,7 @@
         <xsd:sequence>
           <xsd:element name="config-file" type="xsd:string"/>
           <xsd:element name="additional-trail-info" type="xsd:string" minOccurs="0"/>
-          <xsd:choice>
+          <xsd:choice minOccurs="0" maxOccurs="unbounded">
             <xsd:element name="choose">
               <xsd:complexType>
                 <xsd:sequence>
@@ -166,7 +173,7 @@
         </xsd:sequence>
         </xsd:complexType>
       </xsd:element>
-      <xsd:element name="direct-output-service" minOccurs="0">
+      <xsd:element name="direct-output-service" minOccurs="0" maxOccurs="unbounded">
         <xsd:complexType>
           <xsd:sequence>
             <xsd:element name="config-file" type="xsd:string"/>

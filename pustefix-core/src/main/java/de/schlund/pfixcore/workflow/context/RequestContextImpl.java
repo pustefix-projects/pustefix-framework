@@ -378,7 +378,7 @@ public class RequestContextImpl implements Cloneable, AuthorizationInterceptor {
                 }
             }
             if(preq.getRequestParam(PARAM_LASTFLOW) == null && currentpageflow != null &&
-                    needsLastFlow(spdoc.getPagename(), currentpageflow.getRootName())) {
+                    parentcontext.needsLastFlow(spdoc.getPagename(), currentpageflow.getRootName())) {
                 if(firstParam) {
                     redirectURL += "?";
                     firstParam = false;
@@ -639,7 +639,9 @@ public class RequestContextImpl implements Cloneable, AuthorizationInterceptor {
             
             if(parentcontext.getTenant() != null) {
                 spdoc.setTenant(parentcontext.getTenant());
-                parentcontext.getTenant().toXML(spdoc.getDocument().getDocumentElement());
+                if(spdoc.getDocument() != null) {
+                    parentcontext.getTenant().toXML(spdoc.getDocument().getDocumentElement());
+                }
             }
             if(language != null) {
                 spdoc.setLanguage(language);
@@ -1148,14 +1150,10 @@ public class RequestContextImpl implements Cloneable, AuthorizationInterceptor {
         }
         return state;
     }
-    
-    public boolean needsLastFlow(String pageName, String lastFlowName) {
 
-    	//Passing page flow as __lf parameter is disabled
-    	if(!parentcontext.getContextConfig().getPageFlowPassThrough()) {
-            return false;
-        }
-    	return needsPageFlowParameter(pageName, lastFlowName);
+    @Deprecated
+    public boolean needsLastFlow(String pageName, String lastFlowName) {
+        return parentcontext.needsLastFlow(pageName, lastFlowName);
     }
     
     public boolean needsPageFlowParameter(String pageName, String flowName) {

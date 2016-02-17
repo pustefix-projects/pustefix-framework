@@ -61,6 +61,8 @@ public class XMLGeneratorInfoParsingHandler extends CustomizationAwareParsingHan
         	cacheBeanBuilder.addPropertyValue("includeCacheClass", "de.schlund.pfixxml.targets.LRUCache");
         	cacheBeanBuilder.addPropertyValue("renderCacheCapacity", 150);
             cacheBeanBuilder.addPropertyValue("renderCacheClass", "de.schlund.pfixxml.targets.LRUCache");
+            cacheBeanBuilder.addPropertyValue("extensionCacheCapacity", 0);
+            cacheBeanBuilder.addPropertyValue("extensionCacheClass", "de.schlund.pfixxml.targets.LRUCache");
         	cacheBeanBuilder.addPropertyReference("cacheStatistic", CacheStatistic.class.getName());
         	cacheBeanBuilder.setInitMethodName("init");
         	BeanDefinitionHolder beanHolder = new BeanDefinitionHolder(cacheBeanBuilder.getBeanDefinition(), SPCacheFactory.class.getName());
@@ -151,6 +153,16 @@ public class XMLGeneratorInfoParsingHandler extends CustomizationAwareParsingHan
                 cacheBeanBuilder.addPropertyValue("renderCacheCapacity", Integer.parseInt(capacity));
             }
             
+        } else if(root.getLocalName().equals("extension-cache")) {
+                
+                String className = root.getAttribute("class").trim();
+                if(className.length() > 0) {
+                    cacheBeanBuilder.addPropertyValue("extensionCacheClass", className);
+                }
+                String capacity = root.getAttribute("capacity").trim();
+                if(capacity.length() > 0) {
+                    cacheBeanBuilder.addPropertyValue("extensionCacheCapacity", Integer.parseInt(capacity));
+                }
         } else if(root.getLocalName().equals("cache-statistic")) {
         	
         	String queueSize = root.getAttribute("queuesize").trim();

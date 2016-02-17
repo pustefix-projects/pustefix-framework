@@ -20,13 +20,17 @@ package org.pustefixframework.webservices.jsonws;
 
 import java.lang.reflect.ParameterizedType;
 import java.lang.reflect.Type;
+import java.util.List;
+import java.util.regex.Pattern;
 
 public class DeserializationContext {
 
     DeserializerRegistry deserReg;
+    List<Pattern> deserializationWhiteList;
     
-    public DeserializationContext(DeserializerRegistry deserReg) {
+    public DeserializationContext(DeserializerRegistry deserReg, List<Pattern> deserializationWhiteList) {
         this.deserReg=deserReg;
+        this.deserializationWhiteList = deserializationWhiteList;
     }
    
     public boolean canDeserialize(Object jsonObj,Type targetType) throws DeserializationException {
@@ -56,6 +60,17 @@ public class DeserializationContext {
         } else throw new DeserializationException("Unsupported type: "+targetType);
         Deserializer deser=deserReg.getDeserializer(targetClass);
         return deser.deserialize(this,jsonObj,targetType);
+    }
+    
+    public boolean isWhiteListedForDeserialization(String className) {
+        if(deserializationWhiteList != null) {
+            for(Pattern pattern: deserializationWhiteList) {
+                if(pattern.matcher(className).matches()) {
+                    return true;
+                }
+            }
+        }
+        return false;
     }
     
 }

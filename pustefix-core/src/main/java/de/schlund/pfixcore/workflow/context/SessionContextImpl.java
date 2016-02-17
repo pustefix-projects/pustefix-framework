@@ -249,6 +249,10 @@ public class SessionContextImpl {
         this.session.setAttribute(AbstractPustefixXMLRequestHandler.SESS_CLEANUP_FLAG_STAGE1, true);
     }
 
+    public void invalidateSessionAfterCompletion() {
+        session.setAttribute(AbstractPustefixRequestHandler.REQUEST_ATTR_INVALIDATE_SESSION_AFTER_COMPLETION, true);
+    }
+    
     public void addSessionStatusListener(SessionStatusListener l) {
         synchronized (this.sessionEndNotificator) {
             if (!sessionEndNotificator.sessionListeners.contains(l)) {

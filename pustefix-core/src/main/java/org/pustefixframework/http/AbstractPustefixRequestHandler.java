@@ -85,6 +85,8 @@ import de.schlund.pfixxml.serverutil.SessionAdmin;
 
 public abstract class AbstractPustefixRequestHandler implements PageProvider, SessionTrackingStrategyContext, UriProvidingHttpRequestHandler, ServletContextAware, InitializingBean {
 
+    protected Logger LOGGER_SESSION = Logger.getLogger("LOGGER_SESSION");
+    
     public static final String           VISIT_ID                      = "__VISIT_ID__";
     public static final String           PROP_LOADINDEX                = "__PROPERTIES_LOAD_INDEX";
     
@@ -107,6 +109,7 @@ public abstract class AbstractPustefixRequestHandler implements PageProvider, Se
     public static final String REQUEST_ATTR_PAGE_ADDITIONAL_PATH = "__PFX_PAGE_ADDITIONAL_PATH__";
     public static final String REQUEST_ATTR_PAGEFLOW = "__PFX_PAGEFLOW__";
     public static final String REQUEST_ATTR_PAGEGROUP = "__PFX_PAGEGROUP__";
+    public static final String REQUEST_ATTR_INVALIDATE_SESSION_AFTER_COMPLETION = "__PFX_INVALIDATE_SESSION_AFTER_COMPLETION__";
     
     private static final IPRangeMatcher privateIPRange = new IPRangeMatcher("10.0.0.0/8", "169.254.0.0/16", 
             "172.16.0.0/12", "192.168.0.0/16", "fc00::/7");
@@ -492,6 +495,11 @@ public abstract class AbstractPustefixRequestHandler implements PageProvider, Se
                     }
                 } 
                 if(!res.isCommitted()) throw new ServletException("Exception in process.",e);
+            }
+        } finally {
+            if (session != null && (session.getAttribute(REQUEST_ATTR_INVALIDATE_SESSION_AFTER_COMPLETION) != null)) {
+                LOGGER_SESSION.info("Invalidate session VII: " + session.getId());
+                session.invalidate();
             }
         }
     }

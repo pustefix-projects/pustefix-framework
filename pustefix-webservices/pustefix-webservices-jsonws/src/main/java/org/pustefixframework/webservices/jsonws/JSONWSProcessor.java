@@ -127,7 +127,7 @@ public class JSONWSProcessor implements ServiceProcessor {
                     //Service method lookup
                     Method method=null;
                     JSONArray params=jsonReq.getArrayMember("params");
-                    JSONDeserializer jsonDeser = new JSONDeserializer(deserializerRegistry);
+                    JSONDeserializer jsonDeser = new JSONDeserializer(deserializerRegistry, service.getDeserializationWhiteList());
                     try {
                         String methodName=jsonReq.getStringMember("method");
                         ServiceDescriptor serviceDesc=runtime.getServiceDescriptorCache().getServiceDescriptor(service);

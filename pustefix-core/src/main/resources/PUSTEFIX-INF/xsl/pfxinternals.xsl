@@ -234,6 +234,13 @@
             font-size: 85%;
           }
           table.defsearch td {padding-right: 0px;}
+          table.treetable {
+            
+          }
+          table.treetable th,td {
+            padding-right: 20pt;
+            
+          }
           <xsl:if test="$category='search'">
           span.fielderror {
             color: red;
@@ -284,8 +291,9 @@
             margin: 10px;
           }
           span.target {
-            
+             position:relative;
           }
+          div.target {}
           span.virtual {
             border: 1px solid black; border-radius: 10px; padding: 4px; margin: 6px;
           }
@@ -355,7 +363,6 @@
             border-top: 1px solid #ddd;
           }
           </xsl:if>
-          
         </style>
         <script type="text/javascript">
 
@@ -399,6 +406,15 @@
            window.location.href = url;
          }
          </xsl:if>
+         <xsl:if test="$category='xsltrace'">
+         function viewTrace(value) {
+           var url = window.location.href;
+           var ind = url.indexOf('?');
+           if(ind > 0) url = url.substring(0, ind);
+           url = url + "?trace=" + encodeURIComponent(value);
+           window.location.href = url;
+         }
+         </xsl:if>
           
         </script>
       </head>
@@ -419,6 +435,7 @@
             <span><xsl:if test="$category='modules'"><xsl:attribute name="class">active</xsl:attribute></xsl:if><a href="modules">Modules</a></span>
             <span><xsl:if test="$category='targets'"><xsl:attribute name="class">active</xsl:attribute></xsl:if><a href="targets">Targets</a></span>
             <span><xsl:if test="$category='includes'"><xsl:attribute name="class">active</xsl:attribute></xsl:if><a href="includes">Includes</a></span>
+            <span><xsl:if test="$category='xsltrace'"><xsl:attribute name="class">active</xsl:attribute></xsl:if><a href="xsltrace">XSLTrace</a></span>
             <span><xsl:if test="$category='search'"><xsl:attribute name="class">active</xsl:attribute></xsl:if><a href="search">Search</a></span>
             <span><xsl:if test="$category='actions'"><xsl:attribute name="class">active</xsl:attribute></xsl:if><a href="actions">Actions</a></span>
           </div>
@@ -841,6 +858,267 @@
           </xsl:if>
         </xsl:if>
         
+        <xsl:if test="not($category) or $category='xsltrace'">
+          <div style="margin-bottom: 10pt">
+            <form method="POST">
+              <xsl:choose>
+                <xsl:when test="/pfxinternals/traces/@enabled='true'">
+                  <input type="submit" value="Stop" title="Stop tracing XSL transformations"/>
+                  <input type="hidden" name="enabled" value="false"/>
+                </xsl:when>
+                <xsl:otherwise>
+                  <input type="submit" value="Start" title="Start tracing XSL transformations"/>
+                  <input type="hidden" name="enabled" value="true"/>
+                </xsl:otherwise>
+              </xsl:choose>
+              <span style="padding-left:20pt" title="The XSL transformation tracing data will be stored in memory. The cache size limits the number of transformations to avoid a memory leak.">Trace cache size:</span> 
+              <input type="text" name="traceCacheSize" value="{/pfxinternals/traces/@traceCacheSize}" size="3">
+                <xsl:if test="/pfxinternals/traces/@enabled='true'">
+                  <xsl:attribute name="disabled">disabled</xsl:attribute>
+                </xsl:if>
+              </input>
+              <span style="padding-left:10pt" title="Instructions taking less time than the instruction granularity are filtered out to be minimally invasive and reduce the overall amount of tracing data.">
+              Instruction granularity (in ms):</span> 
+              <input type="text" name="instructionGranularity" value="{/pfxinternals/traces/@instructionGranularity}" size="5">
+                <xsl:if test="/pfxinternals/traces/@enabled='true'">
+                  <xsl:attribute name="disabled">disabled</xsl:attribute>
+                </xsl:if>
+              </input>
+              <span style="padding-left:10pt" title="Record attributes of stylesheet elements. Enabling this option can have a negative impact on transformation performance and memory usage.">
+              Record attributes:</span>
+              <input style="vertical-align:middle;" type="checkbox" name="recordAttributes" value="true">
+                <xsl:if test="/pfxinternals/traces/@enabled='true'">
+                  <xsl:attribute name="disabled">disabled</xsl:attribute>
+                </xsl:if>
+                <xsl:if test="/pfxinternals/traces/@recordAttributes='true'">
+                  <xsl:attribute name="checked">checked</xsl:attribute>
+                </xsl:if>
+              </input>
+            </form>
+            
+          </div>
+          <div>
+            <xsl:apply-templates select="/pfxinternals/traces/tracelist"/>
+          </div>
+          <br/>
+          <xsl:if test="/pfxinternals/tracestatistics">
+          <div style="font-size:80%;padding:3px;padding-bottom:10px;">
+          <a href="javascript:expandAll()" style="cursor:pointer;">Expand all</a>&#xa0;
+          <a href="javascript:collapseAll()" style="cursor:pointer;">Collapse all</a>
+          </div>
+          <table id="tracestats" class="treetable">
+            <tr>
+              <th align="left" title="The processed XSL instruction element.">
+                <xsl:choose>
+                  <xsl:when test="/pfxinternals/tracestatistics/@sortby='instruction'">
+                    <span style="padding-right:3px">&#x25b6;</span>
+                    <a href="{$__contextpath}/pfxinternals/xsltrace?trace={enc:encode(/pfxinternals/tracestatistics/@id,'utf8')}">Instruction</a>
+                  </xsl:when>
+                  <xsl:otherwise>
+                    <a href="{$__contextpath}/pfxinternals/xsltrace?trace={enc:encode(/pfxinternals/tracestatistics/@id,'utf8')}&amp;sortby=instruction">Instruction</a>
+                  </xsl:otherwise>
+                </xsl:choose> 
+              </th>
+              <th align="left" title="The instruction's location: file name and line number.">
+                <xsl:choose>
+                  <xsl:when test="/pfxinternals/tracestatistics/@sortby='location'">
+                    <span style="padding-right:3px">&#x25b6;</span>
+                    <a href="{$__contextpath}/pfxinternals/xsltrace?trace={enc:encode(/pfxinternals/tracestatistics/@id,'utf8')}">Location</a>
+                  </xsl:when>
+                  <xsl:otherwise>
+                    <a href="{$__contextpath}/pfxinternals/xsltrace?trace={enc:encode(/pfxinternals/tracestatistics/@id,'utf8')}&amp;sortby=location">Location</a>
+                  </xsl:otherwise>
+                </xsl:choose>
+              </th>
+              <th align="right" title="Number of processed instructions, containing all child instructions.">
+                <xsl:choose>
+                  <xsl:when test="/pfxinternals/tracestatistics/@sortby='count'">
+                    <span style="padding-right:3px">&#x25b6;</span>
+                    <a href="{$__contextpath}/pfxinternals/xsltrace?trace={enc:encode(/pfxinternals/tracestatistics/@id,'utf8')}">Count</a>
+                  </xsl:when>
+                  <xsl:otherwise>
+                    <a href="{$__contextpath}/pfxinternals/xsltrace?trace={enc:encode(/pfxinternals/tracestatistics/@id,'utf8')}&amp;sortby=count">Count</a>
+                  </xsl:otherwise>
+                </xsl:choose>
+              </th>
+              <th align="right" title="Instruction processing time, containing the processing time of all child instructions.">
+                <xsl:choose>
+                  <xsl:when test="/pfxinternals/tracestatistics/@sortby='time'">
+                    <span style="padding-right:3px">&#x25b6;</span>
+                    <a href="{$__contextpath}/pfxinternals/xsltrace?trace={enc:encode(/pfxinternals/tracestatistics/@id,'utf8')}">Time(ms)</a>
+                  </xsl:when>
+                  <xsl:otherwise>
+                    <a href="{$__contextpath}/pfxinternals/xsltrace?trace={enc:encode(/pfxinternals/tracestatistics/@id,'utf8')}&amp;sortby=time">Time(ms)</a>
+                  </xsl:otherwise>
+                </xsl:choose>
+              </th>
+            </tr>
+          </table>
+          
+          <script type="text/javascript">
+          
+            var tracestats = <xsl:value-of select="/pfxinternals/tracestatistics"/>;
+            var tracetime = <xsl:value-of select="/pfxinternals/tracestatistics/@time"/>;
+            
+            function formatSystemId(systemId) {
+              var ind = systemId.lastIndexOf('/');
+              if(ind > -1) {
+                return systemId.substring(ind + 1);
+              }
+              return systemId;
+            }
+            
+            function formatAttributes(attributes) {
+              if(attributes == null) {
+                return "";
+              }
+              var str = "";
+              for(var key in attributes) {
+                str = str + " " + key + "=\"" + attributes[key] + "\"";
+              }
+              return str;
+            }
+            
+            function toggleStep(elem) {
+              elem = elem.parentNode.parentNode;
+              if(elem.step.steps) {
+               
+                for(var i=0; i&lt;elem.step.steps.length; i++) {
+                  var row = elem.step.steps[i].tablerow;
+                  if(row.style.display=="none") {
+                    elem.step.steps[i].tablerow.style.display = "table-row";
+                  } else {
+                    collapse(elem.step.steps[i]);
+                  }
+                }
+                var state=elem.firstChild.firstChild.firstChild.data;
+                if(state == '-') {
+                  state = "+";
+                } else {
+                  state = "-";
+                }
+                elem.firstChild.firstChild.innerHTML=state;
+              }
+            }
+            
+            function collapseAll() {
+              if(tracestats.steps) {
+                tracestats.tablerow.firstChild.firstChild.innerHTML = "+";
+                for(var i=0; i&lt;tracestats.steps.length; i++) {
+                  collapse(tracestats.steps[i]);   
+                }
+              }
+            }
+            
+            function collapse(step) {
+              step.tablerow.style.display = 'none';
+              if(step.steps) {
+                step.tablerow.firstChild.firstChild.innerHTML='+';
+              } 
+              if(step.steps) {
+                for(var i=0; i&lt;step.steps.length; i++) {
+                  collapse(step.steps[i]);   
+                }
+              }
+            }
+            
+            function expandAll() {
+              expand(tracestats);
+            }
+            
+            function expand(step) {
+              if(step == null) {
+                step = tracestats;
+              } 
+              step.tablerow.style.display = "table-row";
+              if(step.steps) {
+                step.tablerow.firstChild.firstChild.innerHTML='-';
+                for(var i=0; i&lt;step.steps.length; i++) {
+                  expand(step.steps[i]);   
+                }
+              } 
+            }
+            
+            function addStep(step,level) {
+              var elem = document.getElementById('tracestats');
+              var tr = document.createElement("tr");
+              var ss;
+              if(level &lt; 2) {
+                if(step.steps) {
+                  ss = "-";
+                } else {
+                  ss = "&#xa0;"
+                }
+              } else {
+                if(step.steps) {
+                  ss = "+";
+                } else {
+                  ss = "&#xa0;"
+                }
+                if(level > 2) {
+                  tr.style.display = 'none';
+                }
+              }
+              
+                tr.style.color = 'rgb(' + (Math.round(step.time / tracetime * 256)) + ',0,0)';
+              
+             
+              elem.appendChild(tr);
+              var td = document.createElement("td");
+              var s = document.createElement("span");
+              s.style.paddingLeft = level*10+'px';
+              s.style.paddingRight = '5px';
+              if(step.steps) {
+                s.setAttribute("onclick","toggleStep(this);");
+                s.style.cursor = "pointer";
+              }
+              s.appendChild(document.createTextNode(ss));
+              td.appendChild(s);
+              step.tablerow = tr;
+              tr.step = step;
+              td.appendChild(document.createTextNode(step.displayName));
+              var sp = document.createElement("span");
+              sp.style.opacity = 0.4;
+              var fa = formatAttributes(step.attributes);
+              sp.title = fa;
+              if(fa.length > 50) {
+                fa = fa.substring(0,48)+"...";
+              }
+              sp.appendChild(document.createTextNode(fa));
+              td.appendChild(sp);
+              tr.appendChild(td);
+              td = document.createElement("td");
+              td.style.textAlign="left";
+              td.appendChild(document.createTextNode(formatSystemId(step.systemId) + ":" + step.lineNumber));
+              td.title = "Double-click to open " + step.systemId + ":" + step.lineNumber;
+              td.ondblclick=function() {openFile(step.systemId);};  
+              tr.appendChild(td);
+              td = document.createElement("td");
+              td.style.textAlign="right";
+              td.appendChild(document.createTextNode(step.count));
+              tr.appendChild(td);
+              td = document.createElement("td");
+              td.style.textAlign="right";
+              td.appendChild(document.createTextNode((step.time/1000000).toFixed(3)));
+              tr.appendChild(td);
+              if(step.steps) {
+                for(var i=0; i&lt;step.steps.length; i++) {
+                  addStep(step.steps[i],level+1);
+                }
+              }
+            }
+            
+            function openFile(systemId) {
+               window.open('<xsl:value-of select="concat($__contextpath,'/pfxinternals?action=download&amp;resource=')"/>' + encodeURI(systemId));
+            }
+            
+            addStep(tracestats,0);
+            
+            
+          </script>
+          </xsl:if>
+        </xsl:if>
+        
         <xsl:if test="not($category) or $category='search'">
          <form action="{$__contextpath}/pfxinternals/search">
           <table class="searchform"><tr>
@@ -1220,10 +1498,10 @@
   <xsl:template match="target">
     <li style="padding:3px;">
       <div class="target">
-      <span class="target">
+      <span>
         <xsl:choose>
-          <xsl:when test="target"><xsl:attribute name="class">virtual <xsl:value-of select="@type"/></xsl:attribute></xsl:when>
-          <xsl:otherwise><xsl:attribute name="class">leaf <xsl:value-of select="@type"/></xsl:attribute></xsl:otherwise>
+          <xsl:when test="target"><xsl:attribute name="class">target virtual <xsl:value-of select="@type"/></xsl:attribute></xsl:when>
+          <xsl:otherwise><xsl:attribute name="class">target leaf <xsl:value-of select="@type"/></xsl:attribute></xsl:otherwise>
         </xsl:choose>
         <a class="target" href="?target={@key}"><xsl:value-of select="@key"/></a>
       </span>
@@ -1313,4 +1591,27 @@
     </xsl:choose>
   </xsl:template>
   
+  <xsl:template match="tracelist">
+    <input style="margin-right: 5px" type="button" title="Refresh stylesheet list" value="Refresh">
+      <xsl:attribute name="onclick">
+        <xsl:text>javascript:window.location.href='</xsl:text>
+        <xsl:value-of select="$__contextpath"/><xsl:text>/pfxinternals/xsltrace'</xsl:text>
+        <xsl:if test="/pfxinternals/tracestatistics/@id">
+          <xsl:text>+'?trace='+encodeURIComponent('</xsl:text>
+          <xsl:value-of select="/pfxinternals/tracestatistics/@id"/>
+          <xsl:text>')</xsl:text>
+        </xsl:if>
+        <xsl:text>;</xsl:text>
+      </xsl:attribute>
+    </input>
+    <select name="target" size="1" onChange="viewTrace(this.value)">
+      <xsl:if test="not(/pfxinternals/tracestatistics/@id)">
+        <option>Select stylesheet</option>
+      </xsl:if>)
+      <xsl:for-each select="trace">
+        <option><xsl:if test="@id = /pfxinternals/tracestatistics/@id"><xsl:attribute name="selected">true</xsl:attribute></xsl:if><xsl:value-of select="@id"/></option>
+      </xsl:for-each>
+    </select>
+  </xsl:template>
+
 </xsl:stylesheet>

@@ -5,12 +5,12 @@
   <parent>
     <groupId>org.pustefixframework</groupId>
     <artifactId>pustefixframework</artifactId>
-    <version>0.19.18-SNAPSHOT</version>
+    <version>0.19.31-SNAPSHOT</version>
   </parent>
 
   <groupId>org.pustefixframework</groupId>
   <artifactId>pustefix-core</artifactId>
-  <version>0.19.18-SNAPSHOT</version>
+  <version>0.19.31-SNAPSHOT</version>
   <packaging>jar</packaging>
 
   <name>Pustefix Core</name>
@@ -19,13 +19,13 @@
     <profile><!-- see http://maven.apache.org/general.html#tools-jar-dependency -->
       <id>oracle-tools.jar</id>
       <activation>
-        <jdk>1.7</jdk>
+        <jdk>1.8</jdk>
       </activation>
       <dependencies>
         <dependency>
           <groupId>com.sun</groupId>
           <artifactId>tools</artifactId>
-          <version>1.7.0</version>
+          <version>1.8.0</version>
           <scope>system</scope>
           <systemPath>${java.home}/../lib/tools.jar</systemPath>
         </dependency>
@@ -123,6 +123,14 @@
     </dependency>
     
     <dependency>
+      <groupId>com.google.javascript</groupId>
+      <artifactId>closure-compiler</artifactId>
+      <version>v20140625</version>
+      <scope>compile</scope>
+      <optional>true</optional>
+    </dependency>
+    
+    <dependency>
       <groupId>org.springframework.data</groupId>
       <artifactId>spring-data-commons-core</artifactId>
       <version>1.4.1.RELEASE</version>
@@ -188,7 +196,7 @@
       <plugin>
         <groupId>org.pustefixframework.maven.plugins</groupId>
         <artifactId>pustefix-statuscode-plugin</artifactId>
-        <version>0.19.18-SNAPSHOT</version>
+        <version>0.19.31-SNAPSHOT</version>
         <executions>
           <execution>
             <configuration>

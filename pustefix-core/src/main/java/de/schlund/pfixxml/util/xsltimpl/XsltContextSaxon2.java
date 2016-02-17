@@ -41,6 +41,10 @@ public class XsltContextSaxon2 implements XsltContext {
         return info.getSystemId();
     }
     
+    public String getStylesheetSystemId() {
+        return null;
+    }
+    
     public String getDocumentElementName() {
         NodeInfo info=(NodeInfo)context.getContextItem();
         return info.getDocumentRoot().getRoot().getLocalPart();

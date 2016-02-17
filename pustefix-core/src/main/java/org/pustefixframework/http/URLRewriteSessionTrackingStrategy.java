@@ -243,6 +243,8 @@ public class URLRewriteSessionTrackingStrategy implements SessionTrackingStrateg
         }
 
         PfixServletRequest preq = null;
+        try {
+        
         if (has_session) {
             preq = (PfixServletRequest) session.getAttribute(STORED_REQUEST);
             if (preq != null) {
@@ -302,6 +304,12 @@ public class URLRewriteSessionTrackingStrategy implements SessionTrackingStrateg
         createTestCookie(req, res);
         
         context.callProcess(preq, req, res);
+        
+        } finally {
+            if(preq != null) {
+                preq.resetRequest();
+            }
+        }
     }
    
     private boolean doCookieTest(HttpServletRequest req, HttpServletResponse res, HttpSession sess) {

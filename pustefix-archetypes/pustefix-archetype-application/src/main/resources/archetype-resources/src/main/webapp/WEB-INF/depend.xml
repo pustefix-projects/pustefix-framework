@@ -2,7 +2,9 @@
 #set( $symbol_dollar = '$' )
 #set( $symbol_escape = '\' )
 <?xml version="1.0" encoding="utf-8"?>
-<make lang="en_GB" project="${artifactId}">
+<make lang="en_GB" project="${artifactId}" 
+      xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+      xsi:noNamespaceSchemaLocation="http://www.pustefix-framework.org/2008/namespace/xml-generator-config.xsd">
 
   <namespaces>
     <namespace-declaration prefix="pfx" url="http://www.schlund.de/pustefix/core"/>

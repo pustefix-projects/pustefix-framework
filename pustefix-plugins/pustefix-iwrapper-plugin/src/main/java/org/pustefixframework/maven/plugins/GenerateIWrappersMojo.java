@@ -73,16 +73,16 @@ public class GenerateIWrappersMojo extends AbstractMojo {
     private File aptdir;
     
     /**
-     * @parameter expression="${project}"
+     * @parameter property="project"
      * @required
      */
     private MavenProject project;
     
-    /** @parameter expression="${plugin.artifacts}" */
+    /** @parameter property="plugin.artifacts" */
     private java.util.List<Artifact> pluginArtifacts;
 
     /**
-     * @parameter expression="${plugin.artifacts}"
+     * @parameter property="plugin.artifacts"
      * @required
      * @readonly
      */

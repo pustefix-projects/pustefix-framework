@@ -8,8 +8,8 @@
   xmlns:dos="http://www.pustefix-framework.org/2008/namespace/direct-output-service-config"
   elementFormDefault="qualified">
   
-  <xs:import namespace="http://www.pustefix-framework.org/2008/namespace/project-config" schemaLocation="http://www.pustefix-framework.org/2008/namespace/project-config-0_18.xsd"></xs:import>
-  <xs:import namespace="http://www.pustefix-framework.org/2008/namespace/context-xml-service-config" schemaLocation="http://www.pustefix-framework.org/2008/namespace/context-xml-service-config-0_18.xsd"></xs:import>
+  <xs:import namespace="http://www.pustefix-framework.org/2008/namespace/project-config" schemaLocation="http://www.pustefix-framework.org/2008/namespace/project-config.xsd"></xs:import>
+  <xs:import namespace="http://www.pustefix-framework.org/2008/namespace/context-xml-service-config" schemaLocation="http://www.pustefix-framework.org/2008/namespace/context-xml-service-config.xsd"></xs:import>
   <xs:import namespace="http://www.pustefix-framework.org/2008/namespace/direct-output-service-config" schemaLocation="http://www.pustefix-framework.org/2008/namespace/direct-output-service-config.xsd"></xs:import>
   
   <xs:element name="config-fragments" type="fr:configFragmentsType" />

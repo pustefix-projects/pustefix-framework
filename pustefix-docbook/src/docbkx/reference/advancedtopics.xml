@@ -898,15 +898,15 @@ public class PremiumCustomerCondition implements Condition {
        xmlns:ws="http://pustefixframework.org/schema/webservices"
        xmlns:aop="http://www.springframework.org/schema/aop"
        xsi:schemaLocation="
-            http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-2.0.xsd
-            http://www.springframework.org/schema/aop http://www.springframework.org/schema/aop/spring-aop-2.5.xsd
+            http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd
+            http://www.springframework.org/schema/aop http://www.springframework.org/schema/aop/spring-aop.xsd
             http://pustefixframework.org/schema/webservices http://pustefixframework.org/schema/webservices/pustefix-webservices.xsd">
 
   <bean id="MyBeanId" class="mypackage.MyBean" scope="session">
     <aop:scoped-proxy/>
   </bean>
   
-  <ws:webservie
+  <ws:webservice
     id="Webservice_MyBean" 
     servicename="MyBean" 
     interface="MyBeanServiceInterface"
@@ -922,6 +922,7 @@ public class PremiumCustomerCondition implements Condition {
     protocol="ANY"
     authconstraint="MyConstraint"
     synchronize="false"
+    whitelist="mypackage.MyClass otherpackage.*"
   />
 
 </beans>
@@ -932,6 +933,10 @@ public class PremiumCustomerCondition implements Condition {
         annotation). Using the <literal>protocol</literal> attribute you can set the webservice protocol (default is <literal>JSONWS</literal>,
         other options are <literal>SOAP</literal> or <literal>ANY</literal>).
       </para>
+      <para>
+        If you're using class hinting, all permitted classes have to be listed as value of the <literal>whitelist</literal> attribute. You can either directly
+        list the full class names (space or comma separated), or you can use regular expressions.
+     </para>
       <para>
         The webservice configuration file <filename>PROJECTNAME/conf/webservices.conf.xml</filename> contains global settings
 	for the runtime system, default settings for webservices, and optionally webservice-specific settings.
@@ -1091,6 +1096,11 @@ public class PremiumCustomerCondition implements Condition {
       Set the service implementation class. [Mandatory]
     -->
     <implementation name="de.schlund.pfixcore.example.webservices.CounterImpl"/>
+
+    <!--
+      List which classes are permitted to be deserialized using class hinting
+    -->
+    <whitelist>mypackage.MyClass otherpackage.*</whitelist>
   </webservice>
   <webservice name="...">...</webservice>...
 </webservice-config>]]></programlisting>
@@ -2447,6 +2457,48 @@ public class MyPublisherBean {
     
 }
 ]]></programlisting>
+  </section>
+
+  <section xml:id="advanced.requestid">
+    <title>Request IDs for log correlation</title>
+    <para>
+      Request IDs let you correlate log entries with a specific web request. Pustefix can generate a unique ID for each
+      request which is available during request processing, i.e. it can be added to each log entry created by a request.
+      The ID is set by a servlet filter as request attribute, Log4J MDC key and HTTP response header.
+    </para>
+    <para>
+      To enable request IDs you have to add the following configuration to your application's <literal>web.xml</literal>:
+    </para>
+<programlisting language="xml"><![CDATA[
+  <filter>
+     <filter-name>RequestIdFilter</filter-name>
+     <filter-class>org.pustefixframework.http.RequestIdFilter</filter-class>
+     <!-- supported init parameters with default values -->
+     <!--
+     <init-param>
+       <param-name>mdcKey</param-name>
+       <param-value>requestId</param-value>
+     </init-param>
+     <init-param>
+       <param-name>attributeName</param-name>
+       <param-value>requestId</param-value>
+     </init-param>
+     <init-param>
+       <param-name>headerName</param-name>
+       <param-value>X-Request-Id</param-value>
+     </init-param>
+     -->
+   </filter>
+   <filter-mapping>
+     <filter-name>RequestIdFilter</filter-name>
+     <url-pattern>/*</url-pattern>
+     <dispatcher>REQUEST</dispatcher>
+   </filter-mapping>
+]]></programlisting>
+    <para>
+      You can configure under which name the ID is stored in the different contexts. Setting the init parameter name
+      to an empty value will disable it.
+    </para>
   </section>
 
   <section xml:id="advanced.editor">

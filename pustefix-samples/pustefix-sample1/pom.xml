@@ -4,12 +4,12 @@
   <parent>
     <groupId>org.pustefixframework</groupId>
     <artifactId>pustefix-samples</artifactId>
-    <version>0.19.18-SNAPSHOT</version>
+    <version>0.19.31-SNAPSHOT</version>
   </parent>
 
   <groupId>org.pustefixframework</groupId>
   <artifactId>pustefix-sample1</artifactId>
-  <version>0.19.18-SNAPSHOT</version>
+  <version>0.19.31-SNAPSHOT</version>
   <packaging>war</packaging>
 
   <name>Pustefix Sample 1</name>
@@ -22,12 +22,12 @@
     <dependency>
       <groupId>org.pustefixframework</groupId>
       <artifactId>pustefix-core</artifactId>
-      <version>0.19.18-SNAPSHOT</version>
+      <version>0.19.31-SNAPSHOT</version>
     </dependency>
     <dependency>
       <groupId>org.pustefixframework.webservices</groupId>
       <artifactId>pustefix-webservices-core</artifactId>
-      <version>0.19.18-SNAPSHOT</version>      
+      <version>0.19.31-SNAPSHOT</version>      
     </dependency>
     <dependency>
       <groupId>javax.servlet</groupId>
@@ -39,12 +39,12 @@
     <dependency>
       <groupId>org.pustefixframework.samples.modules</groupId>
       <artifactId>animal-module</artifactId>
-      <version>0.19.18-SNAPSHOT</version>
+      <version>0.19.31-SNAPSHOT</version>
     </dependency>
     <dependency>
       <groupId>org.pustefixframework.samples.modules</groupId>
       <artifactId>common-module</artifactId>
-      <version>0.19.18-SNAPSHOT</version>
+      <version>0.19.31-SNAPSHOT</version>
     </dependency>
 
     <dependency>
@@ -53,13 +53,6 @@
       <version>4.0.4</version>
     </dependency>
     
-    <!-- Inline javascript compression -->
-    <dependency>
-      <groupId>com.yahoo.platform.yui</groupId>
-      <artifactId>yuicompressor</artifactId>
-      <version>2.4.7</version>
-    </dependency>
-
     <dependency>
       <groupId>org.springframework.data</groupId>
       <artifactId>spring-data-commons-core</artifactId>
@@ -74,6 +67,20 @@
           <artifactId>spring-beans</artifactId>
         </exclusion>
       </exclusions> 
+    </dependency>
+
+    <!-- Inline javascript compression -->
+    <!--
+    <dependency>
+      <groupId>com.google.javascript</groupId>
+      <artifactId>closure-compiler</artifactId>
+      <version>v20140625</version>
+    </dependency>
+    -->
+    <dependency>
+      <groupId>com.yahoo.platform.yui</groupId>
+      <artifactId>yuicompressor</artifactId>
+      <version>2.4.8</version>
     </dependency>
 
   </dependencies>
@@ -148,7 +155,7 @@
       <plugin>
         <groupId>org.pustefixframework.maven.plugins</groupId>
         <artifactId>pustefix-webapp-plugin</artifactId>
-        <version>0.19.18-SNAPSHOT</version>
+        <version>0.19.31-SNAPSHOT</version>
         <executions>
           <execution>
             <goals>
@@ -160,7 +167,7 @@
       <plugin>
         <groupId>org.pustefixframework.maven.plugins</groupId>
         <artifactId>pustefix-statuscode-plugin</artifactId>
-        <version>0.19.18-SNAPSHOT</version>
+        <version>0.19.31-SNAPSHOT</version>
         <executions>
           <execution>
             <goals>
@@ -172,7 +179,7 @@
       <plugin>
         <groupId>org.pustefixframework.maven.plugins</groupId>
         <artifactId>pustefix-iwrapper-plugin</artifactId>
-        <version>0.19.18-SNAPSHOT</version>
+        <version>0.19.31-SNAPSHOT</version>
         <executions>
           <execution>
             <goals>
@@ -184,7 +191,7 @@
       <plugin>
         <groupId>org.pustefixframework.maven.plugins</groupId>
         <artifactId>pustefix-pagelist-plugin</artifactId>
-        <version>0.19.18-SNAPSHOT</version>
+        <version>0.19.31-SNAPSHOT</version>
         <!--
         <configuration>
           <docroot>${basedir}/src/main/webapp</docroot>
@@ -248,6 +255,26 @@
          </plugins>
        </build>
      </profile>
+     <profile>
+       <id>profile-xslt</id>
+       <build>
+         <plugins>
+           <plugin>
+             <groupId>org.pustefixframework.maven.plugins</groupId>
+             <artifactId>pustefix-patch-plugin</artifactId>
+             <version>0.19.31-SNAPSHOT</version>
+             <executions>
+               <execution>
+                 <goals>
+                   <goal>patch</goal>
+                 </goals>
+               </execution>
+             </executions>
+           </plugin>
+         </plugins>
+       </build>
+    </profile>
+
   </profiles>
   
 </project>

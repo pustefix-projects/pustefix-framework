@@ -43,6 +43,7 @@ import javax.xml.transform.stream.StreamResult;
 import javax.xml.transform.stream.StreamSource;
 
 import org.apache.log4j.Logger;
+import org.pustefixframework.xml.tools.XSLTracing;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.xml.sax.InputSource;
@@ -224,6 +225,10 @@ public class Xslt {
            traceWriter=new StringWriter();
            XsltProvider.getXsltSupport(xsltVersion).doTracing(trafo,traceWriter);
         }
+
+        if(XSLTracing.getInstance().isEnabled() && params.containsKey("__spdoc__")) {
+            XsltProvider.getXsltSupport(xsltVersion).doPerformanceTracing(trafo, templates);
+        }
         XsltMessageWriter msgWriter = XsltProvider.getXsltSupport(xsltVersion).recordMessages(trafo);
         long start = 0;
         if (params != null) {
@@ -238,7 +243,7 @@ public class Xslt {
         if (LOG.isDebugEnabled())
             start = System.currentTimeMillis();
         try {
-            ExtensionFunctionUtils.setExtensionFunctionError(null);
+            ExtensionFunctionUtils.resetExtensionFunctionError();
             XsltProvider.getXsltSupport(xsltVersion).doErrorListening(trafo, traceLocation);
             trafo.transform(new DOMSource(Xml.parse(xsltVersion,xml)), result);
         } catch(TransformerException x) {
@@ -251,8 +256,6 @@ public class Xslt {
         	if(extFuncError != null || (msg != null && msg.contains("Exception in extension function"))) {
         		if(extFuncError == null) {
         			extFuncError = x;
-        		} else {
-        			ExtensionFunctionUtils.setExtensionFunctionError(null);
         		}
         		String extFuncMsg = x.getMessageAndLocation();
         		if(extFuncMsg != null && extFuncMsg.contains("Exception in extension function") 
@@ -271,6 +274,7 @@ public class Xslt {
         	}
             
         } finally {
+           ExtensionFunctionUtils.resetExtensionFunctionError();
            if(traceInstructions) {
               String traceStr=traceWriter.toString();
               int maxSize=10000;

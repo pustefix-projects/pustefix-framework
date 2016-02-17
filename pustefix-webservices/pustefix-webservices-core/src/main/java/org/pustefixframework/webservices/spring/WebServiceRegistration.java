@@ -17,6 +17,9 @@
  */
 package org.pustefixframework.webservices.spring;
 
+import java.util.List;
+import java.util.regex.Pattern;
+
 /**
  * 
  * @author mleidig
@@ -32,6 +35,7 @@ public class WebServiceRegistration {
     private String sessionType;
     private String authConstraint;
     private Boolean synchronize;
+    private List<Pattern> whitelist;
     
     public String getTargetBeanName() {
         return targetBeanName;
@@ -96,5 +100,12 @@ public class WebServiceRegistration {
     public void setSynchronize(Boolean synchronize) {
         this.synchronize = synchronize;
     }
+    
+    public List<Pattern> getWhitelist() {
+        return whitelist;
+    }
 
+    public void setWhitelist(List<Pattern> whitelist) {
+        this.whitelist = whitelist;
+    }
 }

@@ -28,15 +28,14 @@ import javax.xml.transform.TransformerConfigurationException;
 import javax.xml.transform.TransformerFactory;
 import javax.xml.transform.sax.SAXSource;
 
-import net.sf.saxon.Configuration;
-import net.sf.saxon.PreparedStylesheet;
-import net.sf.saxon.TransformerFactoryImpl;
-
 import org.xml.sax.InputSource;
 
 import de.schlund.pfixxml.util.Xml;
 import de.schlund.pfixxml.util.XsltMessageWriter;
 import de.schlund.pfixxml.util.XsltSupport;
+import net.sf.saxon.Configuration;
+import net.sf.saxon.PreparedStylesheet;
+import net.sf.saxon.TransformerFactoryImpl;
 
 /**
  * @author mleidig@schlund.de
@@ -85,7 +84,11 @@ public class XsltSaxon2 implements XsltSupport {
         return templates instanceof PreparedStylesheet;
     }
     
-    public void doTracing(Transformer transformer,  Writer traceWriter) {
+    public void doTracing(Transformer transformer, Writer traceWriter) {
+        //TODO: implementation
+    }
+    
+    public void doPerformanceTracing(Transformer transformer, Templates templates) {
         //TODO: implementation
     }
     

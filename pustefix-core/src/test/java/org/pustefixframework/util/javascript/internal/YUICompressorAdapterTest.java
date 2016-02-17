@@ -3,8 +3,6 @@ package org.pustefixframework.util.javascript.internal;
 import java.io.StringReader;
 import java.io.StringWriter;
 
-import junit.framework.TestCase;
-
 import org.apache.log4j.ConsoleAppender;
 import org.apache.log4j.Level;
 import org.apache.log4j.Logger;
@@ -12,16 +10,13 @@ import org.apache.log4j.PatternLayout;
 import org.pustefixframework.util.javascript.Compressor;
 import org.pustefixframework.util.javascript.CompressorException;
 
-public class YUICompressorAdapterTest extends TestCase {
+public class YUICompressorAdapterTest extends AbstractAdapterTest {
 
-    String[] inputs = new String[] {
-            "//comment\n      alert(\"hey\");  //afdfadfs\n",
-            "function foo() {var xxxxxx=3;};"
-    };
-    
     String[] outputs = new String[] {
             "alert(\"hey\");",
-            "function foo(){var a=3};"
+            "function foo(){var a=3};",
+            "function bar(a){alert(a)};",
+            "function bar(a){FOO.bar=a};"
     };
     
     @Override

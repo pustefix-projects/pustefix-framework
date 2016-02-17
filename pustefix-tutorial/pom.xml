@@ -5,12 +5,12 @@
   <parent>
     <groupId>org.pustefixframework</groupId>
     <artifactId>pustefixframework</artifactId>
-    <version>0.19.18-SNAPSHOT</version>
+    <version>0.19.31-SNAPSHOT</version>
   </parent>
 
   <groupId>org.pustefixframework</groupId>
   <artifactId>pustefix-tutorial</artifactId>
-  <version>0.19.18-SNAPSHOT</version>
+  <version>0.19.31-SNAPSHOT</version>
 
   <packaging>pom</packaging>
   <name>Pustefix Tutorial Applications</name>
@@ -19,4 +19,28 @@
     <module>first-app</module>
     <module>usermanagement</module>
   </modules>  
+
+  <build>
+    <plugins>
+      <plugin>
+        <groupId>org.pustefixframework.maven.plugins</groupId>
+        <artifactId>pustefix-validator-plugin</artifactId>
+        <version>0.19.31-SNAPSHOT</version>
+        <executions>
+          <execution>
+            <goals>
+              <goal>validate</goal>
+            </goals>
+            <configuration>
+              <configDir>src</configDir>
+              <recursive>true</recursive>
+              <cacheEntities>true</cacheEntities>
+              <failOnWarning>true</failOnWarning>
+            </configuration>
+          </execution>
+        </executions>
+      </plugin>
+    </plugins>
+  </build>
+
 </project>

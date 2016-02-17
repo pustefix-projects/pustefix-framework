@@ -2,29 +2,30 @@ package org.pustefixframework.util.javascript.internal;
 
 import org.pustefixframework.util.javascript.Compressor;
 
-import de.schlund.pfixxml.config.EnvironmentProperties;
-
 /**
- * 
  * Locator for finding Javascript compressor implementations in the 
- * classpath. Currently only support the YUI compresssor.
- * 
- * Should be replaced by pluggable locator or configuration mechanism. 
- * 
- * @author mleidig@schlund.de
- *
+ * classpath. It will try to find the YUI Javascript Compressor first,
+ * if not found it will look for the Google Closure Compiler.
  */
 public class CompressorLocator {
 
-    public static Compressor getCompressor() {
-        if("prod".equals(EnvironmentProperties.getProperties().getProperty("mode"))) {
-    	if(YUICompressorAdapter.isAvailable()) {
-            return new YUICompressorAdapter();
-        }
+    private static Compressor compressor;
+    
+    static {
+        if(YUICompressorAdapter.isAvailable()) {
+            compressor = new YUICompressorAdapter();
         } else {
-        	return new WhitespaceCompressor();
+            try {
+                Class.forName("com.google.javascript.jscomp.Compiler");
+                compressor = new ClosureCompilerAdapter();
+            } catch (ClassNotFoundException e) {
+                //ignore
+            }
         }
-        return null;
+    }
+    
+    public static Compressor getCompressor() {
+        return compressor;
     }
     
 }

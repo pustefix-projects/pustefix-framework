@@ -17,6 +17,10 @@
  */
 package org.pustefixframework.webservices.spring;
 
+import java.util.ArrayList;
+import java.util.List;
+import java.util.regex.Pattern;
+
 import org.springframework.beans.factory.config.RuntimeBeanReference;
 import org.springframework.beans.factory.support.BeanDefinitionBuilder;
 import org.springframework.beans.factory.xml.AbstractSingleBeanDefinitionParser;
@@ -57,6 +61,16 @@ public class WebServiceBeanDefinitionParser extends AbstractSingleBeanDefinition
        
        String synchronize = element.getAttribute("synchronize");
        if(synchronize.length()>0) beanDefBuilder.addPropertyValue("synchronize", Boolean.valueOf(synchronize));
+       
+       String whitelist = element.getAttribute("whitelist");
+       if(!whitelist.isEmpty()) {
+           String[] values = whitelist.split("[,\\s]+");
+           List<Pattern> patterns = new ArrayList<>();
+           for(String value: values) {
+               patterns.add(Pattern.compile(value));
+           }
+           beanDefBuilder.addPropertyValue("whitelist", patterns);
+       }
        
        Object target = null;
        if (element.hasAttribute("ref")) { 

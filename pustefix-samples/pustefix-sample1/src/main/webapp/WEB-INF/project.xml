@@ -2,7 +2,7 @@
 <project-config xmlns="http://www.pustefix-framework.org/2008/namespace/project-config"
                 xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
                 xsi:schemaLocation="http://www.pustefix-framework.org/2008/namespace/project-config 
-                                    http://www.pustefix-framework.org/2008/namespace/project-config-0_18.xsd">
+                                    http://www.pustefix-framework.org/2008/namespace/project-config.xsd">
   
   <project>
     <name>sample1</name>
@@ -37,6 +37,7 @@
         <include-cache capacity="50"/>
         <target-cache capacity="50"/>
         <render-cache capacity="50"/>
+        <extension-cache capacity="50"/>
       </when>
       <when test="$mode='prelive'">
         <!-- Enable/disable development tooling extensions (dynamic include info, console, etc.) 
@@ -93,7 +94,6 @@
     </context-xml-service>
     
     <direct-output-service>
-      <!-- <path>/xml/download</path>-->
       <config-file>docroot:/WEB-INF/direct.conf.xml</config-file>
     </direct-output-service>
    
@@ -101,7 +101,6 @@
          it, if you want to override one of its default settings: -->
     <!--
     <deref-service>
-      <path>/xml/deref</path>
       <validtime>3600</validtime>
       <mustsign>true</mustsign>
     </deref-service>

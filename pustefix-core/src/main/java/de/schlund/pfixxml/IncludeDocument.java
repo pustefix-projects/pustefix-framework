@@ -19,13 +19,18 @@
 package de.schlund.pfixxml;
 
 import java.io.IOException;
+import java.util.List;
+import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.ConcurrentMap;
 
 import javax.xml.transform.TransformerException;
 
 import org.w3c.dom.Document;
+import org.w3c.dom.Node;
 import org.xml.sax.SAXException;
 
 import de.schlund.pfixxml.resources.Resource;
+import de.schlund.pfixxml.util.XPath;
 import de.schlund.pfixxml.util.Xml;
 import de.schlund.pfixxml.util.XsltVersion;
 
@@ -48,13 +53,10 @@ import de.schlund.pfixxml.util.XsltVersion;
  */
 public class IncludeDocument {
 
-    //~ Instance/static variables ..................................................................
-
     private Document              doc;
     private long                  modTime = 0;
-    // private static final Logger   LOG     = Logger.getLogger(IncludeDocument.class);
-    
-    //~ Methods ....................................................................................
+
+    private ConcurrentMap<String, List<Node>> xpathCache = new ConcurrentHashMap<>();
 
     /**
      * Create the internal document.
@@ -85,4 +87,27 @@ public class IncludeDocument {
     public void resetModTime() {
         modTime -= 1L;
     }
+
+    public List<Node> getNodes(String part) throws TransformerException {
+        String key = part;
+        List<Node> res = xpathCache.get(key);
+        if(res != null) {
+            return res;
+        }
+        res = XPath.select(doc, "/include_parts/part[@name='" + part + "']");
+        xpathCache.putIfAbsent(key, res);
+        return res;
+    }
+
+    public List<Node> getNodes(String part, String theme) throws TransformerException {
+        String key = part + "@" + theme;
+        List<Node> res = xpathCache.get(key);
+        if(res != null) {
+            return res;
+        }
+        res = XPath.select(doc, "/include_parts/part[@name='" + part + "']/theme[@name = '" + theme + "']");
+        xpathCache.putIfAbsent(key, res);
+        return res;
+    }
+
 }

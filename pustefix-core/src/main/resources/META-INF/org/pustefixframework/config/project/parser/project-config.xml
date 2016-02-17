@@ -79,6 +79,7 @@
     <match>/p:project-config/p:xml-generator//p:include-cache</match>
     <match>/p:project-config/p:xml-generator//p:target-cache</match>
     <match>/p:project-config/p:xml-generator//p:render-cache</match>
+    <match>/p:project-config/p:xml-generator//p:extension-cache</match>
     <match>/p:project-config/p:xml-generator//p:cache-statistic</match>
   </handler>
   

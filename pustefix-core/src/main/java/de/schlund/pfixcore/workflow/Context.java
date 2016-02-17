@@ -143,4 +143,10 @@ public interface Context extends PageFlowContext {
      * not needed any more).
      */
     void markSessionForCleanup();
+    
+    /**
+     * Invalidate the current session, immediately after the current request
+     * has been processed, i.e. after the response has been written.
+     */
+    void invalidateSessionAfterCompletion();
 }

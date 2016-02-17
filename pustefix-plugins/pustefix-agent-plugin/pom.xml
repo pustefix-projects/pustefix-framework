@@ -5,7 +5,7 @@
   <parent>
     <groupId>org.pustefixframework.maven.plugins</groupId>
     <artifactId>pustefix-plugins</artifactId>
-    <version>0.19.18-SNAPSHOT</version>
+    <version>0.19.31-SNAPSHOT</version>
     <relativePath>../pom.xml</relativePath>
   </parent>
 
@@ -13,7 +13,7 @@
   
   <groupId>org.pustefixframework.maven.plugins</groupId>
   <artifactId>pustefix-agent-plugin</artifactId>
-  <version>0.19.18-SNAPSHOT</version>
+  <version>0.19.31-SNAPSHOT</version>
   
   <packaging>maven-plugin</packaging>
   
@@ -36,7 +36,7 @@
     <dependency>
       <groupId>org.pustefixframework</groupId>
       <artifactId>pustefix-agent</artifactId>
-      <version>0.19.18-SNAPSHOT</version>
+      <version>0.19.31-SNAPSHOT</version>
     </dependency>
   </dependencies>
   
@@ -53,7 +53,7 @@
         <dependency>
           <groupId>com.sun</groupId>
           <artifactId>tools</artifactId>
-          <version>1.7</version>
+          <version>1.8</version>
           <scope>system</scope>
           <systemPath>${java.home}/../lib/tools.jar</systemPath>
         </dependency>
@@ -71,7 +71,7 @@
         <dependency>
           <groupId>com.sun</groupId>
           <artifactId>tools</artifactId>
-          <version>1.7</version>
+          <version>1.8</version>
           <scope>system</scope>
           <systemPath>${java.home}/../lib/tools.jar</systemPath>
         </dependency>

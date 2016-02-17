@@ -27,7 +27,14 @@ public class InvalidateSessionState extends StaticState {
 
     @Override
     public ResultDocument getDocument(Context context, PfixServletRequest preq) throws Exception {
-        context.markSessionForCleanup();
+        if(preq.getRequestParam("now") != null) {
+            context.invalidateSessionAfterCompletion();
+            ResultDocument res = new ResultDocument();
+            res.getSPDocument().setRedirect("/");
+            return res;
+        } else {
+            context.markSessionForCleanup();
+        }
         return super.getDocument(context, preq);
     }
 

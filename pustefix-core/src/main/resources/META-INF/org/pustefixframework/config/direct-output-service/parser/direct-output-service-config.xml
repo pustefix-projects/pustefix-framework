@@ -35,6 +35,9 @@
     <match>/c:direct-output-service-config/c:properties//c:prop</match>
   </handler>
   
+  <handler class="org.pustefixframework.config.directoutputservice.parser.DirectOutputAuthConstraintParsingHandler">
+    <match>/c:direct-output-service-config//c:directoutputpagerequest/c:authconstraint</match>
+  </handler>
   
   <handler id="org.pustefixframework.config.customization.WhenParsingHandler" class="org.pustefixframework.config.customization.CustomizationWhenParsingHandler">
     <match>//c:choose/c:when</match>

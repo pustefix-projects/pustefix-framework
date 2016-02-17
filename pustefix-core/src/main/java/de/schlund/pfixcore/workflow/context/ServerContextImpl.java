@@ -19,6 +19,8 @@
 package de.schlund.pfixcore.workflow.context;
 
 import java.util.Properties;
+import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.ConcurrentMap;
 
 import org.pustefixframework.config.contextxmlservice.ContextConfig;
 import org.pustefixframework.config.project.ProjectInfo;
@@ -44,6 +46,7 @@ public class ServerContextImpl {
     private PageMap pagemap;
     private ProjectInfo projectInfo;
     private SiteMap siteMap;
+    private ConcurrentMap<Object, Boolean> needsLastFlowCache = new ConcurrentHashMap<>();
     
     public void init() throws Exception {
         if (config == null || pagemap == null) {
@@ -108,6 +111,10 @@ public class ServerContextImpl {
 
     public void setSiteMap(SiteMap siteMap) {
         this.siteMap = siteMap;
+    }
+
+    public ConcurrentMap<Object, Boolean> getNeedsLastFlowCache() {
+        return needsLastFlowCache;
     }
 
 }

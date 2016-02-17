@@ -18,6 +18,7 @@
 
 package de.schlund.pfixcore.workflow.app;
 
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.Iterator;
@@ -127,6 +128,17 @@ public class IWrapperContainerImpl implements IWrapperContainer {
             }
         }
         return false;
+    }
+    
+    public IWrapper[] getIWrappersWithError() {
+        IWrapper[] errorWrappers = new IWrapper[0];
+        for(IWrapper wrapper: allsubmit) {
+            if (wrapper.errorHappened()) {
+                errorWrappers = Arrays.copyOf(errorWrappers, errorWrappers.length + 1);
+                errorWrappers[errorWrappers.length - 1] = wrapper;
+            }
+        }
+        return errorWrappers;
     }
 
     /**

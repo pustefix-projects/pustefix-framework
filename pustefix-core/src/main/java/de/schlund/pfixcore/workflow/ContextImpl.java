@@ -20,6 +20,7 @@ package de.schlund.pfixcore.workflow;
 
 import java.util.List;
 import java.util.Properties;
+import java.util.concurrent.ConcurrentMap;
 
 import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletRequest;
@@ -31,6 +32,7 @@ import org.pustefixframework.config.contextxmlservice.PageRequestConfig;
 import org.pustefixframework.config.project.ProjectInfo;
 import org.pustefixframework.container.spring.beans.TenantScope;
 import org.pustefixframework.http.AbstractPustefixRequestHandler;
+import org.springframework.cache.interceptor.SimpleKeyGenerator;
 
 import de.schlund.pfixcore.auth.Authentication;
 import de.schlund.pfixcore.exception.PustefixApplicationException;
@@ -389,6 +391,10 @@ public class ContextImpl implements AccessibilityChecker, ExtendedContext, Token
     public void markSessionForCleanup() {
         this.sessioncontext.markSessionForCleanup();
     }
+    
+    public void invalidateSessionAfterCompletion() {
+        this.sessioncontext.invalidateSessionAfterCompletion();
+    }
 
     public void addSessionStatusListener(SessionStatusListener l) {
         this.sessioncontext.addSessionStatusListener(l);
@@ -441,7 +447,26 @@ public class ContextImpl implements AccessibilityChecker, ExtendedContext, Token
     }
     
     public boolean needsLastFlow(String pageName, String lastFlowName) {
-        return getRequestContextForCurrentThreadWithError().needsLastFlow(pageName, lastFlowName);
+        if(!getContextConfig().getPageFlowPassThrough()) {
+            return false;
+        }
+        if(lastFlowName != null && !lastFlowName.equals("")) {
+            Variant variant = getRequestContextForCurrentThreadWithError().getVariant();
+            Object cacheKey = SimpleKeyGenerator.generateKey(pageName, lastFlowName, variant == null ? null : variant.getVariantId());
+            ConcurrentMap<Object, Boolean> cache = servercontext.getNeedsLastFlowCache();
+            Boolean result = cache.get(cacheKey);
+            if(result != null) {
+               return result;
+            }
+            PageFlow lastFlow = servercontext.getPageFlowManager().getPageFlowByName(lastFlowName, variant);
+            if(lastFlow != null) {
+                PageRequest page = createPageRequest(pageName);
+                result = servercontext.getPageFlowManager().needsLastFlow(lastFlow, page);
+                cache.putIfAbsent(cacheKey, result);
+                return result;
+            }
+        }
+        return false;
     }
     
     public boolean needsPageFlowParameter(String pageName, String flowName) {

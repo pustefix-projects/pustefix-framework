@@ -26,6 +26,7 @@ import javax.xml.transform.URIResolver;
 public interface XsltContext {
 
     public String getSystemId();
+    public String getStylesheetSystemId();
     public String getDocumentElementName();
     public XsltVersion getXsltVersion();
     public URIResolver getURIResolver();

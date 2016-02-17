@@ -30,7 +30,7 @@
     <param name="File"><cus:logroot/>pustefix-trail.log</param>
     <param name="MaxFileSize" value="10MB"/>
     <layout class="org.apache.log4j.PatternLayout">
-      <param name="ConversionPattern" value="%d{ISO8601}|%m\n"/>
+      <param name="ConversionPattern" value="%d{ISO8601}|%m|%X{requestId}\n"/>
     </layout>
   </appender>
   
@@ -74,7 +74,22 @@
     </layout>
   </appender>
   
-  
+  <appender name="LOGGER_XSLT" class="org.apache.log4j.RollingFileAppender">
+    <param name="File"><cus:logroot/>pustefix-xslt.log</param>
+    <param name="MaxFileSize" value="10MB"/>
+    <layout class="org.apache.log4j.PatternLayout">
+      <param name="ConversionPattern" value="%d{ISO8601} - %m\n"/>
+    </layout>
+  </appender> 
+
+  <appender name="LOGGER_PFXPERF" class="org.apache.log4j.RollingFileAppender">
+    <param name="File"><cus:logroot/>pustefix-perf.log</param>
+    <param name="MaxFileSize" value="10MB"/>
+    <layout class="org.apache.log4j.PatternLayout">
+      <param name="ConversionPattern" value="%d{ISO8601}|%m\n"/>
+    </layout>
+  </appender>
+
   <!-- Categories -->
 
   <!-- Make some very verbose packages quiet by default --> 
@@ -140,7 +155,24 @@
     </cus:choose>
     <appender-ref ref="LOGGER_GENERAL"/>
   </category>
+
+  <!-- Enable verbose logging of XSL extension function calls in non-prod environments -->
+
+  <category name="de.schlund.pfixxml.util.ExtensionFunctionUtils" additivity="false">
+    <cus:choose>
+      <cus:when test="$mode = 'prod'"><priority value="INFO"/></cus:when>
+      <cus:otherwise><priority value="DEBUG"/></cus:otherwise>
+    </cus:choose>
+    <appender-ref ref="LOGGER_XSLT"/>
+  </category>
+
+  <!--  Enable request performance logging done by ServletFilter -->
   
+  <category name="org.pustefixframework.http.PerformanceLoggingFilter" additivity="false">
+    <priority value="INFO"/>
+    <appender-ref ref="LOGGER_PFXPERF"/>
+  </category>
+
   <!-- Special categories for Pustefix statistics log files -->
   
   <category name="LOGGER_VISIT" additivity="false">

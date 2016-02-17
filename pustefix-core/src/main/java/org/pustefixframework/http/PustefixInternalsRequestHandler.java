@@ -53,6 +53,7 @@ import org.pustefixframework.pfxinternals.SendErrorAction;
 import org.pustefixframework.pfxinternals.SystemCategory;
 import org.pustefixframework.pfxinternals.TargetsCategory;
 import org.pustefixframework.pfxinternals.ToolextAction;
+import org.pustefixframework.pfxinternals.XSLTraceCategory;
 import org.springframework.beans.BeansException;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.ApplicationContextAware;
@@ -105,6 +106,7 @@ public class PustefixInternalsRequestHandler implements UriProvidingHttpRequestH
         categories.put("cache", new CacheCategory());
         categories.put("targets", new TargetsCategory());
         categories.put("includes", new IncludesCategory());
+        categories.put("xsltrace", new XSLTraceCategory());
         categories.put("search", new SearchCategory());
     }
     
@@ -159,6 +161,11 @@ public class PustefixInternalsRequestHandler implements UriProvidingHttpRequestH
                if(categoryInstance != null) {
                    categoryInstance.model(root, req, this);
                }
+           }
+           
+           if(req.getMethod().equals("POST")) {
+               res.sendRedirect(req.getRequestURL().toString());
+               return;
            }
            
            if(!messages.isEmpty()) {

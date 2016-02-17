@@ -105,6 +105,20 @@ public class TransformerCallback {
     // }
 
     public static int isAccessible(RequestContextImpl requestcontext, TargetGenerator targetgen, String pagename) throws Exception {
+        
+        Object cacheKey = SimpleKeyGenerator.generateKey(TransformerCallback.class.getName(), "isAccessible", pagename);
+        Integer cachedResult = (Integer)ExtensionFunctionUtils.getCacheValue(cacheKey);
+        if(cachedResult != null) {
+            return cachedResult;
+        } else {
+            int result = isAccessibleNoCache(requestcontext, targetgen, pagename);
+            ExtensionFunctionUtils.setCacheValue(cacheKey, result);
+            return result;
+        }
+    }
+    
+    private static int isAccessibleNoCache(RequestContextImpl requestcontext, TargetGenerator targetgen, String pagename) throws Exception {
+
         try {
             ContextImpl context = requestcontext.getParentContext();
             

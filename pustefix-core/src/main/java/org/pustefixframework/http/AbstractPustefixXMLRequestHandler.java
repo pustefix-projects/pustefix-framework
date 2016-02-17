@@ -56,6 +56,7 @@ import org.pustefixframework.config.contextxmlservice.AbstractXMLServletConfig;
 import org.pustefixframework.config.contextxmlservice.ServletManagerConfig;
 import org.pustefixframework.container.spring.http.PustefixHandlerMapping;
 import org.pustefixframework.util.LogUtils;
+import org.pustefixframework.util.URLUtils;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.ApplicationContextAware;
 import org.springframework.web.servlet.FlashMap;
@@ -86,6 +87,7 @@ import de.schlund.pfixxml.targets.Target;
 import de.schlund.pfixxml.targets.TargetGenerationException;
 import de.schlund.pfixxml.targets.TargetGenerator;
 import de.schlund.pfixxml.util.CacheValueLRU;
+import de.schlund.pfixxml.util.ExtensionFunctionUtils;
 import de.schlund.pfixxml.util.MD5Utils;
 import de.schlund.pfixxml.util.Xml;
 import de.schlund.pfixxml.util.Xslt;
@@ -105,8 +107,6 @@ public abstract class AbstractPustefixXMLRequestHandler extends AbstractPustefix
     //~ Instance/static variables ..................................................................
     // how to write xml to the result stream
     private enum RENDERMODE { RENDER_NORMAL, RENDER_EXTERNAL, RENDER_FONTIFY, RENDER_XMLONLY, RENDER_LASTDOM };
-
-    private Logger LOGGER_SESSION = Logger.getLogger("LOGGER_SESSION");
     
     public static final String DEF_PROP_TMPDIR = "java.io.tmpdir";
     private static final String FONTIFY_SSHEET        = "module://pustefix-core/xsl/xmlfontify.xsl";
@@ -149,6 +149,7 @@ public abstract class AbstractPustefixXMLRequestHandler extends AbstractPustefix
     public static final String GETDOMTIME  = "__GETDOMTIME__";
     public static final String TRAFOTIME   = "__TRAFOTIME__";
     public static final String RENDEREXTTIME = "__RENDEREXTTIME__";
+    public static final String EXTFUNCTIME = "__EXTFUNCTIME__";
     
     public final static String SESS_CLEANUP_FLAG_STAGE1 = "__pfx_session_cleanup_stage1";
     public final static String SESS_CLEANUP_FLAG_STAGE2 = "__pfx_session_cleanup_stage2";
@@ -438,7 +439,8 @@ public abstract class AbstractPustefixXMLRequestHandler extends AbstractPustefix
                         flashMap.put("__reuse", String.valueOf(spdoc.getTimestamp()));
                         String location = spdoc.getResponseHeader().get("Location");
                         UriComponents uriComponents = UriComponentsBuilder.fromUriString(location).build();
-                        flashMap.setTargetRequestPath(uriComponents.getPath());
+                        String targetPath = URLUtils.removePathAttributes(uriComponents.getPath());
+                        flashMap.setTargetRequestPath(targetPath);
                         flashMap.addTargetRequestParams(uriComponents.getQueryParams());
                         flashMap.startExpirationPeriod(30); //30 seconds for redirect request to return
                         FlashMapManager flashMapManager = RequestContextUtils.getFlashMapManager(preq.getRequest());
@@ -464,7 +466,6 @@ public abstract class AbstractPustefixXMLRequestHandler extends AbstractPustefix
                 // This is obviously not thread-safe. However, no problems should
                 // arise if the session is invalidated twice.
                 session.setAttribute(SESS_CLEANUP_FLAG_STAGE2, true);
-                
                 sessionCleaner.invalidateSession(session);
             } else {
                 // Invalidate immediately
@@ -753,6 +754,8 @@ public abstract class AbstractPustefixXMLRequestHandler extends AbstractPustefix
     }
     
     private void render(SPDocument spdoc, RENDERMODE rendering, HttpServletResponse res, TreeMap<String, Object> paramhash, String stylesheet, OutputStream output, PfixServletRequest preq) throws RenderingException {
+        
+        ExtensionFunctionUtils.initCache();
         try {
         switch (rendering) {
             case RENDER_NORMAL:
@@ -779,6 +782,8 @@ public abstract class AbstractPustefixXMLRequestHandler extends AbstractPustefix
             throw new RenderingException("Exception while rendering page " + spdoc.getPagename() + " with stylesheet " + stylesheet, e);
         } catch (TransformerException e) {
             throw new RenderingException("Exception while rendering page " + spdoc.getPagename() + " with stylesheet " + stylesheet, e);
+        } finally {
+            ExtensionFunctionUtils.resetCache();
         }
     }
 
@@ -797,6 +802,7 @@ public abstract class AbstractPustefixXMLRequestHandler extends AbstractPustefix
             LOGGER.warn("stylevalue MUST NOT be null: stylesheet=" + stylesheet + "; " +
                      ((spdoc != null) ? ("pagename=" +  spdoc.getPagename()) : "spdoc==null")); 
         }
+        paramhash.put("__stylesheet", stylesheet);
         paramhash.put("page", spdoc.getPagename());
         String definingModule = generator.getDefiningModule(spdoc.getPagename());
         if(definingModule != null) {
@@ -813,11 +819,16 @@ public abstract class AbstractPustefixXMLRequestHandler extends AbstractPustefix
         renderContext.setParameters(Collections.unmodifiableMap(paramhash));
         try {
             long t1 = System.currentTimeMillis();
+            ExtensionFunctionUtils.resetExtensionFunctionTime();
             Xslt.transform(spdoc.getDocument(), stylevalue, paramhash, new StreamResult(output), getServletEncoding());
             long t2 = System.currentTimeMillis();
             if(LOGGER.isDebugEnabled()) LOGGER.debug("Transformation time => Total: " + (t2-t1) + " REX-Create: " + 
                     renderContext.getTemplateCreationTime() + " REX-Trafo: " + renderContext.getTransformationTime());
             preq.getRequest().setAttribute(RENDEREXTTIME, renderContext.getTemplateCreationTime() + renderContext.getTransformationTime());
+            Long extFuncTime = ExtensionFunctionUtils.getExtensionFunctionTime();
+            if(extFuncTime != null) {
+                preq.getRequest().setAttribute(EXTFUNCTIME, extFuncTime / 1000000);
+            }
         } catch (TransformerException e) {
             Throwable inner = e.getException();
             Throwable cause = null;
@@ -831,6 +842,8 @@ public abstract class AbstractPustefixXMLRequestHandler extends AbstractPustefix
             } else {
                 throw e;
             }
+        } finally {
+            ExtensionFunctionUtils.resetExtensionFunctionTime();
         }
     }
 
@@ -1304,7 +1317,7 @@ public abstract class AbstractPustefixXMLRequestHandler extends AbstractPustefix
             	super.writeTo(out);
             }
         }
-        
+
     }
-    
+
 }

@@ -10,6 +10,29 @@
    </listener>
    -->
    <filter>
+     <filter-name>PerformanceLoggingFilter</filter-name>
+     <filter-class>org.pustefixframework.http.PerformanceLoggingFilter</filter-class>
+   </filter>
+   <filter>
+     <filter-name>RequestIdFilter</filter-name>
+     <filter-class>org.pustefixframework.http.RequestIdFilter</filter-class>
+     <!-- supported init parameters with default values -->
+     <!--
+     <init-param>
+       <param-name>mdcKey</param-name>
+       <param-value>requestId</param-value>
+     </init-param>
+     <init-param>
+       <param-name>attributeName</param-name>
+       <param-value>requestId</param-value>
+     </init-param>
+     <init-param>
+       <param-name>headerName</param-name>
+       <param-value>X-Request-Id</param-value>
+     </init-param>
+     -->
+   </filter>
+   <filter>
      <filter-name>CharacterEncodingFilter</filter-name>
      <filter-class>org.springframework.web.filter.CharacterEncodingFilter</filter-class>
      <init-param>
@@ -21,6 +44,15 @@
       <filter-name>UrlRewriteFilter</filter-name>
       <filter-class>org.tuckey.web.filters.urlrewrite.UrlRewriteFilter</filter-class>
    </filter>
+   <filter-mapping>
+     <filter-name>PerformanceLoggingFilter</filter-name>
+     <url-pattern>/*</url-pattern>
+   </filter-mapping>
+   <filter-mapping>
+     <filter-name>RequestIdFilter</filter-name>
+     <url-pattern>/*</url-pattern>
+     <dispatcher>REQUEST</dispatcher>
+   </filter-mapping>
    <filter-mapping>
       <filter-name>UrlRewriteFilter</filter-name>
       <url-pattern>/xml/main/*</url-pattern>
