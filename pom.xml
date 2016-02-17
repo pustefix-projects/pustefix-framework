@@ -4,7 +4,7 @@
 
   <groupId>org.pustefixframework</groupId>
   <artifactId>pustefixframework</artifactId>
-  <version>0.20.0-beta-1</version>
+  <version>0.20.0-beta-2</version>
   <packaging>pom</packaging>
   <name>Pustefix Framework</name>
   <url>http://pustefix-framework.org</url>
@@ -256,11 +256,13 @@
     </plugins>
   </reporting> 
   <distributionManagement>
+<!--
     <repository>
       <id>sonatype-nexus-staging</id>
       <name>Sonatype Nexus Staging Repository</name>
       <url>https://oss.sonatype.org/service/local/staging/deploy/maven2/</url>
     </repository>
+-->
 <!--
     <snapshotRepository>
       <id>sonatype-nexus-snapshots</id>
@@ -268,6 +270,10 @@
       <url>https://oss.sonatype.org/content/repositories/snapshots/</url>
     </snapshotRepository>
 -->
+    <repository>
+      <id>ciso-release</id>
+      <url>https://artifactory.1and1.org/artifactory/ciso-release</url>
+    </repository>
     <snapshotRepository>
       <id>ciso-snapshot</id>
       <url>https://artifactory.1and1.org/artifactory/ciso-snapshot</url>
