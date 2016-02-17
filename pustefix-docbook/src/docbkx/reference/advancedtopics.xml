@@ -2459,6 +2459,48 @@ public class MyPublisherBean {
 ]]></programlisting>
   </section>
 
+  <section xml:id="advanced.requestid">
+    <title>Request IDs for log correlation</title>
+    <para>
+      Request IDs let you correlate log entries with a specific web request. Pustefix can generate a unique ID for each
+      request which is available during request processing, i.e. it can be added to each log entry created by a request.
+      The ID is set by a servlet filter as request attribute, Log4J MDC key and HTTP response header.
+    </para>
+    <para>
+      To enable request IDs you have to add the following configuration to your application's <literal>web.xml</literal>:
+    </para>
+<programlisting language="xml"><![CDATA[
+  <filter>
+     <filter-name>RequestIdFilter</filter-name>
+     <filter-class>org.pustefixframework.http.RequestIdFilter</filter-class>
+     <!-- supported init parameters with default values -->
+     <!--
+     <init-param>
+       <param-name>mdcKey</param-name>
+       <param-value>requestId</param-value>
+     </init-param>
+     <init-param>
+       <param-name>attributeName</param-name>
+       <param-value>requestId</param-value>
+     </init-param>
+     <init-param>
+       <param-name>headerName</param-name>
+       <param-value>X-Request-Id</param-value>
+     </init-param>
+     -->
+   </filter>
+   <filter-mapping>
+     <filter-name>RequestIdFilter</filter-name>
+     <url-pattern>/*</url-pattern>
+     <dispatcher>REQUEST</dispatcher>
+   </filter-mapping>
+]]></programlisting>
+    <para>
+      You can configure under which name the ID is stored in the different contexts. Setting the init parameter name
+      to an empty value will disable it.
+    </para>
+  </section>
+
   <section xml:id="advanced.editor">
     <title>The Pustefix Editor</title>
     <para>

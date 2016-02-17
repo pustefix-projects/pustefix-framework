@@ -89,4 +89,45 @@
     </para>
   </section>
 
+  <section xml:id="news.0_19_23">
+    <title>What's new in Pustefix 0.19.23</title>
+    <para>Improved rendering perforamnce (by extension function caching).</para>
+  </section>
+
+  <section xml:id="news.0_19_24">
+    <title>What's new in Pustefix 0.19.24</title>
+    <para>Added new <literal>DefaultIWrapperState</literal> method <literal>handleWrapperErrors</literal> for processing validation errors,
+          e.g. to log them.</para>
+  </section>
+
+  <section xml:id="news.0_19_25">
+    <title>What's new in Pustefix 0.19.25</title>
+    <para>Added new <literal>Context</literal> method <literal>invalidateSessionAfterCompletion</literal> for guaranteed invalidation of 
+          session after current request has been processed.</para>
+  </section>
+
+  <section xml:id="news.0_19_27">
+    <title>What's new in Pustefix 0.19.27</title>
+    <para>Added new tool for analyzing XSL transformation performance.</para>
+  </section>
+
+  <section xml:id="news.0_19_28">
+    <title>What's new in Pustefix 0.19.28</title>
+    <para>Improved rendering performance for pages with lots of runtime includes (by include extension function caching).</para>
+    <para>Added servlet filter for performance logging.</para>
+  </section>
+
+  <section xml:id="news.0_19_29">
+    <title>What's new in Pustefix 0.19.29</title>
+    <para>Improved rendering performance for pages with lots of internal links (by caching callbacks).</para>
+  </section>
+
+  <section xml:id="news.0_19_30">
+    <title>What's new in Pustefix 0.19.30</title>
+    <para><emphasis>We officially discontinue support for Java 1.7!</emphasis> This is the first version which makes use of Java 1.8 features. 
+          Almost a year after the EOL of Java 1.7 it's really about time to say goodbye.</para>
+    <para>Added support for generating request IDs which let you correlate log entries with specific web requests (see <xref linkend="advanced.requestid"/>).</para>
+    <para>Added Eclipse m2e lifecycle mappings for Pustefix plugins to improve Eclipse IDE integration of Pustefix projects.</para>
+  </section>
+
 </chapter>
