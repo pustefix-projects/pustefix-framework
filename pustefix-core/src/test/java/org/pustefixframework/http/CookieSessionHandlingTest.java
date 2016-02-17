@@ -390,7 +390,7 @@ public class CookieSessionHandlingTest extends AbstractSessionHandlingTest {
         
         HttpClient client = new HttpClient();
 
-        Cookie cookie = new Cookie("localhost", "JSESSIONID", "xyz");
+        Cookie cookie = new Cookie("localhost", AbstractPustefixRequestHandler.DEFAULT_SESSION_COOKIE_NAME, "xyz");
         cookie.setPath("/");
         client.getState().addCookie(cookie);
         
@@ -507,7 +507,7 @@ public class CookieSessionHandlingTest extends AbstractSessionHandlingTest {
         
         HttpClient client = new HttpClient();
 
-        Cookie cookie = new Cookie("localhost", "JSESSIONID", "xyz");
+        Cookie cookie = new Cookie("localhost", AbstractPustefixRequestHandler.DEFAULT_SESSION_COOKIE_NAME, "xyz");
         cookie.setPath("/");
         client.getState().addCookie(cookie);
         

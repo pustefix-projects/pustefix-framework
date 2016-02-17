@@ -98,7 +98,7 @@ public class CookieOnlySessionHandlingTest extends AbstractSessionHandlingTest {
         Cookie cookie = new Cookie("localhost", CookieOnlySessionTrackingStrategy.COOKIE_SESSION_SSL, "true");
         cookie.setPath("/");
         client.getState().addCookie(cookie);
-        cookie = new Cookie("localhost", "JSESSIONID", "xyz");
+        cookie = new Cookie("localhost", "AbstractPustefixRequestHandler.DEFAULT_SESSION_COOKIE_NAME", "xyz");
         cookie.setPath("/");
         cookie.setSecure(true);
         client.getState().addCookie(cookie);
@@ -295,7 +295,7 @@ public class CookieOnlySessionHandlingTest extends AbstractSessionHandlingTest {
         
         HttpClient client = new HttpClient();
         
-        Cookie cookie = new Cookie("localhost", "JSESSIONID", "xyz");
+        Cookie cookie = new Cookie("localhost", AbstractPustefixRequestHandler.DEFAULT_SESSION_COOKIE_NAME, "xyz");
         cookie.setPath("/");
         client.getState().addCookie(cookie);
 
@@ -331,7 +331,7 @@ public class CookieOnlySessionHandlingTest extends AbstractSessionHandlingTest {
         
         HttpClient client = new HttpClient();
         
-        Cookie cookie = new Cookie("localhost", "JSESSIONID", "xyz");
+        Cookie cookie = new Cookie("localhost", AbstractPustefixRequestHandler.DEFAULT_SESSION_COOKIE_NAME, "xyz");
         cookie.setPath("/");
         client.getState().addCookie(cookie);
 
@@ -354,7 +354,7 @@ public class CookieOnlySessionHandlingTest extends AbstractSessionHandlingTest {
         
         HttpClient client = new HttpClient();
 
-        Cookie cookie = new Cookie("localhost", "JSESSIONID", "xyz");
+        Cookie cookie = new Cookie("localhost", AbstractPustefixRequestHandler.DEFAULT_SESSION_COOKIE_NAME, "xyz");
         cookie.setPath("/");
         client.getState().addCookie(cookie);
         
@@ -390,7 +390,7 @@ public class CookieOnlySessionHandlingTest extends AbstractSessionHandlingTest {
         
         HttpClient client = new HttpClient();
         
-        Cookie cookie = new Cookie("localhost", "JSESSIONID", "xyz");
+        Cookie cookie = new Cookie("localhost", AbstractPustefixRequestHandler.DEFAULT_SESSION_COOKIE_NAME, "xyz");
         cookie.setPath("/");
         client.getState().addCookie(cookie);
         cookie = new Cookie("localhost", "_PFXSSL_", "true");
@@ -429,7 +429,7 @@ public class CookieOnlySessionHandlingTest extends AbstractSessionHandlingTest {
         
         HttpClient client = new HttpClient();
         
-        Cookie cookie = new Cookie("localhost", "JSESSIONID", "xyz");
+        Cookie cookie = new Cookie("localhost", AbstractPustefixRequestHandler.DEFAULT_SESSION_COOKIE_NAME, "xyz");
         cookie.setPath("/");
         client.getState().addCookie(cookie);
 
@@ -452,7 +452,7 @@ public class CookieOnlySessionHandlingTest extends AbstractSessionHandlingTest {
         
         HttpClient client = new HttpClient();
 
-        Cookie cookie = new Cookie("localhost", "JSESSIONID", "xyz");
+        Cookie cookie = new Cookie("localhost", AbstractPustefixRequestHandler.DEFAULT_SESSION_COOKIE_NAME, "xyz");
         cookie.setPath("/");
         client.getState().addCookie(cookie);
         
@@ -552,7 +552,7 @@ public class CookieOnlySessionHandlingTest extends AbstractSessionHandlingTest {
         
         HttpClient client = new HttpClient();
         
-        Cookie cookie = new Cookie("localhost", "JSESSIONID", "xyz");
+        Cookie cookie = new Cookie("localhost", AbstractPustefixRequestHandler.DEFAULT_SESSION_COOKIE_NAME, "xyz");
         cookie.setPath("/");
         client.getState().addCookie(cookie);
 

@@ -292,7 +292,7 @@ public abstract class AbstractPustefixXMLRequestHandler extends AbstractPustefix
             HttpServletRequest req = preq.getRequest();
             String redirectUri = SessionHelper.getClearedURL(req.getScheme(), getServerName(req), req, getAbstractXMLServletConfig().getProperties());
             if(req.isRequestedSessionIdFromCookie()) {
-                Cookie cookie = new Cookie("JSESSIONID", "");
+                Cookie cookie = new Cookie(getSessionCookieName(req), "");
                 cookie.setMaxAge(0);
                 cookie.setPath((req.getContextPath().equals("")) ? "/" : req.getContextPath());
                 res.addCookie(cookie);

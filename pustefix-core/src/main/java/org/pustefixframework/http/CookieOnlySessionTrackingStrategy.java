@@ -262,7 +262,7 @@ public class CookieOnlySessionTrackingStrategy implements SessionTrackingStrateg
     
     private void resetSession(HttpServletRequest req, HttpServletResponse res) {
         if(req.isRequestedSessionIdFromCookie()) {
-            Cookie cookie = new Cookie("JSESSIONID", "");
+            Cookie cookie = new Cookie(AbstractPustefixRequestHandler.getSessionCookieName(req), "");
             cookie.setMaxAge(0);
             cookie.setPath((req.getContextPath().equals("")) ? "/" : req.getContextPath());
             res.addCookie(cookie);

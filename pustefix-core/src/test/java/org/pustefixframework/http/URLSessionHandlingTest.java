@@ -61,8 +61,8 @@ public class URLSessionHandlingTest extends AbstractSessionHandlingTest {
         if(!cookieSessionHandlingDisabled) {
             Header[] headers = method.getResponseHeaders("Set-Cookie");
             for(Header header: headers) {
-                if(header.getValue().contains("JSESSIONID")) {
-                    assertEquals("JSESSIONID=" + session + ";Path=/;Expires=Thu, 01-Jan-1970 00:00:00 GMT", header.getValue());
+                if(header.getValue().contains(AbstractPustefixRequestHandler.DEFAULT_SESSION_COOKIE_NAME)) {
+                    assertEquals(AbstractPustefixRequestHandler.DEFAULT_SESSION_COOKIE_NAME + "=" + session + ";Path=/;Expires=Thu, 01-Jan-1970 00:00:00 GMT", header.getValue());
                 }
             }
         }
