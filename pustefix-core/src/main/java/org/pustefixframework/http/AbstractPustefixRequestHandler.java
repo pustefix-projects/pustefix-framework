@@ -45,6 +45,7 @@ import javax.management.MBeanServer;
 import javax.management.ObjectName;
 import javax.servlet.ServletContext;
 import javax.servlet.ServletException;
+import javax.servlet.SessionCookieConfig;
 import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -90,6 +91,8 @@ import de.schlund.pfixxml.serverutil.SessionAdmin;
 public abstract class AbstractPustefixRequestHandler implements SessionTrackingStrategyContext, UriProvidingHttpRequestHandler, ServletContextAware, InitializingBean {
 
     protected Logger LOGGER_SESSION = Logger.getLogger("LOGGER_SESSION");
+    
+    public static final String DEFAULT_SESSION_COOKIE_NAME = "JSESSIONID";
     
     public static final String           VISIT_ID                      = "__VISIT_ID__";
     public static final String           PROP_LOADINDEX                = "__PROPERTIES_LOAD_INDEX";
@@ -148,6 +151,16 @@ public abstract class AbstractPustefixRequestHandler implements SessionTrackingS
         return 0;
     }
 
+    public static String getSessionCookieName(HttpServletRequest req) {
+        SessionCookieConfig cookieConfig = req.getServletContext().getSessionCookieConfig();
+        if(cookieConfig != null) {
+            if(cookieConfig.getName() != null) {
+                return cookieConfig.getName();
+            }
+        }
+        return DEFAULT_SESSION_COOKIE_NAME;
+    }
+    
     public static String getServerName(HttpServletRequest req) {
         String forward = req.getHeader("X-Forwarded-Server");
         if (forward != null && !forward.equals("")) {

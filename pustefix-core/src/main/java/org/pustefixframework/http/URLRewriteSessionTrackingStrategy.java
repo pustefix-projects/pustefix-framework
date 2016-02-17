@@ -57,14 +57,14 @@ public class URLRewriteSessionTrackingStrategy implements SessionTrackingStrateg
         boolean force_reuse_visit_id = false;
         boolean does_cookies = false;
         
-        // Delete JSESSIONID cookie
+        // Delete session cookie
         // Otherwise a redirect loop will be caused when a request with an
-        // invalid JSESSIONID cookie is made
+        // invalid session cookie is made
         Cookie[] cookies = CookieUtils.getCookies(req);
         if (cookies != null) {
             for (int i = 0; i < cookies.length; i++) {
                 Cookie cookie = cookies[i];
-                if (cookie.getName().equalsIgnoreCase("JSESSIONID")) {
+                if (cookie.getName().equalsIgnoreCase(AbstractPustefixRequestHandler.getSessionCookieName(req))) {
                     cookie.setMaxAge(0);
                     cookie.setPath("/");
                     res.addCookie(cookie);

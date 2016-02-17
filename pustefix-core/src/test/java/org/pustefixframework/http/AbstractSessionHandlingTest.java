@@ -24,18 +24,16 @@ import org.eclipse.jetty.servlet.ServletContextHandler;
 import org.eclipse.jetty.servlet.ServletHolder;
 import org.eclipse.jetty.util.ssl.SslContextFactory;
 
-import de.schlund.pfixxml.serverutil.SessionHelper;
 import junit.framework.TestCase;
 
 public abstract class AbstractSessionHandlingTest extends TestCase {
 
-    protected static String SESSION_COOKIE_NAME = "JSESSIONID";
     protected static String SESSION_PARAM_NAME = "jsessionid";
     
     protected static Pattern PATTERN_URL = Pattern.compile("(https?)://(([^:]*)(:(\\d+))?)(/[^;?]*)?/?(;" + 
                                                             SESSION_PARAM_NAME + "=([^?]+))?(\\?.*)?");
     protected static Pattern PATTERN_COUNT = Pattern.compile(".*<!--(\\d+)-->.*");
-    protected static Pattern COOKIE_SESSION = Pattern.compile(SESSION_COOKIE_NAME + "=(\\w++).*");
+    protected static Pattern COOKIE_SESSION = Pattern.compile(AbstractPustefixRequestHandler.DEFAULT_SESSION_COOKIE_NAME + "=(\\w++).*");
     
     protected static Server server;
     protected static int HTTP_PORT = 8080;

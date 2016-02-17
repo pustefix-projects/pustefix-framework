@@ -94,5 +94,10 @@
    </servlet-mapping>
    <session-config>
       <session-timeout>60</session-timeout>
+      <!--
+      <cookie-config>
+        <name>MYSESSION</name>
+      </cookie-config>
+      -->
    </session-config>
 </web-app>
