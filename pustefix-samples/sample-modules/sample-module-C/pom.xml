@@ -3,18 +3,18 @@
   <parent>
     <groupId>org.pustefixframework.samples.modules</groupId>
     <artifactId>sample-modules</artifactId>
-    <version>0.19.31-SNAPSHOT</version>
+    <version>0.20.0-beta-1</version>
   </parent>
   <groupId>org.pustefixframework.samples.modules</groupId>
   <artifactId>sample-module-C</artifactId>
-  <version>0.19.31-SNAPSHOT</version>
+  <version>0.20.0-beta-1</version>
   <packaging>jar</packaging>
   <name>Pustefix Sample Module C</name>
   <dependencies>
     <dependency>
       <groupId>org.pustefixframework</groupId>
       <artifactId>pustefix-core</artifactId>
-      <version>0.19.31-SNAPSHOT</version>
+      <version>0.20.0-beta-1</version>
     </dependency>
   </dependencies>
 </project>
