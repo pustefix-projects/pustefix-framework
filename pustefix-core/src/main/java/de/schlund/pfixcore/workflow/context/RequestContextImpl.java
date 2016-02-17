@@ -378,7 +378,7 @@ public class RequestContextImpl implements Cloneable, AuthorizationInterceptor {
                 }
             }
             if(preq.getRequestParam(PARAM_LASTFLOW) == null && currentpageflow != null &&
-                    needsLastFlowParameter(spdoc.getPagename(), currentpageflow.getRootName())) {
+                    needsLastFlow(spdoc.getPagename(), currentpageflow.getRootName())) {
                 if(firstParam) {
                     redirectURL += "?";
                     firstParam = false;
@@ -1149,7 +1149,7 @@ public class RequestContextImpl implements Cloneable, AuthorizationInterceptor {
         return state;
     }
     
-    public boolean needsLastFlowParameter(String pageName, String lastFlowName) {
+    public boolean needsLastFlow(String pageName, String lastFlowName) {
 
     	//Passing page flow as __lf parameter is disabled
     	if(!parentcontext.getContextConfig().getPageFlowPassThrough()) {

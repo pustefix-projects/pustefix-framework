@@ -440,8 +440,8 @@ public class ContextImpl implements AccessibilityChecker, ExtendedContext, Token
         return getServerContext().getPageMap();
     }
     
-    public boolean needsLastFlowParameter(String pageName, String lastFlowName) {
-        return getRequestContextForCurrentThreadWithError().needsLastFlowParameter(pageName, lastFlowName);
+    public boolean needsLastFlow(String pageName, String lastFlowName) {
+        return getRequestContextForCurrentThreadWithError().needsLastFlow(pageName, lastFlowName);
     }
     
     public boolean needsPageFlowParameter(String pageName, String flowName) {

@@ -330,7 +330,7 @@ public class PustefixContextXMLRequestHandler extends AbstractPustefixXMLRequest
                         }
                     }
                     if(context.getCurrentPageFlow() != null &&
-                            ((ContextImpl) context).needsLastFlowParameter(spdoc.getPagename(), context.getCurrentPageFlow().getRootName())) {
+                            ((ContextImpl) context).needsLastFlow(spdoc.getPagename(), context.getCurrentPageFlow().getRootName())) {
                         if(firstParam) {
                             redirectURL += "?";
                             firstParam = false;

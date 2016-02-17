@@ -123,7 +123,7 @@
   <func:function name="pfx:__needsLastFlow">
     <xsl:param name="pageName"/>
     <xsl:param name="lastFlow"/>
-    <func:result select="callback:needsLastFlowParameter($__context__,$pageName,$lastFlow)"/>
+    <func:result select="callback:needsLastFlow($__context__,$pageName,$lastFlow)"/>
   </func:function>
   
   <func:function name="pfx:__needsPageFlow">

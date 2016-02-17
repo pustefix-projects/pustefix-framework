@@ -419,10 +419,10 @@ public class TransformerCallback {
         return FrameworkInfo.getVersion();
     }
     
-    public static boolean needsLastFlowParameter(RequestContextImpl requestContext, String pageName, String lastFlowName) throws Exception {
+    public static boolean needsLastFlow(RequestContextImpl requestContext, String pageName, String lastFlowName) throws Exception {
         try {
             ContextImpl context = requestContext.getParentContext();
-            return context.needsLastFlowParameter(pageName, lastFlowName);
+            return context.needsLastFlow(pageName, lastFlowName);
         } catch (Exception x) {
             ExtensionFunctionUtils.setExtensionFunctionError(x);
             throw x;
