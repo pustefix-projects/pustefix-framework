@@ -19,7 +19,6 @@ package de.schlund.pfixxml;
 
 import java.io.IOException;
 import java.io.InputStream;
-import java.net.HttpURLConnection;
 import java.net.URL;
 import java.net.URLConnection;
 
@@ -119,11 +118,8 @@ public class ImageGeometryData {
         InputStream in = null;
         try {
             URLConnection connection = url.openConnection();
-            if(connection instanceof HttpURLConnection) {
-                HttpURLConnection httpConnection = (HttpURLConnection)url.openConnection();
-                httpConnection.setConnectTimeout(500);
-                httpConnection.setReadTimeout(2000);
-            }
+            connection.setConnectTimeout(500);
+            connection.setReadTimeout(2000);
             in = connection.getInputStream();
             ImageInfo info = new ImageInfo();
             info.setInput(in);
