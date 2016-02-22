@@ -40,6 +40,7 @@ import org.apache.log4j.Logger;
 import org.pustefixframework.config.contextxmlservice.IWrapperConfig;
 import org.pustefixframework.config.contextxmlservice.PageRequestConfig;
 import org.pustefixframework.config.contextxmlservice.ProcessActionPageRequestConfig;
+import org.pustefixframework.config.contextxmlservice.ProcessActionStateConfig;
 import org.pustefixframework.config.contextxmlservice.StateConfig;
 import org.pustefixframework.config.project.ProjectInfo;
 import org.pustefixframework.http.BotDetector;
@@ -269,13 +270,23 @@ public class TransformerCallback {
             if(pageConfig != null) {
                 Map<String, ? extends ProcessActionPageRequestConfig> actions = pageConfig.getProcessActions();
                 if (actions != null && !actions.isEmpty()) {
-                    Element actionelement = doc.createElement("actions");
-                    root.appendChild(actionelement);
+                    Map<String, ? extends ProcessActionStateConfig> actionConfigs = null;
+                    if(state instanceof ConfigurableState) {
+                        StateConfig stateConfig = ((ConfigurableState)state).getConfig();
+                        actionConfigs = stateConfig.getProcessActions();
+                    }
+                    Element actionsElem = doc.createElement("actions");
+                    root.appendChild(actionsElem);
                     for (Iterator<? extends ProcessActionPageRequestConfig> iterator = actions.values().iterator(); iterator.hasNext();) {
                         ProcessActionPageRequestConfig action =  iterator.next();
-                        ResultDocument.addObject(actionelement, "action", action);
+                        Element actionElem = ResultDocument.addObject(actionsElem, "action", action);
+                        if(actionConfigs != null) {
+                            ProcessActionStateConfig actionConfig = actionConfigs.get(action.getName());
+                            ResultDocument.addObject(actionElem, actionConfig);
+                        }
                     }
                 }
+                
             }
             if (LOG.isDebugEnabled()) {
                 TransformerFactory tf = TransformerFactory.newInstance();
