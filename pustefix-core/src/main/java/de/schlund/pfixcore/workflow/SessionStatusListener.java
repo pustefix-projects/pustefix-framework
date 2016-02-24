@@ -19,11 +19,12 @@
 package de.schlund.pfixcore.workflow;
 
 /**
- * Listener that can be registred with a {@link Context} in order to be informed
+ * Listener that can be registered with a {@link Context} in order to be informed
  * when the status of the underlying session changes.
  * 
- * @author Sebastian Marsching <sebastian.marsching@1und1.de>
+ * @deprecated Will be removed, because since Servlet API 2.3 you can use {@link javax.servlet.http.HttpSessionListener}
  */
+@Deprecated
 public interface SessionStatusListener {
     /**
      * Triggered when the status of a session changes (e.g. when the session is 
