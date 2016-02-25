@@ -6,6 +6,11 @@ import java.util.concurrent.ConcurrentMap;
 
 import com.icl.saxon.om.NamePool;
 
+/**
+ * Saxon NamePool implementation with minimized synchronization.
+ * It extends Saxon's default NamePool and overrides all synchronized
+ * public methods and caches the results in ConcurrentMaps.
+ */
 public class CachedNamePool extends NamePool {
 
     ConcurrentMap<CacheKey, Integer> namespaceCodes = new ConcurrentHashMap<>();
