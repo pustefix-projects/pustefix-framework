@@ -50,7 +50,12 @@ public class SessionStatusListenerAdapter implements HttpSessionListener, Servle
     @Override
     public void afterPropertiesSet() throws Exception {
         
-        servletContext.addListener(this);
+        try {
+            servletContext.addListener(this);
+        } catch(UnsupportedOperationException x) {
+            //ignore if adding listeners add runtime isn't supported
+            LOG.warn("Can't add HttpSessionListener for SessionStatusListener", x);
+        }
     }
     
 }
