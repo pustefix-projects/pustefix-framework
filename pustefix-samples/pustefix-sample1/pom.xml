@@ -126,15 +126,6 @@
       </plugin>
 
       <plugin>
-        <groupId>org.codehaus.mojo</groupId>
-        <artifactId>tomcat-maven-plugin</artifactId>
-        <version>1.1</version>
-        <configuration>
-          <path>/</path>
-          <uriEncoding>UTF-8</uriEncoding>
-        </configuration>
-      </plugin>
-      <plugin>
         <!--  some tests operated on the exploded webapp -->
         <artifactId>maven-surefire-plugin</artifactId>
         <configuration>
@@ -225,18 +216,6 @@
        <id>pustefix.ssl</id>
        <build>
          <plugins>
-           <plugin>
-             <groupId>org.codehaus.mojo</groupId>
-             <artifactId>tomcat-maven-plugin</artifactId>
-             <version>1.1</version>
-             <configuration>
-               <path>/</path>
-               <uriEncoding>UTF-8</uriEncoding>
-               <httpsPort>8443</httpsPort>
-               <keystoreFile>${user.home}/keystore</keystoreFile>
-               <keystorePass>secret</keystorePass>
-             </configuration>
-           </plugin>
            <plugin>
              <groupId>org.apache.tomcat.maven</groupId>
              <artifactId>tomcat7-maven-plugin</artifactId>
