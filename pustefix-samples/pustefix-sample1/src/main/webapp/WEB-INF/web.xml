@@ -5,6 +5,12 @@
      <param-value>test</param-value>
    </context-param>
    <!--
+   <context-param>
+     <param-name>com.icl.saxon.om.NamePool</param-name>
+     <param-value>org.pustefixframework.xslt.CachedNamePool</param-value>
+   </context-param>
+   -->
+   <!--
    <listener>
      <listener-class>org.pustefixframework.http.Log4jConfigListener</listener-class>
    </listener>
