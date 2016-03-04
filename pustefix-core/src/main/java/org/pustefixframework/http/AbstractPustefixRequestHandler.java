@@ -115,6 +115,10 @@ public abstract class AbstractPustefixRequestHandler implements SessionTrackingS
     public static final String REQUEST_ATTR_PAGE_ALTERNATIVE = "__PFX_PAGE_ALTERNATIVE__";
     public static final String REQUEST_ATTR_PAGE_ADDITIONAL_PATH = "__PFX_PAGE_ADDITIONAL_PATH__";
     public static final String REQUEST_ATTR_INVALIDATE_SESSION_AFTER_COMPLETION = "__PFX_INVALIDATE_SESSION_AFTER_COMPLETION__";
+    public static final String REQUEST_ATTR_CLIENT_ABORTED = "__PFX_CLIENT_ABORTED__";
+    public static final String REQUEST_ATTR_REQUEST_TYPE = "__PFX_REQUEST_TYPE__";
+    
+    public static enum RequestType { PAGE, RENDER, DIRECT };
     
     private static final IPRangeMatcher privateIPRange = new IPRangeMatcher("10.0.0.0/8", "169.254.0.0/16", 
             "172.16.0.0/12", "192.168.0.0/16", "fc00::/7");
@@ -472,6 +476,7 @@ public abstract class AbstractPustefixRequestHandler implements SessionTrackingS
                     (e.getClass().getSimpleName().equals("ClientAbortException") || 
                             e.getClass().getName().equals("org.mortbay.jetty.EofException"))) {
                 LOG.warn("Client aborted request.");
+                req.setAttribute(REQUEST_ATTR_CLIENT_ABORTED, true);
             } else {
                 //Check if exception occurred while having a session which wasn't created by Pustefix,
                 //i.e. the session was created after the Pustefix session timed out and the request thread
