@@ -94,7 +94,7 @@
           <xsd:attribute name="enabled" type="xsd:boolean" default="false"/>
         </xsd:complexType>
       </xsd:element>
-      <xsd:element name="faulthandler" minOccurs="0"/>
+      <xsd:element ref="faulthandler" minOccurs="0"/>
     </xsd:sequence>
   </xsd:group>
 
