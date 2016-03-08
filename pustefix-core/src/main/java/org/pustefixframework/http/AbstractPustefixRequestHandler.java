@@ -357,23 +357,7 @@ public abstract class AbstractPustefixRequestHandler implements SessionTrackingS
     
     public static void initializeRequest(HttpServletRequest request, TenantInfo tenantInfo, LanguageInfo languageInfo) {
         if(tenantInfo != null && !tenantInfo.getTenants().isEmpty()) {
-            Tenant matchingTenant = tenantInfo.getMatchingTenant(request);
-            if(matchingTenant == null) {
-                //check if tenant was provided as cookie (only allowed at development time)
-                if(!"prod".equals(EnvironmentProperties.getProperties().getProperty("mode"))) {
-                    String tenantName = getCookieValue(request, TenantScope.REQUEST_ATTRIBUTE_TENANT);
-                    if(tenantName != null) {
-                        matchingTenant = tenantInfo.getTenant(tenantName);
-                    }
-                }
-                if(matchingTenant == null) {
-                    matchingTenant = tenantInfo.getTenants().get(0);
-                }
-            }
-            request.setAttribute(TenantScope.REQUEST_ATTRIBUTE_TENANT, matchingTenant);
-            if(LOG.isDebugEnabled()) {
-            	LOG.debug("Set tenant " + matchingTenant.getName());
-            }
+            Tenant matchingTenant = tenantInfo.getTenant(request);
             String matchingLanguage = matchingTenant.getDefaultLanguage();
             String pathPrefix = URLUtils.getFirstPathComponent(request.getPathInfo());
             if(pathPrefix != null) {
@@ -662,18 +646,6 @@ public abstract class AbstractPustefixRequestHandler implements SessionTrackingS
         res.setHeader("Cache-Control", "no-cache, no-store, private, must-revalidate");
         res.setStatus(type);
         res.setHeader("Location", reloc_url);
-    }
-    
-    private static String getCookieValue(HttpServletRequest req, String name) {
-    	Cookie[] cookies = req.getCookies();
-        if(cookies != null) {
-            for(Cookie cookie: cookies) {
-                if(cookie.getName().equals(name)) {
-                    return cookie.getValue();
-                }
-            }
-        }
-        return null;
     }
     
     public String getPageName(String pageAlias, HttpServletRequest request) {
