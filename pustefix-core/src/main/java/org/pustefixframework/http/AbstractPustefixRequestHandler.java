@@ -113,6 +113,10 @@ public abstract class AbstractPustefixRequestHandler implements PageProvider, Se
     public static final String REQUEST_ATTR_PAGEFLOW = "__PFX_PAGEFLOW__";
     public static final String REQUEST_ATTR_PAGEGROUP = "__PFX_PAGEGROUP__";
     public static final String REQUEST_ATTR_INVALIDATE_SESSION_AFTER_COMPLETION = "__PFX_INVALIDATE_SESSION_AFTER_COMPLETION__";
+    public static final String REQUEST_ATTR_CLIENT_ABORTED = "__PFX_CLIENT_ABORTED__";
+    public static final String REQUEST_ATTR_REQUEST_TYPE = "__PFX_REQUEST_TYPE__";
+    
+    public static enum RequestType { PAGE, RENDER, DIRECT };
     
     private static final IPRangeMatcher privateIPRange = new IPRangeMatcher("10.0.0.0/8", "169.254.0.0/16", 
             "172.16.0.0/12", "192.168.0.0/16", "fc00::/7");
@@ -351,23 +355,7 @@ public abstract class AbstractPustefixRequestHandler implements PageProvider, Se
     
     public static void initializeRequest(HttpServletRequest request, TenantInfo tenantInfo, LanguageInfo languageInfo) {
         if(tenantInfo != null && !tenantInfo.getTenants().isEmpty()) {
-            Tenant matchingTenant = tenantInfo.getMatchingTenant(request);
-            if(matchingTenant == null) {
-                //check if tenant was provided as cookie (only allowed at development time)
-                if(!"prod".equals(EnvironmentProperties.getProperties().getProperty("mode"))) {
-                    String tenantName = getCookieValue(request, TenantScope.REQUEST_ATTRIBUTE_TENANT);
-                    if(tenantName != null) {
-                        matchingTenant = tenantInfo.getTenant(tenantName);
-                    }
-                }
-                if(matchingTenant == null) {
-                    matchingTenant = tenantInfo.getTenants().get(0);
-                }
-            }
-            request.setAttribute(TenantScope.REQUEST_ATTRIBUTE_TENANT, matchingTenant);
-            if(LOG.isDebugEnabled()) {
-            	LOG.debug("Set tenant " + matchingTenant.getName());
-            }
+            Tenant matchingTenant = tenantInfo.getTenant(request);
             String matchingLanguage = matchingTenant.getDefaultLanguage();
             String pathPrefix = URLUtils.getFirstPathComponent(request.getPathInfo());
             if(pathPrefix != null) {
@@ -470,6 +458,7 @@ public abstract class AbstractPustefixRequestHandler implements PageProvider, Se
                     (e.getClass().getSimpleName().equals("ClientAbortException") || 
                             e.getClass().getName().equals("org.mortbay.jetty.EofException"))) {
                 LOG.warn("Client aborted request.");
+                req.setAttribute(REQUEST_ATTR_CLIENT_ABORTED, true);
             } else {
                 //Check if exception occurred while having a session which wasn't created by Pustefix,
                 //i.e. the session was created after the Pustefix session timed out and the request thread
@@ -655,18 +644,6 @@ public abstract class AbstractPustefixRequestHandler implements PageProvider, Se
         res.setHeader("Cache-Control", "no-cache, no-store, private, must-revalidate");
         res.setStatus(type);
         res.setHeader("Location", reloc_url);
-    }
-    
-    private static String getCookieValue(HttpServletRequest req, String name) {
-    	Cookie[] cookies = req.getCookies();
-        if(cookies != null) {
-            for(Cookie cookie: cookies) {
-                if(cookie.getName().equals(name)) {
-                    return cookie.getValue();
-                }
-            }
-        }
-        return null;
     }
     
     @Override

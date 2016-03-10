@@ -43,6 +43,7 @@ import org.pustefixframework.http.DefaultAdditionalTrailInfoImpl;
 import org.pustefixframework.http.PustefixContextXMLRequestHandler;
 import org.pustefixframework.http.PustefixInternalsRequestHandler;
 import org.pustefixframework.http.internal.Log4jAdmin;
+import org.pustefixframework.http.internal.SessionStatusListenerAdapter;
 import org.springframework.beans.factory.BeanDefinitionStoreException;
 import org.springframework.beans.factory.config.BeanDefinition;
 import org.springframework.beans.factory.config.BeanDefinitionHolder;
@@ -230,6 +231,12 @@ public class PustefixContextXMLRequestHandlerParsingHandler extends Customizatio
         beanBuilder.addPropertyValue("projectName", projectInfo.getProjectName());
         beanDefinition = beanBuilder.getBeanDefinition();
         beanHolder = new BeanDefinitionHolder(beanDefinition, Log4jAdmin.class.getName());
+        context.getObjectTreeElement().addObject(beanHolder);
+        
+        beanBuilder = BeanDefinitionBuilder.genericBeanDefinition(SessionStatusListenerAdapter.class);
+        beanBuilder.setScope("singleton");
+        beanDefinition = beanBuilder.getBeanDefinition();
+        beanHolder = new BeanDefinitionHolder(beanDefinition, SessionStatusListenerAdapter.class.getName());
         context.getObjectTreeElement().addObject(beanHolder);
         
     }

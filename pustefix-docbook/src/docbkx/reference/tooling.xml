@@ -107,6 +107,36 @@
        <title>Maven plugins</title>
        <para>Pustefix provides various Maven plugins, e.g. for generating code (IWrapper beans, Status code constants), for generating 
              all pages of the view (XSL stylesheets) and other optional plugins.</para>
+       <section xml:id="tooling.mavenplugins.generate.xsl">
+          <title>Pustefix XSL Generate Plugin</title>
+          <para>This plugin generates the XSL stylesheets for all pages. It's useful for finding XSL errors before releasing and rolling out on production systems,
+                additionally pre-generating the pages reduces the time initially spent when rendering a page for the first time.</para>
+          <para>The plugin also makes a simple analysis of the generated XSL files, e.g. detecting abnormally big XSL files potentially having
+                bad impact on memory and performance (a summary is output at the end of the plugin execution).</para> 
+          <programlisting language="xml"><![CDATA[      <plugin>
+        <groupId>org.pustefixframework.maven.plugins</groupId>
+        <artifactId>pustefix-generate-plugin</artifactId>
+        <version>${pustefix.version}</version>
+        <executions>
+          <execution>
+            <goals>
+              <goal>generate</goal>
+            </goals>
+          </execution>
+        </executions>
+      </plugin>]]></programlisting>
+<para>The plugin usage can be customized using the following configuration options (here showing the default values):</para>
+           <programlisting language="xml"><![CDATA[      <configuration>
+        <docroot>${basedir}/src/main/webapp</docroot> <!-- The document root directory. Default: src/main/webapp -->
+        <parallel>true</parallel> <!-- Generate page XSLs in parallel using one thread per CPU core. Default: false -->
+        <cleanup>false</cleanup> <!-- Remove intermediate output files after page XSLs are created. Default: true -->
+        <maxPageSize>10m</maxPageSize> <!-- The maximum size of a generated page XSL file. Default: not set -->
+        <maxTotalPageSize>0.5g</maxTotalPageSize> <!-- The maximum total size of all generated page XSL files. Default: not set -->
+      </configuration>]]></programlisting>
+        <para>
+          The plugin will abort the build, if there are exceptions during the XSL page generation or configured maximum values are exceeded. 
+        </para>
+       </section>
        <section xml:id="tooling.mavenplugins.pagelist">
           <title>Pustefix Pagelist Plugin</title>
           <para>This plugin generates a complete list with the display names of all renderable pages (respecting alias names, page alternatives, languages and tenants).</para>

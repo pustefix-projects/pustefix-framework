@@ -21,8 +21,9 @@ package de.schlund.pfixcore.workflow;
 /**
  * Represents an event related to the life-cycle of a session.  
  * 
- * @author Sebastian Marsching <sebastian.marsching@1und1.de>
+ * @deprecated Will be removed, because since Servlet API 2.3 you can use {@link javax.servlet.http.HttpSessionEvent}
  */
+@Deprecated
 public class SessionStatusEvent {
     /**
      * Type of status change

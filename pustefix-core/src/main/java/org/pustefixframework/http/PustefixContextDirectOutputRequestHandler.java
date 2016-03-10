@@ -124,6 +124,9 @@ public class PustefixContextDirectOutputRequestHandler extends AbstractPustefixR
      */
     @Override
     protected void process(PfixServletRequest preq, HttpServletResponse res) throws Exception {
+        
+        preq.getRequest().setAttribute(REQUEST_ATTR_REQUEST_TYPE, RequestType.DIRECT);
+            
          HttpSession   session = preq.getSession(false);
          if (session == null) {
              //throw new RuntimeException("*** didn't get Session from request. ***");

@@ -271,6 +271,12 @@ public abstract class AbstractPustefixXMLRequestHandler extends AbstractPustefix
     @Override
     protected void process(PfixServletRequest preq, HttpServletResponse res) throws Exception {
         
+        RequestType requestType = RequestType.PAGE;
+        if(preq.getRequest().getParameter(PARAM_RENDER_HREF) != null) {
+            requestType = RequestType.RENDER;
+        }
+        preq.getRequest().setAttribute(REQUEST_ATTR_REQUEST_TYPE, requestType);
+        
         Properties  params     = new Properties();
         HttpSession session    = preq.getSession(false);
         CacheValueLRU<String,SPDocument> storeddoms = null;

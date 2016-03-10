@@ -18,10 +18,15 @@
 
 package de.schlund.pfixxml.util;
 
+import java.lang.reflect.Field;
 import java.util.HashMap;
 import java.util.Map;
 
 import org.apache.log4j.Logger;
+
+import com.icl.saxon.om.NamePool;
+
+import de.schlund.pfixxml.config.EnvironmentProperties;
 
 /**
  * @author mleidig@schlund.de
@@ -50,7 +55,25 @@ public class XsltProvider {
         boolean saxon1Available=false;
         try {
             Class.forName(DETECT_SAXON1);
-            saxon1Available=true;    
+            saxon1Available=true;
+            String namePoolImpl = System.getProperty("com.icl.saxon.om.NamePool");
+            if(namePoolImpl == null) {
+                namePoolImpl = EnvironmentProperties.getProperties().getProperty("com.icl.saxon.om.NamePool");
+            }
+            if(namePoolImpl != null) {
+                try {
+                    Class<?> clazz = Class.forName(namePoolImpl);
+                    NamePool namePool = (NamePool)clazz.newInstance();
+                    namePool.loadStandardNames();
+                    Field field = NamePool.class.getDeclaredField("defaultNamePool");
+                    field.setAccessible(true);
+                    field.set(null, namePool);
+                    field.setAccessible(false);
+                    LOG.info("Use " + namePoolImpl + " as default Saxon NamePool.");
+                } catch(Exception x) {
+                    LOG.error("Can't use " + namePoolImpl + " as default Saxon NamePool.", x);
+                }
+            }  
         } catch(Exception x) {
             LOG.info("No Saxon XSLT1 implementation found!");
         }
