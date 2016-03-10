@@ -62,7 +62,7 @@ public class ScriptedFlowTest extends AbstractJUnit4SpringContextTests {
         MockHttpServletResponse res = new MockHttpServletResponse();
         
         requestHandler.handleRequest(req, res);
-        Assert.assertEquals(301, res.getStatus());
+        Assert.assertEquals(302, res.getStatus());
         Assert.assertTrue(res.getHeader("Location").toString().contains("/order"));
        
         req = new MockHttpServletRequest();
@@ -107,7 +107,7 @@ public class ScriptedFlowTest extends AbstractJUnit4SpringContextTests {
         res = new MockHttpServletResponse();
         
         requestHandler.handleRequest(req, res);
-        Assert.assertEquals(301, res.getStatus());
+        Assert.assertEquals(302, res.getStatus());
         Assert.assertTrue(res.getHeader("Location").toString().contains("/overview"));
        
         req = new MockHttpServletRequest();

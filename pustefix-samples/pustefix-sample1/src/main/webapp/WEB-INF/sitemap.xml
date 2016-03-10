@@ -12,7 +12,7 @@
     </page>
     <page name="scripting"/>
     <page name="scriptingstate"/>
-    <page name="encoding" alias="tests/encode-decode">
+    <page name="encoding" alias="encodingpage">
        <alt key="xencoding" name="xencodingpage"/>
     </page>
     <page name="upload"/>
@@ -28,17 +28,16 @@
 
     <page name="A" alias="fooA"/>
 
-    <page-group key="smartphones" name="smartphones">
-      <page-group key="private" name="private">
+    <page-group key="g" name="test">
+      <page-group key="g1" name="one">
         <page name="A"/>
         <page name="B"/>
       </page-group>
-      <page-group key="business" name="business">
+      <page-group key="g2" name="two">
         <page name="A"/>
         <page name="B"/>
       </page-group>
       <page name="C"/>
-      
     </page-group>
 
     <page name="testchecks"/>

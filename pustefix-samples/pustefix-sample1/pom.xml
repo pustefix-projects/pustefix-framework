@@ -198,6 +198,7 @@
           </execution>
         </executions>
       </plugin>
+<!--
       <plugin>
         <groupId>org.pustefixframework.maven.plugins</groupId>
         <artifactId>pustefix-generate-plugin</artifactId>
@@ -215,6 +216,7 @@
           <maxTotalPageSize>10m</maxTotalPageSize>
         </configuration>
       </plugin>
+-->
     </plugins>
   </build>
   

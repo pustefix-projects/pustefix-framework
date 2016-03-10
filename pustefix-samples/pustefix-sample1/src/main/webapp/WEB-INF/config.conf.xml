@@ -64,7 +64,7 @@
   <disable-pageflow-passthrough/>
 
   <!-- <pageflow name="OrderFlow" stopnext="true"> -->
-  <pageflow name="OrderFlow" final="home" pathprefix="true">
+  <pageflow name="OrderFlow" final="home">
     <default>
       <flowstep name="home" />
       <flowstep name="order">
