@@ -105,7 +105,8 @@ public class RequestContextImpl implements Cloneable, AuthorizationInterceptor {
     private PfixServletRequest  currentpservreq     = null;
     private PageRequestStatus   currentstatus       = PageRequestStatus.UNDEF;
     private String              currentPageAlternative;
-
+    private String              currentPageGroup;
+    
     private String              jumptopage          = null;
     private String              jumptopageflow      = null;
     private boolean             prohibitcontinue    = false;
@@ -150,10 +151,10 @@ public class RequestContextImpl implements Cloneable, AuthorizationInterceptor {
     }
     
     public String getCurrentDisplayPageName() {
-        return getDisplayPageName(currentpagerequest.getRootName(), getLanguage(), currentPageAlternative);
+        return getDisplayPageName(currentpagerequest.getRootName(), getLanguage(), currentPageAlternative, currentPageGroup);
     }
     
-    private String getDisplayPageName(String pageName, String language, String pageAlternative) {
+    private String getDisplayPageName(String pageName, String language, String pageAlternative, String pageGroup) {
         
         String langPrefix = "";
         Tenant tenant = parentcontext.getTenant();
@@ -167,7 +168,7 @@ public class RequestContextImpl implements Cloneable, AuthorizationInterceptor {
         if(defaultPage.equals(pageName)) {
             return langPrefix;
         } else {
-            String alias = servercontext.getSiteMap().getAlias(pageName, lang, pageAlternative);
+            String alias = servercontext.getSiteMap().getAlias(pageName, lang, pageAlternative, pageGroup);
             if(langPrefix.length() > 0) {
                 alias = langPrefix + "/" + alias;
             }
@@ -436,7 +437,7 @@ public class RequestContextImpl implements Cloneable, AuthorizationInterceptor {
                 String authPageName = authConst.getAuthPage(parentcontext);
                 if (authPageName != null) {
                     currentpagerequest = createPageRequest(authPageName);
-                    currentPageAlternative = servercontext.getSiteMap().getDefaultPageAlternativeKey(authPageName);
+                    currentPageAlternative = servercontext.getSiteMap().getDefaultPageAlternativeKey(authPageName, currentPageGroup);
                     if (!roleAuthTarget.equals(authPageName)) {
                         if(authConst.getAuthJump()) {
                             setJumpToPage(roleAuthTarget);
@@ -529,10 +530,13 @@ public class RequestContextImpl implements Cloneable, AuthorizationInterceptor {
             }
         }
         
+        String flowFromPrefix = (String)preq.getRequest().getAttribute(AbstractPustefixRequestHandler.REQUEST_ATTR_PAGEFLOW);
         RequestParam pageflow = currentpservreq.getRequestParam(PARAM_FLOW);
         if (pageflow != null && !pageflow.getValue().equals("") && pageflowmanager.getPageFlowByName(pageflow.getValue(), getVariant()) != null) {
             currentpageflow = pageflowmanager.getPageFlowByName(pageflow.getValue(), getVariant());
             LOG.debug("===> Got pageflow from request parameter as [" + currentpageflow.getName() + "]");
+        } else if (flowFromPrefix != null) {
+        	currentpageflow = pageflowmanager.getPageFlowByName(flowFromPrefix, getVariant());
         } else if (action != null && action.getPageflow() != null && pageflowmanager.getPageFlowByName(action.getPageflow(), getVariant()) != null) {
             currentpageflow = pageflowmanager.getPageFlowByName(action.getPageflow(), getVariant());
             LOG.debug("===> Got pageflow from action [" + action.getName() + "] as [" + currentpageflow.getName() + "]");
@@ -625,6 +629,12 @@ public class RequestContextImpl implements Cloneable, AuthorizationInterceptor {
                 } else if(StateUtil.isPageFlowRunning(getParentContext())) {
                     spdoc.getDocument().getDocumentElement().setAttribute("trigger", "flow");
                 }
+            }
+            
+            String pageGroupKey = (String)preq.getRequest().getAttribute(AbstractPustefixRequestHandler.REQUEST_ATTR_PAGEGROUP);
+            pageGroupKey = servercontext.getSiteMap().resolvePageGroup(spdoc.getPagename(), pageGroupKey);
+            if(pageGroupKey != null) {
+                spdoc.setPageGroup(pageGroupKey);
             }
             
             if(parentcontext.getTenant() != null) {
@@ -762,7 +772,7 @@ public class RequestContextImpl implements Cloneable, AuthorizationInterceptor {
                     String nextPage = currentpageflow.findNextPage(this.parentcontext, currentpagerequest.getRootName(), false, stopnextforcurrentrequest);
                     if(nextPage != null) {
                         currentpagerequest = createPageRequest(nextPage);
-                        currentPageAlternative = servercontext.getSiteMap().getDefaultPageAlternativeKey(nextPage);
+                        currentPageAlternative = servercontext.getSiteMap().getDefaultPageAlternativeKey(nextPage, currentPageGroup);
                         foundNext = true;
                     }
                     currentstatus = saved;
@@ -771,7 +781,7 @@ public class RequestContextImpl implements Cloneable, AuthorizationInterceptor {
                     String defpage = parentcontext.getContextConfig().getDefaultPage(variant);
                     LOG.warn("[" + currentpagerequest + "]: ...but trying to use the default page " + defpage); 
                     currentpagerequest = createPageRequest(defpage);
-                    currentPageAlternative = servercontext.getSiteMap().getDefaultPageAlternativeKey(defpage);
+                    currentPageAlternative = servercontext.getSiteMap().getDefaultPageAlternativeKey(defpage, currentPageGroup);
                     if (!checkIsAccessible(currentpagerequest)) {
                         LOG.warn("[" + currentpagerequest + "]: Page is not accessible...");
                         currentpageflow = pageflowmanager.pageFlowToPageRequest(currentpageflow, currentpagerequest, variant);
@@ -783,7 +793,7 @@ public class RequestContextImpl implements Cloneable, AuthorizationInterceptor {
                             String nextPage = currentpageflow.findNextPage(this.parentcontext, currentpagerequest.getRootName(), false, stopnextforcurrentrequest);
                             if(nextPage != null) {
                                 currentpagerequest = createPageRequest(nextPage);
-                                currentPageAlternative = servercontext.getSiteMap().getDefaultPageAlternativeKey(nextPage);
+                                currentPageAlternative = servercontext.getSiteMap().getDefaultPageAlternativeKey(nextPage, currentPageGroup);
                                 foundNext = true;
                             }
                             currentstatus = saved;
@@ -835,7 +845,7 @@ public class RequestContextImpl implements Cloneable, AuthorizationInterceptor {
         jumptopage = result.getPageName();
         currentPageAlternative = result.getPageAlternativeKey();
         if(currentPageAlternative == null) {
-            currentPageAlternative = servercontext.getSiteMap().getDefaultPageAlternativeKey(jumptopage);
+            currentPageAlternative = servercontext.getSiteMap().getDefaultPageAlternativeKey(jumptopage, currentPageGroup);
         }
         currentpagerequest = createPageRequest(jumptopage);
         currentstatus = PageRequestStatus.JUMP;
@@ -859,7 +869,7 @@ public class RequestContextImpl implements Cloneable, AuthorizationInterceptor {
         String nextPage = currentpageflow.findNextPage(this.parentcontext, currentpagerequest.getRootName(), stopatcurrentpage, stopatnextaftercurrentpage);
         if(nextPage == null) throw new PustefixApplicationException("Can't get an accessible page from pageflow '" + currentpageflow.getName() + "'.");
         currentpagerequest = createPageRequest(nextPage);
-        currentPageAlternative = servercontext.getSiteMap().getDefaultPageAlternativeKey(nextPage);
+        currentPageAlternative = servercontext.getSiteMap().getDefaultPageAlternativeKey(nextPage, currentPageGroup);
 
         resdoc = documentFromCurrentStep();
         document = resdoc.getSPDocument();
@@ -1144,6 +1154,46 @@ public class RequestContextImpl implements Cloneable, AuthorizationInterceptor {
     @Deprecated
     public boolean needsLastFlow(String pageName, String lastFlowName) {
         return parentcontext.needsLastFlow(pageName, lastFlowName);
+    }
+    
+    public boolean needsPageFlowParameter(String pageName, String flowName) {
+    	
+    	//Page name starts with page flow prefix
+    	int ind = pageName.indexOf('/');
+    	if(ind > -1) {
+    		String prefix = pageName.substring(0, ind);
+    		if(servercontext.getSiteMap().getPageFlow(prefix, language) != null) {
+    			return false;
+    		} else {
+    			PageFlow flow = pageflowmanager.getPageFlowByName(prefix, variant);
+    			if(flow.isPathPrefix()) {
+    				return false;
+    			}
+    		}
+    	}
+    	
+    	//Selected page flow is passed as flow prefix
+    	PageFlow flow = getPageFlow(pageName, flowName);
+    	if(flow != null && flow.isPathPrefix()) {
+    		return false;
+    	}
+    	
+    	//Check if passing no page flow will automatically select right flow 
+        if(flowName != null && !flowName.equals("")) {
+            flow = pageflowmanager.getPageFlowByName(flowName, variant);
+            if(flow != null) {
+                PageRequest page = createPageRequest(pageName);
+                return pageflowmanager.needsLastFlow(flow, page);
+            }
+        }
+        return false;
+    }
+    
+    public PageFlow getPageFlow(String pageName, String lastFlowName) {
+    	
+    	PageFlow lastFlow = pageflowmanager.getPageFlowByName(lastFlowName, variant);
+    	PageRequest page = createPageRequest(pageName);
+    	return pageflowmanager.pageFlowToPageRequest(lastFlow, page, variant);
     }
 
 }

@@ -28,7 +28,7 @@
     <module>pustefix-i18n</module>
     <module>pustefix-cditest</module>
   </modules>  
-
+<!--
   <build>
     <plugins>
       <plugin>
@@ -88,5 +88,5 @@
       </plugin>
     </plugins>
   </build>
-
+-->
 </project>

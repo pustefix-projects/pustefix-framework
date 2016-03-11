@@ -1,6 +1,9 @@
 <?xml version="1.0" encoding="UTF-8"?><include_parts xmlns:ixsl="http://www.w3.org/1999/XSL/Transform" xmlns:pfx="http://www.schlund.de/pustefix/core">
   <part name="content">
     <theme name="default">
+     <div>
+       Page group: <ixsl:value-of select="$pageGroup"/>
+     </div>
       <pfx:forminput>
         <table style="border: 1px solid black;">
           <tr>
@@ -20,6 +23,7 @@
         <hr/>
         <pfx:button page="home">Home</pfx:button>
         <hr/>
+        <pfx:button page="C">C</pfx:button>
       </pfx:forminput>
     </theme>
   </part>

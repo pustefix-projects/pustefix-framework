@@ -126,11 +126,29 @@
     <func:result select="callback:needsLastFlow($__context__,$pageName,$lastFlow)"/>
   </func:function>
   
+  <func:function name="pfx:__needsPageFlow">
+    <xsl:param name="pageName"/>
+    <xsl:param name="flowName"/>
+    <func:result select="callback:needsPageFlowParameter($__context__,$pageName,$flowName)"/>
+  </func:function>
+  
   <func:function name="pfx:__omitPage">
     <xsl:param name="pageName"/>
     <xsl:param name="language"><xsl:value-of select="$lang"/></xsl:param>
     <xsl:param name="altKey"><xsl:if test="$page=$pageName and $pageAlternative"><xsl:value-of select="$pageAlternative"/></xsl:if></xsl:param>
-    <func:result select="callback:omitPage($__context__,$__target_gen,$pageName,$language,$altKey)"/>
+    <xsl:param name="pageFlow"/>
+    <xsl:param name="pageGroupKey"/>
+    <xsl:variable name="groupKey">
+      <xsl:choose>
+        <xsl:when test="$pageGroupKey = ''">
+          <xsl:value-of select="$pageGroup"/>
+        </xsl:when>
+        <xsl:otherwise>
+          <xsl:value-of select="$pageGroupKey"/>
+        </xsl:otherwise>
+      </xsl:choose>
+    </xsl:variable>
+    <func:result select="callback:omitPage($__context__,$__target_gen,$pageName,$language,$altKey,$__lf,$pageFlow,$groupKey)"/>
   </func:function>
   
   <func:function name="pfx:getHomePage">
@@ -144,7 +162,7 @@
   </func:function>
   
   <func:function name="pfx:getDisplayPageName">
-    <func:result select="callback:omitPage($__context__,$__target_gen,$page,$lang,$pageAlternative)"/>
+    <func:result select="callback:omitPage($__context__,$__target_gen,$page,$lang,$pageAlternative,$__lf,$pageflow,$pageGroup)"/>
   </func:function>
   
   <func:function name="pfx:getEnvProperty">

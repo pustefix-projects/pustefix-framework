@@ -64,6 +64,7 @@ import com.marsching.flexiparse.parser.exception.ParserException;
 import de.schlund.pfixcore.workflow.ContextImpl;
 import de.schlund.pfixcore.workflow.PageMap;
 import de.schlund.pfixcore.workflow.SiteMap;
+import de.schlund.pfixcore.workflow.context.ServerContextImpl;
 import de.schlund.pfixxml.LanguageInfo;
 import de.schlund.pfixxml.SessionCleaner;
 import de.schlund.pfixxml.TenantInfo;
@@ -193,6 +194,7 @@ public class PustefixContextXMLRequestHandlerParsingHandler extends Customizatio
         beanBuilder.addPropertyValue("targetGenerator", new RuntimeBeanReference(TargetGenerator.class.getName()));
         if(path != null && !path.equals("") && !path.equals("/")) beanBuilder.addPropertyValue("handlerURI", path + "/**");
         beanBuilder.addPropertyValue("context", new RuntimeBeanReference(ContextImpl.class.getName()));
+        beanBuilder.addPropertyValue("serverContext", new RuntimeBeanReference(ServerContextImpl.class.getName()));
         beanBuilder.addPropertyValue("configuration", config);
         beanBuilder.addPropertyValue("sessionAdmin", new RuntimeBeanReference(SessionAdmin.class.getName()));
         if(editorInfo != null && editorInfo.getLocation() != null) {

@@ -50,6 +50,7 @@ public class SPDocument {
     private Variant   variant        = null;
     private Tenant tenant;
     private String pageAlternativeKey;
+    private String pageGroup;
     private String language;
     private String    xslkey         = null;
     private long      timestamp      = System.currentTimeMillis();
@@ -107,6 +108,14 @@ public class SPDocument {
     
     public String getPageAlternative() {
         return pageAlternativeKey;
+    }
+    
+    public void setPageGroup(String pageGroup) {
+        this.pageGroup = pageGroup;
+    }
+    
+    public String getPageGroup() {
+        return pageGroup;
     }
 
 //    public void setNostore(boolean nostore) {

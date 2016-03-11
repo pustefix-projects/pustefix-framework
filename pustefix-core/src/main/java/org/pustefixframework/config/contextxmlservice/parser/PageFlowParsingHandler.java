@@ -44,12 +44,13 @@ public class PageFlowParsingHandler implements ParsingHandler {
     public void handleNode(HandlerContext context) throws ParserException {
        
         Element element = (Element)context.getNode();
-        ParsingUtils.checkAttributes(element, new String[] {"name"}, new String[] {"final", "stopnext", "bean-ref"});
+        ParsingUtils.checkAttributes(element, new String[] {"name"}, new String[] {"final", "stopnext", "bean-ref", "pathprefix"});
         
         String flowName = element.getAttribute("name").trim();
         String finalPage = element.getAttribute("final").trim();
         String stopnext = element.getAttribute("stopnext").trim();
         String beanRef = element.getAttribute("bean-ref").trim();
+        String pathPrefix = element.getAttribute("pathprefix").trim();
         
         if ((finalPage.length() != 0 || stopnext.length() != 0) 
                 && beanRef.length() != 0) {
@@ -67,6 +68,10 @@ public class PageFlowParsingHandler implements ParsingHandler {
             
             if (stopnext.length()>0) {
                 flowConfig.setStopNext(Boolean.parseBoolean(stopnext));
+            }
+            
+            if ( pathPrefix.length() > 0) {
+            	flowConfig.setPathPrefix(Boolean.parseBoolean(pathPrefix));
             }
             context.getObjectTreeElement().addObject(flowConfig);
             

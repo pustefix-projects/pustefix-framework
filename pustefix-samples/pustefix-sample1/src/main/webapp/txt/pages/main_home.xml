@@ -1,8 +1,25 @@
 <?xml version="1.0" encoding="UTF-8"?><include_parts xmlns:ixsl="http://www.w3.org/1999/XSL/Transform" xmlns:pfx="http://www.schlund.de/pustefix/core">
   
+  <part name="test">
+    <theme name="default">
+      <div>
+        <pfx:button page="encoding">Link to internal name</pfx:button>
+      </div>
+      <div>
+        <pfx:button page="tests/encode-decode">Link to alias name</pfx:button>
+      </div>
+      <div>
+        <a href="/encoding">Static link to internal name</a>
+      </div>
+    </theme>
+  </part>
+  
   <part name="content">
     <theme name="default">
       <center>
+        <div>
+          <pfx:include part="test"/>
+        </div>
         <pfx:forminput>
           <table width="400">
             <tr>

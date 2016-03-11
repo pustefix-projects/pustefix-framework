@@ -19,6 +19,8 @@
 package org.pustefixframework.http;
 
 import java.io.ByteArrayOutputStream;
+import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
 import java.util.Set;
 import java.util.SortedSet;
@@ -35,6 +37,7 @@ import org.pustefixframework.config.contextxmlservice.AbstractXMLServletConfig;
 import org.pustefixframework.config.contextxmlservice.ContextXMLServletConfig;
 import org.pustefixframework.config.contextxmlservice.PageRequestConfig;
 import org.pustefixframework.config.contextxmlservice.PreserveParams;
+import org.pustefixframework.container.spring.http.MVCStateHandlerMapping;
 import org.pustefixframework.util.LocaleUtils;
 
 import de.schlund.pfixcore.exception.PustefixApplicationException;
@@ -46,10 +49,14 @@ import de.schlund.pfixcore.scriptedflow.compiler.CompilerException;
 import de.schlund.pfixcore.scriptedflow.vm.Script;
 import de.schlund.pfixcore.scriptedflow.vm.ScriptVM;
 import de.schlund.pfixcore.scriptedflow.vm.VirtualHttpServletRequest;
+import de.schlund.pfixcore.util.StateUtil;
 import de.schlund.pfixcore.workflow.ContextImpl;
 import de.schlund.pfixcore.workflow.ContextInterceptor;
 import de.schlund.pfixcore.workflow.ExtendedContext;
+import de.schlund.pfixcore.workflow.State;
+import de.schlund.pfixcore.workflow.context.PageFlow;
 import de.schlund.pfixcore.workflow.context.RequestContextImpl;
+import de.schlund.pfixcore.workflow.context.ServerContextImpl;
 import de.schlund.pfixxml.PfixServletRequest;
 import de.schlund.pfixxml.PfixServletRequestImpl;
 import de.schlund.pfixxml.RenderOutputListener;
@@ -83,12 +90,18 @@ public class PustefixContextXMLRequestHandler extends AbstractPustefixXMLRequest
     
     private RenderOutputListener renderOutputListener;
     
+    private ServerContextImpl serverContext;
+    
     protected ContextXMLServletConfig getContextXMLServletConfig() {
         return this.config;
     }
 
     public void setConfiguration(ContextXMLServletConfig config) {
         this.config = config;
+    }
+    
+    public void setServerContext(ServerContextImpl serverContext) {
+    	this.serverContext = serverContext;
     }
     
     @Override
@@ -240,7 +253,7 @@ public class PustefixContextXMLRequestHandler extends AbstractPustefixXMLRequest
 
             if(spdoc != null) {
                 if(spdoc.getPageAlternative() != null) {
-                    Set<String> pageAltKeys = siteMap.getPageAlternativeKeys(spdoc.getPagename());
+                    Set<String> pageAltKeys = siteMap.getPageAlternativeKeys(spdoc.getPagename(), spdoc.getPageGroup());
                     if(pageAltKeys == null || !pageAltKeys.contains(spdoc.getPageAlternative())) {
                         spdoc.setPageAlternative(null);
                     }
@@ -248,23 +261,33 @@ public class PustefixContextXMLRequestHandler extends AbstractPustefixXMLRequest
             }
             
             if(spdoc != null && !spdoc.isRedirect()) {
-                String expectedPageName = null;
-                boolean isAlias = false;
-                String langPrefix = null;
-                Tenant tenant = spdoc.getTenant();
-                if((tenant != null && !spdoc.getLanguage().equals(tenant.getDefaultLanguage())) ||
-                        tenant == null && languageInfo.getSupportedLanguages().size() > 1 && !spdoc.getLanguage().equals(languageInfo.getDefaultLanguage())) {
-                    langPrefix = LocaleUtils.getLanguagePart(spdoc.getLanguage());
-                }
-                if(context.getContextConfig().getDefaultPage(context.getVariant()).equals(spdoc.getPagename())) {
-                    expectedPageName = langPrefix;
-                } else {
-                    String alias = siteMap.getAlias(spdoc.getPagename(), spdoc.getLanguage(), spdoc.getPageAlternative());
-                    if(langPrefix != null) {
-                        alias = langPrefix + "/" + alias;
+                
+                String prefixedPageFlow = null;
+                String pageFlow = (String)spdoc.getProperties().get("pageflow");
+                if(pageFlow != null) {
+                    PageFlow flow = serverContext.getPageFlowManager().getPageFlowByName(pageFlow, spdoc.getVariant());
+                    if(flow != null && flow.isPathPrefix()) {
+                        prefixedPageFlow = flow.getRootName();
                     }
-                    expectedPageName = alias;
-                    isAlias = true;
+                }
+                Tenant tenant = spdoc.getTenant();
+                String defaultLanguage = null;
+                if(tenant != null) {
+                    defaultLanguage = tenant.getDefaultLanguage();
+                } else if(tenant == null && languageInfo.getSupportedLanguages().size() > 1) {
+                    defaultLanguage = languageInfo.getDefaultLanguage();
+                }
+                String expectedPageName = PathMapping.getURLPath(
+                        spdoc.getPagename(), 
+                        spdoc.getPageAlternative(), 
+                        spdoc.getPageGroup(),
+                        prefixedPageFlow,
+                        spdoc.getLanguage(), 
+                        context.getContextConfig().getDefaultPage(context.getVariant()), 
+                        defaultLanguage, 
+                        siteMap);
+                if(expectedPageName.equals("")) {
+                    expectedPageName = null;
                 }
                 String requestedPageName = preq.getRequestedPageName();
                 if( (expectedPageName == null && requestedPageName != null) ||
@@ -290,6 +313,7 @@ public class PustefixContextXMLRequestHandler extends AbstractPustefixXMLRequest
                         + (expectedPageName == null ? "" : expectedPageName)
                         + sessionIdPath;
                     boolean firstParam = true;
+                    
                     PreserveParams preserveParams = context.getContextConfig().getPreserveParams();
                     for(String paramName: preq.getRequestParamNames()) {
                         if(preserveParams.containsParam(paramName)) {
@@ -305,7 +329,7 @@ public class PustefixContextXMLRequestHandler extends AbstractPustefixXMLRequest
                             }
                         }
                     }
-                    if(preq.getRequestParam("__lf") == null && context.getCurrentPageFlow() != null &&
+                    if(context.getCurrentPageFlow() != null &&
                             ((ContextImpl) context).needsLastFlow(spdoc.getPagename(), context.getCurrentPageFlow().getRootName())) {
                         if(firstParam) {
                             redirectURL += "?";
@@ -315,7 +339,8 @@ public class PustefixContextXMLRequestHandler extends AbstractPustefixXMLRequest
                         }
                         redirectURL += "__lf=" + context.getCurrentPageFlow().getRootName();
                     }
-                    spdoc.setRedirect(redirectURL, isAlias);
+                    boolean permanent = StateUtil.isDirectTrigger(context, preq) && spdoc.getPagename().equals(preq.getPageName());
+                    spdoc.setRedirect(redirectURL, permanent);
                     spdoc.setReuse(true);
                 }
             }
@@ -413,6 +438,9 @@ public class PustefixContextXMLRequestHandler extends AbstractPustefixXMLRequest
     public String[] getRegisteredURIs() {
 
         SortedSet<String> uris = new TreeSet<String>();
+        for(String uri: super.getRegisteredURIs()) {
+            uris.add(uri);
+        }
         
         uris.add("/");
         
@@ -420,9 +448,7 @@ public class PustefixContextXMLRequestHandler extends AbstractPustefixXMLRequest
         String[] regUris = super.getRegisteredURIs();
         for(String regUri: regUris) uris.add(regUri);
         
-        addPageURIs(uris);
-        
-        //add lang default page mappings
+        //add language default and page group mappings
         if(!tenantInfo.getTenants().isEmpty()) {
             for(Tenant tenant: tenantInfo.getTenants()) {
                 for(String supportedLanguage: tenant.getSupportedLanguages()) {
@@ -439,33 +465,145 @@ public class PustefixContextXMLRequestHandler extends AbstractPustefixXMLRequest
             }
         }
         
+        String[] registeredPages = getRegisteredPages();
+        for(String registeredPage: registeredPages) {
+            uris.add("/" + registeredPage);
+                
+            List<String> mvcSuffixes = new ArrayList<String>();
+            State state = pageMap.getState(registeredPage);
+            if(state != null) {
+                String[] mvcUris = MVCStateHandlerMapping.determineUrlsForHandlerMethods(state.getClass());
+                if(mvcUris != null) {
+                    for(String mvcUri: mvcUris) {
+                        uris.add(mvcUri);
+                        if(mvcUri.startsWith("/" + registeredPage)) {
+                            String suffix = mvcUri.substring(registeredPage.length() + 1);
+                            if(suffix.length() > 0) {
+                                mvcSuffixes.add(suffix);
+                            }
+                        }
+                    }
+                }
+            }
+                
+            if(!tenantInfo.getTenants().isEmpty()) {
+                for(Tenant tenant: tenantInfo.getTenants()) {
+                    for(String supportedLanguage: tenant.getSupportedLanguages()) {
+                        String langPart = LocaleUtils.getLanguagePart(supportedLanguage);
+                        String pathPrefix = "";
+                        if(!supportedLanguage.equals(tenant.getDefaultLanguage())) {
+                            pathPrefix = langPart + "/";
+                        }
+                        Set<String> pageAliases = siteMap.getAllPageAliases(registeredPage, supportedLanguage, true);
+                        for(String pageAlias: pageAliases) {
+                            addUri(uris, "/" + pathPrefix + pageAlias, mvcSuffixes);
+                            for(String pageFlow: getPageFlows(registeredPage)) {
+                                addUri(uris, "/"+ pathPrefix + siteMap.getPageFlowAlias(pageFlow, supportedLanguage) + "/" + pageAlias, mvcSuffixes);
+                                uris.add("/"+ pathPrefix + siteMap.getPageFlowAlias(pageFlow, supportedLanguage));
+                            }
+                        }
+                    }
+                }
+            } else if(languageInfo.getSupportedLanguages().size() > 1) {
+                for(String supportedLanguage: languageInfo.getSupportedLanguages()) {
+                    String langPart = LocaleUtils.getLanguagePart(supportedLanguage);
+                    String pathPrefix = "";
+                    if(!supportedLanguage.equals(languageInfo.getDefaultLanguage())) {
+                        pathPrefix = langPart + "/";
+                    }
+                    Set<String> pageAliases = siteMap.getAllPageAliases(registeredPage, supportedLanguage, true);
+                    for(String pageAlias: pageAliases) {
+                        addUri(uris, "/" + pathPrefix + pageAlias, mvcSuffixes);
+                        for(String pageFlow: getPageFlows(registeredPage)) {
+                            addUri(uris, "/"+ pathPrefix + siteMap.getPageFlowAlias(pageFlow, supportedLanguage) + "/" + pageAlias, mvcSuffixes);
+                            uris.add("/"+ pathPrefix + siteMap.getPageFlowAlias(pageFlow, supportedLanguage));
+                        }
+                    }
+                }
+            } else {
+                Set<String> pageAliases = siteMap.getAllPageAliases(registeredPage, null, true);
+                for(String pageAlias: pageAliases) {
+                    addUri(uris, "/" + pageAlias, mvcSuffixes);
+                    for(String pageFlow: getPageFlows(registeredPage)) {
+                        addUri(uris, "/"+ siteMap.getPageFlowAlias(pageFlow, null) + "/" + pageAlias, mvcSuffixes);
+                        uris.add("/"+ siteMap.getPageFlowAlias(pageFlow, null));
+                    }
+                }
+            }
+        }
+        
         String[] uriArr = uris.toArray(new String[uris.size()]);
         return uriArr;
     }
     
-
+    private List<String> getPageFlows(String pageName) {
+        
+        List<String> flowNames = new ArrayList<String>();
+        Collection<PageFlow> pageFlows = serverContext.getPageFlowManager().getPageFlows();
+        for(PageFlow pageFlow : pageFlows) {
+            if(pageFlow.isPathPrefix()) {
+                if(pageFlow.containsPage(pageName)) {
+                    flowNames.add(pageFlow.getRootName());
+                }
+            }
+        }
+        return flowNames;
+    }
     
     @Override
     public String[] getRegisteredPages() {
 
         SortedSet<String> pages = new TreeSet<String>();
-        
         pages.add("pfxsession");
-        
         //add pages from configured pagerequests
         List<? extends PageRequestConfig> pageConfigs = config.getContextConfig().getPageRequestConfigs();
         for(PageRequestConfig pageConfig: pageConfigs) {
             pages.add(pageConfig.getPageName());
         }
-        
         //add page mappings for standardpages
         Set<PageInfo> pageInfos = generator.getPageTargetTree().getPageInfos();
         for(PageInfo pageInfo: pageInfos) {
             pages.add(pageInfo.getName());
         }
-        
         String[] pageArr = pages.toArray(new String[pages.size()]);
         return pageArr;
+    }
+
+    private void addUri(Set<String> uris, String uri, List<String> mvcSuffixes) {
+        uris.add(uri);
+        for(String mvcSuffix: mvcSuffixes) {
+            uris.add(uri + mvcSuffix);
+        }
+    }
+    
+    @Override
+    protected String resolvePrefix(final String pageAlias, final HttpServletRequest request) {
+       
+        String pageName = pageAlias;
+        
+        //check if pageName has page flow prefix
+        String prefix;
+        int ind = pageName.indexOf('/');
+        if(ind > -1) {
+            prefix = pageName.substring(0, ind);
+        } else {
+            prefix = pageName;
+        }
+        String lang = (String)request.getAttribute(REQUEST_ATTR_LANGUAGE);
+        String pageFlowName = siteMap.getPageFlow(prefix, lang);
+        PageFlow pageFlow = serverContext.getPageFlowManager().getPageFlowByName(pageFlowName, null);
+        if(pageFlow != null && pageFlow.isPathPrefix()) {
+            request.setAttribute(REQUEST_ATTR_PAGEFLOW, pageFlowName);
+            if(ind > -1) {
+                //remove page flow prefix
+                pageName = pageName.substring(ind + 1);
+            } else {
+                //default page
+                return null;
+            }
+        }
+        
+        return pageName;
     }
     
 }

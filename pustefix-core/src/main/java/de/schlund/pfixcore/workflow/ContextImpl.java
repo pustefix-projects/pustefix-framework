@@ -469,6 +469,10 @@ public class ContextImpl implements AccessibilityChecker, ExtendedContext, Token
         return false;
     }
     
+    public boolean needsPageFlowParameter(String pageName, String flowName) {
+    	return getRequestContextForCurrentThreadWithError().needsPageFlowParameter(pageName, flowName);
+    }
+    
     public String getLastFlow() {
         return sessioncontext.getLastFlow();
     }

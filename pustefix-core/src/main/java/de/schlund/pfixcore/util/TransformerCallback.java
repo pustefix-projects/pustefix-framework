@@ -44,8 +44,8 @@ import org.pustefixframework.config.contextxmlservice.ProcessActionStateConfig;
 import org.pustefixframework.config.contextxmlservice.StateConfig;
 import org.pustefixframework.config.project.ProjectInfo;
 import org.pustefixframework.http.BotDetector;
+import org.pustefixframework.http.PathMapping;
 import org.pustefixframework.util.FrameworkInfo;
-import org.pustefixframework.util.LocaleUtils;
 import org.pustefixframework.util.javascript.JSUtils;
 import org.springframework.beans.factory.NoSuchBeanDefinitionException;
 import org.springframework.cache.interceptor.SimpleKeyGenerator;
@@ -72,6 +72,7 @@ import de.schlund.pfixcore.workflow.PageRequest;
 import de.schlund.pfixcore.workflow.RequestTokenAwareState;
 import de.schlund.pfixcore.workflow.State;
 import de.schlund.pfixcore.workflow.context.AccessibilityChecker;
+import de.schlund.pfixcore.workflow.context.PageFlow;
 import de.schlund.pfixcore.workflow.context.RequestContextImpl;
 import de.schlund.pfixxml.PfixServletRequest;
 import de.schlund.pfixxml.RenderContext;
@@ -452,42 +453,42 @@ public class TransformerCallback {
             throw x;
         }
     }
-
-    public static String omitPage(RequestContextImpl requestContext, TargetGenerator gen, String pageName, String lang, String altKey) throws Exception {
+    
+    public static boolean needsPageFlowParameter(RequestContextImpl requestContext, String pageName, String flowName) throws Exception {
         try {
             ContextImpl context = requestContext.getParentContext();
-            Tenant tenant = context.getTenant();
-            ProjectInfo projectInfo = context.getProjectInfo();
-            String defaultPage = context.getContextConfig().getDefaultPage(context.getVariant());
-            return omitPage(gen, pageName, lang, altKey, tenant, projectInfo, defaultPage);
+            return context.needsPageFlowParameter(pageName, flowName);
         } catch (Exception x) {
             ExtensionFunctionUtils.setExtensionFunctionError(x);
             throw x;
         }
     }
 
-    public static String omitPage(TargetGenerator gen, String pageName, String lang, String altKey, Tenant tenant, 
-            ProjectInfo projectInfo, String defaultPage) throws Exception {
-
-        String langPrefix = "";
-        if((tenant != null && !lang.equals(tenant.getDefaultLanguage())) ||
-                (tenant == null && projectInfo.getSupportedLanguages().size() > 1 && !lang.equals(projectInfo.getDefaultLanguage()))) {
-            langPrefix = LocaleUtils.getLanguagePart(lang);
-        }
-        if(defaultPage.equals(pageName)) {
-            return langPrefix;
-        } else {
-            String alias = gen.getSiteMap().getAlias(pageName, lang, altKey);
-            if(langPrefix.length() > 0) {
-                alias = langPrefix + "/" + alias;
+    public static String omitPage(RequestContextImpl requestContext, TargetGenerator gen, String pageName, 
+            String lang, String altKey, String lastFlow, String pageFlow, String pageGroup) throws Exception {
+        try {
+            ContextImpl context = requestContext.getParentContext();
+            Tenant tenant = context.getTenant();
+            ProjectInfo projectInfo = context.getProjectInfo();
+            String defaultPage = context.getContextConfig().getDefaultPage(context.getVariant());
+            PageFlow flow = requestContext.getPageFlow(pageName, pageFlow == null ? lastFlow : pageFlow);
+            String flowName = ( flow == null || !flow.isPathPrefix() ? null : flow.getRootName());
+            String defaultLanguage = null;
+            if(tenant != null) {
+                defaultLanguage = tenant.getDefaultLanguage();
+            } else if(tenant == null && projectInfo.getSupportedLanguages().size() > 1) {
+                defaultLanguage = projectInfo.getDefaultLanguage();
             }
-            return alias;
+            return PathMapping.getURLPath(pageName, altKey, pageGroup, flowName, lang, defaultPage, defaultLanguage, gen.getSiteMap());
+        } catch (Exception x) {
+            ExtensionFunctionUtils.setExtensionFunctionError(x);
+            throw x;
         }
     }
 
     public static String getPageAlias(TargetGenerator gen, String pageName, String lang) throws Exception {
         try {
-            return gen.getSiteMap().getAlias(pageName, lang);
+            return gen.getSiteMap().getAlias(pageName, lang, null, null);
         } catch (Exception x) {
             ExtensionFunctionUtils.setExtensionFunctionError(x);
             throw x;
@@ -527,8 +528,9 @@ public class TransformerCallback {
             String pageName = requestContext.getCurrentPageRequest().getRootName();
             Tenant currentTenant = requestContext.getParentContext().getTenant();
             ContextImpl context = requestContext.getParentContext();
-            ProjectInfo projectInfo = context.getProjectInfo();
             String defaultPage = context.getContextConfig().getDefaultPage(context.getVariant());
+            PageFlow pageFlow = requestContext.getPageFlow(defaultPage, null);
+            String flowName = pageFlow != null && pageFlow.isPathPrefix() ? pageFlow.getRootName() : null;
             TenantInfo tenantInfo = gen.getTenantInfo();
             Map<String, Tenant> domainPrefixes = tenantInfo.getTenantsByDomainPrefix();
             Map<Tenant, String> tenantToDomainPrefix = tenantInfo.getDomainPrefixesByTenant();
@@ -553,7 +555,8 @@ public class TransformerCallback {
                 Element tenantElem = tenant.toXML(root);
                 String domainPrefix = tenantToDomainPrefix.get(tenant);
                 String prefixedServerName = domainPrefix + "." + serverName;
-                String page = omitPage(gen, pageName, tenant.getDefaultLanguage(), null, tenant, projectInfo, defaultPage);
+                String lang = tenant.getDefaultLanguage();
+                String page = PathMapping.getURLPath(pageName, null, null, flowName, lang, defaultPage, lang, gen.getSiteMap());
                 try {
                     //check if prefixed servername can be resolved by DNS, otherwise
                     //use servername without prefix and pass tenant as parameter

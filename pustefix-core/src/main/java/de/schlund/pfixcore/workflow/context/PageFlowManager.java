@@ -18,6 +18,7 @@
 
 package de.schlund.pfixcore.workflow.context;
 
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
@@ -157,6 +158,10 @@ public class PageFlowManager {
             }
         }
         return true;
+    }
+ 
+    public Collection<PageFlow> getPageFlows() {
+    	return flowmap.values();
     }
     
 }
