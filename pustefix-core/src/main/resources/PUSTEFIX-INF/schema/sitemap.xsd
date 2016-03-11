@@ -9,6 +9,8 @@
       <xsd:sequence>
         <xsd:choice minOccurs="0" maxOccurs="unbounded">
           <xsd:element name="page" type="page-type"/>
+          <xsd:element name="page-group" type="page-group-type"/>
+          <xsd:element name="pageflow" type="pageflow-type"/>
           <xsd:element name="config-include" type="config-include-type"/>
         </xsd:choice>
       </xsd:sequence>
@@ -32,6 +34,23 @@
     <xsd:attribute name="key" type="xsd:string" use="required"/>
     <xsd:attribute name="name" type="xsd:string" use="required"/>
     <xsd:attribute name="default" type="xsd:boolean" use="optional"/>
+  </xsd:complexType>
+  
+  <xsd:complexType name="page-group-type">
+    <xsd:sequence>
+      <xsd:choice minOccurs="0" maxOccurs="unbounded">
+        <xsd:element name="page-group" type="page-group-type"/>
+        <xsd:element name="page" type="page-type"/>
+        <xsd:element name="config-include" type="config-include-type"/>
+      </xsd:choice>
+    </xsd:sequence>
+    <xsd:attribute name="key" type="xsd:string" use="required"/>
+    <xsd:attribute name="name" type="xsd:string" use="required"/>
+  </xsd:complexType>
+  
+  <xsd:complexType name="pageflow-type">
+    <xsd:attribute name="name" type="xsd:string" use="required"/>
+    <xsd:attribute name="prefix" type="xsd:string" use="required"/>
   </xsd:complexType>
   
   <xsd:complexType name="config-include-type">

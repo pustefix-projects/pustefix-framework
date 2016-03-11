@@ -420,6 +420,7 @@
     <xs:attribute name="name" use="required"/>
     <xs:attribute name="final"/>
     <xs:attribute name="stopnext" type="xs:boolean" default="false"/>
+    <xs:attribute name="pathprefix" type="xs:boolean"/>
   </xs:complexType>
 
   <xs:group name="pageflowGroup">
