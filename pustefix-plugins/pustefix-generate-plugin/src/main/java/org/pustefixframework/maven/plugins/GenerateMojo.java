@@ -23,7 +23,9 @@ import java.net.URL;
 import java.net.URLClassLoader;
 import java.text.DecimalFormat;
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import java.util.regex.Matcher;
@@ -78,13 +80,20 @@ public class GenerateMojo extends AbstractMojo {
      * @parameter
      */
     private String maxPageSize;
-
+    
     /**
      * The maximum total size of all generated page XSL files (e.g. 500m, 0.5g)
      * 
      * @parameter
      */
     private String maxTotalPageSize;
+    
+    /**
+     * List of page XSL files to ignore when checking the maximum size.
+     * 
+     * @parameter
+     */
+    private String maxPageSizeIgnore;
     
     /** 
      * @parameter default-value="${project}"
@@ -93,6 +102,7 @@ public class GenerateMojo extends AbstractMojo {
     
     private long maxXslSize = Long.MAX_VALUE;
     private long maxTotalXslSize = Long.MAX_VALUE;
+    private Set<String> maxXslSizeIgnore = new HashSet<>();
     
 
     public void execute() throws MojoExecutionException {
@@ -109,7 +119,14 @@ public class GenerateMojo extends AbstractMojo {
         if(maxTotalPageSize != null) {
             maxTotalXslSize = getSizeInBytes(maxTotalPageSize);
         }
-            
+        if(maxPageSizeIgnore != null) {
+            maxXslSizeIgnore = new HashSet<>();
+            String[] ignores = maxPageSizeIgnore.split("(\\s+)|(\\s*,\\s*)");
+            for(String ignore: ignores) {
+                maxXslSizeIgnore.add(ignore);
+            }
+        }
+        
         if(!webappdir.exists()) webappdir.mkdirs();
         
         File cache = new File(webappdir, ".cache");
@@ -191,7 +208,7 @@ public class GenerateMojo extends AbstractMojo {
                 if(file.length() > limit) {
                     largeFiles.add(file);
                 }
-                if(file.length() > maxXslSize) {
+                if(!maxXslSizeIgnore.contains(name) && file.length() > maxXslSize) {
                     exceedingFiles.add(file);
                 }
             }

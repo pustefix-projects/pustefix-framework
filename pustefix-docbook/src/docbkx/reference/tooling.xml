@@ -125,12 +125,13 @@
           </execution>
         </executions>
       </plugin>]]></programlisting>
-<para>The plugin usage can be customized using the following configuration options (here showing the default values):</para>
+<para>The plugin usage can be customized using the following configuration options:</para>
            <programlisting language="xml"><![CDATA[      <configuration>
         <docroot>${basedir}/src/main/webapp</docroot> <!-- The document root directory. Default: src/main/webapp -->
         <parallel>true</parallel> <!-- Generate page XSLs in parallel using one thread per CPU core. Default: false -->
         <cleanup>false</cleanup> <!-- Remove intermediate output files after page XSLs are created. Default: true -->
         <maxPageSize>10m</maxPageSize> <!-- The maximum size of a generated page XSL file. Default: not set -->
+        <maxPageSizeIgnore>myfile.xsl afile.xsl</maxPageSizeIgnore> <!-- List of XSL files to ignore when checking the maximum size. -->
         <maxTotalPageSize>0.5g</maxTotalPageSize> <!-- The maximum total size of all generated page XSL files. Default: not set -->
       </configuration>]]></programlisting>
         <para>
