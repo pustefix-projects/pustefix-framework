@@ -91,17 +91,23 @@ public class PageFlowManager {
         if (lastflow == null || !lastflow.containsPage(page.getRootName())) {
             Set<String> rootflownames = pagetoflowmap.get(page.getRootName());
             if (rootflownames == null) {
-                LOG.debug("===> Page " + page + " isn't a member of any pageflow: returning no pageflow");
+                if(LOG.isDebugEnabled()) {
+                    LOG.debug("===> Page " + page + " isn't a member of any pageflow: returning no pageflow");
+                }
                 return null;
             }
             if (config.getPageRequestConfig(page.getName()) != null) {
                 String defaultFlowForRequest = this.config.getPageRequestConfig(page.getName()).getDefaultFlow();
                 if (defaultFlowForRequest != null) {
-                    LOG.debug("===> Page " + page + " has a default flow specified: Using flow " + defaultFlowForRequest);
+                    if(LOG.isDebugEnabled()) {
+                        LOG.debug("===> Page " + page + " has a default flow specified: Using flow " + defaultFlowForRequest);
+                    }
                     String pageflowname = vmanager.getVariantMatchingPageFlowName(defaultFlowForRequest, variant);
                     PageFlow pf = getPageFlowByName(pageflowname);
                     if (pf.containsPage(page.getRootName())) {
-                        LOG.debug("===> Switching to pageflow: " + pf.getName());
+                        if(LOG.isDebugEnabled()) {
+                            LOG.debug("===> Switching to pageflow: " + pf.getName());
+                        }
                         return pf;
                     }
                 }
@@ -114,10 +120,14 @@ public class PageFlowManager {
                     return pf;
                 }
             }
-            LOG.debug("===> Page " + page + " isn't a member of any valid pageflow: returning no pageflow");
+            if(LOG.isDebugEnabled()) {
+                LOG.debug("===> Page " + page + " isn't a member of any valid pageflow: returning no pageflow");
+            }
             return null;
         } else {
-            LOG.debug("===> Page " + page + " is member of the last used pageflow: Reusing flow " + lastflow.getName());
+            if(LOG.isDebugEnabled()) {
+                LOG.debug("===> Page " + page + " is member of the last used pageflow: Reusing flow " + lastflow.getName());
+            }
             return lastflow;
         }
     }
