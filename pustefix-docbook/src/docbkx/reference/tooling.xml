@@ -125,7 +125,7 @@
           </execution>
         </executions>
       </plugin>]]></programlisting>
-<para>The plugin usage can be customized using the following configuration options (here showing the default values):</para>
+<para>The plugin usage can be customized using the following configuration options:</para>
            <programlisting language="xml"><![CDATA[      <configuration>
         <docroot>${basedir}/src/main/webapp</docroot> <!-- The document root directory. Default: src/main/webapp -->
         <parallel>true</parallel> <!-- Generate page XSLs in parallel using one thread per CPU core. Default: false -->
