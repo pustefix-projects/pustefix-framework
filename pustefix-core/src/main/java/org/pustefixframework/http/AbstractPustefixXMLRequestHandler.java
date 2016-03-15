@@ -77,6 +77,7 @@ import de.schlund.pfixxml.RenderContext;
 import de.schlund.pfixxml.RenderingException;
 import de.schlund.pfixxml.RequestParam;
 import de.schlund.pfixxml.SPDocument;
+import de.schlund.pfixxml.SPDocumentHistory;
 import de.schlund.pfixxml.SessionCleaner;
 import de.schlund.pfixxml.Variant;
 import de.schlund.pfixxml.serverutil.SessionAdmin;
@@ -188,6 +189,7 @@ public abstract class AbstractPustefixXMLRequestHandler extends AbstractPustefix
     
     private SessionCleaner sessionCleaner;
     private ApplicationContext applicationContext;
+    private SPDocumentHistory documentHistory;
     
     //~ Methods ....................................................................................
     /**
@@ -426,8 +428,11 @@ public abstract class AbstractPustefixXMLRequestHandler extends AbstractPustefix
             // This will store just the last dom, but only when editmode is allowed (so this normally doesn't apply to production mode)
             // This is a seperate place from the SessionCleaner as we don't want to interfere with this, nor do we want to use 
             // the whole queue of possible stored SPDocs only for the viewing of the DOM during development.
-            if ((showDom || isDebugSession(preq)) && preq.getRequestParam(PARAM_RENDER_HREF) == null) {
-                session.setAttribute(ATTR_SHOWXMLDOC, spdoc);
+            if ((showDom || isDebugSession(preq))) {
+                if(preq.getRequestParam(PARAM_RENDER_HREF) == null) {
+                    session.setAttribute(ATTR_SHOWXMLDOC, spdoc);
+                }
+                documentHistory.addSPDocument(spdoc, preq);
             }
 
 //            if (!spdoc.getNostore() || spdoc.isRedirect()) {
@@ -604,8 +609,10 @@ public abstract class AbstractPustefixXMLRequestHandler extends AbstractPustefix
         		sendError(spdoc, res);
         		return;
         	} else {
-        		throw new PustefixCoreException("Wasn't able to extract any stylesheet specification from page '" +
+        	    if (!(getRendering(preq) == RENDERMODE.RENDER_FONTIFY || getRendering(preq) == RENDERMODE.RENDER_LASTDOM)) {
+        	        throw new PustefixCoreException("Wasn't able to extract any stylesheet specification from page '" +
                                    spdoc.getPagename() + "' ... bailing out.");
+        	    }
         	}
         }
         
@@ -1145,7 +1152,12 @@ public abstract class AbstractPustefixXMLRequestHandler extends AbstractPustefix
                 }
                 return saved;
             } else if (getRendering(preq) == RENDERMODE.RENDER_FONTIFY || getRendering(preq) == RENDERMODE.RENDER_LASTDOM) {
-                return (SPDocument) session.getAttribute(ATTR_SHOWXMLDOC);
+                RequestParam serialParam = preq.getRequestParam("serial");
+                if(serialParam != null) {
+                    long serial = Long.parseLong(serialParam.getValue());
+                    return documentHistory.getSPDocument(serial);
+                }
+                return (SPDocument)session.getAttribute(ATTR_SHOWXMLDOC);
             } else {
                 return null;
             }
@@ -1305,6 +1317,9 @@ public abstract class AbstractPustefixXMLRequestHandler extends AbstractPustefix
         this.applicationContext = applicationContext;
     }
     
+    public void setDocumentHistory(SPDocumentHistory documentHistory) {
+        this.documentHistory = documentHistory;
+    }
     
     class SkippingByteArrayOutputStream extends ByteArrayOutputStream {
         

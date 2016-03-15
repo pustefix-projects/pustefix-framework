@@ -77,6 +77,7 @@ import de.schlund.pfixcore.workflow.context.RequestContextImpl;
 import de.schlund.pfixxml.PfixServletRequest;
 import de.schlund.pfixxml.RenderContext;
 import de.schlund.pfixxml.ResultDocument;
+import de.schlund.pfixxml.SPDocumentHistory;
 import de.schlund.pfixxml.Tenant;
 import de.schlund.pfixxml.TenantInfo;
 import de.schlund.pfixxml.config.EnvironmentProperties;
@@ -661,6 +662,17 @@ public class TransformerCallback {
             } else {
                 throw new PustefixCoreException("Only states implementing ConfigurableState are supporting lazy ContextResources");
             }
+        } catch(Exception x) {
+            ExtensionFunctionUtils.setExtensionFunctionError(x);
+            throw x;
+        }
+    }
+    
+    public static Node getDOMHistory(Node docNode) throws Exception {
+        try {
+            SPDocumentHistory history = (SPDocumentHistory)getBean(SPDocumentHistory.class.getName());
+            XsltVersion xsltVersion = Xml.getXsltVersion(docNode);
+            return Xml.parse(xsltVersion, history.toXML());
         } catch(Exception x) {
             ExtensionFunctionUtils.setExtensionFunctionError(x);
             throw x;

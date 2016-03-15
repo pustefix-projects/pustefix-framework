@@ -44,6 +44,7 @@ import org.pustefixframework.http.PustefixContextXMLRequestHandler;
 import org.pustefixframework.http.PustefixInternalsRequestHandler;
 import org.pustefixframework.http.internal.Log4jAdmin;
 import org.pustefixframework.http.internal.SessionStatusListenerAdapter;
+import org.springframework.aop.scope.ScopedProxyUtils;
 import org.springframework.beans.factory.BeanDefinitionStoreException;
 import org.springframework.beans.factory.config.BeanDefinition;
 import org.springframework.beans.factory.config.BeanDefinitionHolder;
@@ -66,6 +67,7 @@ import de.schlund.pfixcore.workflow.PageMap;
 import de.schlund.pfixcore.workflow.SiteMap;
 import de.schlund.pfixcore.workflow.context.ServerContextImpl;
 import de.schlund.pfixxml.LanguageInfo;
+import de.schlund.pfixxml.SPDocumentHistory;
 import de.schlund.pfixxml.SessionCleaner;
 import de.schlund.pfixxml.TenantInfo;
 import de.schlund.pfixxml.config.EnvironmentProperties;
@@ -216,6 +218,7 @@ public class PustefixContextXMLRequestHandlerParsingHandler extends Customizatio
         beanBuilder.addPropertyValue("languageInfo", new RuntimeBeanReference(LanguageInfo.class.getName()));
         beanBuilder.addPropertyValue("siteMap", new RuntimeBeanReference(SiteMap.class.getName()));
         beanBuilder.addPropertyValue("pageMap", new RuntimeBeanReference(PageMap.class.getName()));
+        beanBuilder.addPropertyValue("documentHistory", new RuntimeBeanReference(SPDocumentHistory.class.getName()));
         BeanDefinition beanDefinition = beanBuilder.getBeanDefinition();
         BeanDefinitionHolder beanHolder = new BeanDefinitionHolder(beanDefinition, PustefixContextXMLRequestHandler.class.getName() + (path != null ? "#" + path : ""));
         context.getObjectTreeElement().addObject(beanHolder);
@@ -237,6 +240,13 @@ public class PustefixContextXMLRequestHandlerParsingHandler extends Customizatio
         beanBuilder.setScope("singleton");
         beanDefinition = beanBuilder.getBeanDefinition();
         beanHolder = new BeanDefinitionHolder(beanDefinition, SessionStatusListenerAdapter.class.getName());
+        context.getObjectTreeElement().addObject(beanHolder);
+        
+        beanBuilder = BeanDefinitionBuilder.genericBeanDefinition(SPDocumentHistory.class);
+        beanBuilder.setScope("session");
+        beanDefinition = beanBuilder.getBeanDefinition();
+        beanHolder = new BeanDefinitionHolder(beanDefinition, SPDocumentHistory.class.getName());
+        beanHolder = ScopedProxyUtils.createScopedProxy(beanHolder, beanReg, true);
         context.getObjectTreeElement().addObject(beanHolder);
         
     }

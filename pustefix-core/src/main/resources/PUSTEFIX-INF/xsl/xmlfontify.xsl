@@ -209,6 +209,17 @@
             req.open("GET", href, true);
             req.send();
           }
+          function loadFromDOMHistory() {
+            var element = document.getElementById("domhistory");
+            var value = element.options[element.selectedIndex].value;
+            var href = window.location.href;
+            var ind = href.lastIndexOf('?');
+            if(ind > -1) {
+              href = href.substring(0,ind);
+            }
+            href = href + "?__xmlonly=1&amp;serial=" + value; 
+            window.location.href = href;
+          }
         </script>
       </head>
       <body>
@@ -226,7 +237,22 @@
           <div id="autocompletion"></div>
         </div>
         <br /><br />
-        <h1 id="XMLData">XML data:</h1>
+        <h1 id="XMLData">XML data:
+        <xsl:variable name="tree" select="/"/>
+        <xsl:variable name="domhistory" select="callback:getDOMHistory(.)"/>
+        <xsl:if test="$domhistory/domhistory/doc">
+          <select id="domhistory" onchange="loadFromDOMHistory();" style="vertical-align:middle;">
+            <xsl:for-each select="$domhistory/domhistory/doc">
+              <option value="{@serial}">
+                <xsl:if test="@serial = $tree/formresult/@serial">
+                  <xsl:attribute name="selected">selected</xsl:attribute>
+                </xsl:if>
+                <xsl:value-of select="@serial"/><xsl:text> -> </xsl:text><xsl:value-of select="@page"/> [<xsl:value-of select="@url"/>]
+              </option>
+            </xsl:for-each>
+          </select>
+        </xsl:if>
+        </h1>
         <div id="dom-tree" class="pretty-print">
           <xsl:apply-templates mode="static_disp" select="/"/>
         </div>
