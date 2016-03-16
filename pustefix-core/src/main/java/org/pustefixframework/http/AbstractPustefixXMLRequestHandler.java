@@ -1041,7 +1041,8 @@ public abstract class AbstractPustefixXMLRequestHandler extends AbstractPustefix
                 }
 
                 try {
-                    Target target = generator.getRenderTarget(href, part, module, search, spdoc.getVariant());
+                    Target target = generator.getRenderTarget(href, part, module, search, 
+                            spdoc.getVariant(), spdoc.getTenant(), spdoc.getLanguage());
                     if(target != null && res != null) {
                     	String contentType = (String)target.getParams().get("content-type");
                     	if(contentType != null) {

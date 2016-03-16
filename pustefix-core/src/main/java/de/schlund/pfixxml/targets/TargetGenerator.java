@@ -327,7 +327,8 @@ public class TargetGenerator implements ResourceVisitor, ServletContextAware, In
         }
     }
     
-    public Target getRenderTarget(String href, String part, String module, String search, Variant variant) throws IncludePartsInfoParsingException {
+    public Target getRenderTarget(String href, String part, String module, String search, 
+            Variant variant, Tenant tenant, String language) throws IncludePartsInfoParsingException {
         String uri;
         if("dynamic".equals(search)) {
             uri = "dynamic:/" + href + "?part=" + part;
@@ -376,7 +377,8 @@ public class TargetGenerator implements ResourceVisitor, ServletContextAware, In
                                         }
         			}
         			if(module == null || module.equals("")) module = "WEBAPP";
-        			return createTargetForRender(href, part, module, selectedVariant, partInfo.getContentType(), partInfo.isContextual());
+        			return createTargetForRender(href, part, module, selectedVariant, partInfo.getContentType(), 
+        			        partInfo.isContextual(), tenant, language);
         		} else {
         			LOG.warn("Part '" + part + "' in '" + res.toURI() + "' is not marked as render part");
         		}
@@ -697,7 +699,7 @@ public class TargetGenerator implements ResourceVisitor, ServletContextAware, In
         }
         
         dependXmlDoc = config;
-        
+
         NodeList targetnodes = config.getElementsByTagName("target");
 
         name = root.getAttribute("project");
@@ -897,9 +899,25 @@ public class TargetGenerator implements ResourceVisitor, ServletContextAware, In
                     if(href.startsWith("/")) href = href.substring(1);
                     String part = partInfo.getName();
                     if(module == null || module.equals("")) module = "WEBAPP";
-                    createTargetForRender(href, part, module, null, partInfo.getContentType(), partInfo.isContextual());
-                    for(String variant: partInfo.getRenderVariants()) {
-                        createTargetForRender(href, part, module, variant, partInfo.getContentType(), partInfo.isContextual());
+                    if(tenantInfo != null) {
+                        for(Tenant tenant: tenantInfo.getTenants()) {
+                            for(String tenantLang: tenant.getSupportedLanguages()) {
+                                createTargetForRender(href, part, module, null, partInfo.getContentType(), 
+                                        partInfo.isContextual(), tenant, tenantLang);
+                                for(String variant: partInfo.getRenderVariants()) {
+                                    createTargetForRender(href, part, module, variant, partInfo.getContentType(), 
+                                            partInfo.isContextual(), tenant, tenantLang);
+                                }
+                                
+                            }
+                        }
+                    } else {
+                        createTargetForRender(href, part, module, null, partInfo.getContentType(), 
+                                partInfo.isContextual(), null, null);
+                        for(String variant: partInfo.getRenderVariants()) {
+                            createTargetForRender(href, part, module, variant, partInfo.getContentType(), 
+                                    partInfo.isContextual(), null, null);
+                        }
                     }
                 }
             }
@@ -1003,7 +1021,8 @@ public class TargetGenerator implements ResourceVisitor, ServletContextAware, In
 
     // *******************************************************************************************
     
-    private Target createTargetForRender(String href, String part, String module, String variantId, String contentType, boolean isContextual) {
+    private Target createTargetForRender(String href, String part, String module, String variantId, String contentType, 
+            boolean isContextual, Tenant tenant, String language) {
         
         Themes themes = global_themes;
         if(variantId != null) {
@@ -1017,10 +1036,9 @@ public class TargetGenerator implements ResourceVisitor, ServletContextAware, In
             themes = new Themes(themeArr);
         }
         
-        String renderKey = createRenderKey(href, part, module, variantId);
+        String renderKey = createRenderKey(href, part, module, variantId, tenant, language);
         Target target = alltargets.get(renderKey);
         if(target == null) {
-            
             XMLVirtualTarget xmlTarget = (XMLVirtualTarget)createTarget(TargetType.XML_VIRTUAL, renderKey + ".xml", themes);
             Target xmlSource = createTarget(TargetType.XML_LEAF, "module://pustefix-core/xml/render.xml", null);
             Target xslSource = createTarget(TargetType.XSL_VIRTUAL, "metatags.xsl", null);
@@ -1045,6 +1063,10 @@ public class TargetGenerator implements ResourceVisitor, ServletContextAware, In
                 xmlTarget.addParam("prohibitEdit", "yes");
             }
             xmlTarget.addParam(XSLPARAM_SITEMAP, siteMap.getSiteMapXMLElement(getXsltVersion(), renderParams.get("lang")));
+            if(tenant != null) {
+                xmlTarget.addParam("tenant", tenant.getName());
+                xmlTarget.addParam("lang", language);
+            }
             
             
             XSLVirtualTarget xslTarget = (XSLVirtualTarget)createTarget(TargetType.XSL_VIRTUAL, renderKey + ".xsl", themes);
@@ -1077,6 +1099,10 @@ public class TargetGenerator implements ResourceVisitor, ServletContextAware, In
             }
             xslTarget.addParam("render_contextual", isContextual);
             xslTarget.addParam(XSLPARAM_SITEMAP, siteMap.getSiteMapXMLElement(getXsltVersion(), renderParams.get("lang")));
+            if(tenant != null) {
+                xslTarget.addParam("tenant", tenant.getName());
+                xslTarget.addParam("lang", language);
+            }
             target = xslTarget;
         }
         return target;
@@ -1366,13 +1392,16 @@ public class TargetGenerator implements ResourceVisitor, ServletContextAware, In
         return key.indexOf(RENDER_KEY_SEPARATOR) > -1;
     }
     
-    private static String createRenderKey(String href, String part, String module, String variant) {
+    private static String createRenderKey(String href, String part, String module, String variant, Tenant tenant, String language) {
         if(href == null || href.equals("")) throw new IllegalArgumentException("Argument 'href' must not be empty");
         if(part == null || part.equals("")) throw new IllegalArgumentException("Argument 'part' must not be empty");
         if(module == null) module = "";
         if(variant == null) variant = "";
         String targetKey = encode(href) + RENDER_KEY_SEPARATOR + encode(part) + 
                             RENDER_KEY_SEPARATOR + encode(module) + RENDER_KEY_SEPARATOR + encode(variant);
+        if(tenant != null) {
+            targetKey += RENDER_KEY_SEPARATOR + tenant.getName() + "-" + language;
+        }
         return targetKey;
     }
         

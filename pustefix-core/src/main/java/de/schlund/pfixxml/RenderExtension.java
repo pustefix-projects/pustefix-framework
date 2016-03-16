@@ -33,7 +33,8 @@ public class RenderExtension {
         boolean isContextual = false;
         Templates style = renderContext.getTemplates(cacheKey);
         if(style == null) {
-            Target target = targetGenerator.getRenderTarget(href, part, module, search, requestContext.getVariant());
+            Target target = targetGenerator.getRenderTarget(href, part, module, search, requestContext.getVariant(), 
+                    requestContext.getParentContext().getTenant(), requestContext.getLanguage());
             if(target == null) {
             	return false;
             } else {
