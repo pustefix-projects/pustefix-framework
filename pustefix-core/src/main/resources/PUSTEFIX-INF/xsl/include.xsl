@@ -278,7 +278,7 @@
             </xsl:when>
             <xsl:otherwise>
               <xsl:message terminate="yes">WARNING at '<xsl:value-of select="inf:getLocation()"/>':
-                Error when calling extension function 'include:get' => Didn't get a valid nodeset.
+                Error when calling extension function 'include:get' => Didn't get a valid nodeset for part '<xsl:value-of select="$part"/>' from '<xsl:value-of select="$realpath"/>'
               </xsl:message>
             </xsl:otherwise>
           </xsl:choose>
