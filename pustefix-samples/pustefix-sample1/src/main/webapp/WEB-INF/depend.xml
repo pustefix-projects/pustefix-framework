@@ -30,6 +30,16 @@
       </cus:otherwise>
     </cus:choose>
 -->
+    <!-- Show missing includes, i.e. display a warning image
+         if an include doesn't exist or has no matching theme. -->
+    <cus:choose>
+      <cus:when test="$mode = 'prod'">
+        <param name="show-missing-include" value="false"/>
+      </cus:when>
+      <cus:otherwise>
+        <param name="show-missing-include" value="true"/>
+      </cus:otherwise>
+    </cus:choose>
   </global>
 
   <standardmaster>

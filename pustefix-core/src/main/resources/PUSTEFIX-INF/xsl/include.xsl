@@ -35,6 +35,7 @@
   <xsl:param name="themes"/>
   <xsl:param name="prohibitEdit">no</xsl:param>
   <xsl:param name="__defining_module">WEBAPP</xsl:param>
+  <xsl:param name="show-missing-include">true</xsl:param>
 
   <xsl:template match="pfx:langselect">
     <xsl:param name="__env"/>
@@ -186,14 +187,16 @@
     <xsl:param name="part"/>
     <xsl:param name="href"/>
     <xsl:param name="module"/>
-    <xsl:variable name="thetext">Missing include: '<xsl:value-of select="$part"/>' in resource '<xsl:value-of select="$href"/>'</xsl:variable>
-    <img src="{{$__contextpath}}/modules/pustefix-core/img/warning.gif">
-      <xsl:if test="$__target_key = '__NONE__'">
-        <xsl:attribute name="src"><xsl:value-of select="$__contextpath"/>/modules/pustefix-core/img/warning.gif</xsl:attribute>
-      </xsl:if>
-      <xsl:attribute name="alt"><xsl:value-of select="$thetext"/></xsl:attribute>
-      <xsl:attribute name="title"><xsl:value-of select="$thetext"/></xsl:attribute>
-    </img>
+    <xsl:if test="$show-missing-include = 'true'"> 
+      <xsl:variable name="thetext">Missing include: '<xsl:value-of select="$part"/>' in resource '<xsl:value-of select="$href"/>'</xsl:variable>
+      <img src="{{$__contextpath}}/modules/pustefix-core/img/warning.gif">
+        <xsl:if test="$__target_key = '__NONE__'">
+          <xsl:attribute name="src"><xsl:value-of select="$__contextpath"/>/modules/pustefix-core/img/warning.gif</xsl:attribute>
+        </xsl:if>
+        <xsl:attribute name="alt"><xsl:value-of select="$thetext"/></xsl:attribute>
+        <xsl:attribute name="title"><xsl:value-of select="$thetext"/></xsl:attribute>
+      </img>
+    </xsl:if>
     <xsl:message>WARNING at '<xsl:value-of select="inf:getLocation()"/>':
        *** Include not found:
        TargetKey = <xsl:value-of select="$__target_key"/> 
