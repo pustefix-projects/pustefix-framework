@@ -38,9 +38,41 @@ public class AdultInfoHandler implements InputHandler<AdultInfo> {
 
     private ContextAdultInfo cai;
 
+    /**
+    @Autowired
+    private ServletContext servletContext;
+    @Autowired
+    private PustefixContextXMLRequestHandler handler;
+    @Autowired
+    private HttpServletRequest request;
+    @Autowired
+    private Context context;
+    */
+    
     public void handleSubmittedData(AdultInfo info) {
         cai.setAdult(info.getAdult());
         cai.setDate(info.getDate());
+        
+        /**
+        VirtualHttpServletRequest req = new VirtualHttpServletRequest(servletContext);
+        req.setSession(request.getSession(false));
+        req.setPathInfo("/encodingpage");
+        req.setMethod("GET");
+        VirtualHttpServletResponse res = new VirtualHttpServletResponse();
+        RequestAttributes originalRequestAttributes = RequestContextHolder.getRequestAttributes();
+        RequestContextImpl originalRequestContext = ((ContextImpl)context).getRequestContextForCurrentThread();
+        RequestContextHolder.setRequestAttributes(new ServletRequestAttributes(req));
+        try {
+            handler.handleRequest(req, res);
+            System.out.println(new String(res.getOutput()));
+        } catch(Exception x) {
+            //TODO: handle exception
+            x.printStackTrace();
+        } finally {
+            RequestContextHolder.setRequestAttributes(originalRequestAttributes);
+            ((ContextImpl)context).setRequestContextForCurrentThread(originalRequestContext);
+        }
+        */
     }
     
     public void retrieveCurrentStatus(AdultInfo info) {

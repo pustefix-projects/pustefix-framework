@@ -367,7 +367,7 @@ public class ContextImpl implements AccessibilityChecker, ExtendedContext, Token
 
     // --------------
 
-    private RequestContextImpl getRequestContextForCurrentThread() {
+    public RequestContextImpl getRequestContextForCurrentThread() {
         return requestcontextstore.get();
     }
 
