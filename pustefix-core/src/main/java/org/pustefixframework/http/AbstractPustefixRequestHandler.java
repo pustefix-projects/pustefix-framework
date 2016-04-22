@@ -499,9 +499,13 @@ public abstract class AbstractPustefixRequestHandler implements PageProvider, Se
                 if(!res.isCommitted()) throw new ServletException("Exception in process.",e);
             }
         } finally {
-            if (session != null && (session.getAttribute(REQUEST_ATTR_INVALIDATE_SESSION_AFTER_COMPLETION) != null)) {
-                LOGGER_SESSION.info("Invalidate session VII: " + session.getId());
-                session.invalidate();
+            try {
+                if (session != null && (session.getAttribute(REQUEST_ATTR_INVALIDATE_SESSION_AFTER_COMPLETION) != null)) {
+                    LOGGER_SESSION.info("Invalidate session VII: " + session.getId());
+                    session.invalidate();
+                }
+            } catch(IllegalStateException x) {
+                //can be ignored, because session has been already invalidated meanwhile
             }
         }
     }
