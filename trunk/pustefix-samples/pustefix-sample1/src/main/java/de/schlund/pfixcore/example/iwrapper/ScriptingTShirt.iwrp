@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="UTF-8"?>
+	<interface xmlns="http://www.pustefix-framework.org/2008/namespace/iwrapper"
+	           xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	           xsi:schemaLocation="http://www.pustefix-framework.org/2008/namespace/iwrapper 
+	                               http://www.pustefix-framework.org/2008/namespace/iwrapper.xsd">
+	          
+	  <ihandler bean-ref="scriptedHandler"/>
+  
+  <param name="Size" type="java.lang.String">
+    <precheck class="de.schlund.pfixcore.generator.prechecks.RegexpCheck">
+      <cparam name="regexp" value="/^(S|M|L|XL|XXL)$/"/>
+    </precheck>
+  </param>
+  
+  <param name="Color" type="java.lang.Integer">
+    <caster class="de.schlund.pfixcore.generator.casters.ToInteger"/>
+  </param>
+
+  <param name="Feature" type="java.lang.Integer" frequency="multiple" occurrence="optional">
+    <caster class="de.schlund.pfixcore.generator.casters.ToInteger"/>
+    <postcheck class="de.schlund.pfixcore.generator.postchecks.IntegerRange">
+      <cparam name="range" value="0:2"/>
+    </postcheck>
+  </param>
+  
+</interface> 

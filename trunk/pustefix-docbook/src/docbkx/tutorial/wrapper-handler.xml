@@ -1,0 +1,1472 @@
+<?xml version="1.0"?>
+<chapter xml:id="wrapper-handler" xmlns="http://docbook.org/ns/docbook" xmlns:xlink="http://www.w3.org/1999/xlink"
+  xmlns:xi="http://www.w3.org/2001/XInclude" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xsi:schemaLocation="http://docbook.org/ns/docbook http://www.docbook.org/xml/5.0CR7/xsd/docbook.xsd"
+>
+  <title>Basic tutorial</title>
+
+  <info>
+    <title>Basic tutorial</title>
+    <copyright>
+      <year>2008</year>
+      <holder>1&amp;1 Internet AG</holder>
+    </copyright>
+    <authorgroup>
+      <author>
+        <personname>
+          <firstname>Martin</firstname>
+          <surname>Leidig</surname>
+        </personname>
+      </author>
+      <author>
+        <personname>
+          <firstname>Stephan</firstname>
+          <surname>Schmidt</surname>
+        </personname>
+      </author>
+    </authorgroup>
+  </info>
+
+  <para>
+    In this tutorial, you will learn how to work with the basic features provided by the Pustefix framework.
+    You will accept user input, store it in the session and display it back to the user.
+    Furthermore, you will create a very simple workflow containing three pages.  
+  </para>
+  <para>
+    The requirements for your application are:
+  </para>
+  <orderedlist>
+    <listitem>
+      <para>
+        Provide an HTML form that can be used to register new users. The data for a new user must contain:
+        gender, name, email-address, homepage, date of birth and a flag to mark the user as an administrator.
+      </para>
+    </listitem>
+    <listitem>
+      <para>
+        Validate the user data after the page has been submitted and display error information.
+      </para>
+    </listitem>
+    <listitem>
+      <para>
+        If the entered data is correct, move to a new page, which displays the user data and allows the
+        user to choose whether he wants to go back and modify the data or accept the data.
+      </para>
+    </listitem>
+    <listitem>
+      <para>
+        After the data has been stored, display a confirmation page to the user.
+      </para>
+    </listitem>
+  </orderedlist>
+  <para>
+    In this tutorial application, you will focus on how the requirements will be implemented in
+    the Pustefix framework. There will be no real business logic like actually storing the
+    user data in any data base. These tasks are left to your favorite ORM framework.
+  </para>
+  <section xml:id="wrapper-handler.setup">
+    <title>Setting up a new project</title>
+    <para>
+      Before you can start developing the application, make sure that your system
+      fulfills all requirements that are mentioned in <xref linkend="gettingstarted.requirements"/>.
+    </para>
+    <para>
+      If your environment is set up correctly, you may create a new Pustefix project. For this
+      tutorial, please name the project <emphasis>firstapp</emphasis>. A new Pustefix project
+      can be created using a Maven archetype as described in <xref linkend="gettingstarted.mavensetup"/> 
+      and <xref linkend="gettingstarted.mavenarchetypes"/>.
+      The project name corresponds to the artifactId, so you should enter <emphasis>firstapp</emphasis> when
+      you're asked by Maven. You should further choose <emphasis>org.pustefixframework.tutorial</emphasis> as
+      groupId and <emphasis>org.pustefixframework.tutorial.firstapp</emphasis> as package name
+      (you can choose other names, but you will have to replace the recommended names wherever used in this tutorial).
+    </para>
+    <para>
+      After Maven successfully created the new project, you can start it using <literal>mvn tomcat:run</literal>
+      and open it in your browser under <uri>http://localhost:8080/firstapp</uri>.
+      Figure <xref linkend="wrapper-handler.first-app"/> shows the output of the new Pustefix project.
+    </para>
+    <figure xml:id="wrapper-handler.first-app">
+      <title>The new Pustefix project</title>
+      <mediaobject>
+        <imageobject>
+          <imagedata fileref="images/tutorial/first-app.png" format="PNG"/>
+        </imageobject>
+      </mediaobject>
+    </figure>
+  </section>
+  <section xml:id="wrapper-handler.structure">
+    <title>Generated files</title>
+    <para>
+      Maven generated a working application for you. All relevant files have been put
+      into the <filename>firstapp</filename> folder within your working directory. Please take a look at the most important folders:
+    </para>
+    <itemizedlist>
+      <listitem>
+        <para>
+          The <filename>src/main/webapp/WEB-INF</filename> folder contains all configuration files for your applications. These are:
+        </para>
+        <itemizedlist>
+          <listitem>
+            <para>
+              <filename>project.xml</filename> contains general project information, framework configuration, e.g. for the
+              rendering system, exception processing, path mappings for static resources, etc.
+            </para>
+          </listitem>
+          <listitem>
+            <para>
+              <filename>app.xml</filename> contains the configuration concerning the Java part of the application, e.g. pagerequests and assigned Java
+              framework classes
+            </para>
+          </listitem>
+          <listitem>
+            <para>
+              <filename>depend.xml</filename> contains the configuration concerning the XML/XSLT part of the application, e.g. pages and XSL stylesheets used in
+              your project.
+            </para>
+          </listitem>
+          <listitem>
+            <para>
+              <filename>web.xml</filename> contains servlet configuration and mappings.
+            </para>
+          </listitem>
+          <listitem>
+            <para>
+              <filename>spring.xml</filename> is empty by default and can be used to configure your Spring beans.
+            </para>
+          </listitem>
+          <listitem>
+            <para>
+              <filename>pfixlog.xml</filename> contains the log4j configuration.
+            </para>
+          </listitem>
+        </itemizedlist>
+      </listitem>
+      <listitem>
+          <para>
+            The <filename>src/main/webapp</filename> folder also contains resource folders. These are:
+          </para>
+          <itemizedlist>
+      <listitem>
+        <para>
+          The <filename>css</filename> and <filename>img</filename> folders contain
+          CSS files and images which should be delivered as static resources.
+        </para>
+      </listitem>
+      <listitem>
+        <para>
+          The <filename>txt</filename> folder contains the web pages, i.e. the according XML content and fragments.
+        </para>
+      </listitem>
+      <listitem>
+        <para>
+          The <filename>xml</filename> folder contains the different frames of your application. A frame is an
+          XML document which will be used for every page that is generated. This way, you can easily share
+          header, footer and navigation between all pages.
+        </para>
+      </listitem>
+      <listitem>
+        <para>
+          The <filename>xsl</filename> folder contains XSL stylesheets that are only used in your application
+          (not including XSL stylesheets provided by Pustefix itself).
+        </para>
+      </listitem>
+      </itemizedlist>
+      </listitem>
+    </itemizedlist>
+  </section>
+  <section xml:id="wrapper-handler.pages">
+    <title>Creating the pages</title>
+    <para>
+      Start implementing your application by adding the three needed pages to the application:
+      <literal>EnterData</literal>, <literal>ReviewData</literal> and <literal>Confirm</literal>.
+    </para>
+    <para>
+      New pages are added by editing the <filename>src/main/webapp/WEB-INF/depend.xml</filename> file. For each page, you
+      have to add two XML tags: 
+    </para>
+    <itemizedlist>
+      <listitem>
+        <para>
+          The <literal>&lt;page/&gt;</literal> tag defines the servlet, that handles the request to this page.
+          All three pages will be handled by the <literal>app</literal> servlet, which is available at
+          <literal>xml/app</literal>.
+        </para>
+      </listitem>
+      <listitem>
+        <para>
+          The <literal>&lt;standardpage/&gt;</literal> tag defines the layout of the page by specifying the
+          XML frame that should be used. Again, all three pages will be rendered using the standard
+          frame that has been generated by the setup script.
+        </para>
+      </listitem>
+    </itemizedlist>
+    <para>
+      You can just remove or alter the according tags for the predefined pages. The new configuration should look like this:
+    </para>
+    <programlisting language="xml"><![CDATA[<?xml version="1.0" encoding="utf-8"?>
+<make lang="en_GB" project="firstapp">
+
+  <!--
+    Metatags have been left out.
+  -->
+  
+  <standardpage name="EnterData" xml="xml/frame.xml"/>
+  <standardpage name="ReviewData" xml="xml/frame.xml"/>
+  <standardpage name="Confirm" xml="xml/frame.xml"/>
+  
+</make>]]></programlisting>
+    <para>
+      You can now open the <literal>EnterData</literal> page by browsing to <uri>http://localhost:8080/firstapp/xml/app/EnterData</uri>.
+    </para>
+    <para>
+      As you did not provide any content for this page, Pustefix will display an error icon. When hovering
+      over this icon, you can see, that the content of the page in the file <filename>txt/pages/EnterData.xml</filename>
+      is missing.
+    </para>
+    <para>
+      This problem can easily be solved by adding the file <filename>src/main/webapp/txt/pages/EnterData.xml</filename>:
+    </para>
+    <programlisting language="xml"><![CDATA[<?xml version="1.0" encoding="utf-8"?>
+<include_parts xmlns:ixsl="http://www.w3.org/1999/XSL/Transform" xmlns:pfx="http://www.schlund.de/pustefix/core">
+  <part name="content">
+    <theme name="default">
+      <h1>Register new user</h1>
+    </theme>
+  </part>
+ </include_parts>]]></programlisting>
+    <para>
+      If you reload the page, you will see the <literal>Register new user</literal> headline. Now repeat this 
+      step for all three pages (you can remove/alter the predefined pages which are no longer used).
+    </para>
+  </section>
+  <section xml:id="wrapper-handler.entrypage">
+    <title>Setting the entry page</title>
+    <para>
+      If you open the application in your browser without specifying the page directly, Pustefix will redirect
+      you to <filename>xml/app/Home</filename>, which is the default page generated by the Maven archetype (you will get
+      an error message, if you already removed the page in the previous step). Desired behaviour would
+      be, that the <literal>EnterData</literal> page is displayed, when your application is started.
+      This can be changed in the configuration in <filename>src/main/webapp/WEB-INF/app.xml</filename>:
+    </para>
+    <programlisting language="xml"><![CDATA[<?xml version="1.0" encoding="utf-8"?>
+<context-xml-service-config>
+  
+  <global-config />
+
+  <context defaultpage="EnterData">
+    ...
+  </context>
+
+  ...
+
+</context-xml-service-config>]]></programlisting>
+    <para>
+      The entry page is specified using the <literal>defaultpage</literal> attribute of the
+      <literal>&lt;context/&gt;</literal> tag. After you set this attribute to <literal>EnterData</literal>
+      open the URL <uri>http://localhost:8080/firstapp</uri> in your browser and you will be automatically
+      redirected to the page to register new users.
+    </para>
+    <para>
+      After you changed the entry page, you can get completely rid of the generated/predefined pages by
+      following these steps (if not already done before):
+    </para>
+    <orderedlist>
+      <listitem>
+        <para>
+          Delete the XML files for the predefined pages from the <filename>src/main/webapp/txt/pages</filename> folder.
+        </para>
+      </listitem>
+      <listitem>
+        <para>
+          Remove the <literal>&lt;pagerequest/&gt;</literal> and <literal>&lt;pageflow&gt;</literal> tags
+          for the predefined pages from the <filename>src/main/webapp/WEB-INF/app.xml</filename> file.
+        </para>
+      </listitem>
+      <listitem>
+        <para>
+          Remove the <literal>&lt;page/&gt;</literal> and <literal>&lt;standardpage/&gt;</literal> tags for the
+          predefined pages from the <filename>src/main/webapp/WEB-INF/depend.xml</filename> file.
+        </para>
+      </listitem>
+    </orderedlist>
+  </section>
+  <section xml:id="wrapper-handler.inputform">
+    <title>Create the input form</title>
+    <para>
+      Next, you have to create the HTML form to accept the data of a new user. To create the form, you should
+      not use the standard HTML tags, but the replacements by Pustefix, which automatically write back the data
+      from the business logic to the HTML page.
+    </para>
+    <para>
+      The form has to be added to <filename>txt/pages/main_EnterData.xml</filename>:
+    </para>
+    <programlisting language="xml"><![CDATA[<?xml version="1.0" encoding="utf-8"?>
+<include_parts xmlns:ixsl="http://www.w3.org/1999/XSL/Transform" xmlns:pfx="http://www.schlund.de/pustefix/core">
+  <part name="content">
+    <theme name="default">
+      <h1>Register new user</h1>
+      <pfx:forminput>
+        <table>
+          <tr>
+            <td>Gender:</td>
+            <td>
+              <pfx:xinp type="select" name="user.sex">
+                <pfx:option value="m">male</pfx:option>
+                <pfx:option value="f">female</pfx:option>
+              </pfx:xinp>
+            </td>
+          </tr>
+          <tr>
+            <td>Name:</td>
+            <td><pfx:xinp type="text" name="user.name"/></td>
+          </tr>
+          <tr>
+            <td>Email:</td>
+            <td><pfx:xinp type="text" name="user.email"/></td>
+          </tr>
+          <tr>
+            <td>Homepage:</td>
+            <td><pfx:xinp type="text" name="user.homepage"/></td>
+          </tr>
+          <tr>
+            <td>Birthdate:</td>
+            <td><pfx:xinp type="text" name="user.birthdate"/></td>
+          </tr>
+          <tr>
+            <td>Administrator:</td>
+            <td><pfx:xinp type="check" name="user.admin" value="true"/></td>
+          </tr>
+        </table>
+        <pfx:xinp type="submit" value="register"/>
+      </pfx:forminput>
+    </theme>
+  </part>
+ </include_parts>]]></programlisting>
+    <para>
+      See the Pustefix reference documentation for more information about the XML tags that have been used in
+      this page.
+    </para>
+  </section>
+  <section xml:id="wrapper-handler.business-logic">
+    <title>Implementing the business logic</title>
+    <para>
+      Now that you have finished most of the HTML frontend, you should start implementing the business logic.
+      The business logic in Pustefix applications mostly consists of three parts:
+    </para>
+    <itemizedlist>
+      <listitem>
+        <para>
+          A <literal>wrapper</literal> is used to extract the user input from the HTTP-request, executes
+          some checks and casts the data to the desired Java types. A <literal>wrapper</literal> is also used
+          to write the values and/or error information back to the response. It connects your HTML frontend
+          with your application logic. 
+        </para>
+      </listitem>
+      <listitem>
+        <para>
+          A <literal>handler</literal> processes the HTTP request. It extracts the user input from the <literal>wrapper</literal>,
+          executes additional information and does whatever is necessary in the specific application. You have all the power
+          provided by Java at your command when implementing a <literal>handler</literal>.
+        </para>
+        <para>
+          A handler does not have direct access to the HTTP request, HTTP session or HTTP response.
+        </para>
+      </listitem>
+      <listitem>
+        <para>
+          A <literal>ContextResource</literal> allows you to store any data in the Pustefix <literal>Context</literal> and thus
+          in the HTTP-session.
+        </para>
+        <para>
+          A <literal>ContextResource</literal> furthermore allows you to add XML data to the <literal>ResultDocument</literal>
+          which is the Pustefix way to pass information to the HTML frontend.
+        </para>
+      </listitem>
+    </itemizedlist>
+    <section xml:id="wrapper-handler.business-logic.wrapper">
+      <title>Implementing a wrapper</title>
+      <para>
+        When implementing the business logic you will always start by implementing a wrapper.
+        Wrappers in Pustefix usually are implemented using XML, which will then be used to generate a Java class for the
+        wrapper. Alternatively Wrappers can be defined using annotated Java beans (see the reference documentation). 
+      </para>
+      <para>
+        Before you can implement a new wrapper, you will have to create a new Java package <literal>org.pustefixframework.tutorial.firstapp.wrapper</literal>
+        which will then contain the new wrapper (if you started with the Maven archetype, the package should already exist). After the package has been created, create a new <filename>EnterUserDataWrapper.iwrp</filename> file for the wrapper
+        and paste the following content into this new file:
+      </para>
+      <programlisting language="xml"><![CDATA[<interface xmlns="http://www.pustefix-framework.org/2008/namespace/iwrapper"
+           xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+           xsi:schemaLocation="http://www.pustefix-framework.org/2008/namespace/iwrapper 
+                               http://www.pustefix-framework.org/2008/namespace/iwrapper.xsd">
+  
+  <!-- This handler will process the data -->
+  <ihandler class="org.pustefixframework.tutorial.firstapp.handler.EnterUserDataHandler"/>
+  
+  <!-- Parameters that have to be extracted from the request -->
+  <param name="sex" type="java.lang.String" occurrence="mandatory"/>
+  <param name="name" type="java.lang.String" occurrence="mandatory"/>
+  <param name="email" type="java.lang.String" occurrence="mandatory"/>
+  <param name="homepage" type="java.lang.String" occurrence="optional"/>
+  <param name="birthdate" type="java.lang.String" occurrence="optional"/>
+  <param name="admin" type="java.lang.Boolean" occurrence="optional">
+    <default>
+      <value>false</value>
+    </default>
+    <caster class="de.schlund.pfixcore.generator.casters.ToBoolean"/>
+  </param>
+</interface>]]></programlisting>
+      <para>
+        The wrapper defines various options:
+      </para>
+      <orderedlist>
+        <listitem>
+          <para>
+            Using the <literal>&lt;ihandler/&gt;</literal> tag, you define the name of the class that will do
+            the request processing for this handler. This class will be implemented at a later point (see
+            <xref linkend="wrapper-handler.business-logic.handler"/> if you are too curious).
+          </para>
+        </listitem>
+        <listitem>
+          <para>
+            The different <literal>&lt;param/&gt;</literal> tags are used to define the different parameters that
+            should be extracted from the HTTP request. For each parameter you define the name and the type of the data.
+            All parameters except the admin-flag are String parameters, the admin-flag should be casted to a <literal>boolean</literal>
+            value. This can be achieved by setting the <literal>type</literal> attribute to <literal>java.lang.Boolean</literal>
+            and supplying a <literal>&lt;caster/&gt;</literal> tag that specifies a class to to the conversion for
+            you. The class <literal>de.schlund.pfixcore.generator.casters.ToBoolean</literal> is provided by the 
+            Pustefix framework.
+          </para>
+          <para>
+            For each parameter you may also specify a default value and define whether the parameter is mandatory or
+            not. For more information on the differen <literal>wrapper</literal> features, please refer to the 
+            reference documentation.
+          </para>
+        </listitem>
+      </orderedlist>
+      <para>
+        After you created the <literal>iwrp</literal> definition, please run <command>mvn generate-sources</command> to
+        generate the Java class for this wrapper:
+      </para>
+      <screen continuation="restarts"><![CDATA[$ mvn generate-sources
+[INFO] Scanning for projects...
+[INFO] ------------------------------------------------------------------------
+[INFO] Building Pustefix Basic Application
+[INFO]    task-segment: [generate-sources]
+[INFO] ------------------------------------------------------------------------
+...
+[INFO] [pustefix-iwrapper:generate {execution: default}]
+[INFO] Generated 1 IWrapper class
+[INFO] ------------------------------------------------------------------------
+[INFO] BUILD SUCCESSFUL
+[INFO] ------------------------------------------------------------------------
+...
+]]></screen>
+      <para>
+        After <literal>Maven</literal> has finished the build, you will find a new class
+        <literal>org.pustefixframework.tutorial.firstapp.wrapper.EnterUserDataWrapper</literal> in the
+        <filename>target/generated-sources/iwrapper</filename> folder of your installation.
+        This file contains all information needed to extract the parameters from the request.
+      </para>
+      <para>
+        If you refresh your IDE or compile you will get an error because the generated class references an IHandler
+        class which doesn't exist and will be created later in this tutorial.
+      </para>
+      <section xml:id="wrapper-handler.business-logic.wrapper.conf">
+        <title>Assigning the wrapper to the page</title>
+        <para>
+          Now that you have implemented the HTML page and the wrapper you have to connect the HTML form with
+          the wrapper. This is done using the <filename>app.xml</filename> servlet configuration. If a page
+          contains business logic that must be executed, you have to add a <literal>&lt;pagerequest/&gt;</literal>
+          tag to the servlet configuration.
+        </para>
+        <para>
+         Place an <literal>&lt;input/&gt;</literal> tag inside the <literal>&lt;pagerequest/&gt;</literal> tag which
+         will act as a container for all wrappers on this page.
+         Each wrapper is registered using an <literal>&lt;wrapper/&gt;</literal> tag which requires two parameters
+         to be set:
+        </para>
+        <orderedlist>
+          <listitem>
+            <para>
+              <literal>class</literal> specifies the classname of the wrapper.
+            </para>
+          </listitem>
+          <listitem>
+            <para>
+              <literal>prefix</literal> specifies the prefix of all request parameters that this wrapper should
+              pay attention to. If you take a look the the HTML page (<xref linkend="wrapper-handler.inputform"/>)
+              you will see, that all input fields are prefixed with <literal>user</literal> and a dot. This way,
+              you can have two wrappers that share parameter names, but will not conflict, as the parameters reside
+              in different namespaces. 
+            </para>
+          </listitem>
+        </orderedlist>
+        <para>
+          To add your new wrapper to the <literal>EnterData</literal> page, add these lines to the configuration:
+        </para>
+        <programlisting language="xml"><![CDATA[<?xml version="1.0" encoding="utf-8"?>
+  <context-xml-service-config>
+  
+  <!-- ... -->
+
+  <pagerequest name="EnterData">
+    <input>
+      <wrapper prefix="user" class="org.pustefixframework.tutorial.firstapp.wrapper.EnterUserDataWrapper" />
+    </input>
+  </pagerequest>
+
+</context-xml-service-config>]]></programlisting>
+        <para>
+          The next step will be implementing a handler processing the wrapped data.
+          But before you can go on and
+          implement the handler, there is a small task left. Up to now, you do not have a Java type that is able to
+          store the data for a user. This will be done in your next step.
+        </para>          
+      </section>
+    </section>
+    <section xml:id="wrapper-handler.business-logic.bean">
+      <title>Interlude: Implementing a bean</title>
+      <note>
+        <para>
+          This step has absolutely nothing to do with the Pustefix framework. However, as it is needed to 
+          understand the example, it still is part of the tutorial.
+        </para>
+      </note>
+      <para>
+        As you need to store the data submitted by the user, you will need a bean, that is able to store
+        all the information. The following class is a very simple implementation, in your applications 
+        you might already have these beans or use a framework, that is generating them for you.
+      </para>
+      <programlisting language="java"><![CDATA[package org.pustefixframework.tutorial.firstapp;
+
+public class User {
+    private String name;
+    private String email;
+    private String birthday;
+    private boolean admin;
+    private String homepage;
+    private String sex;
+
+    public String getName() {
+        return name;
+    }
+
+    public void setName(String name) {
+        this.name = name;
+    }
+
+    public String getEmail() {
+        return email;
+    }
+
+    public void setEmail(String email) {
+        this.email = email;
+    }
+
+    public String getBirthday() {
+        return birthday;
+    }
+
+    public void setBirthday(String birthday) {
+        this.birthday = birthday;
+    }
+
+    public boolean getAdmin() {
+        return admin;
+    }
+
+    public void setAdmin(boolean admin) {
+        this.admin = admin;
+    }
+
+    public String getHomepage() {
+        return homepage;
+    }
+
+    public void setHomepage(String homepage) {
+        this.homepage = homepage;
+    }
+
+    public String getSex() {
+        return sex;
+    }
+
+    public void setSex(String sex) {
+        this.sex = sex;
+    }
+}]]></programlisting>
+      <para>
+        This bean contains exactly the same properties as the wrapper you defined earlier. You will later use this class
+        to store the user information in the session.
+      </para>
+    </section>
+    <section xml:id="wrapper-handler.business-logic.handler">
+      <title>Implementing a handler</title>
+      <para>
+        A handler is responsible to execute the actual business logic of your application. A handler can be any class
+        but is has some requirements that have to be met:
+      </para>
+      <orderedlist>
+        <listitem>
+          <para>It has to implement the <literal>de.schlund.pfixcore.generator.IHandler</literal> interface.</para>
+        </listitem>
+        <listitem>
+          <para>As handlers are used as flyweights, they <emphasis>must not</emphasis> have any static non-final properties.</para>
+        </listitem>
+      </orderedlist>
+      <para>
+        If you use Eclipse to generate a new <literal>EnterUserDataHandler</literal> class that implements the
+        <literal>IHandler</literal> interface, you get the following code:
+      </para>
+      <programlisting language="java"><![CDATA[package org.pustefixframework.tutorial.firstapp.handler;
+
+import de.schlund.pfixcore.generator.IHandler;
+import de.schlund.pfixcore.generator.IWrapper;
+import de.schlund.pfixcore.workflow.Context;
+
+public class EnterUserDataHandler implements IHandler {
+
+    public void handleSubmittedData(Context context, IWrapper wrapper)
+            throws Exception {
+    }
+
+    public boolean isActive(Context context) throws Exception {
+        return false;
+    }
+
+    public boolean needsData(Context context) throws Exception {
+        return false;
+    }
+
+    public boolean prerequisitesMet(Context context) throws Exception {
+        return false;
+    }
+
+    public void retrieveCurrentStatus(Context context, IWrapper wrapper)
+            throws Exception {
+    }
+}]]></programlisting>
+      <para>
+        If you now (re-)start your application and open the page again, you still get an error, that the page is still not accessible. This is because of the
+        return values of the generated methods and how Pustefix processes a request.
+      </para>
+      <itemizedlist>
+        <listitem>
+          <para>
+            When a page is requested, Pustefix calls the <function>prerequisitesMet</function> method of all
+            handlers that are configured for this page. If any of these methods return <literal>false</literal>,
+            the page will not be displayed.
+          </para>
+        </listitem>
+        <listitem>
+          <para>
+            If all of these methods return <literal>true</literal>, Pustefix will call the <function>isActive</function> method
+            on all handlers of the page. If none of the methods return <literal>true</literal>, the page will not be displayed.
+          </para>
+        </listitem>
+      </itemizedlist>
+      <para>
+        When Eclipse generated the method bodies, both methods return <literal>false</literal> und thus the page
+        cannot be displayed.
+        Modify the return values of <function>prerequisitesMet</function> and <function>isActive</function> to
+        make the page accessible
+      </para>
+      <programlisting language="java"><![CDATA[package org.pustefixframework.tutorial.firstapp.handler;
+
+import de.schlund.pfixcore.generator.IHandler;
+import de.schlund.pfixcore.generator.IWrapper;
+import de.schlund.pfixcore.workflow.Context;
+
+public class EnterUserDataHandler implements IHandler {
+
+    public boolean isActive(Context context) throws Exception {
+        return true;
+    }
+
+    public boolean prerequisitesMet(Context context) throws Exception {
+        return true;
+    }
+
+}]]></programlisting>
+      <para>
+        If you now restart the application and open the page again, all form fields will be displayed. To test your form, fill out at least the mandatory fields:
+      </para>
+      <itemizedlist>
+        <listitem>
+          <para>gender</para>
+          <para>name</para>
+          <para>email</para>
+        </listitem>
+      </itemizedlist>
+      <para>
+        If you submit the data, the wrapper will validate your data and then display the page again. At this point,
+        the form elements will still contain the values that you entered. Pustefix saved their state automatically. 
+      </para>
+      <para>
+        If you click on the <literal>XML</literal> button in the upper right corner of the page, you will see the
+        XML document that contains the data of the rendered page:
+      </para>
+      <programlisting language="xml"><![CDATA[<formresult serial="1214247165246">
+      <formvalues>
+          <param name="user.email">schst@bar.de</param>
+          <param name="user.name">Stephan</param>
+          <param name="user.sex">m</param>
+      </formvalues>
+      <formerrors/>
+      <formhiddenvals/>
+      <wrapperstatus>
+          <wrapper active="true" name="org.pustefixframework.tutorial.firstapp.wrapper.EnterUserDataWrapper" prefix="user"/>
+      </wrapperstatus>
+  </formresult>]]></programlisting>
+      <para>
+        The <literal>&lt;formvalues/&gt;</literal> node contains a <literal>&lt;param/&gt;</literal> element for each
+        of the form fields that you submitted. Inside the <literal>&lt;wrapperstatus/&gt;</literal> node, you can see a list
+        of all wrappers that are registered for this page.
+      </para>
+      <para>
+        As the handler mostly consists of auto-generated code, it does not execute any business logic. If you want
+        to execute Java code after the page is submitted, you only need to place it in the <function>handleSubmittedData</function>
+        method
+      </para>
+      <programlisting language="java"><![CDATA[package org.pustefixframework.tutorial.firstapp.handler;
+
+import de.schlund.pfixcore.generator.IHandler;
+import de.schlund.pfixcore.generator.IWrapper;
+import de.schlund.pfixcore.workflow.Context;
+
+public class EnterUserDataHandler implements IHandler {
+
+    public void handleSubmittedData(Context context, IWrapper wrapper)
+            throws Exception {
+        System.out.println("Place business logic here");
+    }
+
+}]]></programlisting>
+      <para>
+        You will re-visit this class at a later point in the tutorial and add some real logic instead of
+        just debugging code.
+      </para>
+    </section>
+    <section xml:id="wrapper-handler.business-logic.contextresource">
+      <title>Implementing a ContextResource</title>
+      <para>
+        To be able to transport the user data from one page to the other, you have to store it in the session.
+      </para>
+      <para>
+        Pustefix does not allow you direct access to the applications HTTP session. Instead it provides you with
+        an easy way to use objects that live inside the session scope. Those objects are called <emphasis>context resources</emphasis>.
+        A context resource can be any class, it just has to meet the following requirements: 
+      </para>
+      <orderedlist>
+        <listitem>
+          <para>There has to be an interface and an implementation for the context resource.</para>
+        </listitem>
+        <listitem>
+          <para>The interface has to extend the <literal>ContextResource</literal> interface provided by Pustefix.</para>
+        </listitem>
+      </orderedlist>
+      <para>
+        A context resource, that is able to store a user inside the HTTP session only requires two methods: one to set the user
+        and one to retrieve it from the context resource.
+      </para>
+      <programlisting language="java"><![CDATA[package org.pustefixframework.tutorial.firstapp.contextresources;
+
+import org.pustefixframework.tutorial.firstapp.User;
+
+import de.schlund.pfixcore.workflow.ContextResource;
+
+public interface ContextUser extends ContextResource {
+    public void setUser(User user);
+    public User getUser();
+}]]></programlisting>
+      <para>
+        The implementation for this interface also is very easy:
+      </para>
+      <programlisting language="java"><![CDATA[package org.pustefixframework.tutorial.firstapp.contextresources;
+
+import org.pustefixframework.tutorial.firstapp.User;
+import org.w3c.dom.Element;
+
+import de.schlund.pfixcore.workflow.Context;
+import de.schlund.pfixxml.ResultDocument;
+
+public class ContextUserImpl implements ContextUser {
+
+    private User user;
+    
+    public User getUser() {
+        return user;
+    }
+
+    public void setUser(User user) {
+        this.user = user;
+    }
+
+    public void init(Context context) throws Exception {
+        // nothing to do here
+
+    }
+
+    public void insertStatus(ResultDocument document, Element element)
+            throws Exception {
+        // will be implemented later
+    }
+}]]></programlisting>
+      <para>
+        The <literal>ContextResource</literal> interface forces you to implement the following methods:
+      </para>
+      <itemizedlist>
+        <listitem>
+          <para><function>init</function> will be called when the context resource is created.</para>
+        </listitem>
+        <listitem>
+          <para><function>insertStatus</function> should insert its current state into the DOM tree.</para>
+        </listitem>
+      </itemizedlist>
+      <para>
+        If a context resource is only used as a container to store information in the session, it is not needed
+        to implement any of these methods.
+      </para>
+      <para>
+        To make this context resource available in your application, you have to register it in the servlet configuration
+        file <filename>app.xml</filename>: 
+      </para>
+      <programlisting language="xml"><![CDATA[<?xml version="1.0" encoding="utf-8"?>
+<context-xml-service-config xmlns="http://www.pustefix-framework.org/2008/namespace/context-xml-service-config" 
+      xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" 
+      version="1.0" xsi:schemaLocation="http://www.pustefix-framework.org/2008/namespace/context-xml-service-config 
+      ../../core/schema/context-xml-service-config.xsd">
+
+  <!-- Rest of configuration -->  
+
+  <context defaultpage="EnterData">
+    <resource class="org.pustefixframework.tutorial.firstapp.contextresources.ContextUserImpl">
+      <implements class="org.pustefixframework.tutorial.firstapp.contextresources.ContextUser"/>
+    </resource>
+  </context>
+
+  <!-- Rest of configuration -->  
+
+</context-xml-service-config>]]></programlisting>
+    </section>
+    <section xml:id="wrapper-handler.business-logic.contextresourcemanager">
+      <title>Accessing a ContextResource</title>
+      <para>
+        Now, that you have created a new context resource, you will learn, how you can access it from your application.
+        All context resources can be accessed via the <classname>ContextResourceManager</classname>, which provides a
+        <function>getResource</function> method.
+      </para>
+      <programlisting language="java"><![CDATA[ContextResourceManager manager = context.getContextResourceManager();
+ContextUser cUser = manager.getResource(ContextUser.class);]]></programlisting>
+      <para>
+        This method accepts the <classname>Class</classname> object of the interface. If the resource is accessed for the
+        first time, a new instance of the implementation specified in the servlet configuration, is created and returned.
+        On subsequent calls, the same instance is returned, so the resource is a singleton in the session scope.
+      </para>
+      <para>
+        You can now implement the business logic in the <function>handleSubmittedData</function> method, that creates
+        the <classname>User</classname> object and stores it in your context resource.
+      </para>
+      <para>
+        But first, you need to know, how you can extract the parameters from the request. Pustefix will pass two arguments
+        to the <function>handleSubmittedData</function> method: The <literal>Context</literal> and an instance of
+        <classname>IWrapper</classname>. This <classname>IWrapper</classname> actually is an instance of the generated
+        <classname>EnterUserDataWrapper</classname> class, that has been generated from your wrapper configuration. This
+        class provides getter-methods for all parameters that you specified in the wrapper. Use these methods to extract
+        the data from the request and create a new <classname>User</classname> instance based on the input data: 
+      </para>
+      <programlisting language="java"><![CDATA[package org.pustefixframework.tutorial.firstapp.handler;
+
+import org.pustefixframework.tutorial.firstapp.User;
+import org.pustefixframework.tutorial.firstapp.contextresources.ContextUser;
+import org.pustefixframework.tutorial.firstapp.wrapper.EnterUserDataWrapper;
+
+import de.schlund.pfixcore.generator.IHandler;
+import de.schlund.pfixcore.generator.IWrapper;
+import de.schlund.pfixcore.workflow.Context;
+import de.schlund.pfixcore.workflow.ContextResourceManager;
+
+public class EnterUserDataHandler implements IHandler {
+
+    public void handleSubmittedData(Context context, IWrapper wrapper)
+            throws Exception {
+        ContextResourceManager manager = context.getContextResourceManager();
+        ContextUser cUser = manager.getResource(ContextUser.class);
+        
+        EnterUserDataWrapper euWrapper = (EnterUserDataWrapper)wrapper;
+        User user = new User();
+        user.setSex(euWrapper.getSex());
+        user.setName(euWrapper.getName());
+        if (euWrapper.getEmail() != null) {
+            user.setEmail(euWrapper.getEmail());
+        }
+        if (euWrapper.getHomepage() != null) {
+            user.setHomepage(euWrapper.getHomepage());
+        }
+        if (euWrapper.getBirthdate() != null) {
+            user.setBirthday(euWrapper.getBirthdate());
+        }
+        user.setAdmin(euWrapper.getAdmin());
+        cUser.setUser(user);
+    }
+
+}]]></programlisting>
+    </section>
+  </section>
+  <section xml:id="wrapper-handler.pageflow">
+    <title>Implementing the workflow</title>
+    <para>
+      Now you have implemented the business logic, that creates your <classname>User</classname> object and stores it in the session,
+      but still, the <literal>EnterData</literal> page is displayed, after you submitted the page. The desired behaviour is to display
+      the <literal>ReviewData</literal> after the business logic has successfully been executed.
+    </para>
+    <para>
+      To achieve this, you have to create a new workflow and specify the steps in this workflow. This is done via the <literal>&lt;pageflow/&gt;</literal> tag
+      in the servlet configuration file:
+    </para>
+    <programlisting language="xml"><![CDATA[<?xml version="1.0" encoding="utf-8"?>
+<context-xml-service-config xmlns="http://www.pustefix-framework.org/2008/namespace/context-xml-service-config" 
+      xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" 
+      version="1.0" xsi:schemaLocation="http://www.pustefix-framework.org/2008/namespace/context-xml-service-config 
+      ../../core/schema/context-xml-service-config.xsd">
+
+  <!-- Rest of configuration -->  
+
+  <pageflow name="RegisterUser" final="Confirm">
+    <flowstep name="EnterData"/>
+    <flowstep name="ReviewData" stophere="true"/>
+  </pageflow>
+
+  <!-- Rest of configuration -->  
+
+</context-xml-service-config>]]></programlisting>
+    <para>
+      The workflow starts with the <literal>EnterData</literal> page, which is followed by the <literal>ReviewData</literal> page. After the page flow
+      is finished, the final page <literal>Confirm</literal> will be displayed. Open the <literal>EnterData</literal> page again, after you made the changes,
+      fill out the mandatory fields and submit them: the page flow will lead you to the <literal>ReviewData</literal> page, as you specified in the configuration.
+    </para>
+  </section>
+  <section xml:id="wrapper-handler.errors">
+    <title>Displaying errors</title>
+    <para>
+      Up to now, you expected, that the users of your application do not make any mistakes. We all know, that this is not the case for
+      real-life users. To test, how the application reacts, if you do not fill out all required fields, open the <literal>EnterData</literal>
+      page again, leave the <literal>name</literal> field empty and submit the page.
+    </para>
+    <para>
+      As you can see, Pustefix is clever enough not to continue the page flow. If you would debug the application, you would see, that Pustefix
+      even does not execute the <function>handleSubmittedData</function> method of your handler. This is because the generated wrapper class does
+      some basic validation on the input data. As you specified the <literal>name</literal> parameter as <literal>mandatory</literal>, the data
+      is not valid and the wrapper is not passed to the handler.
+    </para>
+    <para>
+      But how is the user supposed to know, why the page flow is not processed, there is no error message. But this is not completely true. Pustefix
+      sends you an error message, but your page does not display it. If you open the DOM-tree view again, you will see a difference in the XML document
+      that is used for the page rendering: 
+    </para>
+    <programlisting language="xml"><![CDATA[<formresult serial="1214248690859">
+      <formvalues>
+          <param name="user.email">schst@bar.de</param>
+          <param name="user.sex">m</param>
+      </formvalues>
+      <formerrors>
+          <error name="user.name">
+              <pfx:include href="core-override/dyntxt/statusmessages-core-merged.xml" part="MISSING_PARAM"/>
+          </error>
+      </formerrors>
+      <formhiddenvals/>
+      <wrapperstatus>
+          <wrapper active="true" name="org.pustefixframework.tutorial.firstapp.wrapper.EnterUserDataWrapper" prefix="user"/>
+      </wrapperstatus>
+      <pageflow name="RegisterUser">
+          <step current="true" name="EnterData"/>
+          <step name="ReviewData"/>
+      </pageflow>
+  </formresult>]]></programlisting>
+    <para>
+      Inside the <literal>&lt;formerrors/&gt;</literal> node, there is an <literal>&lt;error/&gt;</literal> element which signals an
+      error for the field <literal>user.name</literal>. The content of the error is an include to the part <literal>MISSING_PARAM</literal>
+      in the file <filename>core-override/dyntxt/statusmessages-core-merged.xml</filename>. This file contains all error messages
+      provided by the core. If you open the file and search for this part, you will find something ike this XML:
+    </para>
+    <programlisting language="xml"><![CDATA[<part name="MISSING_PARAM">
+  <theme name="default">This parameter is mandatory.</theme>
+</part>]]></programlisting>
+    <para>
+      As you can see, Pustefix informs you, that an error happened, and even provides you with a human readable message for the error. All
+      that is left for you to do, is display it to the user. This can be done using the <literal>&lt;pfx:checkfield/&gt;</literal>, <literal>&lt;pfx:error/&gt;</literal>
+      and <literal>&lt;pfx:scode/&gt;</literal> tags provided by Pustefix.
+    </para>
+    <para>
+      To add the error message, open the page content file <filename>txt/pages/main_EnterData.xml</filename>. The <literal>&lt;pfx:checkfield/&gt;</literal> tag
+      is used to check, whether an error happened for a specific field or not. Inside this tag, you can place a <literal>&lt;pfx:error/&gt;</literal> tag. The
+      content of this tag will only be displayed, if an error occurred for this field. The <literal>&lt;pfx:scode/&gt;</literal> tag is an easy way
+      to fetch the error message from the <filename>core-override/dyntxt/statusmessages-core-merged.xml</filename> file.
+    </para>
+    <programlisting language="xml"><![CDATA[<?xml version="1.0" encoding="utf-8"?>
+<include_parts xmlns:ixsl="http://www.w3.org/1999/XSL/Transform" xmlns:pfx="http://www.schlund.de/pustefix/core">
+  <part name="content">
+    <theme name="default">
+      <h1>Register new user</h1>
+      <pfx:forminput>
+        <table>
+          <!-- Other form fields -->
+          <tr>
+            <td>Name:</td>
+            <td>
+              <pfx:xinp type="text" name="user.name"/>
+              <pfx:checkfield name="user.name">
+                <pfx:error><div style="color:#ff0000;"><pfx:scode/></div></pfx:error>
+              </pfx:checkfield>
+            </td>
+          </tr>
+          <!-- Other form fields -->
+        </table>
+        <pfx:xinp type="submit" value="register"/>
+      </pfx:forminput>
+    </theme>
+  </part>
+ </include_parts>]]></programlisting>
+    <para>
+      If you now try to submit the page again without entering your name, Pustefix will display the correct error message.
+      Of course, you have to repeat this step for all other input fields on your page.
+    </para>
+  </section>
+  <section xml:id="wrapper-handler.domtree">
+    <title>Displaying the entered data</title>
+    <para>
+      Now that your application is displaying errors correctly, you should go back to implement the main requirements. The next feature
+      that you will be implementing is the review page, where the user will be able to review has data. To achieve this, you will have
+      to write the user data to the DOM tree, that is used to render the page. This can be done by implementing the <function>insertStatus</function>
+      method of the <classname>ContextUserImpl</classname> class.
+    </para>
+    <para>
+      This method receives the document and the element where it should append the user data. The <classname>ResultDocument</classname> class
+      provides some wrapper methods, which make it easier to add data to the XML: 
+    </para>
+    <programlisting language="java"><![CDATA[package org.pustefixframework.tutorial.firstapp.contextresources;
+
+import org.pustefixframework.tutorial.firstapp.User;
+import org.w3c.dom.Element;
+
+import de.schlund.pfixcore.workflow.Context;
+import de.schlund.pfixxml.ResultDocument;
+
+public class ContextUserImpl implements ContextUser {
+
+    public void insertStatus(ResultDocument document, Element element)
+            throws Exception {
+        if (this.user == null) {
+            return;
+        }
+        ResultDocument.addTextChild(element, "sex", this.user.getSex());
+        ResultDocument.addTextChild(element, "name", this.user.getName());
+        ResultDocument.addTextChild(element, "email", this.user.getEmail());
+        ResultDocument.addTextChild(element, "homepage", this.user.getHomepage());
+        ResultDocument.addTextChild(element, "birthday", this.user.getBirthday());
+        ResultDocument.addTextChild(element, "admin", String.valueOf(this.user.getAdmin()));
+    }
+}]]></programlisting>
+    <para>
+      Now that the context resource is able to render its state to the XML document, you have to tell Pustefix, on which pages, the context
+      resource should be rendered. Again, this is done in the servlet configuration file <filename>app.xml</filename>. This time, you will
+      have to add an <literal>&lt;output/&gt;</literal> tag to the page and nest <literal>&lt;resource/&gt;</literal> tags for each
+      context resource, that should be rendered on this page.
+    </para>
+    <programlisting language="xml"><![CDATA[<?xml version="1.0" encoding="utf-8"?>
+<context-xml-service-config xmlns="http://www.pustefix-framework.org/2008/namespace/context-xml-service-config" 
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" version="1.0" 
+       xsi:schemaLocation="http://www.pustefix-framework.org/2008/namespace/context-xml-service-config 
+       ../../core/schema/context-xml-service-config.xsd">
+
+  <!-- other configuration options -->
+  
+  <pagerequest name="ReviewData">
+    <output>
+      <resource node="user" class="org.pustefixframework.tutorial.firstapp.contextresources.ContextUser"/>
+    </output>
+  </pagerequest>
+
+</context-xml-service-config>]]></programlisting>
+    <para>
+      The <literal>class</literal> attribute references the interface implemented by the context resource and the <literal>node</literal>
+      attribute defines the name of the element in which it will be rendered.
+    </para>
+    <para>
+      Open the XML view for the page, after you made the changes and reloaded the page and you will see, that the user data has been inserted
+      into the XML:
+    </para>
+    <programlisting language="xml"><![CDATA[<formresult serial="1214249956789">
+      <formvalues/>
+      <formerrors/>
+      <formhiddenvals/>
+      <user>
+          <sex>m</sex>
+          <name>Stephan</name>
+          <email>schst@bar.de</email>
+          <homepage>http://pustefix-framework.org</homepage>
+          <birthday>null</birthday>
+          <admin>false</admin>
+      </user>
+      <pageflow name="RegisterUser">
+          <step name="EnterData"/>
+          <step current="true" name="ReviewData"/>
+      </pageflow>
+  </formresult>]]></programlisting>
+    <para>
+      Pustefix allows you to use XSL and XPath in your page definitions to insert this information in the rendered page. Use the <literal>ixsl</literal>
+      namespace to access nodes from the DOM tree:
+    </para>
+    <programlisting language="xml"><![CDATA[<?xml version="1.0" encoding="utf-8"?>
+<include_parts xmlns:ixsl="http://www.w3.org/1999/XSL/Transform" xmlns:pfx="http://www.schlund.de/pustefix/core">
+  <part name="content">
+    <theme name="default">
+      <h1>Review your data</h1>
+      <table>
+        <tr>
+          <td>Gender:</td>
+          <td>
+            <ixsl:choose>
+              <ixsl:when test="/formresult/user/gender/text() = 'f'">female</ixsl:when>
+              <ixsl:otherwise>male</ixsl:otherwise>
+            </ixsl:choose>
+          </td>
+        </tr>
+        <tr>
+          <td>Name:</td>
+          <td><ixsl:value-of select="/formresult/user/name/text()"/></td>
+        </tr>
+        <tr>
+          <td>Email:</td>
+          <td><ixsl:value-of select="/formresult/user/email/text()"/></td>
+        </tr>
+        <tr>
+          <td>Homepage:</td>
+          <td><ixsl:value-of select="/formresult/user/homepage/text()"/></td>
+        </tr>
+        <tr>
+          <td>Birthdate:</td>
+          <td><ixsl:value-of select="/formresult/user/birthdate/text()"/></td>
+        </tr>
+        <tr>
+          <td>Administrator:</td>
+          <td><ixsl:value-of select="/formresult/user/admin/text()"/></td>
+        </tr>
+      </table>      
+    </theme>
+  </part>
+ </include_parts>]]></programlisting>
+   <para>
+     If you now open the page again, enter your data and submit the form, Pustefix will display a new page, which contains
+     the information you entered.
+   </para>
+  </section>
+  <section xml:id="wrapper-handler.save">
+    <title>Saving the data</title>
+    <para>
+      Your application now handles the input of user data and displays it again to the user. To complete the last requirement, your application
+      will have to provide another button on the <literal>ReviewData</literal> page, which lets the user confirm the data and then executes
+      the business logic to store the data in your persistence layer. 
+    </para>
+    <para>
+      To achieve this, you will have to implement a new pair of wrapper and handler. As the <literal>ReviewData</literal> page does not
+      contain any input fields, the new wrapper does not need any parameters:
+    </para>
+    <programlisting language="xml"><![CDATA[<interface xmlns="http://www.pustefix-framework.org/2008/namespace/iwrapper"
+      xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+      xsi:schemaLocation="http://www.pustefix-framework.org/2008/namespace/iwrapper 
+                          http://www.pustefix-framework.org/2008/namespace/iwrapper.xsd">
+  
+  <!-- This handler will process the data -->
+  <ihandler class="org.pustefixframework.tutorial.firstapp.handler.SaveUserDataHandler"/>
+</interface>]]></programlisting>
+    <para>
+      After you implemented the wrapper, continue by creating a new <classname>SaveUserData</classname> class, which implements the
+      <classname>IHandler</classname> interface. Make sure that the handler is active by returning <literal>true</literal> from the
+      <function>prerequisitesMet</function> and <function>isActive</function> methods. Place the business logic that saves the new user
+      in the <function>handleSubmittedData</function> method. In this example, the business logic has been replaced by a simple
+      <function>System.out.println</function> call.
+    </para>
+    <programlisting language="java"><![CDATA[package org.pustefixframework.tutorial.firstapp.handler;
+
+import org.pustefixframework.tutorial.firstapp.contextresources.ContextUser;
+
+import de.schlund.pfixcore.generator.IHandler;
+import de.schlund.pfixcore.generator.IWrapper;
+import de.schlund.pfixcore.workflow.Context;
+import de.schlund.pfixcore.workflow.ContextResourceManager;
+
+public class SaveUserDataHandler implements IHandler {
+
+    public void handleSubmittedData(Context context, IWrapper wrapper)
+            throws Exception {
+        System.out.println("Business logic to save data");
+    }
+
+    public boolean isActive(Context context) throws Exception {
+        return true;
+    }
+
+    public boolean needsData(Context context) throws Exception {
+        return false;
+    }
+
+    public boolean prerequisitesMet(Context context) throws Exception {
+        return true;
+    }
+
+    public void retrieveCurrentStatus(Context context, IWrapper arg1)
+            throws Exception {
+        // Nothing to be done here
+    }
+}]]></programlisting>
+    <para>
+      As the handler should be triggered from the <literal>ReviewData</literal> page, you have to add the handler to the
+      <literal>&lt;pagerequest/&gt;</literal> tag in the servlet configuration:
+    </para>
+    <programlisting language="xml"><![CDATA[<?xml version="1.0" encoding="utf-8"?>
+<context-xml-service-config xmlns="http://www.pustefix-framework.org/2008/namespace/context-xml-service-config" 
+      xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" version="1.0" 
+      xsi:schemaLocation="http://www.pustefix-framework.org/2008/namespace/context-xml-service-config 
+      ../../core/schema/context-xml-service-config.xsd">
+  
+  <pagerequest name="ReviewData">
+    <input>
+      <wrapper prefix="user" class="org.pustefixframework.tutorial.firstapp.wrapper.SaveUserDataWrapper" />
+    </input>
+    <output>
+      <resource node="user" class="org.pustefixframework.tutorial.firstapp.contextresources.ContextUser"/>
+    </output>
+  </pagerequest>
+
+</context-xml-service-config>]]></programlisting>
+    <para>
+      All that is left your you now, is to add a possibility to submit the <literal>ReviewData</literal> page. But as there is no
+      input form needed, you will learn a new way, how data can be submitted using Pustefix. The <literal>&lt;pfx:button/&gt;</literal>
+      tag is used, to create links between different Pustefix pages. But it can also be used to link to the same page again and
+      pass any arguments using the <literal>&lt;pfx:argument/&gt;</literal>. If you use the <literal>&lt;pfx:argument/&gt;</literal>
+      tag, Pustefix will treat the request as if the page had been submitted and call the <function>handleSubmittedData</function> method
+      on all handlers on the page.
+    </para>
+    <para>
+      As your handler does not accept any parameters, you can pass any argument as you like, for example setting the argument
+      <literal>user.save</literal> to <literal>true</literal>.
+    </para>
+    <programlisting language="xml"><![CDATA[<?xml version="1.0" encoding="utf-8"?>
+<include_parts xmlns:ixsl="http://www.w3.org/1999/XSL/Transform" xmlns:pfx="http://www.schlund.de/pustefix/core">
+  <part name="content">
+    <theme name="default">
+      <h1>Review your data</h1>
+      <!-- Display user data -->
+      <pfx:button>
+        <pfx:argument name="user.save">true</pfx:argument>
+        Go ahead and save the data
+      </pfx:button>
+    </theme>
+  </part>
+ </include_parts>]]></programlisting>
+    <para>
+      If you click on this link, the page will be submitted and if you placed the business logic inside the handler, it will
+      be executed.
+    </para>
+    <para>
+      Open the <filename>txt/pages/main_Confirm.xml</filename> file and add some HTML, that will be displayed after the Pustefix
+      workflow will continue to the last page.
+    </para>
+    <programlisting language="xml"><![CDATA[<?xml version="1.0" encoding="utf-8"?>
+<include_parts xmlns:ixsl="http://www.w3.org/1999/XSL/Transform" xmlns:pfx="http://www.schlund.de/pustefix/core">
+  <part name="content">
+    <theme name="default">
+      <h1>Congratulations</h1>
+      <p>Your data has been saved</p>
+    </theme>
+  </part>
+ </include_parts>]]></programlisting>
+    <para>
+      Now you have implemented all specified requirements and finished your first Pustefix application.
+    </para>
+    <para>
+      In the last part of the tutorial you will polish some of the rough edges of your applications, which you did not deal with
+      while implementing the application.
+    </para>
+  </section>
+  <section xml:id="wrapper-handler.tweaks">
+    <title>The finishing touch</title>
+    <para>
+      Although your application is already working, there are some minor problems that you should deal with.
+    </para>
+    <section xml:id="wrapper-handler.tweaks.retrieve">
+      <title>Changing data</title>
+      <para>
+        In a typical application, the review page does not only display the entered data, but offer you a link to go back and modify
+        the data you entered before. Your application currently lacks this feature, but you will now learn how this is implemented in
+        Pustefix.
+      </para>
+      <para>
+        At first, you have to add a new link to the <filename>main_ReviewData.xml</filename> page, which sends the user back to the
+        <literal>EnterData</literal> page. This can be done using the <literal>&lt;pfx:button/&gt;</literal> tag: 
+      </para>
+      <programlisting language="xml"><![CDATA[<pfx:button page="EnterData">Go back and edit data</pfx:button>]]></programlisting>
+      <para>
+        If you click on this link, the <literal>EnterData</literal> page will be loaded and the form will be displayed again.
+        But the application does not behave exactly as you would like it to, as the form fields are empty and not filled with
+        the data that the user entered before. This can be easily changed.
+      </para>
+      <para>
+        Every time a page is rendered, Pustefix will call the <function>retrieveCurrentStatus</function> method of all handlers that
+        are registered for the page and pass in the <literal>context</literal> and the matching wrapper for the handler. In this method
+        you may use the generated setter methods of the wrapper class to assign values to the form fields.
+      </para>
+      <para>
+        To prefill the form fields with the values the user entered before, you need to fetch the <classname>User</classname> instance
+        from the context resource, extract the properties and assign them to the form elements. This is almost the opposite of what you
+        implemented in the <function>handleSubmittedData</function> method:
+      </para>
+      <itemizedlist>
+        <listitem><para>Fetch the <classname>ContextUser</classname> context resource using the <classname>ContextResourceManager</classname>.</para></listitem>
+        <listitem><para>Fetch the <classname>User</classname> instance from the context resource.</para></listitem>
+        <listitem><para>If the user equals <literal>null</literal> the page is accessed for the first time, no user data has been entered, and there is nothing left to do. You can leave the method using the <literal>return</literal> statement.</para></listitem>
+        <listitem><para>Cast the generic wrapper parameter to the concrete <classname>EnterUserDataWrapper</classname> implementation.</para></listitem>
+        <listitem><para>Get the properties from the <classname>User</classname> instance and set them to the corresponding properties in the wrapper.</para></listitem>
+      </itemizedlist>
+      <programlisting language="java"><![CDATA[package org.pustefixframework.tutorial.firstapp.handler;
+
+import org.pustefixframework.tutorial.firstapp.User;
+import org.pustefixframework.tutorial.firstapp.contextresources.ContextUser;
+import org.pustefixframework.tutorial.firstapp.wrapper.EnterUserDataWrapper;
+
+import de.schlund.pfixcore.generator.IHandler;
+import de.schlund.pfixcore.generator.IWrapper;
+import de.schlund.pfixcore.workflow.Context;
+import de.schlund.pfixcore.workflow.ContextResourceManager;
+
+public class EnterUserDataHandler implements IHandler {
+
+    public void retrieveCurrentStatus(Context context, IWrapper wrapper)
+            throws Exception {
+        ContextResourceManager manager = context.getContextResourceManager();
+        ContextUser cUser = manager.getResource(ContextUser.class);
+        User user = cUser.getUser();
+        if (user == null) {
+            return;
+        }
+        EnterUserDataWrapper euWrapper = (EnterUserDataWrapper)wrapper;
+
+        euWrapper.setSex(user.getSex());
+        euWrapper.setName(user.getName());
+        euWrapper.setEmail(user.getEmail());
+        euWrapper.setHomepage(user.getHomepage());
+        euWrapper.setBirthdate(user.getBirthday());
+        euWrapper.setAdmin(user.getAdmin());
+    }
+}]]></programlisting>
+      <para>
+        If you restart the application, enter some data and then go back to the form, you can see, that the form fields contain the
+        values that you wanted them to contain and that you entered before.
+      </para>
+    </section>
+    <section xml:id="wrapper-handler.tweaks.needsdata">
+      <title>Avoiding unwanted access</title>
+      <para>
+        Another problem ist, that your pages are not protected against unwanted access. If you open the URL
+        <uri>http://first-app.HOSTNAME.DOMAIN/xml/app/ReviewData</uri>, Pustefix will display this page,
+        although there is not data to review.
+      </para>
+      <para>
+        It is the responsibility of the application developer to make sure, that the page can only be
+        displayed, if it makes sense in the application context. However, Pustefix provides an easy
+        way to disable the availability of a page. The method <function>prerequisitesMet</function> will be called on
+        every handler, every time a page should be displayed. If this method returns <literal>false</literal>, the page
+        will not be displayed.
+      </para>
+      <para>
+        To protect the <literal>ReviewData</literal> page, you have to modify the <function>prerequisitesMet</function> method
+        of the <classname>SaveUserDataHandler</classname> handler. As the page should only be accessible, if a user has
+        been entered, you only need to fetch the <classname>ContextUser</classname> context resource and check, whether it contains
+        user data. If no user has been set, the method must return <literal>false</literal>, otherwise it must return <literal>true</literal>.
+      </para>
+      <programlisting language="java"><![CDATA[package org.pustefixframework.tutorial.firstapp.handler;
+
+import org.pustefixframework.tutorial.firstapp.contextresources.ContextUser;
+
+import de.schlund.pfixcore.generator.IHandler;
+import de.schlund.pfixcore.generator.IWrapper;
+import de.schlund.pfixcore.workflow.Context;
+import de.schlund.pfixcore.workflow.ContextResourceManager;
+
+public class SaveUserDataHandler implements IHandler {
+
+    public boolean prerequisitesMet(Context context) throws Exception {
+        ContextResourceManager manager = context.getContextResourceManager();
+        ContextUser cUser = manager.getResource(ContextUser.class);
+        if (cUser.getUser() != null) {
+            return true;
+        }
+        return false;
+    }
+}]]></programlisting>
+      <para>
+        If you now open the <uri>http://first-app.HOSTNAME.DOMAIN/xml/app/ReviewData</uri>, the page cannot be displayed.
+        Now the workflow mechanism kicks in and selects the next page, that should be displayed. This is the <literal>Confirm</literal>
+        page, which has been defined as the final page of the workflow.
+      </para>
+      <para>
+        It would have been better, if the <literal>EnterData</literal> page would have been displayed instead of the <literal>Confirm</literal>,
+        page, as the user must enter data before any other page can be displayed. This can easily be achieved using Pustefix.
+      </para>
+      <para>
+        Each handler has a <function>needsData</function> method, which will be called, when the workflow mechanism selects the next
+        page to display. The workflow will start with the first page in the current workflow and if the <function>needsData</function>
+        method returns <literal>true</literal>, it will stop at this page until the handler is satisfied.
+      </para>
+      <para>
+        To make sure, that the user will stay on this page, you only need to implement the <function>needsData</function> method of the
+        <classname>EnterUserDataHandler</classname> handler: the method must return <literal>true</literal>, unless the context
+        resource has a <classname>User</classname> instance.
+      </para>
+      <programlisting language="java"><![CDATA[package org.pustefixframework.tutorial.firstapp.handler;
+
+import org.pustefixframework.tutorial.firstapp.User;
+import org.pustefixframework.tutorial.firstapp.contextresources.ContextUser;
+import org.pustefixframework.tutorial.firstapp.wrapper.EnterUserDataWrapper;
+
+import de.schlund.pfixcore.generator.IHandler;
+import de.schlund.pfixcore.generator.IWrapper;
+import de.schlund.pfixcore.workflow.Context;
+import de.schlund.pfixcore.workflow.ContextResourceManager;
+
+public class EnterUserDataHandler implements IHandler {
+
+    public boolean needsData(Context context) throws Exception {
+        ContextResourceManager manager = context.getContextResourceManager();
+        ContextUser cUser = manager.getResource(ContextUser.class);
+        if (cUser.getUser() == null) {
+            return true;
+        }
+        return false;
+    }
+}
+]]></programlisting>
+      <para>
+        if you now try to access the <literal>ReviewData</literal> page directly, Pustefix will redirect you to the 
+        <literal>EnterData</literal> page instead until you entered the data of a new user.
+      </para>
+    </section>
+  </section>
+  <section xml:id="wrapper-handler.conclusion">
+    <title>Conclusion</title>
+    <para>
+      In this tutorial you learned the basics about the core features of Pustefix and developed a very simple, but typical, web
+      application. For details about the features that you got to know in this tutorial, take a look at the comprehensive reference
+      documentation, which describes all the configuration options, XML tags and interfaces in detail.
+    </para>
+    <para>
+      Of course, Pustefix provides features to automate these tasks, there is no need to re-implement everything from
+      scratch for your applications.
+      See <xref linkend="user-manager"/> to learn how Pustefix will automatically generate wrapper definitions from your
+      existing beans, how to add custom validations and how you can avoid working with DOM and adding any object structure to
+      the generated XML tree automatically.
+    </para>
+  </section>
+</chapter>

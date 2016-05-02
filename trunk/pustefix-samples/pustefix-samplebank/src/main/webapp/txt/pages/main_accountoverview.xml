@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="UTF-8"?><include_parts xmlns:ixsl="http://www.w3.org/1999/XSL/Transform" xmlns:pfx="http://www.schlund.de/pustefix/core">
+  
+  <part name="content">
+    <theme name="default">
+      <h1>Account overview:</h1>
+      <table cellpadding="5px">
+        <tr>
+          <th>Account no.</th>
+          <th>Opening date</th>
+          <th>Debit</th>
+          <th>Currency</th>
+          <th></th>
+        </tr>
+        <ixsl:for-each select="/formresult/accounts/account">
+          <tr>
+            <td><ixsl:value-of select="@accountNo"/></td>
+            <td><ixsl:value-of select="@openingDate"/></td>
+            <td align="right"><ixsl:value-of select="@debit"/></td>
+            <td><ixsl:value-of select="@currency"/></td>
+            <td>
+              <pfx:button>
+                <pfx:argument name="select.AccountNo"><ixsl:value-of select="@accountNo"/></pfx:argument>
+                  Details
+                </pfx:button>
+            </td>
+          </tr>
+        </ixsl:for-each>
+      </table>
+    </theme>
+  </part>
+  
+</include_parts>

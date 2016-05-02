@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<pfx:document xmlns:pfx="http://www.schlund.de/pustefix/core"
+              xmlns:ixsl="http://www.w3.org/1999/XSL/Transform">
+  <response>
+    <ixsl:choose>
+      <ixsl:when test="/formresult/wserror">
+        ERROR: <ixsl:value-of select="/formresult/wserror/@description"/>
+      </ixsl:when>
+      <ixsl:otherwise>
+        <ixsl:apply-templates select="/formresult/wsresponse/node()"/>
+      </ixsl:otherwise>
+    </ixsl:choose>
+  </response>
+</pfx:document>

@@ -1,0 +1,121 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<xs:schema
+  targetNamespace="http://www.pustefix-framework.org/2008/namespace/scriptedflow"
+  xmlns:xs="http://www.w3.org/2001/XMLSchema"
+  xmlns:sf="http://www.pustefix-framework.org/2008/namespace/scriptedflow"
+  elementFormDefault="qualified">
+  
+  <xs:element name="scriptedflow" type="sf:scriptedflowType">
+  </xs:element>
+  
+  <xs:complexType name="scriptedflowType">
+    <xs:complexContent>
+      <xs:extension base="sf:commandContainerType">
+        <xs:attribute name="version" use="optional" default="1.0">
+          <xs:simpleType>
+            <xs:restriction base="xs:string">
+              <xs:enumeration value="1.0"></xs:enumeration>
+           </xs:restriction>
+          </xs:simpleType>
+        </xs:attribute>
+        <xs:attribute name="name"></xs:attribute>
+      </xs:extension>
+    </xs:complexContent>
+  </xs:complexType>
+  
+  <xs:complexType name="commandContainerType">
+    <xs:choice minOccurs="0" maxOccurs="unbounded">
+      <xs:element name="interactive-request" type="sf:interactiveRequestType"></xs:element>
+      <xs:element name="virtual-request" type="sf:virtualRequestType"></xs:element>
+      <xs:element name="set-variable" type="sf:setVariableType"></xs:element>
+      <xs:element name="if" type="sf:ifType"></xs:element>
+      <xs:element name="choose" type="sf:chooseType"></xs:element>
+      <xs:element name="while" type="sf:whileType"></xs:element>
+      <xs:element name="break" type="sf:breakType"></xs:element>
+      <xs:element name="exit" type="sf:exitType"></xs:element>
+    </xs:choice>
+  </xs:complexType>
+  
+  <xs:complexType name="paramType" mixed="true">
+    <xs:choice minOccurs="0" maxOccurs="unbounded">
+      <xs:element name="value-of" type="sf:valueOfType"></xs:element>
+    </xs:choice>
+    <xs:attribute name="name" use="optional"></xs:attribute>
+  </xs:complexType>
+  
+  <xs:complexType name="valueOfType">
+    <xs:attribute name="select" use="required"></xs:attribute>
+  </xs:complexType>
+  
+  <xs:complexType name="interactiveRequestType">
+    <xs:choice minOccurs="0" maxOccurs="unbounded">
+      <xs:element name="param" type="sf:paramType"></xs:element>
+    </xs:choice>
+  </xs:complexType>
+  
+  <xs:complexType name="virtualRequestType">
+    <xs:choice minOccurs="0" maxOccurs="unbounded">
+      <xs:element name="param" type="sf:paramType"></xs:element>
+    </xs:choice>
+    <xs:attribute name="page"></xs:attribute>
+    <xs:attribute name="dointeractive" default="false">
+      <xs:simpleType>
+        <xs:restriction base="xs:string">
+          <xs:enumeration value="false"></xs:enumeration>
+          <xs:enumeration value="true"></xs:enumeration>
+          <xs:enumeration value="reuse"></xs:enumeration>
+        </xs:restriction>
+      </xs:simpleType>
+    </xs:attribute>
+  </xs:complexType>
+  
+  <xs:complexType name="setVariableType" mixed="true">
+    <xs:choice minOccurs="0" maxOccurs="unbounded">
+      <xs:element name="value-of" type="sf:valueOfType"></xs:element>
+    </xs:choice>
+    <xs:attribute name="name" use="optional">
+      <xs:simpleType>
+        <xs:restriction base="xs:NCName">
+          <xs:pattern value="(_[^_].*|[^_].*)"></xs:pattern>
+        </xs:restriction>
+      </xs:simpleType>
+    </xs:attribute>
+  </xs:complexType>
+  
+  <xs:complexType name="ifType">
+    <xs:complexContent>
+      <xs:extension base="sf:commandContainerType">
+        <xs:attribute name="test" use="required"></xs:attribute>
+      </xs:extension>
+    </xs:complexContent>
+  </xs:complexType>
+  
+  <xs:complexType name="chooseType">
+    <xs:sequence>
+      <xs:element name="when" maxOccurs="unbounded">
+        <xs:complexType>
+          <xs:complexContent>
+            <xs:extension base="sf:commandContainerType">
+              <xs:attribute name="test" use="required"></xs:attribute>
+            </xs:extension>
+          </xs:complexContent>
+        </xs:complexType>
+      </xs:element>
+      <xs:element name="otherwise" minOccurs="0" type="sf:commandContainerType">
+      </xs:element>
+    </xs:sequence>
+  </xs:complexType>
+  
+  <xs:complexType name="whileType">
+    <xs:complexContent>
+      <xs:extension base="sf:commandContainerType">
+        <xs:attribute name="test" use="required"></xs:attribute>
+      </xs:extension>
+    </xs:complexContent>
+  </xs:complexType>
+  
+  <xs:complexType name="breakType"></xs:complexType>
+  
+  <xs:complexType name="exitType"></xs:complexType>
+  
+</xs:schema>

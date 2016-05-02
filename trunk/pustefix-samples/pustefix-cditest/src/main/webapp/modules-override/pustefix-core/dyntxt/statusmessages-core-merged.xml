@@ -1,0 +1,79 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<include_parts xmlns:ixsl="http://www.w3.org/1999/XSL/Transform" xmlns:pfx="http://www.schlund.de/pustefix/core"><!--
+This file contains merged statusmessages from 'dyntxt/statusmessages-core.xml'.
+You can modify this file to change the messages for exisiting statuscodes.
+Adding new statuscodes has to be done within the originating module.
+-->
+  <part name="GEN_ERROR">
+    <theme name="default">An error happened.</theme>
+  </part>
+  <part name="MISSING_PARAM">
+    <theme name="default">This parameter is mandatory.</theme>
+  </part>
+  <part name="caster.ERR_TO_BOOLEAN">
+    <theme name="default">The entered value is no valid boolean expression.</theme>
+  </part>
+  <part name="caster.ERR_TO_DATE">
+    <theme name="default">The entered value is no valid date.</theme>
+  </part>
+  <part name="caster.ERR_TO_FILE">
+    <theme name="default">The entered value is not a valid file.</theme>
+  </part>
+  <part name="caster.ERR_TO_UPLOADFILE">
+    <theme name="default">The entered value is not a valid file.</theme>
+  </part>
+  <part name="caster.ERR_TO_FLOAT">
+    <theme name="default">The entered value is no valid float number.</theme>
+  </part>
+  <part name="caster.ERR_TO_DOUBLE">
+    <theme name="default">The entered value is no valid double float number.</theme>
+  </part>
+  <part name="caster.ERR_TO_INTEGER">
+    <theme name="default">The entered value is no valid integer number.</theme>
+  </part>
+  <part name="caster.ERR_TO_LONG">
+    <theme name="default">The entered value is no valid long integer number.</theme>
+  </part>
+  <part name="caster.ERR_TO_BYTE">
+    <theme name="default">The entered value is no valid byte number.</theme>
+  </part>
+  <part name="caster.ERR_TO_P5PATTERN">
+    <theme name="default">The entered value is not a valid Perl5 Regexp.</theme>
+  </part>
+  <part name="postcheck.FLOAT_TOO_BIG">
+    <theme name="default">The entered value is too big.</theme>
+  </part>
+  <part name="postcheck.FLOAT_TOO_SMALL">
+    <theme name="default">The entered value is too small.</theme>
+  </part>
+  <part name="postcheck.INTEGER_TOO_BIG">
+    <theme name="default">The entered value is too big.</theme>
+  </part>
+  <part name="postcheck.INTEGER_TOO_SMALL">
+    <theme name="default">The entered value is too small.</theme>
+  </part>
+  <part name="postcheck.STRING_TOO_LONG">
+    <theme name="default">The entered string is too long.</theme>
+  </part>
+  <part name="postcheck.STRING_TOO_SHORT">
+    <theme name="default">The entered string is too short.</theme>
+  </part>
+  <part name="precheck.REGEXP_NO_MATCH">
+    <theme name="default">The entered value contains invalid characters or is otherwise invalid.</theme>
+  </part>
+  <part name="FORM_TOKEN_INVALID">
+    <theme name="default">The submitted form token is invalid.</theme>
+  </part>
+  <part name="FORM_TOKEN_MISSING">
+    <theme name="default">The required form token is missing.</theme>
+  </part><!-- please note that level names in part names are _always_ lowercase -->
+  <part name="pagemessages.level.error">
+    <theme name="default">ERROR:</theme>
+  </part>
+  <part name="pagemessages.level.info">
+    <theme name="default">NOTE:</theme>
+  </part>
+  <part name="pagemessages.level.warn">
+    <theme name="default">WARNING:</theme>
+  </part>
+</include_parts>

@@ -1,0 +1,373 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<xsd:schema xmlns:xsd="http://www.w3.org/2001/XMLSchema" 
+            xmlns="http://www.pustefix-framework.org/2008/namespace/project-config"
+            targetNamespace="http://www.pustefix-framework.org/2008/namespace/project-config"
+            elementFormDefault="qualified" attributeFormDefault="unqualified">
+
+  <xsd:annotation>
+    <xsd:documentation>
+      XML Schema for project configuration
+    </xsd:documentation>
+  </xsd:annotation>
+
+  <xsd:element name="project-config">
+    <xsd:complexType>
+      <xsd:sequence>
+        <xsd:element name="project" type="project-type"/>
+        <xsd:element name="editor" type="editor-type" minOccurs="0"/>
+        <xsd:element ref="config-include" minOccurs="0"/>
+        <xsd:element ref="tenant" minOccurs="0" maxOccurs="unbounded"/>
+        <xsd:element name="xml-generator" type="xml-generator-type"/>
+        <xsd:element name="searchengine-sitemap" minOccurs="0">
+          <xsd:complexType>
+            <xsd:attribute name="type" type="xsd:string" use="optional"/>
+          </xsd:complexType>
+        </xsd:element>
+        <xsd:element name="session-tracking-strategy" minOccurs="0">
+          <xsd:simpleType>
+            <xsd:restriction base="xsd:string">
+              <xsd:enumeration value="COOKIE"/>
+              <xsd:enumeration value="COOKIEONLY"/>
+              <xsd:enumeration value="URL"/>
+            </xsd:restriction>
+          </xsd:simpleType>
+        </xsd:element>
+        <xsd:element name="initial-session-timeout" minOccurs="0">
+          <xsd:complexType>
+            <xsd:attribute name="value" type="xsd:int"/>
+            <xsd:attribute name="requestlimit" type="xsd:int"/>
+          </xsd:complexType>
+        </xsd:element>
+        <xsd:element name="application" type="application-type"/>
+        <xsd:element name="dynamic-includes" type="dynamic-includes-type" minOccurs="0"/>
+        <xsd:element name="properties" type="properties-type" minOccurs="0"/>
+      </xsd:sequence>
+    </xsd:complexType>
+  </xsd:element>
+
+  <xsd:complexType name="project-type">
+    <xsd:sequence>
+      <xsd:element name="name" type="xsd:string"/>
+      <xsd:element name="description" type="xsd:string"/>
+      <xsd:element name="lang" type="lang-type" minOccurs="0" maxOccurs="unbounded"/>
+    </xsd:sequence>
+  </xsd:complexType>
+
+  <xsd:complexType name="editor-type">
+    <xsd:sequence>
+      <xsd:choice>
+        <xsd:element name="choose">
+          <xsd:complexType>
+            <xsd:sequence>
+              <xsd:element name="when" maxOccurs="unbounded">
+                <xsd:complexType>
+                  <xsd:sequence>
+                    <xsd:element name="enabled" type="xsd:boolean"/>
+                  </xsd:sequence>
+                  <xsd:attribute name="test" type="xsd:string" use="required"/>
+                </xsd:complexType>
+              </xsd:element>
+              <xsd:element name="otherwise" minOccurs="0">
+                <xsd:complexType>
+                  <xsd:sequence>
+                    <xsd:element name="enabled" type="xsd:boolean"/>
+                  </xsd:sequence>
+                </xsd:complexType>
+              </xsd:element>
+            </xsd:sequence>
+          </xsd:complexType>
+        </xsd:element>
+        <xsd:element name="enabled" type="xsd:boolean"/>
+      </xsd:choice>
+      <xsd:element name="location" type="xsd:string"/>
+      <xsd:element name="secret" type="xsd:string"/>
+    </xsd:sequence>
+  </xsd:complexType>
+  
+  <xsd:complexType name="xml-generator-type">
+    <xsd:sequence>
+      <xsd:element name="config-file" type="xsd:string"/>
+      <xsd:choice>
+          <xsd:element name="choose">
+            <xsd:complexType>
+              <xsd:sequence>
+                <xsd:element name="when" maxOccurs="unbounded">
+                  <xsd:complexType>
+                    <xsd:group ref="xml-generator-choose-group" maxOccurs="unbounded"/>
+                    <xsd:attribute name="test" type="xsd:string" use="required"/>
+                  </xsd:complexType>
+                </xsd:element>
+                <xsd:element name="otherwise" minOccurs="0">
+                  <xsd:complexType>
+                    <xsd:group ref="xml-generator-choose-group" maxOccurs="unbounded"/>
+                  </xsd:complexType>
+                </xsd:element>
+              </xsd:sequence>
+            </xsd:complexType>
+          </xsd:element>
+          <xsd:group ref="xml-generator-choose-group" maxOccurs="unbounded"/>
+        </xsd:choice>
+    </xsd:sequence>
+  </xsd:complexType>
+
+  <xsd:group name="xml-generator-choose-group">
+    <xsd:choice>
+      <xsd:element name="check-modtime" type="xsd:boolean" />
+      <xsd:element name="tooling-extensions" type="xsd:boolean" />
+      <xsd:element name="include-cache">
+        <xsd:complexType>
+          <xsd:attribute name="capacity" type="xsd:int" use="required"/>
+          <xsd:attribute name="class" type="xsd:string"/>
+        </xsd:complexType>
+      </xsd:element>
+      <xsd:element name="target-cache">
+        <xsd:complexType>
+          <xsd:attribute name="capacity" type="xsd:int" use="required"/>
+          <xsd:attribute name="class" type="xsd:string"/>
+        </xsd:complexType>
+      </xsd:element>
+      <xsd:element name="render-cache">
+        <xsd:complexType>
+          <xsd:attribute name="capacity" type="xsd:int" use="required"/>
+          <xsd:attribute name="class" type="xsd:string"/>
+        </xsd:complexType>
+      </xsd:element>
+      <xsd:element name="extension-cache">
+        <xsd:complexType>
+          <xsd:attribute name="capacity" type="xsd:int" use="required"/>
+          <xsd:attribute name="class" type="xsd:string"/>
+        </xsd:complexType>
+      </xsd:element>
+    </xsd:choice>  
+  </xsd:group>
+  
+  <xsd:complexType name="application-type">
+    <xsd:sequence>
+      <xsd:element name="docroot-path" type="path-type" minOccurs="0"></xsd:element>
+      <xsd:element name="default-path" type="xsd:string" minOccurs="0"/>
+      <xsd:element name="context-xml-service">
+        <xsd:complexType>
+        <xsd:sequence>
+          <xsd:element name="config-file" type="xsd:string"/>
+          <xsd:element name="additional-trail-info" type="xsd:string" minOccurs="0"/>
+          <xsd:choice minOccurs="0" maxOccurs="unbounded">
+            <xsd:element name="choose">
+              <xsd:complexType>
+                <xsd:sequence>
+                  <xsd:element name="when" maxOccurs="unbounded">
+                    <xsd:complexType>
+                      <xsd:group ref="context-xml-service-choose-group" maxOccurs="unbounded"/>
+                      <xsd:attribute name="test" type="xsd:string" use="required"/>
+                    </xsd:complexType>
+                  </xsd:element>
+                  <xsd:element name="otherwise" minOccurs="0">
+                    <xsd:complexType>
+                      <xsd:group ref="context-xml-service-choose-group" maxOccurs="unbounded"/>
+                    </xsd:complexType>
+                  </xsd:element>
+                </xsd:sequence>
+              </xsd:complexType>
+            </xsd:element>
+            <xsd:group ref="context-xml-service-choose-group" maxOccurs="unbounded"/>
+          </xsd:choice>
+        </xsd:sequence>
+        </xsd:complexType>
+      </xsd:element>
+      <xsd:element name="direct-output-service" minOccurs="0" maxOccurs="unbounded">
+        <xsd:complexType>
+          <xsd:sequence>
+            <xsd:element name="config-file" type="xsd:string"/>
+          </xsd:sequence>
+        </xsd:complexType>
+      </xsd:element>
+      <xsd:element name="deref-service" minOccurs="0">
+        <xsd:complexType>
+          <xsd:sequence>
+            <xsd:element name="validtime" type="xsd:int"/>
+            <xsd:element name="mustsign" type="xsd:boolean"/>
+          </xsd:sequence>
+        </xsd:complexType>
+      </xsd:element>
+      <xsd:element name="webservice-service" minOccurs="0">
+        <xsd:complexType>
+          <xsd:sequence>
+            <xsd:element name="config-file" type="xsd:string"/>
+          </xsd:sequence>
+        </xsd:complexType>
+      </xsd:element>
+      <xsd:element name="static" minOccurs="0">
+        <xsd:complexType>
+          <xsd:sequence>
+            <xsd:element name="path" type="path-type" maxOccurs="unbounded"/>
+          </xsd:sequence>
+        </xsd:complexType>
+      </xsd:element>
+      <xsd:choice>
+        <xsd:element name="choose">
+          <xsd:complexType>
+            <xsd:sequence>
+              <xsd:element name="when" maxOccurs="unbounded">
+                <xsd:complexType>
+                  <xsd:choice>
+                    <xsd:element name="exception-processing" type="exception-processing-type"/>
+                  </xsd:choice>
+                  <xsd:attribute name="test" type="xsd:string" use="required"/>
+                </xsd:complexType>
+              </xsd:element>
+              <xsd:element name="otherwise" minOccurs="0">
+                <xsd:complexType>
+                  <xsd:choice>
+                    <xsd:element name="exception-processing" type="exception-processing-type"/>
+                  </xsd:choice>
+                </xsd:complexType>
+              </xsd:element>
+            </xsd:sequence>
+          </xsd:complexType>
+        </xsd:element>
+        <xsd:element name="exception-processing" type="exception-processing-type"/>
+      </xsd:choice>
+    </xsd:sequence>
+  </xsd:complexType>
+  
+  <xsd:group name="context-xml-service-choose-group">
+    <xsd:choice>
+      <xsd:element name="session-cleaner-timeout" type="xsd:int"/>
+      <xsd:element name="show-dom" type="xsd:boolean"/>
+    </xsd:choice>  
+  </xsd:group>
+  
+  <xsd:complexType name="exception-processing-type">
+    <xsd:sequence>
+      <xsd:element name="process" maxOccurs="unbounded">
+        <xsd:complexType>
+          <xsd:attribute name="type" type="xsd:string" use="required"/>
+          <xsd:attribute name="processor" type="xsd:string"/>
+          <xsd:attribute name="forward" type="xsd:boolean"/>
+          <xsd:attribute name="page" type="xsd:string"/>
+        </xsd:complexType>
+      </xsd:element>
+    </xsd:sequence>
+  </xsd:complexType>
+  
+  <xsd:complexType name="properties-type">
+    <xsd:choice maxOccurs="unbounded">
+      <xsd:element name="prop" type="property-type"/>
+      <xsd:element name="choose">
+        <xsd:complexType>
+          <xsd:sequence>
+            <xsd:element name="when" maxOccurs="unbounded">
+              <xsd:complexType>
+                <xsd:sequence>
+                  <xsd:element name="prop" type="property-type" maxOccurs="unbounded"/>
+                </xsd:sequence>
+                <xsd:attribute name="test" type="xsd:string" use="required"/>
+              </xsd:complexType>
+            </xsd:element>
+            <xsd:element name="otherwise" minOccurs="0">
+              <xsd:complexType>
+                <xsd:sequence>
+                  <xsd:element name="prop" type="property-type" maxOccurs="unbounded"/>
+                </xsd:sequence>
+              </xsd:complexType>
+            </xsd:element>
+          </xsd:sequence>
+        </xsd:complexType>
+      </xsd:element>
+    </xsd:choice>
+  </xsd:complexType>
+
+  <xsd:complexType name="property-type">
+    <xsd:simpleContent>
+      <xsd:extension base="xsd:string">
+        <xsd:attribute name="name" type="xsd:string" use="required"/>
+        <xsd:attribute name="tenant" type="xsd:string" use="optional"/>
+      </xsd:extension>
+    </xsd:simpleContent>
+  </xsd:complexType>
+  
+  <xsd:complexType name="dynamic-includes-type">
+    <xsd:sequence>
+      <xsd:element name="default-search">
+        <xsd:complexType>
+          <xsd:sequence>
+            <xsd:element name="module" type="xsd:string" maxOccurs="unbounded"/>
+          </xsd:sequence>
+        </xsd:complexType>
+      </xsd:element>
+    </xsd:sequence>
+  </xsd:complexType>
+  
+  <xsd:complexType name="lang-type">
+    <xsd:simpleContent>
+      <xsd:extension base="xsd:string">
+        <xsd:attribute name="default" type="xsd:boolean" use="optional"/>
+      </xsd:extension>
+    </xsd:simpleContent>
+  </xsd:complexType>
+
+  <xsd:element name="config-include" type="configIncludeType"/>
+ 
+  <xsd:complexType name="configIncludeType">
+    <xsd:attribute name="file" type="xsd:string" use="required"></xsd:attribute>
+    <xsd:attribute name="section" use="optional">
+      <xsd:simpleType>
+        <xsd:restriction base="xsd:token">
+          <xsd:enumeration value="tenants"/>
+        </xsd:restriction>
+      </xsd:simpleType>
+    </xsd:attribute>
+    <xsd:attribute name="refid" type="xsd:NCName" use="optional"></xsd:attribute>
+    <xsd:attribute name="xpath" type="xsd:string" use="optional"></xsd:attribute>
+    <xsd:attribute name="module" type="xsd:string" use="optional"></xsd:attribute>
+  </xsd:complexType>
+
+  <xsd:element name="tenant" type="tenantType"/>
+
+  <xsd:complexType name="tenantType">
+    <xsd:sequence>
+      <xsd:choice>
+        <xsd:element name="choose">
+          <xsd:complexType>
+            <xsd:sequence>
+              <xsd:element name="when" maxOccurs="unbounded">
+                <xsd:complexType>
+                  <xsd:sequence>
+                    <xsd:element name="host" type="xsd:string"/>
+                  </xsd:sequence>
+                  <xsd:attribute name="test" type="xsd:string" use="required"/>
+                </xsd:complexType>
+              </xsd:element>
+              <xsd:element name="otherwise" minOccurs="0">
+                <xsd:complexType>
+                  <xsd:sequence>
+                    <xsd:element name="host" type="xsd:string"/>
+                  </xsd:sequence>
+                </xsd:complexType>
+              </xsd:element>
+            </xsd:sequence>
+          </xsd:complexType>
+        </xsd:element>
+        <xsd:element name="host" type="xsd:string"/>
+      </xsd:choice>
+      <xsd:element name="lang" maxOccurs="unbounded">
+        <xsd:complexType>
+          <xsd:simpleContent>
+            <xsd:extension base="xsd:string">
+              <xsd:attribute name="default" type="xsd:boolean" use="optional"/>
+            </xsd:extension>
+          </xsd:simpleContent>
+        </xsd:complexType>
+      </xsd:element>
+    </xsd:sequence>
+    <xsd:attribute name="name" type="xsd:string" use="required"/>
+  </xsd:complexType>
+  
+  <xsd:complexType name="path-type">
+    <xsd:simpleContent>
+      <xsd:extension base="xsd:string">
+        <xsd:attribute name="i18n" type="xsd:boolean" use="optional"/>
+      </xsd:extension>
+    </xsd:simpleContent>
+  </xsd:complexType>
+
+</xsd:schema>

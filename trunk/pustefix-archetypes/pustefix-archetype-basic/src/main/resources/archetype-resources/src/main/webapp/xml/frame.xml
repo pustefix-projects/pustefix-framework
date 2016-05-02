@@ -1,0 +1,18 @@
+#set( $symbol_pound = '#' )
+#set( $symbol_dollar = '$' )
+#set( $symbol_escape = '\' )
+<?xml version="1.0" encoding="utf-8"?>
+<pfx:document xmlns:pfx="http://www.schlund.de/pustefix/core" xmlns:ixsl="http://www.w3.org/1999/XSL/Transform">
+  <!-- put the frame markup your pages have in common here -->
+  <html>
+    <head>
+      <title>Pustefix Basic Application</title>
+      <link href="{${symbol_dollar}__contextpath}/css/style.css" media="all" rel="stylesheet" type="text/css"/>
+    </head>
+    <body>
+      <pfx:image src="img/logo.png"/>
+      <pfx:maincontent prefix=""/>
+      <pfx:editconsole/>
+    </body>
+  </html>
+</pfx:document>

@@ -1,0 +1,11 @@
+/* put your application's common CSS styles here */
+
+body {
+  margin: 10px;
+  background: #fff;
+}
+
+span.error {
+  color: red;
+  padding-left: 10px;
+}

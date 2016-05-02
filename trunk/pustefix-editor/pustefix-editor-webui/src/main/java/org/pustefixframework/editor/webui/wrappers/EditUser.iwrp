@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<interface xmlns="http://www.pustefix-framework.org/2008/namespace/iwrapper"
+           xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+           xsi:schemaLocation="http://www.pustefix-framework.org/2008/namespace/iwrapper 
+                               http://www.pustefix-framework.org/2008/namespace/iwrapper.xsd">
+
+  <ihandler class="org.pustefixframework.editor.webui.handlers.EditUserHandler"/>
+
+  <param type="java.lang.String" name="Name" occurrence="optional"/>
+  <param type="java.lang.String" name="Section" occurrence="optional"/>
+  <param type="java.lang.String" name="Phone" occurrence="optional"/>
+  <param type="java.lang.String" name="Password" occurrence="optional"/>
+  <param type="java.lang.String" name="PasswordRepeat" occurrence="optional"/>
+  <param type="java.lang.Boolean" name="AdminPrivilege" occurrence="optional">
+    <caster class="de.schlund.pfixcore.generator.casters.ToBoolean"/>
+  </param>
+  <param type="java.lang.Boolean" name="EditIncludesPrivilege" occurrence="indexed">
+    <caster class="de.schlund.pfixcore.generator.casters.ToBoolean"/>
+  </param>
+  <param type="java.lang.Boolean" name="EditImagesPrivilege" occurrence="indexed">
+    <caster class="de.schlund.pfixcore.generator.casters.ToBoolean"/>
+  </param>
+
+</interface>

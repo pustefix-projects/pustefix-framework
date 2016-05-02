@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<include_parts xmlns:ixsl="http://www.w3.org/1999/XSL/Transform" xmlns:pfx="http://www.schlund.de/pustefix/core">
+  <part name="title">
+    <theme name="default">
+      Test4: Jump to page by link
+    </theme>
+  </part>
+  <part name="content">
+    <theme name="default">
+      <p>
+        This test will check that a jump to a page specified using
+        the special request parameter is performed after submitting a form. 
+        If the check succeeds, a corresponding message will be displayed. 
+        If any error message is displayed or this page is being displayed 
+        again after starting the test, the check failed. To start the check, 
+        click the button below.
+      </p>
+      <p>
+        <pfx:forminput>
+          <pfx:xinp type="submit" jumptopage="Test4Succeeded">Go!</pfx:xinp>
+        </pfx:forminput>
+      </p>
+    </theme>
+  </part>
+</include_parts>

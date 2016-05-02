@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="utf-8"?>
+<library>
+  <module>
+    <name>pfx-webservice-jaxws</name>
+    <resource>
+      <type>js</type>
+      <base>classpath</base>
+      <path>PUSTEFIX-INF/script/webservice.js</path>
+    </resource>
+    <dependencie>pfx-xmlrequest</dependencie>
+  </module>
+</library>

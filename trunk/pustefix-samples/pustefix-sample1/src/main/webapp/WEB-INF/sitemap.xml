@@ -1,0 +1,52 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<sitemap xmlns="http://www.pustefix-framework.org/2011/namespace/sitemap"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://www.pustefix-framework.org/2011/namespace/sitemap 
+                             http://www.pustefix-framework.org/2011/namespace/sitemap.xsd">
+                    
+                             
+    <page name="home">
+      <page name="order"/>
+      <page name="phantom"/>
+      <page name="overview"/>
+    </page>
+    <page name="scripting"/>
+    <page name="scriptingstate"/>
+    <page name="encoding" alias="encodingpage">
+       <alt key="xencoding" name="xencodingpage"/>
+    </page>
+    <page name="upload"/>
+    <page name="test"/>
+    <page name="tokenerror"/>
+    <page name="iwrapperinfo"/>
+    <page name="frames"/>
+    
+    <page name="install"/>
+    
+    <page name="geninc"/>
+    <page name="invalidate"/>
+
+    <page name="A" alias="fooA"/>
+
+    <page-group key="g" name="test">
+      <page-group key="g1" name="one">
+        <page name="A"/>
+        <page name="B"/>
+      </page-group>
+      <page-group key="g2" name="two">
+        <page name="A"/>
+        <page name="B"/>
+      </page-group>
+      <page name="C"/>
+    </page-group>
+
+    <page name="testchecks"/>
+    
+    <page name="moduletest"/>
+    
+    <pageflow name="OrderFlow" prefix="myorder"/>
+
+    <config-include file="WEB-INF/fragments.xml" section="sitemap"/>
+    <config-include file="conf/fragments.xml" section="sitemap" module="animal-module"/>
+
+</sitemap>

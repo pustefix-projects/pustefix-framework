@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<include_parts xmlns:ixsl="http://www.w3.org/1999/XSL/Transform" xmlns:pfx="http://www.schlund.de/pustefix/core">
+  
+  <part name="success">
+    <theme name="default">
+      Registration succeeded.
+    </theme>
+  </part>
+  
+  <part name="failure">
+    <theme name="default">
+      Registration failed.
+    </theme>
+  </part>
+  
+</include_parts>

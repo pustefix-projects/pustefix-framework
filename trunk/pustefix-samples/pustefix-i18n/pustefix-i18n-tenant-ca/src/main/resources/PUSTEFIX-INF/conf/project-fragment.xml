@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<fr:config-fragments xmlns:fr="http://www.pustefix-framework.org/2008/namespace/config-fragments"
+                     xmlns="http://www.pustefix-framework.org/2008/namespace/project-config">
+
+  <fr:tenants>
+    <tenant name="CA_market">
+      <choose>
+        <when test="$mode='prod'">
+          <host>.*\.ca$</host>
+        </when>
+        <otherwise>
+          <host>^ca\..*</host>
+        </otherwise>
+      </choose>
+      <lang default="true">en_CA</lang>
+      <lang>fr_CA</lang>
+    </tenant>
+  </fr:tenants>
+  
+</fr:config-fragments>

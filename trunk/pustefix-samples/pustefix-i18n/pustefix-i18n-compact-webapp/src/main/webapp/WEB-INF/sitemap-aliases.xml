@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<sitemap-aliases>
+  <alias-group lang="fr">
+    <alias page="Home">Depart</alias>
+    <alias page="Overview">Apercu</alias>
+    <alias page="Info">Information</alias>
+    <alias page="Cities">Cites</alias>
+    <alias page="Mountains">Monts</alias>
+    <alias page="NationalParks">Parcs_nationaux</alias>
+  </alias-group>
+  <alias-group lang="en">
+    <alias page="Home">Home</alias>
+    <alias page="Overview">Overview</alias>
+    <alias page="Info">Information</alias>
+    <alias page="Living">Living</alias>
+    <alias page="Garden">Garden</alias>
+    <alias page="Kitchen">Kitchen</alias>
+  </alias-group>
+  <alias-group lang="de">
+    <alias page="Home">Start</alias>
+    <alias page="Overview">Uebersicht</alias>
+    <alias page="Info">Information</alias>
+    <alias page="Cities">Staedte</alias>
+    <alias page="NationalParks">Nationalparks</alias>
+    <alias page="Mountains">Berge</alias>
+  </alias-group>
+</sitemap-aliases>

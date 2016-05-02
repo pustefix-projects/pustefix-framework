@@ -1,0 +1,777 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema"
+  targetNamespace="http://www.pustefix-framework.org/2008/namespace/context-xml-service-config"
+  xmlns:prop="http://www.pustefix-framework.org/2008/namespace/context-xml-service-config" 
+  elementFormDefault="qualified" attributeFormDefault="unqualified">
+
+  <xs:element name="context-xml-service-config" type="prop:context-xml-service-config-Type">
+<!--    <xs:keyref refer="prop:contextresourceimplements" name="contextresourceimplements2pagerequestoutputresource">-->
+<!--      <xs:selector xpath="prop:pagerequest/prop:output/prop:resource"></xs:selector>-->
+<!--      <xs:field xpath="@class"></xs:field>-->
+<!--    </xs:keyref>-->
+    <xs:unique name="pageflow">
+      <xs:selector xpath="."></xs:selector>
+      <xs:field xpath="@name"></xs:field>
+    </xs:unique>
+  </xs:element>
+  <xs:complexType name="context-xml-service-config-Type">
+    <xs:sequence>
+      <xs:element name="global-config" type="prop:context-xml-global-config-Type" minOccurs="0"/>
+      <xs:element ref="prop:context"/>
+      <xs:element ref="prop:global-output" minOccurs="0"/>
+      <xs:element ref="prop:interceptors" maxOccurs="1" minOccurs="0"/>
+      <xs:choice minOccurs="0" maxOccurs="unbounded">
+        <xs:element ref="prop:scriptedflow"/>
+        <xs:element ref="prop:config-include"/>
+      </xs:choice>
+      <xs:element ref="prop:roleprovider" minOccurs="0" maxOccurs="1"/>
+      <xs:choice minOccurs="0" maxOccurs="unbounded">
+        <xs:element ref="prop:role"/>
+        <xs:element ref="prop:config-include"/>
+      </xs:choice>
+      <xs:choice minOccurs="0" maxOccurs="unbounded">
+        <xs:element ref="prop:condition"/>
+        <xs:element ref="prop:config-include"/>
+      </xs:choice>
+      <xs:choice minOccurs="0" maxOccurs="unbounded">
+        <xs:element ref="prop:authconstraint" minOccurs="0"/>
+        <xs:element ref="prop:config-include"/>
+      </xs:choice>
+      <xs:element ref="prop:preserve-params" minOccurs="0"/>
+      <xs:element name="disable-pageflow-passthrough" minOccurs="0">
+        <xs:complexType/>
+      </xs:element>
+      <xs:choice minOccurs="1" maxOccurs="unbounded">
+        <xs:element ref="prop:pageflow"/>
+        <xs:element ref="prop:pagerequest"/>
+        <xs:element ref="prop:config-include"/>
+      </xs:choice>
+      <xs:element ref="prop:exception" minOccurs="0" maxOccurs="unbounded"/>
+      <xs:element ref="prop:properties" minOccurs="0"/>
+    </xs:sequence>
+    <xs:attribute name="version" type="xs:token" default="1.0"/>
+  </xs:complexType>
+
+  <xs:complexType name="global-config-Type" abstract="true">
+  </xs:complexType>
+
+  <xs:complexType name="context-xml-global-config-Type">
+    <xs:complexContent>
+      <xs:extension base="prop:global-config-Type">
+        <xs:sequence>
+          <xs:choice minOccurs="0" maxOccurs="unbounded">
+            <xs:element ref="prop:force-ssl" minOccurs="0"/>
+            <xs:element ref="prop:defaultstate" minOccurs="0"/>
+            <xs:element ref="prop:defaultihandlerstate" minOccurs="0"/>
+            <xs:element name="choose" minOccurs="0" maxOccurs="unbounded">
+              <xs:complexType>
+                <xs:sequence>
+                  <xs:element name="when" minOccurs="1" maxOccurs="unbounded">
+                    <xs:complexType>
+                      <xs:all>
+                        <xs:element ref="prop:force-ssl" minOccurs="0"/>                      
+                      </xs:all>
+                      <xs:attribute name="test" use="required"/>
+                    </xs:complexType>
+                  </xs:element>
+                  <xs:element name="otherwise" minOccurs="0" maxOccurs="1">
+                    <xs:complexType>
+                      <xs:all>
+                        <xs:element ref="prop:force-ssl" minOccurs="0"/>                      
+                      </xs:all>
+                    </xs:complexType>
+                  </xs:element>
+                </xs:sequence>
+              </xs:complexType>
+            </xs:element>
+          </xs:choice>
+        </xs:sequence>
+      </xs:extension>
+    </xs:complexContent>
+  </xs:complexType>
+  
+  <xs:element name="editmode" type="prop:editmodeType"/>
+  <xs:complexType name="editmodeType">
+    <xs:attribute name="allow" type="xs:boolean" default="false"/>
+  </xs:complexType>
+
+  <xs:element name="force-ssl" type="xs:boolean"/>
+
+  <!--  authconstraints -->
+
+  <xs:complexType name="authconstraintTopLevelType">
+    <xs:sequence>
+      <xs:choice minOccurs="0">
+        <xs:element ref="prop:abstractcondition" minOccurs="0"/>
+        <xs:element name="authconstraint" type="prop:authconstraintRefType"/>
+        <xs:element name="condition" type="prop:conditionType"/>
+      </xs:choice>
+      <xs:element ref="prop:navigateTo" minOccurs="0" maxOccurs="unbounded"/>
+    </xs:sequence>
+    <xs:attribute name="id" type="xs:ID" use="required"/>
+    <xs:attribute name="authpage" type="xs:string" use="optional"/>
+    <xs:attribute name="default" type="xs:boolean" use="optional"/>
+  </xs:complexType>
+
+  <xs:complexType name="authconstraintAnonymousType">
+    <xs:choice minOccurs="0">
+      <xs:element ref="prop:abstractcondition"/>
+      <xs:element name="authconstraint" type="prop:authconstraintRefType"/>
+      <xs:element name="condition" type="prop:conditionType"/>
+    </xs:choice>
+    <xs:attribute name="authpage" type="xs:string" use="optional"/>
+    <xs:attribute name="ref" type="xs:string" use="optional"/>
+  </xs:complexType>
+
+  <xs:complexType name="authconstraintRefType">
+    <xs:attribute name="ref" type="xs:string" use="required"/>
+  </xs:complexType>
+  
+  <xs:element name="authconstraint" type="prop:authconstraintTopLevelType"/>
+  
+  <!-- global-output -->
+  
+  <xs:element name="global-output">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element name="resource" minOccurs="0" maxOccurs="unbounded">
+          <xs:complexType>
+            <xs:attribute name="class" use="optional"/>
+            <xs:attribute name="node" use="required"/>
+            <xs:attribute name="bean-ref" use="optional"/>
+            <xs:attribute name="lazy" default="false" type="xs:boolean"/>
+          </xs:complexType>
+        </xs:element>
+      </xs:sequence>
+    </xs:complexType>
+  </xs:element>
+  
+  <!-- conditions -->
+
+  <xs:element name="abstractcondition" type="prop:abstractconditionType" abstract="true"/>
+  <xs:complexType name="abstractconditionType" abstract="true"/>
+ 
+  <xs:complexType name="singleconditionType">
+    <xs:complexContent>
+      <xs:extension base="prop:abstractconditionType">
+        <xs:choice>
+          <xs:element name="authconstraint" type="prop:authconstraintRefType"/>
+          <xs:element ref="prop:abstractcondition"/>
+          <xs:element name="condition" type="prop:conditionType"/>
+        </xs:choice>
+      </xs:extension>
+    </xs:complexContent>
+  </xs:complexType> 
+ 
+  <xs:complexType name="multiconditionType">
+    <xs:complexContent>
+      <xs:extension base="prop:abstractconditionType">
+        <xs:choice minOccurs="2" maxOccurs="unbounded">
+          <xs:element name="authconstraint" type="prop:authconstraintRefType"/>
+          <xs:element ref="prop:abstractcondition"/>
+          <xs:element name="condition" type="prop:conditionType"/>
+        </xs:choice>
+      </xs:extension>
+    </xs:complexContent>
+  </xs:complexType>
+  
+  <xs:element name="or" type="prop:multiconditionType" substitutionGroup="prop:abstractcondition"/>
+  <xs:element name="and" type="prop:multiconditionType" substitutionGroup="prop:abstractcondition"/>
+  <xs:element name="not" type="prop:singleconditionType" substitutionGroup="prop:abstractcondition"/>
+  
+  <xs:element name="hasrole" type="prop:hasroleType" substitutionGroup="prop:abstractcondition"/>
+  <xs:complexType name="hasroleType">
+    <xs:complexContent>
+      <xs:extension base="prop:abstractconditionType">
+         <xs:attribute name="name" type="xs:string" use="required"/>
+      </xs:extension>
+    </xs:complexContent>
+  </xs:complexType>
+  
+  <xs:element name="navigateTo" type="prop:navigateToType" />
+  <xs:complexType name="navigateToType">
+    <xs:complexContent>
+      <xs:extension base="prop:abstractconditionType">
+        <xs:choice maxOccurs="unbounded">
+          <xs:element ref="prop:abstractcondition"/>
+          <xs:element name="condition" type="prop:conditionType"/>
+        </xs:choice>
+        <xs:attribute name="page" type="xs:string" use="required" />
+      </xs:extension>
+    </xs:complexContent>
+  </xs:complexType>
+  
+  <xs:element name="condition" type="prop:conditionTopLevelType"/>
+  
+  <xs:complexType name="conditionTopLevelType">
+    <xs:complexContent>
+      <xs:extension base="prop:abstractconditionType">
+         <xs:sequence>
+           <xs:element name="property" minOccurs="0" maxOccurs="unbounded">
+             <xs:complexType>
+               <xs:attribute name="name" type="xs:string" use="required"/>
+               <xs:attribute name="value" type="xs:string" use="required"/>
+             </xs:complexType>
+           </xs:element>
+         </xs:sequence>
+         <xs:attribute name="id" type="xs:string" use="required"/>
+         <xs:attribute name="class" type="xs:string" use="required"/>
+      </xs:extension>
+    </xs:complexContent>
+  </xs:complexType>
+  
+  <xs:complexType name="conditionType">
+    <xs:complexContent>
+      <xs:extension base="prop:abstractconditionType">
+         <xs:sequence>
+           <xs:element name="property" minOccurs="0" maxOccurs="unbounded">
+             <xs:complexType>
+               <xs:attribute name="name" type="xs:string" use="required"/>
+               <xs:attribute name="value" type="xs:string" use="required"/>
+             </xs:complexType>
+           </xs:element>
+         </xs:sequence>
+         <xs:attribute name="ref" type="xs:string" use="optional"/>
+         <xs:attribute name="class" type="xs:string" use="optional"/>
+      </xs:extension>
+    </xs:complexContent>
+  </xs:complexType>
+  
+  
+  
+  
+  <xs:element name="encoding" type="prop:encodingType"/>
+  <xs:simpleType name="encodingType">
+    <xs:restriction base="xs:normalizedString">
+      <xs:minLength value="2"/>
+    </xs:restriction>
+  </xs:simpleType>
+
+  <xs:element name="defaultstate" type="prop:defaultstateType"/>
+  <xs:complexType name="defaultstateType">
+    <xs:attribute name="class" use="required"/>
+    <xs:attribute name="parent-bean-ref" use="optional"/>
+  </xs:complexType>
+
+  <xs:element name="defaultihandlerstate" type="prop:defaultihandlerstateType"/>
+  <xs:complexType name="defaultihandlerstateType">
+    <xs:attribute name="class" use="required"/>
+    <xs:attribute name="parent-bean-ref" use="optional"/>
+  </xs:complexType>
+  
+  
+  <!-- <context> -->
+  <xs:element name="context" type="prop:contextType">
+    <xs:unique name="contextresource">
+      <xs:selector xpath="prop:resource"/>
+      <xs:field xpath="@class"/>
+    </xs:unique>
+    <xs:unique name="contextresourceimplements">
+      <xs:selector xpath="prop:resource/prop:implements"/>
+      <xs:field xpath="@class"/>
+    </xs:unique>
+  </xs:element>
+  <xs:complexType name="contextType">
+    <xs:sequence>
+      <xs:element name="defaultpage" minOccurs="0">
+        <xs:complexType>
+          <xs:choice>
+            <xs:sequence>
+              <xs:element name="variant" type="prop:defaultPageVariantType" minOccurs="1" maxOccurs="unbounded"/>
+              <xs:element name="default" type="xs:string"/>
+            </xs:sequence>
+            <xs:sequence>
+              <xs:element name="default" type="xs:string"/>
+              <xs:element name="variant" type="prop:defaultPageVariantType" minOccurs="1" maxOccurs="unbounded"/>
+            </xs:sequence>
+          </xs:choice>
+        </xs:complexType>
+      </xs:element>
+      <xs:choice minOccurs="0" maxOccurs="unbounded">
+        <xs:element ref="prop:resource"/>
+        <xs:element ref="prop:config-include"/>
+      </xs:choice>
+    </xs:sequence>
+    <xs:attribute name="class"/>
+    <xs:attribute name="defaultpage"/>
+    <xs:attribute name="synchronized" type="xs:boolean" default="true"/>
+  </xs:complexType>
+
+  <xs:complexType name="defaultPageVariantType">
+    <xs:simpleContent>
+      <xs:extension base="xs:string">
+        <xs:attribute name="name" use="required" type="xs:string"/>
+      </xs:extension>
+    </xs:simpleContent>
+  </xs:complexType>
+
+  <xs:element name="resource" type="prop:resourceType"/>
+  <xs:complexType name="resourceType">
+    <xs:sequence>
+      <xs:element ref="prop:implements" minOccurs="0" maxOccurs="unbounded"/>
+      <xs:element ref="prop:properties" minOccurs="0"/>
+    </xs:sequence>
+    <xs:attribute name="class" use="required"/>
+    <xs:attribute name="bean-name"/>
+    <xs:attribute name="scope" type="prop:springBeanScope"/>
+    <xs:attribute name="parent-bean-ref"/>
+  </xs:complexType>
+
+  <xs:element name="implements" type="prop:implementsType"/>
+  <xs:complexType name="implementsType">
+    <xs:attribute name="class" use="required"/>
+    <xs:attribute name="bean-name" use="optional" />
+    <xs:attribute name="scope" use="optional" />
+    <xs:attribute name="parent-bean-ref" use="optional"/>
+  </xs:complexType>
+  <!-- </context> -->
+
+  <!-- <interceptors> -->
+  
+  <xs:element name="interceptors" type="prop:interceptorsType" />
+  <xs:complexType name="interceptorsType">
+    <xs:sequence>
+      <xs:element ref="prop:start" maxOccurs="1" minOccurs="0"/>
+      <xs:element ref="prop:end" maxOccurs="1" minOccurs="0"/>
+      <xs:element ref="prop:postrender" maxOccurs="1" minOccurs="0"/>
+    </xs:sequence>
+  </xs:complexType>
+  
+  <xs:element name="start" type="prop:interceptorGroupType"/>    
+  <xs:element name="end" type="prop:interceptorGroupType"/>    
+  <xs:element name="postrender" type="prop:interceptorGroupType"/>
+
+  <xs:complexType name="interceptorGroupType">
+    <xs:sequence maxOccurs="unbounded" minOccurs="0">
+      <xs:choice>
+        <xs:element ref="prop:interceptor"/>
+        <xs:element ref="prop:config-include"/>
+      </xs:choice>
+    </xs:sequence>
+  </xs:complexType>
+  
+  
+
+  <xs:element name="interceptor" type="prop:interceptorType"/>
+  <xs:complexType name="interceptorType">
+    <xs:attribute name="class" type="xs:normalizedString"/>
+    <xs:attribute name="bean-ref"/>
+  </xs:complexType>
+  
+  
+  <!-- </interceptors> -->
+    
+  <!-- <role> -->
+
+  <xs:element name="role" type="prop:roleType"/>
+  <xs:complexType name="roleType">
+    <xs:attribute name="name" type="xs:string" use="required"/>
+    <xs:attribute name="initial" type="xs:boolean"/>
+  </xs:complexType>
+  
+  <!-- </role> -->
+  
+  <xs:element name="roleprovider" type="prop:roleproviderType"/>
+  <xs:complexType name="roleproviderType">
+    <xs:sequence>
+      <xs:element name="property" minOccurs="0" maxOccurs="unbounded">
+        <xs:complexType>
+          <xs:attribute name="name" type="xs:string" use="required"/>
+          <xs:attribute name="value" type="xs:string" use="required"/>
+        </xs:complexType>
+      </xs:element>
+    </xs:sequence>
+    <xs:attribute name="class" type="xs:normalizedString" use="required"/>
+  </xs:complexType>
+
+  <xs:element name="preserve-params" type="prop:preserveParamsType" />
+  <xs:complexType name="preserveParamsType">
+    <xs:sequence>
+      <xs:choice minOccurs="0" maxOccurs="unbounded">
+        <xs:element name="param" minOccurs="0" maxOccurs="unbounded">
+          <xs:complexType>
+            <xs:attribute name="name" type="xs:string"/>
+          </xs:complexType>
+        </xs:element>
+        <xs:element ref="prop:config-include"/>
+      </xs:choice>
+    </xs:sequence>
+  </xs:complexType>
+
+  <!-- <pageflow> -->
+  <xs:element name="pageflow" type="prop:pageflowType"/>
+  <xs:complexType name="pageflowType">
+    <xs:choice>
+      <xs:sequence>
+        <xs:element name="default">
+          <xs:complexType>
+            <xs:group ref="prop:pageflowGroup"/>
+          </xs:complexType>
+        </xs:element>
+        <xs:element name="variant" minOccurs="0" maxOccurs="unbounded">
+          <xs:complexType>
+            <xs:group ref="prop:pageflowGroup"/>
+            <xs:attribute name="name" use="required"/>
+          </xs:complexType>
+        </xs:element>
+      </xs:sequence>
+      <xs:group ref="prop:pageflowGroup"/>
+    </xs:choice>
+    <xs:attribute name="name" use="required"/>
+    <xs:attribute name="final"/>
+    <xs:attribute name="stopnext" type="xs:boolean" default="false"/>
+    <xs:attribute name="pathprefix" type="xs:boolean"/>
+  </xs:complexType>
+
+  <xs:group name="pageflowGroup">
+    <xs:sequence>
+      <xs:element ref="prop:flowstep" minOccurs="0" maxOccurs="unbounded"/>
+    </xs:sequence>
+  </xs:group>
+
+  <xs:element name="flowstep" type="prop:flowstepType"/>
+  <xs:complexType name="flowstepType">
+    <xs:sequence>
+      <xs:element ref="prop:oncontinue" minOccurs="0"/>
+      <xs:element ref="prop:properties" minOccurs="0"/>
+    </xs:sequence>
+    <xs:attribute name="name" use="required"/>
+    <xs:attribute name="stophere"/>
+  </xs:complexType>
+
+  <xs:element name="oncontinue" type="prop:oncontinueType"/>
+  <xs:complexType name="oncontinueType">
+    <xs:sequence>
+      <xs:element ref="prop:when" maxOccurs="unbounded"/>
+    </xs:sequence>
+    <xs:attribute name="applyall" type="xs:boolean" default="false"/>
+  </xs:complexType>
+
+  <xs:element name="when" type="prop:whenType"/>
+  <xs:complexType name="whenType">
+    <xs:sequence>
+      <xs:element ref="prop:action" minOccurs="1" maxOccurs="unbounded"/>
+    </xs:sequence>
+    <xs:attribute name="test"/>
+  </xs:complexType>
+
+  <xs:element name="action" type="prop:actionType"/>
+  <xs:complexType name="actionType">
+    <xs:attribute name="type" use="required"/>
+    <xs:anyAttribute processContents="lax"/>
+  </xs:complexType>
+  <!-- </pageflow> -->
+
+
+
+  <!--
+  <xs:element name="" type="prop:"/>
+  <xs:complexType name="">
+    <xs:sequence>
+      <xs:element ref="prop:"/>
+    </xs:sequence>
+    <xs:attribute name=""/>
+  </xs:complexType>
+  -->
+
+  <!-- <pagerequest> -->
+  <xs:element name="pagerequest" type="prop:pagerequestType"/>
+  <xs:complexType name="pagerequestType">
+    <xs:choice>
+      <xs:sequence>
+        <xs:element name="default">
+          <xs:complexType>
+            <xs:group ref="prop:pagerequestGroup"/>
+          </xs:complexType>
+        </xs:element>
+        <xs:element name="variant" minOccurs="0" maxOccurs="unbounded">
+          <xs:complexType>
+            <xs:group ref="prop:pagerequestGroup"/>
+            <xs:attribute name="name" use="required"/>
+          </xs:complexType>
+        </xs:element>
+      </xs:sequence>
+      <xs:group ref="prop:pagerequestGroup"/>
+    </xs:choice>
+    <xs:attribute name="name" use="required"/>
+    <xs:attribute name="copyfrom"/>
+  </xs:complexType>
+
+  <xs:group name="pagerequestGroup">
+      <xs:sequence>
+
+        <xs:element ref="prop:force-ssl" minOccurs="0"/>
+        
+        <xs:element name="choose" minOccurs="0">
+          <xs:complexType>
+            <xs:sequence>
+              <xs:element name="when" minOccurs="1" maxOccurs="unbounded">
+                <xs:complexType>
+                  <xs:all>
+                    <xs:element ref="prop:force-ssl" minOccurs="0"/>                      
+                  </xs:all>
+                  <xs:attribute name="test" use="required"/>
+                </xs:complexType>
+              </xs:element>
+              <xs:element name="otherwise" minOccurs="0" maxOccurs="1">
+                <xs:complexType>
+                  <xs:all>
+                    <xs:element ref="prop:force-ssl" minOccurs="0"/>                      
+                  </xs:all>
+                </xs:complexType>
+              </xs:element>
+            </xs:sequence>
+          </xs:complexType>
+        </xs:element>
+
+        <xs:element name="defaultflow" minOccurs="0">
+          <xs:complexType>
+            <xs:attribute name="flow" use="required"/>
+          </xs:complexType>
+        </xs:element>
+
+        <xs:element name="authconstraint" type="prop:authconstraintAnonymousType" minOccurs="0"/>
+        
+        <xs:element name="state" minOccurs="0">
+          <xs:complexType>
+            <xs:attribute name="class" use="optional"/>
+            <xs:attribute name="bean-ref" use="optional"/>
+            <xs:attribute name="bean-name" use="optional"/>
+            <xs:attribute name="parent-bean-ref" use="optional"/>
+            <xs:attribute name="scope" use="optional"/>
+          </xs:complexType>
+        </xs:element>
+
+        <xs:element name="input"  minOccurs="0">
+          <xs:complexType>
+            <xs:choice>
+              <xs:sequence>
+                <xs:element name="interface" minOccurs="0" maxOccurs="unbounded">
+                  <xs:complexType>
+                    <xs:attribute name="prefix" use="required"/>
+                    <xs:attribute name="class" use="required"/>
+                    <xs:attribute name="checkactive" default="true" type="xs:boolean"/>
+                    <xs:attribute name="activeignore" default="false" type="xs:boolean"/>
+                    <xs:attribute name="logging" default="false" type="xs:boolean"/>
+                  </xs:complexType>
+                </xs:element>
+              </xs:sequence>
+              <xs:sequence maxOccurs="unbounded" minOccurs="0">
+                <xs:choice>
+                  <xs:element name="wrapper" minOccurs="0" maxOccurs="unbounded">
+                    <xs:complexType>
+                      <xs:attribute name="prefix" use="required"/>
+                      <xs:attribute name="class" use="required"/>
+                      <xs:attribute name="checkactive" default="true" type="xs:boolean"/>
+                      <xs:attribute name="activeignore" default="false" type="xs:boolean"/>
+                      <xs:attribute name="logging" default="false" type="xs:boolean"/>
+                      <xs:attribute name="tenant" use="optional"/>
+                    </xs:complexType>
+                  </xs:element>
+                  <xs:element ref="prop:config-include"/>
+                </xs:choice>
+              </xs:sequence>
+            </xs:choice>
+            <xs:attribute name="policy" default="ANY">
+              <xs:simpleType>
+                <xs:restriction base="xs:token">
+                  <xs:enumeration value="ANY"/>
+                  <xs:enumeration value="ALL"/>
+                  <xs:enumeration value="NONE"/>
+                </xs:restriction>
+              </xs:simpleType>
+            </xs:attribute>
+            <xs:attribute name="requirestoken" default="false" type="xs:boolean"/>
+          </xs:complexType>
+        </xs:element>
+        
+          <xs:element name="process" minOccurs="0">
+            <xs:complexType>
+              <xs:sequence> 
+                <xs:element name="action" minOccurs="0" maxOccurs="unbounded">
+                  <xs:complexType>
+                    <xs:sequence>
+                      <xs:element name="submit" minOccurs="0" maxOccurs="1">
+                        <xs:complexType>
+                          <xs:sequence>
+                            <xs:element name="wrapper" minOccurs="0" maxOccurs="unbounded">
+                              <xs:complexType>
+                                <xs:attribute name="ref" use="required" /> 
+                              </xs:complexType>
+                            </xs:element>
+                          </xs:sequence>
+                        </xs:complexType>
+                      </xs:element>
+                      <xs:element name="retrieve" minOccurs="0" maxOccurs="1">
+                        <xs:complexType>
+                          <xs:sequence>
+                            <xs:element name="wrapper" minOccurs="0" maxOccurs="unbounded">
+                              <xs:complexType>
+                                <xs:attribute name="ref" use="required" /> 
+                              </xs:complexType>
+                            </xs:element>
+                          </xs:sequence>
+                        </xs:complexType>
+                      </xs:element>
+                    </xs:sequence>
+                    <xs:attribute name="name" use="required" />
+                    <xs:attribute name="pageflow" />
+                    <xs:attribute name="forcestop">
+                      <xs:simpleType>
+                        <xs:restriction base="xs:token">
+                          <xs:enumeration value="true" />
+                          <xs:enumeration value="false" />
+                          <xs:enumeration value="step" />
+                        </xs:restriction>
+                      </xs:simpleType>
+                    </xs:attribute>
+                    <xs:attribute name="jumptopage" />
+                    <xs:attribute name="jumptopageflow" />
+                  </xs:complexType>
+                </xs:element>
+              </xs:sequence>
+            </xs:complexType>
+          </xs:element>
+
+        <xs:element name="output" minOccurs="0">
+            <xs:complexType>
+              <xs:sequence>
+                <xs:element name="resource" minOccurs="0" maxOccurs="unbounded">
+                  <xs:complexType>
+                    <xs:attribute name="class" use="optional"/>
+                    <xs:attribute name="node" use="required"/>
+                    <xs:attribute name="bean-ref" use="optional"/>
+                    <xs:attribute name="lazy" default="false" type="xs:boolean"/>
+                  </xs:complexType>
+                </xs:element>
+              </xs:sequence>
+            </xs:complexType>
+        </xs:element>
+
+        <xs:element ref="prop:properties" minOccurs="0"/>
+
+        </xs:sequence>
+  </xs:group>
+  <!-- </pagerequest> -->
+    
+  <!-- <scriptedflow name="..." file="..."/> -->
+  <xs:element name="scriptedflow" type="prop:scriptedflowType"/>
+  <xs:complexType name="scriptedflowType" mixed="false">
+    <xs:attribute name="name" use="required"/>
+    <xs:attribute name="file" use="required"/>
+  </xs:complexType>
+  
+  <!-- <exception> -->
+  <!-- the desired behaviour for page and forward cannot be expressed -->
+  <!-- within the schema. The "use"-attribut of xs:attributes for exact the same element cannot differ -->
+  <!-- based on whether a specific attribute is present or not. -->
+  <xs:element name="exception" type="prop:exceptionType"/>
+  <xs:complexType name="exceptionType">
+    <xs:attribute name="type" use="required"/>
+    <xs:attribute name="forward" type="xs:boolean" use="required"/>
+    <xs:attribute name="page" use="required"/>
+    <xs:attribute name="processor"/>
+  </xs:complexType>
+  <!-- </exception> -->
+
+  <!-- <properties> -->
+  <xs:element name="properties" type="prop:propertiesType"/>
+  <xs:complexType name="propertiesType">
+    <xs:sequence>
+      <xs:choice minOccurs="1" maxOccurs="unbounded">
+        <xs:element ref="prop:prop"/>
+        <xs:element ref="prop:choose"/>
+        <xs:element ref="prop:config-include"/>
+      </xs:choice>
+    </xs:sequence>
+  </xs:complexType>
+
+  <xs:element name="prop" type="prop:propType"/>
+  <xs:complexType name="propType" mixed="true">
+    <xs:sequence>
+      <!-- allow <cus:fqdn/> etc -->
+      <xs:any namespace="http://www.schlund.de/pustefix/customize" processContents="lax" minOccurs="0" maxOccurs="unbounded"/>
+    </xs:sequence>
+    <xs:attribute name="name" use="required"/>
+    <xs:attribute name="tenant" use="optional"/>
+  </xs:complexType>
+
+  <xs:element name="choose" type="prop:chooseType"/>
+  <xs:complexType name="chooseType">
+    <xs:sequence>
+      <xs:element name="when" minOccurs="1" maxOccurs="unbounded">
+        <xs:complexType>
+          <xs:sequence>
+            <xs:choice minOccurs="0" maxOccurs="unbounded">
+              <xs:element ref="prop:prop"/>
+              <xs:element ref="prop:config-include"/>
+            </xs:choice>
+          </xs:sequence>
+          <xs:attribute name="test" use="required"/>
+        </xs:complexType>
+      </xs:element>
+      <xs:element name="otherwise" minOccurs="0" maxOccurs="1">
+        <xs:complexType>
+          <xs:sequence>
+            <xs:choice minOccurs="0" maxOccurs="unbounded">
+              <xs:element ref="prop:prop"/>
+              <xs:element ref="prop:config-include"/>
+            </xs:choice>
+          </xs:sequence>
+        </xs:complexType>
+      </xs:element>
+    </xs:sequence>
+  </xs:complexType>
+  <!-- </properties> -->
+
+  <xs:element name="foreigncontext" type="prop:foreigncontextType"/>
+  <xs:complexType name="foreigncontextType">
+    <xs:attribute name="externalservletname"/>
+  </xs:complexType>
+
+  <xs:element name="standardprops" type="prop:standardpropsType"/>
+  <xs:complexType name="standardpropsType">
+    <xs:sequence>
+      <xs:element ref="prop:properties" minOccurs="0"/>
+    </xs:sequence>
+    <xs:attribute name="version" type="xs:token" use="required"/>
+  </xs:complexType>
+
+  <xs:element name="config-include" type="prop:configIncludeType"/>
+  <xs:complexType name="configIncludeType">
+    <xs:attribute name="file" type="xs:string" use="required"></xs:attribute>
+    <xs:attribute name="section" use="optional">
+      <xs:simpleType>
+        <xs:restriction base="xs:token">
+          <xs:enumeration value="targets"/>
+          <xs:enumeration value="resources"/>
+          <xs:enumeration value="pageflows"/>
+          <xs:enumeration value="pagerequests"/>
+          <xs:enumeration value="properties"/>
+          <xs:enumeration value="interceptors"/>
+          <xs:enumeration value="roles"/>
+          <xs:enumeration value="conditions"/>
+          <xs:enumeration value="authconstraints"/>
+          <xs:enumeration value="scriptedflows"/>
+          <xs:enumeration value="preserve-params"/>
+        </xs:restriction>
+      </xs:simpleType>
+    </xs:attribute>
+    <xs:attribute name="refid" type="xs:NCName" use="optional"></xs:attribute>
+    <xs:attribute name="xpath" type="xs:string" use="optional"></xs:attribute>
+    <xs:attribute name="module" type="xs:string" use="optional"></xs:attribute>
+  </xs:complexType>
+
+ 
+  <!--  General simple types -->
+
+  <xs:simpleType name="springBeanScope">
+    <xs:restriction base="xs:string">
+      <xs:enumeration value="prototype"/>
+      <xs:enumeration value="request"/>
+      <xs:enumeration value="session"/>
+      <xs:enumeration value="singleton"/>
+    </xs:restriction>
+  </xs:simpleType>
+
+</xs:schema>

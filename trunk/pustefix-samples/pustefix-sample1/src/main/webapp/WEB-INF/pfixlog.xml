@@ -1,0 +1,44 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<log4j:configuration xmlns:log4j="http://jakarta.apache.org/log4j/"
+                     xmlns:cus="http://www.schlund.de/pustefix/customize">
+
+  <cus:include name="module://pustefix-core/pfixlog.xml"/>
+
+  <!-- Example: include log4j configurations from classpath -->
+  <!--
+  <cus:include name="classpath:META-INF/pfixlog.xml"/>
+  -->
+
+  <!-- Example: override pustefix-servlet.log appender and log on console instead of file -->
+  <!--
+  <appender name="LOGGER_GENERAL" class="org.apache.log4j.ConsoleAppender">
+    <layout class="org.apache.log4j.PatternLayout">
+      <param name="ConversionPattern" value="%d{yyyy-MM-dd HH:mm:ss} %-5p %c{1}:%L - %m%n"/>
+    </layout>
+  </appender>
+  -->
+
+  <!-- Example: add additional category for class with non-default log level -->
+  <!--
+  <category name="de.schlund.pfixcore.example.AdultInfoHandler" additivity="false">
+    <priority value="DEBUG"/>
+    <appender-ref ref="LOGGER_GENERAL"/>
+  </category>"
+  -->
+
+  <!-- Example: override root category and set non-prod level from default INFO to DEBUG -->
+  <!--
+  <root>
+    <cus:choose>
+      <cus:when test="$mode = 'prod'">
+        <priority value="WARN"/>
+      </cus:when>
+      <cus:otherwise>
+        <priority value="DEBUG"/>
+      </cus:otherwise>
+    </cus:choose>
+    <appender-ref ref="LOGGER_GENERAL"/>
+  </root>
+  -->
+
+</log4j:configuration>

@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<interface xmlns="http://www.pustefix-framework.org/2008/namespace/iwrapper"
+           xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+           xsi:schemaLocation="http://www.pustefix-framework.org/2008/namespace/iwrapper 
+                               http://www.pustefix-framework.org/2008/namespace/iwrapper.xsd"
+           extends="org.pustefixframework.samples.i18n.wrapper.Registration">
+  
+  <ihandler class="org.pustefixframework.samples.i18n.handler.RegistrationHandler"/>
+
+  <param name="name" type="java.lang.String" occurrence="mandatory">
+    <precheck class="de.schlund.pfixcore.generator.prechecks.RegexpCheck">
+      <cparam name="regexp" value="/.{4,}/"/>
+      <cparam name="scodeNoMatch" value="org.pustefixframework.samples.i18n.StatusCodes#INVALID_NAME" />
+    </precheck>
+  </param>
+
+</interface>

@@ -1,0 +1,30 @@
+<?xml version="1.0"?>
+<preface xml:id="introduction" xmlns="http://docbook.org/ns/docbook" xmlns:xlink="http://www.w3.org/1999/xlink"
+  xmlns:xi="http://www.w3.org/2001/XInclude" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xsi:schemaLocation="http://docbook.org/ns/docbook http://www.docbook.org/xml/5.0CR7/xsd/docbook.xsd"
+>
+  <title>Introduction</title>
+  <para>
+    Pustefix is a framework that helps you to develop web based applications (referred to as
+    <emphasis>projects</emphasis> here).
+  </para>
+  <para>
+    The framework consists of two more or less independent parts:
+  </para>
+  <itemizedlist>
+    <listitem>
+      <para>A machinery to apply recursive XSLT transformations that produces the UI of the web application.</para>
+    </listitem>
+    <listitem>
+      <para>A Java framework that takes input from the UI to change the application data and supplies changes of the application data back to the UI.</para>
+    </listitem>
+  </itemizedlist>
+  <para>
+    Together, the framework acts similar to the Model-View-Controller pattern (as far as this is possible in
+    the context of a web application).
+  </para>
+  <para>
+    This reference guide covers all important topics that you need to know when working with any aspects of the
+    Pustefix framework. If you are new to Pustefix we recommend reading one of the tutorials.
+  </para>
+</preface>

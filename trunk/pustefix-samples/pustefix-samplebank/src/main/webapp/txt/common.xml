@@ -1,0 +1,68 @@
+<?xml version="1.0" encoding="UTF-8"?><include_parts xmlns:ixsl="http://www.w3.org/1999/XSL/Transform" xmlns:pfx="http://www.schlund.de/pustefix/core">
+  
+<part name="header">
+  <theme name="default">
+    <div class="header">$$$&#160; Sample Bank Application &#160;$$$</div>
+  </theme>
+</part>
+
+<part name="navigation">
+  <theme name="default">
+    <table width="100%" cellpadding="0" cellspacing="0"> 
+      <tr>
+        <td>
+          <div class="navigation">
+            <pfx:button page="home">Home</pfx:button>&#160;
+            <pfx:button page="accountoverview">Overview</pfx:button>&#160;
+            <pfx:button page="accountdetails">Account</pfx:button>&#160;
+            <pfx:button page="test">Test</pfx:button>&#160;
+          </div>
+        </td>
+        <ixsl:if test="pfx:hasRole('ACCOUNT') or pfx:hasRole('UNRESTRICTED')">
+          <td align="right">
+            <div class="navigation">
+              <pfx:button page="logout">Logout</pfx:button>
+            </div>
+          </td>
+        </ixsl:if>
+      </tr>
+    </table>
+  </theme>
+</part>
+
+<part name="roles">
+  <theme name="default">
+    <div class="info">
+      Current roles:<br/>
+      <ixsl:if test="pfx:hasRole('ANONYMOUS')">
+        &#160;&#160;<i>ANONYMOUS</i><br/>
+      </ixsl:if>
+      <ixsl:if test="pfx:hasRole('UNRESTRICTED')"> 
+        &#160;&#160;<i>UNRESTRICTED</i><br/>
+      </ixsl:if>
+      <ixsl:if test="pfx:hasRole('ACCOUNT')">
+        &#160;&#160;<i>ACCOUNT</i><br/>
+      </ixsl:if>
+      <ixsl:if test="pfx:hasRole('ADMIN')">
+        &#160;&#160;<i>ADMIN</i><br/>
+      </ixsl:if>
+      <ixsl:if test="pfx:hasRole('TEST')">
+        &#160;&#160;<i>TEST</i><br/>
+      </ixsl:if>
+    </div>
+  </theme>
+</part>
+
+<part name="authtokens">
+  <theme name="default">
+    <div class="info">
+      <ixsl:for-each select="/formresult/test/authtoken">
+        <a>
+          <ixsl:attribute name="href"><ixsl:value-of select="$__contextpath"/>/accountdetails?__sendingauthdata=1&amp;__sendingdata=1&amp;login.AuthToken=<ixsl:value-of select="@value"/></ixsl:attribute>
+          Account login via authentication token</a><br/>
+      </ixsl:for-each>
+    </div>
+  </theme>
+</part>
+
+</include_parts>

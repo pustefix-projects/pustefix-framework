@@ -1,0 +1,26 @@
+<?xml version="1.0"?>
+<chapter xml:id="installation" xmlns="http://docbook.org/ns/docbook" xmlns:xlink="http://www.w3.org/1999/xlink" xmlns:xi="http://www.w3.org/2001/XInclude" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://docbook.org/ns/docbook http://www.docbook.org/xml/5.0CR7/xsd/docbook.xsd">
+  <title>Installation</title>
+
+  <qandaset>
+    <qandaentry xml:id="installation.dns">
+      <question>
+        <para>
+          I don't have access to DNS and I don't want to mess up my hosts file. Is there any other way to access a pustefix application?
+        </para>
+      </question>
+      <answer>
+        <para>
+          Yes but only if you have one application deployed on that server and you are just using tomcat, without apache.
+          Pustefix uses a virtual host for every application deployed. However you can use the <literal>&lt;serveralias/&gt;</literal>
+          option from the <filename>project.xml.in</filename> file. Let's say that the ip of the server is <literal>111.222.333.444</literal>.
+          You can use something like <literal>&lt;serveralias&gt;111.222.333.444&lt;/serveralias&gt;</literal> then redeploy the application.
+        </para>
+        <para>
+          Now you can access your favourite pustefix application via <uri>http://111.222.333.444:8080/xml/config</uri>.
+        </para>
+      </answer>
+    </qandaentry>
+  </qandaset>
+
+</chapter>

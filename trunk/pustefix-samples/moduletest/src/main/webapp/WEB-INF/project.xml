@@ -1,0 +1,70 @@
+<?xml version="1.0" encoding="utf-8"?>
+<project-config xmlns="http://www.pustefix-framework.org/2008/namespace/project-config"
+                xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+                xsi:schemaLocation="http://www.pustefix-framework.org/2008/namespace/project-config 
+                                    http://www.pustefix-framework.org/2008/namespace/project-config.xsd">
+  
+  <project>
+    <name>moduletest</name>
+    <description>Module test application</description>
+  </project>
+  
+  <editor>
+    <choose>
+      <when test="$mode='test'">
+        <enabled>true</enabled>
+      </when>
+    </choose>
+    <location>http://cms.${fqdn}:9090/pustefix-editor-webui/</location>
+    <secret>foobar</secret>
+  </editor>
+
+  <xml-generator>
+    <config-file>docroot:/WEB-INF/depend.xml</config-file>
+    <choose>
+      <when test="$mode='prod'">
+        <!-- Set this to false if you want to skip the check for changed stylesheets on every request -->
+        <check-modtime>false</check-modtime>
+      </when>
+    </choose>
+  </xml-generator>
+  
+  <application>
+    
+    <docroot-path>docroot:/htdocs</docroot-path>
+    
+    <context-xml-service>
+      <config-file>docroot:/WEB-INF/config.conf.xml</config-file>
+      <choose>
+        <when test="$mode='prod'">
+          <session-cleaner-timeout>20</session-cleaner-timeout>
+        </when>
+        <otherwise>
+          <session-cleaner-timeout>600</session-cleaner-timeout>
+        </otherwise>
+      </choose>
+    </context-xml-service>
+    
+    <static>
+      <path>img</path>
+      <path>css</path>
+    </static>
+    
+    <choose>
+      <when test="$mode='test'">
+        <exception-processing>
+          <process type="java.lang.Throwable" 
+                   processor="de.schlund.pfixxml.exceptionprocessor.UniversalExceptionProcessor"/>
+        </exception-processing>
+      </when>
+    </choose>
+    
+  </application>
+  
+  <properties>
+    <!-- Defines SSL ports used for redirect corresponding to the unsecure ports -->
+    <prop name="pfixcore.ssl_redirect_port.for.8080">8443</prop>
+    <prop name="pfixcore.ssl_redirect_port.for.9080">9443</prop>
+  </properties>
+  
+</project-config>

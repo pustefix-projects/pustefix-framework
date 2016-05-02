@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<fr:config-fragments
+  xmlns:fr="http://www.pustefix-framework.org/2008/namespace/config-fragments"
+  xmlns="http://www.pustefix-framework.org/2008/namespace/context-xml-service-config"
+  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xsi:schemaLocation="http://www.pustefix-framework.org/2008/namespace/config-fragments
+                      http://www.pustefix-framework.org/2008/namespace/config-fragments-0_18.xsd">
+
+  <fr:section id="registration_wrappers">
+    <wrapper prefix="registration" tenant="DE_market" class="org.pustefixframework.samples.i18n.wrapper.RegistrationDE"/>
+  </fr:section>
+
+</fr:config-fragments>
+

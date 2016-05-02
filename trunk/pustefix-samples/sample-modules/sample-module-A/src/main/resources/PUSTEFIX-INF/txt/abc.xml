@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="ISO-8859-1"?><include_parts xmlns:ixsl="http://www.w3.org/1999/XSL/Transform" xmlns:pfx="http://www.schlund.de/pustefix/core">
+
+  <part name="partA">
+    <theme name="default">
+      <div class="part_module">
+        <h3>AAA - A</h3>
+        <partinfo part="partA" theme="default" path="txt/abc.xml" module="sample-module-A"/>
+      </div>
+    </theme>
+  </part>
+  
+  <part name="partAB">
+    <theme name="default">
+      <div class="part_module">
+        <h3>AAA - AB</h3>
+        <partinfo part="partAB" theme="default" path="txt/abc.xml" module="sample-module-A"/>
+      </div>
+    </theme>
+  </part>
+  
+  <part name="partABC">
+    <theme name="default">
+      <div class="part_module">
+        <h3>AAA - ABC</h3>
+        <partinfo part="partABC" theme="default" path="txt/abc.xml" module="sample-module-A"/>
+      </div>
+    </theme>
+  </part>
+ 
+</include_parts>

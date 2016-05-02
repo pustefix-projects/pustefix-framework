@@ -1,0 +1,50 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<web-app xmlns="http://java.sun.com/xml/ns/javaee" xmlns:jee="http://java.sun.com/xml/ns/javaee">
+   <context-param>
+      <!-- Make sure we're in mode "prod" to disable live resolving.
+           The editor has strange problem in mode "test": 
+           the live mechanism causes the editor to load the application's pfixlog.xml instead of his own pfixlog.xml.
+           That fails because the jar file for unifiedlogging.Config is not part ot the editor's jar files.
+        -->
+      <param-name>mode</param-name>
+      <param-value>prod</param-value>
+   </context-param>
+   <!--
+   <context-param>
+      <param-name>editor.userdata</param-name>
+      <param-value>file:/path/to/userdata.xml</param-value>
+   </context-param>
+   <context-param>
+      <param-name>editor.locations</param-name>
+      <param-value>file:/path/to/editor-locations.xml</param-value>
+   </context-param>
+   -->
+   <servlet>
+      <servlet-name>dispatcher</servlet-name>
+      <servlet-class>org.springframework.web.servlet.DispatcherServlet</servlet-class>
+      <init-param>
+         <param-name>contextClass</param-name>
+         <param-value>org.pustefixframework.container.spring.beans.PustefixWebApplicationContext</param-value>
+      </init-param>
+      <init-param>
+         <param-name>contextConfigLocation</param-name>
+         <param-value> WEB-INF/project.xml WEB-INF/spring.xml</param-value>
+      </init-param>
+      <load-on-startup>1</load-on-startup>
+   </servlet>
+   <servlet-mapping>
+      <servlet-name>dispatcher</servlet-name>
+      <url-pattern>/*</url-pattern>
+   </servlet-mapping>
+   <filter>
+      <filter-name>editor-session-cookie-filter</filter-name>
+      <filter-class>org.pustefixframework.editor.webui.util.SessionCookieFilter</filter-class>
+   </filter>
+   <filter-mapping>
+      <filter-name>editor-session-cookie-filter</filter-name>
+      <url-pattern>/*</url-pattern>
+   </filter-mapping>
+   <session-config>
+      <session-timeout>60</session-timeout>
+   </session-config>
+</web-app>

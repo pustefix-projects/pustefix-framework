@@ -1,0 +1,233 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<context-xml-service-config xmlns="http://www.pustefix-framework.org/2008/namespace/context-xml-service-config"
+  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xsi:schemaLocation="http://www.pustefix-framework.org/2008/namespace/context-xml-service-config ../../schema/context-xml-service-config.xsd"
+  version="1.0">
+  
+  <context defaultpage="start">
+    <resource class="org.pustefixframework.editor.webui.resources.SessionResource"/>
+    <resource class="org.pustefixframework.editor.webui.resources.ProjectsResource"/>
+    <resource class="org.pustefixframework.editor.webui.resources.PagesResource"/>
+    <resource class="org.pustefixframework.editor.webui.resources.TargetsResource"/>
+    <resource class="org.pustefixframework.editor.webui.resources.ImagesResource"/>
+    <resource class="org.pustefixframework.editor.webui.resources.IncludesResource"/>
+    <resource class="org.pustefixframework.editor.webui.resources.DynIncludesResource"/>
+    <resource class="org.pustefixframework.editor.webui.resources.SessionInfoResource"/>
+    <resource class="org.pustefixframework.editor.webui.resources.UsersResource"/>
+    <resource class="de.schlund.pfixcore.lucefix.ContextSearch"/>
+    <resource class="org.pustefixframework.editor.webui.resources.NamespaceInfoResource"/>
+  </context>
+
+  <interceptors>
+    <start>
+      <!-- Resets edit state flag -->
+      <interceptor class="org.pustefixframework.editor.webui.util.EditViewResetContextInterceptor" />
+    </start>
+    <end>
+      <interceptor class="org.pustefixframework.editor.webui.util.UpdateSessionInfoContextInterceptor"/>
+    </end>
+  </interceptors>
+
+  <scriptedflow name="selectinclude" file="WEB-INF/scriptedflows/selectinclude.xml" />
+
+  <role name="ANONYMOUS" initial="true" />
+  <role name="AUTHENTICATED" />
+
+  <authconstraint id="AC_AUTHENTICATED" authpage="login" default="true">
+    <hasrole name="AUTHENTICATED" />
+  </authconstraint>
+
+  <pageflow name="EditorFlow" final="start">
+    <flowstep name="start" />
+    <flowstep name="home" />
+    <flowstep name="logout" />
+  </pageflow>
+
+  <pageflow name="EditorPageFlow" final="pages">
+    <flowstep name="start" />
+    <flowstep name="pages" />
+  </pageflow>
+
+  <pageflow name="EditorTargetFlow" final="targets">
+    <flowstep name="start" />
+    <flowstep name="targets" />
+  </pageflow>
+
+  <pageflow name="EditorImageFlow" final="images">
+    <flowstep name="start" />
+    <flowstep name="images" />
+  </pageflow>
+
+  <pageflow name="EditorIncludeFlow" final="includes">
+    <flowstep name="start" />
+    <flowstep name="includes" />
+  </pageflow>
+
+  <pageflow name="EditorDynIncludeFlow" final="dynincludes">
+    <flowstep name="start" />
+    <flowstep name="dynincludes" />
+  </pageflow>
+
+  <pageflow name="EditorJumpToPageFlow">
+    <flowstep name="jumptopage" />
+    <flowstep name="pages" stophere="true"/>
+  </pageflow>
+
+  <pagerequest name="login">
+    <authconstraint>
+      <hasrole name="ANONYMOUS" />
+    </authconstraint>
+    <input>
+      <wrapper class="org.pustefixframework.editor.webui.wrappers.Login" prefix="auth" />
+    </input>
+  </pagerequest>
+
+  <pagerequest name="start">
+    <input>
+      <wrapper class="org.pustefixframework.editor.webui.wrappers.SelectProject" prefix="selectproject" />
+      <wrapper class="org.pustefixframework.editor.webui.wrappers.UserLoginSwitch" prefix="userlogins" />
+      <wrapper class="org.pustefixframework.editor.webui.wrappers.SelectUser" prefix="selectuser" />
+      <wrapper class="org.pustefixframework.editor.webui.wrappers.JumpToIncludePart" prefix="jump" />
+    </input>
+    <output>
+      <resource node="session" class="org.pustefixframework.editor.webui.resources.SessionResource" />
+      <resource node="projects" class="org.pustefixframework.editor.webui.resources.ProjectsResource" />
+    </output>
+  </pagerequest>
+
+  <pagerequest name="home">
+    <output>
+      <resource node="session" class="org.pustefixframework.editor.webui.resources.SessionResource" />
+      <resource node="projects" class="org.pustefixframework.editor.webui.resources.ProjectsResource" />
+    </output>
+  </pagerequest>
+
+  <pagerequest name="pages">
+    <input>
+      <wrapper class="org.pustefixframework.editor.webui.wrappers.SelectPage" prefix="selectpage" />
+    </input>
+    <output>
+      <resource node="session" class="org.pustefixframework.editor.webui.resources.SessionResource" />
+      <resource node="projects" class="org.pustefixframework.editor.webui.resources.ProjectsResource" />
+      <resource node="pages" class="org.pustefixframework.editor.webui.resources.PagesResource" />
+    </output>
+  </pagerequest>
+
+  <pagerequest name="targets">
+    <input>
+      <wrapper class="org.pustefixframework.editor.webui.wrappers.SelectTarget" prefix="selecttarget" />
+    </input>
+    <output>
+      <resource node="session" class="org.pustefixframework.editor.webui.resources.SessionResource" />
+      <resource node="projects" class="org.pustefixframework.editor.webui.resources.ProjectsResource" />
+      <resource node="targets" class="org.pustefixframework.editor.webui.resources.TargetsResource" />
+    </output>
+  </pagerequest>
+
+  <pagerequest name="images">
+    <input>
+      <wrapper class="org.pustefixframework.editor.webui.wrappers.SelectImage" prefix="selectimage" />
+      <wrapper class="org.pustefixframework.editor.webui.wrappers.UploadImage" prefix="upload" />
+      <wrapper class="org.pustefixframework.editor.webui.wrappers.RestoreImage" prefix="restore" />
+    </input>
+    <output>
+      <resource node="session" class="org.pustefixframework.editor.webui.resources.SessionResource" />
+      <resource node="projects" class="org.pustefixframework.editor.webui.resources.ProjectsResource" />
+      <resource node="images" class="org.pustefixframework.editor.webui.resources.ImagesResource" />
+    </output>
+  </pagerequest>
+
+  <pagerequest name="includes">
+    <input>
+      <wrapper class="org.pustefixframework.editor.webui.wrappers.SelectIncludePart" prefix="selectinclude" />
+      <wrapper class="org.pustefixframework.editor.webui.wrappers.BranchIncludePart" prefix="branch" />
+      <wrapper class="org.pustefixframework.editor.webui.wrappers.RestoreIncludePart" prefix="restore" />
+      <wrapper class="org.pustefixframework.editor.webui.wrappers.UploadIncludePart" prefix="upload" />
+    </input>
+    <output>
+      <resource node="session" class="org.pustefixframework.editor.webui.resources.SessionResource" />
+      <resource node="projects" class="org.pustefixframework.editor.webui.resources.ProjectsResource" />
+      <resource node="includes" class="org.pustefixframework.editor.webui.resources.IncludesResource" />
+      <resource node="namespace-info" class="org.pustefixframework.editor.webui.resources.NamespaceInfoResource" />
+      <resource node="lucefix" class="de.schlund.pfixcore.lucefix.ContextSearch" />
+    </output>
+  </pagerequest>
+
+  <pagerequest name="dynincludes">
+    <input>
+      <wrapper class="org.pustefixframework.editor.webui.wrappers.SelectDynIncludePart" prefix="selectinclude" />
+      <wrapper class="org.pustefixframework.editor.webui.wrappers.BranchDynIncludePart" prefix="branch" />
+      <wrapper class="org.pustefixframework.editor.webui.wrappers.RestoreDynIncludePart" prefix="restore" />
+      <wrapper class="org.pustefixframework.editor.webui.wrappers.UploadDynIncludePart" prefix="upload" />
+    </input>
+    <output>
+      <resource node="session" class="org.pustefixframework.editor.webui.resources.SessionResource" />
+      <resource node="projects" class="org.pustefixframework.editor.webui.resources.ProjectsResource" />
+      <resource node="dynincludes" class="org.pustefixframework.editor.webui.resources.DynIncludesResource" />
+      <resource node="namespace-info" class="org.pustefixframework.editor.webui.resources.NamespaceInfoResource" />
+    </output>
+  </pagerequest>
+
+  <pagerequest name="search">
+    <input>
+      <wrapper class="de.schlund.pfixcore.lucefix.wrappers.Search" prefix="lucefix" />
+    </input>
+    <output>
+      <resource node="projects" class="org.pustefixframework.editor.webui.resources.ProjectsResource" />
+      <resource node="lucefix" class="de.schlund.pfixcore.lucefix.ContextSearch" />
+    </output>
+  </pagerequest>
+
+  <pagerequest name="logout">
+    <state class="org.pustefixframework.editor.webui.handlers.LogoutState" />
+  </pagerequest>
+
+  <pagerequest name="jumptopage">
+    <input>
+      <wrapper class="org.pustefixframework.editor.webui.wrappers.SelectPage" prefix="selectpage" />
+    </input>
+  </pagerequest>
+
+  <pagerequest name="sessionmanager">
+    <output>
+      <resource class="org.pustefixframework.editor.webui.resources.SessionInfoResource" node="sessioninfo" />
+    </output>
+  </pagerequest>
+
+  <pagerequest name="useradmin">
+    <input>
+      <wrapper class="org.pustefixframework.editor.webui.wrappers.SelectUser" prefix="selectuser" />
+      <wrapper class="org.pustefixframework.editor.webui.wrappers.DeleteUsers" prefix="delete" />
+    </input>
+    <output>
+      <resource node="session" class="org.pustefixframework.editor.webui.resources.SessionResource" />
+      <resource node="users" class="org.pustefixframework.editor.webui.resources.UsersResource" />
+    </output>
+  </pagerequest>
+
+  <pagerequest name="useredit">
+    <input>
+      <wrapper class="org.pustefixframework.editor.webui.wrappers.EditUser" prefix="user" />
+    </input>
+    <output>
+      <resource node="session" class="org.pustefixframework.editor.webui.resources.SessionResource" />
+      <resource node="projects" class="org.pustefixframework.editor.webui.resources.ProjectsResource" />
+      <resource node="users" class="org.pustefixframework.editor.webui.resources.UsersResource" />
+    </output>
+  </pagerequest>
+
+  <pagerequest name="ws_includes">
+    <state class="org.pustefixframework.editor.webui.webservice.StaticIncludesState" />
+    <properties>
+      <prop name="mimetype">text/xml</prop>
+    </properties>
+  </pagerequest>
+
+  <pagerequest name="ws_dynincludes">
+    <state class="org.pustefixframework.editor.webui.webservice.DynamicIncludesState" />
+    <properties>
+      <prop name="mimetype">text/xml</prop>
+    </properties>
+  </pagerequest>
+
+</context-xml-service-config>

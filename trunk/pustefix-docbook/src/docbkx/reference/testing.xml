@@ -1,0 +1,300 @@
+<?xml version="1.0"?>
+<chapter xml:id="testing" xmlns="http://docbook.org/ns/docbook" xmlns:xlink="http://www.w3.org/1999/xlink"
+  xmlns:xi="http://www.w3.org/2001/XInclude" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xsi:schemaLocation="http://docbook.org/ns/docbook http://www.docbook.org/xml/5.0CR7/xsd/docbook.xsd"
+>
+  <title>Testing</title>
+    <para>
+      Since release 0.13 Pustefix applications are regular Spring applications. Thus the benefit from building
+      IoC based applications also applies to Pustefix: you can either make isolated, container-independent unit tests of your POJOs, or you can make integration tests within the Spring container.
+    </para>
+    <section xml:id="testing.unit">
+      <title>Unit testing</title>
+      <para>
+        Ideally your business logic is container and webframework-independent and you can test your components
+	without any dependency to the Pustefix framework - unlike the view logic, which naturally depends on
+        Pustefix framework classes.
+      </para>
+      <para>
+        The most frequently used Pustefix framework classes/interfaces are IWrappers, IHandlers and ContextResources.
+      </para>
+      <para>
+        In former Pustefix versions view logic objects collaborated using the Context object to programmatically retrieve
+	the required references. Thus the objects were not only coupled to the Context object but also had implicit
+	references to collaborating view objects.
+      </para>
+      <para>
+	Since release 0.13 you're recommended to wire your objects using Dependency Injection. So you often don't
+        have a dependency to the Context object any more and the references to other objects are explicit.
+        ContextResources implemented this way can be tested like other POJOs, in isolation and without providing
+        a Context object.
+      </para>
+      <para>
+        But sometimes your ContextResource has to access the Context object (to call one of the various other methods)
+	or you want to test an IHandler which still needs a Context object (passed as argument to the framework callback
+	methods). If you want to test such an object in isolation, you can use a mock object that implements the Context
+	interface.
+      </para>
+      <para>
+        The class <classname>org.pustefixframework.test.MockContext</classname> provides a very simple implementation of the Context interface.
+        It doesn't really mimic the complex behaviour of the real implementation, but provides methods to set nearly all
+	kind of state which can be accessed using this interface. It's intended to be used within isolated tests. Testing
+	complex behaviour and object collaborations (like pageflow processing) has to be done as integration test using
+	the real Context implementation.
+      </para> 
+      <para>
+	The following example shows how you can test an IHandler, which uses a ContextResource to store data and will return true for <literal>needsData</literal> calls as long as no data has been submitted:
+      </para>
+      <programlisting language="java"><![CDATA[public class AdultInfoHandlerTest {
+
+    public void testHandler() throws Exception {
+        
+        MockContext context = new MockContext();
+        ContextAdultInfo info = new ContextAdultInfo();
+        AdultInfoHandler handler = new AdultInfoHandler();
+        handler.setContextAdultInfo(info);
+        
+        Assert.assertTrue(handler.needsData(context));
+        
+        AdultInfo iwrapper = new AdultInfo();
+        iwrapper.init("info");
+        iwrapper.setStringValAdult("false");
+        iwrapper.loadFromStringValues();
+             
+        handler.handleSubmittedData(context, iwrapper);
+        
+        Assert.assertFalse(handler.needsData(context));
+    
+    }
+    
+}]]></programlisting>
+    <para>
+      You programmatically create a MockContext and instances of the required IHandlers, IWrappers and ContextResources.
+      Then you wire your objects using the according setters. The first assertion is made by checking the handler's <literal>needsData</literal>
+      method passing the MockContext. Then the IWrapper is populated with data and passed as argument to the <literal>handleSumittedData</literal>
+      method. After that an assertion is made to check if <literal>needsData</literal> is satisfied now.
+    </para>
+    <para>
+      The above example worked with an injected ContextResource. If you have to test classes with implicit ContextResource references, which are retrieved using the ContextResourceManager, you also have to mock the ContextResourceManager. Therefore Pustefix provides the <classname>org.pustefixframework.test.MockContextResourceManager</classname> class:
+    </para>
+      <programlisting language="java"><![CDATA[public class AdultInfoHandlerTest {
+
+    public void testHandler() throws Exception {
+        
+        MockContext context = new MockContext();
+        MockContextResourceManager resourceManager = new MockContextResourceManager();
+        context.setContextResourceManager(resourceManager);
+
+        ContextAdultInfo info = new ContextAdultInfo();
+        resourceManager.addResource(info);
+        
+    }
+    
+}]]></programlisting>
+    <para>
+      You have to create a MockContextResourceManager instance and set it at the MockContext object. Then you can create and add your ContextResource instances. 
+    </para>
+    <para>
+      The above example programmatically created an IWrapper instance and set String data, which was casted and checked calling <literal>loadFromStringValues</literal>. The following example shows how the population of an IWrapper itself can be tested:    
+    </para>
+    <programlisting language="java"><![CDATA[public class TShirtWrapperTest {
+
+    public void testIWrapper() throws Exception {
+        
+        TShirt tshirt = new TShirt();   
+        tshirt.init("shirt");
+        tshirt.setStringValSize("MX");
+        tshirt.loadFromStringValues();
+        Assert.assertTrue(tshirt.errorHappened());
+        IWrapperParam[] params = tshirt.gimmeAllParamsWithErrors();
+        for(IWrapperParam param:params) {
+            if(param.getName().equals("Color")) {
+                Assert.assertSame(param.getStatusCodeInfos()[0].getStatusCode(), CoreStatusCodes.MISSING_PARAM);
+            } else if(param.getName().equals("Size")) {
+                Assert.assertSame(param.getStatusCodeInfos()[0].getStatusCode(), CoreStatusCodes.PRECHECK_REGEXP_NO_MATCH);
+            }
+        }
+
+        tshirt.init("shirt");
+        tshirt.setStringValSize("XL");
+        tshirt.setStringValColor("1");
+        tshirt.loadFromStringValues();
+        Assert.assertFalse(tshirt.errorHappened());
+        Assert.assertEquals(1, tshirt.getColor());
+
+    }
+
+}]]></programlisting>
+    <para>
+      First we instantiate and populate the IWrapper. After calling <literal>loadFromStringValues</literal> an assertion is made
+      to check if an error occurred. Then we iterate over all parameters and assert the expected statuscodes.
+    </para>
+    <para>
+      After that we're initializing the wrapper again, this time with valid values. Now we can check if the wrapper returns the
+      correct values (after they have been checked and casted calling the <literal>loadFromStringValues</literal> method).
+      If an error happened during casting or checking, the value won't be set and the according getter method will return <literal>null</literal>.
+    </para>
+
+    </section>
+    <section xml:id="testing.integration">
+      <title>Integration testing</title>
+      <para>
+        Pustefix applications are regular Spring applications, thus all the integration testing benefit provided
+        by Spring is also available for Pustefix: e.g. the IoC container caching between test executions, DI of test fixtures, etc.
+      </para>
+      <para>
+	Pustefix supports Spring's TestContext framework by providing a custom ContextLoader implementation. The following example
+	shows how you can use it to set up a (pre JUnit-4.4) test:
+      </para>
+    <programlisting language="java"><![CDATA[@ContextConfiguration(loader=PustefixWebApplicationContextLoader.class,
+                      locations={"file:projects/sample1/conf/project.xml","file:projects/sample1/conf/spring.xml"})
+public class MyTest extends AbstractJUnit38SpringContextTests {
+}]]></programlisting>
+    <para>
+      You set up the Pustefix specific ApplicationContext by setting the loader attribute of the <classname>org.springframework.test.context.ContextConfiguration</classname> annotation to <classname>org.pustefixframework.test.PustefixWebApplicationContextLoader</classname>. Using the <literal>locations</literal> attribute you can set the location of the ApplicationContext's configuration files (normally <literal>project.xml</literal> and <literal>spring.xml</literal>).
+    </para>
+    <para>
+      In this example we use a JUnit version prior to 4.4. Therefor we have to derive an according Spring class. If you use JUnit 4.4 or newer you can alternatively set a Spring-specific Runner implementation using the JUnit <literal>@RunWith</literal> annotation.
+    </para>
+    <programlisting language="java"><![CDATA[@RunWith(SpringJUnit4ClassRunner.class)
+@ContextConfiguration(loader=PustefixWebApplicationContextLoader.class,
+                      locations={"file:projects/sample1/conf/project.xml","file:projects/sample1/conf/spring.xml"})
+public class MyTest {
+}]]></programlisting>
+    <para>
+      Setting up your test this way, you can use Spring's autowiring to inject the required beans into your test class. The following example test uses a singleton scoped bean, which is automatically injected by its name using the <literal>Autowired</literal> and <literal>Qualifier</literal> annotations:
+    </para>
+    <programlisting language="java"><![CDATA[@RunWith(SpringJUnit4ClassRunner.class)
+@ContextConfiguration(loader=PustefixWebApplicationContextLoader.class,
+                      locations={"file:projects/sample1/conf/project.xml","file:projects/sample1/conf/spring.xml"})
+public class MyTest {
+
+    @Autowired
+    @Qualifier("global_testdata")
+    private TestData testData;
+    
+    @Test
+    public void testBean() {
+        Assert.assertEquals(testData.getText(), "bar");
+    }
+    
+}]]></programlisting>
+    <para>
+      You aren't forced to use Spring's <literal>TestContext</literal> framework, alternatively you can manually use the Pustefix <literal>ContextLoader</literal> to create a <literal>PustefixWebApplicationContext</literal>, but you loose the benefit of context caching and dependency injection:
+    </para>
+    <programlisting language="java"><![CDATA[public class MyTest extends TestCase {
+
+    public void testBean() {
+        
+        File docroot = new File("projects");
+        PustefixWebApplicationContextLoader loader = new PustefixWebApplicationContextLoader(docroot);
+        String[] locations = {"pfixroot:/sample1/conf/spring.xml", "pfixroot:/sample1/conf/project.xml"};
+        PustefixWebApplicationContext appContext = (PustefixWebApplicationContext) loader.loadContext(locations);
+     
+        TestData testData = (TestData)appContext.getBean("global_testdata");
+        assertEquals(testData.getText(), "bar");
+        
+    }
+    
+}]]></programlisting>
+    <para>
+       Now follows a more advanced example, which shows how you can test HTTP requests and session scoped beans
+       outside of the application server using mock objects. This example shows how to request a page and test the resulting HTML document:
+    </para>
+    <programlisting language="java"><![CDATA[@ContextConfiguration(loader=PustefixWebApplicationContextLoader.class,
+                      locations={"file:projects/sample1/conf/project.xml","file:projects/sample1/conf/spring.xml"})
+public class HomePageTest extends AbstractJUnit38SpringContextTests {
+    
+    @Autowired
+    private ServletContext servletContext;
+    
+    @Autowired
+    private PustefixContextXMLRequestHandler requestHandler;
+    
+    public void testPageRequest() throws Exception {
+   
+        MockHttpServletRequest req = new MockHttpServletRequest();
+        req.setPathInfo("/home");
+        req.setMethod("GET");
+        MockHttpServletResponse res = new MockHttpServletResponse();
+        MockHttpSession session = new MockHttpSession(servletContext);
+        req.setSession(session);
+        RequestContextHolder.setRequestAttributes(new ServletRequestAttributes(req));
+        session.setAttribute(SessionHelper.SESSION_ID_URL, SessionHelper.getURLSessionId(req));
+        
+        requestHandler.handleRequest(req, res);
+        Assert.assertTrue(res.getContentAsString().contains("<title>Pustefix Sample</title>"));
+        
+    }
+
+}]]></programlisting>
+    <para>
+      First we create a mock object for the <literal>HttpServletRequest</literal> and set the path to the requested page. Then we're creating an according <literal>HttpServletResponse</literal> mock object. Next we create an <literal>HttpSession</literal> mock object an set it at the request. At last we have to set the request at Spring's <literal>RequestContextHolder</literal> and a special session attribute.
+    </para>
+    <para>
+      Now we can call the <literal>handleRequest</literal> method at the injected <classname>PustefixContextXMLRequestHandler</classname>, passing the request and response objects as arguments. At last we're checking if the resulting
+HTML from the <literal>HttpServletResponse</literal> contains the expected content.
+    </para>
+    <para>
+      The final example shows you how to test a pageflow by checking the collaborating <literal>IHandlers</literal> and <literal>States</literal>, <literal>isAccessible</literal> and <literal>needsData</literal> checks, submitting to handlers and checking of the <literal>ResultDocument</literal>:
+    </para>
+    <programlisting language="java"><![CDATA[@ContextConfiguration(loader=PustefixWebApplicationContextLoader.class,
+                      locations={"file:projects/sample1/conf/project.xml","file:projects/sample1/conf/spring.xml"})
+public class OrderFlowTest extends AbstractJUnit38SpringContextTests {
+    
+    @Autowired
+    private ServletContext servletContext;
+    
+    @Autowired
+    private Context pustefixContext;
+    
+    @Autowired
+    private OverviewState overviewState;
+    
+    public void testHandler() throws Exception {
+        
+        MockHttpServletRequest req = new MockHttpServletRequest();
+        req.setPathInfo("/home");
+        req.setMethod("GET");
+        MockHttpSession session = new MockHttpSession(servletContext);
+        req.setSession(session);
+        RequestContextHolder.setRequestAttributes(new ServletRequestAttributes(req));
+        PfixServletRequest pfxReq = new PfixServletRequestImpl(req,new Properties());
+        ((ContextImpl)pustefixContext).prepareForRequest();
+        ((ContextImpl)pustefixContext).setPfixServletRequest(pfxReq);
+        
+        Assert.assertFalse(overviewState.isAccessible(pustefixContext, pfxReq));
+        AdultInfoHandler handler = (AdultInfoHandler)applicationContext.getBean(AdultInfoHandler.class.getName()+"#home#info");
+        Assert.assertTrue(handler.needsData(pustefixContext));
+        
+        AdultInfo adultInfo = new AdultInfo();
+        adultInfo.init("info");
+        adultInfo.setStringValAdult("false");
+        adultInfo.loadFromStringValues();
+        handler.handleSubmittedData(pustefixContext, adultInfo);
+        
+        TShirtHandler tshirtHandler = (TShirtHandler)applicationContext.getBean(TShirtHandler.class.getName()+"#order#shirt");
+        TShirt tshirt = new TShirt();
+        tshirt.init("shirt");
+        tshirt.setStringValColor("3");
+        tshirt.setStringValSize("XL");
+        tshirt.setStringValFeature(new String[] {"0","1","2"});
+        tshirt.loadFromStringValues();
+        tshirtHandler.handleSubmittedData(pustefixContext, tshirt);
+        Assert.assertTrue(overviewState.isAccessible(pustefixContext, pfxReq));
+        
+        ResultDocument resDoc = overviewState.getDocument(pustefixContext, pfxReq);
+        Document doc = resDoc.getSPDocument().getDocument();
+        Node expNode = XMLUtils.parse("<adultinfo adult=\"false\"/>").getDocumentElement();
+        XmlAssert.assertEquals(expNode, doc.getElementsByTagName("adultinfo").item(0));
+    }
+}]]></programlisting>
+    <para>
+      You have to be aware that some beans, e.g. <literal>States</literal>, require that the Context has set a current pagerequest 
+      and that the Context is prepared (meaning that some ThreadLocal initialization is done). So you can't just reference an arbitrary 
+      bean in the midst of the processing lifecycle and expect it to work outside of this lifecycle. Testing States at the moment requires
+      a cast to its implementation class and some initialization (as shown in this example). But this can be subject to change in future Pustefix
+      versions.
+    </para>
+    </section>
+</chapter>

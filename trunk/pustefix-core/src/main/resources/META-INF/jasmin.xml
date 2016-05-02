@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="utf-8"?>
+<library>
+  <module>
+    <name>pfx-httprequest</name>
+    <resource>
+      <type>js</type>
+      <base>classpath</base>
+      <path>PUSTEFIX-INF/script/httpRequest.js</path>
+    </resource>
+  </module>
+  <module>
+    <name>pfx-xmlrequest</name>
+    <resource>
+      <type>js</type>
+      <base>classpath</base>
+      <path>PUSTEFIX-INF/script/xmlRequest.js</path>
+    </resource>
+  </module>
+  <module>
+    <name>pfx-render</name>
+    <resource>
+      <type>js</type>
+      <base>classpath</base>
+      <path>PUSTEFIX-INF/script/render.js</path>
+    </resource>
+    <dependencie>pfx-httprequest</dependencie>
+  </module>
+</library>

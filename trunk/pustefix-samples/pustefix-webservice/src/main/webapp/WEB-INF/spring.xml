@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xmlns:aop="http://www.springframework.org/schema/aop"
+       xmlns:context="http://www.springframework.org/schema/context"
+       xmlns:ws="http://pustefixframework.org/schema/webservices"
+       xsi:schemaLocation="http://www.springframework.org/schema/beans
+                           http://www.springframework.org/schema/beans/spring-beans.xsd
+                           http://www.springframework.org/schema/aop
+                           http://www.springframework.org/schema/aop/spring-aop.xsd
+                           http://www.springframework.org/schema/context
+                           http://www.springframework.org/schema/context/spring-context.xsd
+                           http://pustefixframework.org/schema/webservices
+                           http://pustefixframework.org/schema/webservices/pustefix-webservices.xsd">
+
+  <bean id="calcbean" class="de.schlund.pfixcore.example.webservices.CalculatorImpl" scope="session">
+    <aop:scoped-proxy/>
+  </bean>
+  
+  <ws:webservice 
+    id="Webservice_Calculator" 
+    servicename="Calculator" 
+    interface="de.schlund.pfixcore.example.webservices.Calculator" 
+    ref="calcbean" 
+    protocol="ANY"
+    synchronize="false"
+  />
+ 
+  <!--
+  <bean id="typebean" class="de.schlund.pfixcore.example.webservices.TypeTestImpl">
+    <aop:scoped-proxy/>
+  </bean>
+ 
+  <ws:webservice 
+    id="Webservice_TypeTest" 
+    servicename="TypeTest" 
+    interface="de.schlund.pfixcore.example.webservices.TypeTest" 
+    ref="typebean" 
+    protocol="ANY"
+    synchronize="false"
+    whitelist="de.schlund.pfixcore.example.webservices.Bean.*"
+  />
+  -->
+
+</beans>

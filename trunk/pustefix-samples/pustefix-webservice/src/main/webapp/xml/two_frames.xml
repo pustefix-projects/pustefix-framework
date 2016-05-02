@@ -1,0 +1,80 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<pfx:document xmlns:pfx="http://www.schlund.de/pustefix/core" xmlns:ixsl="http://www.w3.org/1999/XSL/Transform">
+  <pfx:head>
+    <title>Web service test application</title>
+  </pfx:head>
+  <pfx:frameset rows="50,*">
+    <pfx:frame name="top_navi">
+      <html>
+        <head>
+          <link rel="stylesheet" type="text/css" href="{$__contextpath}/webservice.css"/>
+        </head>
+        <body>
+          <div style="background:#000000;color:#FFFFFF;font-size:16pt;padding:5pt;padding-left:10pt;">
+            <span style="padding-right:20pt">Web service test application:</span>
+            <pfx:button page="calculator" activeclass="navi" normalclass="navi">Calculator</pfx:button>
+            <pfx:button page="chat" activeclass="navi" normalclass="navi">Chat</pfx:button>
+            <pfx:button page="counter" activeclass="navi" normalclass="navi">Counter</pfx:button>
+            <pfx:button page="data" activeclass="navi" normalclass="navi">Data</pfx:button>
+            <pfx:button page="typetest" activeclass="navi" normalclass="navi">TypeTest</pfx:button>
+            <pfx:button page="calltest" activeclass="navi" normalclass="navi">CallTest</pfx:button>
+            <pfx:button page="beantest" activeclass="navi" normalclass="navi">BeanTest</pfx:button>
+          </div>	
+        </body>
+      </html>
+    </pfx:frame>
+    <pfx:frame name="bottom">
+      <html>
+        <head>
+          <link rel="stylesheet" type="text/css" href="{$__contextpath}/webservice.css"/>
+          <script type="text/javascript" src="{$__contextpath}/application.js"></script>
+          <script type="text/javascript" src="{$__contextpath}/modules/pustefix-core/script/xmlRequest.js"></script>
+          <script type="text/javascript" src="{$__contextpath}/modules/pustefix-webservices-jaxws/script/webservice.js"></script>
+          <script type="text/javascript" src="{$__contextpath}/modules/pustefix-core/script/httpRequest.js"></script>
+          <script type="text/javascript" src="{$__contextpath}/modules/pustefix-webservices-jsonws/script/webservice_json.js"></script>
+          <ixsl:choose>
+            <ixsl:when test="$page='calculator'">
+              <pfx:wsscript name="Calculator" type="soap"/>
+              <pfx:wsscript name="Calculator"/>
+              <script type="text/javascript" src="{$__contextpath}/calc-pfxsoap.js"></script>
+            </ixsl:when>
+            <ixsl:when test="$page='chat'">
+              <pfx:wsscript name="Chat" type="soap"/>
+              <pfx:wsscript name="Chat"/>
+              <script type="text/javascript" src="{$__contextpath}/chat-pfxsoap.js"></script>
+            </ixsl:when>
+            <ixsl:when test="$page='counter'"> 
+              <pfx:wsscript name="Counter" type="soap"/>
+              <pfx:wsscript name="Counter"/>
+              <script type="text/javascript" src="{$__contextpath}/counter-pfxsoap.js"></script>		
+            </ixsl:when>
+            <ixsl:when test="$page='data'">
+              <pfx:wsscript name="Data" type="soap"/>
+              <pfx:wsscript name="Data"/>
+              <script type="text/javascript" src="{$__contextpath}/data-pfxsoap.js"></script>		
+            </ixsl:when>
+            <ixsl:when test="$page='typetest'">
+              <pfx:wsscript name="TypeTest" type="soap"/>
+              <pfx:wsscript name="TypeTest"/>
+              <script type="text/javascript" src="{$__contextpath}/typetest-pfxsoap.js"></script>		
+            </ixsl:when>
+            <ixsl:when test="$page='calltest'">
+              <pfx:wsscript name="CallTest" type="soap"/>
+              <pfx:wsscript name="CallTest"/>
+              <script type="text/javascript" src="{$__contextpath}/calltest-pfxsoap.js"></script>   
+            </ixsl:when>
+            <ixsl:when test="$page='beantest'">
+              <pfx:wsscript name="BeanTest" type="soap"/>
+              <pfx:wsscript name="BeanTest"/>
+              <script type="text/javascript" src="{$__contextpath}/beantest-pfxsoap.js"></script>   
+            </ixsl:when>
+          </ixsl:choose>  
+        </head>
+        <body style="padding-left:10pt;">
+          <pfx:maincontent part="content" path="txt/pages" prefix="main_"/> 
+          <pfx:editconsole webserviceconsole="true"/>
+        </body>
+      </html>
+    </pfx:frame>
+  </pfx:frameset>
+</pfx:document>

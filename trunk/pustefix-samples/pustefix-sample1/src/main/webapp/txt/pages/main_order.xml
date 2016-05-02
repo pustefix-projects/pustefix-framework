@@ -1,0 +1,210 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<include_parts xmlns:ixsl="http://www.w3.org/1999/XSL/Transform" xmlns:pfx="http://www.schlund.de/pustefix/core">
+
+  <part name="content">
+    <theme name="default">
+        <center>
+          <pagemsgs/>
+          <pfx:forminput name="main">
+            <pfx:include part="shirt"/>
+            <table>
+              <tr valign="top">
+                <td>
+                  <pfx:include part="counter"/>
+                </td>
+                <td>
+                  <pfx:include part="pic"/>
+                </td>
+              </tr>
+            </table>
+            <pfx:checkactive prefix="trouser">
+              <pfx:include part="trouser"/>
+            </pfx:checkactive>
+            <br/>
+            <table width="400">
+              <tr valign="bottom">
+                <td align="right" nowrap="nowrap" width="100%">
+                  <pfx:xinp type="submit" value="Submit"/>
+                </td>
+              </tr>
+            </table>
+          </pfx:forminput>
+          <br/>[<pfx:image themed-img="test.gif" themed-path="img"/>]
+        </center>
+      </theme>
+  </part>
+
+  <part name="shirt">
+    <theme name="default">
+        <table width="400">
+          <tr>
+            <td align="left">
+              <b><big>T-Shirt:</big></b>
+            </td>
+          </tr>
+        </table>
+        <table bgcolor="#bbccff" cellpadding="2" cellspacing="0" class="boxed" width="400">
+          <tr>
+            <pfx:checkfield name="shirt.Size"><td class="{$pfx_class}" nowrap="nowrap">Size [S,M,L,XL,XXL]</td></pfx:checkfield>
+            <td>
+              <pfx:xinp name="shirt.Size" type="select">
+                <pfx:option>--- Please Select ---</pfx:option>
+                <pfx:option value="S">S</pfx:option>
+                <pfx:option value="M">M</pfx:option>
+                <pfx:option default="true" value="L">L</pfx:option>
+                <pfx:option value="XL">XL</pfx:option>
+                <pfx:option value="XXL">XXL</pfx:option>
+              </pfx:xinp>
+            </td>
+          </tr>
+          <errormsg name="shirt.Size"/>
+          <tr>
+            <pfx:checkfield name="shirt.Color">
+              <td class="{$pfx_class}" nowrap="nowrap">Color-No.:</td>
+            </pfx:checkfield>
+            <td>
+              <pfx:xinp maxlength="3" name="shirt.Color" size="3" type="text"/>
+            </td>
+          </tr>
+          <errormsg name="shirt.Color"/>
+          <tr valign="top">
+            <pfx:checkfield name="shirt.Feature"><td class="{$pfx_class}">Features:</td></pfx:checkfield>
+            <td>
+              <pfx:xinp default="true" name="shirt.Feature" type="check" value="0"/>
+              <pfx:include part="tshirt_feature_0" href="dyntxt/order_features.xml"/><br/>
+              <pfx:xinp default="true" name="shirt.Feature" type="check" value="1"/>
+              <pfx:include part="tshirt_feature_1" href="dyntxt/order_features.xml"/><br/>
+              <pfx:xinp default="true" name="shirt.Feature" type="check" value="2"/>
+              <pfx:include part="tshirt_feature_2" href="dyntxt/order_features.xml"/><br/>
+              <pfx:xinp name="shirt.Feature" type="check" value="3"/>[=&gt; Error]
+            </td>
+          </tr>
+          <errormsg name="shirt.Feature"/>
+        </table>
+        <br/>
+      </theme>
+  </part>
+
+  <part name="counter">
+    <theme name="default">
+      <table bgcolor="#bbccff" cellpadding="2" cellspacing="0" class="boxed">
+        <ixsl:choose>
+          <ixsl:when test="/formresult/counter/@showCounter = 'false'">
+            <tr>
+              <td colspan="2">
+                <pfx:xinp type="submit" value="Show Counter" action="changeCounter">
+                  <pfx:argument name="counter.ShowCounter">true</pfx:argument>
+                </pfx:xinp>
+              </td>
+            </tr>
+          </ixsl:when>
+          <ixsl:otherwise>
+            <tr>
+              <td align="center" colspan="2">
+                <big><b>
+                  <ixsl:value-of select="/formresult/counter/@counter"/>
+                </b></big>
+              </td>
+            </tr>
+            <tr>
+              <td>
+                <pfx:xinp type="submit" value="Add +1" action="changeCounter">
+                  <pfx:argument name="counter.Add">1</pfx:argument>
+                </pfx:xinp>
+              </td>
+              <td>
+                <pfx:xinp type="submit" value="Add -1" action="changeCounter">
+                  <pfx:argument name="counter.Add">-1</pfx:argument>
+                </pfx:xinp>
+              </td>
+            </tr>
+            <tr>
+              <pfx:checkfield name="cinput.Set">
+                <td class="{$pfx_class}">Set Counter:</td>
+              </pfx:checkfield>
+              <td>
+                <pfx:xinp name="cinput.Set" size="3" type="text"/>
+                <pfx:xinp type="submit" value="Set" action="setCounter"/>
+              </td>
+            </tr>
+            <errormsg name="cinput.Set"/>
+          </ixsl:otherwise>
+        </ixsl:choose>
+        <tr>
+          <td colspan="2"><i>Add to the Counter <br/>to see the "PageMessages" <br/>feature in action.</i></td>
+        </tr>
+      </table>
+    </theme>
+  </part>
+  
+  <part name="pic">
+    <theme name="default">
+      <table bgcolor="#bbccff" class="boxed">
+        <pfx:checkactive prefix="pic">
+          <tr>
+            <td align="center">
+              <pfx:xinp type="submit" value="Toggle Pic" action="showImage">
+                <pfx:argument name="pic.Toggle">true</pfx:argument>
+              </pfx:xinp>
+            </td>
+          </tr>
+        </pfx:checkactive>
+        <ixsl:if test="/formresult/togglepic[@show = 'true']">
+          <tr>
+            <td>
+              <pfx:image src="/img/test.gif"/>
+            </td>
+          </tr>
+        </ixsl:if>
+      </table>
+    </theme>
+  </part>
+  
+
+  <part name="trouser">
+    <theme name="default">
+        <table width="400">
+          <tr>
+            <td align="left">
+              <b><big>Trousers:</big></b>
+            </td>
+          </tr>
+        </table>
+        <table bgcolor="#bbccff" cellpadding="2" cellspacing="0" class="boxed" width="400">
+          <tr>
+            <pfx:checkfield name="trouser.Size"><td class="{$pfx_class}" nowrap="nowrap">Size [M,L,XL]:</td></pfx:checkfield>
+            <td>
+              <pfx:xinp name="trouser.Size" type="select">
+                <pfx:option>--- Please Select ---</pfx:option>
+                <pfx:option value="S">S [=&gt; Error]</pfx:option>
+                <pfx:option value="M">M</pfx:option>
+                <pfx:option value="L">L</pfx:option>
+                <pfx:option value="XL">XL</pfx:option>
+              </pfx:xinp>
+            </td>
+          </tr>
+          <errormsg name="trouser.Size"/>
+          <tr>
+            <pfx:checkfield name="trouser.Color"><td class="{$pfx_class}" nowrap="nowrap">Color-No.:</td></pfx:checkfield>
+            <td>
+              <pfx:xinp maxlength="3" name="trouser.Color" size="3" type="text"/>
+            </td>
+          </tr>
+          <errormsg name="trouser.Color"/>
+          <tr valign="top">
+            <pfx:checkfield name="trouser.Feature"><td class="{$pfx_class}">Features:</td></pfx:checkfield>
+            <td>
+              <pfx:xinp name="trouser.Feature" type="check" value="0"/>
+              <pfx:include part="trouser_feature_0" href="dyntxt/order_features.xml"/><br/>
+              <pfx:xinp name="trouser.Feature" type="check" value="1"/>
+              <pfx:include part="trouser_feature_1" href="dyntxt/order_features.xml"/><br/>
+              <pfx:xinp name="trouser.Feature" type="check" value="2"/>
+              <pfx:include part="trouser_feature_2" href="dyntxt/order_features.xml"/><br/>
+            </td>
+          </tr>
+          <errormsg name="trouser.Feature"/>
+        </table>
+      </theme>
+  </part>
+  
+</include_parts>

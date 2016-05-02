@@ -1,0 +1,269 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<xsd:schema xmlns:xsd="http://www.w3.org/2001/XMLSchema" 
+            xmlns="http://www.pustefix-framework.org/2008/namespace/webservice-config"
+            targetNamespace="http://www.pustefix-framework.org/2008/namespace/webservice-config"
+            elementFormDefault="qualified" attributeFormDefault="unqualified">
+
+  <xsd:annotation>
+    <xsd:documentation>
+      XML Schema for webservice configuration
+    </xsd:documentation>
+  </xsd:annotation>
+
+  <xsd:element name="webservice-config">
+    <xsd:complexType>
+      <xsd:sequence>
+        <xsd:element ref="import" minOccurs="0" maxOccurs="unbounded"/>
+        <xsd:element ref="webservice-global" minOccurs="0"/>
+        <xsd:element ref="webservice" minOccurs="0" maxOccurs="unbounded"/>
+      </xsd:sequence>
+    </xsd:complexType>
+  </xsd:element>
+
+  <xsd:element name="import">
+    <xsd:complexType>
+      <xsd:attribute name="href" type="xsd:string"/>
+    </xsd:complexType>
+  </xsd:element>
+
+  <xsd:element name="webservice-global">
+    <xsd:complexType>
+      <xsd:sequence>
+        <xsd:element name="requestpath" type="xsd:string" minOccurs="0"/>
+        <xsd:element name="wsdlsupport" minOccurs="0">
+          <xsd:complexType>
+            <xsd:attribute name="enabled" type="xsd:boolean"/>
+            <xsd:attribute name="repository" type="xsd:string"/>
+          </xsd:complexType>
+        </xsd:element>
+        <xsd:element name="stubgeneration" minOccurs="0">
+          <xsd:complexType>
+            <xsd:attribute name="enabled" type="xsd:boolean"/>
+            <xsd:attribute name="repository" type="xsd:string"/>
+            <xsd:attribute name="jsnamespace" type="xsd:string"/>
+          </xsd:complexType>
+        </xsd:element>
+        <xsd:element ref="protocol" minOccurs="0"/>
+        <xsd:element ref="encoding" minOccurs="0"/>
+        <xsd:element ref="json" minOccurs="0"/>
+        <xsd:element ref="session" minOccurs="0"/>
+        <xsd:element ref="scope" minOccurs="0"/>
+        <xsd:element ref="ssl" minOccurs="0"/>
+        <xsd:element ref="context" minOccurs="0"/>
+        <xsd:element ref="authconstraint" minOccurs="0"/>
+        <xsd:choice>
+          <xsd:group ref="GlobalCustoms"/>
+          <xsd:element name="choose">
+            <xsd:complexType>
+              <xsd:sequence>
+                <xsd:element name="when" maxOccurs="unbounded">
+                  <xsd:complexType>
+                    <xsd:group ref="GlobalCustoms"/>
+                	<xsd:attribute name="test" type="xsd:string"/>
+                  </xsd:complexType>
+                </xsd:element>
+                <xsd:element name="otherwise" minOccurs="0">
+                  <xsd:complexType>
+                     <xsd:group ref="GlobalCustoms"/>
+                  </xsd:complexType>
+                </xsd:element>
+              </xsd:sequence>
+            </xsd:complexType>
+          </xsd:element>
+        </xsd:choice>
+      </xsd:sequence>
+    </xsd:complexType>
+  </xsd:element>
+
+  <xsd:group name="GlobalCustoms">
+	<xsd:sequence>
+	  <xsd:element name="admin" minOccurs="0">
+		<xsd:complexType>
+		  <xsd:attribute name="enabled" type="xsd:boolean" default="false"/>
+		</xsd:complexType>
+	  </xsd:element>
+	  <xsd:element name="monitoring" minOccurs="0">
+	    <xsd:complexType>
+		  <xsd:attribute name="enabled" type="xsd:boolean" default="false"/>
+		  <xsd:attribute name="scope" type="MonitorScopeType" default="session"/>
+		  <xsd:attribute name="historysize" type="MonitorSizeType" default="20"/>
+		</xsd:complexType>
+	  </xsd:element>
+      <xsd:element name="logging" minOccurs="0">
+        <xsd:complexType>
+          <xsd:attribute name="enabled" type="xsd:boolean" default="false"/>
+        </xsd:complexType>
+      </xsd:element>
+      <xsd:element ref="faulthandler" minOccurs="0"/>
+    </xsd:sequence>
+  </xsd:group>
+
+  <xsd:element name="webservice">
+    <xsd:complexType>
+      <xsd:all>
+        <xsd:element name="description" type="xsd:string" minOccurs="0"/>
+        <xsd:element name="interface">
+    	  <xsd:complexType>
+            <xsd:attribute name="name" type="ClassType" use="required"/>
+    	  </xsd:complexType>    
+        </xsd:element>
+        <xsd:element name="implementation">
+    	  <xsd:complexType>
+            <xsd:attribute name="name" type="ClassType" use="required"/>
+    	  </xsd:complexType>    
+    	</xsd:element>
+        <xsd:element name="whitelist" type="xsd:string" minOccurs="0"/>
+        <xsd:element name="stubgeneration" minOccurs="0">
+          <xsd:complexType>
+            <xsd:attribute name="jsnamespace" type="xsd:string"/>
+          </xsd:complexType>
+        </xsd:element>
+        <xsd:element ref="protocol" minOccurs="0"/>
+        <xsd:element ref="encoding" minOccurs="0"/>
+        <xsd:element ref="json" minOccurs="0"/>
+        <xsd:element ref="session" minOccurs="0"/>
+        <xsd:element ref="scope" minOccurs="0"/>
+        <xsd:element ref="ssl" minOccurs="0"/>
+        <xsd:element ref="context" minOccurs="0"/>
+        <xsd:element ref="authconstraint" minOccurs="0"/>
+        <xsd:element ref="faulthandler" minOccurs="0"/>
+      </xsd:all>
+      <xsd:attribute name="name" type="NameType" use="required"/>
+    </xsd:complexType>
+  </xsd:element>
+
+  <xsd:element name="protocol">
+    <xsd:complexType>
+      <xsd:attribute name="type" type="ProtocolType" use="required"/>
+    </xsd:complexType>
+  </xsd:element>
+
+  <xsd:element name="encoding">
+    <xsd:complexType>
+      <xsd:attribute name="style" type="StyleType" use="required"/>
+      <xsd:attribute name="use" type="UseType" use="required"/>
+    </xsd:complexType>    
+  </xsd:element>
+  
+  <xsd:element name="json">
+    <xsd:complexType>
+      <xsd:attribute name="classhinting" type="xsd:boolean"/>
+    </xsd:complexType>
+  </xsd:element>
+    
+  <xsd:element name="session">
+    <xsd:complexType>
+      <xsd:attribute name="type" type="SessionType" use="required"/>
+    </xsd:complexType>
+  </xsd:element>
+  
+  <xsd:element name="scope">
+    <xsd:complexType>
+      <xsd:attribute name="type" type="ScopeType" use="required"/>
+    </xsd:complexType>
+  </xsd:element>
+  
+  <xsd:element name="context">
+    <xsd:complexType>
+      <xsd:attribute name="name" type="xsd:string"/>
+      <xsd:attribute name="synchronize" type="xsd:boolean"/>
+    </xsd:complexType>
+  </xsd:element>
+  
+  <xsd:element name="authconstraint">
+    <xsd:complexType>
+      <xsd:attribute name="ref" type="xsd:string"/>
+    </xsd:complexType>
+  </xsd:element>
+  
+  <xsd:element name="ssl">
+    <xsd:complexType>
+      <xsd:attribute name="force" type="xsd:boolean" use="required"/>
+    </xsd:complexType>
+  </xsd:element>
+  
+  <xsd:element name="faulthandler">
+    <xsd:complexType>
+      <xsd:sequence>
+        <xsd:element name="param" minOccurs="0" maxOccurs="100">
+          <xsd:complexType>
+            <xsd:attribute name="name" type="xsd:string" use="required"/>
+            <xsd:attribute name="value" type="xsd:string" use="required"/>
+          </xsd:complexType>
+        </xsd:element>
+      </xsd:sequence>
+      <xsd:attribute name="class" type="ClassType" use="required"/>
+    </xsd:complexType>
+  </xsd:element>
+
+  <xsd:simpleType name="NameType">
+    <xsd:restriction base="xsd:ID">
+      <xsd:pattern value="[a-zA-Z][a-zA-Z0-9_]*"/>
+    </xsd:restriction>
+  </xsd:simpleType>
+   
+  <xsd:simpleType name="ClassType">
+    <xsd:restriction base="xsd:string">
+      <xsd:pattern value="[a-zA-Z][a-zA-Z0-9_]*(\.[a-zA-Z][a-zA-Z0-9_]*)*"/>
+    </xsd:restriction>
+  </xsd:simpleType>
+ 
+  <xsd:simpleType name="StyleType">
+    <xsd:restriction base="xsd:string">
+      <xsd:enumeration value="rpc"/>
+      <xsd:enumeration value="document"/>
+    </xsd:restriction>
+  </xsd:simpleType>
+   
+  <xsd:simpleType name="UseType">
+    <xsd:restriction base="xsd:string">
+      <xsd:enumeration value="encoded"/>
+      <xsd:enumeration value="literal"/>
+    </xsd:restriction>
+  </xsd:simpleType>
+  
+  <xsd:simpleType name="TestType">
+    <xsd:restriction base="UseType">
+      <xsd:enumeration value="encoded"/>
+    </xsd:restriction>
+  </xsd:simpleType>
+    
+  <xsd:simpleType name="SessionType">
+    <xsd:restriction base="xsd:string">
+      <xsd:enumeration value="none"/>
+      <xsd:enumeration value="servlet"/>
+    </xsd:restriction>
+  </xsd:simpleType>
+	
+  <xsd:simpleType name="MonitorScopeType">
+    <xsd:restriction base="xsd:string">
+      <xsd:enumeration value="session"/>
+      <xsd:enumeration value="ip"/>
+    </xsd:restriction>
+  </xsd:simpleType>
+	
+  <xsd:simpleType name="MonitorSizeType">
+    <xsd:restriction base="xsd:integer">
+      <xsd:minInclusive value="1"/>
+      <xsd:maxInclusive value="100"/>
+    </xsd:restriction>
+  </xsd:simpleType>
+  
+  <xsd:simpleType name="ScopeType">
+    <xsd:restriction base="xsd:string">
+      <xsd:enumeration value="application"/>
+      <xsd:enumeration value="session"/>
+      <xsd:enumeration value="request"/>
+    </xsd:restriction>
+  </xsd:simpleType>
+
+  <xsd:simpleType name="ProtocolType">
+    <xsd:restriction base="xsd:string">
+      <xsd:enumeration value="SOAP"/>
+      <xsd:enumeration value="JSONWS"/>
+      <xsd:enumeration value="JSONQX"/>
+      <xsd:enumeration value="ANY"/>
+    </xsd:restriction>
+  </xsd:simpleType>
+
+</xsd:schema>

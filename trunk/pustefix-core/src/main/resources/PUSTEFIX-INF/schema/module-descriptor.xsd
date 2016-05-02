@@ -1,0 +1,75 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<xs:schema
+  targetNamespace="http://www.pustefix-framework.org/2008/namespace/module-descriptor"
+  xmlns:xs="http://www.w3.org/2001/XMLSchema"
+  xmlns:md="http://www.pustefix-framework.org/2008/namespace/module-descriptor"
+  elementFormDefault="qualified">
+  
+  <xs:element name="module-descriptor" type="md:moduleDescriptorType">
+  </xs:element>
+  
+  <xs:complexType name="moduleDescriptorType">
+    <xs:sequence>
+      <xs:element name="module-name" type="md:moduleNameType"/>
+      <xs:element name="resource-path" type="xs:string" minOccurs="0"/>
+      <xs:element name="content-editable" type="xs:boolean" minOccurs="0"/>
+      <xs:element name="static" type="md:staticType" minOccurs="0"/>
+      <xs:element name="default-search" minOccurs="0">
+        <xs:complexType>
+          <xs:sequence>
+            <xs:element ref="md:filter-attribute" minOccurs="0" maxOccurs="unbounded"/>
+          </xs:sequence>
+          <xs:attribute name="priority" type="xs:int"/>
+        </xs:complexType>
+      </xs:element>
+      <xs:element name="override-modules" type="md:overrideType" minOccurs="0"/>
+    </xs:sequence>
+  </xs:complexType>
+  
+  <xs:simpleType name="moduleNameType">
+    <xs:restriction base="xs:string">
+      <xs:whiteSpace value="collapse"></xs:whiteSpace>
+      <xs:pattern value="[A-Za-z][A-Za-z0-9]*([_\-][A-Za-z0-9]+)*"></xs:pattern>
+    </xs:restriction>
+  </xs:simpleType>
+  
+  <xs:complexType name="staticType">
+    <xs:sequence>
+      <xs:element name="path" type="md:pathType" maxOccurs="unbounded"/>
+    </xs:sequence>
+  </xs:complexType>
+  
+  <xs:complexType name="overrideType">
+    <xs:sequence>
+      <xs:element ref="md:filter-attribute" minOccurs="0" maxOccurs="unbounded"/>
+      <xs:element name="module" maxOccurs="unbounded">
+        <xs:complexType>
+          <xs:sequence>
+            <xs:element name="resource" maxOccurs="unbounded">
+              <xs:complexType>
+                <xs:attribute name="path" type="xs:string"/>
+              </xs:complexType>
+            </xs:element>
+          </xs:sequence>
+          <xs:attribute name="name" type="xs:string"/>
+        </xs:complexType>
+      </xs:element>
+    </xs:sequence>
+  </xs:complexType>
+  
+  <xs:element name="filter-attribute">
+    <xs:complexType>
+      <xs:attribute name="name" type="xs:string"/>
+      <xs:attribute name="value" type="xs:string"/>
+    </xs:complexType>
+  </xs:element>
+  
+  <xs:complexType name="pathType">
+    <xs:simpleContent>
+      <xs:extension base="xs:string">
+        <xs:attribute name="i18n" type="xs:boolean" use="optional"/>
+      </xs:extension>
+    </xs:simpleContent>
+  </xs:complexType>
+    
+</xs:schema>

@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="utf-8"?>
+<module-descriptor xmlns="http://www.pustefix-framework.org/2008/namespace/module-descriptor"
+                   xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+                   xsi:schemaLocation="http://www.pustefix-framework.org/2008/namespace/module-descriptor
+                                       http://www.pustefix-framework.org/2008/namespace/module-descriptor.xsd">
+
+  <module-name>sample-module-B</module-name>
+
+  <override-modules>
+    <module name="sample-module-A">
+      <resource path="txt/common.xml"/>
+      <resource path="txt/ab.xml"/>
+      <resource path="txt/abc.xml"/>
+    </module>
+  </override-modules>
+
+</module-descriptor>

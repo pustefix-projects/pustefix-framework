@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<pfx:document xmlns:pfx="http://www.schlund.de/pustefix/core" xmlns:ixsl="http://www.w3.org/1999/XSL/Transform">
+  <html>
+    <head/>
+    <pfx:frameset rows="*,*,*">
+      <pfx:frame name="A" scrolling="no">
+        <html>
+          <head/>
+          <body>
+            <big>A</big>
+          </body>
+        </html>
+      </pfx:frame>
+      <pfx:frame name="B">
+        <html>
+          <head/>
+          <pfx:frameset cols="*,*,*">
+            <pfx:frame name="B1" scrolling="no">
+              <big>B1</big>
+            </pfx:frame>
+            <pfx:frame name="B2" scrolling="no">
+              <big>B2</big>
+            </pfx:frame>
+            <pfx:frame name="B3" scrolling="no">
+              <big>B3</big>
+            </pfx:frame>
+          </pfx:frameset>
+        </html>
+      </pfx:frame>
+      <pfx:frame name="C" scrolling="no">
+        <html>
+          <head/>
+          <body>
+            <big>C</big>
+          </body>
+        </html>
+      </pfx:frame>
+    </pfx:frameset>
+  </html>
+</pfx:document>

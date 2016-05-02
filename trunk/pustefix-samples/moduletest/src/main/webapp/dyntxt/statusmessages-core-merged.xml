@@ -1,0 +1,183 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<include_parts xmlns:ixsl="http://www.w3.org/1999/XSL/Transform" xmlns:pfx="http://www.schlund.de/pustefix/core"><!-- Don't add new StatusCodes here, only new product branches! -->
+  <part name="pfixcore.GEN_ERROR">
+    <theme name="default">An error happened.</theme>
+  </part>
+  <part name="pfixcore.editor.adduser.USER_EXISTS">
+    <theme name="default">This user already exists.</theme>
+  </part>
+  <part name="pfixcore.editor.auth.NO_LOGIN_ALLOWED">
+    <theme name="default">The CMS is currently unavailable.</theme>
+  </part>
+  <part name="pfixcore.editor.auth.WRONG_USER_OR_PASS">
+    <theme name="default">User and Password don't match.</theme>
+  </part>
+  <part name="pfixcore.editor.commons.COMMONPATH_UNDEF">
+    <theme name="default">The path of this dynamic include doesn't point to any file marked as holding dynamic includes.</theme>
+  </part>
+  <part name="pfixcore.editor.images.IMAGE_UNDEF">
+    <theme name="default">This image does not exist.</theme>
+  </part>
+  <part name="pfixcore.editor.imagesupload.IMAGEUPL_GENERR">
+    <theme name="default">General protection fault.</theme>
+  </part>
+  <part name="pfixcore.editor.imagesupload.IMAGEUPL_NOFILE">
+    <theme name="default">You must upload a image file (GIF or JPG).</theme>
+  </part>
+  <part name="pfixcore.editor.imagesupload.IMAGEUPL_WRONGTYPE">
+    <theme name="default">You need to supply a GIF, JPG or PNG image.</theme>
+  </part>
+  <part name="pfixcore.editor.imagesupload.IMAGEUPL_WRONGTYPEGIF">
+    <theme name="default">This seems to be no GIF image.</theme>
+  </part>
+  <part name="pfixcore.editor.imagesupload.IMAGEUPL_WRONGTYPEJPG">
+    <theme name="default">This seems to be no JPG image.</theme>
+  </part>
+  <part name="pfixcore.editor.imagesupload.IMAGEUPL_WRONGTYPEPNG">
+    <theme name="default">This seems to be no PNG image.</theme>
+  </part>
+  <part name="pfixcore.editor.imagesupload.IMAGEUPL_HASCHANGED">
+    <theme name="default">
+        Image was changed by another user, while you were uploading.
+        Do upload again, if you still want to replace the image.
+      </theme>
+  </part>
+  <part name="pfixcore.editor.imagesupload.FILE_IS_IN_ROOT">
+    <theme name="default">Upload of images residing in the root directory is not allowed.</theme>
+  </part>
+  <part name="pfixcore.editor.includes.INCLUDE_UNDEF">
+    <theme name="default">This include does not exist.</theme>
+  </part>
+  <part name="pfixcore.editor.includes.BRANCH_CREATE_FAILED">
+    <theme name="default">Creation of include part branch failed.</theme>
+  </part>
+  <part name="pfixcore.editor.includes.BRANCH_DELETE_FAILED">
+    <theme name="default">Removal of include part branch failed.</theme>
+  </part>
+  <part name="pfixcore.editor.includesupload.GEN_ERR">
+    <theme name="default">General error.</theme>
+  </part>
+  <part name="pfixcore.editor.includesupload.PARSE_ERR">
+    <theme name="default">Parse error.</theme>
+  </part>
+  <part name="pfixcore.editor.includesupload.PARSE_ERR_WITH_DETAILS">
+    <theme name="default">Parse error on line <pfx:argref pos="1"/>, column <pfx:argref pos="2"/>.</theme>
+  </part>
+  <part name="pfixcore.editor.includesupload.INCLUDE_HAS_CHANGED">
+    <theme name="default">The include part has been changed by another user while you were editing. Please merge the changes in the editor box and upload again.</theme>
+  </part>
+  <part name="pfixcore.editor.includesupload.INCLUDE_HAS_CHANGED_RESTORE">
+    <theme name="default">The include part has been changed by another user. If you still want to restore the backup, please do so again.</theme>
+  </part>
+  <part name="pfixcore.editor.includesupload.FILE_IS_IN_ROOT">
+    <theme name="default">Upload of include parts for files residing in the root directory is not allowed.</theme>
+  </part>
+  <part name="pfixcore.editor.pages.PAGE_UNDEF">
+    <theme name="default">This page is unknown.</theme>
+  </part>
+  <part name="pfixcore.editor.productselect.UNKNOWN_PRODUCT">
+    <theme name="default">Unknown product.</theme>
+  </part>
+  <part name="pfixcore.editor.search.S_INT">
+    <theme name="default">search was interrupted</theme>
+  </part>
+  <part name="pfixcore.editor.search.S_OK">
+    <theme name="default">search finished OK</theme>
+  </part>
+  <part name="pfixcore.editor.search.S_RESET">
+    <theme name="default">search is reset/ready</theme>
+  </part>
+  <part name="pfixcore.editor.search.S_RUNNING">
+    <theme name="default">search is running</theme>
+  </part>
+  <part name="pfixcore.editor.targets.TARGET_UNDEF">
+    <theme name="default">This target is unknown.</theme>
+  </part>
+  <part name="pfixcore.editor.userdata.PWD_NO_MATCH">
+    <theme name="default">The passwords don't match.</theme>
+  </part>
+  <part name="pfixcore.editor.userdata.CHANGES_SAVED">
+    <theme name="default">The changes have been saved.</theme>
+  </part>
+  <part name="pfixcore.editor.userforedit.USER_UNDEF">
+    <theme name="default">This userid is not known.</theme>
+  </part>
+  <part name="pfixcore.generator.MISSING_PARAM">
+    <theme name="default">This parameter is mandatory.</theme>
+  </part>
+  <part name="pfixcore.generator.caster.ERR_TO_BOOLEAN">
+    <theme name="default">The entered value is no valid boolean expression.</theme>
+  </part>
+  <part name="pfixcore.generator.caster.ERR_TO_DATE">
+    <theme name="default">The entered value is no valid date.</theme>
+  </part>
+  <part name="pfixcore.generator.caster.ERR_TO_FILE">
+    <theme name="default">The entered value is not a valid file.</theme>
+  </part>
+  <part name="pfixcore.generator.caster.ERR_TO_UPLOADFILE">
+    <theme name="default">The entered value is not a valid file.</theme>
+  </part>
+  <part name="pfixcore.generator.caster.ERR_TO_FLOAT">
+    <theme name="default">The entered value is no valid float number.</theme>
+  </part>
+  <part name="pfixcore.generator.caster.ERR_TO_DOUBLE">
+    <theme name="default">The entered value is no valid double float number.</theme>
+  </part>
+  <part name="pfixcore.generator.caster.ERR_TO_INTEGER">
+    <theme name="default">The entered value is no valid integer number.</theme>
+  </part>
+  <part name="pfixcore.generator.caster.ERR_TO_LONG">
+    <theme name="default">The entered value is no valid long integer number.</theme>
+  </part>
+  <part name="pfixcore.generator.caster.ERR_TO_BYTE">
+    <theme name="default">The entered value is no valid byte number.</theme>
+  </part>
+  <part name="pfixcore.generator.caster.ERR_TO_P5PATTERN">
+    <theme name="default">The entered value is not a valid Perl5 Regexp.</theme>
+  </part>
+  <part name="pfixcore.generator.postcheck.FLOAT_TOO_BIG">
+    <theme name="default">The entered value is too big.</theme>
+  </part>
+  <part name="pfixcore.generator.postcheck.FLOAT_TOO_SMALL">
+    <theme name="default">The entered value is too small.</theme>
+  </part>
+  <part name="pfixcore.generator.postcheck.INTEGER_TOO_BIG">
+    <theme name="default">The entered value is too big.</theme>
+  </part>
+  <part name="pfixcore.generator.postcheck.INTEGER_TOO_SMALL">
+    <theme name="default">The entered value is too small.</theme>
+  </part>
+  <part name="pfixcore.generator.postcheck.STRING_TOO_LONG">
+    <theme name="default">The entered string is too long.</theme>
+  </part>
+  <part name="pfixcore.generator.postcheck.STRING_TOO_SHORT">
+    <theme name="default">The entered string is too short.</theme>
+  </part>
+  <part name="pfixcore.generator.precheck.REGEXP_NO_MATCH">
+    <theme name="default">The entered value contains invalid characters or is otherwise invalid.</theme>
+  </part>
+  <part name="pfixcore.generator.FORM_TOKEN_INVALID">
+    <theme name="default">The submitted form token is invalid.</theme>
+  </part>
+  <part name="pfixcore.generator.FORM_TOKEN_MISSING">
+    <theme name="default">The required form token is missing.</theme>
+  </part>
+  <part name="pfixcore.lucefix.INDEX_NOT_INITED">
+    <theme name="default">Index is not initialized. Please wait some minutes before using search</theme>
+  </part>
+  <part name="pfixcore.lucefix.PREFIX_WILDCARD_FORBIDDEN">
+    <theme name="default">Wildcards must not be used as first character in a query</theme>
+  </part>
+  <part name="pfixcore.lucefix.TOO_MANY_CLAUSES">
+    <theme name="default">Expression too imprecise</theme>
+  </part>
+  <part name="pfixcore.pagemessages.level.error">
+    <theme name="default">ERROR:</theme>
+  </part>
+  <part name="pfixcore.pagemessages.level.info">
+    <theme name="default">NOTE:</theme>
+  </part>
+  <part name="pfixcore.pagemessages.level.warn">
+    <theme name="default">WARNING:</theme>
+  </part>
+</include_parts>

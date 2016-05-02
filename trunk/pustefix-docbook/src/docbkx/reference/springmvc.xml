@@ -1,0 +1,102 @@
+<?xml version="1.0"?>
+<chapter xml:id="springmvc" xmlns="http://docbook.org/ns/docbook" xmlns:xlink="http://www.w3.org/1999/xlink" xmlns:xi="http://www.w3.org/2001/XInclude" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://docbook.org/ns/docbook http://www.docbook.org/xml/5.0CR7/xsd/docbook.xsd">
+  <title>Using Spring MVC</title>
+
+  <section xml:id="springmvc.controllerstates">
+    <title>Pustefix states as Spring MVC controllers</title>
+    <para>Pustefix <literal>States</literal> are very similar to Spring MVC <literal>Controllers</literal>. They are called for processing request data and return the data model needed to display a page. They are no native <literal>Controllers</literal>, which get automatically picked up by Spring MVC, but Pustefix supports delegating processing to Spring, if a <literal>State</literal> contains according Spring <literal>RequestMapping</literal> annotations.
+    </para>
+<programlisting language="java"><![CDATA[public class TestState extends DefaultIWrapperState {
+
+    @RequestMapping("/test/{myId}")
+    public void list(@PathVariable String myId, Model model) {
+        model.addAttribute("test", myId);
+    }]]></programlisting>
+    <para>
+      A matching <literal>RequestMapping</literal>-annotated method is called after <literal>IHandlers</literal> are processed, but before the <literal>ResultDocument</literal> is created. Data added to the model will be automatically serialized to XML (after the configured output resources/beans are serialized). 
+    </para>
+  </section>
+
+  <section xml:id="springmvc.annotationmethodhandleradapter">
+    <title>AnnotationMethodHandlerAdapter customization</title>
+    <para>Spring MVC's request mapping and parameter binding can be customized by configuring the responsible <literal>AnnotationMethodHandlerAdapter</literal> instance. Pustefix by default registers such an instance, which can be customized by adding a bean definition of type <literal>org.pustefixframework.web.mvc.AnnotationMethodHandlerAdapterConfig</literal> to the Spring configuration. See the following example which configures two argument resolvers:
+    </para>
+<programlisting language="xml"><![CDATA[<bean class="org.pustefixframework.web.mvc.AnnotationMethodHandlerAdapterConfig">
+   <property name="customArgumentResolvers">
+      <list>
+         <bean class="org.springframework.data.web.PageableArgumentResolver"/>
+         <bean class="org.pustefixframework.web.mvc.filter.FilterResolver"/>
+      </list>
+   </property>
+</bean>]]></programlisting>
+  </section>
+
+  <section xml:id="springmvc.paginationexample">
+    <title>Example: Pagination</title>
+    <para>
+      The following example shows how you can do pagination using the <literal>Spring Data</literal> approach 
+      (see <link xlink:href="http://docs.spring.io/spring-data/data-commons/docs/current/reference/html/">see reference documentation</link>). 
+    </para>
+    <para>
+      By adding an argument of type <literal>org.springframework.data.domain.Pageable</literal> to the method, paging parameters like page number and page size are automatically bound to that bean.
+      Then you can pass this bean to your backend to return the matching data page implementing <literal>org.springframework.data.domain.Page</literal>. Add the result to the model, so that the data,
+      including some paging meta information, is automatically serialized to XML.
+    </para>
+<programlisting language="java"><![CDATA[public class TestState extends DefaultIWrapperState {
+
+    @Autowired
+    private ContextData contextData;
+
+    @RequestMapping("/test")
+    public void list(Model model, Pageable pageable, Filter filter) {
+
+        if(pageable.getSort() == null) {
+            //initially create default Pageable 
+            pageable = new PageRequest(0, 10, new Sort(Sort.Direction.ASC, "id"));
+        }
+        model.addAttribute("data", contextData.getDataList(pageable));
+        model.addAttribute("filter", filter);
+    }
+}]]></programlisting>
+     <para>
+       The following parameters are bound to the <literal>Pageable</literal> bean: 
+     </para>
+     <itemizedlist>
+        <listitem>
+          <simpara>page.size - number of items per page</simpara>
+        </listitem>
+        <listitem>
+          <simpara>page.page - the page number, starting with 1</simpara>
+        </listitem>
+        <listitem>
+          <simpara>page.sort - the property to be sorted by</simpara>
+        </listitem>
+        <listitem>
+          <simpara>page.sort.dir - sort direction: asc or desc</simpara>
+        </listitem>
+     </itemizedlist>
+     <para>
+       Often you not just want to paginate and sort data, but you also want to filter it, e.g. based on single property values or more complex conditions. Therefor Pustefix introduced the
+       <literal>org.pustefixframework.web.mvc.filter.Filter</literal> interface. Filter parameters are also automatically bound, multiple parameters having the same name are interpreted as disjunction,
+       different parameters as conjunction.
+     </para>
+     <itemizedlist>
+        <listitem>
+          <simpara>filter.foo=x</simpara>
+        </listitem>
+        <listitem>
+          <simpara>filter.foo=y</simpara>
+        </listitem>
+        <listitem>
+          <simpara>filter.bar=123</simpara>
+        </listitem>
+     </itemizedlist>
+     <para>
+       The filter parameters above will result in a Filter data structure representing the logical expression <literal>( foo=x OR foo=y ) AND bar=123</literal>, i.e. by matching objects with 
+       property <literal>foo</literal> set to <literal>x</literal> or <literal>y</literal> and property <literal>bar</literal> set to <literal>123</literal>. The default implementation supports
+       checking an object candidate using the method <literal>Filter.isSatisfiedBy(candidate)</literal>.
+     </para>
+
+  </section>
+
+</chapter>

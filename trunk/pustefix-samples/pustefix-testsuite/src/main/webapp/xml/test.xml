@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<pfx:document 
+  xmlns:pfx="http://www.schlund.de/pustefix/core" 
+  xmlns:ixsl="http://www.w3.org/1999/XSL/Transform"
+>
+  <html>
+    <head>
+      <title>Test suite for pfixcore - <pfx:maincontent path="txt/pages" prefix="test_" part="title"/></title>
+      <link href="{$__contextpath}/style.css" media="all" rel="stylesheet" type="text/css"/>
+    </head>
+    <body>
+      <div style="margin-left:auto;margin-right:auto;text-align:center">
+        <pfx:button page="Start">Back to main page</pfx:button>
+      </div>
+      <hr/>
+      <h1><pfx:maincontent path="txt/pages" prefix="test_" part="title"/></h1>
+      <pfx:maincontent path="txt/pages" prefix="test_" part="content"/>
+      <br/>
+      <pfx:editconsole/>
+    </body>
+  </html>
+</pfx:document>

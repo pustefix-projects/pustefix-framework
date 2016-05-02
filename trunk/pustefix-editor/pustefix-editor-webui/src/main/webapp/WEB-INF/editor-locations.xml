@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<projects>
+  <project>
+    <location>http://localhost:8080</location>
+    <secret>foobar</secret>
+  </project>
+</projects>

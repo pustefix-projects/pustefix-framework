@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="utf-8"?>
+<module-descriptor xmlns="http://www.pustefix-framework.org/2008/namespace/module-descriptor"
+                   xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+                   xsi:schemaLocation="http://www.pustefix-framework.org/2008/namespace/module-descriptor
+                                       http://www.pustefix-framework.org/2008/namespace/module-descriptor-0_18.xsd">
+
+  <module-name>pustefix-i18n-lang-en</module-name>
+
+  <static>
+    <path>img</path>
+  </static>
+
+  <override-modules>
+    <filter-attribute name="lang" value="en"/>
+    <module name="pustefix-i18n-core">
+      <resource path="dyntxt/statusmessages.xml"/>
+      <resource path="txt/common.xml"/>
+      <resource path="img/*"/>
+    </module>
+  </override-modules>
+  
+</module-descriptor>
