@@ -1178,15 +1178,7 @@ public class RequestContextImpl implements Cloneable, AuthorizationInterceptor {
     		return false;
     	}
     	
-    	//Check if passing no page flow will automatically select right flow 
-        if(flowName != null && !flowName.equals("")) {
-            flow = pageflowmanager.getPageFlowByName(flowName, variant);
-            if(flow != null) {
-                PageRequest page = createPageRequest(pageName);
-                return pageflowmanager.needsLastFlow(flow, page);
-            }
-        }
-        return false;
+    	return true;
     }
     
     public PageFlow getPageFlow(String pageName, String lastFlowName) {
