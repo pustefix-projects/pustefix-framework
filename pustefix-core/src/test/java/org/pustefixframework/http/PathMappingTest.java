@@ -44,8 +44,6 @@ public class PathMappingTest extends TestCase {
         expSet.add("main/one/");
         expSet.add("main/one/x-k1");
         expSet.add("main/one/x-k2");
-        expSet.add("main/two");
-        expSet.add("main/two/");
         expSet.add("main/two/x-k3");
         expSet.add("main/two/x");
         expSet.add("x-k4");
