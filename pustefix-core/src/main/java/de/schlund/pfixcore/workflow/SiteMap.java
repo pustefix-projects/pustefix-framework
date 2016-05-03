@@ -621,7 +621,7 @@ public class SiteMap {
                 aliases.add(getAlias(pageName, lang, null, pageGroup.key));
                 if(includeInternalPages) {
                     aliases.add(getAlias(pageName, lang, null, pageGroup.key, false));
-                    if(pageGroup.defaultPage == page || ( pageGroup.defaultPage == null && pageGroup.pages.get(0).name.equals(pageName))) {
+                    if(pageGroup.defaultPage == page) {
                         aliases.add(pageGroup.getPrefix());
                         aliases.add(pageGroup.getPrefix() + "/");
                     }
@@ -733,8 +733,6 @@ public class SiteMap {
                     alias = fullAlias.substring(ind + 1);
                 } else if(pageGroup.defaultPage != null) {
                     alias = pageGroup.defaultPage.name;
-                } else if(!pageGroup.pages.isEmpty()) {
-                    alias = pageGroup.pages.get(0).name;
                 } else {
                     alias = null;
                 }
