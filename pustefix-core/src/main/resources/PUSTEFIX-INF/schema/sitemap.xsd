@@ -27,6 +27,7 @@
     </xsd:sequence>
     <xsd:attribute name="name" type="xsd:string" use="required"/>
     <xsd:attribute name="internal" type="xsd:boolean"/>
+    <xsd:attribute name="default" type="xsd:boolean"/>
     <xsd:anyAttribute namespace="##any" processContents="lax"/>
   </xsd:complexType>
   
