@@ -30,7 +30,7 @@
 
     <page-group key="g" name="test">
       <page-group key="g1" name="one">
-        <page name="A"/>
+        <page name="A" default="true"/>
         <page name="B"/>
       </page-group>
       <page-group key="g2" name="two">
