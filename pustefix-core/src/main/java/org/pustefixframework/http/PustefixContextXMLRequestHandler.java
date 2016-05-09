@@ -397,7 +397,7 @@ public class PustefixContextXMLRequestHandler extends AbstractPustefixXMLRequest
         //TODO: refactoring to get rid of RequestContext cloning
         PfixServletRequestImpl oldRequest = (PfixServletRequestImpl)oldRequestContext.getPfixServletRequest();
         if(oldRequest != null && oldRequest.getRequest() == null) {
-            oldRequest.setRequest(preq.getRequest());
+            oldRequest.setRequest(new org.pustefixframework.http.VirtualHttpServletRequest(preq.getRequest()));
         }
     }
     

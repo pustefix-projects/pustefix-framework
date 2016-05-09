@@ -77,7 +77,7 @@ public class VirtualHttpServletRequest implements HttpServletRequest {
     private Set<String> userRoles = new HashSet<String>();
     
     public VirtualHttpServletRequest() {
-        this(null);
+        this((ServletContext)null);
     }
     
     public VirtualHttpServletRequest(ServletContext servletContext) {
@@ -89,6 +89,26 @@ public class VirtualHttpServletRequest implements HttpServletRequest {
         this.method = method;
         this.requestURI = requestURI;
         locales.add(Locale.ENGLISH);
+    }
+    
+    public VirtualHttpServletRequest(HttpServletRequest request) {
+        setRequestURI(request.getRequestURI());
+        setMethod(request.getMethod());
+        setPathInfo(request.getPathInfo());
+        Enumeration<String> headerNames = request.getHeaderNames();
+        if(headerNames != null) {
+            while(headerNames.hasMoreElements()) {
+                String headerName = headerNames.nextElement();
+                Enumeration<String> headerValues = request.getHeaders(headerName);
+                if(headerValues != null) {
+                    while(headerValues.hasMoreElements()) {
+                        String headerValue = headerValues.nextElement();
+                        addHeader(headerName, headerValue);
+                    }
+                }
+            }
+        }
+        //TODO: copy additional fields
     }
     
     @Override
