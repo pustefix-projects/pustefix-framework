@@ -438,7 +438,12 @@ public class TransformerCallback {
     }
     
     public static boolean isBot(RequestContextImpl requestContext) {
-        return BotDetector.isBot(requestContext.getPfixServletRequest().getRequest());
+        try {
+            return BotDetector.isBot(requestContext.getPfixServletRequest().getRequest());
+        } catch (Exception x) {
+            ExtensionFunctionUtils.setExtensionFunctionError(x);
+            throw x;
+        }
     }
     
     public static String getFrameworkVersion() {
