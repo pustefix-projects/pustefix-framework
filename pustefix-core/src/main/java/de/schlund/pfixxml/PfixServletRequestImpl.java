@@ -182,6 +182,10 @@ public class PfixServletRequestImpl implements PfixServletRequest {
         internalPageName = null;
     }
 
+    public void setRequest(HttpServletRequest req) {
+        this.request = req;
+    }
+    
     public void resetRequest() {
         this.request = null;
     }
