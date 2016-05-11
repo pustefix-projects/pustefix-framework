@@ -202,7 +202,7 @@
       <plugin>
         <groupId>org.pustefixframework.maven.plugins</groupId>
         <artifactId>pustefix-generate-plugin</artifactId>
-        <version>0.20.3-SNAPSHOT</version>
+        <version>0.20.4-SNAPSHOT</version>
         <executions>
           <execution>
             <goals>
