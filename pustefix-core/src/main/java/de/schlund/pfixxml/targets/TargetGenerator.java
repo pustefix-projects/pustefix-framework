@@ -1285,14 +1285,18 @@ public class TargetGenerator implements ResourceVisitor, ServletContextAware, In
             Target current = getTarget(e.next());
             genTargets.add(current);
         }
-        Thread[] genThreads = new Thread[processors];
+        GenThread[] genThreads = new GenThread[processors];
         for(int i=0; i<processors; i++) {
-            Thread genThread = new GenThread(genTargets);
+            GenThread genThread = new GenThread(genTargets);
             genThread.start();
             genThreads[i] = genThread;
         }
         for(int i=0; i<processors; i++) {
             genThreads[i].join();
+            Throwable error = genThreads[i].getError();
+            if(error != null) {
+                throw new RuntimeException("Error generating targets", error);
+            }
         }
     }
 
@@ -1425,6 +1429,7 @@ public class TargetGenerator implements ResourceVisitor, ServletContextAware, In
     private class GenThread extends Thread {
         
         private List<Target> genTargets;
+        private Throwable error;
         
         GenThread(List<Target> genTargets) {
             this.genTargets = genTargets;
@@ -1444,13 +1449,18 @@ public class TargetGenerator implements ResourceVisitor, ServletContextAware, In
             if(genTarget != null) {
                 try {
                     generateTarget(genTarget);
-                } catch(Exception x) {
-                    throw new RuntimeException("Error generating target " + genTarget.getTargetKey(), x);
+                } catch(Throwable t) {
+                    error = t;
+                    throw new RuntimeException("Error generating target " + genTarget.getTargetKey(), t);
                 }
             } else {
                 break;
             }
             } while(genTarget != null);
+        }
+        
+        public Throwable getError() {
+            return error;
         }
         
     }
