@@ -51,12 +51,17 @@ public class PerformanceLoggingFilter implements Filter {
                 }
                 sb.append(LogUtils.makeLogSafe(path)).append("|");
                 sb.append(request.getAttribute(AbstractPustefixRequestHandler.REQUEST_ATTR_REQUEST_TYPE)).append("|");
-                sb.append(getAttribute(req, AbstractPustefixXMLRequestHandler.GETDOMTIME)).append(",");
-                sb.append(getAttribute(req, AbstractPustefixXMLRequestHandler.TRAFOTIME)).append(",");
-                sb.append(getAttribute(req, AbstractPustefixXMLRequestHandler.RENDEREXTTIME)).append(",");
-                sb.append(getAttribute(req, AbstractPustefixXMLRequestHandler.PREPROCTIME)).append(",");
-                sb.append(getAttribute(req, AbstractPustefixXMLRequestHandler.EXTFUNCTIME)).append("|");
+                String requestId = (String)req.getAttribute("requestId");
+                if(requestId != null) {
+                    sb.append(requestId);
+                }
+                sb.append("|");
                 sb.append(endTime - startTime).append("|");
+                sb.append(getAttribute(req, AbstractPustefixXMLRequestHandler.GETDOMTIME)).append("|");
+                sb.append(getAttribute(req, AbstractPustefixXMLRequestHandler.TRAFOTIME)).append("|");
+                sb.append(getAttribute(req, AbstractPustefixXMLRequestHandler.RENDEREXTTIME)).append("|");
+                sb.append(getAttribute(req, AbstractPustefixXMLRequestHandler.PREPROCTIME)).append("|");
+                sb.append(getAttribute(req, AbstractPustefixXMLRequestHandler.EXTFUNCTIME)).append("|");
                 LOG.info(sb.toString());
             }
         }
