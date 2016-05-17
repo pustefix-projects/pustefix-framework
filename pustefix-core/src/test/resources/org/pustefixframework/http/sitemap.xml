@@ -61,6 +61,11 @@
       <page name="merged"/>
     </page-group>
     
+    <!-- Page group with same name as an existing page -->
+    <page-group key="x" name="x">
+      <page name="page_x"/>
+    </page-group>
+    
     <pageflow name="flow" alias="myflow"/>
 
 </sitemap>

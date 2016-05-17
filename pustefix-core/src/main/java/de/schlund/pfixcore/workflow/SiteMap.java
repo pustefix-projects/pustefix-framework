@@ -728,13 +728,12 @@ public class SiteMap {
             String prefix = fullAlias.substring(0, ind);   
             PageGroup pageGroup = getPageGroup(prefix, lang);
             if(pageGroup != null) {
-                pageGroupKey = pageGroup.key;
                 if(fullAlias.length() > ind + 1) {
                     alias = fullAlias.substring(ind + 1);
+                    pageGroupKey = pageGroup.key;
                 } else if(pageGroup.defaultPage != null) {
                     alias = pageGroup.defaultPage.name;
-                } else {
-                    alias = null;
+                    pageGroupKey = pageGroup.key;
                 }
                 break;
             }

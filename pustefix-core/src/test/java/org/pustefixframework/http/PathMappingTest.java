@@ -18,7 +18,7 @@ public class PathMappingTest extends TestCase {
         SiteMap siteMap = new SiteMap(file, new File[0]);
         
         Set<String> pageNames = siteMap.getPageNames(true);
-        assertEquals(14, pageNames.size());
+        assertEquals(15, pageNames.size());
         
         Set<String> allAltKeys = siteMap.getAllPageAlternativeKeys("x");
         Set<String> expSet = new HashSet<String>();
@@ -136,6 +136,15 @@ public class PathMappingTest extends TestCase {
         assertNull(res.getPageGroup());
         assertEquals("x", res.getPageName());
         assertEquals("k4", res.getPageAlternativeKey());
+        
+        res = siteMap.getPageName("x/page_x", "en_GB");
+        assertEquals("x", res.getPageGroup());
+        assertEquals("page_x", res.getPageName());
+        
+        //Page group with same name as an existing page
+        res = siteMap.getPageName("x", "en_GB");
+        assertNull("x", res.getPageGroup());
+        assertEquals("x", res.getPageName());
         
         res =  siteMap.getPageName("main/zz", "en_GB");
         assertEquals("main", res.getPageGroup());
