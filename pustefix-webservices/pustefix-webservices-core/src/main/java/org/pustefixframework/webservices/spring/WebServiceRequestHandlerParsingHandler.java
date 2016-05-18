@@ -26,6 +26,7 @@ import org.springframework.beans.factory.config.BeanDefinitionHolder;
 import org.springframework.beans.factory.config.RuntimeBeanReference;
 import org.springframework.beans.factory.support.BeanDefinitionBuilder;
 import org.w3c.dom.Element;
+import org.w3c.dom.NodeList;
 
 import com.marsching.flexiparse.parser.HandlerContext;
 import com.marsching.flexiparse.parser.ParsingHandler;
@@ -54,10 +55,16 @@ public class WebServiceRequestHandlerParsingHandler implements ParsingHandler {
             configurationFile = "module://" + projectInfo.getDefiningModule() + "/" + configurationFile;
         }
         
+        String handlerURI = "/webservice";
+        NodeList pathElements = serviceElement.getElementsByTagNameNS(Constants.NS_PROJECT,"path");
+        if(pathElements != null && pathElements.getLength() > 0) {
+            handlerURI = pathElements.item(0).getTextContent();
+        }
+        
         BeanDefinitionBuilder beanBuilder = BeanDefinitionBuilder.genericBeanDefinition(WebServiceHttpRequestHandler.class);
         beanBuilder.setScope("singleton");
         beanBuilder.addPropertyValue("configFile", configurationFile);
-        beanBuilder.addPropertyValue("handlerURI", "/webservice");
+        beanBuilder.addPropertyValue("handlerURI", handlerURI);
         beanBuilder.addPropertyValue("serviceRuntime", new RuntimeBeanReference(ServiceRuntime.class.getName()));
         BeanDefinition beanDefinition = beanBuilder.getBeanDefinition();
         BeanDefinitionHolder beanHolder = new BeanDefinitionHolder(beanDefinition, WebServiceHttpRequestHandler.class.getName());

@@ -28,9 +28,9 @@
     <module>pustefix-i18n</module>
     <module>pustefix-cditest</module>
   </modules>  
-<!--
   <build>
     <plugins>
+      <!--
       <plugin>
         <groupId>org.pustefixframework.maven.plugins</groupId>
         <artifactId>pustefix-validator-plugin</artifactId>
@@ -49,7 +49,8 @@
           </execution>
         </executions>
       </plugin>
-     <plugin>
+      -->
+      <plugin>
         <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-antrun-plugin</artifactId>
         <version>1.7</version>
@@ -88,5 +89,4 @@
       </plugin>
     </plugins>
   </build>
--->
 </project>

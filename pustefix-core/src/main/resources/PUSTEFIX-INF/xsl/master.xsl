@@ -466,7 +466,14 @@
   <xsl:template match="pfx:wsscript">
     <script type="text/javascript">
       <ixsl:attribute name="src">
-        <ixsl:value-of select="concat($__contextpath,'/webservice')"/>
+        <xsl:choose>
+          <xsl:when test="@path">
+            <ixsl:text><xsl:value-of select="@path"/></ixsl:text>  
+          </xsl:when>
+          <xsl:otherwise>
+            <ixsl:value-of select="concat($__contextpath,'/webservice')"/>
+          </xsl:otherwise>
+        </xsl:choose>
         <xsl:if test="@session='true'"><ixsl:value-of select="$__sessionIdPath"/></xsl:if>
         <ixsl:value-of select="concat('?wsscript&amp;name=',url:encode('{@name}','{$outputencoding}'),'&amp;type=')"/>
         <xsl:choose>
