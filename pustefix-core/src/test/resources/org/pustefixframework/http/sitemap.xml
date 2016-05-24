@@ -22,6 +22,10 @@
       <alt key="k4" name="x-k4"/>
     </page>
     
+    <page name="ptn" alias="slm">
+      <alt key="d" name="d"/>
+    </page>
+    
     <page-group key="main" name="main">
       <page-group key="one" name="one">
         <page name="x" default="true">
@@ -64,6 +68,13 @@
     <!-- Page group with same name as an existing page -->
     <page-group key="x" name="x">
       <page name="page_x"/>
+    </page-group>
+    
+    <!-- Page with and without group, and jump to page alternative outside of group -->
+    <page-group key="h" name="h">
+      <page name="ptn" alias="slm" default="true">
+        <alt key="h/btia" name="btia/"/>
+      </page>
     </page-group>
     
     <pageflow name="flow" alias="myflow"/>

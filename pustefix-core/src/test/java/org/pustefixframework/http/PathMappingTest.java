@@ -18,7 +18,7 @@ public class PathMappingTest extends TestCase {
         SiteMap siteMap = new SiteMap(file, new File[0]);
         
         Set<String> pageNames = siteMap.getPageNames(true);
-        assertEquals(15, pageNames.size());
+        assertEquals(16, pageNames.size());
         
         Set<String> allAltKeys = siteMap.getAllPageAlternativeKeys("x");
         Set<String> expSet = new HashSet<String>();
@@ -205,6 +205,10 @@ public class PathMappingTest extends TestCase {
         assertEquals("main/zz", PathMapping.getURLPath("z", null, "main", null, "en_GB", "home", null, siteMap));
         assertEquals("main/zz", PathMapping.getURLPath("z", null, "one", null, "en_GB", "home", null, siteMap));
         assertEquals("main/g3", PathMapping.getURLPath("v", null, "three", null, "en_GB", "home", null, siteMap));
+        
+        assertEquals("d", PathMapping.getURLPath("ptn", "d", "h", null, "en_GB", "home", null, siteMap));
+        assertEquals("h", PathMapping.getURLPath("ptn", null, "h", null, "en_GB", "home", null, siteMap));
+        assertEquals("h/btia/", PathMapping.getURLPath("ptn", "h/btia", "h", null, "en_GB", "home", null, siteMap));
         
     }
     
