@@ -559,7 +559,7 @@ public class SiteMap {
         	    if(resolveName && pageGroup != null && pageGroup.defaultPage == page) {
         	        return pageGroup.getPrefix();
         	    }
-        		return prefix + ( resolveName ? getNameAlias(name, lang, pageGroupKey) : name );
+        		return prefix + ( resolveName ? getNameAlias(name, lang, (pageGroup == null ? null : pageGroup.key)) : name );
         	} else {
         		pageAlternativeKey = page.defaultPageAlt.key;
         	}
@@ -832,6 +832,7 @@ public class SiteMap {
                     return page;
                 }
             }
+            
             return null;
         }
     }  
