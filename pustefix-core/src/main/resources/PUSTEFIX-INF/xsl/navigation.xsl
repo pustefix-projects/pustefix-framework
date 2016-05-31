@@ -225,6 +225,21 @@
       <xsl:with-param name="frame" select="@frame"/>
       <xsl:with-param name="target" select="@target"/>
       <xsl:with-param name="mode" select="@mode"/>
+      <xsl:with-param name="altkey">
+        <xsl:choose>
+          <xsl:when test="./pfx:altkey">
+            <xsl:apply-templates select="./pfx:altkey/node()">
+              <xsl:with-param name="thepagename">
+                <xsl:call-template name="pfx:button_page_impl" />
+              </xsl:with-param>
+            </xsl:apply-templates>
+          </xsl:when>
+          <xsl:when test="@altkey">
+            <xsl:value-of select="@altkey"/>
+          </xsl:when>
+        </xsl:choose>
+      </xsl:with-param>
+      <xsl:with-param name="pagegroup" select="@pagegroup"/>
     </xsl:call-template>
     
   </xsl:template>
