@@ -517,7 +517,7 @@
     </xsl:if>
   </xsl:template>
 
-  <xsl:template match="node()" mode="static_disp">
+  <xsl:template match="*" mode="static_disp">
     <xsl:variable name="dim">
       <xsl:choose>
         <xsl:when test="ancestor-or-self::wrapperstatus[1] and generate-id(ancestor-or-self::wrapperstatus[1]) = generate-id(/formresult/wrapperstatus)">true</xsl:when>
