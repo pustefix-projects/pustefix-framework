@@ -230,7 +230,9 @@ public class PfixServletRequestImpl implements PfixServletRequest {
         String pathInfo = request.getPathInfo();
         //remove leading/trailing whitespace to support requests
         //accidentally adding spaces, e.g. http://localhost:8080/mypage%20
-        pathInfo = pathInfo.trim();
+        if(pathInfo != null) {
+            pathInfo = pathInfo.trim();
+        }
         return pathInfo;
     }
 
