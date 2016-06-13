@@ -31,7 +31,7 @@ public class PageFlowPassThroughParsingHandler implements ParsingHandler {
     public void handleNode(HandlerContext context) throws ParserException {
         
         ContextXMLServletConfigImpl config = ParsingUtils.getSingleTopObject(ContextXMLServletConfigImpl.class, context);
-        config.getContextConfig().setPageFlowPassThrough(true);
+        config.getContextConfig().setPageFlowPassThrough(false);
         config.getContextConfig().getPreserveParams().removeParam("__lf");
     }
 
