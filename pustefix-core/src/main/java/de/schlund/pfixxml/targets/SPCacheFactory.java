@@ -83,7 +83,9 @@ public class SPCacheFactory {
         	LOG.info("  TargetCache    : Class="+targetCache.getClass().getName()+" Capacity=" + targetCache.getCapacity() + " Size="+targetCache.getSize());
         	LOG.info("  DocumentCache  : Class="+documentCache.getClass().getName()+" Capacity=" + documentCache.getCapacity() + " Size="+documentCache.getSize());
         	LOG.info("  RenderCache    : Class="+renderCache.getClass().getName()+" Capacity=" + renderCache.getCapacity() + " Size="+renderCache.getSize());
-        	LOG.info("  ExtensionCache : Class="+extensionCache.getClass().getName()+" Capacity=" + extensionCache.getCapacity() + " Size="+extensionCache.getSize());
+        	if(extensionCache != null) {
+        	    LOG.info("  ExtensionCache : Class="+extensionCache.getClass().getName()+" Capacity=" + extensionCache.getCapacity() + " Size="+extensionCache.getSize());
+        	}
         }
         return this;
     }
