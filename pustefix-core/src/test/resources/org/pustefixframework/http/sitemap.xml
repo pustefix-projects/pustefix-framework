@@ -77,6 +77,14 @@
       </page>
     </page-group>
     
+    <page name="an100v" alias="AN100V" />
+
+    <page-group key="anfb" name="anfb">
+      <page name="ban100v">
+        <alt key="anfb/an100v" name="an100v" />
+      </page>
+    </page-group>
+
     <pageflow name="flow" alias="myflow"/>
 
 </sitemap>

@@ -320,7 +320,11 @@ public class SiteMap {
         String alias = pageElem.getAttribute("alias").trim();
         if(alias.length() > 0) {
             page.alias = alias;
-            pageAliasToPage.put(alias, page);
+            if(pageGroup == null) {
+                pageAliasToPage.put(alias, page);
+            } else {
+                pageGroup.pageAliasToPage.put(alias, page);
+            }
         }
         List<Element> childAlts = DOMUtils.getChildElementsByTagName(pageElem, "alt");
         for(Element childAlt: childAlts) {
@@ -329,7 +333,11 @@ public class SiteMap {
             boolean defaultAlt = Boolean.valueOf(childAlt.getAttribute("default"));
             page.pageAltKeyToName.put(altKey, altName);
             page.pageNameToAltKey.put(altName, altKey);
-            pageAlternativeToPage.put(altName, page);
+            if(pageGroup == null) {
+                pageAlternativeToPage.put(altName, page);
+            } else {
+                pageGroup.pageAlternativeToPage.put(altName, page);
+            }
             
             PageAlternative pageAlt = new PageAlternative();
             pageAlt.key = altKey;
@@ -728,19 +736,19 @@ public class SiteMap {
     
     public PageLookupResult getPageName(String alias, String lang) {
         
-        String pageGroupKey = null;
+        PageGroup pageGroup = null;
         String fullAlias = alias;
         int ind = fullAlias.length();
         do {
             String prefix = fullAlias.substring(0, ind);   
-            PageGroup pageGroup = getPageGroup(prefix, lang);
-            if(pageGroup != null) {
+            PageGroup group = getPageGroup(prefix, lang);
+            if(group != null) {
                 if(fullAlias.length() > ind + 1) {
                     alias = fullAlias.substring(ind + 1);
-                    pageGroupKey = pageGroup.key;
-                } else if(pageGroup.defaultPage != null) {
-                    alias = pageGroup.defaultPage.name;
-                    pageGroupKey = pageGroup.key;
+                    pageGroup = group;
+                } else if(group.defaultPage != null) {
+                    alias = group.defaultPage.name;
+                    pageGroup = group;
                 }
                 break;
             }
@@ -764,29 +772,38 @@ public class SiteMap {
                 }
             }
             if(page != null) {
-                if(pageAliasToPage != null) {
-                    Page p = pageAliasToPage.get(page);
-                    if(p != null) page = p.name;
+                Page p;
+                if(pageGroup == null) {
+                    p = pageAliasToPage.get(alias);
+                } else {
+                    p = pageGroup.pageAliasToPage.get(alias);
                 }
+                if(p != null) page = p.name;
             }
         }
         if(page == null) {
-            if(pageAliasToPage != null) {
-                Page p = pageAliasToPage.get(alias);
-                if(p != null) page = p.name;
+            Page p;
+            if(pageGroup == null) {
+                p = pageAliasToPage.get(alias);
+            } else {
+                p = pageGroup.pageAliasToPage.get(alias);
             }
+            if(p != null) page = p.name;
             if (page == null) page = alias;
         }
-        if(pageAlternativeToPage != null) {
-            Page pageAlt = pageAlternativeToPage.get(page);
-            if(pageAlt != null) {
-                aliasKey = pageAlt.pageNameToAltKey.get(page);
-                page = pageAlt.name;
-            } else {
-            	Page p = getPageByName(page, pageGroupKey);
-            	if(p != null && p.defaultPageAlt != null) {
-            		aliasKey = p.defaultPageAlt.key;
-            	}
+        Page pageAlt;
+        if(pageGroup == null) {
+            pageAlt = pageAlternativeToPage.get(page);
+        } else {
+            pageAlt = pageGroup.pageAlternativeToPage.get(page);
+        }
+        if(pageAlt != null) {
+            aliasKey = pageAlt.pageNameToAltKey.get(page);
+            page = pageAlt.name;
+        } else {
+            Page p = getPageByName(page, pageGroup == null ? null : pageGroup.key);
+            if(p != null && p.defaultPageAlt != null) {
+                aliasKey = p.defaultPageAlt.key;
             }
         }
         String aliasPageName = alias;
@@ -794,7 +811,7 @@ public class SiteMap {
             aliasPageName = page.substring(0, page.lastIndexOf('/'));
             return getPageName(aliasPageName, lang);
         }
-        return new PageLookupResult(page, aliasKey, aliasPageName, pageGroupKey);
+        return new PageLookupResult(page, aliasKey, aliasPageName, pageGroup == null ? null : pageGroup.key);
     }
     
     public Element getSiteMapXMLElement(XsltVersion xsltVersion, String language) {
@@ -869,6 +886,8 @@ public class SiteMap {
         public String name;
         public PageGroup parent;
         public Page defaultPage;
+        public Map<String, Page> pageAlternativeToPage = new HashMap<String, Page>();
+        public Map<String, Page> pageAliasToPage = new HashMap<String, Page>();
         
         public List<PageGroup> pageGroups = new ArrayList<>();
         List<Page> pages = new ArrayList<>();
