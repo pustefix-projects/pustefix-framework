@@ -233,6 +233,7 @@
     <xsd:choice>
       <xsd:element name="session-cleaner-timeout" type="xsd:int"/>
       <xsd:element name="show-dom" type="xsd:boolean"/>
+      <xsd:element name="dom-history-size" type="xsd:int"/>
     </xsd:choice>  
   </xsd:group>
   

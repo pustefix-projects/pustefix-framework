@@ -144,6 +144,12 @@ public class PustefixContextXMLRequestHandlerParsingHandler extends Customizatio
             if(!"prod".equals(mode)) showDom = true; 
         }
         
+        int domHistorySize = 5;
+        List<Element> domHistorySizeElems = CustomizationDOMUtils.getChildElementsByLocalName(context, "dom-history-size");
+        if(!domHistorySizeElems.isEmpty()) {
+            domHistorySize = Integer.parseInt(domHistorySizeElems.get(0).getTextContent().trim());
+        }
+
         de.schlund.pfixxml.resources.Resource res = ResourceUtil.getResource(configurationFile);
         if(!res.exists()) {
             throw new ParserException("Context configuration file can't be found: " + res);
@@ -237,6 +243,7 @@ public class PustefixContextXMLRequestHandlerParsingHandler extends Customizatio
         
         beanBuilder = BeanDefinitionBuilder.genericBeanDefinition(SPDocumentHistory.class);
         beanBuilder.setScope("session");
+        beanBuilder.addConstructorArgValue(domHistorySize);
         beanDefinition = beanBuilder.getBeanDefinition();
         beanHolder = new BeanDefinitionHolder(beanDefinition, SPDocumentHistory.class.getName());
         beanHolder = ScopedProxyUtils.createScopedProxy(beanHolder, beanReg, true);

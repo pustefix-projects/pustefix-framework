@@ -89,6 +89,8 @@
           <!-- Allow viewing of the DOM tree model, which is enabled 
                by default in all non-production modes -->
           <!-- <show-dom>false</show-dom> -->
+          <!-- Maximum number of DOM trees to be displayed in DOM tree view -->
+          <!-- <dom-history-size>5</dom-history-size> -->
         </otherwise>
       </choose>
     </context-xml-service>

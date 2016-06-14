@@ -16,9 +16,13 @@ import org.w3c.dom.Element;
  */
 public class SPDocumentHistory {
 
-    private static final int MAX_ENTRIES = 10;
+    private int maxEntries;
     private List<Entry> entries;
     
+    public SPDocumentHistory(int maxEntries) {
+        this.maxEntries = maxEntries;
+    }
+
     public synchronized void addSPDocument(SPDocument doc, PfixServletRequest preq) {
         Entry entry = new Entry();
         entry.doc = doc;
@@ -33,7 +37,7 @@ public class SPDocumentHistory {
             entries = new ArrayList<>();
         }
         entries.add(0, entry);
-        if(entries.size() > MAX_ENTRIES) {
+        if(entries.size() > maxEntries) {
             entries.remove(entries.size() - 1);
         }
     }
