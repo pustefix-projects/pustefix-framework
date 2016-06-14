@@ -774,9 +774,9 @@ public class SiteMap {
             if(page != null) {
                 Page p;
                 if(pageGroup == null) {
-                    p = pageAliasToPage.get(alias);
+                    p = pageAliasToPage.get(page);
                 } else {
-                    p = pageGroup.pageAliasToPage.get(alias);
+                    p = pageGroup.pageAliasToPage.get(page);
                 }
                 if(p != null) page = p.name;
             }
