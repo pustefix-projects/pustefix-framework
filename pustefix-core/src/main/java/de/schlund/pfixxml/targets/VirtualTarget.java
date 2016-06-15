@@ -36,7 +36,6 @@ import org.xml.sax.InputSource;
 
 import de.schlund.pfixxml.XMLException;
 import de.schlund.pfixxml.resources.FileResource;
-import de.schlund.pfixxml.resources.ResourceUtil;
 import de.schlund.pfixxml.util.Xml;
 import de.schlund.pfixxml.util.Xslt;
 
@@ -117,7 +116,7 @@ public abstract class VirtualTarget extends TargetImpl {
         if (modtime == 0) {
             synchronized (this) {
                 if (modtime == 0) {
-                    FileResource doc = ResourceUtil.getFileResource(getTargetGenerator().getDisccachedir(), getTargetKey());
+                    FileResource doc = getTargetCacheResource();
                     if (doc.exists() && doc.isFile()) {
                         setModTime(doc.lastModified());
                     }
@@ -320,14 +319,12 @@ public abstract class VirtualTarget extends TargetImpl {
 
     private void generateValue() throws XMLException, TransformerException,
             IOException {
-        String key = getTargetKey();
         Target tmpxmlsource = getXMLSource();
         Target tmpxslsource = getXSLSource();
-        FileResource cachepath = getTargetGenerator().getDisccachedir();
-        FileResource cachefile = ResourceUtil.getFileResource(cachepath, key);
+        FileResource cachefile = getTargetCacheResource();
         cachefile.getParentAsFileResource().mkdirs();
         if (LOG.isDebugEnabled()) {
-            LOG.debug(key + ": Getting " + getType() + " by XSLTrafo ("
+            LOG.debug(getTargetKey() + ": Getting " + getType() + " by XSLTrafo ("
                     + tmpxmlsource.getTargetKey() + " / "
                     + tmpxslsource.getTargetKey() + ")");
         }
@@ -380,7 +377,7 @@ public abstract class VirtualTarget extends TargetImpl {
         // Make sure we have an up-to-date version
         this.getValue();
         
-        FileResource thefile = ResourceUtil.getFileResource(getTargetGenerator().getDisccachedir(), getTargetKey());
+        FileResource thefile = getTargetCacheResource();
         if (thefile.exists() && thefile.isFile()) {
             try {
                 InputSource input = new InputSource();

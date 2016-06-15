@@ -23,7 +23,6 @@ import java.util.TreeMap;
 import javax.xml.transform.TransformerException;
 
 import de.schlund.pfixxml.resources.FileResource;
-import de.schlund.pfixxml.resources.ResourceUtil;
 import de.schlund.pfixxml.util.Xslt;
 
 /**
@@ -53,7 +52,7 @@ public class XSLVirtualTarget extends VirtualTarget {
      */
     @Override
     protected Object getValueFromDiscCache() throws TransformerException {
-        FileResource thefile = ResourceUtil.getFileResource(getTargetGenerator().getDisccachedir(), getTargetKey());
+        FileResource thefile = getTargetCacheResource();
         if (thefile.exists() && thefile.isFile()) {
             return Xslt.loadTemplates(generator.getXsltVersion(), thefile, this);
         } else {

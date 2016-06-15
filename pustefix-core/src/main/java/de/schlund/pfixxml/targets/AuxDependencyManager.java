@@ -67,6 +67,7 @@ public class AuxDependencyManager {
     private FileResource getAuxFile() {
         String path = target.getTargetKey();
         if(path.startsWith("module://")) path = path.substring(9);
+        path = path.replace('/', '_');
         FileResource auxFile = ResourceUtil.getFileResource(target.getTargetGenerator().getDisccachedir(), path + ".aux");
         return auxFile;
     }

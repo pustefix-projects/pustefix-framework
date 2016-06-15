@@ -140,7 +140,7 @@ public abstract class TargetImpl implements TargetRW, Comparable<Target> {
                 // do test for exists here!
                 FileResource thefile = null;
                 if(!getTargetKey().startsWith("module:/")) {
-                    thefile = ResourceUtil.getFileResource(getTargetGenerator().getDisccachedir(), getTargetKey());
+                    thefile = getTargetCacheResource();
                 }
                 if (thefile==null || !thefile.exists()) { // Target has not been loaded once and it doesn't exist in disk cache
                     if(LOG.isDebugEnabled()) {
@@ -242,7 +242,7 @@ public abstract class TargetImpl implements TargetRW, Comparable<Target> {
                     // newer any more, so set the mod time of the target to the mod time of the file
                     // in disk cache
                     if (isDiskCacheNewerThenMemCache()) {
-                        setModTime(ResourceUtil.getFileResource(getTargetGenerator().getDisccachedir(), getTargetKey()).lastModified());
+                        setModTime(getTargetCacheResource().lastModified());
                     }
 
                     // now the target is generated
@@ -267,7 +267,7 @@ public abstract class TargetImpl implements TargetRW, Comparable<Target> {
         //TODO: rework
         if(getTargetKey().startsWith("module:")) disk_mod_time = 0;
         else {
-            FileResource thefile = ResourceUtil.getFileResource(getTargetGenerator().getDisccachedir(), getTargetKey());
+            FileResource thefile = getTargetCacheResource();
             disk_mod_time = thefile.lastModified();
         }
         if (LOG.isDebugEnabled()) {
@@ -303,6 +303,12 @@ public abstract class TargetImpl implements TargetRW, Comparable<Target> {
     
     public AuxDependencyManager getAuxDependencyManager() {
         return auxdepmanager;
+    }
+    
+    protected FileResource getTargetCacheResource() {
+        String fileName = getTargetKey();
+        fileName = fileName.replace('/', '_');
+        return ResourceUtil.getFileResource(getTargetGenerator().getDisccachedir(), fileName);
     }
 
 } // TargetImpl
