@@ -18,7 +18,7 @@ public class PathMappingTest extends TestCase {
         SiteMap siteMap = new SiteMap(file, new File[0]);
         
         Set<String> pageNames = siteMap.getPageNames(true);
-        assertEquals(18, pageNames.size());
+        assertEquals(19, pageNames.size());
         
         Set<String> allAltKeys = siteMap.getAllPageAlternativeKeys("x");
         Set<String> expSet = new HashSet<String>();
@@ -27,7 +27,7 @@ public class PathMappingTest extends TestCase {
         expSet.add("k3");
         expSet.add("k4");
         assertEquals(expSet, allAltKeys);
-       
+
         Set<String> allAliases = siteMap.getAllPageAliases("x", "en_GB", false);
         expSet = new HashSet<String>();
         expSet.add("main/one/x-k1");
@@ -112,6 +112,17 @@ public class PathMappingTest extends TestCase {
         expSet.add("main/merged");
         assertEquals(expSet, allAliases);
         
+        allAliases = siteMap.getAllPageAliases("encoding", "en_GB", false);
+        expSet = new HashSet<String>();
+        expSet.add("xencodingpage");
+        assertEquals(expSet, allAliases);
+        
+        allAliases = siteMap.getAllPageAliases("encoding", "en_GB", true);
+        expSet = new HashSet<String>();
+        expSet.add("encodingpage");
+        expSet.add("xencodingpage");
+        assertEquals(expSet, allAliases);
+        
         PageLookupResult res =  siteMap.getPageName("main/one/x-k1", "en_GB");
         assertEquals("one", res.getPageGroup());
         assertEquals("x", res.getPageName());
@@ -174,6 +185,21 @@ public class PathMappingTest extends TestCase {
         assertNull(res.getPageGroup());
         assertEquals("an100v", res.getPageName());
         assertNull(res.getPageAlternativeKey());
+        
+        res =  siteMap.getPageName("xencodingpage", "en_GB");
+        assertNull(res.getPageGroup());
+        assertEquals("encoding", res.getPageName());
+        assertEquals("xencoding", res.getPageAlternativeKey());
+        
+        res =  siteMap.getPageName("encodingpage", "en_GB");
+        assertNull(res.getPageGroup());
+        assertEquals("encoding", res.getPageName());
+        assertEquals("xencoding", res.getPageAlternativeKey());
+        
+        res =  siteMap.getPageName("encoding", "en_GB");
+        assertNull(res.getPageGroup());
+        assertEquals("encoding", res.getPageName());
+        assertEquals("xencoding", res.getPageAlternativeKey());
 
         assertEquals("", PathMapping.getURLPath("home", null, null, null, "en_GB", "home", null, siteMap));
         assertEquals("", PathMapping.getURLPath(null, null, null, null, "en_GB", "home", null, siteMap));
@@ -218,6 +244,12 @@ public class PathMappingTest extends TestCase {
         assertEquals("AN100V", PathMapping.getURLPath("an100v", null, null, null, "en_GB", "home", null, siteMap));
         assertEquals("anfb/an100v", PathMapping.getURLPath("ban100v", "anfb/an100v", "anfb", null, "en_GB", "home", null, siteMap));
 
+        assertEquals("AN100V", PathMapping.getURLPath("an100v", null, null, null, "en_GB", "home", null, siteMap));
+        assertEquals("anfb/an100v", PathMapping.getURLPath("ban100v", "anfb/an100v", "anfb", null, "en_GB", "home", null, siteMap));
+        
+        assertEquals("xencodingpage", PathMapping.getURLPath("encoding", null, null, null, "en_GB", "home", null, siteMap));
+        assertEquals("xencodingpage", PathMapping.getURLPath("encoding", "xencoding", null, null, "en_GB", "home", null, siteMap));
+        
     }
     
 }

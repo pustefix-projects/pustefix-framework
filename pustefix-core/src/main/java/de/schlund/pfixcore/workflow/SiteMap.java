@@ -613,6 +613,7 @@ public class SiteMap {
             aliases.add(getAlias(pageName, lang, null, null));
             if(includeInternalPages) {
                 aliases.add(getAlias(pageName, lang, null, null, false));
+                aliases.add(getNameAlias(pageName, lang, null));
             }
             for(String pageAltKey: page.pageAltKeyToName.keySet()) {
                 aliases.add(getAlias(pageName, lang, pageAltKey, null));

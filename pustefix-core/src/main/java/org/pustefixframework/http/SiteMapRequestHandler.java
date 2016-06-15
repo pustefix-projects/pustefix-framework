@@ -277,6 +277,7 @@ public class SiteMapRequestHandler implements UriProvidingHttpRequestHandler, Se
                 Element mobileElem = parent.getOwnerDocument().createElementNS(NS_SITEMAP_MOBILE, "mobile:mobile");
                 urlElem.appendChild(mobileElem);
             }
+            parent.appendChild(urlElem);
         }
     }
     

@@ -85,6 +85,10 @@
       </page>
     </page-group>
 
+    <page name="encoding" alias="encodingpage">
+      <alt key="xencoding" name="xencodingpage" default="true"/>
+    </page>
+
     <pageflow name="flow" alias="myflow"/>
 
 </sitemap>
