@@ -31,7 +31,7 @@ public class PathMappingTest extends TestCase {
         Set<String> allAliases = siteMap.getAllPageAliases("x", "en_GB", false);
         expSet = new HashSet<String>();
         expSet.add("main/one/x-k1");
-        expSet.add("main/one");
+        expSet.add("main/one/");
         expSet.add("main/two/x-k3");
         expSet.add("main/two/x");
         expSet.add("x-k4");
@@ -62,7 +62,7 @@ public class PathMappingTest extends TestCase {
         
         allAliases = siteMap.getAllPageAliases("v", "en_GB", false);
         expSet = new HashSet<String>();
-        expSet.add("main/g3");
+        expSet.add("main/g3/");
         assertEquals(expSet, allAliases);
         
         allAliases = siteMap.getAllPageAliases("v", "en_GB", true);
@@ -74,7 +74,7 @@ public class PathMappingTest extends TestCase {
         
         allAliases = siteMap.getAllPageAliases("t", "en_GB", false);
         expSet = new HashSet<String>();
-        expSet.add("main");
+        expSet.add("main/");
         assertEquals(expSet, allAliases);
         
         allAliases = siteMap.getAllPageAliases("t", "en_GB", true);
@@ -231,14 +231,14 @@ public class PathMappingTest extends TestCase {
         assertEquals("fr/myflow/hihey", PathMapping.getURLPath("hey", "hi", null, "flow", "fr_CA", "home", "en_CA", siteMap));
         
         assertEquals("main/one/y", PathMapping.getURLPath("y", null, "one", null, "en_GB", "home", null, siteMap));
-        assertEquals("main/one", PathMapping.getURLPath("x", "k2", "one", null, "en_GB", "home", null, siteMap));
+        assertEquals("main/one/", PathMapping.getURLPath("x", "k2", "one", null, "en_GB", "home", null, siteMap));
         assertEquals("main/one/x-k1", PathMapping.getURLPath("x", "k1", "one", null, "en_GB", "home", null, siteMap));
         assertEquals("main/zz", PathMapping.getURLPath("z", null, "main", null, "en_GB", "home", null, siteMap));
         assertEquals("main/zz", PathMapping.getURLPath("z", null, "one", null, "en_GB", "home", null, siteMap));
-        assertEquals("main/g3", PathMapping.getURLPath("v", null, "three", null, "en_GB", "home", null, siteMap));
+        assertEquals("main/g3/", PathMapping.getURLPath("v", null, "three", null, "en_GB", "home", null, siteMap));
         
         assertEquals("d", PathMapping.getURLPath("ptn", "d", "h", null, "en_GB", "home", null, siteMap));
-        assertEquals("h", PathMapping.getURLPath("ptn", null, "h", null, "en_GB", "home", null, siteMap));
+        assertEquals("h/", PathMapping.getURLPath("ptn", null, "h", null, "en_GB", "home", null, siteMap));
         assertEquals("h/btia/", PathMapping.getURLPath("ptn", "h/btia", "h", null, "en_GB", "home", null, siteMap));
 
         assertEquals("AN100V", PathMapping.getURLPath("an100v", null, null, null, "en_GB", "home", null, siteMap));
