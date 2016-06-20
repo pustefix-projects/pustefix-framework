@@ -565,7 +565,7 @@ public class SiteMap {
         if(pageAlternativeKey == null || pageAlternativeKey.equals("")) {
         	if(page == null || page.defaultPageAlt == null) {
         	    if(resolveName && pageGroup != null && pageGroup.defaultPage == page) {
-        	        return pageGroup.getPrefix();
+                    return pageGroup.getPrefix() + "/";
         	    }
         		return prefix + ( resolveName ? getNameAlias(name, lang, (pageGroup == null ? null : pageGroup.key)) : name );
         	} else {
@@ -579,7 +579,7 @@ public class SiteMap {
             } 
             if(pageAlternativeKey == null || (page.defaultPageAlt != null && page.defaultPageAlt.key.equals(pageAlternativeKey))) {
                 //no altKey requested or altKey is page's default altKey -> return pageGroup prefix
-                return pageGroup.getPrefix();
+                return pageGroup.getPrefix() + "/";
             }
         }
         String pageName = name;
