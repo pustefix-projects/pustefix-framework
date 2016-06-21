@@ -1,7 +1,6 @@
 package org.pustefixframework.http;
 
 import java.io.File;
-import java.net.URL;
 import java.util.HashSet;
 import java.util.Set;
 
@@ -13,12 +12,12 @@ public class PathMappingTest extends TestCase {
 
     public void test() throws Exception {
         
-        URL url = getClass().getResource("sitemap.xml");
-        File file = new File(url.toURI());
-        SiteMap siteMap = new SiteMap(file, new File[0]);
+        File siteMapFile = new File(getClass().getResource("sitemap.xml").toURI());
+        File siteMapAliasFile = new File(getClass().getResource("sitemap-aliases.xml").toURI());
+        SiteMap siteMap = new SiteMap(siteMapFile, new File[] {siteMapAliasFile});
         
         Set<String> pageNames = siteMap.getPageNames(true);
-        assertEquals(19, pageNames.size());
+        assertEquals(20, pageNames.size());
         
         Set<String> allAltKeys = siteMap.getAllPageAlternativeKeys("x");
         Set<String> expSet = new HashSet<String>();
@@ -123,6 +122,22 @@ public class PathMappingTest extends TestCase {
         expSet.add("xencodingpage");
         assertEquals(expSet, allAliases);
         
+        allAliases = siteMap.getAllPageAliases("TA", "en_GB", false);
+        expSet = new HashSet<String>();
+        expSet.add("TA");
+        expSet.add("TB");
+        expSet.add("TG/TA");
+        expSet.add("TG/TC");
+        assertEquals(expSet, allAliases);
+        
+        allAliases = siteMap.getAllPageAliases("TA", "en_GB", true);
+        expSet = new HashSet<String>();
+        expSet.add("TA");
+        expSet.add("TB");
+        expSet.add("TG/TA");
+        expSet.add("TG/TC");
+        assertEquals(expSet, allAliases);
+        
         PageLookupResult res =  siteMap.getPageName("main/one/x-k1", "en_GB");
         assertEquals("one", res.getPageGroup());
         assertEquals("x", res.getPageName());
@@ -200,10 +215,17 @@ public class PathMappingTest extends TestCase {
         assertNull(res.getPageGroup());
         assertEquals("encoding", res.getPageName());
         assertEquals("xencoding", res.getPageAlternativeKey());
+        
+        res =  siteMap.getPageName("foo", null);
+        assertEquals("foo", res.getPageName());
+        assertNull(res.getPageGroup());
+        assertNull(res.getPageAlternativeKey());
 
         assertEquals("", PathMapping.getURLPath("home", null, null, null, "en_GB", "home", null, siteMap));
         assertEquals("", PathMapping.getURLPath(null, null, null, null, "en_GB", "home", null, siteMap));
         assertEquals("foo", PathMapping.getURLPath("foo", null, null, null, "en_GB", "home", null, siteMap));
+        assertEquals("foo", PathMapping.getURLPath("foo", null, "nonexisting", null, "en_GB", "home", null, siteMap));
+        assertEquals("foo", PathMapping.getURLPath("foo", null, "main", null, "en_GB", "home", null, siteMap));
         assertEquals("baz", PathMapping.getURLPath("bar", null, null, null, "en_GB", "home", null, siteMap));
         assertEquals("baz", PathMapping.getURLPath("baz", null, null, null, "en_GB", "home", null, siteMap));
         assertEquals("xyz", PathMapping.getURLPath("xyz", null, null, null, "en_GB", "home", null, siteMap));
@@ -236,6 +258,9 @@ public class PathMappingTest extends TestCase {
         assertEquals("main/zz", PathMapping.getURLPath("z", null, "main", null, "en_GB", "home", null, siteMap));
         assertEquals("main/zz", PathMapping.getURLPath("z", null, "one", null, "en_GB", "home", null, siteMap));
         assertEquals("main/g3/", PathMapping.getURLPath("v", null, "three", null, "en_GB", "home", null, siteMap));
+        assertEquals("main/one/y", PathMapping.getURLPath("y", null, null, null, "en_GB", "home", null, siteMap));
+        assertEquals("x", PathMapping.getURLPath("x", "k2", "nonexisting", null, "en_GB", "home", null, siteMap));
+        assertEquals("x", PathMapping.getURLPath("x", null, "nonexisting", null, "en_GB", "home", null, siteMap));
         
         assertEquals("d", PathMapping.getURLPath("ptn", "d", "h", null, "en_GB", "home", null, siteMap));
         assertEquals("h/", PathMapping.getURLPath("ptn", null, "h", null, "en_GB", "home", null, siteMap));
@@ -249,6 +274,15 @@ public class PathMappingTest extends TestCase {
         
         assertEquals("xencodingpage", PathMapping.getURLPath("encoding", null, null, null, "en_GB", "home", null, siteMap));
         assertEquals("xencodingpage", PathMapping.getURLPath("encoding", "xencoding", null, null, "en_GB", "home", null, siteMap));
+        
+        assertEquals("nonexisting", PathMapping.getURLPath("nonexisting", null, null, null, "en_GB", "home", null, siteMap));
+        assertEquals("nonexisting", PathMapping.getURLPath("nonexisting", "", null, null, "en_GB", "home", null, siteMap));
+        
+        assertEquals("TA", PathMapping.getURLPath("TA", null, null, null, "en_GB", "home", null, siteMap));
+        assertEquals("TB", PathMapping.getURLPath("TA", "TB", null, null, "en_GB", "home", null, siteMap));
+        assertEquals("TG/TA", PathMapping.getURLPath("TA", null, "TG", null, "en_GB", "home", null, siteMap));
+        assertEquals("TG/TC", PathMapping.getURLPath("TA", "TC", "TG", null, "en_GB", "home", null, siteMap));
+        assertEquals("TB", PathMapping.getURLPath("TA", "TB", "TG", null, "en_GB", "home", null, siteMap));
         
     }
     

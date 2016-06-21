@@ -88,6 +88,16 @@
     <page name="encoding" alias="encodingpage">
       <alt key="xencoding" name="xencodingpage" default="true"/>
     </page>
+    
+    <page name="TA">
+      <alt key="TB" name="TB"/>
+    </page>
+
+    <page-group name="TG" key="TG">
+      <page name="TA">
+        <alt key="TC" name="TC"/>
+      </page>
+    </page-group>
 
     <pageflow name="flow" alias="myflow"/>
 

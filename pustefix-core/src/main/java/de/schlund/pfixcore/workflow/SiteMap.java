@@ -572,12 +572,12 @@ public class SiteMap {
         		pageAlternativeKey = page.defaultPageAlt.key;
         	}
         }
-        if(resolveName && pageGroup != null && pageGroup.defaultPage == page) {    
-            if(pageAlternativeKey != null && !page.pageAltKeyMap.containsKey(pageAlternativeKey)) {
+        if(resolveName && pageGroup != null) {    
+            if(!page.pageAltKeyMap.containsKey(pageAlternativeKey)) {
                 //page doesn't contain requested altKey, resolve alias without page group
                 return getAlias(name, lang, pageAlternativeKey, null, resolveName);
             } 
-            if(pageAlternativeKey == null || (page.defaultPageAlt != null && page.defaultPageAlt.key.equals(pageAlternativeKey))) {
+            if(pageGroup.defaultPage == page && page.defaultPageAlt != null && page.defaultPageAlt.key.equals(pageAlternativeKey)) {
                 //no altKey requested or altKey is page's default altKey -> return pageGroup prefix
                 return pageGroup.getPrefix() + "/";
             }
