@@ -1,7 +1,11 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<sitemap-aliases lang="de">
-  <alias page="home">Start</alias>
-  <alias page="order">Bestellung</alias>
-  <alias page="overview">Uebersicht</alias>
-  <alias page="mvctest">mymvc</alias>
+<sitemap-aliases>
+  <alias-group lang="de">
+    <alias page="foo">Fu</alias>
+  </alias-group>
+  <alias-group lang="de_DE">
+    <alias page="foo">Fuh</alias>
+    <alias page="y">YYY</alias>
+    <alias page="zz">ZZZ</alias>
+  </alias-group>
 </sitemap-aliases>

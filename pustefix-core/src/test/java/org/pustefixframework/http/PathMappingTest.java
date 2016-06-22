@@ -215,8 +215,43 @@ public class PathMappingTest extends TestCase {
         assertNull(res.getPageGroup());
         assertEquals("encoding", res.getPageName());
         assertEquals("xencoding", res.getPageAlternativeKey());
-        
+
         res =  siteMap.getPageName("foo", null);
+        assertEquals("foo", res.getPageName());
+        assertNull(res.getPageGroup());
+        assertNull(res.getPageAlternativeKey());
+
+        res =  siteMap.getPageName("Fu", "de_DE");
+        assertEquals("foo", res.getPageName());
+        assertNull(res.getPageGroup());
+        assertNull(res.getPageAlternativeKey());
+
+        res =  siteMap.getPageName("Fu", "de");
+        assertEquals("foo", res.getPageName());
+        assertNull(res.getPageGroup());
+        assertNull(res.getPageAlternativeKey());
+
+        res =  siteMap.getPageName("nonexisting", "de_DE");
+        assertEquals("nonexisting", res.getPageName());
+        assertNull(res.getPageGroup());
+        assertNull(res.getPageAlternativeKey());
+
+        res =  siteMap.getPageName("nonexisting", "de");
+        assertEquals("nonexisting", res.getPageName());
+        assertNull(res.getPageGroup());
+        assertNull(res.getPageAlternativeKey());
+
+        res =  siteMap.getPageName("main/one/YYY", "de_DE");
+        assertEquals("y", res.getPageName());
+        assertEquals("one", res.getPageGroup());
+        assertNull(res.getPageAlternativeKey());
+
+        res =  siteMap.getPageName("main/ZZZ", "de_DE");
+        assertEquals("z", res.getPageName());
+        assertEquals("main", res.getPageGroup());
+        assertNull(res.getPageAlternativeKey());
+
+        res =  siteMap.getPageName("foo/123", "en_GB");
         assertEquals("foo", res.getPageName());
         assertNull(res.getPageGroup());
         assertNull(res.getPageAlternativeKey());
@@ -284,6 +319,10 @@ public class PathMappingTest extends TestCase {
         assertEquals("TG/TC", PathMapping.getURLPath("TA", "TC", "TG", null, "en_GB", "home", null, siteMap));
         assertEquals("TB", PathMapping.getURLPath("TA", "TB", "TG", null, "en_GB", "home", null, siteMap));
         
+        assertEquals("Fuh", PathMapping.getURLPath("foo", null, null, null, "de_DE", "home", null, siteMap));
+        assertEquals("Fu", PathMapping.getURLPath("foo", null, null, null, "de_AT", "home", null, siteMap));
+        assertEquals("baz", PathMapping.getURLPath("bar", null, null, null, "de_DE", "home", null, siteMap));
+
     }
     
 }

@@ -330,6 +330,9 @@ public class SiteMap {
         for(Element childAlt: childAlts) {
             String altKey = childAlt.getAttribute("key");
             String altName = childAlt.getAttribute("name");
+            if(altName.isEmpty()) {
+                altName = altKey;
+            }
             boolean defaultAlt = Boolean.valueOf(childAlt.getAttribute("default"));
             page.pageAltKeyToName.put(altKey, altName);
             page.pageNameToAltKey.put(altName, altKey);
@@ -808,7 +811,7 @@ public class SiteMap {
             }
         }
         String aliasPageName = alias;
-        if(page != null && page.equals(alias) && page.contains("/")) {
+        if(page.equals(alias) && page.contains("/")) {
             aliasPageName = page.substring(0, page.lastIndexOf('/'));
             return getPageName(aliasPageName, lang);
         }
@@ -902,7 +905,7 @@ public class SiteMap {
             return null;
         }
         
-        public PageGroup lookup(String pageName) {
+        PageGroup lookup(String pageName) {
             if(pageName == null) {
                 return null;
             } else {
