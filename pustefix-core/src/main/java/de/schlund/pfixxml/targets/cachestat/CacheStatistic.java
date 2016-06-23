@@ -42,8 +42,22 @@ import de.schlund.pfixxml.util.Xml;
  * and misses in the SPCache. Currently it 
  * is used by TargetImpl to register
  * cache hits and misses.
+ *
+ * <p>
+ * An instance registers itself as MBean using the Object Name:
+ * Pustefix:type=CacheStatistic,project=PROJECT
+ * </p>
+ *
+ * <p>
+ * Upon registration of Caches via {@link #monitor(SPCache, String)}, it registers
+ * per a per-Cache MBean using an Object-Name like:<br/>
+ * <code>Pustefix:type=DetailedCacheStatistics,project=PROJECT,id=CACHE_ID</code>
+ * </p> 
+ *
  * @author Joerg Haecker <haecker@schlund.de>
- *  
+ *
+ * @see DetailedCacheStatisticsMBean
+ *
  */
 public class CacheStatistic implements CacheStatisticMBean, InitializingBean, DisposableBean {
     
@@ -61,24 +75,39 @@ public class CacheStatistic implements CacheStatisticMBean, InitializingBean, Di
     private List<SPCacheStatProxy<?,?>> cacheStatistics = new ArrayList<SPCacheStatProxy<?,?>>();
     
     public void afterPropertiesSet() throws Exception {
-        try {
-            MBeanServer mbeanServer = ManagementFactory.getPlatformMBeanServer(); 
-            ObjectName objectName = new ObjectName("Pustefix:type=CacheStatistic,project="+projectName);
-            if(mbeanServer.isRegistered(objectName)) mbeanServer.unregisterMBean(objectName);
-            mbeanServer.registerMBean(this, objectName);   
-        } catch(Exception x) {
-            LOG.error("Can't register SPCacheStatistic MBean!",x);
-        }
+        registerMBean(this, "Pustefix:type=CacheStatistic,project=" + projectName);
+
         tickTimer = new Timer("Timer-CacheStatistic", true);
     }
-    
+
     public <T1,T2> SPCache<T1, T2> monitor(SPCache<T1, T2> cache, String id) {        
         AdvanceCacheStatistic stat = new AdvanceCacheStatistic(id, tickTimer, queueSize, queueTicks);
         SPCacheStatProxy<T1, T2> proxy = new SPCacheStatProxy<T1, T2>(cache, stat);
         cacheStatistics.add(proxy);
+
+        registerMBean(new DetailedCacheStatistics(proxy), //
+                "Pustefix:type=DetailedCacheStatistics,project=" + projectName + ",id=" + stat.getId());
+
         return proxy;
     }
-    
+
+    private void registerMBean(Object mbean, String name) {
+        try {
+            ObjectName objectName = new ObjectName(name);
+            MBeanServer mbeanServer = ManagementFactory.getPlatformMBeanServer();
+
+            if (mbeanServer.isRegistered(objectName)) {
+                mbeanServer.unregisterMBean(objectName);
+            }
+
+            mbeanServer.registerMBean(mbean, objectName);
+
+            LOG.info("Registered MBean: " + objectName);
+        } catch (Exception e) {
+            LOG.error("Can't register MBean: " + name, e);
+        }
+    }
+
     public void setProjectName(String projectName) {
         this.projectName = projectName;
     }
@@ -171,5 +200,4 @@ public class CacheStatistic implements CacheStatisticMBean, InitializingBean, Di
     public void reset() {
     	cacheStatistics.clear();
     }
-    
 }
