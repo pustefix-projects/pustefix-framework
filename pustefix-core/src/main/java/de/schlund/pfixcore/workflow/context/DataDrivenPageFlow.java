@@ -186,6 +186,9 @@ public class DataDrivenPageFlow implements PageFlow {
 
     public void addPageFlowInfo(String currentpagename, Element root) {
         Document doc = root.getOwnerDocument();
+        if(finalpage != null) {
+            root.setAttribute("final", finalpage);
+        }
         FlowStep[] steps = getAllSteps();
         for (int i = 0; i < steps.length; i++) {
             String step = steps[i].getPageName();
