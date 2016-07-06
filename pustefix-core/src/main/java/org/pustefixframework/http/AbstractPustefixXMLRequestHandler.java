@@ -575,14 +575,6 @@ public abstract class AbstractPustefixXMLRequestHandler extends AbstractPustefix
             }
         }
         
-        if (spdoc.getResponseError() == HttpServletResponse.SC_NOT_FOUND && spdoc.getDocument() != null) {
-            String stylesheet = extractStylesheetFromSPDoc(spdoc, preq, null);
-            if (generator.getTarget(stylesheet) != null) {
-                spdoc.setResponseError(0);
-                spdoc.setResponseErrorText(null);
-            }
-        }
-        
         // if the document contains a error code, do errorhandling here and no further processing.
         if(spdoc.getResponseError() != 0) {
         	sendError(spdoc, res);
