@@ -131,7 +131,7 @@ public class TransformerCallback {
             if(pageExists) {
                 AccessibilityChecker check = (AccessibilityChecker) context;
                 boolean retval;
-                if (context.getContextConfig().isSynchronized()) {
+                if (context.synchronizeOnContext(pagename)) {
                     synchronized (context) {
                         retval = check.isPageAccessible(pagename);
                     }
@@ -157,7 +157,7 @@ public class TransformerCallback {
             if (context.getContextConfig().getPageRequestConfig(pagename) != null) {
                 AccessibilityChecker check = (AccessibilityChecker) context;
                 boolean retval;
-                if (context.getContextConfig().isSynchronized()) {
+                if (context.synchronizeOnContext(pagename)) {
                     synchronized (context) {
                         retval = check.isPageAlreadyVisited(pagename);
                     }

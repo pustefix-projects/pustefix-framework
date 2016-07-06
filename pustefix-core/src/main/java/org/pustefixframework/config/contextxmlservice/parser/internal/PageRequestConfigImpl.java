@@ -44,7 +44,8 @@ public class PageRequestConfigImpl implements Cloneable, PageRequestConfig, SSLO
     private String beanName = null;
     private Properties props = new Properties();
     private LinkedHashMap<String, ProcessActionPageRequestConfigImpl> actions = new LinkedHashMap<String, ProcessActionPageRequestConfigImpl>();
-    
+    private Boolean synchronizeOnContext;
+
     public void setPageName(String page) {
         this.pageName = page;
     }
@@ -119,4 +120,13 @@ public class PageRequestConfigImpl implements Cloneable, PageRequestConfig, SSLO
     public void addProcessAction(String name, ProcessActionPageRequestConfigImpl action) {
         actions.put(name, action);
     }
- }
+
+    public void setSynchronizeOnContext(Boolean synchronizeOnContext) {
+        this.synchronizeOnContext = synchronizeOnContext;
+    }
+
+    public Boolean getSynchronizeOnContext() {
+        return synchronizeOnContext;
+    }
+
+}

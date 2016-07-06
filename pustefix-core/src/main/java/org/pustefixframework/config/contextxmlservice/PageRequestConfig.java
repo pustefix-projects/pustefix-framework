@@ -67,4 +67,7 @@ public interface PageRequestConfig {
     Properties getProperties();
     
     public Map<String, ? extends ProcessActionPageRequestConfig> getProcessActions();
+
+    public Boolean getSynchronizeOnContext();
+
 }

@@ -261,7 +261,7 @@ public class ContextImpl implements AccessibilityChecker, ExtendedContext, Token
 
     public boolean isPageAccessible(String pagename) throws Exception {
         RequestContextImpl requestcontext = getRequestContextForCurrentThreadWithError();
-        if (getContextConfig().isSynchronized()) {
+        if (synchronizeOnContext(pagename)) {
             synchronized (this) {
                 return requestcontext.isPageAccessible(pagename);
             }
@@ -320,13 +320,28 @@ public class ContextImpl implements AccessibilityChecker, ExtendedContext, Token
     }
     
     public SPDocument handleRequest(PfixServletRequest preq) throws PustefixApplicationException, PustefixCoreException {
-        if (getContextConfig().isSynchronized()) {
+        String pageName = preq.getPageName();
+        if(pageName == null) {
+            pageName = getContextConfig().getDefaultPage(getVariant());
+        }
+        if (synchronizeOnContext(pageName)) {
             synchronized (this) {
                 return getRequestContextForCurrentThreadWithError().handleRequest(preq);
             }
         } else {
             return getRequestContextForCurrentThreadWithError().handleRequest(preq);
         }
+    }
+
+    public boolean synchronizeOnContext(String pageName) {
+        Boolean sync = null;
+        if(pageName != null) {
+            PageRequestConfig conf = getContextConfig().getPageRequestConfig(pageName);
+            if(conf != null) {
+                sync = conf.getSynchronizeOnContext();
+            }
+        }
+        return sync == Boolean.TRUE || ( getContextConfig().isSynchronized() && sync != Boolean.FALSE);
     }
 
     public void cleanupAfterRequest() {

@@ -86,6 +86,14 @@ public class PageRequestParsingHandler implements ParsingHandler {
             }
             pageConfig.setPageName(pageName);
             
+            String value = element.getAttribute("synchronized").trim();
+            if(value.isEmpty() && !element.getLocalName().equals("pagerequest")) {
+                value = ((Element)element.getParentNode()).getAttribute("synchronized").trim();
+            }
+            if(!value.isEmpty()) {
+                pageConfig.setSynchronizeOnContext(Boolean.valueOf(value));
+            }
+
             boolean isCopyPage = false;
             String copyfrom = element.getAttribute("copyfrom").trim();
             if (copyfrom.length() > 0) {
