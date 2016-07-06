@@ -22,6 +22,7 @@ import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
+import java.lang.reflect.Method;
 import java.net.URI;
 import java.util.HashMap;
 import java.util.Iterator;
@@ -124,7 +125,16 @@ public class XMLCreatorVisitor implements ExceptionDataValueVisitor {
 	        Element exElem = doc.createElement("exception");
 	        exElem.setAttribute("type", throwable.getClass().getName());
 	        exElem.setAttribute("msg", throwable.getMessage());
-	        
+            //add toString output if Throwable overrides default implementation
+            if(overridesToString(throwable)) {
+                String str = throwable.toString();
+                if(str == null) {
+                    str = "-";
+                } else {
+                    str = str.trim();
+                }
+                exElem.setAttribute("string", str);
+            }
 	        if(throwable instanceof TransformerException) {
 	            TransformerException te = (TransformerException)throwable;
 	            Element xsltInfo = doc.createElement("xsltinfo");
@@ -301,5 +311,16 @@ public class XMLCreatorVisitor implements ExceptionDataValueVisitor {
         }
         return cutStr.toString();
     }
-	
+
+    private boolean overridesToString(Throwable t) {
+        try {
+            Method meth = t.getClass().getMethod("toString", new Class<?>[0]);
+            //check if returned toString method is not declared by Throwable
+            return meth.getDeclaringClass() != Throwable.class;
+        } catch (NoSuchMethodException e) {
+            //can be ignored because there's Throwable toString as fallback
+        }
+        return false;
+    }
+
 }

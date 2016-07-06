@@ -5,36 +5,81 @@
     <html>
       <head>
         <title>Error</title>
+        <style>
+          body {
+            font-family: sans-serif;
+          }
+          table.error {
+            background: #aaaacc;
+            border: 1px solid black;
+          }
+          table.error td {
+            padding: 4px;
+          }
+          td.head {
+            background: #dd9999;
+          }
+          td.pre {
+            font-family: monospace;
+            white-space: pre;
+          }
+          table.error > tbody > tr:nth-child(odd) {
+            background: #ccccee;
+          }
+          table.error > tbody > tr:nth-child(even) {
+            background: #aaaacc;
+          }
+          table.stack td {
+            padding: 0px;
+          }
+          span.open {
+            margin-right: 5px;
+            cursor: pointer;
+            color: #000000;
+            font-family: monospace;
+            border-style: groove;
+            border-width: 2px;
+            border-color: #ccccee;
+          }
+          span.close {
+            margin-right: 5px;
+            cursor: pointer;
+            color: #000000;
+            font-family: monospace;
+            border-style: groove;
+            border-width: 2px;
+            border-color: #ccccee;
+          }
+        </style>
       </head>
-      <body style="font-size:xx-small">
-        <br/><br/>
+      <body>
         <div align="center">
-          <table cellpadding="3" cellspacing="0" style="background-color: #aaaacc; border: 1px solid black">
-            <tr>
-              <td align="center" bgcolor="#cc0000" colspan="2">
-                <span style="color:#ffffff; font-weight: bold">
-                  <xsl:choose>
-         	        <xsl:when test="/error[@type ='xslt']">
-                      XML/XSLT Error!
-                    </xsl:when>
-                    <xsl:when test="/error[@type = 'xslt_ext']">
-                      XSLT Extension Function Error!
-                    </xsl:when>
-                    <xsl:otherwise>
-                      Java Error!
-                    </xsl:otherwise>
-                  </xsl:choose> 
-                </span>
-              </td>
-            </tr>
-            <xsl:apply-templates/>
+          <table cellpadding="3" cellspacing="0" class="error">
+            <tbody>
+              <tr>
+                <td align="center" bgcolor="#cc0000" colspan="2">
+                  <span style="color:#ffffff; font-weight: bold; letter-spacing: 0.2em; text-transform:uppercase;">
+                    <xsl:choose>
+                      <xsl:when test="/error[@type ='xslt']">
+                        XML/XSLT Error!
+                      </xsl:when>
+                      <xsl:when test="/error[@type = 'xslt_ext']">
+                        XSLT Extension Function Error!
+                      </xsl:when>
+                      <xsl:otherwise>
+                        Java Error!
+                      </xsl:otherwise>
+                    </xsl:choose>
+                  </span>
+                </td>
+              </tr>
+              <xsl:apply-templates/>
+            </tbody>
           </table>
         </div>
       </body>
     </html>
   </xsl:template>
-
-
 
   <xsl:template match="/error">
     
@@ -92,7 +137,10 @@
   
   <xsl:template name="sessioninfo">
     <tr>
-      <td><b>Session-ID:</b></td>
+      <td colspan="2" class="head"><b>Session:</b></td>
+    </tr>
+    <tr>
+      <td>ID:</td>
       <td>
         <xsl:value-of select="sessioninfo/text()"/>
       </td>
@@ -100,60 +148,38 @@
   </xsl:template>
 
   <xsl:template name="requestparams">
-    <tr>
-      <td colspan="2" bgcolor="#dd9999"><b>Request Parameter:</b></td>
-    </tr>
-    <xsl:for-each select="requestparams/param">
+    <xsl:if test="requestparams/param">
       <tr>
-        <xsl:attribute name="bgcolor">
-          <xsl:choose>
-            <xsl:when test="position() mod 2 = 0">#aaaacc</xsl:when>
-            <xsl:otherwise>#ccccee</xsl:otherwise>
-          </xsl:choose>
-        </xsl:attribute>
-        <td><xsl:value-of select="@key"/></td>
-        <td><xsl:value-of select="text()"/></td>
+        <td colspan="2" class="head"><b>Request Parameter:</b></td>
       </tr>
-    </xsl:for-each>
-  
+      <xsl:for-each select="requestparams/param">
+        <tr>
+          <td><xsl:value-of select="@key"/></td>
+          <td><xsl:value-of select="text()"/></td>
+        </tr>
+      </xsl:for-each>
+    </xsl:if>
   </xsl:template>
 
   <xsl:template name="laststeps">
-    <tr>
-      <td colspan="2" bgcolor="#dd9999"><b>Last steps:</b></td>
-    </tr>
-    <xsl:choose>
-      <xsl:when test="count(laststeps/step) &lt; 1">
-        <tr><td/><td>Not available</td></tr>
-      </xsl:when>
-      <xsl:otherwise>
-        <xsl:for-each select="laststeps/step">
-          <tr>
-            <xsl:attribute name="bgcolor">
-              <xsl:choose>
-                <xsl:when test="position() mod 2 = 0">#aaaacc</xsl:when>
-                <xsl:otherwise>#ccccee</xsl:otherwise>
-              </xsl:choose>
-            </xsl:attribute>
-            <td/><td><xsl:value-of select="text()"/></td>
-          </tr>
-        </xsl:for-each>
-      </xsl:otherwise>
-    </xsl:choose>
+    <xsl:if test="laststeps/step">
+      <tr>
+        <td colspan="2" class="head"><b>Last steps:</b></td>
+      </tr>
+      <xsl:for-each select="laststeps/step">
+        <tr>
+          <td/><td><xsl:value-of select="text()"/></td>
+        </tr>
+      </xsl:for-each>
+    </xsl:if>
   </xsl:template>
 
   <xsl:template name="session_dump">
     <tr>
-      <td colspan="2" bgcolor="#dd9999"><b>Session keys and values:</b></td>
+      <td colspan="2" class="head"><b>Session keys and values:</b></td>
     </tr>
     <xsl:for-each select="session_dump/pair">
       <tr>
-        <xsl:attribute name="bgcolor">
-          <xsl:choose>
-            <xsl:when test="position() mod 2 = 0">#aaaacc</xsl:when>
-            <xsl:otherwise>#ccccee</xsl:otherwise>
-          </xsl:choose>
-        </xsl:attribute>
         <td valign="top" style="font-family: monospace">
           <xsl:call-template name="linewrap">
             <xsl:with-param name="str" select="@key"/>
@@ -167,7 +193,7 @@
 
   <xsl:template match="exception">
     <tr>
-      <td colspan="2" bgcolor="#dd9999">
+      <td colspan="2" class="head">
         <b>
           <xsl:choose>
             <xsl:when test="parent::exception">Cause:</xsl:when>
@@ -176,50 +202,64 @@
         </b>
       </td>
     </tr>
-    <tr bgcolor="#ccccee">
+    <tr>
       <td>Type</td>
       <td><xsl:value-of select="@type"/></td></tr>
-    <tr bgcolor="#aaaacc">
+    <tr>
       <td valign="top">Message</td>
       <xsl:choose>
         <xsl:when test="@msg != ''">
           <td><xsl:value-of select="@msg"/></td>
         </xsl:when>
         <xsl:otherwise>
-          <td>Not available</td>
+          <td>-</td>
         </xsl:otherwise> 
       </xsl:choose>
     </tr>
+    <xsl:if test="@string">
+    <tr>
+      <td valign="top">ToString</td>
+      <td class="pre"><xsl:value-of select="@string"/></td>
+    </tr>
+    </xsl:if>
     <xsl:if test="xsltinfo">
-    <tr bgcolor="#ccccee">
+    <tr>
       <td>Location</td>
       <td><xsl:value-of select="xsltinfo/@systemId"/><br/>
           Line: <xsl:value-of select="xsltinfo/@line"/> Column: <xsl:value-of select="xsltinfo/@column"/> 
           </td></tr>
     </xsl:if>
     <tr>
-      <xsl:choose>
-        <xsl:when test="xsltinfo">
-          <xsl:attribute name="bgcolor">#aaaacc</xsl:attribute>
-        </xsl:when>
-        <xsl:otherwise>
-          <xsl:attribute name="bgcolor">#ccccee</xsl:attribute>
-        </xsl:otherwise>
-      </xsl:choose>
       <xsl:variable name="stackid">stack<xsl:value-of select="generate-id()"/></xsl:variable>
       <td valign="top">
         Stacktrace 
       </td>
       <td>
         <div id="{$stackid}_short">
-          <span style="margin-right: 5px; cursor:pointer; color:#000000; font-family:monospace; border-style:groove; border-width:2px; border-color:#ccccee;" onclick="document.getElementById('{$stackid}').style.display='block';document.getElementById('{$stackid}_short').style.display='none'">+</span>
-          <xsl:value-of select="stacktrace/line"/>
+          <table class="stack">
+            <tr>
+              <td valign="top">
+                <span class="open" onclick="document.getElementById('{$stackid}').style.display='block';document.getElementById('{$stackid}_short').style.display='none'">+</span>
+              </td>
+              <td class="pre">
+                <xsl:value-of select="stacktrace/line"/>
+              </td>
+            </tr>
+          </table>
         </div>
         <div id="{$stackid}" style="display:none">  
-          <span style="margin-right: 5px; cursor:pointer; color:#000000; font-family:monospace; border-style:groove; border-width:2px; border-color:#ccccee;" onclick="document.getElementById('{$stackid}').style.display='none';document.getElementById('{$stackid}_short').style.display='block'">-</span>
-          <xsl:for-each select="stacktrace/line">
-            <xsl:value-of select="text()"/><br/>
-          </xsl:for-each>
+          <table class="stack">
+            <tr>
+              <td valign="top">
+                <span class="close" onclick="document.getElementById('{$stackid}').style.display='none';document.getElementById('{$stackid}_short').style.display='block'">-</span>
+              </td>
+              <td class="pre">
+                <xsl:for-each select="stacktrace/line">
+                  <xsl:value-of select="text()"/><br/>
+                </xsl:for-each>
+              </td>
+            </tr>
+          </table>
         </div>
       </td>
     </tr>
