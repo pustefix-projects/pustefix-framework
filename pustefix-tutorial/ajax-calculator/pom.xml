@@ -14,6 +14,10 @@
 
   <name>Pustefix Tutorial AJAX Calculator</name>
 
+  <properties>
+    <pustefix.mode>test</pustefix.mode>
+  </properties>
+
   <dependencies>
     <dependency>
       <groupId>org.pustefixframework</groupId>
@@ -90,18 +94,5 @@
       </plugin>
     </plugins>
   </build>
-  
-  <profiles>
-    <profile>
-      <id>activatePustefixEditor</id>
-      <dependencies>
-        <dependency>
-          <groupId>org.pustefixframework.editor</groupId>
-          <artifactId>pustefix-editor-backend</artifactId>
-          <version>${project.version}</version>
-        </dependency>
-      </dependencies>
-    </profile>
-  </profiles>
-  
+
 </project>
