@@ -1,10 +1,9 @@
 package org.pustefixframework.util;
 
-import java.io.BufferedReader;
 import java.io.File;
 import java.io.InputStream;
-import java.io.InputStreamReader;
 import java.net.URL;
+import java.util.Properties;
 import java.util.jar.JarFile;
 import java.util.jar.Manifest;
 import java.util.zip.ZipEntry;
@@ -26,9 +25,10 @@ public class FrameworkInfo {
                 if("file".equals(url.getProtocol())) {
                     File file = new File(url.toURI());
                     if(!file.isDirectory()) {
-                        JarFile jarFile = new JarFile(file);
-                        Manifest manifest = jarFile.getManifest();
-                        detected = manifest.getMainAttributes().getValue("Specification-Version");
+                        try (JarFile jarFile = new JarFile(file)) {
+                            Manifest manifest = jarFile.getManifest();
+                            detected = manifest.getMainAttributes().getValue("Specification-Version");
+                        }
                     }
                 }
             }
@@ -38,7 +38,7 @@ public class FrameworkInfo {
         if(detected == null) detected = "n/a";
         return detected;
     }
-    
+
     private static String detectSCMUrl() {
         String detected = null;
         try {
@@ -47,18 +47,18 @@ public class FrameworkInfo {
                 if("file".equals(url.getProtocol())) {
                     File file = new File(url.toURI());
                     if(!file.isDirectory()) {
-                        JarFile jarFile = new JarFile(file);
-                        ZipEntry entry = jarFile.getEntry("META-INF/SVN_REVISION");
-                        if(entry != null) {
-                            InputStream in = jarFile.getInputStream(entry);
-                            BufferedReader reader = new BufferedReader(new InputStreamReader(in, "utf-8"));
-                            String line = null;
-                            while((line = reader.readLine()) != null && detected == null) {
-                                if(line.startsWith("URL:") && line.length()>4) {
-                                    detected = line.substring(5).trim();
+                        try (JarFile jarFile = new JarFile(file)) {
+                            ZipEntry entry = jarFile.getEntry("META-INF/pominfo.properties");
+                            if(entry != null) {
+                                InputStream in = jarFile.getInputStream(entry);
+                                Properties props = new Properties();
+                                props.load(in);
+                                in.close();
+                                String value = props.getProperty("scmConnection");
+                                if(value != null) {
+                                    return value.trim();
                                 }
                             }
-                            reader.close();
                         }
                     }
                 }

@@ -162,11 +162,6 @@
             <configuration>
               <tasks>
                 <mkdir dir="${basedir}/target/classes/META-INF" />
-                <property name="svnrevision" location="${basedir}/target/classes/META-INF/SVN_REVISION" />
-                <delete file="${svnrevision}" />
-                <exec executable="svn" output="${svnrevision}">
-                  <arg line="info" />
-                </exec>
                 <echo file="${basedir}/target/classes/META-INF/wsd.properties">
                   groupId = ${project.groupId}
                   artifactId = ${project.artifactId}
