@@ -1,12 +1,15 @@
-<?xml version="1.0" encoding="utf-8"?><pfx:document xmlns:pfx="http://www.schlund.de/pustefix/core" xmlns:ixsl="http://www.w3.org/1999/XSL/Transform">
-<!-- This page is a frame containing the choosen content -->
+<?xml version="1.0" encoding="utf-8"?>
+<pfx:document xmlns:pfx="http://www.schlund.de/pustefix/core"
+              xmlns:ixsl="http://www.w3.org/1999/XSL/Transform">
   <html>
     <head>
-      <title>A new pustefix project</title>
+      <title>A new Pustefix project</title>
+      <link href="{$__contextpath}/css/style.css" rel="stylesheet" type="text/css"/>
     </head>
-    <body style="padding: 10px;">
+    <body>
       <pfx:maincontent/>
       <pfx:editconsole/>
     </body>
   </html>
+
 </pfx:document>

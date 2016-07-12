@@ -19,6 +19,7 @@ package org.pustefixframework.tutorial.firstapp;
 
 
 public class User {
+
     private String name;
     private String email;
     private String birthday;
@@ -73,4 +74,5 @@ public class User {
     public void setSex(String sex) {
         this.sex = sex;
     }
+
 }

@@ -17,39 +17,35 @@
  */
 package org.pustefixframework.tutorial.firstapp.handler;
 
-import org.pustefixframework.tutorial.firstapp.contextresources.ContextUser;
+import org.pustefixframework.tutorial.firstapp.User;
+import org.pustefixframework.tutorial.firstapp.wrapper.SaveUserDataWrapper;
+import org.pustefixframework.web.mvc.InputHandler;
+import org.springframework.beans.factory.annotation.Autowired;
 
-import de.schlund.pfixcore.generator.IHandler;
-import de.schlund.pfixcore.generator.IWrapper;
-import de.schlund.pfixcore.workflow.Context;
-import de.schlund.pfixcore.workflow.ContextResourceManager;
 
-public class SaveUserDataHandler implements IHandler {
+public class SaveUserDataHandler implements InputHandler<SaveUserDataWrapper> {
 
-    public void handleSubmittedData(Context context, IWrapper wrapper)
-            throws Exception {
+    @Autowired
+    User user;
+
+    public void handleSubmittedData(SaveUserDataWrapper wrapper) {
         System.out.println("Business logic to save data");
     }
 
-    public boolean isActive(Context context) throws Exception {
+    public boolean isActive() {
         return true;
     }
 
-    public boolean needsData(Context context) throws Exception {
+    public boolean needsData() {
         return false;
     }
 
-    public boolean prerequisitesMet(Context context) throws Exception {
-        ContextResourceManager manager = context.getContextResourceManager();
-        ContextUser cUser = manager.getResource(ContextUser.class);
-        if (cUser.getUser() != null) {
-            return true;
-        }
-        return false;
+    public boolean prerequisitesMet() {
+        return user.getName() != null;
     }
 
-    public void retrieveCurrentStatus(Context context, IWrapper arg1)
-            throws Exception {
+    public void retrieveCurrentStatus(SaveUserDataWrapper wrapper) {
         // Nothing to be done here
     }
+
 }

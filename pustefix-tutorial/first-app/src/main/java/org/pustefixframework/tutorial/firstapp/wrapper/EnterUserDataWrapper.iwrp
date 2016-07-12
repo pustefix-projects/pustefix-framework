@@ -12,7 +12,7 @@
   <param name="name" type="java.lang.String" occurrence="mandatory"/>
   <param name="email" type="java.lang.String" occurrence="mandatory"/>
   <param name="homepage" type="java.lang.String" occurrence="optional"/>
-  <param name="birthdate" type="java.lang.String" occurrence="optional"/>
+  <param name="birthday" type="java.lang.String" occurrence="optional"/>
   <param name="admin" type="java.lang.Boolean" occurrence="optional">
     <default>
       <value>false</value>

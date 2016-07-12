@@ -12,4 +12,8 @@
                            
   <context:annotation-config/>
 
+  <bean id="user" class="org.pustefixframework.tutorial.firstapp.User" scope="session">
+    <aop:scoped-proxy/>
+  </bean>
+
 </beans>

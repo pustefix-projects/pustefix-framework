@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<context-xml-service-config xmlns="http://www.pustefix-framework.org/2008/namespace/context-xml-service-config" 
+<context-xml-service-config xmlns="http://www.pustefix-framework.org/2008/namespace/context-xml-service-config"
                             xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
                             xsi:schemaLocation="http://www.pustefix-framework.org/2008/namespace/context-xml-service-config
                                                 http://www.pustefix-framework.org/2008/namespace/context-xml-service-config.xsd"
@@ -7,11 +7,7 @@
 
   <global-config />
 
-  <context defaultpage="EnterData">
-    <resource class="org.pustefixframework.tutorial.firstapp.contextresources.ContextUserImpl">
-      <implements class="org.pustefixframework.tutorial.firstapp.contextresources.ContextUser"/>
-    </resource>
-  </context>
+  <context defaultpage="EnterData"/>
 
   <pageflow name="RegisterUser" final="Confirm">
     <flowstep name="EnterData"/>
@@ -23,13 +19,13 @@
       <wrapper prefix="user" class="org.pustefixframework.tutorial.firstapp.wrapper.EnterUserDataWrapper" />
     </input>
   </pagerequest>
-  
+
   <pagerequest name="ReviewData">
     <input>
       <wrapper prefix="user" class="org.pustefixframework.tutorial.firstapp.wrapper.SaveUserDataWrapper" />
     </input>
     <output>
-      <resource node="user" class="org.pustefixframework.tutorial.firstapp.contextresources.ContextUser"/>
+      <resource node="user" bean-ref="user"/>
     </output>
   </pagerequest>
 
@@ -38,7 +34,7 @@
       <wrapper prefix="user" class="org.pustefixframework.tutorial.firstapp.wrapper.SaveUserDataWrapper" />
     </input>
     <output>
-      <resource node="user" class="org.pustefixframework.tutorial.firstapp.contextresources.ContextUser"/>
+      <resource node="user" bean-ref="user"/>
     </output>
   </pagerequest>
 

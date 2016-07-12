@@ -18,70 +18,47 @@
 package org.pustefixframework.tutorial.firstapp.handler;
 
 import org.pustefixframework.tutorial.firstapp.User;
-import org.pustefixframework.tutorial.firstapp.contextresources.ContextUser;
 import org.pustefixframework.tutorial.firstapp.wrapper.EnterUserDataWrapper;
+import org.pustefixframework.web.mvc.InputHandler;
+import org.springframework.beans.factory.annotation.Autowired;
 
-import de.schlund.pfixcore.generator.IHandler;
-import de.schlund.pfixcore.generator.IWrapper;
-import de.schlund.pfixcore.workflow.Context;
-import de.schlund.pfixcore.workflow.ContextResourceManager;
 
-public class EnterUserDataHandler implements IHandler {
+public class EnterUserDataHandler implements InputHandler<EnterUserDataWrapper> {
 
-    public void handleSubmittedData(Context context, IWrapper wrapper)
-            throws Exception {
-        ContextResourceManager manager = context.getContextResourceManager();
-        ContextUser cUser = manager.getResource(ContextUser.class);
-        
-        EnterUserDataWrapper euWrapper = (EnterUserDataWrapper)wrapper;
-        User user = new User();
-        user.setSex(euWrapper.getSex());
-        user.setName(euWrapper.getName());
-        if (euWrapper.getEmail() != null) {
-            user.setEmail(euWrapper.getEmail());
-        }
-        if (euWrapper.getHomepage() != null) {
-            user.setHomepage(euWrapper.getHomepage());
-        }
-        if (euWrapper.getBirthdate() != null) {
-            user.setBirthday(euWrapper.getBirthdate());
-        }
-        euWrapper.setAdmin(euWrapper.getAdmin());
-        cUser.setUser(user);
+    @Autowired
+    User user;
+
+    public void handleSubmittedData(EnterUserDataWrapper wrapper) {
+        user.setSex(wrapper.getSex());
+        user.setName(wrapper.getName());
+        user.setEmail(wrapper.getEmail());
+        user.setHomepage(wrapper.getHomepage());
+        user.setBirthday(wrapper.getBirthday());
+        user.setAdmin(wrapper.getAdmin());
     }
 
-    public boolean isActive(Context context) throws Exception {
+    public boolean isActive() {
         return true;
     }
 
-    public boolean needsData(Context context) throws Exception {
-        ContextResourceManager manager = context.getContextResourceManager();
-        ContextUser cUser = manager.getResource(ContextUser.class);
-        if (cUser.getUser() == null) {
-            return true;
-        }
-        return false;
+    public boolean needsData() {
+        return user.getName() == null;
     }
 
-    public boolean prerequisitesMet(Context context) throws Exception {
+    public boolean prerequisitesMet() {
         return true;
     }
 
-    public void retrieveCurrentStatus(Context context, IWrapper wrapper)
-            throws Exception {
-        ContextResourceManager manager = context.getContextResourceManager();
-        ContextUser cUser = manager.getResource(ContextUser.class);
-        User user = cUser.getUser();
-        if (user == null) {
+    public void retrieveCurrentStatus(EnterUserDataWrapper wrapper) {
+        if (user.getName() == null) {
             return;
         }
-        EnterUserDataWrapper euWrapper = (EnterUserDataWrapper)wrapper;
-
-        euWrapper.setSex(user.getSex());
-        euWrapper.setName(user.getName());
-        euWrapper.setEmail(user.getEmail());
-        euWrapper.setHomepage(user.getHomepage());
-        euWrapper.setBirthdate(user.getBirthday());
-        euWrapper.setAdmin(user.getAdmin());
+        wrapper.setSex(user.getSex());
+        wrapper.setName(user.getName());
+        wrapper.setEmail(user.getEmail());
+        wrapper.setHomepage(user.getHomepage());
+        wrapper.setBirthday(user.getBirthday());
+        wrapper.setAdmin(user.getAdmin());
     }
+
 }
