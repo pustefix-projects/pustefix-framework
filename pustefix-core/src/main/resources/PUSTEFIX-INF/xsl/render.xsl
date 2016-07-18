@@ -8,6 +8,8 @@
                 exclude-result-prefixes="rex inf">
 
   <xsl:param name="__rendercontext__"/>
+  <xsl:param name="parentContext"/>
+  <xsl:param name="rootContext"/>
 
   <xsl:param name="render_href"/>
   <xsl:param name="render_part"/>

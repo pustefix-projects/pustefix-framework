@@ -77,6 +77,18 @@ public abstract class RenderContext {
     	return contextNodes.peek();
     }
     
+    public Node getParentContextNode() {
+        if(contextNodes.size() > 1) {
+            return contextNodes.get(contextNodes.size() - 2);
+        }
+        return null;
+    }
+
+    public Node getRootContextNode() {
+        if(contextNodes.empty()) return null;
+        return contextNodes.firstElement();
+    }
+
     public Map<Object, Object> getCallbackCache() {
         return callbackCache;
     }

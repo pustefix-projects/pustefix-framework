@@ -1,6 +1,8 @@
 package de.schlund.pfixxml;
 
 import java.io.StringWriter;
+import java.util.HashMap;
+import java.util.Map;
 
 import javax.xml.transform.Result;
 import javax.xml.transform.Templates;
@@ -61,7 +63,11 @@ public class RenderExtension {
         	
         	writer = new StringWriter();
         	Result res = new StreamResult(writer);
-        	Xslt.transform(node.getOwnerDocument(), style, renderContext.getParameters(), res, "utf-8");
+            Map<String, Object> params = new HashMap<String, Object>();
+            params.putAll(renderContext.getParameters());
+            params.put("parentContext", renderContext.getParentContextNode());
+            params.put("rootContext", renderContext.getRootContextNode());
+            Xslt.transform(node.getOwnerDocument(), style, params, res, "utf-8");
             
         } finally {
         	if(isContextual) {
