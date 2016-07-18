@@ -3,47 +3,40 @@
 #set( $symbol_escape = '\' )
 package ${package}.handler;
 
-
 import ${package}.context.User;
 import ${package}.wrapper.Registration;
+
+import de.schlund.pfixcore.workflow.Context;
+import org.pustefixframework.web.mvc.InputHandler;
 import org.springframework.beans.factory.annotation.Autowired;
 
-import de.schlund.pfixcore.generator.IHandler;
-import de.schlund.pfixcore.generator.IWrapper;
-import de.schlund.pfixcore.workflow.Context;
+public class RegistrationHandler implements InputHandler<Registration> {
 
-public class RegistrationHandler implements IHandler {
+    @Autowired
+    Context context;
+    @Autowired
+    User user;
 
-    private User user;
-
-    public void handleSubmittedData(Context context, IWrapper wrapper) throws Exception {
-
-        Registration registration = (Registration)wrapper;
+    public void handleSubmittedData(Registration registration) {
         user.setName(registration.getName());
     }
 
-    public boolean isActive(Context context) throws Exception {
+    public boolean isActive() {
         return true;
     }
 
-    public boolean needsData(Context context) throws Exception {
+    public boolean needsData() {
         return user.getName() == null;
     }
 
-    public boolean prerequisitesMet(Context context) throws Exception {
+    public boolean prerequisitesMet() {
         return true;
     }
 
-    public void retrieveCurrentStatus(Context context, IWrapper wrapper) throws Exception {
+    public void retrieveCurrentStatus(Registration registration) {
         if(user.getName() != null) {
-            Registration registration = (Registration)wrapper;
             registration.setName(user.getName());
         }
-    }
-
-    @Autowired
-    public void setUser(User user) {
-        this.user = user;
     }
 
 }
