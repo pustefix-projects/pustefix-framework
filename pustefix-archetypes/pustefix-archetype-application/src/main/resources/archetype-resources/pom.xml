@@ -1,5 +1,9 @@
+#set( $symbol_dollar = '$' )
 <?xml version="1.0" encoding="UTF-8"?>
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+
   <modelVersion>4.0.0</modelVersion>
 
   <groupId>${groupId}</groupId>
@@ -7,23 +11,29 @@
   <version>${version}</version>
   <packaging>war</packaging>
 
-  <name>${artifactId} Pustefix Application </name>
+  <name>Pustefix Application</name>
 
   <properties>
+    <pustefix.mode>test</pustefix.mode>
     <pustefix.version>${pustefixVersion}</pustefix.version>
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
   </properties>
-  
+
   <dependencies>
     <dependency>
       <groupId>org.pustefixframework</groupId>
       <artifactId>pustefix-core</artifactId>
-      <version>${pustefix.version}</version>
+      <version>${symbol_dollar}{pustefix.version}</version>
     </dependency>
     <dependency>
-      <groupId>org.pustefixframework</groupId>
-      <artifactId>pustefix-live</artifactId>
-      <version>${pustefix.version}</version>
+      <groupId>org.pustefixframework.webservices</groupId>
+      <artifactId>pustefix-webservices-core</artifactId>
+      <version>${symbol_dollar}{pustefix.version}</version>
+    </dependency>
+    <dependency>
+      <groupId>org.pustefixframework.webservices</groupId>
+      <artifactId>pustefix-webservices-jsonws</artifactId>
+      <version>${symbol_dollar}{pustefix.version}</version>
     </dependency>
   </dependencies>
  
@@ -41,7 +51,7 @@
       <plugin>
         <groupId>org.pustefixframework.maven.plugins</groupId>
         <artifactId>pustefix-webapp-plugin</artifactId>
-        <version>${pustefix.version}</version>
+        <version>${symbol_dollar}{pustefix.version}</version>
         <executions>
           <execution>
             <goals>
@@ -53,7 +63,7 @@
       <plugin>
         <groupId>org.pustefixframework.maven.plugins</groupId>
         <artifactId>pustefix-statuscode-plugin</artifactId>
-        <version>${pustefix.version}</version>
+        <version>${symbol_dollar}{pustefix.version}</version>
         <executions>
           <execution>
             <goals>
@@ -65,7 +75,7 @@
       <plugin>
         <groupId>org.pustefixframework.maven.plugins</groupId>
         <artifactId>pustefix-iwrapper-plugin</artifactId>
-        <version>${pustefix.version}</version>
+        <version>${symbol_dollar}{pustefix.version}</version>
         <executions>
           <execution>
             <goals>
@@ -73,6 +83,43 @@
             </goals>
           </execution>
         </executions>
+      </plugin>
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-antrun-plugin</artifactId>
+        <version>1.8</version>
+        <executions>
+          <execution>
+            <id>tomcatconf</id>
+            <phase>prepare-package</phase>
+            <configuration>
+              <target>
+                <mkdir dir="${symbol_dollar}{project.build.directory}/addtomcatconf" />
+                <echo file="${symbol_dollar}{project.build.directory}/addtomcatconf/context.xml"><![CDATA[<?xml version='1.0' encoding='utf-8'?>
+<Context cookies="true" useHttpOnly="true">
+  <Parameter name="mode" value="${symbol_dollar}{pustefix.mode}" override="false" />
+  <Manager pathname="" />
+</Context>
+]]></echo>
+              </target>
+            </configuration>
+            <goals>
+              <goal>run</goal>
+            </goals>
+          </execution>
+        </executions>
+      </plugin>
+      <plugin>
+        <groupId>org.apache.tomcat.maven</groupId>
+        <artifactId>tomcat7-maven-plugin</artifactId>
+        <version>2.2</version>
+        <configuration>
+          <path>/</path>
+          <contextFile>${symbol_dollar}{project.build.directory}/addtomcatconf/context.xml</contextFile>
+          <warDirectory>${symbol_dollar}{war.dir}</warDirectory>
+          <uriEncoding>UTF-8</uriEncoding>
+          <useSeparateTomcatClassLoader>true</useSeparateTomcatClassLoader>
+        </configuration>
       </plugin>
     </plugins>
   </build>

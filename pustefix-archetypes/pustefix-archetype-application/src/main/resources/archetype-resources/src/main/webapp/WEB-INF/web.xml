@@ -1,3 +1,6 @@
+#set( $symbol_pound = '#' )
+#set( $symbol_dollar = '$' )
+#set( $symbol_escape = '\' )
 <?xml version="1.0" encoding="UTF-8"?>
 <web-app xmlns="http://java.sun.com/xml/ns/javaee" xmlns:jee="http://java.sun.com/xml/ns/javaee">
    <context-param>
@@ -13,26 +16,10 @@
       </init-param>
       <init-param>
          <param-name>contextConfigLocation</param-name>
-         <param-value>WEB-INF/project.xml</param-value>
+         <param-value>WEB-INF/project.xml WEB-INF/spring.xml</param-value>
       </init-param>
       <load-on-startup>1</load-on-startup>
    </servlet>
-   <servlet-mapping>
-      <servlet-name>dispatcher</servlet-name>
-      <url-pattern>/xml/app/*</url-pattern>
-   </servlet-mapping>
-   <servlet-mapping>
-      <servlet-name>dispatcher</servlet-name>
-      <url-pattern>/xml/deref/*</url-pattern>
-   </servlet-mapping>
-   <servlet-mapping>
-      <servlet-name>dispatcher</servlet-name>
-      <url-pattern>/xml/download/*</url-pattern>
-   </servlet-mapping>
-   <servlet-mapping>
-      <servlet-name>dispatcher</servlet-name>
-      <url-pattern>/xml/*</url-pattern>
-   </servlet-mapping>
    <servlet-mapping>
       <servlet-name>dispatcher</servlet-name>
       <url-pattern>/*</url-pattern>

@@ -9,7 +9,7 @@
 
   <project>
     <name>${artifactId}</name>
-    <description>${artifactId} pustefix application</description>
+    <description>Pustefix Application</description>
   </project>
 
   <editor>
@@ -21,7 +21,7 @@
   <xml-generator>
     <config-file>docroot:/WEB-INF/depend.xml</config-file>
     <choose>
-      <when test="$mode='prod'">
+      <when test="${symbol_dollar}mode='prod'">
         <!-- Set this to false if you want to skip the check for changed stylesheets on every request -->
         <check-modtime>false</check-modtime>
       </when>
@@ -35,7 +35,7 @@
     <context-xml-service>
       <config-file>docroot:/WEB-INF/app.xml</config-file>
       <choose>
-        <when test="$mode='prod'">
+        <when test="${symbol_dollar}mode='prod'">
           <session-cleaner-timeout>20</session-cleaner-timeout>
         </when>
         <otherwise>
@@ -44,17 +44,18 @@
       </choose>
     </context-xml-service>
 
-    <deref-service>
-      <validtime>3600</validtime>        <!-- optional: default is 3600 (seconds) -->
-      <mustsign>false</mustsign>         <!-- optional: default is false -->
-    </deref-service>
+    <webservice-service>
+      <config-file>docroot:/WEB-INF/webservice.xml</config-file>
+    </webservice-service>
 
     <static>
+      <path>css</path>
       <path>img</path>
+      <path>script</path>
     </static>
-
+    
     <choose>
-      <when test="$mode='test'">
+      <when test="${symbol_dollar}mode='test'">
         <exception-processing>
           <process type="java.lang.Throwable" 
                    processor="de.schlund.pfixxml.exceptionprocessor.UniversalExceptionProcessor"/>
@@ -64,10 +65,10 @@
 
   </application>
 
+  <!--
   <properties>
-    <!-- Defines SSL ports used for redirect corresponding to the unsecure ports -->
-    <prop name="pfixcore.ssl_redirect_port.for.8080">8443</prop>
-    <prop name="pfixcore.ssl_redirect_port.for.9080">9443</prop>
-  </properties>
   
+  </properties>
+  -->
+
 </project-config>

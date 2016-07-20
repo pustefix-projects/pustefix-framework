@@ -10,38 +10,25 @@
 
   <global-config />
 
-  <context defaultpage="EnterData">
-    <resource class="${package}.contextresources.ContextUserImpl">
-      <implements class="${package}.contextresources.ContextUser"/>
-    </resource>
+  <context defaultpage="Home">
+    <resource bean-name="user" class="${package}.context.User"/>
   </context>
 
-  <pageflow name="RegisterUser" final="Confirm">
-    <flowstep name="EnterData"/>
-    <flowstep name="ReviewData" stophere="true"/>
+  <pageflow name="MainFlow" final="Home">
+    <flowstep name="Home"/>
+    <flowstep name="Bye"/>
   </pageflow>
 
-  <pagerequest name="EnterData">
+  <pagerequest name="Home">
     <input>
-      <wrapper prefix="user" class="${package}.wrapper.EnterUserDataWrapper" />
+      <wrapper prefix="registration" class="${package}.wrapper.Registration"/>
     </input>
-  </pagerequest>
-  
-  <pagerequest name="ReviewData">
-    <input>
-      <wrapper prefix="user" class="${package}.wrapper.SaveUserDataWrapper" />
-    </input>
-    <output>
-      <resource node="user" class="${package}.contextresources.ContextUser"/>
-    </output>
   </pagerequest>
 
-  <pagerequest name="ConfirmData">
-    <input>
-      <wrapper prefix="user" class="${package}.wrapper.SaveUserDataWrapper" />
-    </input>
+ <pagerequest name="Bye">
+    <state class="${package}.state.ByeState"/>
     <output>
-      <resource node="user" class="${package}.contextresources.ContextUser"/>
+      <resource node="user" bean-ref="user"/>
     </output>
   </pagerequest>
 

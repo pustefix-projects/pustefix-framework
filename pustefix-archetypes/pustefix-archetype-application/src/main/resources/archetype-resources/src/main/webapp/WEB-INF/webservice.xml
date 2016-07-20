@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<webservice-config
+  xmlns="http://www.pustefix-framework.org/2008/namespace/webservice-config"
+  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xsi:schemaLocation="http://www.pustefix-framework.org/2008/namespace/webservice-config
+                      http://www.pustefix-framework.org/2008/namespace/webservice-config.xsd">
+
+  <webservice-global>
+    <choose>
+      <when test="$mode = 'test'">
+        <admin enabled="true"/>
+        <monitoring enabled="true"/>
+        <logging enabled="true"/>
+      </when>
+    </choose>
+  </webservice-global>
+
+</webservice-config>

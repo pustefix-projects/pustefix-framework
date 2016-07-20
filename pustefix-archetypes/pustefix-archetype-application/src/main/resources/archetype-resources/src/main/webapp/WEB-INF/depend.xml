@@ -2,15 +2,16 @@
 #set( $symbol_dollar = '$' )
 #set( $symbol_escape = '\' )
 <?xml version="1.0" encoding="utf-8"?>
-<make lang="en_GB" project="${artifactId}" 
+<make lang="en_GB" project="${artifactId}"
       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
       xsi:noNamespaceSchemaLocation="http://www.pustefix-framework.org/2008/namespace/xml-generator-config.xsd">
 
+  <!-- prefix to namespace url mappings to be used in pages xml -->
   <namespaces>
     <namespace-declaration prefix="pfx" url="http://www.schlund.de/pustefix/core"/>
     <namespace-declaration prefix="ixsl" url="http://www.w3.org/1999/XSL/Transform"/>
   </namespaces>
-  
+
   <standardmaster>
     <include stylesheet="xsl/skin.xsl"/>
   </standardmaster>
@@ -19,8 +20,7 @@
     <include stylesheet="xsl/metatags.xsl"/>
   </standardmetatags>
   
-  <standardpage name="EnterData" xml="xml/frame.xml"/>
-  <standardpage name="ReviewData" xml="xml/frame.xml"/>
-  <standardpage name="Confirm" xml="xml/frame.xml"/>
-  
+  <standardpage name="Home" xml="xml/frame.xml"/>
+  <standardpage name="Bye" xml="xml/frame.xml"/>
+
 </make>
