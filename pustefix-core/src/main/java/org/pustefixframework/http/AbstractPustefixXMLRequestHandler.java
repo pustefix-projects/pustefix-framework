@@ -527,7 +527,7 @@ public abstract class AbstractPustefixXMLRequestHandler extends AbstractPustefix
         }
         
         if(preq.getRequestParam(PARAM_RENDER_HREF) != null && preq.getRequestParam(PARAM_REUSE) != null) {
-        	long maxAge = 1000L * 60 * 60 * 24 * 365 * 10; //10 years
+            long maxAge = 1000L * 60 * 60 * 24; //1 day
         	res.setDateHeader("Expires", System.currentTimeMillis() + maxAge);
         	res.setHeader("Cache-Control", "max-age=" + maxAge / 1000 +", private");
         } else {
