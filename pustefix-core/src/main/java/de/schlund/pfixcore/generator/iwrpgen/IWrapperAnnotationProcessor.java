@@ -55,6 +55,7 @@ import javax.xml.transform.stream.StreamResult;
 import javax.xml.transform.stream.StreamSource;
 
 import org.pustefixframework.util.AnnotationUtils;
+import org.pustefixframework.web.mvc.InputHandler;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 
@@ -208,7 +209,14 @@ public class IWrapperAnnotationProcessor extends AbstractProcessor {
                         ihandlerClass = ((TypeElement)((DeclaredType)x.getTypeMirror()).asElement()).getQualifiedName().toString();
                     }
                     if(ihandlerClass.equals(IHandler.class.getName())) {
-                        ihandlerClass = null;
+                        try {
+                            iwrpAnno.inputHandler();
+                        } catch(MirroredTypeException x) {
+                            ihandlerClass = ((TypeElement)((DeclaredType)x.getTypeMirror()).asElement()).getQualifiedName().toString();
+                        }
+                        if(ihandlerClass.equals(InputHandler.class.getName())) {
+                            ihandlerClass = null;
+                        }
                     }
                 
                     if(beanRef == null && ihandlerClass == null) {

@@ -23,17 +23,18 @@ import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
+import org.pustefixframework.web.mvc.InputHandler;
+
 import de.schlund.pfixcore.generator.IHandler;
 
-/**
- * @author mleidig@schlund.de
- */
 @Target(ElementType.TYPE)
 @Retention(RetentionPolicy.RUNTIME)
 public @interface IWrapper {
 
     String name() default "";
     Class<? extends IHandler> ihandler() default IHandler.class;
+    @SuppressWarnings("rawtypes")
+    Class<? extends InputHandler> inputHandler() default InputHandler.class;
     String beanRef() default "";
 
 }
