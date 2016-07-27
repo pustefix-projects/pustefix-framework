@@ -17,17 +17,20 @@
  */
 package org.pustefixframework.tutorial.usermanagement;
 
-import de.schlund.pfixcore.generator.IHandler;
-import de.schlund.pfixcore.generator.IWrapper;
+import org.pustefixframework.web.mvc.InputHandler;
+import org.springframework.beans.factory.annotation.Autowired;
+
 import de.schlund.pfixcore.generator.iwrpgen.BeanToIWrapper;
 import de.schlund.pfixcore.generator.iwrpgen.IWrapperToBean;
-import de.schlund.pfixcore.workflow.Context;
 
-public class UserHandler implements IHandler {
+public class UserHandler implements InputHandler<UserWrapper> {
 
-    public void handleSubmittedData(Context context, IWrapper wrapper) throws Exception {
-        UserList userList = context.getContextResourceManager().getResource(UserList.class);
-        EditUser editUser = context.getContextResourceManager().getResource(EditUser.class);
+    @Autowired
+    UserList userList;
+    @Autowired
+    EditUser editUser;
+
+    public void handleSubmittedData(UserWrapper wrapper) {
         User user = IWrapperToBean.createBean(wrapper, User.class);
         if (editUser.getId() != null) {
             // replace existing user
@@ -40,22 +43,20 @@ public class UserHandler implements IHandler {
         }
     }
 
-    public boolean isActive(Context context) throws Exception {
+    public boolean isActive() {
         return true;
     }
 
-    public boolean needsData(Context context) throws Exception {
+    public boolean needsData() {
         return false;
     }
 
-    public boolean prerequisitesMet(Context context) throws Exception {
+    public boolean prerequisitesMet() {
         return true;
     }
 
-    public void retrieveCurrentStatus(Context context, IWrapper wrapper) throws Exception {
-        EditUser editUser = context.getContextResourceManager().getResource(EditUser.class);
+    public void retrieveCurrentStatus(UserWrapper wrapper) {
         if (editUser.getId() != null) {
-            UserList userList = context.getContextResourceManager().getResource(UserList.class);
             User user = userList.getUser(editUser.getId());
             BeanToIWrapper.populateIWrapper(user, wrapper);
         }

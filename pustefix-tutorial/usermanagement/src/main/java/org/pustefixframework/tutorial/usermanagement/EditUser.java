@@ -20,8 +20,9 @@ package org.pustefixframework.tutorial.usermanagement;
 import de.schlund.pfixcore.generator.annotation.IWrapper;
 import de.schlund.pfixcore.generator.annotation.Param;
 
-@IWrapper(name="EditUserWrapper", ihandler=EditUserHandler.class)
+@IWrapper(name="EditUserWrapper", inputHandler=EditUserHandler.class)
 public class EditUser {
+
     private Integer id;
 
     @Param(name="id", mandatory=true)

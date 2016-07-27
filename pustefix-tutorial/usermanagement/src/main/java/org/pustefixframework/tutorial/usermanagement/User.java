@@ -28,9 +28,10 @@ import de.schlund.pfixcore.generator.annotation.Param;
 import de.schlund.pfixcore.generator.annotation.Transient;
 import de.schlund.pfixcore.oxm.impl.annotation.DateSerializer;
 
-@IWrapper(name="UserWrapper", ihandler=UserHandler.class)
+@IWrapper(name="UserWrapper", inputHandler=UserHandler.class)
 public class User {
-    private Integer id;
+
+    private int id;
     private String name;
     private String email;
     private Date birthday;
@@ -51,11 +52,11 @@ public class User {
     }
     
     @Transient
-    public Integer getId() {
+    public int getId() {
         return id;
     }
 
-    public void setId(Integer id) {
+    public void setId(int id) {
         this.id = id;
     }
 
@@ -114,4 +115,5 @@ public class User {
     public void setGender(String gender) {
         this.gender = gender;
     }
+
 }

@@ -1,16 +1,20 @@
-<?xml version="1.0" encoding="utf-8"?><make lang="en_GB" project="usermanagement">
-
-<!--
-  A file configuring the xml related topics. 
-  More Informations here: 
-  
-  http://pustefix.sourceforge.net/depend.html
- -->
+<?xml version="1.0" encoding="utf-8"?>
+<make xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+      xsi:noNamespaceSchemaLocation="http://www.pustefix-framework.org/2008/namespace/xml-generator-config.xsd"
+      xmlns:cus="http://www.schlund.de/pustefix/customize"
+      project="usermanagement"
+      lang="en_GB">
 
   <namespaces>
      <namespace-declaration prefix="pfx" url="http://www.schlund.de/pustefix/core"/>
      <namespace-declaration prefix="ixsl" url="http://www.w3.org/1999/XSL/Transform"/>
   </namespaces>
+
+  <global>
+    <param name="outputmethod" value="html"/>
+    <param name="outputdoctype-public" value=""/>
+    <param name="outputdoctype-system" value="about:legacy-compat"/>
+  </global>
 
   <standardmaster>
     <include stylesheet="xsl/skin.xsl"/>

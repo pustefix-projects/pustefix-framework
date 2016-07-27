@@ -12,4 +12,10 @@
 
   <context:annotation-config/>
 
+  <bean id="userList" class="org.pustefixframework.tutorial.usermanagement.UserList"/>
+  
+  <bean id="editUser" class="org.pustefixframework.tutorial.usermanagement.EditUser" scope="session">
+    <aop:scoped-proxy/>
+  </bean>
+
 </beans>

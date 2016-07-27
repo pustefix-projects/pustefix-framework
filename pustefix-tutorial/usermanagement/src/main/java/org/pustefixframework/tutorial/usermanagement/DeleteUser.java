@@ -20,7 +20,7 @@ package org.pustefixframework.tutorial.usermanagement;
 import de.schlund.pfixcore.generator.annotation.IWrapper;
 import de.schlund.pfixcore.generator.annotation.Param;
 
-@IWrapper(name="DeleteUserWrapper", ihandler=DeleteUserHandler.class)
+@IWrapper(name="DeleteUserWrapper", inputHandler=DeleteUserHandler.class)
 public class DeleteUser {
     private int id;
 
