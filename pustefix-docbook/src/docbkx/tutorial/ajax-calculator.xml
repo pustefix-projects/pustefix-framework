@@ -7,18 +7,6 @@
   
   <info>
     <title>AJAX Calculator tutorial</title>
-    <copyright>
-      <year>2008</year>
-      <holder>1&amp;1 Internet AG</holder>
-    </copyright>
-    <authorgroup>
-      <author>
-        <personname>
-          <firstname>Stephan</firstname>
-          <surname>Schmidt</surname>
-        </personname>
-      </author>
-    </authorgroup>
   </info>
   
   <para>
@@ -33,8 +21,8 @@
   <section xml:id="ajax-calculator.setup">
     <title>Setup</title>
     <para>
-      To build this tutorial, create a new project <literal>calculator</literal> with one servlet as described in
-      <xref linkend="wrapper-handler.setup"/> with the following data:
+      To build this tutorial, create a new project <literal>calculator</literal> as described in
+      <xref linkend="wrapper-handler.setup"/>. But this time, use the Maven archetype <literal>pustefix-archetype-application</literal> with the following data:
     </para>
     <informaltable>
       <thead>
@@ -62,181 +50,13 @@
         </tr>
         <tr>
           <td>pustefixVersion</td>
-          <td>the latest 0.16.x version</td>
+          <td>the latest version</td>
         </tr>
       </tbody>
     </informaltable>
     <para>
-      You will also need additional dependencies in your <filename>pom.xml</filename> as described below. The version might differ from the version of pustefix-core, go to http://pustefix-framework.org/repository/maven/org/pustefixframework/webservices/ to see which versions are actually available.
-    </para>
-    <programlisting language="xml"><![CDATA[<dependency>
-    <groupId>org.pustefixframework.webservices</groupId>
-    <artifactId>pustefix-webservices-core</artifactId>
-    <version>0.16.2</version>
-</dependency>
-<dependency>
-    <groupId>org.pustefixframework.webservices</groupId>
-    <artifactId>pustefix-webservices-jsonws</artifactId>
-    <version>0.16.2</version>
-</dependency>
-<dependency>
-    <groupId>org.pustefixframework.webservices</groupId>
-    <artifactId>pustefix-webservices-jaxws</artifactId>
-    <version>0.16.2</version>
-</dependency>]]></programlisting>
-    <para>
-      Although you are building an AJAX application and will not need any wrappers and handlers which process your submit requests, you
-      still need at least one HTML page as a starting point for your application. Please create a page called <literal>Calculator</literal>
-      by adding the necessary tags to the <filename>depend.xml</filename> as described in <xref linkend="wrapper-handler.pages"/>. As the pages
-      itself do not trigger any business logic, there is no need to make the page known in the servlet configuration file. 
-    </para>
-    <para>
-      Set the new <literal>Calculator</literal> page as the default page as described in <xref linkend="wrapper-handler.entrypage"/>
-    </para>
-  </section>
-  <section xml:id="ajax-calculator.servlet">
-    <title>Using the webservice servlet</title>
-    <para>
-      In AJAX applications, you will need a servlet, that is able to process the AJAX requests sent by the client.
-      Pustefix provides a ready-to-use servlet, that is able to expose any Java class as a webservice and process
-      requests made by the client. To use this servlet, open the <filename>project.xml</filename> configuration
-      file and add the the webservice element at the end of the file.     
-    </para>
-    <programlisting language="xml"><![CDATA[<?xml version="1.0" encoding="utf-8"?>
-<project-config xmlns="http://www.pustefix-framework.org/2008/namespace/project-config">
-
-<project>
-  <application>
-
-    <!-- auto-generated content -->
-
-    <!-- Add these lines manually above <static> and <choose> -->
-    <webservice-service>
-      <path>/webservice</path>
-      <config-file>docroot:/WEB-INF/webservice.conf.xml</config-file>
-    </webservice-service>
-    
-    <static>
-      <!-- ... -->
-    </static>
-    
-    <choose>
-      <!-- ... -->
-    </choose>
-
-  </application>
-</project-config>]]></programlisting>
-    <para>
-      Instead of using the <classname>ContextXMLServlet</classname> for the servlet, you need to use the
-      <classname>org.pustefixframework.webservices.WebServiceServlet</classname> instead. To configure the webservice servlet
-      you add the <filename>docroot:/WEB-INF/webservice.conf.xml</filename> file in the <literal>&lt;propfile/&gt;</literal> tag.
-    </para>
-    <para>
-      This <filename>webservice.conf.xml</filename> file makes use of the XML syntax like all the previous configuration files
-      you encountered in Pustefix. Add the following content to the file:
-    </para>
-    <programlisting language="xml"><![CDATA[<webservice-config
-  xmlns="http://www.pustefix-framework.org/2008/namespace/webservice-config"
-  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-  xsi:schemaLocation="http://www.pustefix-framework.org/2008/namespace/webservice-config ../../core/schema/webservice-config.xsd">
-  
-  <webservice-global>
-    <requestpath>/webservice</requestpath>
-    <wsdlsupport enabled="false"/>
-    <stubgeneration enabled="false"/>
-    <protocol type="JSONWS"/>
-    <session type="servlet"/>
-    <scope type="application"/>
-    <admin enabled="true"/>
-    <monitoring enabled="true" scope="session" historysize="10"/>
-    <logging enabled="true"/>
-    <faulthandler class="org.pustefixframework.webservices.fault.LoggingHandler"/>
-  </webservice-global>
-</webservice-config>]]></programlisting>
-    <para>
-      <xref linkend="ajax-calculator.servlet.config"/> lists all used configuration options and describes
-      their usage in this example. 
-    </para>
-    <table xml:id="ajax-calculator.servlet.config" rules="all" frame="box">
-      <caption>Global webservice configuration </caption>
-      <thead>
-        <tr>
-          <th>Option</th>
-          <th>Description</th>
-        </tr>
-      </thead>
-      <tbody>
-        <tr>
-          <td><literal>requestpath</literal></td>
-          <td>
-            The path where the webservice requests will be sent to.
-          </td>
-        </tr>
-        <tr>
-          <td><literal>wsdlsupport</literal></td>
-          <td>
-            Whether WSDL for SOAP webservices should be generated. As you will be using a JSON protocol instead of SOAP, this is not needed.
-          </td>
-        </tr>
-        <tr>
-          <td><literal>stubgeneration</literal></td>
-          <td>
-            Whether JavaScript stub classes should be generated in the build process. Again, this is not needed when using a JSON-based protocol.
-          </td>
-        </tr>
-        <tr>
-          <td><literal>protocol</literal></td>
-          <td>
-            The protocol to use. In this example, you will be using the <literal>JSONWS</literal> protocol, which is very similar to JSON-RPC.
-          </td>
-        </tr>
-        <tr>
-          <td><literal>session</literal></td>
-          <td>
-            Which session type to use. Using <literal>servlet</literal> means that there must be an HTTP-session that can be used in your services.
-          </td>
-        </tr>
-        <tr>
-          <td><literal>scope</literal></td>
-          <td>
-            Specifies the scope in which your web services will be executed. When using <literal>application</literal>, the service object is created only once and reused for all requests.
-          </td>
-        </tr>
-        <tr>
-          <td><literal>admin</literal></td>
-          <td>
-            Whether to enable the web service admin console.
-          </td>
-        </tr>
-        <tr>
-          <td><literal>monitoring</literal></td>
-          <td>
-            Whether to enable the web service monitoring, which is useful for debgging.
-          </td>
-        </tr>
-        <tr>
-          <td><literal>logging</literal></td>
-          <td>
-            Whether to enable the pustefix-webservice.log, which contains all requests and responses.
-          </td>
-        </tr>
-        <tr>
-          <td><literal>faulthandler</literal></td>
-          <td>
-            Specifies a class that will receive all exceptions that are thrown in your web services.
-          </td>
-        </tr>
-      </tbody>
-    </table>
-    <para>
-      You have now configured the <classname>WebServiceServlet</classname> and it is now available at
-      <uri>http://localhost:8080/calc/webservice/</uri>. If you open this URL in your
-      browser, you will get an HTTP Code <literal>400 Bad Request</literal> as you made a simple HTTP
-      request instead of a webservice request.
-    </para>
-    <para>
-      To make web service requests, you will at first have to implement a service that you can send
-      requests to.
+      This Maven archetype will create an application which is already set up for AJAX applications, i.e.
+      it contains the required Maven dependencies and configuration.
     </para>
   </section>
   <section xml:id="ajax-calculator.businesslogic">
@@ -266,9 +86,7 @@ public interface CalculatorService {
     </para>
     <programlisting language="java"><![CDATA[package org.pustefixframework.tutorial.calculator;
 
-import org.pustefixframework.webservices.AbstractService;
-
-public class CalculatorServiceImpl extends AbstractService implements CalculatorService {
+public class CalculatorServiceImpl implements CalculatorService {
     public int add(int a, int b) {
         return a+b;
     }
@@ -281,110 +99,58 @@ public class CalculatorServiceImpl extends AbstractService implements Calculator
         return a*b;
     }
 }]]></programlisting>
-    <para>
-      As you can see, the <classname>CalculatorServiceImpl</classname> implements the
-      <classname>CalculatorService</classname> service interface <emphasis>and</emphasis> extends
-      the abstract class <classname>AbstractService</classname> provided by Pustefix.
-      All of your web service implementations should extend this class to inherit some methods
-      that are useful when working with web services. 
-    </para>
-    <tip>
-      <title>Accessing the context</title>
-      <para>
-        The <classname>AbstractService</classname> class provides a <function>getContext</function> method
-        which gives you access to the <classname>Context</classname> of the current user. This allows you to
-        access any data that your application stored in the context.
-      </para>
-    </tip>
   </section>
   <section xml:id="ajax-calculator.expose">
     <title>Exposing the service</title>
     <para>
       Now that you have defined the interface for your service and also provided an implementation for it, the next
-      step is to expose this service using the <classname>WebServiceServlet</classname> provided by Pustefix
+      step is to expose this service and make it available to the frontend.
     </para>
     <para>
-      This is done by adding some additional configuration options to the <filename>webservice.conf.xml</filename> file
-      you created earler (in <xref linkend="ajax-calculator.servlet"/>). For each webservice you want to expose, you
-      have to add one <literal>&lt;webservice/&gt;</literal> tag in this configuration file:
+      This is done by adding a Spring bean definition for the service implementation and export this bean as a webservice.
+      Your Spring configuration file <filename>src/main/webapp/WEB-INF/spring.xml</filename> should look like this:
     </para>
-    <programlisting language="xml"><![CDATA[<webservice-config
-  xmlns="http://www.pustefix-framework.org/2008/namespace/webservice-config"
-  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-  xsi:schemaLocation="http://www.pustefix-framework.org/2008/namespace/webservice-config ../../core/schema/webservice-config.xsd">
-  
-  <!-- global config -->
-  
-  <webservice name="CalculatorService">
-    <interface name="org.pustefixframework.tutorial.calculator.CalculatorService"/>
-    <implementation name="org.pustefixframework.tutorial.calculator.CalculatorServiceImpl"/>
-  </webservice>
+    <programlisting language="xml"><![CDATA[<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xmlns:aop="http://www.springframework.org/schema/aop"
+       xmlns:context="http://www.springframework.org/schema/context"
+       xmlns:ws="http://pustefixframework.org/schema/webservices"
+       xsi:schemaLocation="http://www.springframework.org/schema/beans
+                           http://www.springframework.org/schema/beans/spring-beans.xsd
+                           http://www.springframework.org/schema/aop
+                           http://www.springframework.org/schema/aop/spring-aop.xsd
+                           http://www.springframework.org/schema/context
+                           http://www.springframework.org/schema/context/spring-context.xsd
+                           http://pustefixframework.org/schema/webservices
+                           http://pustefixframework.org/schema/webservices/pustefix-webservices.xsd">
 
-</webservice-config>]]></programlisting>
-    <para>
-      Each of these webservice configurations requires at least the following options to be set:
-    </para>
-    <table xml:id="ajax-calculator.expose.config" rules="all" frame="box">
-      <caption>Local webservice configuration</caption>
-      <thead>
-        <tr>
-          <th>Option</th>
-          <th>Description</th>
-        </tr>
-      </thead>
-      <tbody>
-        <tr>
-          <td><literal>name</literal></td>
-          <td>
-            The <literal>name</literal> attribute specifies the name of the webservice. This name does not have to match
-            the name of the Java class. It will be used to identify the service, when the web service servlet is
-            requested by a client.
-          </td>
-        </tr>
-        <tr>
-          <td><literal>interface</literal></td>
-          <td>
-            The <literal>&lt;interface/&gt;</literal> tag specifies the name of interface for the web service. Only methods
-            defined in this interface will be exposed as web service methods.
-          </td>
-        </tr>
-        <tr>
-          <td><literal>implementation</literal></td>
-          <td>
-            The <literal>&lt;implementation/&gt;</literal> tag references the actual implementation of the service.
-          </td>
-        </tr>
-      </tbody>
-    </table>
-    <para>
-      Also, most of the global options (see <xref linkend="ajax-calculator.servlet.config"/>) can be used in the local
-      web service configuration to override them for the specified service.
-    </para>
-    <tip>
-      <title>Accessing the context</title>
-      <para>
-        If your web service extends the <classname>AbstractService</classname> class and you want to access the <classname>Context</classname>
-        of your application, you can use the <literal>&lt;context/&gt;</literal> tag to reference the context you want to
-        access in your service:
-      </para>
-      <programlisting language="xml"><![CDATA[<context name="pfixtutorial:ajax-calculator::servlet:calc"/>]]></programlisting>
-    </tip>    
+  <context:annotation-config/>
+
+  <bean id="calculator" class="org.pustefixframework.tutorial.calculator.CalculatorServiceImpl"/>
+
+  <ws:webservice 
+    id="CalculatorService" 
+    servicename="CalculatorService" 
+    interface="org.pustefixframework.tutorial.calculator.CalculatorService" 
+    ref="calculator" 
+  />
+
+</beans>]]></programlisting>
   </section>
   <section xml:id="ajax-calculator.consume">
     <title>Consuming the service</title>
     <para>
       With these steps, you have finished all Java and configuration work packages and can continue implementing the client
-      side of your application. Open the <filename>Calculator.xml</filename> file and add some HTML as a frontend for
-      your calculator application:
+      side of your application. Open the <filename>Home.xml</filename> file and add some HTML as a frontend for
+      your calculator application (we just use the default page of the generated application):
     </para>
     <programlisting language="xml"><![CDATA[<?xml version="1.0" encoding="utf-8"?>
 <include_parts xmlns:ixsl="http://www.w3.org/1999/XSL/Transform"
   xmlns:pfx="http://www.schlund.de/pustefix/core">
+
   <part name="content">
     <theme name="default">
-      <!-- Include external JavaScript -->
-      <pfx:include part="javascript-includes"/>
-
       <h1>AJAX Calculator Tutorial</h1>
       <fieldset>
         <legend>Calculator</legend>
@@ -396,6 +162,7 @@ public class CalculatorServiceImpl extends AbstractService implements Calculator
       </fieldset>
     </theme>
   </part>
+
 </include_parts>]]></programlisting>
     <para>
       The HTML page contains several controls:
@@ -407,32 +174,31 @@ public class CalculatorServiceImpl extends AbstractService implements Calculator
       <listitem><para>A button labeled <literal>multiply</literal> which will call the JavaScript function <function>multiply()</function> when clicked.</para></listitem>
     </itemizedlist>
     <para>
-      To implement an AJAX application, you will have to use JavaScript. This has been left out in the last example of your page,
-      there is only a <literal>&lt;pfx:include/&gt;</literal> tag, which includes a second part <literal>javascript-includes</literal>
-      defined in the same page. This part is used to separate the HTML from all your JavaScript includes and make the page
-      more maintainable.
+      To implement an AJAX application, you will have to use JavaScript. This has been left out in the last example of your page.
+      We will add it in a separate part named <literal>head</literal>, which will be automatically included in the head section
+      of the page (this is done in the <literal>frame.xml</literal> previously created by the archetype - just to separate the HTML 
+      from all your JavaScript includes and make the pages more maintainable).
     </para>
     <para>
       Pustefix does not only provide server side implementation helpers for your AJAX applications, but also some client side JavaScript
       classes which hide all transportation details from you. Pustefix will also generate JavaScript stub classes for the Java services
-      you exposed via the <classname>WebServiceServlet</classname>. To use the <literal>JSONWS</literal> implementation, you have to
-      include the following files:
+      you have exported. Therefor you have to include the following files:
     </para>
     <itemizedlist>
       <listitem><para><filename>httpRequest.js</filename> provides an abstraction over the different <literal>XmlHttpRequest</literal> implementations in the different browsers.</para></listitem>
       <listitem><para><filename>webservice_json.js</filename> provides an abstraction of the <literal>JSONWS</literal> protocol used by Pustefix.</para></listitem>
       <listitem>
         <para>
-          The JavaScript stub for your calculator service is not available as a file, but is generated on demand by the servlet.
+          The JavaScript stub for your calculator service is not available as a file, but is generated on demand.
           To include this generated JavaScript code, Pustefix provides the <literal>&lt;pfxwsscript/&gt;</literal> tag, which takes the name of the
           service (as specified in the <literal>&lt;webservice/&gt;</literal> tag in your web service configuration) in the <literal>name</literal>
           attribute. This tag will generate the <literal>&lt;script/&gt;</literal> tag that requests the generated JavaScript code from
-          the web service servlet. 
+          the server. 
         </para>
       </listitem>
     </itemizedlist>
     <para>
-      The following listing shows the <literal>javascript-includes</literal> part, which is referenced by the frontend of your application and has to be included in your <filename>Calculator.xml</filename> file:
+      The following listing shows the according <literal>head</literal> part, you should add to your <filename>Home.xml</filename> file:
     </para>
     <programlisting language="xml"><![CDATA[<?xml version="1.0" encoding="utf-8"?>
 <include_parts xmlns:ixsl="http://www.w3.org/1999/XSL/Transform"
@@ -442,13 +208,14 @@ public class CalculatorServiceImpl extends AbstractService implements Calculator
     <!-- content, including part "javascript-includes", see above -->
   </part>
   
-  <part name="javascript-includes">
+  <part name="head">
     <theme name="default">
       <script type="text/javascript" src="{$__contextpath}/modules/pustefix-core/script/httpRequest.js"></script>
       <script type="text/javascript" src="{$__contextpath}/modules/pustefix-webservices-jsonws/script/webservice_json.js"></script>
       <pfx:wsscript name="CalculatorService"/>
     </theme>
   </part>
+
 </include_parts>]]></programlisting>
     <para>
       If you are taking a look at the generated JavaScript code, you will see, that this code defines a new class called
@@ -485,23 +252,10 @@ WS_CalculatorService.prototype.add=function() {
     </para>
     <para>
       So all that is left to do, is implement the client side logic, that will create the proxy object and delegate the
-      calculation to it. This is done in a new part <literal>javascript-logic</literal>, which you need to include
-      in the <literal>content</literal> part of your application:
+      calculation to it. You can just add the Javascript to the already existing <literal>head</literal> part of your page.
     </para>
-    <programlisting language="xml"><![CDATA[<?xml version="1.0" encoding="utf-8"?>
-<include_parts xmlns:ixsl="http://www.w3.org/1999/XSL/Transform" xmlns:pfx="http://www.schlund.de/pustefix/core">
-  <part name="content">
-    <theme name="default">
-      <!-- Include external JavaScript -->
-      <pfx:include part="javascript-includes"/>
-      <pfx:include part="javascript-logic"/>
-
-      <!-- HTML has been left out --> 
-    </theme>
-  </part>
-</include_parts>]]></programlisting>
     <para>
-      In this part, you are using the <literal>&lt;pfx:script/&gt;</literal> tag, which is used to insert inline JavaScript
+      You are using the <literal>&lt;pfx:script/&gt;</literal> tag, which is used to insert inline JavaScript
       into your page. In this script, you create a new instance of <classname>WS_Calculator</classname> and assign it to
       a global JavaScript variable.
     </para>
@@ -514,33 +268,29 @@ WS_CalculatorService.prototype.add=function() {
     <programlisting language="xml"><![CDATA[<?xml version="1.0" encoding="utf-8"?>
 <include_parts xmlns:ixsl="http://www.w3.org/1999/XSL/Transform" xmlns:pfx="http://www.schlund.de/pustefix/core">
 
-  <part name="content">
-    <!-- content, see above -->
-  </part>
-  
-  <part name="javascript-includes">
-    <!-- see above -->
-  </part>
-  
-  <part name="javascript-logic">
+  <part name="head">
     <theme name="default">
+      <script type="text/javascript" src="{$__contextpath}/modules/pustefix-core/script/httpRequest.js"></script>
+      <script type="text/javascript" src="{$__contextpath}/modules/pustefix-webservices-jsonws/script/webservice_json.js"></script>
+      <pfx:wsscript name="CalculatorService"/>
+      
       <pfx:script>
-var calcProxy = new WS_CalculatorService();
-function add() {
-  var a = parseInt(document.getElementById('a').value);
-  var b = parseInt(document.getElementById('b').value);
-  alert(calcProxy.add(parseInt(a),parseInt(b)));
-}
-function subtract() {
-  var a = parseInt(document.getElementById('a').value);
-  var b = parseInt(document.getElementById('b').value);
-  alert(calcProxy.subtract(parseInt(a),parseInt(b)));
-}
-function multiply() {
-  var a = parseInt(document.getElementById('a').value);
-  var b = parseInt(document.getElementById('b').value);
-  alert(calcProxy.multiply(parseInt(a),parseInt(b)));
-}
+        var calcProxy = new WS_CalculatorService();
+        function add() {
+          var a = parseInt(document.getElementById('a').value);
+          var b = parseInt(document.getElementById('b').value);
+          alert(calcProxy.add(parseInt(a),parseInt(b)));
+        }
+        function subtract() {
+          var a = parseInt(document.getElementById('a').value);
+          var b = parseInt(document.getElementById('b').value);
+          alert(calcProxy.subtract(parseInt(a),parseInt(b)));
+        }
+        function multiply() {
+          var a = parseInt(document.getElementById('a').value);
+          var b = parseInt(document.getElementById('b').value);
+          alert(calcProxy.multiply(parseInt(a),parseInt(b)));
+        }
       </pfx:script>
     </theme>
   </part>
@@ -557,24 +307,6 @@ function multiply() {
       a very simple business logic and transferred only primitive type, AJAX applications in Pustefix are not restricted to built-in
       Java types. Pustefix is able to send any Java-bean style objects from the client to the server and vice-versa. You only need to
       make sure, that there is an empty constructor in your beans.
-    </para>
-    <para>
-      Furthermore, the following features are also supported by Pustefix:
-    </para>
-    <itemizedlist>
-      <listitem>
-        <para>Access any property of the context (including context resources) in your services.</para>
-      </listitem>
-      <listitem>
-        <para>Switch from JSONWS to SOAP without changing any of your services.</para>
-      </listitem>
-      <listitem>
-        <para>Implement custom protocols or custom serializers to fit your special needs.</para>
-      </listitem>
-    </itemizedlist>
-    <para>
-      Of course, you can combine the AJAX features of Pustefix with any other feature in Pustefix with ease. For example, it
-      is possible to force AJAX requests to be made secure or to restrict a service to users with sepcial roles attached.
     </para>
   </section>
 </chapter>

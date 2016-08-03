@@ -17,7 +17,6 @@
   <modules>
     <module>ajax-calculator</module>
     <module>first-app</module>
-    <module>usermanagement</module>
   </modules>  
 
   <build>

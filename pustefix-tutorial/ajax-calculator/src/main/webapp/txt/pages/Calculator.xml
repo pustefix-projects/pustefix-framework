@@ -2,10 +2,6 @@
 <include_parts xmlns:ixsl="http://www.w3.org/1999/XSL/Transform" xmlns:pfx="http://www.schlund.de/pustefix/core">
   <part name="content">
     <theme name="default">
-      <!-- Include external JavaScript -->
-      <pfx:include part="javascript-includes"/>
-      <pfx:include part="javascript-logic"/>
-
       <h1>AJAX Calculator Tutorial</h1>
       <fieldset>
         <legend>Calculator</legend>
@@ -18,33 +14,28 @@
     </theme>
   </part>
   
-  <part name="javascript-includes">
+  <part name="head">
     <theme name="default">
       <script type="text/javascript" src="{$__contextpath}/modules/pustefix-core/script/httpRequest.js"></script>
       <script type="text/javascript" src="{$__contextpath}/modules/pustefix-webservices-jsonws/script/webservice_json.js"></script>
       <pfx:wsscript name="Calculator"/>
-    </theme>
-  </part>
-
-  <part name="javascript-logic">
-    <theme name="default">
       <pfx:script>
-var calcProxy = new WS_Calculator();
-function add() {
-  var a = document.getElementById('a').value;
-  var b = document.getElementById('b').value;
-  alert(calcProxy.add(parseInt(a),parseInt(b)));
-}
-function subtract() {
-  var a = document.getElementById('a').value;
-  var b = document.getElementById('b').value;
-  alert(calcProxy.subtract(parseInt(a),parseInt(b)));
-}
-function multiply() {
-  var a = document.getElementById('a').value;
-  var b = document.getElementById('b').value;
-  alert(calcProxy.multiply(parseInt(a),parseInt(b)));
-}
+        var calcProxy = new WS_Calculator();
+        function add() {
+          var a = document.getElementById('a').value;
+          var b = document.getElementById('b').value;
+          alert(calcProxy.add(parseInt(a),parseInt(b)));
+        }
+        function subtract() {
+          var a = document.getElementById('a').value;
+          var b = document.getElementById('b').value;
+          alert(calcProxy.subtract(parseInt(a),parseInt(b)));
+        }
+        function multiply() {
+          var a = document.getElementById('a').value;
+          var b = document.getElementById('b').value;
+          alert(calcProxy.multiply(parseInt(a),parseInt(b)));
+        }
       </pfx:script>
     </theme>
   </part>
