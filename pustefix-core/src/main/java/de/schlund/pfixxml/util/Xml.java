@@ -165,13 +165,8 @@ public class Xml {
      * @throws TransformerException on errors
      */
     public static Document parse(XsltVersion xsltVersion,File file) throws TransformerException {
-        SAXSource src = new SAXSource(createXMLReader(), new InputSource(toUri(file)));
+        SAXSource src = new SAXSource(createXMLReader(), new InputSource(file.toURI().toString()));
         return parse(xsltVersion,src);
-    }
-
-    private static String toUri(File file) {
-        // TODO: file.toURI returns single-slash.uri ...
-        return "file://" + file.getAbsolutePath();
     }
 
     public static Document parse(XsltVersion xsltVersion, Source input) throws TransformerException {
@@ -227,7 +222,7 @@ public class Xml {
             // otherwise, I get obscure content-not-allowed-here exceptions
             throw new IOException("expected file, got directory: " + file);
         }
-        return parseMutable(new InputSource(toUri(file)));
+        return parseMutable(new InputSource(file.toURI().toString()));
     }
 
     public static Document parseMutable(String filename) throws IOException, SAXException {

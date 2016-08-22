@@ -20,6 +20,8 @@ package de.schlund.pfixxml.config;
 
 import java.io.File;
 import java.net.MalformedURLException;
+import java.net.URI;
+import java.net.URISyntaxException;
 import java.net.URL;
 
 import javax.servlet.ServletContext;
@@ -69,8 +71,8 @@ public class GlobalConfig {
         docroot = path;
         ResourceProviderRegistry.register(new DocrootResourceOnFileSystemProvider(docroot));
         try {
-            docrootURL =  new URL("file", null, -1, docroot);
-        } catch (MalformedURLException e) {
+            docrootURL = new URI("file", null, docroot, null).toURL();
+        } catch (MalformedURLException|URISyntaxException e) {
             throw new RuntimeException("Cannot create URL for docroot: " + docroot, e);
         }
 
