@@ -5,18 +5,18 @@
 >
   <title>Introduction</title>
   <para>
-    Pustefix is a framework that helps you to develop web based applications (referred to as
-    <emphasis>projects</emphasis> here).
+    The Pustefix Framework is an open-source Java web application framework for developing request-based MVC-style web
+    applications using Spring, XML and XSLT. 
   </para>
   <para>
-    The framework consists of two more or less independent parts:
-  </para>
+    A key feature of the framework is the clear separation of view and business logic, reflected by having
+    two loosely coupled main parts:</para>
   <itemizedlist>
     <listitem>
-      <para>A machinery to apply recursive XSLT transformations that produces the UI of the web application.</para>
+      A machinery to apply recursive XSLT transformations that produces the UI of the web application.
     </listitem>
     <listitem>
-      <para>A Java framework that takes input from the UI to change the application data and supplies changes of the application data back to the UI.</para>
+      A Java framework that takes input from the UI to change the application data and supplies changes of the application data back to the UI.
     </listitem>
   </itemizedlist>
   <para>

@@ -207,7 +207,8 @@ public interface PageFlow {
     String getName();
     String getRootName();
     boolean containsPage(String pagename);
-    String findNextPage(PageFlowContext context, String currentpagename, boolean stopatcurrentpage, boolean stopatnextaftercurrentpage) throws PustefixApplicationException;    
+    String findNextPage(PageFlowContext context, String currentpagename, boolean stopatcurrentpage,
+                        boolean stopatnextaftercurrentpage) throws PustefixApplicationException;    
     boolean precedingFlowNeedsData(PageFlowContext context, String currentpagename) throws PustefixApplicationException;
     boolean hasHookAfterRequest(String currentpagename);
     void hookAfterRequest(Context context, ResultDocument resdoc) throws PustefixApplicationException, PustefixCoreException;
@@ -853,7 +854,8 @@ public interface State {
     This node can (and usually will) occur multiple times, one for every parameter that
     should be part of the interface
   -->
-  <param name="AName" type="some.java.Type" occurrence="optional|mandatory|indexed" frequency="single|multiple" missingscode="some.defined.statuscode">
+  <param name="AName" type="some.java.Type" occurrence="optional|mandatory|indexed" frequency="single|multiple"
+         missingscode="some.defined.statuscode">
     <!--
       The whole node is optional. It allows to specify a default value (or multiple) for
       a parameter to use, when no value is supplied via the request. Note that this makes
@@ -875,7 +877,10 @@ public interface State {
     </precheck>
       
     <!--
-      Each parameter must be casted from a String to the specific type (unless the type is java.lang.String itself, in this case, no caster need to be supplied). This is done by means of a class implementing de.schlund.pfixcore.generator.IWrapperParamCaster. For the usual simple types you can use a caster from the package de.schlund.pfixcore.generator.casters.
+      Each parameter must be casted from a String to the specific type (unless the type is java.lang.String itself,
+      in this case, no caster need to be supplied). This is done by means of a class implementing 
+      de.schlund.pfixcore.generator.IWrapperParamCaster. For the usual simple types you can use a caster from the
+      package de.schlund.pfixcore.generator.casters.
     -->
     <caster class="de.caster.class">
       <cparam name="ACasterParamName" value="ACasterParamValue"></cparam>

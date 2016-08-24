@@ -5,17 +5,15 @@
   id="reference"
 >
   <info>
-    <title>Pustefix Reference Documentation</title>
-    <subtitle>Version 0.19.x</subtitle>
-    <releaseinfo>This documentation relates to the latest Pustefix release from the 0.19 line.</releaseinfo>
+    <title>Pustefix Framework Reference Documentation</title>
+    <subtitle>Version 0.20.x</subtitle>
+    <releaseinfo>This documentation relates to the latest Pustefix release from the 0.20 line.</releaseinfo>
     <copyright>
-      <year>2007</year>
-      <year>2008</year>
-      <year>2009</year>
-      <year>2010</year>
-      <year>2011</year>
-      <holder>1&amp;1 Internet AG</holder>
+      <year>2007-2016</year>
     </copyright>
+    <legalnotice>
+      <para>Copies of this document may be made for your own use and for distribution to others, provided that you do not charge any fee for such copies and further provided that each copy contains this Copyright Notice, whether distributed in print or electronically.</para>
+    </legalnotice>
     <authorgroup>
       <author>
         <personname>
@@ -70,6 +68,5 @@
   <xi:include href="tooling.xml" />
   <xi:include href="upgrade.xml" />
   <xi:include href="news-archive.xml" />
-  <xi:include href="glossary.xml" />
 
 </book>

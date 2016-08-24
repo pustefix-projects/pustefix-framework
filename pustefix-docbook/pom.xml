@@ -16,16 +16,9 @@
   <build>
     <plugins>
       <plugin>
-        <!-- Notes:
-             * pdf generation needs an image path because the image is resolved at build-time
-               (html images are resolved at runtime) 
-             * documentation: http://code.google.com/p/docbkx-tools/
-             * built-in images (src/site/resources/docbkx/images/docbkx copied from 
-               http://mvnrepository.com/artifact/org.docbook/docbook-xsl/1.72.0) 
-          -->
         <groupId>com.agilejava.docbkx</groupId>
         <artifactId>docbkx-maven-plugin</artifactId>
-        <version>2.0.9</version>
+        <version>2.0.16</version>
         <executions>
           <execution>
             <id>tutorial-html</id>
@@ -42,20 +35,6 @@
             </configuration>
           </execution>
           <execution>
-            <id>tutorial-pdf</id>
-            <phase>pre-site</phase>
-            <goals>
-              <goal>generate-pdf</goal>
-            </goals>
-            <configuration>
-              <sourceDirectory>src/docbkx/tutorial</sourceDirectory>
-              <includes>tutorial.xml</includes>
-              <imgSrcPath>../../site/resources/docbkx/</imgSrcPath>
-              <admonGraphicsPath>../../site/resources/docbkx/images/docbkx/</admonGraphicsPath>
-              <calloutGraphicsPath>../../site/resources/docbkx/images/docbkx/callouts/</calloutGraphicsPath>
-            </configuration>
-          </execution>
-          <execution>
             <id>reference-html</id>
             <phase>pre-site</phase>
             <goals>
@@ -64,21 +43,8 @@
             <configuration>
               <sourceDirectory>src/docbkx/reference</sourceDirectory>
               <includes>reference.xml</includes>
+              <admonGraphicsPath>images/docbkx/</admonGraphicsPath>
               <htmlCustomization>${project.basedir}/src/docbkx/resources/xsl/html.xsl</htmlCustomization>
-            </configuration>
-          </execution>
-          <execution>
-            <id>reference-pdf</id>
-            <phase>pre-site</phase>
-            <goals>
-              <goal>generate-pdf</goal>
-            </goals>
-            <configuration>
-              <sourceDirectory>src/docbkx/reference</sourceDirectory>
-              <includes>reference.xml</includes>
-              <imgSrcPath>../../site/resources/docbkx/</imgSrcPath>
-              <admonGraphicsPath>../../site/resources/docbkx/images/docbkx/</admonGraphicsPath>
-              <calloutGraphicsPath>../../site/resources/docbkx/images/docbkx/callouts/</calloutGraphicsPath>
             </configuration>
           </execution>
           <execution>
@@ -91,20 +57,6 @@
               <sourceDirectory>src/docbkx/faq</sourceDirectory>
               <includes>faq.xml</includes>
               <htmlCustomization>${project.basedir}/src/docbkx/resources/xsl/html.xsl</htmlCustomization>
-            </configuration>
-          </execution>
-          <execution>
-            <id>faq-pdf</id>
-            <phase>pre-site</phase>
-            <goals>
-              <goal>generate-pdf</goal>
-            </goals>
-            <configuration>
-              <sourceDirectory>src/docbkx/faq</sourceDirectory>
-              <includes>faq.xml</includes>
-              <imgSrcPath>../../site/resources/docbkx/</imgSrcPath>
-              <admonGraphicsPath>../../site/resources/docbkx/images/docbkx/</admonGraphicsPath>
-              <calloutGraphicsPath>../../site/resources/docbkx/images/docbkx/callouts/</calloutGraphicsPath>
             </configuration>
           </execution>
         </executions>
@@ -138,28 +90,64 @@
       </plugin>
     </plugins>
   </build>
-  <reporting>
-<!--
-    <plugins>
-      <plugin>
-        <groupId>org.apache.maven.plugins</groupId>
-        <artifactId>maven-changes-plugin</artifactId>
-        <version>2.7.1</version>
-        <reportSets>
-          <reportSet>
-            <reports>
-              <report>trac-report</report>
-            </reports>
-          </reportSet>
-        </reportSets>
-        <configuration>
-          <tracUser>mvnchr</tracUser>
-          <tracPassword>k7XvGD9i3MNz2bV4d78P</tracPassword>
-          <query>order=priority&amp;milestone=${project.version}</query>
-        </configuration>
-      </plugin>
-    </plugins>
--->
-  </reporting>
+
+  <profiles>
+    <profile>
+      <id>pdf</id>
+      <build>
+        <plugins>
+          <plugin>
+            <groupId>com.agilejava.docbkx</groupId>
+            <artifactId>docbkx-maven-plugin</artifactId>
+            <version>2.0.16</version>
+            <executions>
+              <execution>
+                <id>tutorial-pdf</id>
+                <phase>pre-site</phase>
+                <goals>
+                  <goal>generate-pdf</goal>
+                </goals>
+                <configuration>
+                  <sourceDirectory>src/docbkx/tutorial</sourceDirectory>
+                  <includes>tutorial.xml</includes>
+                  <imgSrcPath>../../site/resources/docbkx/</imgSrcPath>
+                  <admonGraphicsPath>../../site/resources/docbkx/images/docbkx/</admonGraphicsPath>
+                  <calloutGraphicsPath>../../site/resources/docbkx/images/docbkx/callouts/</calloutGraphicsPath>
+                </configuration>
+              </execution>
+              <execution>
+                <id>reference-pdf</id>
+                <phase>pre-site</phase>
+                <goals>
+                  <goal>generate-pdf</goal>
+                </goals>
+                <configuration>
+                  <sourceDirectory>src/docbkx/reference</sourceDirectory>
+                  <includes>reference.xml</includes>
+                  <imgSrcPath>../../site/resources/docbkx/</imgSrcPath>
+                  <admonGraphicsPath>../../site/resources/docbkx/images/docbkx/</admonGraphicsPath>
+                  <calloutGraphicsPath>../../site/resources/docbkx/images/docbkx/callouts/</calloutGraphicsPath>
+                </configuration>
+              </execution>
+              <execution>
+                <id>faq-pdf</id>
+                <phase>pre-site</phase>
+                <goals>
+                  <goal>generate-pdf</goal>
+                </goals>
+                <configuration>
+                  <sourceDirectory>src/docbkx/faq</sourceDirectory>
+                  <includes>faq.xml</includes>
+                  <imgSrcPath>../../site/resources/docbkx/</imgSrcPath>
+                  <admonGraphicsPath>../../site/resources/docbkx/images/docbkx/</admonGraphicsPath>
+                  <calloutGraphicsPath>../../site/resources/docbkx/images/docbkx/callouts/</calloutGraphicsPath>
+                </configuration>
+              </execution>
+            </executions>
+          </plugin>
+        </plugins>
+      </build>
+    </profile>
+  </profiles>
 
 </project>

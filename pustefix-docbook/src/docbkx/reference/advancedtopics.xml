@@ -900,7 +900,8 @@ public class PremiumCustomerCondition implements Condition {
        xsi:schemaLocation="
             http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd
             http://www.springframework.org/schema/aop http://www.springframework.org/schema/aop/spring-aop.xsd
-            http://pustefixframework.org/schema/webservices http://pustefixframework.org/schema/webservices/pustefix-webservices.xsd">
+            http://pustefixframework.org/schema/webservices
+            http://pustefixframework.org/schema/webservices/pustefix-webservices.xsd">
 
   <bean id="MyBeanId" class="mypackage.MyBean" scope="session">
     <aop:scoped-proxy/>
@@ -943,9 +944,11 @@ public class PremiumCustomerCondition implements Condition {
         If you're using Spring-managed services only, you can ignore the webservice-specific settings in this file as they're
         done as part of the Spring configuration. The global and default settings are applied to the managed services too.
       </para>
-      <programlisting language="xml"><![CDATA[<webservice-config schemaLocation="http://pustefix.sourceforge.net/wsconfig200401 ../../core/schema/wsconfig200401.xsd"
-  xmlns="http://pustefix.sourceforge.net/wsconfig200401"
-  xmlns:xsi="xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+      <programlisting language="xml"><![CDATA[<webservice-config
+  xmlns="http://www.pustefix-framework.org/2008/namespace/webservice-config"
+  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xsi:schemaLocation="http://www.pustefix-framework.org/2008/namespace/webservice-config
+                      http://www.pustefix-framework.org/2008/namespace/webservice-config.xsd">
 
   <!--
     The webservice-global section contains general configuration options, which are applied to
@@ -1367,7 +1370,8 @@ public class B extends A {
           your beans using a XML configuration file. The file has to be named beanmetadata.xml and has to be placed
           in the project configuration directory or in a META-INF directory that's part of the classpath.
         </para>
-        <programlisting language="xml"><![CDATA[<bean-metadata xsi:schemaLocation="http://pustefix.sourceforge.net/bean-metadata http://pustefix.sourceforge.net/beanmetadata.xsd">
+        <programlisting language="xml"><![CDATA[<bean-metadata xsi:schemaLocation="http://pustefix.sourceforge.net/bean-metadata 
+                                   http://pustefix.sourceforge.net/beanmetadata.xsd">
   <bean class="de.schlund.pfixcore.webservice.beans.A">
     <property name="foo" alias="myfoo"/>
     <property name="bar" exclude="true"/>

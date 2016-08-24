@@ -121,7 +121,8 @@
   <properties
     xmlns="http://www.pustefix-framework.org/2008/namespace/properties-config"
     xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-    xsi:schemaLocation="http://www.pustefix-framework.org/2008/namespace/properties-config http://www.pustefix-framework.org/2008/namespace/properties-config.xsd">
+    xsi:schemaLocation="http://www.pustefix-framework.org/2008/namespace/properties-config
+                        http://www.pustefix-framework.org/2008/namespace/properties-config.xsd">
     
     <prop name="a.property.name">a.property.value</prop>
     <!-- if you're using multitenancy, you can set or override properties depending on the tenant
@@ -293,13 +294,14 @@
       <path i18n="true">errorpages</path>
     </static>
    
-    <!-- Exceptions thrown by the business logic or Pustefix itself can be handled on the top layer by so-called ExceptionProcessors,
-         e.g. an ExceptionProcessor implementation can forward certain types of exceptions to error pages, log them to a file or
-         pass them to an external tool. If you don't configure an ExceptionProcessor or the ExceptionProcessor doesn't create
-         an HTTP response by itself, the default exception handling of the servlet container applies.
-         Pustefix provides a default implementation for development, which renders the exception together with some contextual
-         information as HTML. But this processor should only be used in test mode, because it would expose system internals to
-         the world. In production mode you should leave it out or register an alternative implementation.
+    <!-- Exceptions thrown by the business logic or Pustefix itself can be handled on the top layer by so-called
+         ExceptionProcessors, e.g. an ExceptionProcessor implementation can forward certain types of exceptions to
+         error pages, log them to a file or pass them to an external tool. If you don't configure an ExceptionProcessor
+         or the ExceptionProcessor doesn't create an HTTP response by itself, the default exception handling of the 
+         servlet container applies. Pustefix provides a default implementation for development, which renders the
+         exception together with some contextual information as HTML. But this processor should only be used in test
+         mode, because it would expose system internals to the world. In production mode you should leave it out or
+         register an alternative implementation.
     -->
     <choose>
       <when test="$mode='test'">
@@ -566,7 +568,8 @@
       <para>
         The standardpage tag is a convenience tag that encapsulates the typical definition of a complete page in the Pustefix system.
       </para>
-      <programlisting language="xml"><![CDATA[<standardpage name="BazPage" master="AName" metatags="AName" xml="xml/FooBase.xml" themes="Theme_A Theme_B ... default" variant="foo">
+      <programlisting language="xml"><![CDATA[<standardpage name="BazPage" master="AName" metatags="AName" xml="xml/FooBase.xml"
+              themes="Theme_A Theme_B ... default" variant="foo">
   <!--
     Note: All the child nodes are optional (and in fact usually not needed)
   -->
@@ -748,7 +751,7 @@
   </section>
 
     <section xml:id="configuration.sitemap">
-      <title>Sitemap configuration (sitemap.xml, sitemap-aliases.xml)</title>
+      <title>Sitemap configuration</title>
       <para>
         The optional sitemap configuration file <literal>sitemap.xml</literal> can be used to define a logical page structure, e.g.
         for grouping pages according to a navigation or menu structure. This sitemap can be accessed during the XSL transformations
@@ -761,9 +764,13 @@
         the page, page names in links, etc., are replaced by the display names.
       </para>
       <para>
-        Finally the sitemap allows the definition of page alternatives. Page alternatives can be used to create different 
+        In addition the sitemap allows the definition of page alternatives. Page alternatives can be used to create different 
         representations of a page. They base on the same logical page, but can produce different content and display names,
         e.g. for landing pages.
+      </para>
+      <para>
+        Finally you can define so-called <literal>page groups</literal>, which let you group pages and add a common path prefix
+        to their URL. Page groups can be nested arbitrarily, which will create compound path prefixes.
       </para>
  <programlisting language="xml"><![CDATA[<sitemap>
   <!-- page elements can be arbitrarily listed/nested, the name attribute relates to the logical page name -->
@@ -780,9 +787,19 @@
     <alt key="cities" name="Cities"/>
     <alt key="nationalparks" name="NationalParks"/>
     <alt key="mountains" name="Mountains"/>
-    <!-- Optionally you can set one page alternative to be the default one used when no page alternative is explicitly requested -->
+    <!-- Optionally you can set one page alternative to be the default one used when no page alternative is
+         explicitly requested -->
     <!-- <alt key="mountains" name="Mountains" default="true"/> -->
   </page>
+  <!-- the page-group name will appear as path prefix in the URL, setting the default attribute on a page will make it
+       accessible under the group name, e.g. /mainpath/mainpage, /mainpath/subpath/ and /mainpath/subpath/subpage2 --> 
+  <page-group key="main" name="mainpath">
+    <page name="mainpage"/>
+    <page-group key="sub" name="subpath">
+      <page name="subpage1" default="true"/>
+      <page name="subpage2"/>
+    </page-group>
+  </page-group>
   <!-- additional parts of a sitemap can be included, e.g. from modules -->
   <config-include file="conf/sitemap-fragment.xml" section="sitemap" module="*"/>
 </sitemap>]]></programlisting>
@@ -1770,7 +1787,8 @@
   xmlns:c="http://www.pustefix-framework.org/2008/namespace/context-xml-service-config"
   xmlns:d="http://www.pustefix-framework.org/2008/namespace/direct-output-service-config"
   xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-  xsi:schemaLocation="http://pustefix.sourceforge.net/configfragments200609 http://pustefix.sourceforge.net/configfragments200609.xsd">
+  xsi:schemaLocation="http://pustefix.sourceforge.net/configfragments200609
+                      http://pustefix.sourceforge.net/configfragments200609.xsd">
   
   <fr:navigation id="nav1">
       ]]></programlisting>
@@ -1915,11 +1933,10 @@
       </para>
 <programlisting language="xml"><![CDATA[
 <?xml version="1.0" encoding="UTF-8"?>
-<properties 
-    xmlns="http://www.pustefix-framework.org/2008/namespace/properties-config" 
-    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-    xsi:schemaLocation="http://www.pustefix-framework.org/2008/namespace/properties-config ../../core/schema/properties-config.xsd">
-    
+<properties xmlns="http://www.pustefix-framework.org/2008/namespace/properties-config" 
+            xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+            xsi:schemaLocation="http://www.pustefix-framework.org/2008/namespace/properties-config 
+                                http://www.pustefix-framework.org/schema/properties-config.xsd">    
     <choose>
       <when test="$mode='prod'">
         <property name="default.text">I'm in production mode</property>
@@ -1936,10 +1953,10 @@
       </para>
 <programlisting language="xml"><![CDATA[
 <?xml version="1.0" encoding="UTF-8"?>
-<properties 
-    xmlns="http://www.pustefix-framework.org/2008/namespace/properties-config" 
-    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-    xsi:schemaLocation="http://www.pustefix-framework.org/2008/namespace/properties-config ../../core/schema/properties-config.xsd">
+<properties xmlns="http://www.pustefix-framework.org/2008/namespace/properties-config" 
+            xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+            xsi:schemaLocation="http://www.pustefix-framework.org/2008/namespace/properties-config 
+                                http://www.pustefix-framework.org/schema/properties-config.xsd">
     
     <property name="mybean2.text">I'm in ${mode} mode</property>
 

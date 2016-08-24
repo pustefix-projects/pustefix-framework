@@ -16,16 +16,14 @@
     </para>
     <itemizedlist>
       <listitem>
-        <para>JDK 8 or higher</para>
+        JDK 8 or higher
       </listitem>
       <listitem>
-        <para>
-          POSIX-like operating system (Pustefix has been tested with Linux
-          and Mac OS X, but might also work with other systems like *BSD)
-        </para>
+        POSIX-like operating system (Pustefix has been tested with Linux
+        and Mac OS X, but might also work with other systems like *BSD)
       </listitem>
       <listitem>
-        <para>Apache Maven 3 or higher</para>
+        Apache Maven 3 or higher
       </listitem>
     </itemizedlist>
     <para>

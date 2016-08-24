@@ -5,8 +5,15 @@
   id="tutorial"
 >
   <info>
-    <title>Pustefix Tutorial</title>
+    <title>Pustefix Framework Tutorial</title>
     <subtitle>Version 0.20.x</subtitle>
+    <releaseinfo>This documentation relates to the latest Pustefix release from the 0.20 line.</releaseinfo>
+    <copyright>
+      <year>2007-2016</year>
+    </copyright>
+    <legalnotice>
+      <para>Copies of this document may be made for your own use and for distribution to others, provided that you do not charge any fee for such copies and further provided that each copy contains this Copyright Notice, whether distributed in print or electronically.</para>
+    </legalnotice>
   </info>
   
   <xi:include href="preface.xml" />

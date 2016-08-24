@@ -664,4 +664,123 @@
 
   </section>
 
+  <section xml:id="news.0_19_0">
+    <title>What's new in Pustefix 0.19.0</title>
+  
+    <para>Pustefix 0.19.0 focuses on upgrading the underlying technologies/libraries. It added support for Servlet API 3 and Spring 4.
+          The legacy dependency to Apache ORO was removed, i.e. stuff like regular expressions and LRU caches now are implemented completely
+          based on the JDK standard library.
+    </para>
+  </section>
+
+  <section xml:id="news.0_19_4">
+    <title>What's new in Pustefix 0.19.4</title>
+  
+    <para>Beginning with this version the Pustefix 0.19 line becomes the main development line. All new features from 0.18 now are available
+          in 0.19 too and the development of the 0.18 line will be discontinued. It's recommended to upgrade existing applications to 0.19 soon
+          (see <xref linkend="upgrade.0_18_to_0_19"/>).
+    </para>
+  </section>
+
+  <section xml:id="news.0_19_8">
+    <title>What's new in Pustefix 0.19.8</title>
+  
+    <para>Passing through the last pageflow using the <literal>__lf</literal> URL parameter has become optional. It can be disabled using the new configuration switch
+          <literal>&lt;disable-pageflow-passthrough/&gt;</literal> (see <link linkend="configuration.servlet.contextxml.passthrough">configuration section</link>).
+    </para>
+  </section>
+
+  <section xml:id="news.0_19_9">
+    <title>What's new in Pustefix 0.19.9</title>
+  
+    <para>Pustefix now supports modularized log4j configurations and provides an appropriate default configuration, which helps keeping the logging configuration
+          up-to-date with the latest Pustefix version and simplifies the maintenance of complex application logging configurations 
+          (see <link linkend="configuration.logging.includes">logging configuration</link>). Additionally Pustefix now allows changing of log levels at runtime
+          via JMX.
+    </para>
+  </section>
+
+  <section xml:id="news.0_19_11">
+    <title>What's new in Pustefix 0.19.11</title>
+  
+    <para>Extended form error checking tag by optionally supporting IWrapper parameter prefix/name and request trigger conditions, and adding a new tag
+          with inverted semantics (see <link linkend="xslt.forms.errors.fields">tag reference</link>).
+    </para>
+    <para>Improved render include Javascript library: support for passing arguments as JSON object, HTTP error callback functions
+          (see <link linkend="xslt.renderextensions.javascript">Javascript example</link>).
+    </para>
+  </section>
+
+  <section xml:id="news.0_19_14">
+    <title>What's new in Pustefix 0.19.14</title>
+  
+    <para>Added new Maven plugin for generating a complete list with display names of all renderable pages, e.g. can be used for automatic testing.
+          (see <xref linkend="tooling.mavenplugins.pagelist"/>).
+    </para>
+    <para>Beautified and more SEO-friendly URLs by removing the <literal>__reuse</literal> parameter from redirect URLs (replaced by Spring flash attributes).</para>
+    <para>Pustefix now provides a simple Spring/annotation-based event mechanism. It should replace the deprecated way of coupling <literal>ContextResources</literal>
+          using the <literal>ContextResourceObserver</literal> and <literal>ObservableContextResource</literal> interfaces (see <xref linkend="advanced.eventbus"/>).</para>
+  </section>
+
+  <section xml:id="news.0_19_15">
+    <title>What's new in Pustefix 0.19.15</title>
+    <para>Added support for rendering pages with non-200 status code (see <literal>SPDocument.setResponseStatus()</literal>) and 
+          overriding declared error pages (see <literal>SPDocument.setResponseErrorPageOverride()</literal>).
+    </para>
+  </section>
+
+  <section xml:id="news.0_19_17">
+    <title>What's new in Pustefix 0.19.17</title>
+    <para>Added support for Spring profiles. Pustefix now by default activates a profile for the current execution environment mode
+          (see <xref linkend="configuration.spring.profiles"/>).
+    </para>
+  </section>
+
+  <section xml:id="news.0_19_21">
+    <title>What's new in Pustefix 0.19.21</title>
+    <para>Added support for using Google Closure Compiler to compress inline Javascript (default compressor will be the YUI compressor, if available in the classpath).
+    </para>
+  </section>
+
+  <section xml:id="news.0_19_23">
+    <title>What's new in Pustefix 0.19.23</title>
+    <para>Improved rendering perforamnce (by extension function caching).</para>
+  </section>
+
+  <section xml:id="news.0_19_24">
+    <title>What's new in Pustefix 0.19.24</title>
+    <para>Added new <literal>DefaultIWrapperState</literal> method <literal>handleWrapperErrors</literal> for processing validation errors,
+          e.g. to log them.</para>
+  </section>
+
+  <section xml:id="news.0_19_25">
+    <title>What's new in Pustefix 0.19.25</title>
+    <para>Added new <literal>Context</literal> method <literal>invalidateSessionAfterCompletion</literal> for guaranteed invalidation of 
+          session after current request has been processed.</para>
+  </section>
+
+  <section xml:id="news.0_19_27">
+    <title>What's new in Pustefix 0.19.27</title>
+    <para>Added new tool for analyzing XSL transformation performance.</para>
+  </section>
+
+  <section xml:id="news.0_19_28">
+    <title>What's new in Pustefix 0.19.28</title>
+    <para>Improved rendering performance for pages with lots of runtime includes (by include extension function caching).</para>
+    <para>Added servlet filter for performance logging.</para>
+  </section>
+
+  <section xml:id="news.0_19_29">
+    <title>What's new in Pustefix 0.19.29</title>
+    <para>Improved rendering performance for pages with lots of internal links (by caching callbacks).</para>
+  </section>
+
+  <section xml:id="news.0_19_30">
+    <title>What's new in Pustefix 0.19.30</title>
+    <para><emphasis>We officially discontinue support for Java 1.7!</emphasis> This is the first version which makes use of Java 1.8 features. 
+          Almost a year after the EOL of Java 1.7 it's really about time to say goodbye.</para>
+    <para>Added support for generating request IDs which let you correlate log entries with specific web requests (see <xref linkend="advanced.requestid"/>).</para>
+    <para>Added Eclipse m2e lifecycle mappings for Pustefix plugins to improve Eclipse IDE integration of Pustefix projects.</para>
+  </section>
+
 </chapter>

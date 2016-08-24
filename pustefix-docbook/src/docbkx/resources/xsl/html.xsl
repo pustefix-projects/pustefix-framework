@@ -5,11 +5,13 @@
              -->
 <xsl:stylesheet xmlns:xsl="http://www.w3.org/1999/XSL/Transform"
                 xmlns:d="http://docbook.org/ns/docbook"
-                exclude-result-prefixes="d"      
+                xmlns:xslthl="http://xslthl.sf.net"    
+                exclude-result-prefixes="d xslthl"      
                 version="1.0">
 
     <xsl:import href="urn:docbkx:stylesheet"/>
-
+    <xsl:import href="urn:docbkx:stylesheet/highlight.xsl"/>
+<!--
   <xsl:template name="user.head.content">
     <xsl:param name="node" select="."/>
     <meta name="description">
@@ -29,6 +31,38 @@
       <li><a href="http://pustefix-framework.org/docs.html">Other versions</a></li>
     </div>
   </xsl:template>
+-->
 
+  <xsl:template name="credits.div"/>
+
+  <xsl:template match="xslthl:keyword" mode="xslthl">
+    <span class="hl-keyword">
+      <xsl:apply-templates mode="xslthl"/>
+    </span>
+  </xsl:template>
+
+  <xsl:template match="xslthl:string" mode="xslthl">
+    <span class="hl-string">
+      <xsl:apply-templates mode="xslthl"/>
+    </span>
+  </xsl:template>
+
+  <xsl:template match="xslthl:tag" mode="xslthl">
+    <span class="hl-tag">
+      <xsl:apply-templates mode="xslthl"/>
+    </span>
+  </xsl:template>
+
+  <xsl:template match="xslthl:attribute" mode="xslthl">
+    <span class="hl-attribute">
+      <xsl:apply-templates mode="xslthl"/>
+    </span>
+  </xsl:template>
+
+  <xsl:template match="xslthl:value" mode="xslthl">
+    <span class="hl-value">
+      <xsl:apply-templates mode="xslthl"/>
+    </span>
+  </xsl:template>
 
 </xsl:stylesheet>
