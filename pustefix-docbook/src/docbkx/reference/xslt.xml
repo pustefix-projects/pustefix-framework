@@ -2064,6 +2064,15 @@
         The <emphasis role="strong">pfx:replace</emphasis> function replaces all substrings of the text passed as first argument, which match the pattern passed a second argument, with the replacement passed as third argument. You can optionally specify one or more pattern mode flags as third argument ('s' dot-all mode, 'm' multi-line mode, 'i' case-insensitive mode, 'x' pattern-whitespace-ignoring mode). The function basically works like the according XPath 2.0 function (see <link xlink:href="http://www.w3.org/TR/xpath-functions/#func-replace"/>). 
       </para>
 
+      <para></para>
+      <para>
+        <emphasis role="strong">Function:</emphasis> <emphasis>string</emphasis> <emphasis role="strong">pfx:encode-for-uri</emphasis>(<emphasis>string</emphasis>)
+      </para>
+      <para>
+        The <emphasis role="strong">pfx:encode-for-uri</emphasis> encodes reserved characters in a string for usage in the path segment of an URI. 
+        The function basically works like the according XPath 2.0 function (see <link xlink:href="http://www.w3.org/TR/xpath-functions/#func-encode-for-uri"/>). 
+      </para>
+
     </section>
 
     <section xml:id="xslt.extensions.xpathfunctions.date">

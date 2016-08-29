@@ -90,6 +90,10 @@
     <func:result select="xslt2:formatDate($dateTime, $format, $timeZone, $locale)"/>
   </func:function>
   
+  <func:function name="pfx:encode-for-uri">
+    <xsl:param name="uriPart"/>
+    <func:result select="xslt2:encodeForUri($uriPart)"/>
+  </func:function>
   
   <!-- Development functions -->
   

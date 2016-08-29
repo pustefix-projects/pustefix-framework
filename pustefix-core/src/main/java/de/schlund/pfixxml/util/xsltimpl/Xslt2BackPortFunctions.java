@@ -1,5 +1,6 @@
 package de.schlund.pfixxml.util.xsltimpl;
 
+import java.io.UnsupportedEncodingException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.Locale;
@@ -7,6 +8,7 @@ import java.util.TimeZone;
 import java.util.regex.Pattern;
 
 import org.pustefixframework.util.LocaleUtils;
+import org.springframework.web.util.UriUtils;
 
 import com.icl.saxon.Context;
 import com.icl.saxon.expr.XPathException;
@@ -110,6 +112,18 @@ public class Xslt2BackPortFunctions {
         } catch (Exception err) {
             ExtensionFunctionUtils.setExtensionFunctionError(err);
             throw new XPathException(err);
+        }
+    }
+
+    public static String encodeForUri(String uriPart) {
+        try {
+            return UriUtils.encodePathSegment(uriPart, "UTF-8");
+        } catch (UnsupportedEncodingException e) {
+            //should never be thrown
+            throw new RuntimeException(e);
+        } catch (RuntimeException err) {
+            ExtensionFunctionUtils.setExtensionFunctionError(err);
+            throw err;
         }
     }
 
