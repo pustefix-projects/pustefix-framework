@@ -31,4 +31,16 @@
     </para>
   </section>
 
+  <section xml:id="news.0_20_14">
+    <title>What's new in Pustefix 0.20.14</title>
+    <para>
+      Pustefix backported some useful XPath 2.0 functions to make them avaiable with XSLT 1: <literal>pfx:encode-for-uri()</literal>,
+      <literal>pfx:string-length()</literal> and <literal>pfx:substring()</literal> (see <xref linkend="xslt.extensions.xpathfunctions.string"/>).
+    </para>
+    <para>
+      Extended the <literal>pfx:button</literal> template to support the creation of REST-style links using the new <literal>@path</literal> attribute,
+      or the <literal>pfx:path</literal>/<literal>pfx:segment</literal> elements (see <xref linkend="xslt.pfx.button"/>).
+    </para>
+  </section>
+
 </chapter>

@@ -25,6 +25,7 @@ import de.schlund.pfixxml.util.ExtensionFunctionUtils;
 /**
  * Some useful extensions function not available until XSLT 2 "backported" to XSLT 1
  *
+ * See <a href="https://www.w3.org/TR/xpath-functions/#func-encode-for-uri">XPath 2.0 Functions</a>.
  */
 public class Xslt2BackPortFunctions {
 
@@ -117,7 +118,7 @@ public class Xslt2BackPortFunctions {
 
     public static String encodeForUri(String uriPart) {
         try {
-            return UriUtils.encodePathSegment(uriPart, "UTF-8");
+            return UriUtils.encode(uriPart, "UTF-8");
         } catch (UnsupportedEncodingException e) {
             //should never be thrown
             throw new RuntimeException(e);
@@ -125,6 +126,41 @@ public class Xslt2BackPortFunctions {
             ExtensionFunctionUtils.setExtensionFunctionError(err);
             throw err;
         }
+    }
+
+    public static String substring(String sourceString, double startingLoc) {
+        int start = (int)Math.round(startingLoc) - 1;
+        if(start < 0) {
+            start = 0;
+        }
+        if(start > sourceString.length()) {
+            start = sourceString.length();
+        }
+        return sourceString.substring(start);
+    }
+
+    public static String substring(String sourceString, double startingLoc, double length) {
+        try {
+            int start = (int)Math.round(startingLoc) - 1;
+            if(start < 0) {
+                start = 0;
+            }
+            int end = (int)Math.round(startingLoc) + (int)Math.round(length) - 1;
+            if(end > sourceString.length()) {
+                end = sourceString.length();
+            }
+            if(start > end) {
+                start = end;
+            }
+            return sourceString.substring(start, end);
+        } catch (RuntimeException err) {
+            ExtensionFunctionUtils.setExtensionFunctionError(err);
+            throw err;
+        }
+    }
+
+    public static int stringLength(String arg) {
+        return arg.length();
     }
 
 }

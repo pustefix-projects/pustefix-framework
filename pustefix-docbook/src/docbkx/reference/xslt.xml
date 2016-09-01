@@ -219,7 +219,7 @@
         and builds up valid, url encoded query strings.
       </para>
       <programlisting language="xml"><![CDATA[<pfx:button page="APage" pageflow="AFlow" jumptopage="APage" jumptopageflow="AFlow" 
-            forcestop="true|false|step" startwithflow="true|false" altkey="pageAlternativeKey">
+            forcestop="true|false|step" startwithflow="true|false" altkey="pageAlternativeKey" path="sub/path">
   <!-- Control the submit commands -->
   <pfx:command page="APage" name="SUBWRP">prefix</pfx:command>
 
@@ -233,6 +233,13 @@
 
   <!-- Select a page alternative by key --> 
   <pfx:altkey>pageAlternativeKey</pfx:altkey>
+
+  <!-- Set page-relative URL sub path (suffixing the display page name). Segments are URI-encoded automatically. -->
+  <pfx:path>sub/path</pfx:path>
+  <pfx:path>
+    <pfx:segment>sub</pfx:segment>
+    <pfx:segment>path</pfx:segment/>
+  </pfx:path>
 
   <!--
     These three optional child nodes can be used to display different
@@ -2018,6 +2025,15 @@
       <title>String functions</title>
     
       <para>
+        <emphasis role="strong">Function:</emphasis> <emphasis>string</emphasis> <emphasis role="strong">pfx:encode-for-uri</emphasis>(<emphasis>string</emphasis>)
+      </para>
+      <para>
+        The <emphasis role="strong">pfx:encode-for-uri</emphasis> encodes reserved characters in a string for usage in the path segment of an URI.
+        The function basically works like the according XPath 2.0 function (see <link xlink:href="http://www.w3.org/TR/xpath-functions/#func-encode-for-uri"/>).
+      </para>
+
+      <para></para>
+      <para>
         <emphasis role="strong">Function:</emphasis> <emphasis>boolean</emphasis> <emphasis role="strong">pfx:ends-with</emphasis>(<emphasis>string, string</emphasis>)
       </para>
       <para>
@@ -2034,6 +2050,42 @@
 
       <para></para>
       <para>
+        <emphasis role="strong">Function:</emphasis> <emphasis>boolean</emphasis> <emphasis role="strong">pfx:matches</emphasis>(<emphasis>string, string, string?</emphasis>)
+      </para>
+      <para>
+        The <emphasis role="strong">pfx:matches</emphasis> function returns true if the text passed as first argument is matched by the pattern passed as second argument. You can optionally specify one or more pattern mode flags as third argument ('s' dot-all mode, 'm' multi-line mode, 'i' case-insensitive mode, 'x' pattern-whitespace-ignoring mode). The function basically works like the according XPath 2.0 function (see <link xlink:href="http://www.w3.org/TR/xpath-functions/#func-matches"/>).
+      </para>
+
+      <para></para>
+      <para>
+        <emphasis role="strong">Function:</emphasis> <emphasis>string</emphasis> <emphasis role="strong">pfx:replace</emphasis>(<emphasis>string, string, string, string?</emphasis>)
+      </para>
+      <para>
+        The <emphasis role="strong">pfx:replace</emphasis> function replaces all substrings of the text passed as first argument, which match the pattern passed a second argument, with the replacement passed as third argument. You can optionally specify one or more pattern mode flags as third argument ('s' dot-all mode, 'm' multi-line mode, 'i' case-insensitive mode, 'x' pattern-whitespace-ignoring mode). The function basically works like the according XPath 2.0 function (see <link xlink:href="http://www.w3.org/TR/xpath-functions/#func-replace"/>).
+      </para>
+
+      <para></para>
+      <para>
+        <emphasis role="strong">Function:</emphasis> <emphasis>string</emphasis> <emphasis role="strong">pfx:string-length</emphasis>(<emphasis>string</emphasis>)
+      </para>
+      <para>
+        The <emphasis role="strong">pfx:string-length</emphasis> returns the length of the passed string.
+        The function basically works like the according XPath 2.0 function (see <link xlink:href="http://www.w3.org/TR/xpath-functions/#string-length"/>).
+      </para>
+
+      <para></para>
+      <para>
+        <emphasis role="strong">Function:</emphasis> <emphasis>string</emphasis> <emphasis role="strong">pfx:substring</emphasis>(<emphasis>string, double, double?</emphasis>)
+      </para>
+      <para>
+        The <emphasis role="strong">pfx:substring</emphasis> function returns the portion of the the string passed as first argument,
+        beginning at the position passed as second argument (first character is located at position 1!),
+        optionally limited to the number of characters passed as third argument.
+        The function basically works like the according XPath 2.0 function (see <link xlink:href="http://www.w3.org/TR/xpath-functions/#substring"/>).
+      </para>
+
+      <para></para>
+      <para>
         <emphasis role="strong">Function:</emphasis> <emphasis>node-set</emphasis> <emphasis role="strong">pfx:tokenize</emphasis>(<emphasis>string, string</emphasis>)
       </para>
       <para>
@@ -2046,31 +2098,6 @@
       </para>
       <para>
         The <emphasis role="strong">pfx:upper-case</emphasis> function converts all of the characters in the arguments string to upper case.
-      </para>
-
-      <para></para>
-      <para>
-        <emphasis role="strong">Function:</emphasis> <emphasis>boolean</emphasis> <emphasis role="strong">pfx:matches</emphasis>(<emphasis>string, string, string?</emphasis>)
-      </para>
-      <para>
-        The <emphasis role="strong">pfx:matches</emphasis> function returns true if the text passed as first argument is matched by the pattern passed as second argument. You can optionally specify one or more pattern mode flags as third argument ('s' dot-all mode, 'm' multi-line mode, 'i' case-insensitive mode, 'x' pattern-whitespace-ignoring mode). The function basically works like the according XPath 2.0 function (see <link xlink:href="http://www.w3.org/TR/xpath-functions/#func-matches"/>). 
-      </para>
-
-      <para></para>
-      <para>
-        <emphasis role="strong">Function:</emphasis> <emphasis>string</emphasis> <emphasis role="strong">pfx:replace</emphasis>(<emphasis>string, string, string, string?</emphasis>)
-      </para>
-      <para>
-        The <emphasis role="strong">pfx:replace</emphasis> function replaces all substrings of the text passed as first argument, which match the pattern passed a second argument, with the replacement passed as third argument. You can optionally specify one or more pattern mode flags as third argument ('s' dot-all mode, 'm' multi-line mode, 'i' case-insensitive mode, 'x' pattern-whitespace-ignoring mode). The function basically works like the according XPath 2.0 function (see <link xlink:href="http://www.w3.org/TR/xpath-functions/#func-replace"/>). 
-      </para>
-
-      <para></para>
-      <para>
-        <emphasis role="strong">Function:</emphasis> <emphasis>string</emphasis> <emphasis role="strong">pfx:encode-for-uri</emphasis>(<emphasis>string</emphasis>)
-      </para>
-      <para>
-        The <emphasis role="strong">pfx:encode-for-uri</emphasis> encodes reserved characters in a string for usage in the path segment of an URI. 
-        The function basically works like the according XPath 2.0 function (see <link xlink:href="http://www.w3.org/TR/xpath-functions/#func-encode-for-uri"/>). 
       </para>
 
     </section>

@@ -95,6 +95,52 @@
     <func:result select="xslt2:encodeForUri($uriPart)"/>
   </func:function>
   
+  <func:function name="pfx:substring">
+    <xsl:param name="sourceString"/>
+    <xsl:param name="startingLoc"/>
+    <xsl:param name="length"/>
+    <xsl:choose>
+      <xsl:when test="$length">
+        <func:result select="xslt2:substring($sourceString, $startingLoc, $length)"/>
+      </xsl:when>
+      <xsl:otherwise>
+        <func:result select="xslt2:substring($sourceString, $startingLoc)"/>
+      </xsl:otherwise>
+    </xsl:choose>
+  </func:function>
+
+  <func:function name="pfx:string-length">
+    <xsl:param name="arg"/>
+    <func:result select="xslt2:stringLength($arg)"/>
+  </func:function>
+
+  <func:function name="pfx:concatPath">
+    <xsl:param name="path1"/>
+    <xsl:param name="path2"/>
+    <xsl:choose>
+      <xsl:when test="pfx:ends-with($path1, '/')">
+        <xsl:choose>
+          <xsl:when test="starts-with($path2, '/')">
+            <func:result select="concat($path1, pfx:substring($path2, 2))"/>
+          </xsl:when>
+          <xsl:otherwise>
+            <func:result select="concat($path1, $path2)"/>
+          </xsl:otherwise>
+        </xsl:choose>
+      </xsl:when>
+      <xsl:otherwise>
+        <xsl:choose>
+          <xsl:when test="starts-with($path2, '/')">
+            <func:result select="concat($path1, $path2)"/>
+          </xsl:when>
+          <xsl:otherwise>
+            <func:result select="concat($path1, '/', $path2)"/>
+          </xsl:otherwise>
+        </xsl:choose>
+      </xsl:otherwise>
+    </xsl:choose>
+  </func:function>
+
   <!-- Development functions -->
   
   <func:function name="pfx:sleep">

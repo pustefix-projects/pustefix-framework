@@ -171,7 +171,9 @@
         <pfx:button page="encoding">Encoding test page</pfx:button>&#160;&#160;
         <pfx:button page="SelectAnimal">Moduletest I</pfx:button>  
         <br/>
-        <pfx:button page="moduletest">Moduletest II</pfx:button>
+        <pfx:button page="moduletest">Moduletest II</pfx:button>&#160;&#160;
+        <pfx:button page="mvctest">MVC-Test</pfx:button>&#160;&#160;
+        <pfx:button page="mvctest" path="data/4">REST-Link</pfx:button>
     </theme>
   </part>
   

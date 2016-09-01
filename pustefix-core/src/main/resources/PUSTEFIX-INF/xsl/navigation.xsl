@@ -318,7 +318,16 @@
       </xsl:choose>
     </xsl:variable>
     <xsl:variable name="fulllink">
-      <ixsl:value-of select="$__contextpath"/>/<ixsl:value-of select="pfx:__omitPage($page_{generate-id()}, $lang, $tmpaltkey_{generate-id()}, '{$pageflow}', '{$pagegroup}')"/><ixsl:value-of select="$__sessionIdPath"/>
+      <xsl:choose>
+        <xsl:when test="pfx:path or @path">
+          <ixsl:variable name="pathstart" select="concat($__contextpath, '/', pfx:__omitPage($page_{generate-id()}, $lang, $tmpaltkey_{generate-id()}, '{$pageflow}', '{$pagegroup}'))"/>
+          <xsl:call-template name="pfx:button_path"/>
+        </xsl:when>
+        <xsl:otherwise>
+          <ixsl:value-of select="$__contextpath"/>/<ixsl:value-of select="pfx:__omitPage($page_{generate-id()}, $lang, $tmpaltkey_{generate-id()}, '{$pageflow}', '{$pagegroup}')"/>
+        </xsl:otherwise>
+      </xsl:choose>
+      <ixsl:value-of select="$__sessionIdPath"/>
       <ixsl:variable name="params">
       <xsl:if test="not($frame_impl='')">__frame=<xsl:value-of select="$frame_impl"/></xsl:if>
       <ixsl:if test="not($__lf = '') and pfx:__needsLastFlow($page_{generate-id()},$__lf)">&amp;__lf=<ixsl:value-of select="$__lf"/></ixsl:if>
@@ -337,7 +346,7 @@
       <ixsl:value-of select="pfx:__addParams($params)"/>
       <xsl:if test="$anchors[not(@frame) or @frame = '']">#<xsl:apply-templates select="$anchors[not(@frame) or @frame = ''][1]/node()"/></xsl:if>
     </xsl:variable>
-    <xsl:variable name="excluded_button_attrs">|action|activeclass|altkey|buttpage|forcestop|frame|invisibleclass|jumptopage|jumptopageflow|mode|nodata|normalclass|page|pageflow|popup|popupfeatures|popupheight|popupid|popupwidth|startwithflow|target|</xsl:variable>
+    <xsl:variable name="excluded_button_attrs">|action|activeclass|altkey|buttpage|forcestop|frame|invisibleclass|jumptopage|jumptopageflow|mode|nodata|normalclass|page|pageflow|path|popup|popupfeatures|popupheight|popupid|popupwidth|startwithflow|target|</xsl:variable>
     <xsl:variable name="excluded_button_span_attrs"><xsl:value-of select="$excluded_button_attrs"/>charset|type|name|href|hreflang|rel|rev|accesskey|shape|coords|tabindex|onfocus|onblur|</xsl:variable>
     <ixsl:if test="true()">
     <ixsl:variable name="tmpaltkey_{generate-id()}">
@@ -427,8 +436,31 @@
     </xsl:choose>
     </ixsl:if>
   </xsl:template>
-  
+
   <xsl:template match="pfx:page"/>
+
+  <xsl:template match="pfx:path"/>
+
+  <xsl:template name="pfx:button_path">
+    <xsl:choose>
+      <xsl:when test="pfx:path">
+        <ixsl:variable name="pathext">
+          <xsl:apply-templates select="pfx:path/node()"/>
+        </ixsl:variable>
+        <ixsl:value-of select="pfx:concatPath($pathstart, $pathext)"/>
+      </xsl:when>
+      <xsl:when test="@path">
+        <ixsl:value-of select="pfx:concatPath($pathstart, '{@path}')"/>
+      </xsl:when>
+    </xsl:choose>
+  </xsl:template>
+
+  <xsl:template match="pfx:segment">
+    <ixsl:text>/</ixsl:text>
+    <ixsl:call-template name="__enc">
+      <ixsl:with-param name="in"><xsl:apply-templates select="./node()"/></ixsl:with-param>
+    </ixsl:call-template>
+  </xsl:template>
 
   <xsl:template match="pfx:elink">
     <xsl:choose>
