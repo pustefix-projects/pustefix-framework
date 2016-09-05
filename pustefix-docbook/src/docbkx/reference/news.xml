@@ -41,6 +41,11 @@
       Extended the <literal>pfx:button</literal> template to support the creation of REST-style links using the new <literal>@path</literal> attribute,
       or the <literal>pfx:path</literal>/<literal>pfx:segment</literal> elements (see <xref linkend="xslt.pfx.button"/>).
     </para>
+    <para>
+      Added the new method <literal>getModelAndView()</literal> to the <literal>ResultDocument</literal> class. This enables you to retrieve
+      the <literal>ModelAndView</literal> instance created by Spring MVC when using <literal>RequestMappings</literal>, e.g. when overriding the
+      <literal>getDocument()</literal> method of a <literal>State</literal> and you need to check for model changes.
+    </para>
   </section>
 
 </chapter>

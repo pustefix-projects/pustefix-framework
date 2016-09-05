@@ -158,6 +158,7 @@ public class DefaultIWrapperState extends StateImpl implements IWrapperState, Re
         }
         
         ModelAndView modelAndView = processMVC(context, preq);
+        resdoc.setModelAndView(modelAndView);
         
         // We want to optimize away the case where the context tells us that we
         // don't need to supply a full document as the context will - because of

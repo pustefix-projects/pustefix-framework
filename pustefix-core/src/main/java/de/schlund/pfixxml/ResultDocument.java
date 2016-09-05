@@ -22,10 +22,13 @@ import java.util.Properties;
 
 import javax.xml.transform.dom.DOMResult;
 
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.servlet.ModelAndView;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 
 import de.schlund.pfixcore.oxm.impl.MarshallerFactory;
+import de.schlund.pfixcore.workflow.State;
 import de.schlund.pfixxml.util.Xml;
 import de.schlund.util.statuscodes.StatusCode;
 
@@ -46,7 +49,7 @@ public class ResultDocument {
     protected Element    formhiddenvals;
     protected Document   doc;
     protected SPDocument spdoc;
-    
+    private ModelAndView modelAndView;
     
     public ResultDocument() {
         
@@ -110,6 +113,20 @@ public class ResultDocument {
             param.setAttribute("level", level);
         }
         formerrors.appendChild(param);
+    }
+
+    public void setModelAndView(ModelAndView modelAndView) {
+        this.modelAndView = modelAndView;
+    }
+
+    /**
+     * Returns the {@link ModelAndView} instance created by Spring MVC while processing {@link State}
+     * methods with matching {@link RequestMapping} annotations.
+     *
+     * @return {@link ModelAndView} instance, or null if no {@link RequestMapping} used or matching.
+     */
+    public ModelAndView getModelAndView() {
+        return modelAndView;
     }
 
     // -----------------------------------------------------------------
