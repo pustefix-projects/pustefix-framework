@@ -27,6 +27,7 @@ import java.net.URLConnection;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -431,6 +432,10 @@ public class LiveJarInfo {
                         String version = attrs.getValue("Implementation-Version");
                         if (groupId != null && version != null) {
                             int endInd = jarFileName.indexOf(version);
+                            if(endInd == -1 && version.endsWith("-SNAPSHOT")) {
+                                String versionStart = version.substring(0, version.length() - 8);
+                                endInd = jarFileName.indexOf(versionStart);
+                            }
                             if (endInd > 2) {
                                 String artifactId = jarFileName.substring(0, endInd - 1);
                                 String entryKey = groupId + "+" + artifactId + "+" + version;
