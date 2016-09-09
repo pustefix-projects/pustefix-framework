@@ -592,7 +592,7 @@ public class RequestContextImpl implements Cloneable, AuthorizationInterceptor {
                 }
                 spdoc = res.getSPDocument();
             } else {
-                spdoc = documentFromFlow(startwithflow, stopnextforcurrentrequest);
+                spdoc = documentFromFlow(startwithflow, stopnextforcurrentrequest, new LinkedHashSet<String>());
             }
         }
         
@@ -743,7 +743,7 @@ public class RequestContextImpl implements Cloneable, AuthorizationInterceptor {
         return getStateForPageRequest(currentpagerequest);
     }
     
-    private SPDocument documentFromFlow(boolean startwithflow, boolean stopnextforcurrentrequest) throws PustefixApplicationException, PustefixCoreException {
+    private SPDocument documentFromFlow(boolean startwithflow, boolean stopnextforcurrentrequest, LinkedHashSet<String> jumpList) throws PustefixApplicationException, PustefixCoreException {
         SPDocument document = null;
 
         // First, check if the requested page is defined at all
@@ -819,7 +819,7 @@ public class RequestContextImpl implements Cloneable, AuthorizationInterceptor {
                 LOG.debug("* [" + currentpagerequest + "] returned document to show, skipping page flow.");
                 document = resdoc.getSPDocument();
             } else if (jumptopage != null) {
-                document = doJump(stopnextforcurrentrequest);
+                document = doJump(stopnextforcurrentrequest, jumpList);
             } else if (currentpageflow != null) {
                 LOG.debug("* [" + currentpagerequest + "] signalled success, starting page flow process");
                 document = runPageFlow(false, stopnextforcurrentrequest);
@@ -837,13 +837,13 @@ public class RequestContextImpl implements Cloneable, AuthorizationInterceptor {
         }
 
         if(!prohibitcontinue && jumptopage != null) {
-            document = doJump(stopnextforcurrentrequest);
+            document = doJump(stopnextforcurrentrequest, jumpList);
         }
         
         return document;
     }
 
-    private SPDocument doJump(boolean stopnextforcurrentrequest) throws PustefixApplicationException, PustefixCoreException {
+    private SPDocument doJump(boolean stopnextforcurrentrequest, LinkedHashSet<String> jumpList) throws PustefixApplicationException, PustefixCoreException {
         LOG.debug("* [" + currentpagerequest + "] signalled success, jumptopage is set as [" + jumptopage + "].");
         PageLookupResult result = servercontext.getSiteMap().getPageName(jumptopage, getLanguage());
         jumptopage = result.getPageName();
@@ -863,11 +863,20 @@ public class RequestContextImpl implements Cloneable, AuthorizationInterceptor {
         } else {
             currentpageflow = pageflowmanager.pageFlowToPageRequest(currentpageflow, currentpagerequest, getVariant());
         }
+        if(jumpList.contains(jumptopage)) {
+            StringBuilder sb = new StringBuilder();
+            for(String jumpListPage: jumpList) {
+                sb.append(jumpListPage).append(" -> ");
+            }
+            sb.append(jumptopage);
+            throw new RuntimeException("Circular page jump: " + sb.toString());
+        }
+        jumpList.add(jumptopage);
         jumptopage = null; // we don't want to recurse infinitely
         jumptopageflow = null; // we don't want to recurse infinitely
 
         LOG.debug("******* JUMPING to [" + currentpagerequest + "] *******\n");
-        return documentFromFlow(false, stopnextforcurrentrequest);
+        return documentFromFlow(false, stopnextforcurrentrequest, jumpList);
     }
     
     private SPDocument runPageFlow(boolean stopatcurrentpage, boolean stopatnextaftercurrentpage) throws PustefixApplicationException, PustefixCoreException {
