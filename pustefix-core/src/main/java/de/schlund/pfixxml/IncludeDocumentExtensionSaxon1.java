@@ -104,4 +104,8 @@ public class IncludeDocumentExtensionSaxon1 {
         return IncludeDocumentExtension.getIncludeInfo(xsltContext, path, module, search, tenant, language, targetkey, targetgen);
     }
 
+    public static String getMessage(String key, String lang, Object arg1, Object arg2, Object arg3, Object arg4, Object arg5) throws Exception {
+        return IncludeDocumentExtension.getMessage(key, lang, arg1, arg2, arg3, arg4, arg5);
+    }
+
 }

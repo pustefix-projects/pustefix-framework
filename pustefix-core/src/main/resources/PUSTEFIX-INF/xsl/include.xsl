@@ -994,4 +994,62 @@
     </xsl:attribute>
   </xsl:template>
 
+  <xsl:template match="pfx:message">
+    <xsl:choose>
+      <xsl:when test="$__target_key = '__NONE__'">
+        <xsl:call-template name="pfx:message">
+          <xsl:with-param name="key">
+            <xsl:choose>
+              <xsl:when test="pfx:key">
+                <xsl:apply-templates select="pfx:key/node()"/>
+              </xsl:when>
+              <xsl:otherwise>
+                <xsl:value-of select="@key"/>
+              </xsl:otherwise>
+            </xsl:choose>
+          </xsl:with-param>
+          <xsl:with-param name="arg1"><xsl:apply-templates select="pfx:arg[1]"/></xsl:with-param>
+          <xsl:with-param name="arg2"><xsl:apply-templates select="pfx:arg[2]"/></xsl:with-param>
+          <xsl:with-param name="arg3"><xsl:apply-templates select="pfx:arg[3]"/></xsl:with-param>
+          <xsl:with-param name="arg4"><xsl:apply-templates select="pfx:arg[4]"/></xsl:with-param>
+          <xsl:with-param name="arg5"><xsl:apply-templates select="pfx:arg[5]"/></xsl:with-param>
+        </xsl:call-template>
+      </xsl:when>
+      <xsl:otherwise>
+        <xsl:choose>
+          <xsl:when test="pfx:key or pfx:arg or @level='runtime'">
+            <ixsl:call-template name="pfx:message">
+              <xsl:choose>
+                <xsl:when test="pfx:key">
+                  <ixsl:with-param name="key"><xsl:apply-templates select="pfx:key/node()"/></ixsl:with-param>
+                </xsl:when>
+                <xsl:otherwise>
+                  <ixsl:with-param name="key"><xsl:value-of select="@key"/></ixsl:with-param>
+                </xsl:otherwise>
+              </xsl:choose>
+              <xsl:for-each select="pfx:arg">
+                <ixsl:with-param name="arg{position()}"><xsl:apply-templates/></ixsl:with-param>
+              </xsl:for-each>
+            </ixsl:call-template>
+          </xsl:when>
+          <xsl:otherwise>
+            <xsl:call-template name="pfx:message">
+              <xsl:with-param name="key" select="@key"/>
+            </xsl:call-template>
+          </xsl:otherwise>
+        </xsl:choose>
+      </xsl:otherwise>
+    </xsl:choose>
+  </xsl:template>
+
+  <xsl:template name="pfx:message">
+    <xsl:param name="key"/>
+    <xsl:param name="arg1"/>
+    <xsl:param name="arg2"/>
+    <xsl:param name="arg3"/>
+    <xsl:param name="arg4"/>
+    <xsl:param name="arg5"/>
+    <xsl:value-of select="include:getMessage($key, $lang, string($arg1), string($arg2), string($arg3), string($arg4), string($arg5))"/>
+  </xsl:template>
+
 </xsl:stylesheet>

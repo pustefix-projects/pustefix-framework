@@ -24,12 +24,14 @@ import java.net.URLEncoder;
 import java.text.MessageFormat;
 import java.util.LinkedHashMap;
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentMap;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import javax.servlet.http.HttpServletRequest;
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.transform.TransformerException;
@@ -38,6 +40,10 @@ import javax.xml.transform.URIResolver;
 import org.apache.log4j.Logger;
 import org.pustefixframework.util.LocaleUtils;
 import org.springframework.cache.interceptor.SimpleKeyGenerator;
+import org.springframework.context.ApplicationContext;
+import org.springframework.web.context.request.RequestContextHolder;
+import org.springframework.web.context.request.ServletRequestAttributes;
+import org.springframework.web.servlet.support.RequestContextUtils;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.Node;
@@ -659,6 +665,19 @@ public final class IncludeDocumentExtension {
             extCache.setValue(mapKey, cache);
         }
         return cache;
+    }
+
+    public static String getMessage(String key, String lang, Object arg1, Object arg2, Object arg3, Object arg4, Object arg5) throws Exception {
+        try {
+            HttpServletRequest req = ((ServletRequestAttributes)RequestContextHolder.getRequestAttributes()).getRequest();
+            ApplicationContext ctx = RequestContextUtils.getWebApplicationContext(req);
+            Locale locale = LocaleUtils.getLocale(lang);
+            Object[] args = new Object[] {arg1, arg2, arg3, arg4, arg5};
+            return ctx.getMessage(key, args, locale);
+        } catch (Exception x) {
+            ExtensionFunctionUtils.setExtensionFunctionError(x);
+            throw x;
+        }
     }
 
 }

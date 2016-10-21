@@ -1,0 +1,34 @@
+#Translations
+msgid ""
+msgstr ""
+"PO-Revision-Date: 2008-07-22 18:13+0200\n"
+"Plural-Forms: nplurals=2; plural=n != 1;\n"
+
+#: lib/error.c:116
+msgid "Unknown system error"
+msgstr "Unbekannter Systemfehler"
+
+#: src/msgcmp.c:338 src/po-lex.c:699
+#, c-format
+msgid "found %d fatal error"
+msgid_plural "found %d fatal errors"
+msgstr[0] "%d fataler Fehler gefunden"
+msgstr[1] "%d fatale Fehler gefunden"
+
+msgid ""
+"multiline\n"
+"example\n"
+msgstr ""
+"Mehrzeiliges\n"
+"Beispiel\n"
+
+msgid "foo"
+msgstr "FOO {0}"
+msgid "bar"
+msgstr "BAR"
+#comment
+msgid "baz"
+msgstr "BAZ"
+msgctxt "context"
+msgid "test"
+msgstr "TEST"
