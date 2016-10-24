@@ -93,7 +93,7 @@ public class DependencyTracker {
         } else if (thetype == DependencyType.IMAGE) {
             target.getAuxDependencyManager().addDependencyImage(path, parent_path, parent_part, parent_theme);
         } else {
-            throw new RuntimeException("Unknown dependency type '" + type + "'!");
+            LOG.error("Unknown dependency type '" + type + "'!");
         }
     }
 

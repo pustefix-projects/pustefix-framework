@@ -75,8 +75,7 @@ import de.schlund.pfixxml.util.XsltContext;
  * XSL via the extension mechanism (and from nowhere else!).
  */
 public final class IncludeDocumentExtension {
-    //~ Instance/static variables
-    // ..................................................................
+
     private static final Logger       LOG        = Logger.getLogger(IncludeDocumentExtension.class);
     private static final String NOTARGET   = "__NONE__";
     
@@ -111,71 +110,117 @@ public final class IncludeDocumentExtension {
                     computed_inc, module, search, tenant, language);
         }
     }
-    
-    //~ Methods
-    // ....................................................................................
+
     /**
      * Get the requested IncludeDocument from {@link IncludeDocumentFactory}
      * and retrieve desired information from it.</br> Note: The nested
-     * document in the Includedocument is immutable, any attempts to modify it
+     * document in the included document is immutable, any attempts to modify it
      * will cause an exception.
      * 
-     * @param path    the path to the Includedocument in the file system relative
-     *                to docroot.
-     * @param part    the part in the Includedocument.
-     * @param docroot the document root in the file system
-     * @param targetgen
-     * @param targetkey
-     * @param parent_path
-     * @param parent_part
-     * @param parent_theme
-     * @return a list of nodes understood by the current transformer(currently saxon)
+     * @param context - the XSLT context
+     * @param pathStr - the path to the include document in the file system relative to docroot
+     * @param part - the part name within the include document
+     * @param targetgen - the target generator instance
+     * @param targetkey - the target key
+     * @param parentPartIn - the part from where the include is done
+     * @param parentThemeIn - the theme from where the include is done
+     * @param computedInc - computed include
+     * @param module - the source module
+     * @param search - the search strategy (dynamic or not)
+     * @param tenant - the selected tenant
+     * @param language - the selected language
+     * @return a list of nodes understood by the current transformer (currently saxon)
      * @throws Exception on all errors
      */
-    public static final Object getNoCache(XsltContext context, String path_str, String part,
-                                   TargetGenerator targetgen, String targetkey,
-                                   String parent_part_in, String parent_theme_in, String computed_inc,
-                                   String module, String search, String tenant, String language) throws Exception {
+    public static final Object getNoCache(XsltContext context, String pathStr, String part, TargetGenerator targetgen, 
+            String targetkey, String parentPartIn, String parentThemeIn, String computedInc, String module, 
+            String search, String tenant, String language) throws Exception {
 
-        if(path_str.startsWith("docroot:")) path_str = path_str.substring(9);
-        if(module != null) {
-            module = module.trim();
-            if(module.equals("")) module = null;
+        if (pathStr.startsWith("docroot:")) {
+            pathStr = pathStr.substring(9);
         }
-        
-        if (path_str == null || path_str.equals("")) {
+        if (module != null) {
+            module = module.trim();
+            if (module.equals("")) {
+                module = null;
+            }
+        }
+        if (pathStr == null || pathStr.equals("")) {
             throw new XMLException("Need href attribute for pfx:include or path of parent part must be deducible");
         }
-        if (path_str.startsWith("/")) path_str = path_str.substring(1);
-        
-        String       parent_uri_str  = "";
-        String       parent_part     = "";
-        String       parent_theme    = "";
-        
+        if (pathStr.startsWith("/")) {
+            pathStr = pathStr.substring(1);
+        }
+        String parentUriStr = "";
+        String parentPart = "";
+        String parentTheme = "";
         String parentSystemId = getSystemId(context);
         URI parentURI = new URI(parentSystemId);
-        
-        if (computed_inc.equals("false") && isIncludeDocument(context)) {
-            parent_uri_str = parentSystemId;
-            parent_part     = parent_part_in;
-            parent_theme  = parent_theme_in;
+        if (computedInc.equals("false") && isIncludeDocument(context)) {
+            parentUriStr = parentSystemId;
+            parentPart = parentPartIn;
+            parentTheme = parentThemeIn;
         }
-        
-        String uriStr = makeURI(path_str, part, module, search, tenant, language, parentURI);
-        
-        // EEEEK! this code is in need of some serious beautifying....
-        
+        String uriStr = makeURI(pathStr, part, module, search, tenant, language, parentURI);
+
         try {
-            
-            Resource    path        = ResourceUtil.getResource(uriStr);
+            Resource path = ResourceUtil.getResource(uriStr);
             resolvedUri.set(path.toURI().toString());
-            Resource    parent_path = "".equals(parent_uri_str) ? null : ResourceUtil.getResource(parent_uri_str);
-            boolean            dolog       = !targetkey.equals(NOTARGET);
-            int                length      = 0;
-            IncludeDocument    iDoc        = null;
-
+            Resource parent_path = "".equals(parentUriStr) ? null : ResourceUtil.getResource(parentUriStr);
             VirtualTarget target = (VirtualTarget) targetgen.getTarget(targetkey);
+            boolean dolog = !targetkey.equals(NOTARGET);
+            String DEF_THEME = targetgen.getDefaultTheme();
 
+            // resource path not found
+            if (path == null || !path.exists()) {
+                if (dolog) {
+                    DependencyTracker.logTyped("text", path, part, DEF_THEME,
+                            parent_path, parentPart, parentTheme, target);
+                }
+                return errorNode(context, DEF_THEME);
+            }
+
+            // get the include document
+            IncludeDocument iDoc;
+            try {
+                iDoc = targetgen.getIncludeDocumentFactory().getIncludeDocument(context.getXsltVersion(), path, false);
+            } catch (SAXException saxex) {
+                if (dolog)
+                    DependencyTracker.logTyped("text", path, part, DEF_THEME,
+                            parent_path, parentPart, parentTheme, target);
+                target.setStoredException(saxex);
+                throw saxex;
+            }
+
+            // get the part
+            List<Node> partNodes;
+            try {
+                partNodes = iDoc.getNodes(part);
+            } catch (TransformerException e) {
+                if (dolog)
+                    DependencyTracker.logTyped("text", path, part, DEF_THEME,
+                            parent_path, parentPart, parentTheme, target);
+                throw e;
+            }
+            if (partNodes.size() == 0) {
+                // part not found
+                if (dolog) {
+                    DependencyTracker.logTyped("text", path, part, DEF_THEME,
+                            parent_path, parentPart, parentTheme, target);
+                }
+                return errorNode(context,DEF_THEME);
+            } else if (partNodes.size() > 1) {
+                // multiple parts found
+                if (dolog) {
+                    DependencyTracker.logTyped("text", path, part, DEF_THEME,
+                            parent_path, parentPart, parentTheme, target);
+                }
+                XMLException ex = new XMLException("*** Part '" + part + "' is multiple times defined! Must be exactly 1");
+                if(target!=null) target.setStoredException(ex);
+                throw ex;
+            }
+
+            // get theme lookup array
             String[] themes = targetgen.getGlobalThemes().getThemesArr();
             if(targetkey.equals(NOTARGET)) {
                 Target parentTarget = getParentTarget(context);
@@ -196,106 +241,38 @@ public final class IncludeDocumentExtension {
                 throw ex;
             }
             
-            String DEF_THEME = targetgen.getDefaultTheme();
-
-            if (path == null || !path.exists()) {
-                if (dolog) {
-                    DependencyTracker.logTyped("text", path, part, DEF_THEME,
-                                               parent_path, parent_part, parent_theme, target);
-                }
-                return errorNode(context,DEF_THEME);
-                //return new EmptyNodeSet();
-            }
-            // get the includedocument
-            try {
-                iDoc = targetgen.getIncludeDocumentFactory().getIncludeDocument(context.getXsltVersion(), path, false);
-            } catch (SAXException saxex) {
-                if (dolog)
-                    DependencyTracker.logTyped("text", path, part, DEF_THEME,
-                                               parent_path, parent_part, parent_theme, target);
-                target.setStoredException(saxex);
-                throw saxex;
-            }
-            // Get the part
-            List<Node> ns;
-            try {
-                ns = iDoc.getNodes(part);
-            } catch (TransformerException e) {
-                if (dolog)
-                    DependencyTracker.logTyped("text", path, part, DEF_THEME,
-                                               parent_path, parent_part, parent_theme, target);
-                throw e;
-            }
-            length = ns.size();
-            if (length == 0) {
-                // part not found
-                LOG.debug("*** Part '" + part + "' is 0 times defined.");
-                if (dolog) {
-                    DependencyTracker.logTyped("text", path, part, DEF_THEME,
-                                               parent_path, parent_part, parent_theme, target);
-                }
-                return errorNode(context,DEF_THEME);
-                //return new EmptyNodeSet();
-            } else if (length > 1) {
-                // too many parts. Error!
-                if (dolog) {
-                    DependencyTracker.logTyped("text", path, part, DEF_THEME,
-                                               parent_path, parent_part, parent_theme, target);
-                }
-                XMLException ex = new XMLException("*** Part '" + part + "' is multiple times defined! Must be exactly 1");
-                if(target!=null) target.setStoredException(ex);
-                throw ex;
-            }
-
-            // OK, we have found the part. Find the specfic theme branch matching the theme fallback list.
-            LOG.debug("   => Found part '" +  part + "'");
-            
+            // We have found the part. Find the specific theme branch matching the theme fallback list.
             for (int i = 0; i < themes.length; i++) {
-
-                String curr_theme = themes[i]; 
-                LOG.debug("     => Trying to find theme branch for theme '" + curr_theme + "'");
-                
+                String theme = themes[i]; 
+                List<Node> themeNodes;
                 try {
-                    ns = iDoc.getNodes(part, curr_theme);
+                    themeNodes = iDoc.getNodes(part, theme);
                 } catch (TransformerException e) {
                     if (dolog)
                         DependencyTracker.logTyped("text", path, part, DEF_THEME,
-                                                   parent_path, parent_part, parent_theme, target);
+                                parent_path, parentPart, parentTheme, target);
                     throw e;
                 }
-                length = ns.size();
-                if (length == 0) {
-                    // Didn't find a theme part matching curr_theme, trying next in fallback line
-                    if (i < (themes.length - 1)) {
-                        LOG.debug("        Part '" + part + "' has no theme branch matching '" + curr_theme + "', trying next theme");
-                    } else {
-                        LOG.warn("        Part '" + part + "' has no theme branch matching '" + curr_theme + "', no more theme to try!");
-                    }
-                    continue;
-                } else if (length == 1) {
-                    LOG.debug("        Found theme branch '" + curr_theme + "' => STOP");
-                    // specific theme found
-                    boolean ok = true;
-                    if (dolog) {
-                        try {
-                            DependencyTracker.logTyped("text", path, part, curr_theme,
-                                                       parent_path, parent_part, parent_theme, target);
-                        } catch (Exception e) {
-                            // TODO
-                            ok = false;
+                if (themeNodes.size() == 1) {
+                    Element elem = (Element)themeNodes.get(0);
+                    if(elem.getAttribute("tenant").isEmpty() && elem.getAttribute("lang").isEmpty()) {
+                        // found one specific theme without language or tenant attribute
+                        if (dolog) {
+                            DependencyTracker.logTyped("text", path, part, theme,
+                                    parent_path, parentPart, parentTheme, target);
+                        } else {
+                            DependencyTracker.logInclude(true, path, part, targetgen);
                         }
-                    } else {
-                        DependencyTracker.logInclude(true, path, part, targetgen);
+                        return elem;
                     }
-                    return ok? (Object) ns.get(0) : errorNode(context,curr_theme);
-                    //return ok? (Object) ns.get(0) : new EmptyNodeSet();
-                } else {
-                    
+                }
+                if (themeNodes.size() > 0) {
+                    // found multiple themes, select best matching by tenant and language
                     String languagePart = LocaleUtils.getLanguagePart(language);
                     int lastMatchFactor = 0;
                     Element lastMatch = null;
-                    for(Node node: ns) {
-                        Element elem = (Element)node;
+                    for(Node themeNode: themeNodes) {
+                        Element elem = (Element)themeNode;
                         String tenantAttr = elem.getAttribute("tenant");
                         String langAttr = elem.getAttribute("lang");
                         int matchFactor = 0;
@@ -320,40 +297,25 @@ public final class IncludeDocumentExtension {
                             lastMatch = elem;
                         }
                     }
-                    
-                    boolean ok = true;
                     if (dolog) {
-                        try {
-                            DependencyTracker.logTyped("text", path, part, curr_theme,
-                                                       parent_path, parent_part, parent_theme, target);
-                        } catch (Exception e) {
-                            // TODO
-                            ok = false;
-                        }
+                        DependencyTracker.logTyped("text", path, part, theme,
+                                parent_path, parentPart, parentTheme, target);
                     } else {
                         DependencyTracker.logInclude(true, path, part, targetgen);
                     }
-                    return ok? (Object) lastMatch : errorNode(context,curr_theme);
+                    return lastMatch != null ? (Object) lastMatch : errorNode(context, theme);
                 }
             }
-            
-            // We are only here if none of the themes produced a match:
-            @SuppressWarnings("unused")
-            boolean ok = true;
+
             if (dolog) {
-                try {
-                    DependencyTracker.logTyped("text", path, part, DEF_THEME,
-                                               parent_path, parent_part, parent_theme, target);
-                } catch (Exception e) { // TODO
-                    ok = false;
-                }
+                DependencyTracker.logTyped("text", path, part, DEF_THEME,
+                        parent_path, parentPart, parentTheme, target);
             }
             return errorNode(context,DEF_THEME);
-            //return new EmptyNodeSet();
-            
+
         } catch (Exception e) {
             Object[] args = {uriStr, part, targetgen, targetkey, 
-                             parent_uri_str, parent_part, parent_theme};
+                             parentUriStr, parentPart, parentTheme};
             String sb = MessageFormat.format("path={0}|part={1}|targetgen={2}|targetkey={3}|"+
                                              "parent_path={4}|parent_part={5}|parent_theme={6}", args);
             LOG.error("Caught exception in extension function! Params:\n"+ sb+"\n Stacktrace follows.");
