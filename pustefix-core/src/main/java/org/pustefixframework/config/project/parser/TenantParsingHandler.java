@@ -51,6 +51,9 @@ public class TenantParsingHandler extends CustomizationAwareParsingHandler {
             if(tenant.getSupportedLanguages().contains(lang)) throw new ParserException("Element '/project/tenant/lang'" + 
                     " with content '" + lang + "' was found multiple times.");
             tenant.addSupportedLanguage(lang);
+            if(langElem.getAttribute("default").equalsIgnoreCase("true")) {
+                tenant.setDefaultLanguage(lang);
+            }
         }
         
         context.getObjectTreeElement().addObject(tenant);
