@@ -480,7 +480,7 @@ public class TransformerCallback {
             PageFlow flow = requestContext.getPageFlow(pageName, pageFlow == null ? lastFlow : pageFlow);
             String flowName = ( flow == null || !flow.isPathPrefix() ? null : flow.getRootName());
             String defaultLanguage = null;
-            if(tenant != null) {
+            if(tenant != null && tenant.useLangPrefix()) {
                 defaultLanguage = tenant.getDefaultLanguage();
             } else if(tenant == null && projectInfo.getSupportedLanguages().size() > 1) {
                 defaultLanguage = projectInfo.getDefaultLanguage();
@@ -562,7 +562,8 @@ public class TransformerCallback {
                 String domainPrefix = tenantToDomainPrefix.get(tenant);
                 String prefixedServerName = domainPrefix + "." + serverName;
                 String lang = tenant.getDefaultLanguage();
-                String page = PathMapping.getURLPath(pageName, null, null, flowName, lang, defaultPage, lang, gen.getSiteMap());
+                String defaultLang = tenant.useLangPrefix() ? lang : null;
+                String page = PathMapping.getURLPath(pageName, null, null, flowName, lang, defaultPage, defaultLang, gen.getSiteMap());
                 try {
                     //check if prefixed servername can be resolved by DNS, otherwise
                     //use servername without prefix and pass tenant as parameter

@@ -18,6 +18,7 @@
   -->
   
   <tenant name="CA_market">
+  <!-- <tenant name="CA_market" langprefix="false"> -->
     <choose>
       <when test="$mode='prod'">
         <host>.*\.ca$</host>

@@ -160,7 +160,7 @@ public class RequestContextImpl implements Cloneable, AuthorizationInterceptor {
         Tenant tenant = parentcontext.getTenant();
         String lang = getLanguage();
         ProjectInfo projectInfo = parentcontext.getProjectInfo();
-        if((tenant != null && !lang.equals(tenant.getDefaultLanguage())) ||
+        if((tenant != null && tenant.useLangPrefix() && !lang.equals(tenant.getDefaultLanguage())) ||
                 (tenant == null && projectInfo.getSupportedLanguages().size() > 1 && !lang.equals(projectInfo.getDefaultLanguage()))) {
             langPrefix = LocaleUtils.getLanguagePart(lang);
         }

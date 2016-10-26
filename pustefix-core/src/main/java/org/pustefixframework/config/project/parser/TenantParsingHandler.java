@@ -44,6 +44,11 @@ public class TenantParsingHandler extends CustomizationAwareParsingHandler {
         if(name.length() == 0) throw new ParserException("Attribute '/project/tenant/@name' must not be empty!");
         Tenant tenant = new Tenant(name);
         
+        String langPrefix = elem.getAttribute("langprefix").trim();
+        if(!langPrefix.isEmpty()) {
+            tenant.setUseLangPrefix(Boolean.parseBoolean(langPrefix));
+        }
+
         List<Element> langElems = DOMUtils.getChildElementsByTagNameNS(elem, Constants.NS_PROJECT, "lang");
         for(Element langElem: langElems) {
             String lang = langElem.getTextContent().trim();

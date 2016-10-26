@@ -737,7 +737,23 @@ public class SiteMap {
         }
         return pageGroup;
     }
-    
+
+    public PageLookupResult getPageName(String alias, String selectedLang, List<String> allLangs) {
+
+        PageLookupResult selRes = getPageName(alias, selectedLang);
+        if(selRes.getPageName().equals(alias)) {
+            for(String lang: allLangs) {
+                if(!lang.equals(selectedLang)) {
+                    PageLookupResult res = getPageName(alias, lang);
+                    if(!res.getPageName().equals(alias)) {
+                        return res;
+                    }
+                }
+            }
+        }
+        return selRes;
+    }
+
     public PageLookupResult getPageName(String alias, String lang) {
         
         PageGroup pageGroup = null;

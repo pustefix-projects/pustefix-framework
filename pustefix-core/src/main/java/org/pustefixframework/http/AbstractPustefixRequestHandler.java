@@ -356,21 +356,20 @@ public abstract class AbstractPustefixRequestHandler implements PageProvider, Se
     public static void initializeRequest(HttpServletRequest request, TenantInfo tenantInfo, LanguageInfo languageInfo) {
         if(tenantInfo != null && !tenantInfo.getTenants().isEmpty()) {
             Tenant matchingTenant = tenantInfo.getTenant(request);
-            String matchingLanguage = matchingTenant.getDefaultLanguage();
-            String pathPrefix = URLUtils.getFirstPathComponent(request.getPathInfo());
-            if(pathPrefix != null) {
-                if(tenantInfo.isLanguagePrefix(pathPrefix)) {
-                    String language = matchingTenant.getSupportedLanguageByCode(pathPrefix);
-                    if(language != null) {
-                        matchingLanguage = language;
-                    } else {
-                        matchingLanguage = matchingTenant.getDefaultLanguage();
+            if(matchingTenant.useLangPrefix()) {
+                String matchingLanguage = matchingTenant.getDefaultLanguage();
+                String pathPrefix = URLUtils.getFirstPathComponent(request.getPathInfo());
+                if(pathPrefix != null) {
+                    if(tenantInfo.isLanguagePrefix(pathPrefix)) {
+                        String language = matchingTenant.getSupportedLanguageByCode(pathPrefix);
+                        if(language != null) {
+                            matchingLanguage = language;
+                        } else {
+                            matchingLanguage = matchingTenant.getDefaultLanguage();
+                        }
                     }
                 }
-            }
-            request.setAttribute(AbstractPustefixRequestHandler.REQUEST_ATTR_LANGUAGE, matchingLanguage);
-            if(LOG.isDebugEnabled()) {
-            	LOG.debug("Set language " + matchingLanguage);
+                request.setAttribute(AbstractPustefixRequestHandler.REQUEST_ATTR_LANGUAGE, matchingLanguage);
             }
         } else if(languageInfo != null && !languageInfo.getSupportedLanguages().isEmpty()) {
             String matchingLanguage = languageInfo.getDefaultLanguage();
@@ -669,7 +668,7 @@ public abstract class AbstractPustefixRequestHandler implements PageProvider, Se
         
         //check if pageAlias has language prefix
         Tenant tenant = (Tenant)request.getAttribute(TenantScope.REQUEST_ATTRIBUTE_TENANT);
-        if((tenant != null && tenant.getSupportedLanguageByCode(prefix) != null) ||
+        if((tenant != null && tenant.useLangPrefix() && tenant.getSupportedLanguageByCode(prefix) != null) ||
             (tenant == null && languageInfo.getSupportedLanguageByCode(prefix) != null)) {
             if(ind > -1) {
                 //remove language prefix
@@ -688,7 +687,11 @@ public abstract class AbstractPustefixRequestHandler implements PageProvider, Se
         //check page alias
         PageLookupResult res = null;
         String lang = (String)request.getAttribute(REQUEST_ATTR_LANGUAGE);
-        res = siteMap.getPageName(pageName, lang);
+        if(tenant != null && !tenant.useLangPrefix() && tenant.getSupportedLanguages().size() > 1) {
+            res = siteMap.getPageName(pageName, lang, tenant.getSupportedLanguages());
+        } else {
+            res = siteMap.getPageName(pageName, lang);
+        }
         
         if(pageName.startsWith(res.getAliasPageName()) && pageName.length() > res.getAliasPageName().length()) {
             String additionalPath = pageName.substring(pageName.indexOf(res.getAliasPageName()) + res.getAliasPageName().length());

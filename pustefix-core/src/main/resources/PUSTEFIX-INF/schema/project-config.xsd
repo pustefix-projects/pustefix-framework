@@ -361,6 +361,7 @@
       </xsd:element>
     </xsd:sequence>
     <xsd:attribute name="name" type="xsd:string" use="required"/>
+    <xsd:attribute name="langprefix" type="xsd:boolean" use="optional"/>
   </xsd:complexType>
   
   <xsd:complexType name="path-type">

@@ -17,6 +17,7 @@
   <interceptors>
     <start>
       <interceptor class="org.pustefixframework.samples.i18n.interceptor.PageAlternativeInterceptor"/>
+      <interceptor class="org.pustefixframework.samples.i18n.interceptor.SwitchLanguageInterceptor"/>
     </start>
   </interceptors>
 

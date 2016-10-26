@@ -16,6 +16,7 @@ public class Tenant {
 
     private String name;
     private String defaultLanguage;
+    private boolean useLangPrefix = true;
     private List<String> supportedLanguages = new ArrayList<String>();
     private Map<String, String> languageCodeToLanguage = new HashMap<String, String>();
     private Pattern hostPattern;
@@ -38,7 +39,15 @@ public class Tenant {
     public void setDefaultLanguage(String language) {
         this.defaultLanguage = language;
     }
-    
+
+    public boolean useLangPrefix() {
+        return useLangPrefix;
+    }
+
+    public void setUseLangPrefix(boolean useLangPrefix) {
+        this.useLangPrefix = useLangPrefix;
+    }
+
     public List<String> getSupportedLanguages() {
         return supportedLanguages;
     }
@@ -70,6 +79,7 @@ public class Tenant {
         Document doc = root.getOwnerDocument();
         Element tenantElem = doc.createElement("tenant");
         tenantElem.setAttribute("name", getName());
+        tenantElem.setAttribute("langprefix", String.valueOf(useLangPrefix()));
         for(String lang : supportedLanguages) {
             Element elem = doc.createElement("lang");
             if(lang.equals(getDefaultLanguage())) {

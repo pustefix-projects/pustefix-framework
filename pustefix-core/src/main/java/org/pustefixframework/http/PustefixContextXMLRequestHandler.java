@@ -272,7 +272,7 @@ public class PustefixContextXMLRequestHandler extends AbstractPustefixXMLRequest
                 }
                 Tenant tenant = spdoc.getTenant();
                 String defaultLanguage = null;
-                if(tenant != null) {
+                if(tenant != null && tenant.useLangPrefix()) {
                     defaultLanguage = tenant.getDefaultLanguage();
                 } else if(tenant == null && languageInfo.getSupportedLanguages().size() > 1) {
                     defaultLanguage = languageInfo.getDefaultLanguage();
@@ -458,7 +458,7 @@ public class PustefixContextXMLRequestHandler extends AbstractPustefixXMLRequest
         if(!tenantInfo.getTenants().isEmpty()) {
             for(Tenant tenant: tenantInfo.getTenants()) {
                 for(String supportedLanguage: tenant.getSupportedLanguages()) {
-                    if(!supportedLanguage.equals(tenant.getDefaultLanguage())) {
+                    if(!supportedLanguage.equals(tenant.getDefaultLanguage()) && tenant.useLangPrefix()) {
                         uris.add("/" + LocaleUtils.getLanguagePart(supportedLanguage));
                     }
                 }
@@ -497,7 +497,7 @@ public class PustefixContextXMLRequestHandler extends AbstractPustefixXMLRequest
                     for(String supportedLanguage: tenant.getSupportedLanguages()) {
                         String langPart = LocaleUtils.getLanguagePart(supportedLanguage);
                         String pathPrefix = "";
-                        if(!supportedLanguage.equals(tenant.getDefaultLanguage())) {
+                        if(!supportedLanguage.equals(tenant.getDefaultLanguage()) && tenant.useLangPrefix()) {
                             pathPrefix = langPart + "/";
                         }
                         Set<String> pageAliases = siteMap.getAllPageAliases(registeredPage, supportedLanguage, true);

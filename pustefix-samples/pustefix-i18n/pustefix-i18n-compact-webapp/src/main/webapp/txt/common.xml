@@ -15,7 +15,15 @@
       	        <pfx:include href="txt/common.xml" part="langdesc"/>
       	      </ixsl:when>
       	      <ixsl:otherwise>
-      	          <a href="{$__contextpath}/{pfx:__omitPage($page,text(),$pageAlternative)}{$__sessionIdPath}">
+                  <a>
+                  <ixsl:attribute name="href">
+                    <ixsl:value-of select="$__contextpath"/><ixsl:text>/</ixsl:text>
+                    <ixsl:value-of select="pfx:__omitPage($page,text(),$pageAlternative)"/>
+                    <ixsl:value-of select="$__sessionIdPath"/>
+                    <ixsl:if test="../@langprefix='false'">
+                      <ixsl:text>?lang=</ixsl:text><ixsl:value-of select="text()"/>
+                    </ixsl:if>
+                  </ixsl:attribute>
       	          <pfx:include href="txt/common.xml" part="langdesc"/>
       	        </a>
       	      </ixsl:otherwise>
