@@ -42,6 +42,10 @@ public class BotSessionTrackingStrategy implements SessionTrackingStrategy {
                 session = req.getSession(true);
                 context.registerSession(req, session);
                 session.setMaxInactiveInterval(30);
+            } else if(session.isNew() && session.getAttribute(AbstractPustefixRequestHandler.VISIT_ID) == null) {
+                //Assimilate session created within this request but outside of Pustefix
+                context.registerSession(req, session);
+                session.setMaxInactiveInterval(30);
             } else {
                 if(session.getMaxInactiveInterval() == 30) {
                     session.setMaxInactiveInterval(5 * 60);
