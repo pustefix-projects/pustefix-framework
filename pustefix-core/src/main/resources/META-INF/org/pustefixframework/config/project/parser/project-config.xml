@@ -12,6 +12,10 @@
     <match>/p:project-config/p:project</match>
   </handler>
   
+  <handler class="org.pustefixframework.config.project.parser.MessageSourcesParsingHandler">
+    <match>/p:project-config/p:messagesources</match>
+  </handler>
+
   <handler class="org.pustefixframework.config.project.parser.TenantParsingHandler">
     <match>/p:project-config/p:tenant</match>
   </handler>

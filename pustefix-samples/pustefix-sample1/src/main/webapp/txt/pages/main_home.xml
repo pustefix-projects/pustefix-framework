@@ -140,7 +140,14 @@
          <span id="rexresult"/>
          <span id="rexjsresult"/>
        </div>
-       
+
+       <!--
+       <h2>Test messages on first transformation level:</h2>
+       <pfx:include part="message_test"/>
+       <h2>Test messages on runtime transformation level:</h2>
+       <pfx:include part="message_test" level="runtime"/>
+       -->
+
       </center>
     </theme>
   </part>
@@ -356,6 +363,135 @@
   <part name="headertest" render="true">
     <theme name="default">
        HEADERTEST WEBAPP
+    </theme>
+  </part>
+
+  <part name="message_test">
+    <theme name="default">
+      <table>
+        <tr>
+          <td>
+            <pfx:message key="foo" level="runtime"/>
+          </td>
+          <td>
+            <pfx:message>
+              <pfx:key>foo</pfx:key>
+            </pfx:message>
+          </td>
+          <td>
+            <pfx:message>
+              <pfx:key><pfx:value-of select="'foo'"/></pfx:key>
+            </pfx:message>
+          </td>
+        </tr>
+        <tr>
+          <td>
+            <pfx:message key="foo" level="runtime">
+              <pfx:arg>ONE</pfx:arg>
+              <pfx:arg>TWO</pfx:arg>
+            </pfx:message>
+          </td>
+          <td>
+            <pfx:message key="foo">
+              <pfx:key>foo</pfx:key>
+              <pfx:arg>ONE</pfx:arg>
+              <pfx:arg>TWO</pfx:arg>
+            </pfx:message>
+          </td>
+          <td>
+            <pfx:message>
+              <pfx:key><pfx:value-of select="'foo'"/></pfx:key>
+              <pfx:arg><pfx:value-of select="'ONE'"/></pfx:arg>
+              <pfx:arg><pfx:value-of select="'TWO'"/></pfx:arg>
+            </pfx:message>
+          </td>
+        </tr>
+        <tr>
+          <td>
+            <pfx:message key="xfoo" level="runtime"/>
+          </td>
+          <td>
+            <pfx:message key="xfoo"/>
+          </td>
+          <td>
+            <pfx:message>
+              <pfx:key>xfoo</pfx:key>
+            </pfx:message>
+          </td>
+        </tr>
+      </table>
+      <table>
+        <tr>
+          <td>
+            <pfx:checkmessage key="foo">X</pfx:checkmessage>
+          </td>
+          <td>
+            <pfx:checkmessage><pfx:key>foo</pfx:key>X</pfx:checkmessage>
+          </td>
+          <td>
+            <pfx:checkmessage key="xfoo">X</pfx:checkmessage>
+          </td>
+          <td>
+            <pfx:checkmessage><pfx:key>xfoo</pfx:key>X</pfx:checkmessage>
+          </td>
+        </tr>
+        <tr>
+          <td>
+            <pfx:checkmessage key="foo"><pfx:checkpassed>X</pfx:checkpassed></pfx:checkmessage>
+          </td>
+          <td>
+            <pfx:checkmessage><pfx:key>foo</pfx:key><pfx:checkpassed>X</pfx:checkpassed></pfx:checkmessage>
+          </td>
+          <td>
+            <pfx:checkmessage key="xfoo"><pfx:checkpassed>X</pfx:checkpassed></pfx:checkmessage>
+          </td>
+          <td>
+            <pfx:checkmessage><pfx:key>xfoo</pfx:key><pfx:checkpassed>X</pfx:checkpassed></pfx:checkmessage>
+          </td>
+        </tr>
+        <tr>
+          <td>
+            <pfx:checkmessage key="xfoo"><pfx:checkfailed>X</pfx:checkfailed></pfx:checkmessage>
+          </td>
+          <td>
+            <pfx:checkmessage><pfx:key>xfoo</pfx:key><pfx:checkfailed>X</pfx:checkfailed></pfx:checkmessage>
+          </td>
+          <td>
+            <pfx:checkmessage key="foo"><pfx:checkfailed>X</pfx:checkfailed></pfx:checkmessage>
+          </td>
+          <td>
+            <pfx:checkmessage><pfx:key>foo</pfx:key><pfx:checkfailed>X</pfx:checkfailed></pfx:checkmessage>
+          </td>
+        </tr>
+        <tr>
+          <td>
+            <pfx:checkmessage key="foo"><pfx:checkpassed>X</pfx:checkpassed><pfx:checkfailed></pfx:checkfailed></pfx:checkmessage>
+          </td>
+          <td>
+            <pfx:checkmessage><pfx:key>foo</pfx:key><pfx:checkpassed>X</pfx:checkpassed><pfx:checkfailed></pfx:checkfailed></pfx:checkmessage>
+          </td>
+          <td>
+            <pfx:checkmessage key="xfoo"><pfx:checkpassed>X</pfx:checkpassed><pfx:checkfailed></pfx:checkfailed></pfx:checkmessage>
+          </td>
+          <td>
+            <pfx:checkmessage><pfx:key>xfoo</pfx:key><pfx:checkpassed>X</pfx:checkpassed><pfx:checkfailed></pfx:checkfailed></pfx:checkmessage>
+          </td>
+        </tr>
+        <tr>
+          <td>
+            <pfx:checknomessage key="xfoo">X</pfx:checknomessage>
+          </td>
+          <td>
+            <pfx:checknomessage><pfx:key>xfoo</pfx:key>X</pfx:checknomessage>
+          </td>
+          <td>
+            <pfx:checknomessage key="foo">X</pfx:checknomessage>
+          </td>
+          <td>
+            <pfx:checknomessage><pfx:key>foo</pfx:key>X</pfx:checknomessage>
+          </td>
+        </tr>
+      </table>
     </theme>
   </part>
 

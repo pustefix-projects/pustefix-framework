@@ -1,0 +1,2 @@
+msgid "foo"
+msgstr "Tag {0} und Jahr {1} !!!"

@@ -12,6 +12,30 @@
 
   <context:annotation-config/>
 
+  <!-- MessageSources can/should be configured in project.xml to be available during pre-generation of pages -->
+  <!--
+  <bean id="messageSource"
+        class="org.pustefixframework.util.i18n.POMessageSource">
+    <property name="cacheSeconds" value="10"/>
+    <property name="basenames">
+      <list>
+        <value>module://common-module/i18n/messages</value>
+      </list>
+    </property>
+    <property name="parentMessageSource" ref="fallbackMessageSource" />
+  </bean>
+
+  <bean id="fallbackMessageSource"
+        class="org.springframework.context.support.ReloadableResourceBundleMessageSource">
+    <property name="cacheSeconds" value="10"/>
+    <property name="basenames">
+      <list>
+        <value>/WEB-INF/messages</value>
+      </list>
+    </property>
+  </bean>
+  -->
+
   <bean id="propsConfig" class="org.pustefixframework.container.spring.util.EnvironmentPropertyPlaceholderConfigurer">
     <!--
     <property name="locations">

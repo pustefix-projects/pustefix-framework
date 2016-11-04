@@ -994,6 +994,9 @@
     </xsl:attribute>
   </xsl:template>
 
+  <xsl:template match="pfx:key"/>
+  <xsl:template match="pfx:arg"/>
+
   <xsl:template match="pfx:message">
     <xsl:choose>
       <xsl:when test="$__target_key = '__NONE__'">
@@ -1008,11 +1011,11 @@
               </xsl:otherwise>
             </xsl:choose>
           </xsl:with-param>
-          <xsl:with-param name="arg1"><xsl:apply-templates select="pfx:arg[1]"/></xsl:with-param>
-          <xsl:with-param name="arg2"><xsl:apply-templates select="pfx:arg[2]"/></xsl:with-param>
-          <xsl:with-param name="arg3"><xsl:apply-templates select="pfx:arg[3]"/></xsl:with-param>
-          <xsl:with-param name="arg4"><xsl:apply-templates select="pfx:arg[4]"/></xsl:with-param>
-          <xsl:with-param name="arg5"><xsl:apply-templates select="pfx:arg[5]"/></xsl:with-param>
+          <xsl:with-param name="arg1"><xsl:apply-templates select="pfx:arg[1]/node()"/></xsl:with-param>
+          <xsl:with-param name="arg2"><xsl:apply-templates select="pfx:arg[2]/node()"/></xsl:with-param>
+          <xsl:with-param name="arg3"><xsl:apply-templates select="pfx:arg[3]/node()"/></xsl:with-param>
+          <xsl:with-param name="arg4"><xsl:apply-templates select="pfx:arg[4]/node()"/></xsl:with-param>
+          <xsl:with-param name="arg5"><xsl:apply-templates select="pfx:arg[5]/node()"/></xsl:with-param>
         </xsl:call-template>
       </xsl:when>
       <xsl:otherwise>
@@ -1050,6 +1053,127 @@
     <xsl:param name="arg4"/>
     <xsl:param name="arg5"/>
     <xsl:value-of select="include:getMessage($key, $lang, string($arg1), string($arg2), string($arg3), string($arg4), string($arg5))"/>
+  </xsl:template>
+
+  <func:function name="pfx:checkMessage">
+    <xsl:param name="key"/>
+    <func:result select="include:messageExists($key,$lang)"/>
+  </func:function>
+
+  <xsl:template match="pfx:checkmessage">
+    <xsl:choose>
+      <xsl:when test="$__target_key = '__NONE__'">
+        <xsl:variable name="key">
+          <xsl:choose>
+            <xsl:when test="pfx:key">
+              <xsl:apply-templates select="pfx:key/node()"/>
+            </xsl:when>
+            <xsl:otherwise>
+              <xsl:value-of select="@key"/>
+            </xsl:otherwise>
+          </xsl:choose>
+        </xsl:variable>
+        <xsl:choose>
+          <xsl:when test="include:messageExists($key, $lang)">
+            <xsl:choose>
+              <xsl:when test="pfx:checkpassed">
+                <xsl:apply-templates select="pfx:checkpassed/node()"/>
+              </xsl:when>
+              <xsl:when test="not(pfx:checkfailed)">
+                <xsl:apply-templates/>
+              </xsl:when>
+            </xsl:choose>
+          </xsl:when>
+          <xsl:otherwise>
+            <xsl:if test="pfx:checkfailed">
+              <xsl:apply-templates select="pfx:checkfailed/node()"/>
+            </xsl:if>
+          </xsl:otherwise>
+        </xsl:choose>
+      </xsl:when>
+      <xsl:otherwise>
+        <xsl:choose>
+          <xsl:when test="pfx:key">
+            <ixsl:variable name="key_{generate-id()}">
+              <xsl:apply-templates select="pfx:key/node()"/>
+            </ixsl:variable>
+            <ixsl:choose>
+              <ixsl:when test="pfx:checkMessage($key_{generate-id()})">
+                <xsl:choose>
+                  <xsl:when test="pfx:checkpassed">
+                    <xsl:apply-templates select="pfx:checkpassed/node()"/>
+                  </xsl:when>
+                  <xsl:when test="not(pfx:checkfailed)">
+                    <xsl:apply-templates/>
+                  </xsl:when>
+                </xsl:choose>
+              </ixsl:when>
+              <xsl:if test="pfx:checkfailed">
+                <ixsl:otherwise>
+                  <xsl:apply-templates select="pfx:checkfailed/node()"/>
+                </ixsl:otherwise>
+              </xsl:if>
+            </ixsl:choose>
+          </xsl:when>
+          <xsl:otherwise>
+            <xsl:choose>
+              <xsl:when test="include:messageExists(@key, $lang)">
+                <xsl:choose>
+                  <xsl:when test="pfx:checkpassed">
+                    <xsl:apply-templates select="pfx:checkpassed/node()"/>
+                  </xsl:when>
+                  <xsl:when test="not(pfx:checkfailed)">
+                    <xsl:apply-templates/>
+                  </xsl:when>
+                </xsl:choose>
+              </xsl:when>
+              <xsl:otherwise>
+                <xsl:if test="pfx:checkfailed">
+                  <xsl:apply-templates select="pfx:checkfailed/node()"/>
+                </xsl:if>
+              </xsl:otherwise>
+            </xsl:choose>
+          </xsl:otherwise>
+        </xsl:choose>
+      </xsl:otherwise>
+    </xsl:choose>
+  </xsl:template>
+
+  <xsl:template match="pfx:checknomessage">
+    <xsl:choose>
+      <xsl:when test="$__target_key = '__NONE__'">
+        <xsl:variable name="key">
+          <xsl:choose>
+            <xsl:when test="pfx:key">
+              <xsl:apply-templates select="pfx:key/node()"/>
+            </xsl:when>
+            <xsl:otherwise>
+              <xsl:value-of select="@key"/>
+            </xsl:otherwise>
+          </xsl:choose>
+        </xsl:variable>
+        <xsl:if test="not(include:messageExists($key, $lang))">
+          <xsl:apply-templates/>
+        </xsl:if>
+      </xsl:when>
+      <xsl:otherwise>
+        <xsl:choose>
+          <xsl:when test="pfx:key">
+            <ixsl:variable name="key_{generate-id()}">
+              <xsl:apply-templates select="pfx:key/node()"/>
+            </ixsl:variable>
+            <ixsl:if test="not(pfx:checkMessage($key_{generate-id()}))">
+              <xsl:apply-templates/>
+            </ixsl:if>
+          </xsl:when>
+          <xsl:otherwise>
+            <xsl:if test="not(include:messageExists(@key, $lang))">
+              <xsl:apply-templates/>
+            </xsl:if>
+          </xsl:otherwise>
+        </xsl:choose>
+      </xsl:otherwise>
+    </xsl:choose>
   </xsl:template>
 
 </xsl:stylesheet>

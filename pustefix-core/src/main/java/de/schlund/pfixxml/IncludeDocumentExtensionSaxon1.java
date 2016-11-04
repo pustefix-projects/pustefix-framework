@@ -108,4 +108,8 @@ public class IncludeDocumentExtensionSaxon1 {
         return IncludeDocumentExtension.getMessage(key, lang, arg1, arg2, arg3, arg4, arg5);
     }
 
+    public static boolean messageExists(String key, String lang) {
+        return IncludeDocumentExtension.messageExists(key, lang);
+    }
+
 }

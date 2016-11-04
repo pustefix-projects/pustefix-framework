@@ -40,6 +40,7 @@
         </xsd:element>
         <xsd:element name="application" type="application-type"/>
         <xsd:element name="dynamic-includes" type="dynamic-includes-type" minOccurs="0"/>
+        <xsd:element name="messagesources" type="messagesources-type" minOccurs="0"/>
         <xsd:element name="properties" type="properties-type" minOccurs="0"/>
       </xsd:sequence>
     </xsd:complexType>
@@ -298,6 +299,27 @@
     </xsd:sequence>
   </xsd:complexType>
   
+  <xsd:complexType name="messagesources-type">
+    <xsd:sequence>
+      <xsd:element name="messagesource" minOccurs="1" maxOccurs="unbounded">
+        <xsd:complexType>
+          <xsd:sequence>
+            <xsd:element name="basename" type="xsd:string" minOccurs="0" maxOccurs="unbounded"/>
+          </xsd:sequence>
+          <xsd:attribute name="type" use="required">
+            <xsd:simpleType>
+              <xsd:restriction base="xsd:string">
+                <xsd:enumeration value="properties"/>
+                <xsd:enumeration value="po"/>
+              </xsd:restriction>
+            </xsd:simpleType>
+          </xsd:attribute>
+          <xsd:attribute name="basename" type="xsd:string" use="optional"/>
+        </xsd:complexType>
+      </xsd:element>
+    </xsd:sequence>
+  </xsd:complexType>
+
   <xsd:complexType name="lang-type">
     <xsd:simpleContent>
       <xsd:extension base="xsd:string">

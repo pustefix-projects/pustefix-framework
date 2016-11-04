@@ -130,6 +130,14 @@
     </default-search>
   </dynamic-includes>
   
+  <messagesources>
+    <messagesource type="po">
+      <basename>module://common-module/i18n/messages</basename>
+      <basename>module://common-module/i18n/errors</basename>
+    </messagesource>
+    <messagesource type="properties" basename="/WEB-INF/messages"/>
+  </messagesources>
+
   <properties>
     
     <!-- Defines SSL ports used for redirect corresponding to the unsecure ports -->

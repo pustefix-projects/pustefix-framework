@@ -41,6 +41,7 @@ import org.apache.log4j.Logger;
 import org.pustefixframework.util.LocaleUtils;
 import org.springframework.cache.interceptor.SimpleKeyGenerator;
 import org.springframework.context.ApplicationContext;
+import org.springframework.context.NoSuchMessageException;
 import org.springframework.web.context.request.RequestContextHolder;
 import org.springframework.web.context.request.ServletRequestAttributes;
 import org.springframework.web.servlet.support.RequestContextUtils;
@@ -49,6 +50,7 @@ import org.w3c.dom.Element;
 import org.w3c.dom.Node;
 import org.xml.sax.SAXException;
 
+import de.schlund.pfixxml.config.EnvironmentProperties;
 import de.schlund.pfixxml.resources.DynamicResourceInfo;
 import de.schlund.pfixxml.resources.DynamicResourceProvider;
 import de.schlund.pfixxml.resources.Resource;
@@ -635,7 +637,33 @@ public final class IncludeDocumentExtension {
             ApplicationContext ctx = RequestContextUtils.getWebApplicationContext(req);
             Locale locale = LocaleUtils.getLocale(lang);
             Object[] args = new Object[] {arg1, arg2, arg3, arg4, arg5};
-            return ctx.getMessage(key, args, locale);
+            try {
+                return ctx.getMessage(key, args, locale);
+            } catch(NoSuchMessageException x) {
+                LOG.warn("Can't resolve message key '" + key + "'.");
+                if("prod".equals(EnvironmentProperties.getProperties().getProperty("mode"))) {
+                    return "";
+                } else {
+                    return "[MESSAGE NOT FOUND: " + key + "]";
+                }
+            }
+        } catch (Exception x) {
+            ExtensionFunctionUtils.setExtensionFunctionError(x);
+            throw x;
+        }
+    }
+
+    public static boolean messageExists(String key, String lang) {
+        try {
+            HttpServletRequest req = ((ServletRequestAttributes)RequestContextHolder.getRequestAttributes()).getRequest();
+            ApplicationContext ctx = RequestContextUtils.getWebApplicationContext(req);
+            Locale locale = LocaleUtils.getLocale(lang);
+            try {
+                ctx.getMessage(key, null, locale);
+                return true;
+            } catch(NoSuchMessageException x) {
+                return false;
+            }
         } catch (Exception x) {
             ExtensionFunctionUtils.setExtensionFunctionError(x);
             throw x;

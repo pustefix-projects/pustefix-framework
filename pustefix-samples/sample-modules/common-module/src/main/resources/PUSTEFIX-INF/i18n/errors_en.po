@@ -1,0 +1,2 @@
+msgid "error"
+msgstr "Ein Fehler ist aufgetreten!"
