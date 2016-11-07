@@ -327,6 +327,15 @@
     
   </application>
   
+  <!-- Example configuration of Spring MessageSources -->
+  <messagesources>
+    <messagesource type="po">
+      <basename>module://my-module/i18n/messages</basename>
+      <basename>module://my-module/i18n/errors</basename>
+    </messagesource>
+    <messagesource type="properties" basename="/WEB-INF/messages"/>
+  </messagesources>
+
 </project-config>
 
 ]]>

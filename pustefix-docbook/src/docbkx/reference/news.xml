@@ -48,4 +48,16 @@
     </para>
   </section>
 
+  <section xml:id="news.0_20_19">
+    <title>What's new in Pustefix 0.20.19</title>
+    <para>
+      Added <literal>&lt;pfx:checkmessage&gt;</literal> and <literal>&lt;pfx:checknomessage&gt;</literal> tags for checking if a <literal>MessageSource</literal>
+      message is existing or not (see <xref linkend="xslt.messages.tags"/>).
+    </para>
+    <para>
+      Added support for configuring the Spring <literal>MessageSource</literal> in <literal>project.xml</literal>, which makes it available
+      during page pre-generation too (see <xref linkend="xslt.messages.configuration"/>).
+    </para>
+  </section>
+
 </chapter>

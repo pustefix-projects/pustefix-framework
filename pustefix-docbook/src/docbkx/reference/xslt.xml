@@ -941,6 +941,101 @@
 ]]></programlisting>
 
     </section>
+
+  </section>
+
+  <section xml:id="xslt.messages">
+    <title>Displaying messages</title>
+    <para>
+      Pustefix can display messages coming from a Spring <literal>MessageSource</literal>. It's an alternative to outputting text using include parts
+      as described in <xref linkend="xslt.pfx.include"/>, especially suitable if you want to use already exisiting internationalization mechanisms, like
+      resource bundles or gettext PO files, or if you need to access the messages from within the Java logic.
+    </para>
+    <section xml:id="xslt.messages.tags">  
+      <title>Message tags</title>  
+      <para>
+        Messages can be displayed using the <literal>&lt;pfx:message&gt;</literal> tag. You need to specify a <literal>key</literal> referencing the
+        message ID (or property key in terms of property files).
+      </para>
+      <programlisting language="xml"><![CDATA[<pfx:message key="my.message.key"/>]]></programlisting>
+      <para>
+        Messages can have arguments which are passed using <literal>&lt;pfx:arg&gt;</literal> tags. Pustefix automatically fills them in at the specified
+        position (denoted by the message string placeholders <literal>{0}</literal>, <literal>{1}</literal>, etc.).
+      </para>
+      <programlisting language="xml"><![CDATA[<pfx:message key="my.message.key">
+   <pfx:arg>my argument</pfx:arg>
+   <pfx:arg>another argument</pfx:arg>
+</pfx:message>
+]]></programlisting>
+      <para>
+        Besides the message arguments, the message key itself can be set at runtime, e.g. for dynamically including messages based on values from
+        the DOM tree:
+      </para>
+      <programlisting language="xml"><![CDATA[<pfx:message>
+   <pfx:key><ixsl:value-of select="/formresult/path/to/@messageid"/></pfx:key>
+</pfx:message>
+]]></programlisting>
+      <para>
+        Using the <literal>&lt;pfx:checkmessage&gt;</literal> and <literal>&lt;pfx:checknomessage&gt;</literal> tags you can check if a message is
+        existing or not:
+      </para>
+      <programlisting language="xml"><![CDATA[<pfx:checkmessage key="my.message.key">
+   <!-- Apply if message exists -->
+</pfx:checkmessage>
+<pfx:checknomessage key="my.message.key">
+   <!-- Apply if message not exists -->
+</pfx:checknomessage>
+<pfx:checkmessage key="my.message.key">
+   <pfx:checkpassed>
+      <!-- Apply if message exists -->
+   </pfx:checkpassed
+   <pfx:checkfailed>
+      <!-- Apply if message not exists -->
+   </pfx:checkfailed>
+</pfx:checkmessage>
+]]></programlisting>
+    </section>
+    <section xml:id="xslt.messages.configuration">
+      <title>MessageSource configuration</title>
+      <para>
+        The <literal>MessageSource</literal> can either be configured using Spring means, or, as recommended, within the Pustefix project configuration
+        (which makes it available during pre-generation of the pages too). 
+      </para>
+      <para>
+        You can specify one or more <literal>MessageSources</literal> (the latter ones will serve as parent <literal>MessageSource</literal> for the former ones).
+        For each <literal>MessageSource</literal> you have to specify its type (<literal>po</literal> or <literal>properties</literal>) and one or more 
+        <literal>basenames</literal>.
+      </para>
+      <programlisting language="xml"><![CDATA[<messagesources>
+   <messagesource type="po">
+      <basename>module://common-module/i18n/messages</basename>
+      <basename>module://common-module/i18n/errors</basename>
+   </messagesource>
+   <messagesource type="properties" basename="/WEB-INF/messages"/>
+</messagesources>
+]]></programlisting>
+      <para>
+        According to the specified type and selected locale Pustefix will look up the messages in all matching files, e.g. for the locale <literal>en_UK</literal>
+        starting with <literal>messages_en_UK.po</literal>, <literal>messages_en.po</literal> and <literal>messages.po</literal>, whereas messages in previous
+        files (previous <literal>basename</literal> or <literal>MessageSources</literal>) override later ones. 
+      </para>
+    </section>
+    <section>
+      <title>Message format</title>
+      <para>
+        Messages in property or po files should conform to the Java <literal>java.text.MessageFormat</literal> standard, see the following examples:
+      </para>
+      <screen><![CDATA[#Sample property file
+my.message.key=My message text
+another.key=Message text with arguments {0} and {1}
+]]></screen>
+      <screen><![CDATA[#Sample po file
+msgid "my.message.key"
+msgstr "My message text"
+msgid "another.key"
+msgstr "Message text with arguments {0} and {1}"
+]]></screen>
+    </section>
   </section>
 
   <section xml:id="xslt.forms">
