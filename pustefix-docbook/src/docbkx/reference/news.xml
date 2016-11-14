@@ -60,4 +60,12 @@
     </para>
   </section>
 
+  <section xml:id="news.0_20_20">
+    <title>What's new in Pustefix 0.20.20</title>
+    <para>
+      Added support for markup in message arguments and strings (unescaped rendering is enable by setting the new <literal>&lt;pfx:message&gt;</literal>
+      attribute <literal>disable-output-escaping</literal> to <literal>yes</literal> (see <xref linkend="xslt.messages.tags"/>).
+   </para>
+  </section>
+
 </chapter>

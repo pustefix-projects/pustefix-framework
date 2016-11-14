@@ -1016,6 +1016,7 @@
           <xsl:with-param name="arg3"><xsl:apply-templates select="pfx:arg[3]/node()"/></xsl:with-param>
           <xsl:with-param name="arg4"><xsl:apply-templates select="pfx:arg[4]/node()"/></xsl:with-param>
           <xsl:with-param name="arg5"><xsl:apply-templates select="pfx:arg[5]/node()"/></xsl:with-param>
+          <xsl:with-param name="disable-output-escaping" select="@disable-output-escaping"/>
         </xsl:call-template>
       </xsl:when>
       <xsl:otherwise>
@@ -1033,11 +1034,15 @@
               <xsl:for-each select="pfx:arg">
                 <ixsl:with-param name="arg{position()}"><xsl:apply-templates/></ixsl:with-param>
               </xsl:for-each>
+              <xsl:if test="@disable-output-escaping">
+                <ixsl:with-param name="disable-output-escaping" select="'{@disable-output-escaping}'"/>
+              </xsl:if>
             </ixsl:call-template>
           </xsl:when>
           <xsl:otherwise>
             <xsl:call-template name="pfx:message">
               <xsl:with-param name="key" select="@key"/>
+              <xsl:with-param name="disable-output-escaping" select="@disable-output-escaping"/>
             </xsl:call-template>
           </xsl:otherwise>
         </xsl:choose>
@@ -1052,7 +1057,15 @@
     <xsl:param name="arg3"/>
     <xsl:param name="arg4"/>
     <xsl:param name="arg5"/>
-    <xsl:value-of select="include:getMessage($key, $lang, string($arg1), string($arg2), string($arg3), string($arg4), string($arg5))"/>
+    <xsl:param name="disable-output-escaping">no</xsl:param>
+    <xsl:choose>
+      <xsl:when test="$disable-output-escaping='yes'">
+        <xsl:value-of disable-output-escaping="yes" select="include:getMessage($key, $lang, $arg1, $arg2, $arg3, $arg4, $arg5)"/>
+      </xsl:when>
+      <xsl:otherwise>
+        <xsl:value-of select="include:getMessage($key, $lang, $arg1, $arg2, $arg3, $arg4, $arg5)"/>
+      </xsl:otherwise>
+    </xsl:choose>
   </xsl:template>
 
   <func:function name="pfx:checkMessage">
@@ -1060,7 +1073,7 @@
     <func:result select="include:messageExists($key,$lang)"/>
   </func:function>
 
-  <xsl:template match="pfx:checkmessage">
+  <xsl:template match="pfx:checkmessage[@key or pfx:key]">
     <xsl:choose>
       <xsl:when test="$__target_key = '__NONE__'">
         <xsl:variable name="key">

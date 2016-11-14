@@ -18,11 +18,25 @@
 
 package de.schlund.pfixxml;
 
+import java.io.StringWriter;
+import java.util.Properties;
+
+import javax.xml.transform.OutputKeys;
+import javax.xml.transform.TransformerException;
+
 import org.w3c.dom.Node;
 
 import com.icl.saxon.Context;
+import com.icl.saxon.Controller;
+import com.icl.saxon.expr.FragmentValue;
+import com.icl.saxon.expr.NodeSetValue;
 import com.icl.saxon.expr.StaticContext;
+import com.icl.saxon.expr.TextFragmentValue;
+import com.icl.saxon.expr.Value;
+import com.icl.saxon.om.NodeEnumeration;
 import com.icl.saxon.om.NodeInfo;
+import com.icl.saxon.output.Outputter;
+import com.icl.saxon.output.XMLEmitter;
 
 import de.schlund.pfixxml.targets.TargetGenerator;
 import de.schlund.pfixxml.util.ExtensionFunctionUtils;
@@ -104,8 +118,48 @@ public class IncludeDocumentExtensionSaxon1 {
         return IncludeDocumentExtension.getIncludeInfo(xsltContext, path, module, search, tenant, language, targetkey, targetgen);
     }
 
-    public static String getMessage(String key, String lang, Object arg1, Object arg2, Object arg3, Object arg4, Object arg5) throws Exception {
+    public static String getMessage(Context context, String key, String lang, Object arg1, Object arg2, Object arg3, Object arg4, Object arg5) throws Exception {
+        arg1 = stringify(arg1, context);
+        arg2 = stringify(arg2, context);
+        arg3 = stringify(arg3, context);
+        arg4 = stringify(arg4, context);
+        arg5 = stringify(arg5, context);
         return IncludeDocumentExtension.getMessage(key, lang, arg1, arg2, arg3, arg4, arg5);
+    }
+
+    private static Object stringify(Object arg, Context context) throws TransformerException {
+        if(arg instanceof Value) {
+            Controller controller = context.getController();
+            XMLEmitter emitter = new XMLEmitter();
+            StringWriter writer = new StringWriter();
+            emitter.setWriter(writer);
+            Outputter old = controller.getOutputter();
+            Properties props = new Properties();
+            props.put(OutputKeys.OMIT_XML_DECLARATION, "yes");
+            controller.changeOutputDestination(props, emitter);
+            try {
+                if(arg instanceof FragmentValue) {
+                    ((FragmentValue)arg).copy(controller.getOutputter());
+                } else if(arg instanceof TextFragmentValue) {
+                    ((TextFragmentValue)arg).copy(controller.getOutputter());
+                } else if(arg instanceof NodeSetValue) {
+                    NodeEnumeration enm = ((NodeSetValue)arg).enumerate(context, true);
+                    while(enm.hasMoreElements()) {
+                        NodeInfo node = enm.nextElement();
+                        node.copy(controller.getOutputter());
+                    }
+                } else if(arg instanceof Value) {
+                    controller.getOutputter().writeContent(((Value)arg).asString());
+                } else {
+                    return arg;
+                }
+            } finally {
+                controller.resetOutputDestination(old);
+            }
+            return writer.toString();
+        } else {
+            return arg;
+        }
     }
 
     public static boolean messageExists(String key, String lang) {

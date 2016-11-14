@@ -968,6 +968,14 @@
 </pfx:message>
 ]]></programlisting>
       <para>
+        If the message string contains markup or you're passing markup as argument, you have to set the attribute <literal>disable-output-escaping</literal>
+        to <literal>yes</literal>, if you want to render the markup without escaping it:
+      </para>
+     <programlisting language="xml"><![CDATA[<pfx:message key="my.message.key" disable-output-escaping="yes">
+   <pfx:arg><pfx:button page="test">testlink</pfx:button></pfx:arg>
+</pfx:message>
+]]></programlisting>
+      <para>
         Besides the message arguments, the message key itself can be set at runtime, e.g. for dynamically including messages based on values from
         the DOM tree:
       </para>
