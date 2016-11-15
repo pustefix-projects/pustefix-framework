@@ -31,7 +31,6 @@ import java.util.concurrent.ConcurrentMap;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-import javax.servlet.http.HttpServletRequest;
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.transform.TransformerException;
@@ -40,11 +39,7 @@ import javax.xml.transform.URIResolver;
 import org.apache.log4j.Logger;
 import org.pustefixframework.util.LocaleUtils;
 import org.springframework.cache.interceptor.SimpleKeyGenerator;
-import org.springframework.context.ApplicationContext;
 import org.springframework.context.NoSuchMessageException;
-import org.springframework.web.context.request.RequestContextHolder;
-import org.springframework.web.context.request.ServletRequestAttributes;
-import org.springframework.web.servlet.support.RequestContextUtils;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.Node;
@@ -631,14 +626,13 @@ public final class IncludeDocumentExtension {
         return cache;
     }
 
-    public static String getMessage(String key, String lang, Object arg1, Object arg2, Object arg3, Object arg4, Object arg5) throws Exception {
+    public static String getMessage(TargetGenerator targetGen, String key, String lang, 
+            Object arg1, Object arg2, Object arg3, Object arg4, Object arg5) throws Exception {
         try {
-            HttpServletRequest req = ((ServletRequestAttributes)RequestContextHolder.getRequestAttributes()).getRequest();
-            ApplicationContext ctx = RequestContextUtils.getWebApplicationContext(req);
             Locale locale = LocaleUtils.getLocale(lang);
             Object[] args = new Object[] {arg1, arg2, arg3, arg4, arg5};
             try {
-                return ctx.getMessage(key, args, locale);
+                return targetGen.getMessageSource().getMessage(key, args, locale);
             } catch(NoSuchMessageException x) {
                 LOG.warn("Can't resolve message key '" + key + "'.");
                 if("prod".equals(EnvironmentProperties.getProperties().getProperty("mode"))) {
@@ -653,13 +647,11 @@ public final class IncludeDocumentExtension {
         }
     }
 
-    public static boolean messageExists(String key, String lang) {
+    public static boolean messageExists(TargetGenerator targetGen, String key, String lang) {
         try {
-            HttpServletRequest req = ((ServletRequestAttributes)RequestContextHolder.getRequestAttributes()).getRequest();
-            ApplicationContext ctx = RequestContextUtils.getWebApplicationContext(req);
             Locale locale = LocaleUtils.getLocale(lang);
             try {
-                ctx.getMessage(key, null, locale);
+                targetGen.getMessageSource().getMessage(key, null, locale);
                 return true;
             } catch(NoSuchMessageException x) {
                 return false;

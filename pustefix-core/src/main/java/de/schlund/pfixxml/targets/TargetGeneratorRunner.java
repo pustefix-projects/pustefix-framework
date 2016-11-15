@@ -19,8 +19,14 @@ import org.apache.log4j.ConsoleAppender;
 import org.apache.log4j.Level;
 import org.apache.log4j.Logger;
 import org.apache.log4j.PatternLayout;
+import org.pustefixframework.container.spring.util.PustefixResourceLoader;
+import org.pustefixframework.util.i18n.POMessageSource;
 import org.pustefixframework.util.xml.DOMUtils;
 import org.pustefixframework.util.xml.XPathUtils;
+import org.springframework.context.HierarchicalMessageSource;
+import org.springframework.context.MessageSource;
+import org.springframework.context.support.DelegatingMessageSource;
+import org.springframework.context.support.ReloadableResourceBundleMessageSource;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.NodeList;
@@ -45,6 +51,7 @@ import de.schlund.pfixxml.resources.ResourceUtil;
 public class TargetGeneratorRunner {
     
     private TenantInfo tenantInfo;
+    private MessageSource messageSource;
     private Resource confFile;
         
     public boolean run(File docroot, File cache, String mode, boolean parallel, java.util.logging.Logger reportLogger) throws Exception {
@@ -87,6 +94,7 @@ public class TargetGeneratorRunner {
             TargetGenerator gen = new TargetGenerator(confFile, cacheDir, true, parallel);
             gen.setIsGetModTimeMaybeUpdateSkipped(true);
             gen.setTenantInfo(tenantInfo);
+            gen.setMessageSource(messageSource);
             gen.afterPropertiesSet();
             TargetGenerationReport report = new TargetGenerationReport(reportLogger);
             gen.addListener(report);
@@ -152,6 +160,48 @@ public class TargetGeneratorRunner {
                 tenantInfo.setTenants(tenants);
             }
             
+            xp = xpf.newXPath();
+            xp.setNamespaceContext(nc);
+            xpe = xp.compile("/p:project-config/p:messagesources/p:messagesource");
+            nodes = (NodeList)xpe.evaluate(doc, XPathConstants.NODESET);
+            if(nodes != null && nodes.getLength() > 0) {
+                HierarchicalMessageSource lastMessageSource = null;
+                for(int i=0; i<nodes.getLength(); i++) {
+                    Element elem = (Element)nodes.item(i);
+                    String type = elem.getAttribute("type");
+                    List<String> baseNames = new ArrayList<>();
+                    String baseName = elem.getAttribute("basename").trim();
+                    if(!baseName.isEmpty()) {
+                        baseNames.add(baseName);
+                    }
+                    List<Element> baseNameElems = DOMUtils.getChildElementsByTagName(elem, "basename");
+                    for(Element baseNameElem: baseNameElems) {
+                        baseNames.add(baseNameElem.getTextContent().trim());
+                    }
+                    if(type.equals("po")) {
+                        POMessageSource src = new POMessageSource();
+                        src.setBasenames(baseNames.toArray(new String[baseNames.size()]));
+                        src.setResourceLoader(new PustefixResourceLoader());
+                        if(lastMessageSource != null) {
+                            lastMessageSource.setParentMessageSource(src);
+                        }
+                        lastMessageSource = src;
+                    } else if(type.equals("properties")) {
+                        ReloadableResourceBundleMessageSource src = new ReloadableResourceBundleMessageSource();
+                        src.setBasenames(baseNames.toArray(new String[baseNames.size()]));
+                        src.setResourceLoader(new PustefixResourceLoader());
+                        if(lastMessageSource != null) {
+                            lastMessageSource.setParentMessageSource(src);
+                        }
+                        lastMessageSource = src;
+                    }
+                    if(i == 0) {
+                        messageSource = lastMessageSource;
+                    }
+                }
+            } else {
+                messageSource = new DelegatingMessageSource();
+            }
         } catch(Exception x) {
             throw new Exception("Can't read project configuration", x);
         }

@@ -49,6 +49,7 @@ import org.apache.log4j.Logger;
 import org.apache.log4j.xml.DOMConfigurator;
 import org.pustefixframework.util.xml.DOMUtils;
 import org.springframework.beans.factory.InitializingBean;
+import org.springframework.context.MessageSource;
 import org.springframework.web.context.ServletContextAware;
 import org.w3c.dom.Attr;
 import org.w3c.dom.Document;
@@ -162,6 +163,7 @@ public class TargetGenerator implements ResourceVisitor, ServletContextAware, In
     private Map<String, String> renderParams;
     private ServletContext servletContext;
     private TenantInfo tenantInfo;
+    private MessageSource messageSource;
     
     private Map<String, String> pageToDefiningModule;
     
@@ -308,6 +310,14 @@ public class TargetGenerator implements ResourceVisitor, ServletContextAware, In
     	return tenantInfo;
     }
     
+    public void setMessageSource(MessageSource messageSource) {
+        this.messageSource = messageSource;
+    }
+
+    public MessageSource getMessageSource() {
+        return messageSource;
+    }
+
     public Node getConfigDocument() {
         return dependXmlDoc;
     }

@@ -1060,17 +1060,17 @@
     <xsl:param name="disable-output-escaping">no</xsl:param>
     <xsl:choose>
       <xsl:when test="$disable-output-escaping='yes'">
-        <xsl:value-of disable-output-escaping="yes" select="include:getMessage($key, $lang, $arg1, $arg2, $arg3, $arg4, $arg5)"/>
+        <xsl:value-of disable-output-escaping="yes" select="include:getMessage($__target_gen, $key, $lang, $arg1, $arg2, $arg3, $arg4, $arg5)"/>
       </xsl:when>
       <xsl:otherwise>
-        <xsl:value-of select="include:getMessage($key, $lang, $arg1, $arg2, $arg3, $arg4, $arg5)"/>
+        <xsl:value-of select="include:getMessage($__target_gen, $key, $lang, $arg1, $arg2, $arg3, $arg4, $arg5)"/>
       </xsl:otherwise>
     </xsl:choose>
   </xsl:template>
 
   <func:function name="pfx:checkMessage">
     <xsl:param name="key"/>
-    <func:result select="include:messageExists($key,$lang)"/>
+    <func:result select="include:messageExists($__target_gen, $key, $lang)"/>
   </func:function>
 
   <xsl:template match="pfx:checkmessage[@key or pfx:key]">
@@ -1087,7 +1087,7 @@
           </xsl:choose>
         </xsl:variable>
         <xsl:choose>
-          <xsl:when test="include:messageExists($key, $lang)">
+          <xsl:when test="include:messageExists($__target_gen, $key, $lang)">
             <xsl:choose>
               <xsl:when test="pfx:checkpassed">
                 <xsl:apply-templates select="pfx:checkpassed/node()"/>
@@ -1130,7 +1130,7 @@
           </xsl:when>
           <xsl:otherwise>
             <xsl:choose>
-              <xsl:when test="include:messageExists(@key, $lang)">
+              <xsl:when test="include:messageExists($__target_gen, @key, $lang)">
                 <xsl:choose>
                   <xsl:when test="pfx:checkpassed">
                     <xsl:apply-templates select="pfx:checkpassed/node()"/>
@@ -1165,7 +1165,7 @@
             </xsl:otherwise>
           </xsl:choose>
         </xsl:variable>
-        <xsl:if test="not(include:messageExists($key, $lang))">
+        <xsl:if test="not(include:messageExists($__target_gen, $key, $lang))">
           <xsl:apply-templates/>
         </xsl:if>
       </xsl:when>
@@ -1180,7 +1180,7 @@
             </ixsl:if>
           </xsl:when>
           <xsl:otherwise>
-            <xsl:if test="not(include:messageExists(@key, $lang))">
+            <xsl:if test="not(include:messageExists($__target_gen, @key, $lang))">
               <xsl:apply-templates/>
             </xsl:if>
           </xsl:otherwise>

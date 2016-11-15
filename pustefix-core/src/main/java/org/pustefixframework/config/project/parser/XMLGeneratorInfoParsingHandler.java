@@ -100,6 +100,7 @@ public class XMLGeneratorInfoParsingHandler extends CustomizationAwareParsingHan
             targetBeanBuilder.addConstructorArgReference(SPCacheFactory.class.getName());
             targetBeanBuilder.addConstructorArgReference(SiteMap.class.getName());
             targetBeanBuilder.addPropertyReference("tenantInfo", TenantInfo.class.getName());
+            targetBeanBuilder.addPropertyReference("messageSource", "messageSource");
             BeanDefinition beanDefinition = targetBeanBuilder.getBeanDefinition();
             String beanName = TargetGenerator.class.getName();
             BeanDefinitionRegistry beanRegistry = ParsingUtils.getSingleTopObject(BeanDefinitionRegistry.class, context);
