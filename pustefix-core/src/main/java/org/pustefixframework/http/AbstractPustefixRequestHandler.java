@@ -370,6 +370,8 @@ public abstract class AbstractPustefixRequestHandler implements PageProvider, Se
                     }
                 }
                 request.setAttribute(AbstractPustefixRequestHandler.REQUEST_ATTR_LANGUAGE, matchingLanguage);
+            } else if(matchingTenant.getSupportedLanguages().size() == 1) {
+                request.setAttribute(AbstractPustefixRequestHandler.REQUEST_ATTR_LANGUAGE, matchingTenant.getDefaultLanguage());
             }
         } else if(languageInfo != null && !languageInfo.getSupportedLanguages().isEmpty()) {
             String matchingLanguage = languageInfo.getDefaultLanguage();
