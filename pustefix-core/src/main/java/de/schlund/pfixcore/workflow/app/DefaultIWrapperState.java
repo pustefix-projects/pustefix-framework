@@ -87,7 +87,10 @@ public class DefaultIWrapperState extends StateImpl implements IWrapperState, Re
         CAT.debug("[[[[[ " + context.getCurrentPageRequest().getName() + " ]]]]]");
         
         ResultDocument  resdoc = new ResultDocument();
-      
+
+        ModelAndView modelAndView = processMVC(context, preq);
+        resdoc.setModelAndView(modelAndView);
+
         IWrapperContainer wrp_container =  getIHandlerContainer(context).createIWrapperContainerInstance(context, preq, resdoc);
 
         if (isSubmitTrigger(context, preq)) {
@@ -156,9 +159,6 @@ public class DefaultIWrapperState extends StateImpl implements IWrapperState, Re
         } else {
             throw new XMLException("This should not happen: No submit trigger, no direct trigger, no final page and no workflow???");
         }
-        
-        ModelAndView modelAndView = processMVC(context, preq);
-        resdoc.setModelAndView(modelAndView);
         
         // We want to optimize away the case where the context tells us that we
         // don't need to supply a full document as the context will - because of
