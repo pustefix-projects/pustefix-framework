@@ -11,7 +11,7 @@
                            http://www.springframework.org/schema/context
                            http://www.springframework.org/schema/context/spring-context.xsd
                            http://pustefixframework.org/schema/webservices
-                           http://pustefixframework.org/schema/webservices/pustefix-webservices.xsd">
+                           http://www.pustefix-framework.org/schema/webservices/pustefix-webservices.xsd">
 
   <context:annotation-config/>
 
