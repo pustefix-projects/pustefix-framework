@@ -98,7 +98,7 @@ public class CookieOnlySessionTrackingStrategy implements SessionTrackingStrateg
                         if(hasSecureFlag != Boolean.TRUE) { //session isn't secure
                             
                             //copy existing session data into new secure session
-                            session = copySession(session, req);
+                            session = copySession(session, req, res);
                             addCookie(COOKIE_SESSION_SSL, "true", req, res);
                             
                         }
@@ -230,6 +230,10 @@ public class CookieOnlySessionTrackingStrategy implements SessionTrackingStrateg
                 
             }
         
+            if(res.isCommitted()) {
+                return;
+            }
+
         } else { //no session required
                         
             if(context.needsSSL(preq) && !req.isSecure()) { //requires SSL, but has no SSL
@@ -295,7 +299,7 @@ public class CookieOnlySessionTrackingStrategy implements SessionTrackingStrateg
         AbstractPustefixRequestHandler.relocate(res, statusCode, redirect_uri);
     }
      
-    private HttpSession createSession(HttpServletRequest req, HttpServletResponse res) throws ServletException {
+    private HttpSession createSession(HttpServletRequest req, HttpServletResponse res) throws ServletException, IOException {
         if(context.allowSessionCreate()) {
              HttpSession session = req.getSession(true);
              LOGGER_SESSION.info("Create session: " + session.getId());
@@ -306,11 +310,16 @@ public class CookieOnlySessionTrackingStrategy implements SessionTrackingStrateg
              context.registerSession(req, session);
              return session;
         } else {
-            throw new ServletException("Creating session not allowed.");
+            if(res.isCommitted()) {
+                throw new ServletException("Creating session not allowed.");
+            } else {
+                res.sendError(HttpServletResponse.SC_FORBIDDEN, "Session required");
+                return null;
+            }
         }
    }
     
-    private HttpSession copySession(HttpSession oldSession, HttpServletRequest req) throws ServletException {
+    private HttpSession copySession(HttpSession oldSession, HttpServletRequest req, HttpServletResponse res) throws ServletException, IOException {
         
         if(context.allowSessionCreate()) {
         
@@ -342,7 +351,12 @@ public class CookieOnlySessionTrackingStrategy implements SessionTrackingStrateg
             return newSession;
         
         } else {
-            throw new ServletException("Creating session not allowed.");
+            if(res.isCommitted()) {
+                throw new ServletException("Creating session not allowed.");
+            } else {
+                res.sendError(HttpServletResponse.SC_FORBIDDEN, "Session required");
+                return null;
+            }
         }
     }
     
