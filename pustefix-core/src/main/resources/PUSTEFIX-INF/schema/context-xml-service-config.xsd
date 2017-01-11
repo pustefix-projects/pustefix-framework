@@ -582,6 +582,7 @@
               </xs:simpleType>
             </xs:attribute>
             <xs:attribute name="requirestoken" default="false" type="xs:boolean"/>
+            <xs:attribute name="premvc" default="false" type="xs:boolean"/>
           </xs:complexType>
         </xs:element>
         

@@ -37,7 +37,7 @@ public class PageRequestInputParsingHandler implements ParsingHandler {
     public void handleNode(HandlerContext context) throws ParserException {
        
         Element element = (Element)context.getNode();
-        ParsingUtils.checkAttributes(element, null, new String[] {"requirestoken", "policy"});
+        ParsingUtils.checkAttributes(element, null, new String[] {"requirestoken", "policy", "premvc"});
          
         StateConfigImpl stateConfig = ParsingUtils.getFirstTopObject(StateConfigImpl.class, context, true);
         
@@ -65,6 +65,16 @@ public class PageRequestInputParsingHandler implements ParsingHandler {
             }
         }
         
+        value = element.getAttribute("premvc").trim();
+        if(value.length() > 0) {
+            if(value.equalsIgnoreCase("true")) {
+                stateConfig.setPreMVC(true);
+            } else if(value.equalsIgnoreCase("false")) {
+                stateConfig.setPreMVC(false);
+            } else {
+                throw new ParserException("Illegal 'premvc' attribute value: "+value);
+            }
+        }
     }
 
 }

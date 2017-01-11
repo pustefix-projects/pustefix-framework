@@ -58,6 +58,7 @@ public class StateConfigImpl implements Cloneable, StateConfig {
     private String parentBeanName = null;
     private String scope = "singleton";
     private Map<String, ProcessActionStateConfig> actions = new LinkedHashMap<String, ProcessActionStateConfig>();
+    private boolean preMVC = false;
     
     public void setState(Class<? extends ConfigurableState> clazz) {
         this.stateClass = clazz;
@@ -231,4 +232,13 @@ public class StateConfigImpl implements Cloneable, StateConfig {
     public void addProcessAction(String name, ProcessActionStateConfig action) {
         actions.put(name, action);
     }
- }
+
+    public boolean preMVC() {
+        return preMVC;
+    }
+
+    public void setPreMVC(boolean preMVC) {
+        this.preMVC = preMVC;
+    }
+
+}

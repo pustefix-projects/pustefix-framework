@@ -107,4 +107,12 @@ public interface StateConfig {
     
     public Map<String, ? extends ProcessActionStateConfig> getProcessActions();
     
+    /**
+     * Return if handlers should be executed before MVC RequestMapping method.
+     * Default is false, i.e. RequestMappings are processed first.
+     *
+     * @return true if handlers are executed before MVC method.
+     */
+    boolean preMVC();
+
 }

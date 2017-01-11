@@ -15,7 +15,6 @@
  * along with Pustefix; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  */
-
 package de.schlund.pfixcore.workflow.app;
 
 import java.util.Map;
@@ -40,14 +39,8 @@ import de.schlund.pfixxml.Tenant;
 import de.schlund.pfixxml.XMLException;
 
 /**
- * DefaultIWrapperState.java
- * 
- * 
- * Created: Wed Oct 10 10:31:49 2001
- * 
- * @author <a href="mailto:jtl@schlund.de">Jens Lautenbacher</a>
+ * State implementation used for pages which need to process input data.
  */
-
 public class DefaultIWrapperState extends StateImpl implements IWrapperState, RequestTokenAwareState {
 
     private final static String IHDL_CONT_MANAGER = "de.schlund.pfixcore.workflow.app.IHandlerContainerManager";
@@ -67,15 +60,7 @@ public class DefaultIWrapperState extends StateImpl implements IWrapperState, Re
      */
     @Override
     public boolean needsData(Context context, PfixServletRequest preq) throws Exception {
-        CAT.debug(">>> [" + context.getCurrentPageRequest().getName() + "] Checking needsData()...");
-
-        boolean retval = getIHandlerContainer(context).needsData(context);
-        if (retval) {
-            CAT.debug("    TRUE! now going to retrieve the current status.");
-        } else {
-            CAT.debug("    FALSE! continue with pageflow check.");
-        }
-        return retval;
+        return getIHandlerContainer(context).needsData(context);
     }
 
     /**
@@ -84,18 +69,28 @@ public class DefaultIWrapperState extends StateImpl implements IWrapperState, Re
      */
     @Override
     public ResultDocument getDocument(Context context, PfixServletRequest preq) throws Exception {
-        CAT.debug("[[[[[ " + context.getCurrentPageRequest().getName() + " ]]]]]");
-        
-        ResultDocument  resdoc = new ResultDocument();
+        ResultDocument  resDoc = new ResultDocument();
+        IWrapperContainer wrapperContainer;
+        ModelAndView modelAndView;
+        if(getConfig() != null && getConfig().preMVC()) {
+            wrapperContainer = handleWrappers(context, preq, resDoc);
+            modelAndView = processMVC(context, preq);
+            resDoc.setModelAndView(modelAndView);
+        } else {
+            modelAndView = processMVC(context, preq);
+            resDoc.setModelAndView(modelAndView);
+            wrapperContainer = handleWrappers(context, preq, resDoc);
+        }
+        render(context, wrapperContainer, resDoc, modelAndView);
+        return resDoc;
+    }
 
-        ModelAndView modelAndView = processMVC(context, preq);
-        resdoc.setModelAndView(modelAndView);
-
+    /**
+     * Process IWrappers/IHandlers.
+     */
+    protected IWrapperContainer handleWrappers(Context context, PfixServletRequest preq, ResultDocument resdoc) throws Exception {
         IWrapperContainer wrp_container =  getIHandlerContainer(context).createIWrapperContainerInstance(context, preq, resdoc);
-
         if (isSubmitTrigger(context, preq)) {
-            CAT.debug(">>> In SubmitHandling...");
-
             boolean valid = true;
             RequestParam rp = preq.getRequestParam("__token");
             if (rp != null) {
@@ -130,36 +125,28 @@ public class DefaultIWrapperState extends StateImpl implements IWrapperState, Re
                     valid = false;
                 }
             }
-
             if (valid) {
                 wrp_container.handleSubmittedData();
-
                 if (wrp_container.errorHappened()) {
                     handleWrapperErrors(wrp_container.getIWrappersWithError());
-                    CAT.debug("    => Can't continue, as errors happened during load/work.");
                     context.prohibitContinue();
                 } else {
-                    CAT.debug("    => No error happened during work... end of submit reached successfully.");
-                    CAT.debug("    => retrieving current status.");
                     wrp_container.retrieveCurrentStatus(false);
                 }
             }
         } else if (isDirectTrigger(context, preq) || isPageFlowRunning(context)) {
-            CAT.debug(">>> Retrieving current status...");
-
             wrp_container.retrieveCurrentStatus(true);
-            if (CAT.isDebugEnabled()) {
-                if (isDirectTrigger(context, preq)) {
-                    CAT.debug("    => REASON: DirectTrigger");
-                } else {
-                    CAT.debug("    => REASON: WorkFlow");
-                }
-            }
             context.prohibitContinue();
         } else {
             throw new XMLException("This should not happen: No submit trigger, no direct trigger, no final page and no workflow???");
         }
-        
+        return wrp_container;
+    }
+
+    /**
+     * Render model to XML.
+     */
+    protected void render(Context context, IWrapperContainer wrp_container, ResultDocument resdoc, ModelAndView modelAndView) throws Exception {
         // We want to optimize away the case where the context tells us that we
         // don't need to supply a full document as the context will - because of
         // the current state of
@@ -182,7 +169,6 @@ public class DefaultIWrapperState extends StateImpl implements IWrapperState, Re
             renderContextResources(context, resdoc);
             addResponseHeadersAndType(context, resdoc);
         }
-        return resdoc;
     }
 
     // Remember, a IHandlerContainer is a flyweight!!!

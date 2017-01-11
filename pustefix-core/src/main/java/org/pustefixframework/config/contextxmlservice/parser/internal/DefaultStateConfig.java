@@ -76,4 +76,8 @@ public class DefaultStateConfig implements StateConfig {
         return false;
     }
 
+    public boolean preMVC() {
+        return false;
+    }
+
 }
