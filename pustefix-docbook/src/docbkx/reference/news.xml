@@ -68,4 +68,13 @@
    </para>
   </section>
 
+  <section xml:id="news.0_20_25">
+    <title>What's new in Pustefix 0.20.25</title>
+    <para>
+      Added support for configuring if a matching <literal>RequestMapping</literal> method is call before/after <literal>IHandlers</literal> are processed.
+      By default the <literal>RequestMapping</literal> is called first. This behaviour can be changed by setting <literal>&lt;input premvc="true"/&gt;</literal>
+      (see <xref linkend="configuration.servlet.contextxml.input"/>).
+   </para>
+  </section>
+
 </chapter>
