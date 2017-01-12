@@ -128,7 +128,7 @@ public class DocrootRequestHandler implements UriProvidingHttpRequestHandler, Se
 
         // Directory listing is not allowed
         if (path.endsWith("/")) {
-            res.sendError(HttpServletResponse.SC_FORBIDDEN);
+            res.sendError(HttpServletResponse.SC_NOT_FOUND);
             return;
         }
 
