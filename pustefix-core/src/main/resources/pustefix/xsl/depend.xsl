@@ -199,10 +199,24 @@
           <xsl:with-param name="variant">
             <xsl:choose>
               <xsl:when test="$node/@variant">
-                <xsl:value-of select="concat($node/@variant, ':', @tenant, '-', @lang)"/>
+                <xsl:choose>
+                  <xsl:when test="@tenant">
+                    <xsl:value-of select="concat($node/@variant, ':', @tenant, '-', @lang)"/>
+                  </xsl:when>
+                  <xsl:otherwise>
+                    <xsl:value-of select="concat($node/@variant, ':', @lang)"/>
+                  </xsl:otherwise>
+                </xsl:choose>
               </xsl:when>
               <xsl:otherwise>
-                <xsl:value-of select="concat(@tenant, '-', @lang)"/>
+                <xsl:choose>
+                  <xsl:when test="@tenant">
+                    <xsl:value-of select="concat(@tenant, '-', @lang)"/>
+                  </xsl:when>
+                  <xsl:otherwise>
+                    <xsl:value-of select="@lang"/>
+                  </xsl:otherwise>
+                </xsl:choose>
               </xsl:otherwise>
             </xsl:choose>
           </xsl:with-param>
@@ -216,10 +230,24 @@
             <xsl:with-param name="variant">
               <xsl:choose>
                 <xsl:when test="$node/@variant">
-                  <xsl:value-of select="concat($node/@variant, ':', ., ':', $varnode/@tenant, '-', $varnode/@lang)"/>
+                  <xsl:choose>
+                    <xsl:when test="$varnode/@tenant">
+                      <xsl:value-of select="concat($node/@variant, ':', ., ':', $varnode/@tenant, '-', $varnode/@lang)"/>
+                    </xsl:when>
+                    <xsl:otherwise>
+                      <xsl:value-of select="concat($node/@variant, ':', ., ':', $varnode/@lang)"/>
+                    </xsl:otherwise>
+                  </xsl:choose>
                 </xsl:when>
                 <xsl:otherwise>
-                  <xsl:value-of select="concat(., ':', $varnode/@tenant, '-', $varnode/@lang)"/>
+                  <xsl:choose>
+                    <xsl:when test="$varnode/@tenant">
+                      <xsl:value-of select="concat(., ':', $varnode/@tenant, '-', $varnode/@lang)"/>
+                    </xsl:when>
+                    <xsl:otherwise>
+                      <xsl:value-of select="concat(., ':', $varnode/@lang)"/>
+                    </xsl:otherwise>
+                  </xsl:choose>
                 </xsl:otherwise>
               </xsl:choose>
             </xsl:with-param>

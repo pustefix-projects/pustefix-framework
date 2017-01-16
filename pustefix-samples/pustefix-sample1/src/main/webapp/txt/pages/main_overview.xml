@@ -7,12 +7,12 @@
          <table bgcolor="#ffcccc" class="boxed" width="500">
            <tr>
              <td colspan="3">
-               <b>TShirt:</b>
+               <b><pfx:message key="heading.tshirt"/></b>
              </td>
            </tr>
            <tr valign="top">
-             <td>Size: <ixsl:value-of select="/formresult/tshirt/@size"/></td>
-             <td>ColorNo: <ixsl:value-of select="/formresult/tshirt/@color"/></td>
+             <td><pfx:message key="label.size"/>: <ixsl:value-of select="/formresult/tshirt/@size"/></td>
+             <td><pfx:message key="label.color"/>: <ixsl:value-of select="/formresult/tshirt/@color"/></td>
              <td>
                <ixsl:for-each select="/formresult/tshirt/feature/int">
                  <ixsl:call-template name="pfx:include">
@@ -29,12 +29,12 @@
            <table bgcolor="#ccccff" class="boxed" width="500">
              <tr>
                <td colspan="3">
-                 <b>Trousers:</b>
+                 <b><pfx:message key="heading.trousers"/>:</b>
                </td>
              </tr>
              <tr valign="top">
-               <td>Size: <ixsl:value-of select="/formresult/trouser/@size"/></td>
-               <td>ColorNo: <ixsl:value-of select="/formresult/trouser/@color"/></td>
+               <td><pfx:message key="label.size"/>: <ixsl:value-of select="/formresult/trouser/@size"/></td>
+               <td><pfx:message key="label.color"/>: <ixsl:value-of select="/formresult/trouser/@color"/></td>
                <td>
                  <ixsl:for-each select="/formresult/trouser/feature/int">
                    <ixsl:call-template name="pfx:include">

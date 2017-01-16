@@ -18,6 +18,10 @@
   <part name="home.NO_AGE">
     <theme name="default">Please answer yes or no!</theme>
   </part>
+  <part name="home.ILLEGAL_DATE">
+    <theme name="default">Illegal date. Required format is <i>yyyy/MM/dd</i>.</theme>
+    <theme name="default" lang="de">Ungültiges Datum. Erforderliches Format ist <i>yyyy/MM/dd</i>.</theme>
+  </part>
   <part name="trouser.FEATURECOLOR_OUTOF_STOCK">
     <theme name="default">The combination <b><pfx:argref pos="1"/>/<pfx:argref pos="2"/></b> of features/color is out of stock.</theme>
   </part>

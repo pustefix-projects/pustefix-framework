@@ -1057,7 +1057,11 @@ public abstract class AbstractPustefixXMLRequestHandler extends AbstractPustefix
                 for (int i = 0; i < variants.length; i++) {
                     variant_id = variants[i];
                     if(spdoc.getPageAlternative() != null) variant_id += ":" + spdoc.getPageAlternative();
-                    if(spdoc.getTenant() != null) variant_id += ":" + spdoc.getTenant().getName() + "-" + spdoc.getLanguage();
+                    if(spdoc.getTenant() != null) {
+                        variant_id += ":" + spdoc.getTenant().getName() + "-" + spdoc.getLanguage();
+                    } else if(languageInfo.getSupportedLanguages().size() > 1) {
+                        variant_id += ":" + spdoc.getLanguage();
+                    }
                     pinfo   = generator.getPageInfoFactory().getPage(pagename, variant_id);
                     target  = pagetree.getTargetForPageInfo(pinfo);
                     if (target != null) {
@@ -1069,7 +1073,11 @@ public abstract class AbstractPustefixXMLRequestHandler extends AbstractPustefix
                 for (int i = 0; i < variants.length; i++) {
                     variant_id = variants[i];
                     if(spdoc.getPageAlternative() != null) variant_id += ":" + spdoc.getPageAlternative();
-                    if(spdoc.getTenant() != null) variant_id += ":" + spdoc.getTenant().getName() + "-" + spdoc.getLanguage();
+                    if(spdoc.getTenant() != null) {
+                        variant_id += ":" + spdoc.getTenant().getName() + "-" + spdoc.getLanguage();
+                    } else if(languageInfo.getSupportedLanguages().size() > 1) {
+                        variant_id += ":" + spdoc.getLanguage();
+                    }
                     Variant newVariant = new Variant(variant_id);
                     TreeSet<PageInfo> pageInfos = pagetree.getPageInfoForPageName(pagename);
                     if(pageInfos != null) {
@@ -1099,6 +1107,12 @@ public abstract class AbstractPustefixXMLRequestHandler extends AbstractPustefix
                         variantId = spdoc.getTenant().getName() + "-" + spdoc.getLanguage();
                     } else {
                         variantId += ":" + spdoc.getTenant().getName() + "-" + spdoc.getLanguage();
+                    }
+                } else if(languageInfo.getSupportedLanguages().size() > 1) {
+                    if(variantId == null) {
+                        variantId = spdoc.getLanguage();
+                    } else {
+                        variantId += ":" + spdoc.getLanguage();
                     }
                 }
                 pinfo = generator.getPageInfoFactory().getPage(pagename, variantId);

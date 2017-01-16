@@ -13,7 +13,8 @@
   </param>
   <param name="Date" type="java.util.Date" occurrence="optional">
     <caster class="de.schlund.pfixcore.generator.casters.ToDate">
-      <cparam name="paramFormat" value="yy/MM/dd" />
+      <cparam name="paramFormat" value="yyyy/MM/dd"/>
+      <cparam name="scodeCastError" value="de.schlund.pfixcore.example.StatusCodeLib#home.ILLEGAL_DATE"/>
     </caster>
   </param>
 

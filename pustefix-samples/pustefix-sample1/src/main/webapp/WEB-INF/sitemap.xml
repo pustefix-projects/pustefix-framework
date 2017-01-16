@@ -10,8 +10,6 @@
       <page name="phantom"/>
       <page name="overview"/>
     </page>
-    <page name="scripting"/>
-    <page name="scriptingstate"/>
     <page name="encoding" alias="encodingpage">
        <alt key="xencoding" name="xencodingpage"/>
     </page>

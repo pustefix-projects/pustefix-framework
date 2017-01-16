@@ -69,6 +69,7 @@ import de.schlund.pfixxml.IncludePartInfo;
 import de.schlund.pfixxml.IncludePartsInfo;
 import de.schlund.pfixxml.IncludePartsInfoFactory;
 import de.schlund.pfixxml.IncludePartsInfoParsingException;
+import de.schlund.pfixxml.LanguageInfo;
 import de.schlund.pfixxml.Tenant;
 import de.schlund.pfixxml.TenantInfo;
 import de.schlund.pfixxml.Variant;
@@ -163,6 +164,7 @@ public class TargetGenerator implements ResourceVisitor, ServletContextAware, In
     private Map<String, String> renderParams;
     private ServletContext servletContext;
     private TenantInfo tenantInfo;
+    private LanguageInfo languageInfo;
     private MessageSource messageSource;
     
     private Map<String, String> pageToDefiningModule;
@@ -310,6 +312,14 @@ public class TargetGenerator implements ResourceVisitor, ServletContextAware, In
     	return tenantInfo;
     }
     
+    public void setLanguageInfo(LanguageInfo languageInfo) {
+        this.languageInfo = languageInfo;
+    }
+
+    public LanguageInfo getLanguageInfo() {
+        return languageInfo;
+    }
+
     public void setMessageSource(MessageSource messageSource) {
         this.messageSource = messageSource;
     }
@@ -382,12 +392,12 @@ public class TargetGenerator implements ResourceVisitor, ServletContextAware, In
         			if("dynamic".equals(search)) {
         				if(res instanceof ModuleResource) {
         					module = res.toURI().getAuthority();
-        				} else {
-                                                module = null;
-                                        }
+                        } else {
+                            module = null;
+                        }
         			}
         			if(module == null || module.equals("")) module = "WEBAPP";
-        			return createTargetForRender(href, part, module, selectedVariant, partInfo.getContentType(), 
+                    return createTargetForRender(href, part, module, selectedVariant, partInfo.getContentType(),
         			        partInfo.isContextual(), tenant, language);
         		} else {
         			LOG.warn("Part '" + part + "' in '" + res.toURI() + "' is not marked as render part");
@@ -510,7 +520,7 @@ public class TargetGenerator implements ResourceVisitor, ServletContextAware, In
         iresolver.resolveIncludes(confDoc);
         
         //automatically add standardpage-alternatives for tenants/languages
-        if(tenantInfo != null) {
+        if(tenantInfo != null && !tenantInfo.getTenants().isEmpty()) {
             for(Tenant tenant: tenantInfo.getTenants()) {
                 for(String tenantLang: tenant.getSupportedLanguages()) {
                     Element pageAltElem = confDoc.createElement("standardpage-alternative");
@@ -520,8 +530,15 @@ public class TargetGenerator implements ResourceVisitor, ServletContextAware, In
                     LOG.debug("Added standardpage-alternative for " + tenant.getName() + "-" + tenantLang);
                 }
             }
+        } else if(languageInfo != null && languageInfo.getSupportedLanguages().size() > 1) {
+            for(String lang: languageInfo.getSupportedLanguages()) {
+                Element pageAltElem = confDoc.createElement("standardpage-alternative");
+                pageAltElem.setAttribute("lang", lang);
+                confDoc.getDocumentElement().appendChild(pageAltElem);
+                LOG.debug("Added standardpage-alternative for " + lang);
+            }
         }
-            
+
         String configFileModule = null;
         URI configFileURI = configFile.toURI();
         if("module".equals(configFileURI.getScheme())) {
@@ -909,23 +926,32 @@ public class TargetGenerator implements ResourceVisitor, ServletContextAware, In
                     if(href.startsWith("/")) href = href.substring(1);
                     String part = partInfo.getName();
                     if(module == null || module.equals("")) module = "WEBAPP";
-                    if(tenantInfo != null) {
+                    if(tenantInfo != null && !tenantInfo.getTenants().isEmpty()) {
                         for(Tenant tenant: tenantInfo.getTenants()) {
                             for(String tenantLang: tenant.getSupportedLanguages()) {
-                                createTargetForRender(href, part, module, null, partInfo.getContentType(), 
+                                createTargetForRender(href, part, module, null, partInfo.getContentType(),
                                         partInfo.isContextual(), tenant, tenantLang);
                                 for(String variant: partInfo.getRenderVariants()) {
-                                    createTargetForRender(href, part, module, variant, partInfo.getContentType(), 
+                                    createTargetForRender(href, part, module, variant, partInfo.getContentType(),
                                             partInfo.isContextual(), tenant, tenantLang);
                                 }
                                 
                             }
                         }
+                    } else if(languageInfo != null && languageInfo.getSupportedLanguages().size() > 1) {
+                        for(String lang: languageInfo.getSupportedLanguages()) {
+                            createTargetForRender(href, part, module, null, partInfo.getContentType(),
+                                    partInfo.isContextual(), null, lang);
+                            for(String variant: partInfo.getRenderVariants()) {
+                                createTargetForRender(href, part, module, variant, partInfo.getContentType(),
+                                        partInfo.isContextual(), null, lang);
+                            }
+                        }
                     } else {
-                        createTargetForRender(href, part, module, null, partInfo.getContentType(), 
+                        createTargetForRender(href, part, module, null, partInfo.getContentType(),
                                 partInfo.isContextual(), null, null);
                         for(String variant: partInfo.getRenderVariants()) {
-                            createTargetForRender(href, part, module, variant, partInfo.getContentType(), 
+                            createTargetForRender(href, part, module, variant, partInfo.getContentType(),
                                     partInfo.isContextual(), null, null);
                         }
                     }
@@ -1046,7 +1072,7 @@ public class TargetGenerator implements ResourceVisitor, ServletContextAware, In
             themes = new Themes(themeArr);
         }
         
-        String renderKey = createRenderKey(href, part, module, variantId, tenant, language);
+        String renderKey = createRenderKey(href, part, module, variantId, tenant, language, languageInfo);
         Target target = alltargets.get(renderKey);
         if(target == null) {
             XMLVirtualTarget xmlTarget = (XMLVirtualTarget)createTarget(TargetType.XML_VIRTUAL, renderKey + ".xml", themes);
@@ -1075,7 +1101,9 @@ public class TargetGenerator implements ResourceVisitor, ServletContextAware, In
             xmlTarget.addParam(XSLPARAM_SITEMAP, siteMap.getSiteMapXMLElement(getXsltVersion(), renderParams.get("lang")));
             if(tenant != null) {
                 xmlTarget.addParam("tenant", tenant.getName());
-                xmlTarget.addParam("lang", language);
+            }
+            if(language != null) {
+                xmlTarget.addParam("lang",  language);
             }
             
             
@@ -1111,6 +1139,8 @@ public class TargetGenerator implements ResourceVisitor, ServletContextAware, In
             xslTarget.addParam(XSLPARAM_SITEMAP, siteMap.getSiteMapXMLElement(getXsltVersion(), renderParams.get("lang")));
             if(tenant != null) {
                 xslTarget.addParam("tenant", tenant.getName());
+            }
+            if(language != null) {
                 xslTarget.addParam("lang", language);
             }
             target = xslTarget;
@@ -1406,7 +1436,8 @@ public class TargetGenerator implements ResourceVisitor, ServletContextAware, In
         return key.indexOf(RENDER_KEY_SEPARATOR) > -1;
     }
     
-    private static String createRenderKey(String href, String part, String module, String variant, Tenant tenant, String language) {
+    private static String createRenderKey(String href, String part, String module, String variant, Tenant tenant,
+            String language, LanguageInfo langInfo) {
         if(href == null || href.equals("")) throw new IllegalArgumentException("Argument 'href' must not be empty");
         if(part == null || part.equals("")) throw new IllegalArgumentException("Argument 'part' must not be empty");
         if(module == null) module = "";
@@ -1415,6 +1446,8 @@ public class TargetGenerator implements ResourceVisitor, ServletContextAware, In
                             RENDER_KEY_SEPARATOR + encode(module) + RENDER_KEY_SEPARATOR + encode(variant);
         if(tenant != null) {
             targetKey += RENDER_KEY_SEPARATOR + tenant.getName() + "-" + language;
+        } else if(langInfo != null && langInfo.getSupportedLanguages().size()>1) {
+            targetKey += RENDER_KEY_SEPARATOR + language;
         }
         return targetKey;
     }

@@ -39,6 +39,7 @@ import javax.xml.transform.URIResolver;
 import org.apache.log4j.Logger;
 import org.pustefixframework.util.LocaleUtils;
 import org.springframework.cache.interceptor.SimpleKeyGenerator;
+import org.springframework.context.MessageSource;
 import org.springframework.context.NoSuchMessageException;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
@@ -632,7 +633,11 @@ public final class IncludeDocumentExtension {
             Locale locale = LocaleUtils.getLocale(lang);
             Object[] args = new Object[] {arg1, arg2, arg3, arg4, arg5};
             try {
-                return targetGen.getMessageSource().getMessage(key, args, locale);
+                MessageSource src = targetGen.getMessageSource();
+                if(src == null) {
+                    throw new NoSuchMessageException(key, locale);
+                }
+                return src.getMessage(key, args, locale);
             } catch(NoSuchMessageException x) {
                 LOG.warn("Can't resolve message key '" + key + "'.");
                 if("prod".equals(EnvironmentProperties.getProperties().getProperty("mode"))) {

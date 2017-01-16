@@ -1,30 +1,14 @@
-<?xml version="1.0" encoding="UTF-8"?><include_parts xmlns:ixsl="http://www.w3.org/1999/XSL/Transform" xmlns:pfx="http://www.schlund.de/pustefix/core">
-  
-  <part name="test">
-    <theme name="default">
-      <div>
-        <pfx:button page="encoding">Link to internal name</pfx:button>
-      </div>
-      <div>
-        <pfx:button page="tests/encode-decode">Link to alias name</pfx:button>
-      </div>
-      <div>
-        <a href="/encoding">Static link to internal name</a>
-      </div>
-    </theme>
-  </part>
-  
+<?xml version="1.0" encoding="UTF-8"?>
+<include_parts xmlns:ixsl="http://www.w3.org/1999/XSL/Transform" xmlns:pfx="http://www.schlund.de/pustefix/core">
+
   <part name="content">
     <theme name="default">
       <center>
-        <div>
-          <pfx:include part="test"/>
-        </div>
         <pfx:forminput>
           <table width="400">
             <tr>
               <td align="left">
-                <b><big>Confirmation:</big></b>
+                <b><big><pfx:message key="heading.confirmation"/>:</big></b>
               </td>
             </tr>
           </table>
@@ -40,7 +24,12 @@
             <errormsg name="info.Adult"/>
             <tr>
               <td>
-                Date of birth: <pfx:xinp name="info.Date" type="text" size="10"/>
+                <pfx:message key="label.birthday"/>: <pfx:xinp name="info.Date" type="text" size="10"/>
+                <pfx:checkfield name="info.Date">
+                  <pfx:error>
+                    <div class="errmsg"><pfx:scode/></div>
+                  </pfx:error>
+                </pfx:checkfield>
               </td>
             </tr>
             <tr>
@@ -56,23 +45,21 @@
           <table width="400">
             <tr>
               <td align="right" nowrap="nowrap">
-                <pfx:xinp type="submit" value="Go!"/>
-                <pfx:xinp forcestop="true" type="submit" value="Don't go"/>
-                <pfx:xinp forcestop="step" type="submit" value="Go Step by Step!"/>
+                <pfx:xinp type="submit">
+                  <pfx:value><pfx:message key="label.go"/></pfx:value>
+                </pfx:xinp>
+                <pfx:xinp forcestop="true" type="submit">
+                  <pfx:value><pfx:message key="label.gonot"/></pfx:value>
+                </pfx:xinp>
+                <pfx:xinp forcestop="step" type="submit">
+                  <pfx:value><pfx:message key="label.gostep"/></pfx:value>
+                </pfx:xinp>
               </td>
             </tr>
           </table>
           <br/>
           <pfx:token errorpage="tokenerror"/>
-        <p>
-          <h3><pfx:button page="scripting">SCRIPTING IHandler Test</pfx:button></h3>
-        </p>
-        <p>
-          <h3><pfx:button page="scriptingstate">SCRIPTING State Test</pfx:button></h3>
-        </p>
-        <p>
-          <h3><pfx:button page="testchecks">Pre- and postchecks Test</pfx:button></h3>
-        </p>
+
         <br/>
         <pfx:include part="buttons"/>
         <br/>
@@ -154,9 +141,14 @@
   
   <part name="buttons">
     <theme name="default">
+      <pfx:button page="encoding"><pfx:message key="link.internal"/></pfx:button>&#160;&#160;
+      <pfx:button page="tests/encode-decode"><pfx:message key="link.alias"/></pfx:button>&#160;&#160;
+      <a href="/encoding"><pfx:message key="link.static"/></a>
+      <br/>
       <pfx:button page="test" target="_top">
         STARTWITHFLOW test
-      </pfx:button>
+      </pfx:button>&#160;&#160;
+      <pfx:button page="testchecks">Pre- and postchecks Test</pfx:button>
       <br/>
       <pfx:elink href="http://www.gimp.org" target="_popup">
         <pfx:argument name="foo"><ixsl:value-of select="/formresult/@serial"/></pfx:argument>
@@ -185,15 +177,24 @@
   </part>
   
   <part name="adult">
+    <theme name="default">
+      [DEF] Are you really older than 18 years?
+    </theme>
+    <theme name="default" lang="de">
+      [DEF] Sind sie wirklich älter als 18 Jahre?
+    </theme>
     <theme name="bar">
       [BAR] Are you older than 18 years?
     </theme>
-    <theme name="default">
-      [DEF] Are you really older than 18 years?
-      </theme>
-      <theme name="foo">
-        <pfx:include part="thefoo"/> Older than 18?
-      </theme>
+    <theme name="bar" lang="de">
+      [BAR] Sind sie älter als 18 Jahre?
+    </theme>
+    <theme name="foo">
+      <pfx:include part="thefoo"/> Older than 18?
+    </theme>
+    <theme name="foo">
+      <pfx:include part="thefoo"/> Älter als 18?
+    </theme>
   </part>
   
   <part name="yes">
@@ -208,6 +209,7 @@
   
   <part name="no">
     <theme name="default">No!</theme>
+    <theme name="default" lang="de">Nein!</theme>
   </part>
   
   <part name="inline_test">
@@ -352,11 +354,17 @@
     <theme name="default">
       No adult
     </theme>
+    <theme name="default" lang="de">
+      Nicht volljährig
+    </theme>
   </part>
   
   <part name="true" render="true">
     <theme name="default">
       Adult
+    </theme>
+    <theme name="default" lang="de">
+      Volljährig
     </theme>
   </part>
   

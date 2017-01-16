@@ -33,6 +33,7 @@ import org.w3c.dom.NodeList;
 import org.xml.sax.InputSource;
 
 import de.schlund.pfixcore.util.ModuleInfo;
+import de.schlund.pfixxml.LanguageInfo;
 import de.schlund.pfixxml.Tenant;
 import de.schlund.pfixxml.TenantInfo;
 import de.schlund.pfixxml.config.EnvironmentProperties;
@@ -51,6 +52,7 @@ import de.schlund.pfixxml.resources.ResourceUtil;
 public class TargetGeneratorRunner {
     
     private TenantInfo tenantInfo;
+    private LanguageInfo languageInfo;
     private MessageSource messageSource;
     private Resource confFile;
         
@@ -94,6 +96,7 @@ public class TargetGeneratorRunner {
             TargetGenerator gen = new TargetGenerator(confFile, cacheDir, true, parallel);
             gen.setIsGetModTimeMaybeUpdateSkipped(true);
             gen.setTenantInfo(tenantInfo);
+            gen.setLanguageInfo(languageInfo);
             gen.setMessageSource(messageSource);
             gen.afterPropertiesSet();
             TargetGenerationReport report = new TargetGenerationReport(reportLogger);
@@ -160,6 +163,26 @@ public class TargetGeneratorRunner {
                 tenantInfo.setTenants(tenants);
             }
             
+            xp = xpf.newXPath();
+            xp.setNamespaceContext(nc);
+            xpe = xp.compile("/p:project-config/p:project/p:lang");
+            nodes = (NodeList)xpe.evaluate(doc, XPathConstants.NODESET);
+            if(nodes != null && nodes.getLength() > 0) {
+                List<String> languages = new ArrayList<String>();
+                String defaultLanguage = null;
+                for(int i=0; i<nodes.getLength(); i++) {
+                    Element elem = (Element)nodes.item(i);
+                    String language = elem.getTextContent().trim();
+                    languages.add(language);
+                    if(elem.getAttribute("default").equals("true")) {
+                        defaultLanguage = language;
+                    }
+                }
+                languageInfo = new LanguageInfo();
+                languageInfo.setSupportedLanguages(languages);
+                languageInfo.setDefaultLanguage(defaultLanguage);
+            }
+
             xp = xpf.newXPath();
             xp.setNamespaceContext(nc);
             xpe = xp.compile("/p:project-config/p:messagesources/p:messagesource");

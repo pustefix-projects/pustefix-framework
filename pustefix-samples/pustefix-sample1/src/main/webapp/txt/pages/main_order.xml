@@ -39,16 +39,16 @@
         <table width="400">
           <tr>
             <td align="left">
-              <b><big>T-Shirt:</big></b>
+              <b><big><pfx:message key="heading.tshirt"/>:</big></b>
             </td>
           </tr>
         </table>
         <table bgcolor="#bbccff" cellpadding="2" cellspacing="0" class="boxed" width="400">
           <tr>
-            <pfx:checkfield name="shirt.Size"><td class="{$pfx_class}" nowrap="nowrap">Size [S,M,L,XL,XXL]</td></pfx:checkfield>
+            <pfx:checkfield name="shirt.Size"><td class="{$pfx_class}" nowrap="nowrap"><pfx:message key="label.size"/> [S,M,L,XL,XXL]:</td></pfx:checkfield>
             <td>
               <pfx:xinp name="shirt.Size" type="select">
-                <pfx:option>--- Please Select ---</pfx:option>
+                <pfx:option>--- <pfx:message key="label.select"/> ---</pfx:option>
                 <pfx:option value="S">S</pfx:option>
                 <pfx:option value="M">M</pfx:option>
                 <pfx:option default="true" value="L">L</pfx:option>
@@ -60,7 +60,7 @@
           <errormsg name="shirt.Size"/>
           <tr>
             <pfx:checkfield name="shirt.Color">
-              <td class="{$pfx_class}" nowrap="nowrap">Color-No.:</td>
+              <td class="{$pfx_class}" nowrap="nowrap"><pfx:message key="label.color"/>:</td>
             </pfx:checkfield>
             <td>
               <pfx:xinp maxlength="3" name="shirt.Color" size="3" type="text"/>
@@ -68,7 +68,7 @@
           </tr>
           <errormsg name="shirt.Color"/>
           <tr valign="top">
-            <pfx:checkfield name="shirt.Feature"><td class="{$pfx_class}">Features:</td></pfx:checkfield>
+            <pfx:checkfield name="shirt.Feature"><td class="{$pfx_class}"><pfx:message key="label.features"/>:</td></pfx:checkfield>
             <td>
               <pfx:xinp default="true" name="shirt.Feature" type="check" value="0"/>
               <pfx:include part="tshirt_feature_0" href="dyntxt/order_features.xml"/><br/>
@@ -166,16 +166,16 @@
         <table width="400">
           <tr>
             <td align="left">
-              <b><big>Trousers:</big></b>
+              <b><big><pfx:message key="heading.trousers"/>:</big></b>
             </td>
           </tr>
         </table>
         <table bgcolor="#bbccff" cellpadding="2" cellspacing="0" class="boxed" width="400">
           <tr>
-            <pfx:checkfield name="trouser.Size"><td class="{$pfx_class}" nowrap="nowrap">Size [M,L,XL]:</td></pfx:checkfield>
+            <pfx:checkfield name="trouser.Size"><td class="{$pfx_class}" nowrap="nowrap"><pfx:message key="label.size"/> [M,L,XL]:</td></pfx:checkfield>
             <td>
               <pfx:xinp name="trouser.Size" type="select">
-                <pfx:option>--- Please Select ---</pfx:option>
+                <pfx:option>--- <pfx:message key="label.select"/> ---</pfx:option>
                 <pfx:option value="S">S [=&gt; Error]</pfx:option>
                 <pfx:option value="M">M</pfx:option>
                 <pfx:option value="L">L</pfx:option>
@@ -185,14 +185,14 @@
           </tr>
           <errormsg name="trouser.Size"/>
           <tr>
-            <pfx:checkfield name="trouser.Color"><td class="{$pfx_class}" nowrap="nowrap">Color-No.:</td></pfx:checkfield>
+            <pfx:checkfield name="trouser.Color"><td class="{$pfx_class}" nowrap="nowrap"><pfx:message key="label.color"/>:</td></pfx:checkfield>
             <td>
               <pfx:xinp maxlength="3" name="trouser.Color" size="3" type="text"/>
             </td>
           </tr>
           <errormsg name="trouser.Color"/>
           <tr valign="top">
-            <pfx:checkfield name="trouser.Feature"><td class="{$pfx_class}">Features:</td></pfx:checkfield>
+            <pfx:checkfield name="trouser.Feature"><td class="{$pfx_class}"><pfx:message key="label.features"/>:</td></pfx:checkfield>
             <td>
               <pfx:xinp name="trouser.Feature" type="check" value="0"/>
               <pfx:include part="trouser_feature_0" href="dyntxt/order_features.xml"/><br/>

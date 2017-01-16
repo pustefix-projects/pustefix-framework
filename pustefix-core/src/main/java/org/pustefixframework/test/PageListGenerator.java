@@ -109,6 +109,7 @@ public class PageListGenerator {
             TargetGenerator gen = new TargetGenerator(confFile, cacheDir, false, false);
             gen.setIsGetModTimeMaybeUpdateSkipped(true);
             gen.setTenantInfo(tenantInfo);
+            gen.setLanguageInfo(languageInfo);
             gen.afterPropertiesSet();
             Set<PageInfo> pageInfos = gen.getPageTargetTree().getPageInfos();
             List<String> pageNames = new ArrayList<String>();

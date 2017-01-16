@@ -31,6 +31,7 @@ import com.marsching.flexiparse.parser.HandlerContext;
 import com.marsching.flexiparse.parser.exception.ParserException;
 
 import de.schlund.pfixcore.workflow.SiteMap;
+import de.schlund.pfixxml.LanguageInfo;
 import de.schlund.pfixxml.TenantInfo;
 import de.schlund.pfixxml.config.EnvironmentProperties;
 import de.schlund.pfixxml.resources.Resource;
@@ -100,6 +101,7 @@ public class XMLGeneratorInfoParsingHandler extends CustomizationAwareParsingHan
             targetBeanBuilder.addConstructorArgReference(SPCacheFactory.class.getName());
             targetBeanBuilder.addConstructorArgReference(SiteMap.class.getName());
             targetBeanBuilder.addPropertyReference("tenantInfo", TenantInfo.class.getName());
+            targetBeanBuilder.addPropertyReference("languageInfo", LanguageInfo.class.getName());
             targetBeanBuilder.addPropertyReference("messageSource", "messageSource");
             BeanDefinition beanDefinition = targetBeanBuilder.getBeanDefinition();
             String beanName = TargetGenerator.class.getName();
