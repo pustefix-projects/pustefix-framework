@@ -37,8 +37,6 @@ import com.marsching.flexiparse.parser.exception.ParserException;
 
 import de.schlund.pfixcore.util.ModuleDescriptor;
 import de.schlund.pfixcore.util.ModuleInfo;
-import de.schlund.pfixxml.LanguageInfo;
-import de.schlund.pfixxml.TenantInfo;
 import de.schlund.pfixxml.config.EnvironmentProperties;
 
 public class DocrootRequestHandlerParsingHandler implements ParsingHandler {
@@ -96,9 +94,7 @@ public class DocrootRequestHandlerParsingHandler implements ParsingHandler {
             beanBuilder.addPropertyValue("i18NPaths", staticPathInfo.getI18NPaths());
             beanBuilder.addPropertyValue("i18NBase", staticPathInfo.isBaseI18N());
             beanBuilder.addPropertyValue("mode", EnvironmentProperties.getProperties().getProperty("mode"));
-            beanBuilder.addPropertyReference("tenantInfo", TenantInfo.class.getName());
-            beanBuilder.addPropertyReference("languageInfo", LanguageInfo.class.getName());
-            
+
             context.getObjectTreeElement().addObject(new BeanDefinitionHolder(beanBuilder.getBeanDefinition(), "org.pustefixframework.http.DocrootRequestHandler"));
             
         }

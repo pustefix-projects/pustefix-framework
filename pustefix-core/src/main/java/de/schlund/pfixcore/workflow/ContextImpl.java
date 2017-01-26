@@ -24,15 +24,23 @@ import java.util.concurrent.ConcurrentMap;
 
 import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSessionBindingEvent;
 import javax.servlet.http.HttpSessionBindingListener;
 
+import org.apache.log4j.Logger;
 import org.pustefixframework.config.contextxmlservice.ContextConfig;
 import org.pustefixframework.config.contextxmlservice.PageRequestConfig;
 import org.pustefixframework.config.project.ProjectInfo;
 import org.pustefixframework.container.spring.beans.TenantScope;
 import org.pustefixframework.http.AbstractPustefixRequestHandler;
+import org.pustefixframework.util.LocaleUtils;
 import org.springframework.cache.interceptor.SimpleKeyGenerator;
+import org.springframework.web.context.request.RequestAttributes;
+import org.springframework.web.context.request.RequestContextHolder;
+import org.springframework.web.context.request.ServletRequestAttributes;
+import org.springframework.web.servlet.LocaleResolver;
+import org.springframework.web.servlet.support.RequestContextUtils;
 
 import de.schlund.pfixcore.auth.Authentication;
 import de.schlund.pfixcore.exception.PustefixApplicationException;
@@ -52,6 +60,8 @@ import de.schlund.util.statuscodes.StatusCode;
 
 public class ContextImpl implements AccessibilityChecker, ExtendedContext, TokenManager, HttpSessionBindingListener {
     
+    private Logger LOG = Logger.getLogger(ContextImpl.class);
+
     private SessionContextImpl              sessioncontext;
     private ServerContextImpl               servercontext;
     private ThreadLocal<RequestContextImpl> requestcontextstore = new ThreadLocal<RequestContextImpl>();
@@ -217,6 +227,20 @@ public class ContextImpl implements AccessibilityChecker, ExtendedContext, Token
         if(matchingLang != null) {
             getRequestContextForCurrentThreadWithError().setLanguage(matchingLang);
             sessioncontext.setLanguage(matchingLang);
+
+            RequestAttributes reqAttrs = RequestContextHolder.getRequestAttributes();
+            if(reqAttrs instanceof ServletRequestAttributes) {
+                HttpServletRequest req = ((ServletRequestAttributes)reqAttrs).getRequest();
+                HttpServletResponse res = ((ServletRequestAttributes)reqAttrs).getResponse();
+                LocaleResolver resolver = RequestContextUtils.getLocaleResolver(req);
+                if(resolver != null) {
+                    try {
+                        resolver.setLocale(req, res, LocaleUtils.getLocale(matchingLang));
+                    } catch(UnsupportedOperationException x) {
+                        LOG.warn("LocaleResolver doesn't support setting locale", x);
+                    }
+                }
+            }
         }
     }
 

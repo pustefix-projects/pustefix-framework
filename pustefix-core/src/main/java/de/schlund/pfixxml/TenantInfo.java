@@ -9,19 +9,13 @@ import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Set;
 
-import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletRequest;
 
-import org.apache.log4j.Logger;
 import org.pustefixframework.container.spring.beans.TenantScope;
 import org.pustefixframework.util.LocaleUtils;
 
-import de.schlund.pfixxml.config.EnvironmentProperties;
-
 public class TenantInfo {
-    
-    private Logger LOG = Logger.getLogger(TenantInfo.class);
-    
+
     private List<Tenant> tenants = new ArrayList<Tenant>();
     private Map<String, Tenant> nameToTenant = new HashMap<String, Tenant>();
     private Set<String> languagePrefixes = new HashSet<String>();
@@ -38,35 +32,7 @@ public class TenantInfo {
      * @return the current tenant or null if no tenants are configured
      */
     public Tenant getTenant(HttpServletRequest request) {
-        Tenant tenant = (Tenant)request.getAttribute(TenantScope.REQUEST_ATTRIBUTE_TENANT);
-        if(tenant == null && !tenants.isEmpty()) {
-            tenant = getMatchingTenant(request);
-            if(tenant == null) {
-                //check if tenant was provided as cookie (only allowed at development time)
-                if(!"prod".equals(EnvironmentProperties.getProperties().getProperty("mode"))) {
-                    Cookie[] cookies = request.getCookies();
-                    if(cookies != null) {
-                        for(Cookie cookie: cookies) {
-                            if(cookie.getName().equals(TenantScope.REQUEST_ATTRIBUTE_TENANT)) {
-                                String tenantName = cookie.getValue();
-                                if(tenantName != null) {
-                                    tenant = getTenant(tenantName);
-                                    break;
-                                }
-                            }
-                        }
-                    }
-                }
-                if(tenant == null) {
-                    tenant = tenants.get(0);
-                }
-            }
-            request.setAttribute(TenantScope.REQUEST_ATTRIBUTE_TENANT, tenant);
-            if(LOG.isDebugEnabled()) {
-                LOG.debug("Set tenant for current request: " + tenant.getName());
-            }
-        }
-        return tenant;
+        return (Tenant)request.getAttribute(TenantScope.REQUEST_ATTRIBUTE_TENANT);
     }
     
     public Tenant getMatchingTenant(HttpServletRequest req) {

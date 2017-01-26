@@ -56,7 +56,6 @@ import org.pustefixframework.container.spring.beans.TenantScope;
 import org.pustefixframework.container.spring.http.UriProvidingHttpRequestHandler;
 import org.pustefixframework.util.LogUtils;
 import org.pustefixframework.util.NetUtils;
-import org.pustefixframework.util.URLUtils;
 import org.pustefixframework.util.net.IPRangeMatcher;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.web.context.ServletContextAware;
@@ -335,9 +334,7 @@ public abstract class AbstractPustefixRequestHandler implements PageProvider, Se
             }
             res.sendRedirect(req.getRequestURL().toString());
         }
-        
-        initializeRequest(req, tenantInfo, languageInfo);
-        
+
         // Set P3P-Header if needed to make sure it is 
         // set for every response (even redirects).
         String p3pHeader = getServletManagerConfig().getProperties().getProperty(PROP_P3PHEADER);
@@ -352,40 +349,6 @@ public abstract class AbstractPustefixRequestHandler implements PageProvider, Se
         }
             
     }
-    
-    public static void initializeRequest(HttpServletRequest request, TenantInfo tenantInfo, LanguageInfo languageInfo) {
-        if(tenantInfo != null && !tenantInfo.getTenants().isEmpty()) {
-            Tenant matchingTenant = tenantInfo.getTenant(request);
-            if(matchingTenant.useLangPrefix()) {
-                String matchingLanguage = matchingTenant.getDefaultLanguage();
-                String pathPrefix = URLUtils.getFirstPathComponent(request.getPathInfo());
-                if(pathPrefix != null) {
-                    if(tenantInfo.isLanguagePrefix(pathPrefix)) {
-                        String language = matchingTenant.getSupportedLanguageByCode(pathPrefix);
-                        if(language != null) {
-                            matchingLanguage = language;
-                        } else {
-                            matchingLanguage = matchingTenant.getDefaultLanguage();
-                        }
-                    }
-                }
-                request.setAttribute(AbstractPustefixRequestHandler.REQUEST_ATTR_LANGUAGE, matchingLanguage);
-            } else if(matchingTenant.getSupportedLanguages().size() == 1) {
-                request.setAttribute(AbstractPustefixRequestHandler.REQUEST_ATTR_LANGUAGE, matchingTenant.getDefaultLanguage());
-            }
-        } else if(languageInfo != null && !languageInfo.getSupportedLanguages().isEmpty()) {
-            String matchingLanguage = languageInfo.getDefaultLanguage();
-            String pathPrefix = URLUtils.getFirstPathComponent(request.getPathInfo());
-            if(pathPrefix != null) {
-                String language = languageInfo.getSupportedLanguageByCode(pathPrefix);
-                if(language != null && !language.equals(languageInfo.getDefaultLanguage())) {
-                    matchingLanguage = language;
-                }
-            }
-            request.setAttribute(AbstractPustefixRequestHandler.REQUEST_ATTR_LANGUAGE, matchingLanguage);
-        }
-    }
-    
     
     public void afterPropertiesSet() throws Exception {
         init();

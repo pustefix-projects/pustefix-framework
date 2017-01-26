@@ -15,7 +15,6 @@
  * along with PFIXCORE; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  */
-
 package org.pustefixframework.config.project.parser;
 
 import java.util.ArrayList;
@@ -24,6 +23,8 @@ import java.util.List;
 
 import org.pustefixframework.config.customization.CustomizationAwareParsingHandler;
 import org.pustefixframework.config.generic.ParsingUtils;
+import org.pustefixframework.http.PustefixInitInterceptor;
+import org.pustefixframework.web.servlet.i18n.PustefixLocaleResolverPostProcessor;
 import org.springframework.beans.factory.config.BeanDefinition;
 import org.springframework.beans.factory.support.BeanDefinitionBuilder;
 import org.springframework.beans.factory.support.BeanDefinitionRegistry;
@@ -32,14 +33,10 @@ import com.marsching.flexiparse.configuration.RunOrder;
 import com.marsching.flexiparse.parser.HandlerContext;
 import com.marsching.flexiparse.parser.exception.ParserException;
 
+import de.schlund.pfixxml.LanguageInfo;
 import de.schlund.pfixxml.Tenant;
 import de.schlund.pfixxml.TenantInfo;
 
-/**
- * 
- * @author mleidig@schlund.de
- *
- */
 public class ProjectParsingHandler extends CustomizationAwareParsingHandler {
 
     public void handleNodeIfActive(HandlerContext context) throws ParserException {
@@ -57,9 +54,17 @@ public class ProjectParsingHandler extends CustomizationAwareParsingHandler {
             BeanDefinitionRegistry beanRegistry = ParsingUtils.getSingleTopObject(BeanDefinitionRegistry.class, context);
             beanRegistry.registerBeanDefinition(TenantInfo.class.getName(), beanDefinition);
             beanRegistry.registerAlias(TenantInfo.class.getName(), "pustefixTenantInfo");
-            
-        }  
-      
+
+            beanBuilder = BeanDefinitionBuilder.genericBeanDefinition(PustefixInitInterceptor.class);
+            beanBuilder.setScope("singleton");
+            beanBuilder.addPropertyReference("tenantInfo", TenantInfo.class.getName());
+            beanBuilder.addPropertyReference("languageInfo", LanguageInfo.class.getName());
+            beanRegistry.registerBeanDefinition(PustefixInitInterceptor.class.getName(), beanBuilder.getBeanDefinition());
+
+            beanBuilder = BeanDefinitionBuilder.genericBeanDefinition(PustefixLocaleResolverPostProcessor.class);
+            beanBuilder.setScope("singleton");
+            beanRegistry.registerBeanDefinition(PustefixLocaleResolverPostProcessor.class.getName(), beanBuilder.getBeanDefinition());
+        }
     }
 
 }

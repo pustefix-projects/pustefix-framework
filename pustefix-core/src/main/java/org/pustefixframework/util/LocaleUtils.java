@@ -22,6 +22,14 @@ public class LocaleUtils {
         return parts[0].toLowerCase();
     }
     
+    public static String getShortString(Locale locale) {
+        String str = locale.getLanguage();
+        if(!locale.getCountry().isEmpty()) {
+            str += "_" + locale.getCountry();
+        }
+        return str;
+    }
+
     public static void main(String[] args) {
         System.out.println(getLocale("en-us"));
         System.out.println(getLocale("en_US"));
