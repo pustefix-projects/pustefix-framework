@@ -26,6 +26,8 @@
 
     <page name="A" alias="fooA"/>
 
+    <page name="mvctest"/>
+
     <page-group key="g" name="test">
       <page-group key="g1" name="one">
         <page name="A" default="true"/>
