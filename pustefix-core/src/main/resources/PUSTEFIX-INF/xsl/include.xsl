@@ -998,6 +998,7 @@
   <xsl:template match="pfx:arg"/>
 
   <xsl:template match="pfx:message">
+    <xsl:param name="__env"/>
     <xsl:choose>
       <xsl:when test="$__target_key = '__NONE__'">
         <xsl:call-template name="pfx:message">
@@ -1011,11 +1012,21 @@
               </xsl:otherwise>
             </xsl:choose>
           </xsl:with-param>
-          <xsl:with-param name="arg1"><xsl:apply-templates select="pfx:arg[1]/node()"/></xsl:with-param>
-          <xsl:with-param name="arg2"><xsl:apply-templates select="pfx:arg[2]/node()"/></xsl:with-param>
-          <xsl:with-param name="arg3"><xsl:apply-templates select="pfx:arg[3]/node()"/></xsl:with-param>
-          <xsl:with-param name="arg4"><xsl:apply-templates select="pfx:arg[4]/node()"/></xsl:with-param>
-          <xsl:with-param name="arg5"><xsl:apply-templates select="pfx:arg[5]/node()"/></xsl:with-param>
+          <xsl:with-param name="arg1">
+            <xsl:apply-templates select="pfx:arg[1]/node()"><xsl:with-param name="__env" select="$__env"/></xsl:apply-templates>
+          </xsl:with-param>
+          <xsl:with-param name="arg2">
+            <xsl:apply-templates select="pfx:arg[2]/node()"><xsl:with-param name="__env" select="$__env"/></xsl:apply-templates>
+          </xsl:with-param>
+          <xsl:with-param name="arg3">
+            <xsl:apply-templates select="pfx:arg[3]/node()"><xsl:with-param name="__env" select="$__env"/></xsl:apply-templates>
+          </xsl:with-param>
+          <xsl:with-param name="arg4">
+            <xsl:apply-templates select="pfx:arg[4]/node()"><xsl:with-param name="__env" select="$__env"/></xsl:apply-templates>
+          </xsl:with-param>
+          <xsl:with-param name="arg5">
+            <xsl:apply-templates select="pfx:arg[5]/node()"><xsl:with-param name="__env" select="$__env"/></xsl:apply-templates>
+          </xsl:with-param>
           <xsl:with-param name="disable-output-escaping" select="@disable-output-escaping"/>
         </xsl:call-template>
       </xsl:when>
