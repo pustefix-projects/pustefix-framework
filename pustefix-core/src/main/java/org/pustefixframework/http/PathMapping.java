@@ -11,7 +11,7 @@ public class PathMapping {
 
         //add language prefix
         String prefix = "";
-        if(defaultLanguage != null && !lang.equals(defaultLanguage)) {
+        if(defaultLanguage != null && lang != null && !lang.equals(defaultLanguage)) {
             prefix = LocaleUtils.getLanguagePart(lang);
         }
         //add page flow prefix
