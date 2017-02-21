@@ -113,7 +113,7 @@ public class CookieOnlySessionTrackingStrategy implements SessionTrackingStrateg
                     
                 }
             
-            } else if(req.getRequestedSessionId() != null) { //has invalid session
+            } else if(req.getRequestedSessionId() != null || req.getRequestURI().contains(";jsessionid=")) { //has invalid session
                 
                 //requested session id is invalid, therefor we make a redirect and
                 //delete the session cookie, giving loadbalancers relying on sticky

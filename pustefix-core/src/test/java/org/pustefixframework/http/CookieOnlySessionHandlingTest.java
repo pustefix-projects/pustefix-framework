@@ -20,7 +20,7 @@ public class CookieOnlySessionHandlingTest extends AbstractSessionHandlingTest {
         HTTP_PORT = findFreePort();
         HTTPS_PORT = findFreePort();
         try {
-            server = createServer(HTTP_PORT, HTTPS_PORT, CookieOnlySessionTrackingStrategy.class, false);
+            createServer(HTTP_PORT, HTTPS_PORT, CookieOnlySessionTrackingStrategy.class);
         } catch(Exception x) {
             throw new RuntimeException("Error creating embedded server", x);
         }

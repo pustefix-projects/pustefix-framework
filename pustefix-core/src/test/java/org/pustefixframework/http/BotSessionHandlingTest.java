@@ -19,7 +19,7 @@ public class BotSessionHandlingTest extends AbstractSessionHandlingTest {
         HTTP_PORT = findFreePort();
         HTTPS_PORT = findFreePort();
         try {
-            server = createServer(HTTP_PORT, HTTPS_PORT, BotSessionTrackingStrategy.class, false);
+            createServer(HTTP_PORT, HTTPS_PORT, BotSessionTrackingStrategy.class);
         } catch(Exception x) {
             throw new RuntimeException("Error creating embedded server", x);
         }
