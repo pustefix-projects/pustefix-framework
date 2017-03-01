@@ -346,7 +346,7 @@ public class RequestContextImpl implements Cloneable, AuthorizationInterceptor {
         spdoc = handleRequestWorker(preq);
 
         boolean forceSSL = false;
-        if (getConfigForCurrentPageRequest() != null && getConfigForCurrentPageRequest().isSSL() && !preq.getOriginalScheme().equals("https")) {
+        if (getConfigForCurrentPageRequest() != null && getConfigForCurrentPageRequest().isSSL() && !preq.getScheme().equals("https")) {
             forceSSL = true;
         }
 

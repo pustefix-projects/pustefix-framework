@@ -44,6 +44,7 @@ import javax.management.ObjectName;
 import javax.servlet.ServletContext;
 import javax.servlet.ServletException;
 import javax.servlet.SessionCookieConfig;
+import javax.servlet.SessionTrackingMode;
 import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -366,13 +367,23 @@ public abstract class AbstractPustefixRequestHandler implements PageProvider, Se
         }
         
         initServletEncoding();
-        
-        if(sessionTrackingStrategy == null) sessionTrackingStrategy = new CookieSessionTrackingStrategy();
+
+        if(sessionTrackingStrategy == null) {
+            Set<SessionTrackingMode> modes = ctx.getEffectiveSessionTrackingModes();
+            if(modes.contains(SessionTrackingMode.COOKIE)) {
+                if(modes.contains(SessionTrackingMode.URL)) {
+                    sessionTrackingStrategy = new CookieSessionTrackingStrategy();
+                } else {
+                    sessionTrackingStrategy = new CookieOnlySessionTrackingStrategy();
+                }
+            } else if(modes.contains(SessionTrackingMode.URL)) {
+                sessionTrackingStrategy = new URLRewriteSessionTrackingStrategy();
+            }
+        }
         sessionTrackingStrategy.init(this);
         botSessionTrackingStrategy = new BotSessionTrackingStrategy();
         botSessionTrackingStrategy.init(this);
     }
-
 
 
     public void callProcess(PfixServletRequest preq, HttpServletRequest req, HttpServletResponse res) throws ServletException, IOException {

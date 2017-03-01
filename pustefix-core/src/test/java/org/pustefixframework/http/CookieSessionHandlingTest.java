@@ -1,14 +1,9 @@
 package org.pustefixframework.http;
 
-import java.io.IOException;
-import java.util.regex.Matcher;
-
 import org.apache.commons.httpclient.Cookie;
-import org.apache.commons.httpclient.Header;
 import org.apache.commons.httpclient.HttpClient;
 import org.apache.commons.httpclient.HttpMethod;
 import org.apache.commons.httpclient.HttpStatus;
-import org.apache.commons.httpclient.URIException;
 import org.apache.commons.httpclient.cookie.CookiePolicy;
 import org.apache.commons.httpclient.methods.GetMethod;
 
@@ -29,7 +24,7 @@ public class CookieSessionHandlingTest extends AbstractSessionHandlingTest {
         
         HttpClient client = new HttpClient();
 
-        HttpMethod method = new GetMethod("http://localhost:"+HTTP_PORT+"?nossl&foo=bar");
+        HttpMethod method = new GetMethod("http://localhost:"+HTTP_PORT+"?foo=bar");
         method.setFollowRedirects(false);
         method.getParams().setCookiePolicy(CookiePolicy.BROWSER_COMPATIBILITY);
             
@@ -77,7 +72,7 @@ public class CookieSessionHandlingTest extends AbstractSessionHandlingTest {
         cookie.setPath("/");
         client.getState().addCookie(cookie);
 
-        HttpMethod method = new GetMethod("http://localhost:"+HTTP_PORT+"?nossl&foo=bar");
+        HttpMethod method = new GetMethod("http://localhost:"+HTTP_PORT+"?foo=bar");
         method.setFollowRedirects(false);
         method.getParams().setCookiePolicy(CookiePolicy.BROWSER_COMPATIBILITY);
             
@@ -176,7 +171,7 @@ public class CookieSessionHandlingTest extends AbstractSessionHandlingTest {
         
         HttpClient client = new HttpClient();
 
-        HttpMethod method = new GetMethod("http://localhost:"+HTTP_PORT+"?nossl&foo=bar");
+        HttpMethod method = new GetMethod("http://localhost:"+HTTP_PORT+"?foo=bar");
         method.setFollowRedirects(false);
         method.getParams().setCookiePolicy(CookiePolicy.IGNORE_COOKIES);
             
@@ -234,7 +229,7 @@ public class CookieSessionHandlingTest extends AbstractSessionHandlingTest {
         
         HttpClient client = new HttpClient();
 
-        HttpMethod method = new GetMethod("http://localhost:"+HTTP_PORT+"?foo=bar");
+        HttpMethod method = new GetMethod("http://localhost:"+HTTP_PORT+"/ssl?foo=bar");
         method.setFollowRedirects(false);
         method.getParams().setCookiePolicy(CookiePolicy.BROWSER_COMPATIBILITY);
             
@@ -291,7 +286,7 @@ public class CookieSessionHandlingTest extends AbstractSessionHandlingTest {
         
         HttpClient client = new HttpClient();
 
-        HttpMethod method = new GetMethod("http://localhost:"+HTTP_PORT+"?foo=bar");
+        HttpMethod method = new GetMethod("http://localhost:"+HTTP_PORT+"/ssl?foo=bar");
         method.setFollowRedirects(false);
         method.getParams().setCookiePolicy(CookiePolicy.IGNORE_COOKIES);
             
@@ -334,7 +329,7 @@ public class CookieSessionHandlingTest extends AbstractSessionHandlingTest {
         
         HttpClient client = new HttpClient();
 
-        HttpMethod method = new GetMethod("http://localhost:"+HTTP_PORT+"/;jsessionid=xyz?nossl&foo=bar");
+        HttpMethod method = new GetMethod("http://localhost:"+HTTP_PORT+"/;jsessionid=xyz?foo=bar");
         method.setFollowRedirects(false);
         method.getParams().setCookiePolicy(CookiePolicy.BROWSER_COMPATIBILITY);
             
@@ -394,7 +389,7 @@ public class CookieSessionHandlingTest extends AbstractSessionHandlingTest {
         cookie.setPath("/");
         client.getState().addCookie(cookie);
         
-        HttpMethod method = new GetMethod("http://localhost:"+HTTP_PORT+"/?nossl&foo=bar");
+        HttpMethod method = new GetMethod("http://localhost:"+HTTP_PORT+"/?foo=bar");
         method.setFollowRedirects(false);
         method.getParams().setCookiePolicy(CookiePolicy.BROWSER_COMPATIBILITY);
         
@@ -568,7 +563,7 @@ public class CookieSessionHandlingTest extends AbstractSessionHandlingTest {
         
         HttpClient client = new HttpClient();
 
-        HttpMethod method = new GetMethod("http://localhost:"+HTTP_PORT+"/;jsessionid=xyz?nossl&foo=bar");
+        HttpMethod method = new GetMethod("http://localhost:"+HTTP_PORT+"/;jsessionid=xyz?foo=bar");
         method.setFollowRedirects(false);
         method.getParams().setCookiePolicy(CookiePolicy.IGNORE_COOKIES);
             
@@ -652,7 +647,7 @@ public class CookieSessionHandlingTest extends AbstractSessionHandlingTest {
         
         HttpClient client = new HttpClient();
 
-        HttpMethod method = new GetMethod("http://localhost:"+HTTP_PORT+"/;jsessionid=xyz?foo=bar");
+        HttpMethod method = new GetMethod("http://localhost:"+HTTP_PORT+"/ssl;jsessionid=xyz?foo=bar");
         method.setFollowRedirects(false);
         method.getParams().setCookiePolicy(CookiePolicy.BROWSER_COMPATIBILITY);
             
@@ -720,7 +715,7 @@ public class CookieSessionHandlingTest extends AbstractSessionHandlingTest {
         
         HttpClient client = new HttpClient();
 
-        HttpMethod method = new GetMethod("http://localhost:"+HTTP_PORT+"/;jsessionid=xyz?foo=bar");
+        HttpMethod method = new GetMethod("http://localhost:"+HTTP_PORT+"/ssl;jsessionid=xyz?foo=bar");
         method.setFollowRedirects(false);
         method.getParams().setCookiePolicy(CookiePolicy.IGNORE_COOKIES);
             
@@ -778,7 +773,7 @@ public class CookieSessionHandlingTest extends AbstractSessionHandlingTest {
 
         //get HTTP session
         
-        HttpMethod method = new GetMethod("http://localhost:"+HTTP_PORT+"?nossl&foo=bar");
+        HttpMethod method = new GetMethod("http://localhost:"+HTTP_PORT+"?foo=bar");
         method.setFollowRedirects(false);
         method.getParams().setCookiePolicy(CookiePolicy.BROWSER_COMPATIBILITY);
             
@@ -818,7 +813,7 @@ public class CookieSessionHandlingTest extends AbstractSessionHandlingTest {
         
         //get HTTPS session
         
-        method = new GetMethod("http://localhost:"+HTTP_PORT+"?foo=bar");
+        method = new GetMethod("http://localhost:"+HTTP_PORT+"/ssl?foo=bar");
         method.setFollowRedirects(false);
         method.getParams().setCookiePolicy(CookiePolicy.BROWSER_COMPATIBILITY);
             
@@ -897,7 +892,7 @@ public class CookieSessionHandlingTest extends AbstractSessionHandlingTest {
         
         HttpClient client = new HttpClient();
 
-        HttpMethod method = new GetMethod("http://localhost:"+HTTP_PORT+"?nossl&foo=bar");
+        HttpMethod method = new GetMethod("http://localhost:"+HTTP_PORT+"?foo=bar");
         method.setFollowRedirects(false);
         method.getParams().setCookiePolicy(CookiePolicy.IGNORE_COOKIES);
             
@@ -920,7 +915,7 @@ public class CookieSessionHandlingTest extends AbstractSessionHandlingTest {
         assertTrue(method.getResponseBodyAsString().contains("<body>test</body>"));
         assertEquals(1, getCount(method.getResponseBodyAsString()));
         
-        method = new GetMethod("http://localhost:"+HTTP_PORT+"/;jsessionid=" + session + "?foo=bar");
+        method = new GetMethod("http://localhost:"+HTTP_PORT+"/ssl;jsessionid=" + session + "?foo=bar");
         String oldLocation = location;
         method.setFollowRedirects(false);
         method.getParams().setCookiePolicy(CookiePolicy.IGNORE_COOKIES);
@@ -984,95 +979,5 @@ public class CookieSessionHandlingTest extends AbstractSessionHandlingTest {
         assertTrue(method.getResponseBodyAsString().contains("<body>test</body>"));
         assertEquals(1, getCount(method.getResponseBodyAsString()));
     }
-    
-    public static String getSession(String url) {
-        Matcher matcher = PATTERN_URL.matcher(url);
-        if(matcher.matches()) return matcher.group(8);
-        return null;
-    }
-    
-    public static String getSessionFromResponseCookie(HttpMethod method) {
-        Header[] headers = method.getResponseHeaders("Set-Cookie");
-        for(Header header: headers) {
-            String value = header.getValue();
-            if(value != null) {
-                Matcher matcher = COOKIE_SESSION.matcher(value);
-                if(matcher.matches()) return matcher.group(1);
-            }
-        }
-        return null;
-    }
-    
-    public static String getSessionFromRequestCookie(HttpMethod method) {
-        Header[] headers = method.getRequestHeaders("Cookie");
-        for(Header header: headers) {
-            String value = header.getValue();
-            if(value != null) {
-                Matcher matcher = COOKIE_SESSION.matcher(value);
-                if(matcher.matches()) return matcher.group(1);
-            }
-        }
-        return null;
-    }
-    
-    public static String getProtocol(String url) {
-        Matcher matcher = PATTERN_URL.matcher(url);
-        if(matcher.matches()) return matcher.group(1);
-        return null;
-    }
-    
-    public static String getHost(String url) {
-        Matcher matcher = PATTERN_URL.matcher(url);
-        if(matcher.matches()) return matcher.group(3);
-        return null;
-    }
-    
-    public static int getPort(String url) {
-        Matcher matcher = PATTERN_URL.matcher(url);
-        if(matcher.matches()) return Integer.parseInt(matcher.group(5));
-        return 80;
-    }
-    
-    public static int getCount(String content) {
-        Matcher matcher = PATTERN_COUNT.matcher(content);
-        if(matcher.matches()) return Integer.parseInt(matcher.group(1));
-        return 0;
-    }
-    
-    public static void printDump(HttpMethod method) {
-        System.out.println("--------------------------------------------------------------------------------");
-        System.out.println(dump(method));
-        System.out.println("--------------------------------------------------------------------------------");
-    }
-    
-    public static String dump(HttpMethod method) {
-        StringBuilder sb = new StringBuilder();
-        try {
-            sb.append(method.getURI());
-        } catch (URIException e) {
-            sb.append("-");
-        }
-        sb.append("\n\n");
-        sb.append(method.getName()).append(" ").append(method.getPath()).append(method.getQueryString()).append("\n");
-        Header[] headers = method.getRequestHeaders();
-        for(Header header: headers) {
-            sb.append(header.getName()).append(": ").append(header.getValue()).append("\n");
-        }
-        sb.append("\n");
-        sb.append(method.getStatusLine()).append("\n");
-        headers = method.getResponseHeaders();
-        for(Header header: headers) {
-            sb.append(header.getName()).append(": ").append(header.getValue()).append("\n");
-        }
-        Header ctypeHeader = method.getResponseHeader("Content-Type");
-        if(ctypeHeader != null && ctypeHeader.getValue().startsWith("text/")) {
-            try {
-                sb.append("\n").append(method.getResponseBodyAsString()).append("\n");
-            } catch(IOException e) {
-                //ignore
-            }
-        }
-        return sb.toString();
-    }
-   
+
 }

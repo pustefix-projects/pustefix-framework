@@ -52,8 +52,6 @@ public class DerefRequestHandlerParsingHandler implements ParsingHandler {
             ServletManagerConfig config = new DerefServiceConfig();
             context.getObjectTreeElement().addObject(config);
 
-            SessionTrackingStrategyInfo strategyInfo = ParsingUtils.getSingleSubObjectFromRoot(SessionTrackingStrategyInfo.class, context);
-            
             beanBuilder = BeanDefinitionBuilder.genericBeanDefinition(DerefRequestHandler.class);
             beanBuilder.setScope("singleton");
             beanBuilder.setInitMethodName("init");
@@ -62,7 +60,10 @@ public class DerefRequestHandlerParsingHandler implements ParsingHandler {
             beanBuilder.addPropertyValue("mustSign", true);
             beanBuilder.addPropertyValue("configuration", config);
             beanBuilder.addPropertyValue("sessionAdmin", new RuntimeBeanReference(SessionAdmin.class.getName()));
-            beanBuilder.addPropertyValue("sessionTrackingStrategy", strategyInfo.getSessionTrackingStrategyInstance());
+            SessionTrackingStrategyInfo strategyInfo = ParsingUtils.getSingleSubObjectFromRoot(SessionTrackingStrategyInfo.class, context, false);
+            if(strategyInfo != null) {
+                beanBuilder.addPropertyValue("sessionTrackingStrategy", strategyInfo.getSessionTrackingStrategyInstance());
+            }
             beanBuilder.addPropertyValue("tenantInfo", new RuntimeBeanReference(TenantInfo.class.getName()));
             beanBuilder.addPropertyValue("languageInfo", new RuntimeBeanReference(LanguageInfo.class.getName()));
             beanBuilder.addPropertyValue("siteMap", new RuntimeBeanReference(SiteMap.class.getName()));

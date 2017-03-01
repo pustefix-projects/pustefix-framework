@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="utf-8"?>
+<project-config xmlns="http://www.pustefix-framework.org/2008/namespace/project-config"
+                xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+                xsi:schemaLocation="http://www.pustefix-framework.org/2008/namespace/project-config 
+                                    http://www.pustefix-framework.org/2008/namespace/project-config.xsd">
+
+  <project>
+    <name>test</name>
+    <description>test application</description>
+  </project>
+
+  <xml-generator>
+    <config-file>docroot:/WEB-INF/depend.xml</config-file>
+  </xml-generator>
+
+  <application>
+    <docroot-path>docroot:/htdocs</docroot-path>
+    <context-xml-service>
+      <config-file>docroot:/WEB-INF/config.conf.xml</config-file>
+    </context-xml-service>
+  </application>
+
+  <properties/>
+
+</project-config>

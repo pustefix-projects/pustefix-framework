@@ -77,4 +77,27 @@
    </para>
   </section>
 
+  <section xml:id="news.0_20_26">
+    <title>What's new in Pustefix 0.20.26</title>
+    <para>
+      Added multilanguage support for projects without tenants, i.e. specifying multiple supported languages in <literal>project.xml</literal>, an own version 
+      of a page per language can be generated (like it's already done for multitenant projects with multiple languages).
+    </para>
+    <para>
+      Added support for the Spring <literal>Locale</literal> mechanism, i.e. by default Pustefix makes its currently set language available via Spring's
+      <literal>LocaleResolver</literal> mechanism, e.g. for passing the <literal>Locale</literal> to request dispatching methods. 
+    </para>
+  </section>
+
+  <section xml:id="news.0_20_27">
+    <title>What's new in Pustefix 0.20.27</title>
+    <para>
+      Added support for session tracking modes introduced with Servlet API 3.0, i.e. the Pustefix <literal>SessionTrackingStrategy</literal> now is derived 
+      from the session tracking mode setting done in <literal>web.xml</literal> (or directly via Servlet API). The <literal>&lt;session-tracking-strategy&gt;</literal>
+      configuration element becomes deprecated and should be replaced by according <literal>&lt;tracking-mode&gt;</literal> settings in <literal>web.xml</literal>
+      (by default <literal>COOKIE</literal> and <literal>URL</literal> tracking modes are set, which corresponds to the Pustefix <literal>COOKIE</literal> 
+      session tracking strategy using cookies with URL fallback, if you want <literal>COOKIEONLY</literal> strategy, you have to set the <literal>COOKIE</literal> tracking mode only).
+   </para>
+  </section>
+
 </chapter>

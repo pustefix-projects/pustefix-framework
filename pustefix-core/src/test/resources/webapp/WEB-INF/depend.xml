@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<make xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+      xsi:noNamespaceSchemaLocation="http://www.pustefix-framework.org/2008/namespace/xml-generator-config.xsd"
+      xmlns:cus="http://www.schlund.de/pustefix/customize"
+      project="test"
+      lang="en_GB">
+
+  <namespaces>
+    <namespace-declaration prefix="pfx" url="http://www.schlund.de/pustefix/core"/>
+    <namespace-declaration prefix="ixsl" url="http://www.w3.org/1999/XSL/Transform"/>
+  </namespaces>
+
+  <global>
+    <param name="outputdoctype-public" value="-//W3C//DTD HTML 4.01//EN"/>
+    <param name="outputdoctype-system" value="http://www.w3.org/TR/html40/strict.dtd"/>
+  </global>
+  
+  <standardmetatags/>
+  <standardmaster/>
+ 
+  <standardpage name="home" xml="xml/frame.xml"/>
+  <standardpage name="ssl" xml="xml/frame.xml"/>
+  
+</make>

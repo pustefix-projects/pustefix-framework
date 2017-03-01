@@ -55,13 +55,6 @@
        (according to sitemaps protocol from http://www.sitemaps.org), 
        to create mobile sitemap specify attribute type="mobile -->
   <searchengine-sitemap/>
-
-  <!-- Supported Session tracking strategies are:
-       - URL: always use URL rewriting 
-       - COOKIE: use cookies if supported by client and server
-       Default is COOKIE.
-  -->
-  <session-tracking-strategy>COOKIEONLY</session-tracking-strategy>
   
   <!-- Set an initial session timeout 'value' (in seconds) used until 
        more than 'requestlimit' requests are made within a session -->

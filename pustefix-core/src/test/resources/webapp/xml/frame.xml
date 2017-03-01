@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<pfx:document xmlns:pfx="http://www.schlund.de/pustefix/core" xmlns:ixsl="http://www.w3.org/1999/XSL/Transform">
+  <html>
+    <head>
+      <title>Pustefix Sample</title>
+    </head>
+    <body><pfx:maincontent part="content" path="txt/pages" prefix="main_"/></body>
+    <ixsl:if test="/formresult/param[@name='foo']">
+      <ixsl:comment>foo=<ixsl:value-of select="/formresult/param[@name='foo']"/></ixsl:comment>
+    </ixsl:if>
+    <ixsl:comment><ixsl:value-of select="/formresult/counter"/></ixsl:comment>
+  </html>
+</pfx:document>

@@ -7,6 +7,7 @@ import java.net.URL;
 import java.util.HashSet;
 import java.util.Properties;
 import java.util.Set;
+import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import javax.servlet.ServletContainerInitializer;
@@ -19,6 +20,9 @@ import org.apache.catalina.Context;
 import org.apache.catalina.Service;
 import org.apache.catalina.connector.Connector;
 import org.apache.catalina.startup.Tomcat;
+import org.apache.commons.httpclient.Header;
+import org.apache.commons.httpclient.HttpMethod;
+import org.apache.commons.httpclient.URIException;
 import org.apache.commons.httpclient.protocol.Protocol;
 import org.apache.commons.httpclient.protocol.ProtocolSocketFactory;
 import org.apache.log4j.ConsoleAppender;
@@ -53,7 +57,6 @@ public abstract class AbstractSessionHandlingTest extends TestCase {
         logger.addAppender(appender);
         
         Tomcat tomcat = new Tomcat();
-        
         tomcat.setPort(HTTP_PORT);
         
         Connector httpsConnector = new Connector();
@@ -64,7 +67,6 @@ public abstract class AbstractSessionHandlingTest extends TestCase {
         httpsConnector.setAttribute("keystorePass", "password");
 
         URL res = AbstractSessionHandlingTest.class.getClassLoader().getResource("org/pustefixframework/http/keystore");
-
         httpsConnector.setAttribute("keystoreFile", res.toExternalForm());
         httpsConnector.setAttribute("clientAuth", "false");
         httpsConnector.setAttribute("sslProtocol", "TLS");
@@ -72,8 +74,9 @@ public abstract class AbstractSessionHandlingTest extends TestCase {
 
         Service service = tomcat.getService();
         service.addConnector(httpsConnector);
+        tomcat.getConnector().setRedirectPort(HTTPS_PORT);
 
-        Context ctx = tomcat.addContext("", new File(".").getAbsolutePath());
+        Context ctx = tomcat.addWebapp("/", new File("src/test/resources/webapp").getAbsolutePath());
 
         Set<SessionTrackingMode> modes = new HashSet<>();
         if(sessionTrackingStrategy == CookieOnlySessionTrackingStrategy.class) {
@@ -98,8 +101,6 @@ public abstract class AbstractSessionHandlingTest extends TestCase {
         Protocol.registerProtocol("https", protocol);
         
         ctx.addParameter("pustefix.https.port", String.valueOf(httpsPort));
-        Tomcat.addServlet(ctx, "SessionHandlingTestServlet", new SessionHandlingTestServlet(sessionTrackingStrategy, properties));
-        ctx.addServletMappingDecoded("/*", "SessionHandlingTestServlet");
         tomcat.start();
         return tomcat;
     }
@@ -113,6 +114,96 @@ public abstract class AbstractSessionHandlingTest extends TestCase {
         } catch(IOException x) {
             throw new RuntimeException("Can't get free port", x);
         }
+    }
+
+    public static String getProtocol(String url) {
+        Matcher matcher = PATTERN_URL.matcher(url);
+        if(matcher.matches()) return matcher.group(1);
+        return null;
+    }
+
+    public static String getHost(String url) {
+        Matcher matcher = PATTERN_URL.matcher(url);
+        if(matcher.matches()) return matcher.group(3);
+        return null;
+    }
+
+    public static int getPort(String url) {
+        Matcher matcher = PATTERN_URL.matcher(url);
+        if(matcher.matches()) return Integer.parseInt(matcher.group(5));
+        return 80;
+    }
+
+    public static int getCount(String content) {
+        Matcher matcher = PATTERN_COUNT.matcher(content);
+        if(matcher.find()) return Integer.parseInt(matcher.group(1));
+        return 0;
+    }
+
+    public static String getSession(String url) {
+        Matcher matcher = PATTERN_URL.matcher(url);
+        if(matcher.matches()) return matcher.group(8);
+        return null;
+    }
+
+    public static String getSessionFromResponseCookie(HttpMethod method) {
+        Header[] headers = method.getResponseHeaders("Set-Cookie");
+        for(Header header: headers) {
+            String value = header.getValue();
+            if(value != null) {
+                Matcher matcher = COOKIE_SESSION.matcher(value);
+                if(matcher.matches()) return matcher.group(1);
+            }
+        }
+        return null;
+    }
+
+    public static String getSessionFromRequestCookie(HttpMethod method) {
+        Header[] headers = method.getRequestHeaders("Cookie");
+        for(Header header: headers) {
+            String value = header.getValue();
+            if(value != null) {
+                Matcher matcher = COOKIE_SESSION.matcher(value);
+                if(matcher.matches()) return matcher.group(1);
+            }
+        }
+        return null;
+    }
+
+    public static void printDump(HttpMethod method) {
+        System.out.println("--------------------------------------------------------------------------------");
+        System.out.println(dump(method));
+        System.out.println("--------------------------------------------------------------------------------");
+    }
+
+    public static String dump(HttpMethod method) {
+        StringBuilder sb = new StringBuilder();
+        try {
+            sb.append(method.getURI());
+        } catch (URIException e) {
+            sb.append("-");
+        }
+        sb.append("\n\n");
+        sb.append(method.getName()).append(" ").append(method.getPath()).append(method.getQueryString()).append("\n");
+        Header[] headers = method.getRequestHeaders();
+        for(Header header: headers) {
+            sb.append(header.getName()).append(": ").append(header.getValue()).append("\n");
+        }
+        sb.append("\n");
+        sb.append(method.getStatusLine()).append("\n");
+        headers = method.getResponseHeaders();
+        for(Header header: headers) {
+            sb.append(header.getName()).append(": ").append(header.getValue()).append("\n");
+        }
+        Header ctypeHeader = method.getResponseHeader("Content-Type");
+        if(ctypeHeader != null && ctypeHeader.getValue().startsWith("text/")) {
+            try {
+                sb.append("\n").append(method.getResponseBodyAsString()).append("\n");
+            } catch(IOException e) {
+                //ignore
+            }
+        }
+        return sb.toString();
     }
 
 
