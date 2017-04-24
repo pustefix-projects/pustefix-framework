@@ -57,6 +57,7 @@ public abstract class AbstractSessionHandlingTest extends TestCase {
         logger.addAppender(appender);
         
         Tomcat tomcat = new Tomcat();
+        tomcat.setBaseDir("target/tomcat");
         tomcat.setPort(HTTP_PORT);
         
         Connector httpsConnector = new Connector();
