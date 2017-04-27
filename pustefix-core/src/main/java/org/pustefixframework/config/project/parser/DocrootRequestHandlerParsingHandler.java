@@ -94,6 +94,8 @@ public class DocrootRequestHandlerParsingHandler implements ParsingHandler {
             beanBuilder.addPropertyValue("i18NPaths", staticPathInfo.getI18NPaths());
             beanBuilder.addPropertyValue("i18NBase", staticPathInfo.isBaseI18N());
             beanBuilder.addPropertyValue("mode", EnvironmentProperties.getProperties().getProperty("mode"));
+            beanBuilder.addPropertyValue("defaultExpires", staticPathInfo.getDefaultExpires());
+            beanBuilder.addPropertyValue("expiresByType", staticPathInfo.getExpiresByType());
 
             context.getObjectTreeElement().addObject(new BeanDefinitionHolder(beanBuilder.getBeanDefinition(), "org.pustefixframework.http.DocrootRequestHandler"));
             

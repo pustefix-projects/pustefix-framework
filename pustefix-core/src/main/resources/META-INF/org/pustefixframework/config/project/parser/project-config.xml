@@ -50,7 +50,12 @@
   <handler class="org.pustefixframework.config.project.parser.StaticPathParsingHandler">
     <match>/p:project-config/p:application/p:static//p:path</match>
   </handler>
-  
+
+  <handler class="org.pustefixframework.config.project.parser.ExpiresParsingHandler">
+    <match>/p:project-config/p:application/p:static</match>
+    <match>/p:project-config/p:application/p:static//p:expires</match>
+  </handler>
+
   <!-- Adds the SessionCleaner bean -->
   <handler class="org.pustefixframework.config.project.parser.SessionCleanerParsingHandler">
     <match>/p:project-config/p:application//p:context-xml-service</match>

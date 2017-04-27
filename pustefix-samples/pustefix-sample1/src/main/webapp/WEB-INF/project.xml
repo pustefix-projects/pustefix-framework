@@ -101,7 +101,8 @@
     </deref-service>
     -->
     
-    <static>
+    <static expires="A3600">
+      <expires type="image/png">A7200</expires>
       <path>img</path>
     </static>
     

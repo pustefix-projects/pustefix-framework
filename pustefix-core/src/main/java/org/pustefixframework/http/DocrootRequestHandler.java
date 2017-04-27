@@ -21,8 +21,10 @@ import java.io.BufferedOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 
 import javax.servlet.ServletContext;
@@ -31,6 +33,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import org.apache.log4j.Logger;
+import org.pustefixframework.config.project.Expires;
 import org.pustefixframework.container.spring.beans.TenantScope;
 import org.pustefixframework.container.spring.http.UriProvidingHttpRequestHandler;
 import org.springframework.beans.factory.InitializingBean;
@@ -64,6 +67,9 @@ public class DocrootRequestHandler implements UriProvidingHttpRequestHandler, Se
     private String mode;
     
     private Set<String> extractedPaths = new HashSet<String>();
+
+    private Expires defaultExpires = new Expires(Expires.Base.ACCESS, 3600);
+    private Map<String, Expires> expiresByType = new HashMap<>();
 
     public ServletContext getServletContext() {
         return servletContext;
@@ -244,7 +250,7 @@ public class DocrootRequestHandler implements UriProvidingHttpRequestHandler, Se
             res.setHeader("Cache-Control", "no-cache, no-store, private, must-revalidate");
             res.setHeader("Pragma", "no-cache");
         } else if(mode==null || mode.equals("") || mode.equals("prod")) {
-            res.setHeader("Cache-Control", "max-age=3600");
+            res.setHeader("Cache-Control", "max-age=" + getExpires(type, lastModified));
         } else {
             res.setHeader("Cache-Control", "max-age=3, must-revalidate");
         }
@@ -279,7 +285,33 @@ public class DocrootRequestHandler implements UriProvidingHttpRequestHandler, Se
         return MD5Utils.hex_md5(path + length + modtime);
     }
 
-    
+    public void setDefaultExpires(Expires defaultExpires) {
+        this.defaultExpires = defaultExpires;
+    }
+
+    public void setExpiresByType(Map<String, Expires> expiresByType) {
+        this.expiresByType = expiresByType;
+    }
+
+    private long getExpires(String contentType, long lastModified) {
+        Expires expires = null;
+        if(expiresByType != null) {
+            expires = expiresByType.get(contentType);
+        }
+        if(expires == null) {
+            expires = defaultExpires;
+        }
+        if(expires.getBase() == Expires.Base.MODIFICATION) {
+            long maxAge = lastModified / 1000 + expires.getSeconds() - System.currentTimeMillis() / 1000;
+            if(maxAge < 0) {
+                maxAge = 0;
+            }
+            return maxAge;
+        } else {
+            return expires.getSeconds();
+        }
+    }
+
     public void afterPropertiesSet() throws Exception {
         for(String path: passthroughPaths) {
             if(path.startsWith("modules/") || path.equals("modules")) {
