@@ -288,7 +288,7 @@
       <!-- Path to the configuration file for the service -->
       <config-file>docroot:/WEB-INF/direct.conf.xml</config-file>
     </direct-output-service>
-    
+
     <!-- Extra paths for static resources (set i18n attribute to "true" for multitenancy/-language support)-->
     <static expires="3600">
       <!-- The expires attribute and elements set the "Cache-Control: max-age" header value for static resources.

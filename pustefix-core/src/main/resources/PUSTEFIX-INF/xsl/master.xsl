@@ -166,6 +166,7 @@
       </ixsl:param>
       
       <ixsl:param name="__reusestamp">-1</ixsl:param>
+      <ixsl:param name="nonce"/>
       
       <ixsl:param name="__lf"/>
       <ixsl:param name="pageflow"/>
@@ -363,6 +364,9 @@
 
   <xsl:template match="pfx:script">
     <script>
+      <ixsl:if test="not($nonce='')">
+        <ixsl:attribute name="nonce"><ixsl:value-of select="$nonce"/></ixsl:attribute>
+      </ixsl:if>
       <xsl:attribute name="type">text/javascript</xsl:attribute>
       <xsl:copy-of select="@*[not(name()='compress' or name()='transform')]"/>
       <ixsl:comment><xsl:text>&#10;</xsl:text>

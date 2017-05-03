@@ -137,7 +137,9 @@
     <!-- Defines SSL ports used for redirect corresponding to the unsecure ports -->
     <prop name="pfixcore.ssl_redirect_port.for.8080">8443</prop>
     <prop name="pfixcore.ssl_redirect_port.for.9080">9443</prop>
-
+    <!--
+    <prop name="responseheader.Content-Security-Policy">script-src 'self' 'nonce-[NONCE]';</prop>
+    -->
   </properties>
   
 </project-config>

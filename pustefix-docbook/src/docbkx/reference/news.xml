@@ -100,4 +100,20 @@
    </para>
   </section>
 
+  <section xml:id="news.0_20_28">
+    <title>What's new in Pustefix 0.20.28</title>
+    <para>
+      Added support for setting the expiration time of static resources. You can set a default time for all resources or specify it per content type.
+      The setting is done within the <literal>&lt;static&gt;</literal> element of the project configuration file
+      (see <xref linkend="configuration.project.projectxml"/>).
+    </para>
+    <para>
+      Pustefix now can generate CSP nonce randoms for explicitely permitting inline script, i.e. if you add an according response header, e.g.
+      <literal>&lt;prop name="responseheader.Content-Security-Policy"&gt;script-src 'self' 'nonce-[NONCE]';&lt;/prop&gt;</literal>, Pustefix will
+      replace <literal>[NONCE]</literal> by a secure random value, which will be automatically added as <literal>nonce</literal> attribute to
+      the <literal>script</literal> elements of a page (if using the <literal>&lt;pfx:script&gt;</literal> tag). The value will be also accessible
+      as <literal>nonce</literal> XSLT parameter.
+    </para>
+  </section>
+
 </chapter>

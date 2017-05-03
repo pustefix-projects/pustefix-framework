@@ -30,6 +30,7 @@ import org.pustefixframework.http.AbstractPustefixRequestHandler;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 
+import de.schlund.pfixcore.util.TokenUtils;
 import de.schlund.pfixxml.serverutil.SessionHelper;
 import de.schlund.pfixxml.util.Xml;
 
@@ -66,6 +67,7 @@ public class SPDocument {
     private boolean trailLogged;
     private long creationTime;
     private boolean reuse;
+    private String nonce;
 
     //~ Methods ....................................................................................
 
@@ -196,7 +198,16 @@ public class SPDocument {
     }
     
     public void addResponseHeader(String key, String val) {
-        header.put(key, val);
+        header.put(key, replaceHeaderVariables(key, val));
+    }
+
+    private String replaceHeaderVariables(String key, String val) {
+        if(key.equalsIgnoreCase("Content-Security-Policy")) {
+            if(val.contains("[NONCE]")) {
+                val = val.replaceAll("\\[NONCE\\]", getNonce());
+            }
+        }
+        return val;
     }
 
     public HashMap<String, String> getResponseHeader() {
@@ -363,6 +374,14 @@ public class SPDocument {
     
     public boolean getReuse() {
         return reuse;
+    }
+
+    public String getNonce() {
+        if(nonce == null) {
+            nonce = TokenUtils.createRandomToken();
+            setProperty("nonce", nonce);
+        }
+        return nonce;
     }
 
     /**
