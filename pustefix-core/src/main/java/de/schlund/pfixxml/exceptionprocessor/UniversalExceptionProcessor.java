@@ -91,6 +91,11 @@ public class UniversalExceptionProcessor implements ExceptionProcessor {
             throw new ServletException(e);
         }
         
+        String requestId = res.getHeader("X-Request-Id");
+        res.reset();
+        if(requestId != null) {
+            res.setHeader("X-Request-Id", requestId);
+        }
         res.setContentType("text/html");
         res.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
         
