@@ -22,6 +22,7 @@ import java.lang.reflect.Type;
 import java.util.Calendar;
 import java.util.Date;
 
+import org.pustefixframework.webservices.json.JSONObject;
 import org.pustefixframework.webservices.jsonws.DeserializationContext;
 import org.pustefixframework.webservices.jsonws.DeserializationException;
 import org.pustefixframework.webservices.jsonws.Deserializer;
@@ -32,8 +33,10 @@ public class CalendarDeserializer extends Deserializer {
     @Override
     public boolean canDeserialize(DeserializationContext ctx, Object jsonValue, Type targetType) {
         Class<?> targetClass=(Class<?>)targetType;
-        if(jsonValue instanceof Calendar && (targetClass==Date.class || 
-                Calendar.class.isAssignableFrom(targetClass))) return true;
+        if( (jsonValue instanceof Calendar && (targetClass==Date.class || Calendar.class.isAssignableFrom(targetClass)))
+            || (jsonValue instanceof JSONObject && ((JSONObject)jsonValue).hasMember("__time__")) ) {
+            return true;
+        }
         return false;
     }
     
@@ -45,6 +48,15 @@ public class CalendarDeserializer extends Deserializer {
                 return ((Calendar)jsonValue).getTime();
             } 
             return jsonValue;
+        } else if(jsonValue instanceof JSONObject && ((JSONObject)jsonValue).hasMember("__time__")) {
+            long time = (Long)((JSONObject)jsonValue).getMember("__time__");
+            if(targetClass == Date.class) {
+                return new Date(time);
+            } else {
+                Calendar cal=Calendar.getInstance();
+                cal.setTimeInMillis(time);
+                return cal;
+            }
         } else throw new DeserializationException("Wrong type: "+jsonValue.getClass().getName());
     }
 

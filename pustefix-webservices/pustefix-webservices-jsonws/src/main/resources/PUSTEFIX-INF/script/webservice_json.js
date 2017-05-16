@@ -4,8 +4,15 @@ if(!pfx.ws.json) pfx.ws.json={};
 
 pfx.ws.json.deserialize=function(response) {
    if(this._debug==true) alert("Response: "+response);
-	eval("res="+response);
-	return res;
+    var res = JSON.parse(response, pfx.ws.json.convert);
+    return res;
+};
+
+pfx.ws.json.convert=function(key, value) {
+    if(value != null && typeof value === 'object' && "__time__" in value) {
+        return new Date(value.__time__);
+    }
+    return value;
 };
 
 pfx.ws.json.serialize=function(obj) {
@@ -17,8 +24,8 @@ pfx.ws.json.serialize=function(obj) {
 			json=obj.toString();
     	} else if(obj.constructor==Boolean) {
 			json=obj.toString();
-   	} else if(obj.constructor==Date) {
-			json='new Date('+obj.valueOf()+')';
+        } else if(obj.constructor==Date) {
+            json="{\"__time__\":"+obj.valueOf()+"}";
     	} else if(obj.constructor==Array) {
 			var arr=[];
 			for(var i=0;i<obj.length;i++) arr.push(pfx.ws.json.serialize(obj[i]));
@@ -139,8 +146,8 @@ pfx.ws.json.DynamicProxy.prototype._proxySetup=function() {
 };
 
 pfx.ws.json.DynamicProxy.prototype._proxySetupCB=function(response) {
-   eval("response="+response);
-   var methods=response.result;
+   var res = JSON.parse(response, pfx.ws.json.convert);
+   var methods = res.result;
    for(var i=0;i<methods.length;i++) {
       this._createMethod(methods[i]);
    }
