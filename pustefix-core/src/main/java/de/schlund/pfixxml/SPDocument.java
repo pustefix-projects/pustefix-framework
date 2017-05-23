@@ -202,7 +202,7 @@ public class SPDocument {
     }
 
     private String replaceHeaderVariables(String key, String val) {
-        if(key.equalsIgnoreCase("Content-Security-Policy")) {
+        if(key.equalsIgnoreCase("Content-Security-Policy") || key.equalsIgnoreCase("Content-Security-Policy-Report-Only")) {
             if(val.contains("[NONCE]")) {
                 val = val.replaceAll("\\[NONCE\\]", getNonce());
             }
