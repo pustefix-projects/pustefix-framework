@@ -267,6 +267,12 @@ public class SiteMapRequestHandler implements UriProvidingHttpRequestHandler, Se
                 alias="";
             } 
             locElem.setTextContent(baseUrl + "/" + langPrefix + alias);
+            String lastMod = siteMap.getLastmod(pageAlias, lang);
+            if(lastMod != null) {
+                Element lastModElem = parent.getOwnerDocument().createElement("lastmod");
+                urlElem.appendChild(lastModElem);
+                lastModElem.setTextContent(lastMod);
+            }
             Element cfElem = parent.getOwnerDocument().createElement("changefreq");
             urlElem.appendChild(cfElem);
             cfElem.setTextContent("weekly");

@@ -22,6 +22,10 @@ import java.io.File;
 import java.io.IOException;
 import java.io.StringReader;
 import java.net.URI;
+import java.time.format.DateTimeFormatter;
+import java.time.format.DateTimeFormatterBuilder;
+import java.time.format.DateTimeParseException;
+import java.time.temporal.ChronoField;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -68,6 +72,16 @@ public class SiteMap {
     
     public final static String XMLNS = "http://www.pustefix-framework.org/2011/namespace/sitemap";
     
+    static DateTimeFormatter w3cDateTimeFormatter = new DateTimeFormatterBuilder()
+            .appendPattern("yyyy")
+            .optionalStart().appendLiteral("-").appendPattern("MM")
+            .optionalStart().appendLiteral("-").appendPattern("dd")
+            .optionalStart().appendLiteral("T").appendPattern("HH").appendLiteral(":").appendPattern("mm")
+            .optionalStart().appendLiteral(":").appendPattern("ss")
+            .optionalStart().appendFraction(ChronoField.NANO_OF_SECOND, 0, 9, true).optionalEnd().optionalEnd()
+            .appendOffsetId().optionalEnd().optionalEnd().optionalEnd()
+            .toFormatter();
+
     private Logger LOG = Logger.getLogger(SiteMap.class);
     
     private Resource siteMapFile;
@@ -303,6 +317,15 @@ public class SiteMap {
         String defaultAttr = pageElem.getAttribute("default").trim();
         if(defaultAttr.equals("true")) {
             pageGroup.defaultPage = page;
+        }
+        String lastMod = pageElem.getAttribute("lastmod").trim();
+        if(lastMod.length() > 0) {
+            try {
+                w3cDateTimeFormatter.parse(lastMod);
+                page.lastMod = lastMod;
+            } catch(DateTimeParseException x) {
+                LOG.error("Invalid lastmod value in sitemap: " + lastMod);
+            }
         }
         NamedNodeMap map = pageElem.getAttributes();
         if(map != null) {
@@ -873,11 +896,45 @@ public class SiteMap {
             return null;
         }
     }  
-    
+
+    public String getLastmod(String alias, String lang) {
+        PageLookupResult res = getPageName(alias, lang);
+        String lastMod = null;
+        if(res != null) {
+            Page page = null;
+            if(res.pageGroup == null) {
+                page = pageNameToPage.get(res.pageName);
+            } else {
+                PageGroup group = keyToPageGroup.get(res.getPageGroup());
+                if(group != null) {
+                    for(Page groupPage: group.pages) {
+                        if(groupPage.name.equals(res.getPageName())) {
+                            page = groupPage;
+                            break;
+                        }
+                    }
+                }
+            }
+            if(page != null) {
+                if(res.pageAlternativeKey != null) {
+                    PageAlternative alt = page.pageAltKeyMap.get(res.pageAlternativeKey);
+                    if(alt != null) {
+                        lastMod = alt.customAttributes.get("lastmod");
+                    }
+                }
+                if(lastMod == null) {
+                    lastMod = page.lastMod;
+                }
+            }
+        }
+        return lastMod;
+    }
+
     private class Page {
         
         String name;
         boolean internal;
+        String lastMod;
         Map<String, String> customAttributes = new HashMap<String, String>();
         String alias;
         List<Page> pages = new ArrayList<Page>();

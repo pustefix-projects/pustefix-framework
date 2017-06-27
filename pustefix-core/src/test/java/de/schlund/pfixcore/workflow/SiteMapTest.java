@@ -1,6 +1,11 @@
 package de.schlund.pfixcore.workflow;
 
 import java.io.File;
+import java.time.LocalDate;
+import java.time.OffsetDateTime;
+import java.time.Year;
+import java.time.YearMonth;
+import java.time.temporal.TemporalAccessor;
 
 import junit.framework.TestCase;
 
@@ -74,4 +79,20 @@ public class SiteMapTest extends TestCase {
         
     }
     
+    public void testDateTimeFormatter() {
+
+        String[] values = {
+                "1997",
+                "1997-07",
+                "1997-07-16",
+                "1997-07-16T19:20+01:00",
+                "1997-07-16T19:20:30+01:00",
+                "1997-07-16T19:20:30.450+01:00"
+        };
+        for(String value: values) {
+            TemporalAccessor tmp = SiteMap.w3cDateTimeFormatter.parseBest(value, OffsetDateTime::from, LocalDate::from, YearMonth::from, Year::from);
+            assertEquals(value, tmp.toString());
+        }
+    }
+
 }

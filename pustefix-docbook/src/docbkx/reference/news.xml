@@ -116,4 +116,14 @@
     </para>
   </section>
 
+  <section xml:id="news.0_20_29">
+    <title>What's new in Pustefix 0.20.29</title>
+    <para>
+      Added support for generating <literal>lastmod</literal> elements into the searchengine sitemap 
+      (see <link xlink:href="http://www.sitemaps.org/protocol.html">Sitemaps protocol specification</link>). Therefor you have
+      to add according <literal>lastmod</literal> attributes to the <literal>page</literal> or <literal>alt</literal> elements within
+      the Pustefix <literal>sitemap.xml</literal> configuration file (see <xref linkend="configuration.sitemap"/>).
+    </para>
+  </section>
+
 </chapter>

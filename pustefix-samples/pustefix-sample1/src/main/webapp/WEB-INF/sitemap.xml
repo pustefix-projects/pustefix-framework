@@ -24,7 +24,7 @@
     <page name="geninc"/>
     <page name="invalidate"/>
 
-    <page name="A" alias="fooA"/>
+    <page name="A" alias="fooA" lastmod="2017-04-14T18:29:39+00:00"/>
 
     <page name="mvctest"/>
 
