@@ -34,6 +34,7 @@ import com.sun.tools.attach.VirtualMachine;
  *
  * @goal register
  * @phase package
+ * @threadSafe
  */
 public class RegisterLiveAgentMojo extends AbstractMojo {
     

@@ -35,6 +35,7 @@ import org.apache.maven.project.MavenProject;
  * @phase generate-test-resources
  *
  * @requiresDependencyResolution compile
+ * @threadSafe
  */
 public class PageListGeneratorMojo extends AbstractMojo {
 

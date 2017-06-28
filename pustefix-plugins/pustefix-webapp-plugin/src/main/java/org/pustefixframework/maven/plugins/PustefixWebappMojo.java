@@ -34,6 +34,7 @@ import de.schlund.pfixxml.config.GlobalConfigurator;
  * @goal generate
  * @phase generate-sources
  * @requiresDependencyResolution compile
+ * @threadSafe
  */
 public class PustefixWebappMojo extends AbstractMojo {
     

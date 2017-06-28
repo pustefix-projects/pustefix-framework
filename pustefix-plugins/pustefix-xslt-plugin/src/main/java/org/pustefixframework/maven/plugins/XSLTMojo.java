@@ -46,6 +46,7 @@ import org.apache.maven.project.MavenProject;
  * @goal transform
  * @phase generate-resources
  * @requiresDependencyResolution compile
+ * @threadSafe
  */
 public class XSLTMojo extends AbstractMojo {
     

@@ -39,6 +39,7 @@ import org.xml.sax.SAXException;
  *
  * @goal generate
  * @phase prepare-package
+ * @threadSafe
  */
 public class ResourceIndexMojo extends AbstractMojo {
 

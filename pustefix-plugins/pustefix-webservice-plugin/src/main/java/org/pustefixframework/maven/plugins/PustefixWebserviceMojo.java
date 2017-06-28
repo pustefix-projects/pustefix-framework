@@ -57,6 +57,7 @@ import de.schlund.pfixxml.util.FileUtils;
  * @goal generate
  * @phase compile 
  * @requiresDependencyResolution compile
+ * @threadSafe
  */
 public class PustefixWebserviceMojo extends AbstractMojo {
     //--

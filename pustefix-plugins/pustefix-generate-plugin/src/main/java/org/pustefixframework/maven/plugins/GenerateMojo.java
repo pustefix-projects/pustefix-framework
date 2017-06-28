@@ -43,6 +43,7 @@ import org.apache.maven.project.MavenProject;
  * @phase prepare-package
  *
  * @requiresDependencyResolution compile
+ * @threadSafe
  */
 public class GenerateMojo extends AbstractMojo {
 

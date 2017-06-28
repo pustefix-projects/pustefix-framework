@@ -52,6 +52,7 @@ import de.schlund.pfixxml.util.Xml;
  * @goal merge-statusmessages
  * @phase process-resources
  * @requiresDependencyResolution compile
+ * @threadSafe
  */
 public class PustefixMergeMojo extends AbstractMojo {
 

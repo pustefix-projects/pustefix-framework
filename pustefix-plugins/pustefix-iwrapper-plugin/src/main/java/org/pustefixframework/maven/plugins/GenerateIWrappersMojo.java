@@ -50,6 +50,7 @@ import org.codehaus.plexus.util.DirectoryScanner;
  * @goal generate
  * @phase generate-sources
  * @requiresDependencyResolution compile
+ * @threadSafe
  */
 public class GenerateIWrappersMojo extends AbstractMojo {
     

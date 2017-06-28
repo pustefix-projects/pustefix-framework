@@ -40,6 +40,7 @@ import javassist.expr.MethodCall;
  * @phase process-resources
  *
  * @requiresDependencyResolution compile
+ * @threadSafe
  */
 public class LibraryPatchMojo extends AbstractMojo {
 

@@ -26,6 +26,7 @@ import org.xml.sax.helpers.XMLReaderFactory;
  *
  * @goal validate
  * @phase prepare-package
+ * @threadSafe
  */
 public class ValidatorMojo extends AbstractMojo {
 

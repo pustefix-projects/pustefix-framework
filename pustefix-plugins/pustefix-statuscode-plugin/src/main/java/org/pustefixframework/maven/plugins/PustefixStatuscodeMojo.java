@@ -35,6 +35,7 @@ import org.pustefixframework.maven.plugins.GenerateSCodes.Result;
  *
  * @goal generate
  * @phase generate-sources
+ * @threadSafe
  */
 public class PustefixStatuscodeMojo extends AbstractMojo {
     
