@@ -76,7 +76,23 @@ public class SiteMapTest extends TestCase {
         assertEquals("bar", siteMap.getAlias("foo", "en", "1", null));
         assertEquals("1", siteMap.getPageName("bar", "en").pageAlternativeKey);
         assertEquals("2", siteMap.getPageName("baz", "en").pageAlternativeKey);
-        
+
+        assertEquals("fooA", siteMap.getAlias("A", "en", null, null));
+        assertEquals("fooA", siteMap.getAlias("A", "en", "unknownkey", null));
+        assertEquals("test/one/", siteMap.getAlias("A", "en", null, "g1"));
+        assertEquals("test/two/A", siteMap.getAlias("A", "en", null, "g2"));
+        assertEquals("test/one/B", siteMap.getAlias("B", "en", null, null));
+        assertEquals("B", siteMap.getAlias("B", "en", "unknownkey", null));
+        assertEquals("test/one/B", siteMap.getAlias("B", "en", null, "g1"));
+        assertEquals("test/two/fooB", siteMap.getAlias("B", "en", null, "g2"));
+        assertEquals("test/C", siteMap.getAlias("C", "en", null, null));
+        assertEquals("test/C", siteMap.getAlias("C", "en", null, "g"));
+        assertEquals("C", siteMap.getAlias("C", "en", "unknownkey", null));
+        assertEquals("D", siteMap.getAlias("D", "en", null, null));
+        assertEquals("D1", siteMap.getAlias("D", "en", "ak1", null));
+        assertEquals("test/D2", siteMap.getAlias("D", "en", "ak2", "g"));
+        assertEquals("D1", siteMap.getAlias("D", "en", "ak1", null));
+
     }
     
     public void testDateTimeFormatter() {

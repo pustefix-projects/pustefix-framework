@@ -17,4 +17,23 @@
     <alt key="2" name="baz" default="true"/>
   </page>
 
+  <page name="A" alias="fooA"/>
+  <page name="D">
+    <alt key="ak1" name="D1"/>
+  </page>
+  <page-group key="g" name="test">
+    <page-group key="g1" name="one">
+      <page name="A" default="true"/>
+      <page name="B"/>
+    </page-group>
+    <page-group key="g2" name="two">
+      <page name="A"/>
+      <page name="B" alias="fooB"/>
+    </page-group>
+    <page name="C"/>
+    <page name="D">
+      <alt key="ak2" name="D2"/>
+    </page>
+  </page-group>
+
 </sitemap>

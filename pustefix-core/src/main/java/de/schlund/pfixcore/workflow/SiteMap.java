@@ -555,10 +555,11 @@ public class SiteMap {
     }
     
     public String getAlias(String name, String lang, String pageAlternativeKey, String pageGroupKey) {
-        return getAlias(name, lang, pageAlternativeKey, pageGroupKey, true);
+        return getAlias(name, lang, pageAlternativeKey, pageGroupKey, true, false);
     }
     
-    private String getAlias(final String name, final String lang, String pageAlternativeKey, String pageGroupKey, boolean resolveName) {
+    private String getAlias(final String name, final String lang, String pageAlternativeKey, String pageGroupKey,
+            boolean resolveName, boolean skipDefaultGroup) {
         if(name == null) {
             return "";
         }
@@ -577,8 +578,10 @@ public class SiteMap {
         if(pageGroup == null) {
             page = pageNameToPage.get(name);
             if(page == null) {
-                pageGroup = defaultPageGroups.get(name);
-                pageGroupKey = ( pageGroup == null ? null : pageGroup.key );
+                if(!skipDefaultGroup) {
+                    pageGroup = defaultPageGroups.get(name);
+                    pageGroupKey = ( pageGroup == null ? null : pageGroup.key );
+                }
                 page = getPageByName(name, pageGroupKey);
             }
         } else {
@@ -601,7 +604,7 @@ public class SiteMap {
         if(resolveName && pageGroup != null) {    
             if(!page.pageAltKeyMap.containsKey(pageAlternativeKey)) {
                 //page doesn't contain requested altKey, resolve alias without page group
-                return getAlias(name, lang, pageAlternativeKey, null, resolveName);
+                return getAlias(name, lang, pageAlternativeKey, null, resolveName, true);
             } 
             if(pageGroup.defaultPage == page && page.defaultPageAlt != null && page.defaultPageAlt.key.equals(pageAlternativeKey)) {
                 //no altKey requested or altKey is page's default altKey -> return pageGroup prefix
@@ -638,13 +641,13 @@ public class SiteMap {
         if(page != null) {
             aliases.add(getAlias(pageName, lang, null, null));
             if(includeInternalPages) {
-                aliases.add(getAlias(pageName, lang, null, null, false));
+                aliases.add(getAlias(pageName, lang, null, null, false, false));
                 aliases.add(getNameAlias(pageName, lang, null));
             }
             for(String pageAltKey: page.pageAltKeyToName.keySet()) {
                 aliases.add(getAlias(pageName, lang, pageAltKey, null));
                 if(includeInternalPages) {
-                    aliases.add(getAlias(pageName, lang, pageAltKey, null, false));
+                    aliases.add(getAlias(pageName, lang, pageAltKey, null, false, false));
                 }
             }
         }
@@ -662,7 +665,7 @@ public class SiteMap {
             if(page.name.equals(pageName)) {
                 aliases.add(getAlias(pageName, lang, null, pageGroup.key));
                 if(includeInternalPages) {
-                    aliases.add(getAlias(pageName, lang, null, pageGroup.key, false));
+                    aliases.add(getAlias(pageName, lang, null, pageGroup.key, false, false));
                     if(pageGroup.defaultPage == page) {
                         aliases.add(pageGroup.getPrefix());
                         aliases.add(pageGroup.getPrefix() + "/");
@@ -671,7 +674,7 @@ public class SiteMap {
                 for(String pageAltKey: page.pageAltKeyToName.keySet()) {
                     aliases.add(getAlias(pageName, lang, pageAltKey, pageGroup.key));
                     if(includeInternalPages) {
-                        aliases.add(getAlias(pageName, lang, pageAltKey, pageGroup.key, false));
+                        aliases.add(getAlias(pageName, lang, pageAltKey, pageGroup.key, false, false));
                     }
                 }
             }
