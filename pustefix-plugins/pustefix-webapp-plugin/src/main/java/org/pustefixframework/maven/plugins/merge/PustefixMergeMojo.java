@@ -24,7 +24,7 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.URL;
-import java.util.List;
+import java.util.Set;
 import java.util.jar.JarFile;
 import java.util.zip.ZipEntry;
 
@@ -220,9 +220,8 @@ public class PustefixMergeMojo extends AbstractMojo {
         }
     }
 
-    @SuppressWarnings("unchecked")
     public void processUnextractedModules() throws MojoExecutionException {
-        List<Artifact> artifacts; artifacts = project.getCompileArtifacts();
+        Set<Artifact> artifacts = project.getArtifacts();
         for (Artifact artifact : artifacts) {
             if ("jar".equals(artifact.getType())) {
                 processUnextractedModule(artifact.getFile());
@@ -234,90 +233,88 @@ public class PustefixMergeMojo extends AbstractMojo {
         if(jarFile.isDirectory()) {
             return;
         }
-        JarFile jar;
-        try {
-            jar = new JarFile(jarFile);
-        } catch (IOException e) {
-            throw new MojoExecutionException("Error while reading JAR file " + jarFile, e);
-        }
-        ZipEntry descEntry = jar.getEntry("META-INF/pustefix-module.xml");
-        if(descEntry != null) {
-            ModuleDescriptor moduleInfo = null;
-            try {
-                URL url = new URL("jar:" + jarFile.toURI().toURL().toString() + "!/META-INF/pustefix-module.xml");
-                moduleInfo = ModuleDescriptor.read(url);
-            } catch(Exception x) {
-                throw new MojoExecutionException("Can't read module information from descriptor: " + jarFile.getAbsolutePath(), x);
-            }
-            String[] modIncludes = DEFAULT_INCLUDES;
-            if(includes != null) modIncludes = includes;
-            File modulesSrcDir = new File(modulesdir);
-            File destDir = new File(modulesDestDirname);
-            for(String modInclude: modIncludes) {
-                ZipEntry entry = jar.getEntry(moduleInfo.getResourcePath().substring(1) + "/" + modInclude);
-                if(entry != null) {
-                    File extracted = new File(modulesSrcDir, moduleInfo.getName() + "/" + modInclude);
-                    String moduleURI = "module://" + moduleInfo.getName() + "/" + modInclude;
-                    if(!extracted.exists()) {
-                        File destFile = new File(destDir, moduleInfo.getName() + "/" + modInclude);
-                        if (mergeSuffix != null) {
-                            String name = destFile.getName();
-                            int ind = name.indexOf('.');
-                            if (ind > -1) {
-                                name = name.substring(0, ind) + mergeSuffix + name.substring(ind);
-                            } else {
-                                throw new MojoExecutionException("Expected file name containing file extension: "
-                                        + destFile.getAbsolutePath());
-                            }
-                            destFile = new File(destFile.getParentFile(), name);
-                        }
-                        if (!destFile.exists()) {
-                            try {
-                                if (!destFile.getParentFile().exists()) {
-                                    destFile.getParentFile().mkdirs();
+        try (JarFile jar = new JarFile(jarFile)) {
+            ZipEntry descEntry = jar.getEntry("META-INF/pustefix-module.xml");
+            if(descEntry != null) {
+                ModuleDescriptor moduleInfo = null;
+                try {
+                    URL url = new URL("jar:" + jarFile.toURI().toURL().toString() + "!/META-INF/pustefix-module.xml");
+                    moduleInfo = ModuleDescriptor.read(url);
+                } catch(Exception x) {
+                    throw new MojoExecutionException("Can't read module information from descriptor: " + jarFile.getAbsolutePath(), x);
+                }
+                String[] modIncludes = DEFAULT_INCLUDES;
+                if(includes != null) modIncludes = includes;
+                File modulesSrcDir = new File(modulesdir);
+                File destDir = new File(modulesDestDirname);
+                for(String modInclude: modIncludes) {
+                    ZipEntry entry = jar.getEntry(moduleInfo.getResourcePath().substring(1) + "/" + modInclude);
+                    if(entry != null) {
+                        File extracted = new File(modulesSrcDir, moduleInfo.getName() + "/" + modInclude);
+                        String moduleURI = "module://" + moduleInfo.getName() + "/" + modInclude;
+                        if(!extracted.exists()) {
+                            File destFile = new File(destDir, moduleInfo.getName() + "/" + modInclude);
+                            if (mergeSuffix != null) {
+                                String name = destFile.getName();
+                                int ind = name.indexOf('.');
+                                if (ind > -1) {
+                                    name = name.substring(0, ind) + mergeSuffix + name.substring(ind);
+                                } else {
+                                    throw new MojoExecutionException("Expected file name containing file extension: "
+                                            + destFile.getAbsolutePath());
                                 }
-                                InputStream in = jar.getInputStream(entry);
-                                FileOutputStream out = new FileOutputStream(destFile);
-                                byte[] buffer = new byte[4096];
-                                int no = 0;
+                                destFile = new File(destFile.getParentFile(), name);
+                            }
+                            if (!destFile.exists()) {
                                 try {
-                                    while ((no = in.read(buffer)) != -1)
-                                        out.write(buffer, 0, no);
-                                } finally {
-                                    in.close();
-                                    out.close();
+                                    if (!destFile.getParentFile().exists()) {
+                                        destFile.getParentFile().mkdirs();
+                                    }
+                                    InputStream in = jar.getInputStream(entry);
+                                    FileOutputStream out = new FileOutputStream(destFile);
+                                    byte[] buffer = new byte[4096];
+                                    int no = 0;
+                                    try {
+                                        while ((no = in.read(buffer)) != -1)
+                                            out.write(buffer, 0, no);
+                                    } finally {
+                                        in.close();
+                                        out.close();
+                                    }
+                                } catch (IOException x) {
+                                    throw new MojoExecutionException("Error copying statusmessages from '" + moduleURI
+                                            + "' to '" + destFile.getAbsolutePath() + "'.", x);
                                 }
-                            } catch (IOException x) {
-                                throw new MojoExecutionException("Error copying statusmessages from '" + moduleURI
-                                        + "' to '" + destFile.getAbsolutePath() + "'.", x);
+                                try {
+                                    Document doc = Xml.parseMutable(destFile);
+                                    addComment(doc, moduleURI);
+                                    Xml.serialize(doc, destFile, true, true);
+                                } catch (Exception x) {
+                                    throw new MojoExecutionException("Error adding comment to statusmessages file '"
+                                            + destFile.getAbsolutePath() + "'.", x);
+                                }
+                                getLog().info("Created " + destFile + " from source file " + moduleURI);
+                            } else {
+                                try {
+                                    InputStream in = jar.getInputStream(entry);
+                                    InputSource src = new InputSource();
+                                    src.setSystemId(moduleURI);
+                                    src.setByteStream(in);
+                                    Merge merge = new Merge(src, selection, destFile, false);
+                                    merge.run();
+                                    in.close();
+                                } catch (Exception x) {
+                                    throw new MojoExecutionException("Merging to file " + destFile.getAbsolutePath() + " failed.", x);
+                                }
+                                getLog().info("Merged source file " + moduleURI + " into " + destFile);
                             }
-                            try {
-                                Document doc = Xml.parseMutable(destFile);
-                                addComment(doc, moduleURI);
-                                Xml.serialize(doc, destFile, true, true);
-                            } catch (Exception x) {
-                                throw new MojoExecutionException("Error adding comment to statusmessages file '"
-                                        + destFile.getAbsolutePath() + "'.", x);
-                            }
-                            getLog().info("Created " + destFile + " from source file " + moduleURI);
-                        } else {
-                            try {
-                                InputStream in = jar.getInputStream(entry);
-                                InputSource src = new InputSource();
-                                src.setSystemId(moduleURI);
-                                src.setByteStream(in);
-                                Merge merge = new Merge(src, selection, destFile, false);
-                                merge.run();
-                                in.close();
-                            } catch (Exception x) {
-                                throw new MojoExecutionException("Merging to file " + destFile.getAbsolutePath() + " failed.", x);
-                            } 
-                            getLog().info("Merged source file " + moduleURI + " into " + destFile);
                         }
                     }
                 }
             }
-        }  
+        } catch (IOException e) {
+            throw new MojoExecutionException("Error while reading JAR file " + jarFile, e);
+        }
     }
 
 }
