@@ -20,6 +20,7 @@ package org.pustefixframework.http;
 import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import javax.servlet.http.HttpSession;
 
 import org.pustefixframework.container.spring.beans.TenantScope;
 import org.pustefixframework.util.URLUtils;
@@ -81,6 +82,16 @@ public class PustefixInitInterceptor implements HandlerInterceptor {
                 request.setAttribute(AbstractPustefixRequestHandler.REQUEST_ATTR_LANGUAGE, matchingLanguage);
             } else if(tenant.getSupportedLanguages().size() == 1) {
                 request.setAttribute(AbstractPustefixRequestHandler.REQUEST_ATTR_LANGUAGE, tenant.getDefaultLanguage());
+            } else if(tenant.getSupportedLanguages().size() > 1) {
+                String lang = null;
+                HttpSession session = request.getSession(false);
+                if(session != null) {
+                    lang = (String)session.getAttribute(AbstractPustefixRequestHandler.REQUEST_ATTR_LANGUAGE);
+                }
+                if(lang == null) {
+                    lang = tenant.getDefaultLanguage();
+                }
+                request.setAttribute(AbstractPustefixRequestHandler.REQUEST_ATTR_LANGUAGE, lang);
             }
         } else if(langInfo != null && !langInfo.getSupportedLanguages().isEmpty()) {
             String matchingLanguage = langInfo.getDefaultLanguage();
