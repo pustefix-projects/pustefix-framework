@@ -364,11 +364,11 @@
 
   <xsl:template match="pfx:script">
     <script>
+      <xsl:attribute name="type">text/javascript</xsl:attribute>
+      <xsl:copy-of select="@*[not(name()='compress' or name()='transform')]"/>
       <ixsl:if test="not($nonce='')">
         <ixsl:attribute name="nonce"><ixsl:value-of select="$nonce"/></ixsl:attribute>
       </ixsl:if>
-      <xsl:attribute name="type">text/javascript</xsl:attribute>
-      <xsl:copy-of select="@*[not(name()='compress' or name()='transform')]"/>
       <ixsl:comment><xsl:text>&#10;</xsl:text>
         <xsl:choose>
           <xsl:when test="$compress-inline-javascript='true' and not(@compress='false')">
