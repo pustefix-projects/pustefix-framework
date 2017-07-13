@@ -126,4 +126,14 @@
     </para>
   </section>
 
+  <section xml:id="news.0_20_31">
+    <title>What's new in Pustefix 0.20.31</title>
+    <para>
+      Pustefix states acting as Spring MVC controllers (<xref linkend="springmvc.controllerstates"/>) now support redirecting
+      using redirect prefixes, i.e. a request mapped method can return a view name prefixed with <literal>redirect:</literal>
+      or you can set an according view name at the <literal>ModelAndView</literal> object. The redirect will be handled by Spring,
+      thus URI template variables are working too.
+    </para>
+  </section>
+
 </chapter>

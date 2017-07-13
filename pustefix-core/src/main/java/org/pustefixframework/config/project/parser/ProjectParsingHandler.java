@@ -25,6 +25,8 @@ import org.pustefixframework.config.customization.CustomizationAwareParsingHandl
 import org.pustefixframework.config.generic.ParsingUtils;
 import org.pustefixframework.http.PustefixInitInterceptor;
 import org.pustefixframework.web.servlet.i18n.PustefixLocaleResolverPostProcessor;
+import org.pustefixframework.web.servlet.view.XsltView;
+import org.pustefixframework.web.servlet.view.XsltViewResolver;
 import org.springframework.beans.factory.config.BeanDefinition;
 import org.springframework.beans.factory.support.BeanDefinitionBuilder;
 import org.springframework.beans.factory.support.BeanDefinitionRegistry;
@@ -64,6 +66,11 @@ public class ProjectParsingHandler extends CustomizationAwareParsingHandler {
             beanBuilder = BeanDefinitionBuilder.genericBeanDefinition(PustefixLocaleResolverPostProcessor.class);
             beanBuilder.setScope("singleton");
             beanRegistry.registerBeanDefinition(PustefixLocaleResolverPostProcessor.class.getName(), beanBuilder.getBeanDefinition());
+
+            beanBuilder = BeanDefinitionBuilder.genericBeanDefinition(XsltViewResolver.class);
+            beanBuilder.setScope("singleton");
+            beanBuilder.addPropertyValue("viewClass", XsltView.class);
+            beanRegistry.registerBeanDefinition(XsltViewResolver.class.getName(), beanBuilder.getBeanDefinition());
         }
     }
 

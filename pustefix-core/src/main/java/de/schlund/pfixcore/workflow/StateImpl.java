@@ -109,6 +109,10 @@ public abstract class StateImpl implements ConfigurableState {
                 pageName = preq.getPageName();
             }
             ModelAndView modelAndView = adapter.tryHandle(preq, this, pageName);
+            if(modelAndView != null && modelAndView.getViewName() != null
+                    && modelAndView.getViewName().startsWith("redirect:")) {
+                context.prohibitContinue();
+            }
             return modelAndView;
         }
         return null;
@@ -127,7 +131,7 @@ public abstract class StateImpl implements ConfigurableState {
             }
         }
     }
-    
+
     /**
      * @see de.schlund.pfixcore.util.StateUtil#addResponseHeadersAndType(Context, ResultDocument)
      */

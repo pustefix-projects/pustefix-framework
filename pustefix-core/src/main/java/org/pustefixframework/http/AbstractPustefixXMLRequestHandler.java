@@ -59,8 +59,11 @@ import org.pustefixframework.util.LogUtils;
 import org.pustefixframework.util.URLUtils;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.ApplicationContextAware;
+import org.springframework.context.i18n.LocaleContextHolder;
 import org.springframework.web.servlet.FlashMap;
 import org.springframework.web.servlet.FlashMapManager;
+import org.springframework.web.servlet.View;
+import org.springframework.web.servlet.ViewResolver;
 import org.springframework.web.servlet.support.RequestContextUtils;
 import org.springframework.web.util.UriComponents;
 import org.springframework.web.util.UriComponentsBuilder;
@@ -190,7 +193,8 @@ public abstract class AbstractPustefixXMLRequestHandler extends AbstractPustefix
     private SessionCleaner sessionCleaner;
     private ApplicationContext applicationContext;
     private SPDocumentHistory documentHistory;
-    
+    private ViewResolver viewResolver;
+
     //~ Methods ....................................................................................
     /**
      * Init method of all servlets inheriting from AbstractXMLServlets.
@@ -574,7 +578,19 @@ public abstract class AbstractPustefixXMLRequestHandler extends AbstractPustefix
                 }
             }
         }
-        
+
+        if(spdoc.getViewName() != null && viewResolver != null) {
+            try {
+                View view = viewResolver.resolveViewName(spdoc.getViewName(), LocaleContextHolder.getLocale());
+                if(view != null) {
+                    view.render(spdoc.getModel(), preq.getRequest(), res);
+                    return;
+                }
+            } catch(Exception x) {
+                throw new RuntimeException(x);
+            }
+        }
+
         // if the document contains a error code, do errorhandling here and no further processing.
         if(spdoc.getResponseError() != 0) {
         	sendError(spdoc, res);
@@ -1333,6 +1349,10 @@ public abstract class AbstractPustefixXMLRequestHandler extends AbstractPustefix
         this.documentHistory = documentHistory;
     }
     
+    public void setViewResolver(ViewResolver viewResolver) {
+        this.viewResolver = viewResolver;
+    }
+
     class SkippingByteArrayOutputStream extends ByteArrayOutputStream {
         
         public SkippingByteArrayOutputStream(int size) {

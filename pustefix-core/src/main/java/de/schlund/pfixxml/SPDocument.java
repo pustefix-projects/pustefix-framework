@@ -27,6 +27,7 @@ import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletResponse;
 
 import org.pustefixframework.http.AbstractPustefixRequestHandler;
+import org.springframework.web.servlet.ModelAndView;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 
@@ -39,7 +40,7 @@ import de.schlund.pfixxml.util.Xml;
  *
  *
  */
-public class SPDocument {
+public class SPDocument extends ModelAndView {
 
     //~ Instance/static variables ..................................................................
 

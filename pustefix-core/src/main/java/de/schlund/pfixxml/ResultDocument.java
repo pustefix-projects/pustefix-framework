@@ -116,7 +116,11 @@ public class ResultDocument {
     }
 
     public void setModelAndView(ModelAndView modelAndView) {
-        this.modelAndView = modelAndView;
+        if(modelAndView != null) {
+            this.modelAndView = modelAndView;
+            spdoc.setViewName(modelAndView.getViewName());
+            spdoc.addAllObjects(modelAndView.getModel());
+        }
     }
 
     /**

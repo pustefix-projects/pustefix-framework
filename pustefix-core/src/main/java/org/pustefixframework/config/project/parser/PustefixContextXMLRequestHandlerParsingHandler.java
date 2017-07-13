@@ -43,6 +43,7 @@ import org.pustefixframework.http.DefaultAdditionalTrailInfoImpl;
 import org.pustefixframework.http.PustefixContextXMLRequestHandler;
 import org.pustefixframework.http.PustefixInternalsRequestHandler;
 import org.pustefixframework.http.internal.Log4jAdmin;
+import org.pustefixframework.web.servlet.view.XsltViewResolver;
 import org.springframework.aop.scope.ScopedProxyUtils;
 import org.springframework.beans.factory.BeanDefinitionStoreException;
 import org.springframework.beans.factory.config.BeanDefinition;
@@ -226,6 +227,7 @@ public class PustefixContextXMLRequestHandlerParsingHandler extends Customizatio
         beanBuilder.addPropertyValue("siteMap", new RuntimeBeanReference(SiteMap.class.getName()));
         beanBuilder.addPropertyValue("pageMap", new RuntimeBeanReference(PageMap.class.getName()));
         beanBuilder.addPropertyValue("documentHistory", new RuntimeBeanReference(SPDocumentHistory.class.getName()));
+        beanBuilder.addPropertyValue("viewResolver", new RuntimeBeanReference(XsltViewResolver.class.getName()));
         BeanDefinition beanDefinition = beanBuilder.getBeanDefinition();
         BeanDefinitionHolder beanHolder = new BeanDefinitionHolder(beanDefinition, PustefixContextXMLRequestHandler.class.getName() + (path != null ? "#" + path : ""));
         context.getObjectTreeElement().addObject(beanHolder);
