@@ -25,7 +25,8 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Set;
 
-import org.apache.log4j.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import de.schlund.pfixcore.generator.annotation.Param;
 import de.schlund.pfixcore.generator.annotation.Transient;
@@ -35,7 +36,7 @@ import de.schlund.pfixcore.generator.annotation.Transient;
  */
 public class BeanDescriptor {
 
-    final static Logger LOG=Logger.getLogger(BeanDescriptor.class);
+    final static Logger LOG=LoggerFactory.getLogger(BeanDescriptor.class);
     
 	Class<?> clazz;
 	

@@ -21,7 +21,8 @@ package de.schlund.pfixcore.example;
 
 import java.util.HashMap;
 
-import org.apache.log4j.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import de.schlund.pfixcore.workflow.Context;
 import de.schlund.pfixcore.workflow.FlowStepAction;
@@ -34,9 +35,10 @@ import de.schlund.pfixxml.ResultDocument;
  */
 
 public class MsgFlowStepAction implements FlowStepAction {
-    private String          text;
-    private final static Logger LOG = Logger.getLogger(MsgFlowStepAction.class);
-    
+
+    private final static Logger LOG = LoggerFactory.getLogger(MsgFlowStepAction.class);
+    private String text;
+
     public void setData(HashMap<String, String> data) {
         this.text = data.get("text");
     }

@@ -24,6 +24,8 @@ import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
 import java.lang.management.ManagementFactory;
+import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.Method;
 import java.net.ServerSocket;
 import java.net.URL;
 import java.util.Enumeration;
@@ -48,8 +50,6 @@ import javax.xml.transform.sax.TransformerHandler;
 import javax.xml.transform.stream.StreamResult;
 import javax.xml.transform.stream.StreamSource;
 
-import org.apache.log4j.Logger;
-import org.apache.log4j.xml.DOMConfigurator;
 import org.pustefixframework.admin.mbeans.Admin;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
@@ -85,48 +85,17 @@ import de.schlund.pfixxml.util.XsltProvider;
  */
 public class PustefixInit {
 
-    // ~ Instance/static variables
-    // ..................................................................
-
-    private final static Logger LOG = Logger.getLogger(PustefixInit.class);
-    
     private final static String log4jconfig = "/WEB-INF/pfixlog.xml";
     public final static String SERVLET_CONTEXT_ATTRIBUTE_NAME = "___PUSTEFIX_INIT___";
 
-    private long log4jmtime = -1;
     private boolean initDone;
-    
-    public void tryReloadLog4j() {
-        if (log4jconfig != null) {
-            FileResource l4jfile = ResourceUtil.getFileResourceFromDocroot(log4jconfig);
-            long tmpmtime = l4jfile.lastModified();
-            if (tmpmtime > log4jmtime) {
-                LOG.error("\n\n################################\n"
-                        + "#### Reloading log4j config ####\n"
-                        + "################################\n");
-                try {
-                    configureLog4j(l4jfile);
-                } catch (FileNotFoundException e) {
-                    Logger.getLogger(PustefixInit.class).error(
-                            "Reloading log4j config failed!", e);
-                } catch (SAXException e) {
-                    Logger.getLogger(PustefixInit.class).error(
-                            "Reloading log4j config failed!", e);
-                } catch (IOException e) {
-                    Logger.getLogger(PustefixInit.class).error(
-                            "Reloading log4j config failed!", e);
-                }
-                log4jmtime = tmpmtime;
-            }
-        }
-    }
-    
+
     public PustefixInit(ServletContext servletContext) throws PustefixCoreException {
         this(servletContext, null);
     }
     
     public PustefixInit(ServletContext servletContext, String docrootstr) throws PustefixCoreException {
-        
+
         //avoid re-initializations, e.g. when ApplicationContext is refreshed
         if(initDone) return;
         
@@ -138,64 +107,72 @@ public class PustefixInit {
     	} catch(IOException x) {
     	    throw new RuntimeException("Error creating temporary directory for JAR caching", x);
     	}
-    	
-    	//override environment properties by according context init parameters
-    	Enumeration<?> names = servletContext.getInitParameterNames();
-    	while(names.hasMoreElements()) {
-    	    String name = (String)names.nextElement();
-    	    String value = servletContext.getInitParameter(name);
-            if(value != null && !value.equals("")) {
-                EnvironmentProperties.getProperties().put(name, value);
-            }
-    	}
-    	
+
+        initEnvironmentProperties(servletContext);
+
     	if(docrootstr == null) {
     	    docrootstr = servletContext.getRealPath("/");
     	    if (docrootstr == null) {
     	        GlobalConfigurator.setServletContext(servletContext);
     	    } else {
     	        if (!docrootstr.equals(GlobalConfig.getDocroot())) {
-    	            GlobalConfigurator.setDocroot(docrootstr);
+                    GlobalConfigurator.setDocroot(docrootstr);
     	        }
     	    }
     	} else {
     	    GlobalConfigurator.setDocroot(docrootstr);
     	}
-    	
-    	configureLogging(properties, servletContext);
-    	LOG.debug(">>>> LOG4J Init OK <<<<");
 
+        configureLogging(properties, servletContext);
     	initAdminMBean();
-    	
     	initDone = true;
+    }
 
+    public static void initEnvironmentProperties(ServletContext servletContext) {
+        //override environment properties by according context init parameters
+        Enumeration<?> names = servletContext.getInitParameterNames();
+        while(names.hasMoreElements()) {
+            String name = (String)names.nextElement();
+            String value = servletContext.getInitParameter(name);
+            if(value != null && !value.equals("")) {
+                EnvironmentProperties.getProperties().put(name, value);
+            }
+        }
     }
 
     private void configureLogging(Properties properties, ServletContext servletContext) throws PustefixCoreException {
-        
     	FileResource l4jfile = ResourceUtil.getFileResourceFromDocroot(log4jconfig);
-    	
-    	try {
-    		configureLog4j(l4jfile);
-    	} catch (FileNotFoundException e) {
-    		throw new PustefixCoreException(l4jfile + ": file for log4j configuration not found!", e);
-    	} catch (SAXException e) {
-    		throw new PustefixCoreException(l4jfile + ": error on parsing log4j configuration file", e);
-    	} catch (IOException e) {
-    		throw new PustefixCoreException(l4jfile + ": error on reading log4j configuration file!", e);
-    	}
-
+        if(l4jfile.exists()) {
+            try {
+                configureLog4j(l4jfile);
+            } catch (FileNotFoundException e) {
+                throw new PustefixCoreException(l4jfile + ": file for log4j configuration not found!", e);
+            } catch (SAXException e) {
+                throw new PustefixCoreException(l4jfile + ": error on parsing log4j configuration file", e);
+            } catch (IOException e) {
+                throw new PustefixCoreException(l4jfile + ": error on reading log4j configuration file!", e);
+            }
+        }
     }
 
     private void configureLog4j(FileResource configFile) throws SAXException, FileNotFoundException, IOException {
-        log4jmtime = configFile.lastModified();
         Document confDoc = readLoggingConfig(configFile.getInputStream(), configFile.getURI().toString(), true);
-        DOMConfigurator.configure(confDoc.getDocumentElement());
+        try {
+            Class<?> clazz = Class.forName("org.apache.log4j.xml.DOMConfigurator");
+            Method meth = clazz.getMethod("configure", Element.class);
+            meth.invoke(null, confDoc.getDocumentElement());
+        } catch(ClassNotFoundException x) {
+            System.err.println("[ERROR] Configuring deprecated Log4j failed: either remove pfixlog.xml and use Logback"
+                    + " or Log4j 2 instead, or add the missing deprecated Log4j library (not recommended).");
+            x.printStackTrace(System.err);
+        } catch(NoSuchMethodException|InvocationTargetException|IllegalAccessException x) {
+            throw new RuntimeException("Log4j DOM configuration failed", x);
+        }
     }
 
     static Document readLoggingConfig(InputStream in, String systemID, boolean validating) 
             throws SAXException, FileNotFoundException, IOException {
-        
+
         XMLReader xreader = XMLReaderFactory.createXMLReader();
         TransformerFactory tf = XsltProvider.getXsltSupport(XsltProvider.getPreferredXsltVersion()).getThreadTransformerFactory();
         SAXTransformerFactory stf = (SAXTransformerFactory) tf;
@@ -283,7 +260,6 @@ public class PustefixInit {
                     try {
                         Thread.currentThread().setContextClassLoader(null);
                         server.createMBean(mletClass, mletName);
-                        LOG.debug("Created AdminMlet.");
                         Object mletParams[] = {PustefixInit.class.getProtectionDomain().getCodeSource().getLocation()};
                         String mletSignature[] = {"java.net.URL"};
                         server.invoke(mletName, "addURL", mletParams, mletSignature);
@@ -293,14 +269,13 @@ public class PustefixInit {
                             Object[] params = new Object[] {findFreePort()};
                             String[] signature = new String[] {"int"};
                             server.createMBean(mbeanClass, mbeanName, mletName, params, signature);
-                            LOG.debug("Created Admin mbean.");
-                        } else LOG.debug("Already found a registered Admin mbean.");
+                        }
                     } finally {
                         Thread.currentThread().setContextClassLoader(cl);
                     }
-                } else LOG.debug("Already found a registered AdminMLet.");
+                }
             } catch(Exception x) {
-                LOG.error("Can't register Admin MBean", x);
+                System.err.println("WARN: Can't register Admin MBean [ " + x.getMessage() + "]");
             }
         }
     }

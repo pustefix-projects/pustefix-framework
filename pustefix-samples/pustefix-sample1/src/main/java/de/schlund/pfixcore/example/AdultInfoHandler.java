@@ -52,7 +52,7 @@ public class AdultInfoHandler implements InputHandler<AdultInfo> {
     public void handleSubmittedData(AdultInfo info) {
         cai.setAdult(info.getAdult());
         cai.setDate(info.getDate());
-        
+
         /**
         VirtualHttpServletRequest req = new VirtualHttpServletRequest(servletContext);
         req.setSession(request.getSession(false));

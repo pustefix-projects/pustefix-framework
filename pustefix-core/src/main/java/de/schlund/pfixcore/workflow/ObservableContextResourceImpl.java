@@ -22,7 +22,8 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.concurrent.CopyOnWriteArrayList;
 
-import org.apache.log4j.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * Implements an observable ContextResource. Observers will be
@@ -36,7 +37,7 @@ import org.apache.log4j.Logger;
 public abstract class ObservableContextResourceImpl implements ObservableContextResource {
 
     private List<ContextResourceObserver> observers = new CopyOnWriteArrayList<ContextResourceObserver>();
-    private Logger LOG = Logger.getLogger(this.getClass());
+    private Logger LOG = LoggerFactory.getLogger(this.getClass());
 
     /**
      * Adds an observer to the list of registered observers.

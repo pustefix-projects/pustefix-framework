@@ -32,8 +32,6 @@ import javax.xml.ws.handler.MessageContext;
 import javax.xml.ws.handler.soap.SOAPHandler;
 import javax.xml.ws.handler.soap.SOAPMessageContext;
 
-import org.apache.log4j.Logger;
-
 import org.pustefixframework.webservices.ServiceCallContext;
 import org.pustefixframework.webservices.ServiceRequest;
 import org.pustefixframework.webservices.ServiceResponse;
@@ -41,6 +39,9 @@ import org.pustefixframework.webservices.config.Configuration;
 import org.pustefixframework.webservices.config.ServiceConfig;
 import org.pustefixframework.webservices.fault.Fault;
 import org.pustefixframework.webservices.fault.FaultHandler;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import de.schlund.pfixcore.workflow.Context;
 
 /**
@@ -51,7 +52,7 @@ import de.schlund.pfixcore.workflow.Context;
  */
 public class ErrorHandler implements SOAPHandler<SOAPMessageContext> {
         
-    private final static Logger LOG=Logger.getLogger(ErrorHandler.class.getName());
+    private final static Logger LOG = LoggerFactory.getLogger(ErrorHandler.class.getName());
     
     /**
      * Do nothing.

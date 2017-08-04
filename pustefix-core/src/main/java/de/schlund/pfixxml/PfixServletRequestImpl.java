@@ -32,7 +32,8 @@ import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
 
-import org.apache.log4j.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.pustefixframework.http.AbstractPustefixRequestHandler;
 import org.pustefixframework.http.AbstractPustefixXMLRequestHandler;
 
@@ -68,7 +69,7 @@ public class PfixServletRequestImpl implements PfixServletRequest {
     private static final String   ATTR_LASTEXCEPTION  = "REQ_LASTEXCEPTION";
     private static final String   DEF_MAXPARTSIZE     = "" + (10 * 1024 * 1024); // 10 MB
     private HashMap<String, RequestParam[]> parameters = new HashMap<String, RequestParam[]>();
-    private Logger                LOG                 = Logger.getLogger(this.getClass());
+    private Logger                LOG                 = LoggerFactory.getLogger(this.getClass());
     private List<Exception>             multiPartExceptions = new ArrayList<Exception>();
     private String                servername;
     private String                querystring;

@@ -12,7 +12,8 @@ import java.util.TreeSet;
 
 import javax.servlet.ServletContext;
 
-import org.apache.log4j.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.web.context.ServletContextAware;
 
@@ -20,7 +21,7 @@ public class HighScore implements ServletContextAware, Serializable, Initializin
     
     private static final long serialVersionUID = -1250893468425754371L;
     
-    private static final Logger LOG = Logger.getLogger(HighScore.class);
+    private static final Logger LOG = LoggerFactory.getLogger(HighScore.class);
     
     private static int MAX_SIZE = 10;
     

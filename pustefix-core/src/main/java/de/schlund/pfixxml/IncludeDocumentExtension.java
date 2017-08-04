@@ -36,7 +36,8 @@ import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.transform.TransformerException;
 import javax.xml.transform.URIResolver;
 
-import org.apache.log4j.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.pustefixframework.util.LocaleUtils;
 import org.springframework.cache.interceptor.SimpleKeyGenerator;
 import org.springframework.context.MessageSource;
@@ -74,7 +75,7 @@ import de.schlund.pfixxml.util.XsltContext;
  */
 public final class IncludeDocumentExtension {
 
-    private static final Logger       LOG        = Logger.getLogger(IncludeDocumentExtension.class);
+    private static final Logger       LOG        = LoggerFactory.getLogger(IncludeDocumentExtension.class);
     private static final String NOTARGET   = "__NONE__";
     
     private static ThreadLocal<String> resolvedUri = new ThreadLocal<String>();

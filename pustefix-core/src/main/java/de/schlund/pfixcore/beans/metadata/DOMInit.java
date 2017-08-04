@@ -24,7 +24,8 @@ import java.net.URL;
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 
-import org.apache.log4j.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.NodeList;
@@ -37,7 +38,7 @@ import org.xml.sax.SAXParseException;
  */
 public class DOMInit {
     
-    protected final static Logger LOG=Logger.getLogger(DOMInit.class);
+    protected final static Logger LOG=LoggerFactory.getLogger(DOMInit.class);
     
     private final static String DEPRECATED_NS_BEAN_METADATA = "http://pustefix.sourceforge.net/bean-metadata";
     private final static String NS_BEAN_METADATA = "http://www.pustefix-framework.org/2008/namespace/bean-metadata";

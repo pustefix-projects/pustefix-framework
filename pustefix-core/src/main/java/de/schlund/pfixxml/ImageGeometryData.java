@@ -22,7 +22,8 @@ import java.io.InputStream;
 import java.net.URL;
 import java.net.URLConnection;
 
-import org.apache.log4j.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import de.schlund.pfixxml.resources.Resource;
 
@@ -31,7 +32,7 @@ import de.schlund.pfixxml.resources.Resource;
  */
 public class ImageGeometryData {
    
-    private static Logger LOG = Logger.getLogger(ImageGeometryData.class);
+    private static Logger LOG = LoggerFactory.getLogger(ImageGeometryData.class);
     
     private final boolean ok;
     private final int width;

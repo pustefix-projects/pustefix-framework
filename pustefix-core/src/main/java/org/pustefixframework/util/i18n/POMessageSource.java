@@ -28,7 +28,8 @@ import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentMap;
 
-import org.apache.log4j.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.context.HierarchicalMessageSource;
 import org.springframework.context.MessageSource;
 import org.springframework.context.MessageSourceResolvable;
@@ -52,7 +53,7 @@ public class POMessageSource implements HierarchicalMessageSource, ResourceLoade
 
     private final static String PO_FILE_SUFFIX = ".po";
 
-    private Logger LOG = Logger.getLogger(POMessageSource.class);
+    private Logger LOG = LoggerFactory.getLogger(POMessageSource.class);
 
     private long cacheMillis = -1;
     private MessageSource parent;

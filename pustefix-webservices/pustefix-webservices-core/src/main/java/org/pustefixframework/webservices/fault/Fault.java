@@ -17,15 +17,16 @@
  */
 package org.pustefixframework.webservices.fault;
 
-import org.apache.log4j.Logger;
 import org.pustefixframework.webservices.ServiceRequest;
 import org.pustefixframework.webservices.ServiceResponse;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import de.schlund.pfixcore.workflow.Context;
 
 public class Fault {
 	
-	Logger LOG=Logger.getLogger(getClass().getName());
+	Logger LOG = LoggerFactory.getLogger(getClass().getName());
 	
 	String serviceName;
     ServiceRequest srvReq;

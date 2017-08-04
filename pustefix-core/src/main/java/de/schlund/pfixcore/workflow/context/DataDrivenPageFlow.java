@@ -21,7 +21,8 @@ package de.schlund.pfixcore.workflow.context;
 import java.util.ArrayList;
 import java.util.HashMap;
 
-import org.apache.log4j.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.pustefixframework.config.contextxmlservice.PageFlowConfig;
 import org.pustefixframework.config.contextxmlservice.PageFlowStepConfig;
 import org.w3c.dom.Document;
@@ -48,7 +49,7 @@ public class DataDrivenPageFlow implements PageFlow {
     private String    finalpage;
     private boolean pathPrefix;
     
-    private final static Logger LOG = Logger.getLogger(DataDrivenPageFlow.class);
+    private final static Logger LOG = LoggerFactory.getLogger(DataDrivenPageFlow.class);
     
     public DataDrivenPageFlow(PageFlowConfig config) {
         flowname = config.getFlowName();

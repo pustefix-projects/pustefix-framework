@@ -24,7 +24,8 @@ import java.util.Iterator;
 import java.util.Map;
 import java.util.Properties;
 
-import org.apache.log4j.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.pustefixframework.config.contextxmlservice.StateConfig;
 import org.pustefixframework.util.BytecodeAPIUtils;
 import org.pustefixframework.util.xml.DOMUtils;
@@ -48,7 +49,7 @@ import de.schlund.pfixxml.SPDocument;
  */
 public class StateUtil {
   
-    private final static Logger LOG = Logger.getLogger(StateUtil.class);
+    private final static Logger LOG = LoggerFactory.getLogger(StateUtil.class);
     
     private static final String MIMETYPE    = "mimetype";
     private static final String HEADER      = "responseheader";

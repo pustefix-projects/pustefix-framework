@@ -24,7 +24,8 @@ import java.util.List;
 
 import javax.xml.transform.TransformerException;
 
-import org.apache.log4j.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.pustefixframework.util.xml.NamespaceUtils;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
@@ -53,7 +54,7 @@ import de.schlund.pfixxml.util.Xml;
  */
 public class Compiler {
     
-    private final static Logger LOG = Logger.getLogger(Compiler.class);
+    private final static Logger LOG = LoggerFactory.getLogger(Compiler.class);
     
     public final static String DEPRECATED_NS_SCRIPTEDFLOW = "http://pustefix.sourceforge.net/scriptedflow200602";
     public final static String NS_SCRIPTEDFLOW = "http://www.pustefix-framework.org/2008/namespace/scriptedflow";

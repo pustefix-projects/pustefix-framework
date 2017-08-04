@@ -26,9 +26,9 @@ import java.util.HashSet;
 
 import javax.xml.transform.TransformerException;
 
-import org.apache.log4j.Logger;
 import org.pustefixframework.editor.common.dom.AbstractIncludeFile;
 import org.pustefixframework.editor.common.dom.IncludePart;
+import org.slf4j.LoggerFactory;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.Node;
@@ -119,7 +119,7 @@ public abstract class CommonIncludeFileImpl extends AbstractIncludeFile {
                             + "']");
                 } catch (TransformerException e) {
                     // Should NEVER happen
-                    Logger.getLogger(this.getClass()).error("XPath error!", e);
+                    LoggerFactory.getLogger(this.getClass()).error("XPath error!", e);
                     return null;
                 }
                 IncludePart incPart = createIncludePartInstance(name, el, this
@@ -147,10 +147,10 @@ public abstract class CommonIncludeFileImpl extends AbstractIncludeFile {
                     try {
                         xmlCache = Xml.parseMutable((ModuleResource)res);
                     } catch(SAXException x) {
-                        Logger.getLogger(this.getClass()).warn(x);
+                        LoggerFactory.getLogger(this.getClass()).warn(x.getMessage(), x);
                         return null;
                     } catch(IOException x) {
-                        Logger.getLogger(this.getClass()).warn(x);
+                        LoggerFactory.getLogger(this.getClass()).warn(x.getMessage(), x);
                         return null;
                     }
                 }
@@ -177,10 +177,10 @@ public abstract class CommonIncludeFileImpl extends AbstractIncludeFile {
                     return this.xmlCache;
                 }
             } catch (SAXException e) {
-                Logger.getLogger(this.getClass()).warn(e);
+                LoggerFactory.getLogger(this.getClass()).warn(e.getMessage(), e);
                 return null;
             } catch (IOException e) {
-                Logger.getLogger(this.getClass()).warn(e);
+                LoggerFactory.getLogger(this.getClass()).warn(e.getMessage(), e);
                 return null;
             }
         }

@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Configuration status="WARN" packages="org.pustefixframework.logging.log4j">
+
+  <Properties>
+    <Property name="defaultLevel_prod">WARN</Property>
+    <Property name="defaultLevel_test">DEBUG</Property>
+    <Property name="defaultLevel">${defaultLevel_${pfx:mode}}</Property>
+  </Properties>
+
+  <Appenders>
+    <Console name="STDOUT">
+      <PatternLayout pattern="%d{ISO8601} [%t] %-5p %c [%M():%L] %marker - %m%n"/>
+    </Console>
+  </Appenders>
+
+  <Loggers>
+    <Logger name="org.pustefixframework.logging.log4j.PropertyLookupTest" level="${defaultLevel}" additivity="false">
+      <AppenderRef ref="STDOUT"/>
+    </Logger>
+    <Logger name="${pfx:mode}" level="info" additivity="false">
+      <AppenderRef ref="STDOUT"/>
+    </Logger>
+    <Root level="warn">
+      <AppenderRef ref="STDOUT"/>
+    </Root>
+  </Loggers>
+
+</Configuration>

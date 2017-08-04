@@ -34,6 +34,7 @@
   </profiles>
 
   <dependencies>
+
     <dependency>
       <groupId>org.pustefixframework</groupId>
       <artifactId>pustefix-live</artifactId>
@@ -41,10 +42,32 @@
     </dependency>
 
     <dependency>
-      <groupId>log4j</groupId>
-      <artifactId>log4j</artifactId>
-      <version>1.2.17</version>
+      <groupId>org.slf4j</groupId>
+      <artifactId>slf4j-api</artifactId>
+      <version>1.7.25</version>
     </dependency>
+
+    <!-- Spring logging with SLF4J -->
+    <dependency>
+      <groupId>org.slf4j</groupId>
+      <artifactId>jcl-over-slf4j</artifactId>
+      <version>1.7.25</version>
+    </dependency>
+
+    <!-- Logging test dependencies -->
+    <dependency>
+      <groupId>ch.qos.logback</groupId>
+      <artifactId>logback-classic</artifactId>
+      <version>1.2.3</version>
+      <scope>test</scope>
+    </dependency>
+    <dependency>
+      <groupId>ch.qos.logback</groupId>
+      <artifactId>logback-core</artifactId>
+      <version>1.2.3</version>
+      <scope>test</scope>
+    </dependency>
+
     <dependency>
       <groupId>com.marsching.flexiparse</groupId>
       <artifactId>flexiparse</artifactId>

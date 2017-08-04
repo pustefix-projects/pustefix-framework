@@ -20,7 +20,8 @@ package de.schlund.pfixxml.targets;
 import java.lang.reflect.Constructor;
 import java.util.TreeMap;
 
-import org.apache.log4j.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * TargetFactory.java
@@ -35,7 +36,7 @@ import org.apache.log4j.Logger;
 
 public class TargetFactory {
     
-    private final static Logger  LOG      = Logger.getLogger(TargetFactory.class); 
+    private final static Logger  LOG      = LoggerFactory.getLogger(TargetFactory.class);
     
     private TreeMap<String, TargetRW> targetmap = new TreeMap<String, TargetRW>();
 

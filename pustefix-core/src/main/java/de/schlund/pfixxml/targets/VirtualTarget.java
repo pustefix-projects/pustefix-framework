@@ -30,7 +30,6 @@ import javax.xml.transform.TransformerException;
 import javax.xml.transform.sax.SAXSource;
 import javax.xml.transform.stream.StreamResult;
 
-import org.apache.log4j.NDC;
 import org.w3c.dom.Document;
 import org.xml.sax.InputSource;
 
@@ -229,7 +228,6 @@ public abstract class VirtualTarget extends TargetImpl {
         // long currmodtime = getModTime();
         long maxmodtime = 0;
         long tmpmodtime;
-        NDC.push("    ");
         if(TREE.isDebugEnabled()) {
             TREE.debug("> " + getTargetKey());
         }
@@ -313,7 +311,6 @@ public abstract class VirtualTarget extends TargetImpl {
                 TREE.debug("  [" + getTargetKey() + ": skipping...]");
             }
         }
-        NDC.pop();
         return getModTime();
     }
 

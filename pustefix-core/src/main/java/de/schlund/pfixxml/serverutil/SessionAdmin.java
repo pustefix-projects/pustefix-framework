@@ -35,7 +35,8 @@ import javax.servlet.http.HttpSession;
 import javax.servlet.http.HttpSessionBindingEvent;
 import javax.servlet.http.HttpSessionBindingListener;
 
-import org.apache.log4j.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.DisposableBean;
 import org.springframework.beans.factory.InitializingBean;
 
@@ -50,8 +51,8 @@ public class SessionAdmin implements HttpSessionBindingListener, SessionAdminMBe
     public final static String PARENT_SESS_ID = "__PARENT_SESSION_ID__";
     public final static String SESSION_IS_SECURE = "__SESSION_IS_SECURE__";
     public final static String SESSION_IS_DEBUG = "__SESSION_IS_DEBUG__";
-    private final static Logger LOG = Logger.getLogger(SessionAdmin.class);
-    private final static Logger LOGGER_SESSION = Logger.getLogger("LOGGER_SESSION");
+    private final static Logger LOG = LoggerFactory.getLogger(SessionAdmin.class);
+    private final static Logger LOGGER_SESSION = LoggerFactory.getLogger("LOGGER_SESSION");
     /** Maps session to it's id. */
     private HashMap<HttpSession, String> sessionid = new HashMap<HttpSession, String>();
     private HashMap<String, SessionInfoStruct> sessioninfo = new HashMap<String, SessionInfoStruct>();

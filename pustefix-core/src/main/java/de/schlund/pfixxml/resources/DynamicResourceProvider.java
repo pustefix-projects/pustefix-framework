@@ -21,7 +21,8 @@ import java.net.URI;
 import java.net.URISyntaxException;
 import java.util.List;
 
-import org.apache.log4j.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import de.schlund.pfixcore.util.ModuleInfo;
 import de.schlund.pfixxml.IncludePartsInfoFactory;
@@ -35,7 +36,7 @@ import de.schlund.pfixxml.util.URIParameters;
  */
 public class DynamicResourceProvider implements ResourceProvider {
     
-    private Logger LOG = Logger.getLogger(DynamicResourceProvider.class);
+    private Logger LOG = LoggerFactory.getLogger(DynamicResourceProvider.class);
     
     private final static String DYNAMIC_SCHEME = "dynamic";
     private final static String[] supportedSchemes = {DYNAMIC_SCHEME};

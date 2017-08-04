@@ -22,7 +22,8 @@ import java.net.URL;
 import java.util.StringTokenizer;
 import java.util.concurrent.ConcurrentHashMap;
 
-import org.apache.log4j.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import de.schlund.pfixxml.resources.Resource;
 import de.schlund.pfixxml.resources.ResourceUtil;
@@ -33,7 +34,7 @@ import de.schlund.pfixxml.resources.ResourceUtil;
  */
 public class ImageGeometry {
 
-    private final static Logger LOG = Logger.getLogger(ImageGeometry.class); 
+    private final static Logger LOG = LoggerFactory.getLogger(ImageGeometry.class);
     
     private static ConcurrentHashMap<String, ImageGeometryData> imageinfo = new ConcurrentHashMap<String, ImageGeometryData>();
     

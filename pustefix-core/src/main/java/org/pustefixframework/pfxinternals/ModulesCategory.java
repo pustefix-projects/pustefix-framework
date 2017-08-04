@@ -13,7 +13,8 @@ import javax.management.MalformedObjectNameException;
 import javax.management.ObjectName;
 import javax.servlet.http.HttpServletRequest;
 
-import org.apache.log4j.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.pustefixframework.live.LiveResolver;
 import org.w3c.dom.Element;
 
@@ -23,7 +24,7 @@ import de.schlund.pfixxml.FilterHelper;
 
 public class ModulesCategory implements Category {
 
-    private Logger LOG = Logger.getLogger(ModulesCategory.class);
+    private Logger LOG = LoggerFactory.getLogger(ModulesCategory.class);
     
     @Override
     public void model(Element parent, HttpServletRequest request, PageContext context) {

@@ -23,7 +23,8 @@ import java.io.Writer;
 import java.util.HashMap;
 import java.util.Map;
 
-import org.apache.log4j.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import com.icl.saxon.Context;
 import com.icl.saxon.Mode;
@@ -37,7 +38,7 @@ import com.icl.saxon.trace.TraceListener;
  */
 public class Saxon1TraceListener implements TraceListener {
 
-   private final static Logger LOG=Logger.getLogger(Saxon1TraceListener.class);
+   private final static Logger LOG=LoggerFactory.getLogger(Saxon1TraceListener.class);
     
    public enum Format {VERBOSE,COMPRESSED};
    

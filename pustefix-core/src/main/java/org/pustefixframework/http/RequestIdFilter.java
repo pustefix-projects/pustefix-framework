@@ -14,7 +14,7 @@ import javax.servlet.ServletResponse;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-import org.apache.log4j.MDC;
+import org.slf4j.MDC;
 
 /**
  * Servlet filter which generates a request ID for uniquely identifying requests.

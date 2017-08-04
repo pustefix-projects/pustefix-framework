@@ -27,7 +27,8 @@ import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-import org.apache.log4j.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import de.schlund.pfixxml.PfixServletRequest;
 
@@ -42,7 +43,7 @@ import de.schlund.pfixxml.PfixServletRequest;
  */
 public class PageForwardingExceptionProcessor implements ExceptionProcessor {
 
-    private final static Logger LOG = Logger.getLogger(PageForwardingExceptionProcessor.class);
+    private final static Logger LOG = LoggerFactory.getLogger(PageForwardingExceptionProcessor.class);
 
     /**
      * The request gets forwarded to the page specified by the 'page'-attribute

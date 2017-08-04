@@ -30,7 +30,8 @@ import javax.xml.transform.TransformerConfigurationException;
 import javax.xml.transform.TransformerException;
 import javax.xml.transform.stream.StreamResult;
 
-import org.apache.log4j.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.w3c.dom.Document;
 
 import de.schlund.pfixxml.PfixServletRequest;
@@ -53,7 +54,7 @@ import de.schlund.pfixxml.util.XsltVersion;
 public class UniversalExceptionProcessor implements ExceptionProcessor {
 
     private static final String ERROR_STYLESHEET = "module://pustefix-core/xsl/errorrepresentation.xsl";
-    private static final Logger LOG = Logger.getLogger(UniversalExceptionProcessor.class);
+    private static final Logger LOG = LoggerFactory.getLogger(UniversalExceptionProcessor.class);
     
     /* (non-Javadoc)
      * @see de.schlund.pfixxml.exceptionprocessor.ExceptionProcessor#processException(java.lang.Throwable, de.schlund.pfixxml.exceptionprocessor.ExceptionConfig, de.schlund.pfixxml.PfixServletRequest, javax.servlet.ServletContext, javax.servlet.http.HttpServletRequest, javax.servlet.http.HttpServletResponse, java.lang.String)

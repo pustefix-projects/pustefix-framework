@@ -42,6 +42,7 @@ import org.apache.maven.project.MavenProject;
  * @goal generate
  * @phase prepare-package
  *
+ * @threadSafe
  * @requiresDependencyResolution compile
  * @threadSafe
  */

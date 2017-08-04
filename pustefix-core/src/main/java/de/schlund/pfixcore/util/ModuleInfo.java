@@ -28,14 +28,15 @@ import java.util.SortedSet;
 import java.util.TreeMap;
 import java.util.TreeSet;
 
-import org.apache.log4j.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import de.schlund.pfixcore.exception.PustefixRuntimeException;
 import de.schlund.pfixxml.resources.ModuleFilter;
 
 public class ModuleInfo {
     
-	private final static Logger LOG = Logger.getLogger(ModuleInfo.class);
+	private final static Logger LOG = LoggerFactory.getLogger(ModuleInfo.class);
 	
     private final static String MODULE_DESCRIPTOR_LOCATION = "META-INF/pustefix-module.xml";
     

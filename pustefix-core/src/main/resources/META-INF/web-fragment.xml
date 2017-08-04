@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<web-fragment xmlns="http://java.sun.com/xml/ns/javaee"
+              xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+              xsi:schemaLocation="http://java.sun.com/xml/ns/javaee
+                                  http://java.sun.com/xml/ns/javaee/web-fragment_3_0.xsd"
+              version="3.0" metadata-complete="true">
+   <!-- In order to make the Pustefix environment settings available as soon as possible during
+        application startup, the Pustefix web fragment should be loaded before all other fragments,
+        e.g. thus you can use the Pustefix environment properties within the logging configuration.
+        If you experience problems, try specifying an <absolute-ordering> in your web.xml
+        deployment descriptor.
+   -->
+   <name>pustefix-core</name>
+   <distributable/>
+   <ordering>
+      <before>
+         <others/>
+      </before>
+   </ordering>
+</web-fragment>

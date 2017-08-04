@@ -22,8 +22,9 @@ import java.io.Serializable;
 import java.util.Date;
 import java.util.HashMap;
 
-import org.apache.log4j.Logger;
 import org.pustefixframework.eventbus.EventBus;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import de.schlund.pfixcore.beans.Exclude;
@@ -43,7 +44,7 @@ public class ContextAdultInfo implements Serializable {
     
     private static final long serialVersionUID = -7113285838799932518L;
     
-    private transient Logger LOG = Logger.getLogger(ContextAdultInfo.class);
+    private transient Logger LOG = LoggerFactory.getLogger(ContextAdultInfo.class);
     
     private Boolean adult = null;
     private Date date = null;

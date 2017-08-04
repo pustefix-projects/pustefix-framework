@@ -21,7 +21,8 @@ import java.util.jar.JarFile;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-import org.apache.log4j.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.pustefixframework.live.LiveResolver;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
@@ -34,7 +35,7 @@ import de.schlund.pfixxml.util.FileUtils;
 
 public class FullTextSearch {
 
-    private Logger LOG = Logger.getLogger(FullTextSearch.class);
+    private Logger LOG = LoggerFactory.getLogger(FullTextSearch.class);
 
     public void search(Element root, Pattern filePattern, Pattern textPattern, boolean searchWebapp, boolean searchModules, String searchModule, boolean searchClassPath) {
 

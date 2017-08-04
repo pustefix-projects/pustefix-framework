@@ -13,7 +13,8 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 
-import org.apache.log4j.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import de.schlund.pfixxml.PfixServletRequest;
 import de.schlund.pfixxml.PfixServletRequestImpl;
@@ -26,8 +27,8 @@ import de.schlund.pfixxml.util.MD5Utils;
 
 public class URLRewriteSessionTrackingStrategy implements SessionTrackingStrategy {
 
-    private static Logger LOG = Logger.getLogger(URLRewriteSessionTrackingStrategy.class);
-    private static Logger LOGGER_SESSION = Logger.getLogger("LOGGER_SESSION");
+    private static Logger LOG = LoggerFactory.getLogger(URLRewriteSessionTrackingStrategy.class);
+    private static Logger LOGGER_SESSION = LoggerFactory.getLogger("LOGGER_SESSION");
 
     private static final String CHECK_FOR_RUNNING_SSL_SESSION = "__CHECK_FOR_RUNNING_SSL_SESSION__";
     private static final String COOKIE_VALUE_SEPARATOR = "_";
@@ -258,9 +259,6 @@ public class URLRewriteSessionTrackingStrategy implements SessionTrackingStrateg
             preq = new PfixServletRequestImpl(req, context.getServletManagerConfig().getProperties(), context);
         }
 
-        //TODO: call it later
-        //PustefixInit.tryReloadLog4j();
-        
         // End of initialization. Now we handle all cases where we need to redirect.
 
         if (force_jump_back_to_ssl && context.allowSessionCreate()) {

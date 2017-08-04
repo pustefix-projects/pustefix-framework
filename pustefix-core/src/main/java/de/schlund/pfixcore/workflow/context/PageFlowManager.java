@@ -25,7 +25,8 @@ import java.util.Iterator;
 import java.util.Map;
 import java.util.Set;
 
-import org.apache.log4j.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.pustefixframework.config.contextxmlservice.ContextConfig;
 import org.pustefixframework.config.contextxmlservice.PageRequestConfig;
 
@@ -46,7 +47,7 @@ public class PageFlowManager {
     private VariantManager vmanager;
     private ContextConfig config;
 
-    private final static Logger LOG = Logger.getLogger(PageFlowManager.class);
+    private final static Logger LOG = LoggerFactory.getLogger(PageFlowManager.class);
 
     public final static String PROP_PREFIX = "context.pageflow";
 

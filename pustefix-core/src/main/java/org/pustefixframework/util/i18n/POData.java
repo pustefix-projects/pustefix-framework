@@ -30,7 +30,8 @@ import javax.script.ScriptEngineManager;
 import javax.script.ScriptException;
 import javax.script.SimpleBindings;
 
-import org.apache.log4j.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * Representation of the PO file data, including message
@@ -38,7 +39,7 @@ import org.apache.log4j.Logger;
  */
 public class POData {
 
-    private Logger LOG = Logger.getLogger(POData.class);
+    private Logger LOG = LoggerFactory.getLogger(POData.class);
 
     private Map<String, POMessage> messages;
     private PluralForms pluralForms;

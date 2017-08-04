@@ -27,8 +27,10 @@ import javax.xml.transform.OutputKeys;
 import javax.xml.transform.TransformerConfigurationException;
 import javax.xml.transform.TransformerException;
 
-import org.apache.log4j.Level;
-import org.apache.log4j.Logger;
+import org.pustefixframework.util.LogUtils;
+import org.pustefixframework.util.LogUtils.Level;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import com.icl.saxon.Context;
 import com.icl.saxon.output.Emitter;
@@ -68,7 +70,7 @@ public class LogExtensionElement extends StyleElement {
             if(name.equals("level")) {
                 level = Level.toLevel(value);
             } else if(name.equals("logger")) {
-                logger = Logger.getLogger(value);
+                logger = LoggerFactory.getLogger(value);
             } else {
                 compileError("Attribute " + name + " is not allowed on this element");
             }
@@ -90,7 +92,7 @@ public class LogExtensionElement extends StyleElement {
                 maxLevel = Level.INFO;
             }
         } else {
-            maxLevel = logger.getEffectiveLevel();
+            maxLevel = LogUtils.getEffectiveLevel(logger);
         }
     }
 
@@ -120,7 +122,7 @@ public class LogExtensionElement extends StyleElement {
                 PrintWriter pw = new PrintWriter(sw);
                 emitter.setWriter(pw);
                 output(context, emitter);
-                logger.log(level, sw.toString());
+                LogUtils.log(logger, level, sw.toString());
 
             }
         }

@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE Configuration [
+  <!ENTITY Properties SYSTEM "classpath:org/pustefixframework/logging/log4j-properties.ent">
+  <!ENTITY Appenders SYSTEM "classpath:org/pustefixframework/logging/log4j-appenders.ent">
+  <!ENTITY Loggers SYSTEM "classpath:org/pustefixframework/logging/log4j-loggers.ent">
+]>
+<Configuration status="WARN" packages="org.pustefixframework.logging.log4j">
+
+  <Properties>
+
+    &Properties;
+
+  </Properties>
+
+  <Appenders>
+
+    &Appenders;
+
+  </Appenders>
+
+  <Loggers>
+
+    &Loggers;
+
+  </Loggers>
+
+</Configuration>

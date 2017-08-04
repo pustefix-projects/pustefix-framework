@@ -44,7 +44,8 @@ import javax.xml.transform.dom.DOMResult;
 import javax.xml.transform.sax.SAXTransformerFactory;
 import javax.xml.transform.sax.TransformerHandler;
 
-import org.apache.log4j.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.pustefixframework.util.xml.DOMUtils;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
@@ -82,8 +83,8 @@ public class SiteMap {
             .appendOffsetId().optionalEnd().optionalEnd().optionalEnd()
             .toFormatter();
 
-    private Logger LOG = Logger.getLogger(SiteMap.class);
-    
+    private Logger LOG = LoggerFactory.getLogger(SiteMap.class);
+
     private Resource siteMapFile;
     private Set<Resource> fileDependencies = new HashSet<>();
     private long lastFileModTime;

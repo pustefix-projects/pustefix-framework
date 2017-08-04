@@ -25,7 +25,8 @@ import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.Set;
 
-import org.apache.log4j.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * Created: Tue Jul  4 10:35:21 2006
@@ -36,7 +37,7 @@ import org.apache.log4j.Logger;
 
 public class CacheValueLRU<K,V> implements Map<K, V> {
     
-    private final static Logger LOG = Logger.getLogger(CacheValueLRU.class);
+    private final static Logger LOG = LoggerFactory.getLogger(CacheValueLRU.class);
     
     CacheValueLRUStack valuestack;
     HashMap<K, V> keytovalue;

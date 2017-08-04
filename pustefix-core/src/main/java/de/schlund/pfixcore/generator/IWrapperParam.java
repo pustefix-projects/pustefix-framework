@@ -23,7 +23,8 @@ import java.util.Arrays;
 import java.util.HashSet;
 import java.util.Iterator;
 
-import org.apache.log4j.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.pustefixframework.generated.CoreStatusCodes;
 
 import de.schlund.pfixxml.RequestParam;
@@ -58,7 +59,7 @@ public class IWrapperParam implements IWrapperParamCheck, IWrapperParamDefinitio
     private ArrayList<IWrapperParamPreCheck> precheck = new ArrayList<IWrapperParamPreCheck>();
     private ArrayList<IWrapperParamPostCheck> postcheck = new ArrayList<IWrapperParamPostCheck>();
     private HashSet<StatusCodeInfo> scodeinfos = new HashSet<StatusCodeInfo>();
-    private Logger              LOG            = Logger.getLogger(this.getClass());
+    private Logger              LOG            = LoggerFactory.getLogger(this.getClass());
     private StatusCodeInfo      missing        = new StatusCodeInfo(CoreStatusCodes.MISSING_PARAM, null, null);  
     private boolean             inrequest      = false;
     

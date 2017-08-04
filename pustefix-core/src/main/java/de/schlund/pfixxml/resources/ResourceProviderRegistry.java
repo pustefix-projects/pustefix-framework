@@ -22,7 +22,8 @@ import java.util.Iterator;
 import java.util.Map;
 import java.util.ServiceLoader;
 
-import org.apache.log4j.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * 
@@ -31,7 +32,7 @@ import org.apache.log4j.Logger;
  */
 public class ResourceProviderRegistry {
     
-    private static Logger LOG = Logger.getLogger(ResourceProviderRegistry.class);
+    private static Logger LOG = LoggerFactory.getLogger(ResourceProviderRegistry.class);
     
     private static Map<String, ResourceProvider> resourceProviders = new HashMap<String, ResourceProvider>();
     

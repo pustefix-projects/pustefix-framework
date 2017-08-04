@@ -20,7 +20,8 @@ package de.schlund.pfixcore.auth;
 import java.util.SortedMap;
 import java.util.TreeMap;
 
-import org.apache.log4j.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * 
@@ -29,7 +30,7 @@ import org.apache.log4j.Logger;
  */
 public class AuthenticationImpl implements Authentication {
 
-    private final static Logger     LOG = Logger.getLogger(AuthenticationImpl.class);
+    private final static Logger     LOG = LoggerFactory.getLogger(AuthenticationImpl.class);
 
     private SortedMap<String, Role> roles;
     private RoleProvider            roleProvider;

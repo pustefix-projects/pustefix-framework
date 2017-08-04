@@ -25,10 +25,6 @@ import org.apache.commons.httpclient.HttpMethod;
 import org.apache.commons.httpclient.URIException;
 import org.apache.commons.httpclient.protocol.Protocol;
 import org.apache.commons.httpclient.protocol.ProtocolSocketFactory;
-import org.apache.log4j.ConsoleAppender;
-import org.apache.log4j.Level;
-import org.apache.log4j.Logger;
-import org.apache.log4j.PatternLayout;
 
 import junit.framework.TestCase;
 
@@ -45,16 +41,6 @@ public abstract class AbstractSessionHandlingTest extends TestCase {
     protected static int HTTPS_PORT = 8443;
     
     protected static Tomcat createServer(int httpPort, int httpsPort, Class<? extends SessionTrackingStrategy> sessionTrackingStrategy) throws Exception {
-        
-        ConsoleAppender appender = new ConsoleAppender(new PatternLayout("%p: %m\n"));
-        Logger logger=Logger.getRootLogger();
-        logger.setLevel((Level)Level.WARN);
-        logger.removeAllAppenders();
-        logger.addAppender(appender);
-        
-        logger = Logger.getLogger("org.pustefixframework");
-        logger.setLevel((Level)Level.WARN);
-        logger.addAppender(appender);
         
         Tomcat tomcat = new Tomcat();
         tomcat.setBaseDir("target/tomcat");
@@ -77,7 +63,7 @@ public abstract class AbstractSessionHandlingTest extends TestCase {
         service.addConnector(httpsConnector);
         tomcat.getConnector().setRedirectPort(HTTPS_PORT);
 
-        Context ctx = tomcat.addWebapp("/", new File("src/test/resources/webapp").getAbsolutePath());
+        Context ctx = tomcat.addWebapp("/", new File("target/test-classes/webapp").getAbsolutePath());
 
         Set<SessionTrackingMode> modes = new HashSet<>();
         if(sessionTrackingStrategy == CookieOnlySessionTrackingStrategy.class) {

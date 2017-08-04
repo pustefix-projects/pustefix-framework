@@ -26,8 +26,6 @@ import javax.xml.ws.handler.MessageContext;
 import javax.xml.ws.handler.soap.SOAPHandler;
 import javax.xml.ws.handler.soap.SOAPMessageContext;
 
-import org.apache.log4j.Logger;
-
 import org.pustefixframework.webservices.ServiceCallContext;
 import org.pustefixframework.webservices.ServiceRequest;
 import org.pustefixframework.webservices.ServiceResponse;
@@ -36,6 +34,8 @@ import org.pustefixframework.webservices.config.GlobalServiceConfig;
 import org.pustefixframework.webservices.utils.RecordingRequestWrapper;
 import org.pustefixframework.webservices.utils.RecordingResponseWrapper;
 import org.pustefixframework.webservices.utils.XMLFormatter;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * Records SOAP requests and responses for monitoring (only appropriate to development mode).
@@ -44,7 +44,7 @@ import org.pustefixframework.webservices.utils.XMLFormatter;
  */
 public class RecordingHandler implements SOAPHandler<SOAPMessageContext> {
         
-    private static Logger LOG=Logger.getLogger(RecordingHandler.class.getName());
+    private static Logger LOG = LoggerFactory.getLogger(RecordingHandler.class.getName());
 
     public RecordingHandler() {}
     

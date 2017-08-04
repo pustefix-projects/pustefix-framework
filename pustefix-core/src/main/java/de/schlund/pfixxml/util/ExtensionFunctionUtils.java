@@ -22,7 +22,8 @@ import java.lang.reflect.Method;
 import java.util.HashMap;
 import java.util.Map;
 
-import org.apache.log4j.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.pustefixframework.util.LogUtils;
 import org.springframework.util.ClassUtils;
 
@@ -49,7 +50,7 @@ public class ExtensionFunctionUtils {
     private static ThreadLocal<Long> extFuncTime = new ThreadLocal<>();
     private static ThreadLocal<Map<Object, Object>> extFuncCache = new ThreadLocal<>();
     
-    private static Logger LOG = Logger.getLogger(ExtensionFunctionUtils.class);
+    private static Logger LOG = LoggerFactory.getLogger(ExtensionFunctionUtils.class);
     
     public static void setExtensionFunctionError(Throwable t) {
         extFuncError.set(t);

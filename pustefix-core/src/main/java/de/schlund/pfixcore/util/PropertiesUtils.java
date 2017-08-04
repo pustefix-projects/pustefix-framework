@@ -25,7 +25,8 @@ import java.util.HashMap;
 import java.util.Properties;
 import java.util.TreeMap;
 
-import org.apache.log4j.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * Insert the type's description here.
@@ -35,7 +36,7 @@ import org.apache.log4j.Logger;
 
 public class PropertiesUtils {
     /** Logging. */
-    protected final static Logger LOG = Logger.getLogger(PropertiesUtils.class);
+    protected final static Logger LOG = LoggerFactory.getLogger(PropertiesUtils.class);
 
     /** Default constructor. */
     protected PropertiesUtils() {

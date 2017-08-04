@@ -28,7 +28,6 @@ import java.util.Iterator;
 
 import javax.xml.transform.TransformerException;
 
-import org.apache.log4j.Logger;
 import org.pustefixframework.editor.common.dom.AbstractIncludePartThemeVariant;
 import org.pustefixframework.editor.common.dom.IncludePart;
 import org.pustefixframework.editor.common.dom.IncludePartThemeVariant;
@@ -37,6 +36,7 @@ import org.pustefixframework.editor.common.dom.Theme;
 import org.pustefixframework.editor.common.exception.EditorIOException;
 import org.pustefixframework.editor.common.exception.EditorParsingException;
 import org.pustefixframework.editor.common.exception.EditorSecurityException;
+import org.slf4j.LoggerFactory;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.Node;
@@ -131,7 +131,7 @@ public abstract class CommonIncludePartThemeVariantImpl extends
         } catch (TransformerException e) {
             // Should NEVER happen
             // So if it does, assume there is no node
-            Logger.getLogger(this.getClass()).error("XPath error!", e);
+            LoggerFactory.getLogger(this.getClass()).error("XPath error!", e);
             return null;
         }
     }
@@ -164,7 +164,7 @@ public abstract class CommonIncludePartThemeVariantImpl extends
                     } catch (IOException e) {
                         String err = "Could not create file "
                                 + xmlFile.getAbsolutePath() + "!";
-                        Logger.getLogger(this.getClass()).error(err, e);
+                        LoggerFactory.getLogger(this.getClass()).error(err, e);
                         throw new EditorIOException(err, e);
                     }
                 }
@@ -195,18 +195,18 @@ public abstract class CommonIncludePartThemeVariantImpl extends
                     String err = "File "
                             + xmlFile.getAbsolutePath()
                             + " could not be found although Pustefix core could obviously read it!";
-                    Logger.getLogger(this.getClass()).error(err, e);
+                    LoggerFactory.getLogger(this.getClass()).error(err, e);
                     throw new EditorIOException(err, e);
                 } catch (SAXException e) {
                     String err = "Error during parsing file "
                             + xmlFile.getAbsolutePath() + "!";
-                    Logger.getLogger(this.getClass()).error(err, e);
+                    LoggerFactory.getLogger(this.getClass()).error(err, e);
                     throw new EditorParsingException(err, e);
                 } catch (IOException e) {
                     String err = "File "
                             + xmlFile.getAbsolutePath()
                             + " could not be read although Pustefix core could obviously read it!";
-                    Logger.getLogger(this.getClass()).error(err, e);
+                    LoggerFactory.getLogger(this.getClass()).error(err, e);
                     throw new EditorIOException(err, e);
                 }
                 root = doc.getDocumentElement();
@@ -217,7 +217,7 @@ public abstract class CommonIncludePartThemeVariantImpl extends
                     // Should never happen as a DOM document is always
                     // well-formed!
                     String err = "XPath error!";
-                    Logger.getLogger(this.getClass()).error(err, e);
+                    LoggerFactory.getLogger(this.getClass()).error(err, e);
                     throw new RuntimeException(err, e);
                 }
                 if (part == null) {
@@ -240,7 +240,7 @@ public abstract class CommonIncludePartThemeVariantImpl extends
                     // Should never happen as a DOM document is always
                     // well-formed!
                     String err = "XPath error!";
-                    Logger.getLogger(this.getClass()).error(err, e);
+                    LoggerFactory.getLogger(this.getClass()).error(err, e);
                     throw new RuntimeException(err, e);
                 }
                 if (theme == null) {
@@ -309,7 +309,7 @@ public abstract class CommonIncludePartThemeVariantImpl extends
             } catch (IOException e) {
                 String err = "File " + xmlFile.getAbsolutePath()
                         + " could not written!";
-                Logger.getLogger(this.getClass()).error(err, e);
+                LoggerFactory.getLogger(this.getClass()).error(err, e);
                 throw new EditorIOException(err, e);
             }
 

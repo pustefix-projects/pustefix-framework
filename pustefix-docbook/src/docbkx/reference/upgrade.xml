@@ -5,6 +5,68 @@
 >
   <title>Upgrading to a newer Pustefix version</title>
 
+  <section xml:id="upgrade.0_20_to_0_21">
+    <title>Upgrading from Pustefix 0.20 to 0.21</title>
+
+    <para>
+      After changing internal logging from Log4j to SLF4J, Pustefix no longer has a Maven dependency on Log4j or another logging implementation,
+      it only brings a dependency to the SLF4J API (<literal>org.slf4j:slf4j-api</literal>), i.e. depending on the logging framework of your choice, you have to adapt
+      your Maven dependencies, logging configuration and code:
+    </para>
+    <itemizedlist>
+      <listitem>
+        <para>
+          If you want to stick with the old Log4j version, you have to add the Log4j library dependency (<literal>log4j:log4j</literal>),
+          along with the dependency of the SLF4J-to-Log4j bridge (<literal>org.slf4j:slf4j-log4j12</literal>).
+        </para>
+        <para>
+          No configuration or code change is required (<literal>pfixlog.xml</literal> is still supported).
+        </para>
+      </listitem>
+      <listitem>
+        <para>
+         If you want to use Logback, you have to add the according Logback library dependencies (at least <literal>ch.qos.logback:logback-classic</literal>)
+         or you can alternatively add the Pustefix Logback extension module
+         (<literal>org.pustefixframework.logging:pustefix-logback</literal>), which already has the required dependencies and provides
+         some useful configuration extensions.
+        </para>
+        <para>
+         You will have to migrate your old Log4j configuration (from <literal>pfixlog.xml</literal>) to a new Logback configuration
+         (e.g. located at <literal>src/main/resources/logback.xml</literal>). Details about the migration can be found in the Logback
+         documentation (see <link xlink:href="https://logback.qos.ch/manual/migrationFromLog4j.html"/>). A base configuration for the
+         Pustefix framework stuff comes as part of the Pustefix Logback module and can be included or used as reference, see
+         <xref linkend="configuration.logging.logback"/>).
+        </para>
+        <para>
+         Code using the old Log4j API should be migrated to the SLF4J API.
+         If you can't migrate all your legacy code, you can temporarily use a legacy API bridge (see <link xlink:href="https://www.slf4j.org/legacy.html"/>).
+        </para>
+      </listitem>
+      <listitem>
+        <para>
+         If you want to use Log4j 2, you have to add the according Log4j 2 library dependencies (at least <literal>org.apache.logging.log4j:log4j-slf4j-impl</literal>,
+         <literal>org.apache.logging.log4j:log4j-web</literal> and <literal>org.apache.logging.log4j:log4j-jcl</literal>) or you can alternatively add the
+         Pustefix Log4j extension module
+         (<literal>org.pustefixframework.logging:pustefix-log4j</literal>), which already has the required dependencies and provides
+         some useful configuration extensions.
+        </para>
+        <para>
+         You will have to migrate your old Log4j configuration (from <literal>pfixlog.xml</literal>) to a new Log4j 2 configuration
+         (e.g. located at <literal>src/main/webapp/WEB-INF/log4j2.xml</literal>). Details about the migration can be found in the Log4j
+         documentation (see <link xlink:href="https://logging.apache.org/log4j/2.x/manual/migration.html"/>).  A base configuration for the
+         Pustefix framework stuff comes as part of the Pustefix Log4j module and can be included or used as reference, see
+         <xref linkend="configuration.logging.log4j2"/>).
+        </para>
+        <para>
+         Code using the old Log4j API either has to be migrated to the new Log4j 2 API or to the SLF4J API.
+         If you can't migrate all your legacy code, you can temporarily use a legacy API bridge (see <link xlink:href="https://logging.apache.org/log4j/2.x/manual/migration.html"/>
+         and <link xlink:href="https://www.slf4j.org/legacy.html"/>).
+        </para>
+      </listitem>
+    </itemizedlist>
+
+  </section>
+
   <section xml:id="upgrade.0_18_to_0_19">
     <title>Upgrading from Pustefix 0.18 to 0.19</title>
 

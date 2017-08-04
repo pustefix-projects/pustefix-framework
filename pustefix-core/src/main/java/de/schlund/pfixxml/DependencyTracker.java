@@ -22,7 +22,8 @@ package de.schlund.pfixxml;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentMap;
 
-import org.apache.log4j.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import de.schlund.pfixxml.resources.Resource;
 import de.schlund.pfixxml.resources.ResourceUtil;
@@ -33,8 +34,8 @@ import de.schlund.pfixxml.util.XsltContext;
 
 public class DependencyTracker {
     
-    private final static Logger LOG = Logger.getLogger(DependencyTracker.class);
-    private final static Logger USAGE_LOG = Logger.getLogger("LOGGER_PFXUSAGE");
+    private final static Logger LOG = LoggerFactory.getLogger(DependencyTracker.class);
+    private final static Logger USAGE_LOG = LoggerFactory.getLogger("LOGGER_PFXUSAGE");
     private final static ConcurrentMap<String, ConcurrentMap<String, Boolean>> includeUsage = new ConcurrentHashMap<String, ConcurrentMap<String, Boolean>>();
     
     /** xslt extension */

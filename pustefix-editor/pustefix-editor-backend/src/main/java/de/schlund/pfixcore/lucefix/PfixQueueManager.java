@@ -25,7 +25,6 @@ import java.util.LinkedList;
 import java.util.Queue;
 import java.util.Vector;
 
-import org.apache.log4j.Logger;
 import org.apache.lucene.analysis.Analyzer;
 import org.apache.lucene.document.DateField;
 import org.apache.lucene.document.Document;
@@ -35,6 +34,8 @@ import org.apache.lucene.index.Term;
 import org.apache.lucene.search.Hits;
 import org.apache.lucene.search.IndexSearcher;
 import org.apache.lucene.search.TermQuery;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.xml.sax.SAXException;
 
 import de.schlund.pfixxml.XMLException;
@@ -47,7 +48,7 @@ import de.schlund.pfixxml.config.GlobalConfig;
 public class PfixQueueManager extends Thread {
 
     private static PfixQueueManager _instance = null;
-    private final static Logger LOG = Logger.getLogger((PfixQueueManager.class));
+    private final static Logger LOG = LoggerFactory.getLogger((PfixQueueManager.class));
     public static final String WAITMS_PROP = "lucefix.queueidle";
     public static String lucene_data_path;
     private Queue<Tripel> queue = new LinkedList<Tripel>();

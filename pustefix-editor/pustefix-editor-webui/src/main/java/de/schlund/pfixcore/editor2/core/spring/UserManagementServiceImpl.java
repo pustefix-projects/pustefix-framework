@@ -31,13 +31,13 @@ import java.util.Map;
 import javax.servlet.ServletContext;
 import javax.xml.transform.TransformerException;
 
-import org.apache.log4j.Logger;
 import org.pustefixframework.editor.common.dom.Project;
 import org.pustefixframework.editor.common.exception.EditorDuplicateUsernameException;
 import org.pustefixframework.editor.common.exception.EditorIOException;
 import org.pustefixframework.editor.common.exception.EditorParsingException;
 import org.pustefixframework.editor.common.exception.EditorSecurityException;
 import org.pustefixframework.editor.common.exception.EditorUserNotExistingException;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.ApplicationContextAware;
@@ -124,15 +124,15 @@ public class UserManagementServiceImpl implements UserManagementService, Applica
                 xml = Xml.parseMutable(resource.getInputStream());
             } catch (FileNotFoundException e) {
                 String err = "File " + resource + " could not be found!";
-                Logger.getLogger(this.getClass()).error(err, e);
+                LoggerFactory.getLogger(this.getClass()).error(err, e);
                 throw new EditorIOException(err, e);
             } catch (SAXException e) {
                 String err = "Error during parsing file " + resource + "!";
-                Logger.getLogger(this.getClass()).error(err, e);
+                LoggerFactory.getLogger(this.getClass()).error(err, e);
                 throw new EditorParsingException(err, e);
             } catch (IOException e) {
                 String err = "File " + resource + " could not be read!";
-                Logger.getLogger(this.getClass()).error(err, e);
+                LoggerFactory.getLogger(this.getClass()).error(err, e);
                 throw new EditorIOException(err, e);
             }
         }
@@ -145,7 +145,7 @@ public class UserManagementServiceImpl implements UserManagementService, Applica
                     String userName = userNode.getAttribute("id");
                     if (userName == null) {
                         String err = "<user> has to have id attribute!";
-                        Logger.getLogger(this.getClass()).error(err);
+                        LoggerFactory.getLogger(this.getClass()).error(err);
                         throw new EditorParsingException(err);
                     }
                     EditorUser user = new EditorUser(userName);
@@ -154,7 +154,7 @@ public class UserManagementServiceImpl implements UserManagementService, Applica
                     if (userFullname == null) {
                         String msg = "User " + userName
                                 + " has no name attribute.";
-                        Logger.getLogger(this.getClass()).info(msg);
+                        LoggerFactory.getLogger(this.getClass()).info(msg);
                     } else {
                         user.setFullname(userFullname);
                     }
@@ -162,7 +162,7 @@ public class UserManagementServiceImpl implements UserManagementService, Applica
                     if (userPhone == null) {
                         String msg = "User " + userName
                                 + " has no phone attribute.";
-                        Logger.getLogger(this.getClass()).info(msg);
+                        LoggerFactory.getLogger(this.getClass()).info(msg);
                     } else {
                         user.setPhoneNumber(userPhone);
                     }
@@ -170,7 +170,7 @@ public class UserManagementServiceImpl implements UserManagementService, Applica
                     if (userPwd == null) {
                         String msg = "User " + userName
                                 + " has no pwd attribute.";
-                        Logger.getLogger(this.getClass()).info(msg);
+                        LoggerFactory.getLogger(this.getClass()).info(msg);
                     } else {
                         user.setCryptedPassword(userPwd);
                     }
@@ -178,7 +178,7 @@ public class UserManagementServiceImpl implements UserManagementService, Applica
                     if (userSection == null) {
                         String msg = "User " + userName
                                 + " has no sect attribute.";
-                        Logger.getLogger(this.getClass()).info(msg);
+                        LoggerFactory.getLogger(this.getClass()).info(msg);
                     } else {
                         user.setSectionName(userSection);
                     }
@@ -203,7 +203,7 @@ public class UserManagementServiceImpl implements UserManagementService, Applica
                         String projectName = projectElement.getAttribute("name");
                         if (projectName == null) {
                             String err = "<project> has to have name attribute!";
-                            Logger.getLogger(this.getClass()).error(err);
+                            LoggerFactory.getLogger(this.getClass()).error(err);
                             throw new EditorParsingException(err);
                         }
                         
@@ -230,7 +230,7 @@ public class UserManagementServiceImpl implements UserManagementService, Applica
             } catch (TransformerException e) {
                 // Should never happen as a DOM document is always well-formed!
                 String err = "XPath error!";
-                Logger.getLogger(this.getClass()).error(err, e);
+                LoggerFactory.getLogger(this.getClass()).error(err, e);
                 throw new RuntimeException(err, e);
             }
         }
@@ -304,7 +304,7 @@ public class UserManagementServiceImpl implements UserManagementService, Applica
                 // this error on a higher level, so log this
                 // error and continue
                 String err = "Error during writing userdata file!";
-                Logger.getLogger(this.getClass()).error(err, e);
+                LoggerFactory.getLogger(this.getClass()).error(err, e);
             }
         }
     }

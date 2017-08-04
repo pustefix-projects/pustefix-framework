@@ -22,7 +22,8 @@ import java.util.Map;
 
 import javax.servlet.ServletException;
 
-import org.apache.log4j.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.DisposableBean;
 import org.springframework.beans.factory.InitializingBean;
 
@@ -36,7 +37,7 @@ import de.schlund.pfixxml.exceptionprocessor.monitor.MonitoringExceptionProcesso
  */
 public class ExceptionProcessingConfiguration implements InitializingBean, DisposableBean{
 
-    private Logger LOG = Logger.getLogger(ExceptionProcessingConfiguration.class);
+    private Logger LOG = LoggerFactory.getLogger(ExceptionProcessingConfiguration.class);
     
     private Map<Class<?>, ExceptionConfig> exceptionConfigs;
     private MonitoringExceptionProcessor monitoringProcessor;

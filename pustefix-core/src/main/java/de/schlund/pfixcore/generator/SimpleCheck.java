@@ -19,7 +19,8 @@
 package de.schlund.pfixcore.generator;
 import java.util.HashSet;
 
-import org.apache.log4j.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import de.schlund.util.statuscodes.StatusCode;
 
@@ -36,7 +37,7 @@ import de.schlund.util.statuscodes.StatusCode;
 
 public abstract class SimpleCheck implements IWrapperParamCheck {
     protected HashSet<StatusCodeInfo>  scodeinfos = new HashSet<StatusCodeInfo>();
-    protected Logger   LOG        = Logger.getLogger(this.getClass());
+    protected Logger   LOG        = LoggerFactory.getLogger(this.getClass());
     
     protected void addSCode(StatusCode scode) {
         addScode(scode, null, null);

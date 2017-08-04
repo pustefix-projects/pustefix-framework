@@ -7,7 +7,8 @@ import java.util.List;
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 
-import org.apache.log4j.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.Node;
@@ -15,7 +16,7 @@ import org.w3c.dom.NodeList;
 
 public class LiveUtils {
 
-    private static Logger LOG = Logger.getLogger(LiveUtils.class);
+    private static Logger LOG = LoggerFactory.getLogger(LiveUtils.class);
 
     public static String getArtifactFromPom(File pomFile) throws Exception {
     	Element root = getRootFromPom(pomFile);
@@ -81,25 +82,25 @@ public class LiveUtils {
         if (docrootDir.exists() && docrootDir.isDirectory()) {
             File metaInfDir = new File(docrootDir, "META-INF");
             if (LOG.isTraceEnabled())
-                LOG.trace(metaInfDir);
+                LOG.trace(metaInfDir.getAbsolutePath());
             if (metaInfDir.exists() && metaInfDir.isDirectory()) {
                 File mavenDir = new File(metaInfDir, "maven");
                 if (LOG.isTraceEnabled())
-                    LOG.trace(mavenDir);
+                    LOG.trace(mavenDir.getAbsolutePath());
                 if (mavenDir.exists() && mavenDir.isDirectory()) {
                     File[] groupIdDirs = mavenDir.listFiles();
                     for (File groupIdDir : groupIdDirs) {
                         if (LOG.isTraceEnabled())
-                            LOG.trace(groupIdDir);
+                            LOG.trace(groupIdDir.getAbsolutePath());
                         if (groupIdDir.exists() && groupIdDir.isDirectory()) {
                             File[] artifactIdDirs = groupIdDir.listFiles();
                             for (File artifiactIdDir : artifactIdDirs) {
                                 if (LOG.isTraceEnabled())
-                                    LOG.trace(artifiactIdDir);
+                                    LOG.trace(artifiactIdDir.getAbsolutePath());
                                 if (artifiactIdDir.exists() && artifiactIdDir.isDirectory()) {
                                     File pomFile = new File(artifiactIdDir, "pom.xml");
                                     if (LOG.isTraceEnabled())
-                                        LOG.trace(pomFile);
+                                        LOG.trace(pomFile.getAbsolutePath());
                                     if (pomFile.exists() && pomFile.isFile()) {
                                         return pomFile;
                                     }

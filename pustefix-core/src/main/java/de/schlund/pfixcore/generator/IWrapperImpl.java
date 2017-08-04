@@ -30,7 +30,8 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.TreeSet;
 
-import org.apache.log4j.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import de.schlund.pfixxml.resources.FileResource;
 import de.schlund.pfixxml.resources.ResourceUtil;
@@ -50,7 +51,7 @@ public abstract class IWrapperImpl implements IWrapper {
     protected RequestData req;
     protected String      prefix   = "__undef";
     protected Integer     order    = new Integer(0);
-    private   Logger      LOG      = Logger.getLogger(this.getClass());
+    private   Logger      LOG      = LoggerFactory.getLogger(this.getClass());
     private   FileResource logdir  = null; 
     private   String      pagename = null;
     private   String      visitid  = null;

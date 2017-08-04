@@ -50,7 +50,8 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 
-import org.apache.log4j.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.pustefixframework.config.contextxmlservice.ServletManagerConfig;
 import org.pustefixframework.config.project.SessionTimeoutInfo;
 import org.pustefixframework.container.spring.beans.TenantScope;
@@ -86,7 +87,7 @@ import de.schlund.pfixxml.serverutil.SessionAdmin;
 
 public abstract class AbstractPustefixRequestHandler implements PageProvider, SessionTrackingStrategyContext, UriProvidingHttpRequestHandler, ServletContextAware, InitializingBean {
 
-    protected Logger LOGGER_SESSION = Logger.getLogger("LOGGER_SESSION");
+    protected Logger LOGGER_SESSION = LoggerFactory.getLogger("LOGGER_SESSION");
     
     public static final String DEFAULT_SESSION_COOKIE_NAME = "JSESSIONID";
     
@@ -124,8 +125,8 @@ public abstract class AbstractPustefixRequestHandler implements PageProvider, Se
     private int INC_ID = 0;
     private String TIMESTAMP_ID = "";
     
-    public static final Logger LOGGER_VISIT = Logger.getLogger("LOGGER_VISIT");
-    private static final Logger LOG = Logger.getLogger(AbstractPustefixRequestHandler.class);
+    public static final Logger LOGGER_VISIT = LoggerFactory.getLogger("LOGGER_VISIT");
+    private static final Logger LOG = LoggerFactory.getLogger(AbstractPustefixRequestHandler.class);
     private String                       servletEncoding;
     private ServletContext servletContext;
     protected String handlerURI;

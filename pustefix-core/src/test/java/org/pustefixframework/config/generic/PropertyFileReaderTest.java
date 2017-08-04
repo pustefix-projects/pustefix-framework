@@ -22,11 +22,6 @@ import static org.junit.Assert.assertEquals;
 import java.io.InputStream;
 import java.util.Properties;
 
-import org.apache.log4j.ConsoleAppender;
-import org.apache.log4j.Level;
-import org.apache.log4j.Logger;
-import org.apache.log4j.PatternLayout;
-import org.junit.Before;
 import org.junit.Test;
 import org.pustefixframework.container.spring.beans.TenantAwareProperties;
 import org.pustefixframework.container.spring.beans.TenantScope;
@@ -41,15 +36,6 @@ import de.schlund.pfixxml.config.EnvironmentProperties;
 
 public class PropertyFileReaderTest {
 
-    @Before
-    public void setUp() {
-        ConsoleAppender appender = new ConsoleAppender(new PatternLayout("%p: %m\n"));
-        Logger logger=Logger.getRootLogger();
-        logger.setLevel((Level)Level.WARN);
-        logger.removeAllAppenders();
-        logger.addAppender(appender);
-    }
-    
     @Test
     public void test() throws Exception {
         Properties btp = new Properties();

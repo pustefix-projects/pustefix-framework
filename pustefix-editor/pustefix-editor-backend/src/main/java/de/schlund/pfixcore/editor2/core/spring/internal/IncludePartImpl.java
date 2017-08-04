@@ -23,7 +23,6 @@ import java.util.HashSet;
 import java.util.Iterator;
 import java.util.LinkedHashSet;
 
-import org.apache.log4j.Logger;
 import org.pustefixframework.editor.common.dom.IncludeFile;
 import org.pustefixframework.editor.common.dom.IncludePartThemeVariant;
 import org.pustefixframework.editor.common.dom.Page;
@@ -32,6 +31,7 @@ import org.pustefixframework.editor.common.dom.Theme;
 import org.pustefixframework.editor.common.exception.EditorIOException;
 import org.pustefixframework.editor.common.exception.EditorParsingException;
 import org.pustefixframework.editor.common.exception.EditorSecurityException;
+import org.slf4j.LoggerFactory;
 import org.w3c.dom.DOMException;
 import org.w3c.dom.Element;
 
@@ -127,7 +127,7 @@ public class IncludePartImpl extends CommonIncludePartImpl {
     public void deleteThemeVariant(IncludePartThemeVariant variant) throws EditorSecurityException, EditorIOException, EditorParsingException {
         super.deleteThemeVariant(variant);
         
-        Logger.getLogger("LOGGER_EDITOR").warn(
+        LoggerFactory.getLogger("LOGGER_EDITOR").warn(
                 "TXT: remote_access: DELETED");
         
         // Register affected pages for regeneration

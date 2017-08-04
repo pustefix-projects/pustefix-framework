@@ -11,12 +11,13 @@ import javax.servlet.ServletResponse;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-import org.apache.log4j.Logger;
 import org.pustefixframework.util.LogUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 public class PerformanceLoggingFilter implements Filter {
     
-    Logger LOG = Logger.getLogger(PerformanceLoggingFilter.class);
+    Logger LOG = LoggerFactory.getLogger(PerformanceLoggingFilter.class);
     
     @Override
     public void init(FilterConfig filterConfig) throws ServletException {}

@@ -5,13 +5,14 @@ import java.io.IOException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-import org.apache.log4j.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import de.schlund.pfixxml.targets.TargetGenerator;
 
 public class ToolextAction implements Action {
 
-    private Logger LOG = Logger.getLogger(ToolextAction.class);
+    private Logger LOG = LoggerFactory.getLogger(ToolextAction.class);
     
     @Override
     public void execute(HttpServletRequest req, HttpServletResponse res, PageContext pageContext) throws IOException {
@@ -26,7 +27,7 @@ public class ToolextAction implements Action {
                     (toolExtEnabled?"Disabled":"Enabled") + " TargetGenerator tooling extensions.");
         } catch (Exception e) {
             pageContext.addMessage(PageContext.MessageLevel.ERROR, "Error during TargetGenerator reload");
-            LOG.error(e, e);
+            LOG.error(e.getMessage(), e);
         }
         String referer = req.getHeader("Referer");
         if(referer != null && !referer.contains("pfxinternals")) {

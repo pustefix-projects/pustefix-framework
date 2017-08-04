@@ -3,7 +3,8 @@ package org.pustefixframework.util.javascript;
 import java.io.StringReader;
 import java.io.StringWriter;
 
-import org.apache.log4j.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.pustefixframework.util.javascript.internal.CompressorLocator;
 
 /**
@@ -11,7 +12,7 @@ import org.pustefixframework.util.javascript.internal.CompressorLocator;
  */
 public class CompressorCallback {
 
-    private final static Logger LOG = Logger.getLogger(CompressorCallback.class);
+    private final static Logger LOG = LoggerFactory.getLogger(CompressorCallback.class);
     
     public static String compressJavascript(String javascript) {
         Compressor compressor = CompressorLocator.getCompressor();

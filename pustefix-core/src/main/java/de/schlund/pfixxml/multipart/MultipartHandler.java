@@ -44,7 +44,8 @@ import javax.servlet.GenericServlet;
 import javax.servlet.ServletInputStream;
 import javax.servlet.http.HttpServletRequest;
 
-import org.apache.log4j.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.pustefixframework.http.AbstractPustefixXMLRequestHandler;
 
 /**
@@ -84,7 +85,7 @@ public class MultipartHandler {
     private List<Exception> failedParts = null;
     private long maxPartSize = -1;
 
-    private final static Logger LOG = Logger.getLogger(MultipartHandler.class);
+    private final static Logger LOG = LoggerFactory.getLogger(MultipartHandler.class);
 
     protected static File getDestFile(File dir, String fName) throws IOException {
         TempFile rc = null;
@@ -293,7 +294,7 @@ public class MultipartHandler {
             }
             params.add(part);
         } catch (NullPointerException e) {
-            LOG.error(e,e);
+            LOG.error(e.getMessage(), e);
         }
     }
 

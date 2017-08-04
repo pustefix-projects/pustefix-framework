@@ -36,7 +36,8 @@ import javax.xml.transform.TransformerFactory;
 import javax.xml.transform.dom.DOMSource;
 import javax.xml.transform.stream.StreamResult;
 
-import org.apache.log4j.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.pustefixframework.config.contextxmlservice.IWrapperConfig;
 import org.pustefixframework.config.contextxmlservice.PageRequestConfig;
 import org.pustefixframework.config.contextxmlservice.ProcessActionPageRequestConfig;
@@ -97,7 +98,7 @@ import de.schlund.pfixxml.util.XsltVersion;
  */
 public class TransformerCallback {
 
-    private final static Logger           LOG               = Logger.getLogger(TransformerCallback.class);
+    private final static Logger           LOG               = LoggerFactory.getLogger(TransformerCallback.class);
     private static DocumentBuilderFactory docBuilderFactory = DocumentBuilderFactory.newInstance();
     
     private static Pattern JAVACLASS_PATTERN = Pattern.compile("[a-zA-Z][a-zA-Z0-9_]*(\\.[a-zA-Z][a-zA-Z0-9_]*)*");

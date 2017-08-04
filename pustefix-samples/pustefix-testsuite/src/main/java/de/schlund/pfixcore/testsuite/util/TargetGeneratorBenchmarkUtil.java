@@ -20,8 +20,6 @@ package de.schlund.pfixcore.testsuite.util;
 
 import java.util.Properties;
 
-import org.apache.log4j.PropertyConfigurator;
-
 import de.schlund.pfixxml.config.GlobalConfig;
 import de.schlund.pfixxml.config.GlobalConfigurator;
 
@@ -42,11 +40,7 @@ public class TargetGeneratorBenchmarkUtil {
         String dependxml = args[0];
         String numberofthreads = args[1];
         String requestsperthread = args[2];
-        
-        //BasicConfigurator.configure(new NullAppender());
-        Properties log4jprops = new Properties();
-        log4jprops.setProperty("log4j.threshold", "OFF");
-        PropertyConfigurator.configure(log4jprops);
+
         GlobalConfigurator.setDocroot(GlobalConfig.guessDocroot().getAbsolutePath());
         
         Properties props = new Properties();

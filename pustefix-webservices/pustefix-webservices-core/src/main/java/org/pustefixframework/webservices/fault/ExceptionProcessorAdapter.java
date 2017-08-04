@@ -27,9 +27,10 @@ import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpServletResponseWrapper;
 import javax.servlet.http.HttpSession;
 
-import org.apache.log4j.Logger;
 import org.pustefixframework.webservices.ServiceRequest;
 import org.pustefixframework.webservices.ServiceResponse;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.BeansException;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.ApplicationContextAware;
@@ -44,7 +45,7 @@ public class ExceptionProcessorAdapter extends FaultHandler implements Applicati
 
     private static final long serialVersionUID = -7046404948962289457L;
 
-    final static Logger LOG=Logger.getLogger(ExceptionProcessorAdapter.class);
+    final static Logger LOG = LoggerFactory.getLogger(ExceptionProcessorAdapter.class);
     
     transient ApplicationContext appContext;
     

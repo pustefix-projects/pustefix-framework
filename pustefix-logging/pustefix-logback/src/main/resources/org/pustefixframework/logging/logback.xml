@@ -1,0 +1,300 @@
+<included>
+
+  <!-- Define Pustefix environment properties as context variables -->
+  <!--
+  <define name="fqdn" class="org.pustefixframework.logging.logback.EnvironmentPropertyDefiner">
+    <key>fqdn</key>
+  </define>
+  <define name="logroot" class="org.pustefixframework.logging.logback.EnvironmentPropertyDefiner">
+    <key>logroot</key>
+  </define>
+  <define name="machine" class="org.pustefixframework.logging.logback.EnvironmentPropertyDefiner">
+    <key>machine</key>
+  </define>
+  <define name="mode" class="org.pustefixframework.logging.logback.EnvironmentPropertyDefiner">
+    <key>mode</key>
+  </define>
+  <define name="uid" class="org.pustefixframework.logging.logback.EnvironmentPropertyDefiner">
+    <key>uid</key>
+  </define>
+  -->
+
+  <!-- Insert Pustefix environment properties as context variables -->
+  <newRule pattern="*/insertFromEnvironment"
+           actionClass="org.pustefixframework.logging.logback.InsertFromEnvironmentAction"/>
+  <insertFromEnvironment name="fqdn"/>
+  <insertFromEnvironment name="logroot"/>
+  <insertFromEnvironment name="machine"/>
+  <insertFromEnvironment name="mode"/>
+  <insertFromEnvironment name="uid"/>
+
+  <!-- Define the default log level based on mode from Pustefix environment properties -->
+  <property name="defaultLevel.prod" value="WARN"/>
+  <property name="defaultLevel.prelive" value="WARN"/>
+  <property name="defaultLevel.stage" value="INFO"/>
+  <property name="defaultLevel.devel" value="INFO"/>
+  <property name="defaultLevel.test" value="INFO"/>
+  <property name="defaultLevel" value="${defaultLevel.${mode}}"/>
+
+  <!-- Define a verbose log level based on mode from Pustefix environment properties -->
+  <property name="verboseLevel.prod" value="WARN"/>
+  <property name="verboseLevel.prelive" value="WARN"/>
+  <property name="verboseLevel.stage" value="DEBUG"/>
+  <property name="verboseLevel.devel" value="DEBUG"/>
+  <property name="verboseLevel.test" value="DEBUG"/>
+  <property name="verboseLevel" value="${verboseLevel.${mode}}"/>
+
+  <!-- Define a more verbose log level based on mode from Pustefix environment properties -->
+  <property name="verboseLevelAll.prod" value="INFO"/>
+  <property name="verboseLevelAll.prelive" value="INFO"/>
+  <property name="verboseLevelAll.stage" value="DEBUG"/>
+  <property name="verboseLevelAll.devel" value="DEBUG"/>
+  <property name="verboseLevelAll.test" value="DEBUG"/>
+  <property name="verboseLevelAll" value="${verboseLevelAll.${mode}}"/>
+
+
+  <appender name="LOGGER_GENERAL" class="ch.qos.logback.core.rolling.RollingFileAppender">
+    <file>${logroot}/pustefix-servlet.log</file>
+    <rollingPolicy class="ch.qos.logback.core.rolling.FixedWindowRollingPolicy">
+      <fileNamePattern>${logroot}/pustefix-servlet.%i.log</fileNamePattern>
+      <minIndex>1</minIndex>
+      <maxIndex>3</maxIndex>
+    </rollingPolicy>
+    <triggeringPolicy class="ch.qos.logback.core.rolling.SizeBasedTriggeringPolicy">
+      <maxFileSize>10MB</maxFileSize>
+    </triggeringPolicy>
+    <encoder>
+      <pattern>%d [%t] %-5p %c [%M\(\):%L] %marker - %m%n</pattern>
+    </encoder>
+  </appender>
+
+  <appender name="LOGGER_VISIT" class="ch.qos.logback.core.rolling.RollingFileAppender">
+    <file>${logroot}/pustefix-visit.log</file>
+    <rollingPolicy class="ch.qos.logback.core.rolling.FixedWindowRollingPolicy">
+      <fileNamePattern>${logroot}/pustefix-visit.%i.log</fileNamePattern>
+      <minIndex>1</minIndex>
+      <maxIndex>3</maxIndex>
+    </rollingPolicy>
+    <triggeringPolicy class="ch.qos.logback.core.rolling.SizeBasedTriggeringPolicy">
+      <maxFileSize>10MB</maxFileSize>
+    </triggeringPolicy>
+    <encoder>
+      <pattern>%d|%m%n</pattern>
+    </encoder>
+  </appender>
+
+  <appender name="LOGGER_TRAIL" class="ch.qos.logback.core.rolling.RollingFileAppender">
+    <file>${logroot}/pustefix-trail.log</file>
+    <rollingPolicy class="ch.qos.logback.core.rolling.FixedWindowRollingPolicy">
+      <fileNamePattern>${logroot}/pustefix-trail.%i.log</fileNamePattern>
+      <minIndex>1</minIndex>
+      <maxIndex>3</maxIndex>
+    </rollingPolicy>
+    <triggeringPolicy class="ch.qos.logback.core.rolling.SizeBasedTriggeringPolicy">
+      <maxFileSize>10MB</maxFileSize>
+    </triggeringPolicy>
+    <encoder>
+      <pattern>%d|%m|%X{requestId}%n</pattern>
+    </encoder>
+  </appender>
+
+  <appender name="LOGGER_WSTRAIL" class="ch.qos.logback.core.rolling.RollingFileAppender">
+    <file>${logroot}/pustefix-wstrail.log</file>
+    <rollingPolicy class="ch.qos.logback.core.rolling.FixedWindowRollingPolicy">
+      <fileNamePattern>${logroot}/pustefix-wstrail.%i.log</fileNamePattern>
+      <minIndex>1</minIndex>
+      <maxIndex>3</maxIndex>
+    </rollingPolicy>
+    <triggeringPolicy class="ch.qos.logback.core.rolling.SizeBasedTriggeringPolicy">
+      <maxFileSize>10MB</maxFileSize>
+    </triggeringPolicy>
+    <encoder>
+      <pattern>%d|%m%n</pattern>
+    </encoder>
+  </appender>
+
+  <appender name="LOGGER_DEREF" class="ch.qos.logback.core.rolling.RollingFileAppender">
+    <file>${logroot}/pustefix-deref.log</file>
+    <rollingPolicy class="ch.qos.logback.core.rolling.FixedWindowRollingPolicy">
+      <fileNamePattern>${logroot}/pustefix-deref.%i.log</fileNamePattern>
+      <minIndex>1</minIndex>
+      <maxIndex>3</maxIndex>
+    </rollingPolicy>
+    <triggeringPolicy class="ch.qos.logback.core.rolling.SizeBasedTriggeringPolicy">
+      <maxFileSize>10MB</maxFileSize>
+    </triggeringPolicy>
+    <encoder>
+      <pattern>%d|%m%n</pattern>
+    </encoder>
+  </appender>
+
+  <appender name="LOGGER_SESSION" class="ch.qos.logback.core.rolling.RollingFileAppender">
+    <file>${logroot}/pustefix-session.log</file>
+    <rollingPolicy class="ch.qos.logback.core.rolling.FixedWindowRollingPolicy">
+      <fileNamePattern>${logroot}/pustefix-session.%i.log</fileNamePattern>
+      <minIndex>1</minIndex>
+      <maxIndex>3</maxIndex>
+    </rollingPolicy>
+    <triggeringPolicy class="ch.qos.logback.core.rolling.SizeBasedTriggeringPolicy">
+      <maxFileSize>10MB</maxFileSize>
+    </triggeringPolicy>
+    <encoder>
+      <pattern>%d|%m%n</pattern>
+    </encoder>
+  </appender>
+
+  <appender name="LOGGER_EDITOR" class="ch.qos.logback.core.rolling.RollingFileAppender">
+    <file>${logroot}/pustefix-editor.log</file>
+    <rollingPolicy class="ch.qos.logback.core.rolling.FixedWindowRollingPolicy">
+      <fileNamePattern>${logroot}/pustefix-editor.%i.log</fileNamePattern>
+      <minIndex>1</minIndex>
+      <maxIndex>3</maxIndex>
+    </rollingPolicy>
+    <triggeringPolicy class="ch.qos.logback.core.rolling.SizeBasedTriggeringPolicy">
+      <maxFileSize>10MB</maxFileSize>
+    </triggeringPolicy>
+    <encoder>
+      <pattern>%d %m%n</pattern>
+    </encoder>
+  </appender>
+
+  <appender name="LOGGER_USAGE" class="ch.qos.logback.core.rolling.RollingFileAppender">
+    <file>${logroot}/pustefix-usage.log</file>
+    <rollingPolicy class="ch.qos.logback.core.rolling.FixedWindowRollingPolicy">
+      <fileNamePattern>${logroot}/pustefix-usage.%i.log</fileNamePattern>
+      <minIndex>1</minIndex>
+      <maxIndex>3</maxIndex>
+    </rollingPolicy>
+    <triggeringPolicy class="ch.qos.logback.core.rolling.SizeBasedTriggeringPolicy">
+      <maxFileSize>10MB</maxFileSize>
+    </triggeringPolicy>
+    <encoder>
+      <pattern>%d %m%n</pattern>
+    </encoder>
+  </appender>
+
+  <appender name="LOGGER_XSLT" class="ch.qos.logback.core.rolling.RollingFileAppender">
+    <file>${logroot}/pustefix-xslt.log</file>
+    <rollingPolicy class="ch.qos.logback.core.rolling.FixedWindowRollingPolicy">
+      <fileNamePattern>${logroot}/pustefix-xslt.%i.log</fileNamePattern>
+      <minIndex>1</minIndex>
+      <maxIndex>3</maxIndex>
+    </rollingPolicy>
+    <triggeringPolicy class="ch.qos.logback.core.rolling.SizeBasedTriggeringPolicy">
+      <maxFileSize>10MB</maxFileSize>
+    </triggeringPolicy>
+    <encoder>
+      <pattern>%d %m%n</pattern>
+    </encoder>
+  </appender>
+
+  <appender name="LOGGER_PFXPERF" class="ch.qos.logback.core.rolling.RollingFileAppender">
+    <file>${logroot}/pustefix-perf.log</file>
+    <rollingPolicy class="ch.qos.logback.core.rolling.FixedWindowRollingPolicy">
+      <fileNamePattern>${logroot}/pustefix-perf.%i.log</fileNamePattern>
+      <minIndex>1</minIndex>
+      <maxIndex>3</maxIndex>
+    </rollingPolicy>
+    <triggeringPolicy class="ch.qos.logback.core.rolling.SizeBasedTriggeringPolicy">
+      <maxFileSize>10MB</maxFileSize>
+    </triggeringPolicy>
+    <encoder>
+      <pattern>%d|%m%n</pattern>
+    </encoder>
+  </appender>
+
+  <!-- Make some very verbose packages quiet by default --> 
+
+  <logger name="org.apache" level="WARN" additivity="false">
+    <appender-ref ref="LOGGER_GENERAL"/>
+  </logger>
+
+  <logger name="org.springframework" level="WARN" additivity="false">
+    <appender-ref ref="LOGGER_GENERAL"/>
+  </logger>
+
+  <!-- Disable logging of Pustefix debug/info messages by default -->
+
+  <logger name="org.pustefixframework" level="WARN" additivity="false">
+    <appender-ref ref="LOGGER_GENERAL"/>
+  </logger>
+
+  <logger name="de.schlund.pfixcore" level="WARN" additivity="false">
+    <appender-ref ref="LOGGER_GENERAL"/>
+  </logger>
+
+  <logger name="de.schlund.pfixxml" level="WARN" additivity="false">
+    <appender-ref ref="LOGGER_GENERAL"/>
+  </logger>
+
+  <!-- Enable verbose logging of Pustefix pageflow stuff in non-prod environments -->
+
+  <logger name="de.schlund.pfixcore.workflow" level="${verboseLevel}" additivity="false">
+    <appender-ref ref="LOGGER_GENERAL"/>
+  </logger>
+
+  <!-- Enable verbose logging of Pustefix DOM rendering in non-prod environments -->
+
+  <logger name="org.pustefixframework.http" level="${verboseLevel}" additivity="false">
+    <appender-ref ref="LOGGER_GENERAL"/>
+  </logger>
+
+  <logger name="org.pustefixframework.http.DocrootRequestHandler" level="WARN" additivity="false">
+    <appender-ref ref="LOGGER_GENERAL"/>
+  </logger>
+
+  <!--  Enable verbose logging of HTTP requests in non-prod environments -->
+
+  <logger name="de.schlund.pfixxml.PfixServletRequestImpl" level="${verboseLevel}" additivity="false">
+    <appender-ref ref="LOGGER_GENERAL"/>
+  </logger>
+
+  <!-- Enable verbose logging of XSL extension function calls in non-prod environments -->
+
+  <logger name="de.schlund.pfixxml.util.ExtensionFunctionUtils" level="${verboseLevelAll}" additivity="false">
+    <appender-ref ref="LOGGER_XSLT"/>
+  </logger>
+
+  <!--  Enable request performance logging done by ServletFilter -->
+
+  <logger name="org.pustefixframework.http.PerformanceLoggingFilter" level="INFO" additivity="false">
+    <appender-ref ref="LOGGER_PFXPERF"/>
+  </logger>
+
+  <!-- Special loggers for Pustefix statistics log files -->
+
+  <logger name="LOGGER_VISIT" level="WARN" additivity="false">
+    <appender-ref ref="LOGGER_VISIT"/>
+  </logger>
+
+  <logger name="LOGGER_TRAIL" level="WARN" additivity="false">
+    <appender-ref ref="LOGGER_TRAIL"/>
+  </logger>
+
+  <logger name="LOGGER_WSTRAIL" level="WARN" additivity="false">
+    <appender-ref ref="LOGGER_WSTRAIL"/>
+  </logger>
+
+  <logger name="LOGGER_DEREF" level="WARN" additivity="false">
+    <appender-ref ref="LOGGER_DEREF"/>
+  </logger>
+
+  <logger name="LOGGER_SESSION" level="INFO" additivity="false">
+    <appender-ref ref="LOGGER_SESSION"/>
+  </logger>
+
+  <logger name="LOGGER_EDITOR" level="WARN" additivity="false">
+    <appender-ref ref="LOGGER_EDITOR"/>
+  </logger>
+
+  <logger name="LOGGER_PFXUSAGE" level="INFO" additivity="false">
+    <appender-ref ref="LOGGER_USAGE"/>
+  </logger>
+
+  <!-- Default logger -->
+
+  <root level="${defaultLevel}">
+    <appender-ref ref="LOGGER_GENERAL" />
+  </root>
+
+</included>

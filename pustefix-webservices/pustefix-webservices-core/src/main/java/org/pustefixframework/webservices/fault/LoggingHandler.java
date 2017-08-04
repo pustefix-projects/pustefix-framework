@@ -17,13 +17,14 @@
  */
 package org.pustefixframework.webservices.fault;
 
-import org.apache.log4j.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 public class LoggingHandler extends FaultHandler {
 
     private static final long serialVersionUID = -5523320091746362278L;
     
-    private Logger LOG=Logger.getLogger(getClass().getName());
+    private Logger LOG = LoggerFactory.getLogger(getClass().getName());
 	
     @Override
     public void init() {

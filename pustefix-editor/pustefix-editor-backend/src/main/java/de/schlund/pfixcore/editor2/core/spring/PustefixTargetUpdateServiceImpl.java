@@ -22,8 +22,9 @@ import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.Iterator;
 
-import org.apache.log4j.Logger;
 import org.pustefixframework.editor.backend.config.EditorProjectInfo;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.DisposableBean;
 
 import de.schlund.pfixcore.lucefix.PfixReadjustment;
@@ -72,7 +73,7 @@ public class PustefixTargetUpdateServiceImpl extends Thread implements
 
     private long completeRunDelay = 600000;
 
-    private Logger LOG = Logger.getLogger(this.getClass());
+    private Logger LOG = LoggerFactory.getLogger(this.getClass());
 
     public void enableAutoUpdating(boolean flag) {
         LOG.debug("***** Target Updater currently enabled?: " + isEnabled);

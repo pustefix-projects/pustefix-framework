@@ -26,7 +26,8 @@ import java.net.URL;
 
 import javax.servlet.ServletContext;
 
-import org.apache.log4j.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import de.schlund.pfixxml.resources.ResourceProviderRegistry;
 import de.schlund.pfixxml.resources.internal.DocrootResourceByServletContextProvider;
@@ -41,7 +42,7 @@ import de.schlund.pfixxml.resources.internal.DocrootResourceOnFileSystemProvider
  */
 public class GlobalConfig {
     
-    private static Logger LOG = Logger.getLogger(GlobalConfig.class);
+    private static Logger LOG = LoggerFactory.getLogger(GlobalConfig.class);
     
     private static String docroot = null;
     private static URL docrootURL = null;

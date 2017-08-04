@@ -42,7 +42,8 @@ import javax.xml.transform.sax.SAXSource;
 import javax.xml.transform.stream.StreamResult;
 import javax.xml.transform.stream.StreamSource;
 
-import org.apache.log4j.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.pustefixframework.xml.tools.XSLTracing;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
@@ -59,7 +60,7 @@ import de.schlund.pfixxml.util.xsltimpl.ErrorListenerBase;
 
 public class Xslt {
     
-    private static final Logger LOG = Logger.getLogger(Xslt.class);
+    private static final Logger LOG = LoggerFactory.getLogger(Xslt.class);
     
     //-- load documents
 
@@ -174,7 +175,7 @@ public class Xslt {
     	try {
             doTransform(xml, templates, params, result, encoding, false);
     	} catch(TransformerException x) {
-    		LOG.error(x);
+            LOG.error(x.getMessage(), x);
     		XsltVersion xsltVersion = getXsltVersion(templates);
     		XsltSupport xsltSupport = XsltProvider.getXsltSupport(xsltVersion);
     		String systemId = xsltSupport.getSystemId(templates);

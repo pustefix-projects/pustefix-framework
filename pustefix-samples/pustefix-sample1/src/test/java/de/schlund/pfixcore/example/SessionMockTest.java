@@ -4,10 +4,6 @@ import java.io.File;
 
 import junit.framework.TestCase;
 
-import org.apache.log4j.ConsoleAppender;
-import org.apache.log4j.Level;
-import org.apache.log4j.Logger;
-import org.apache.log4j.PatternLayout;
 import org.pustefixframework.container.spring.beans.PustefixWebApplicationContext;
 import org.pustefixframework.test.PustefixWebApplicationContextLoader;
 import org.springframework.mock.web.MockHttpServletRequest;

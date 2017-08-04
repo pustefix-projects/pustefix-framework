@@ -78,7 +78,6 @@ public class DumpText implements IDumpText {
             trans = new DumpText();
         }
 
-        Logging.configure("generator_quiet.xml");
         trans.generateList(depend);
     }
 

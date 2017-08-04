@@ -5,13 +5,14 @@ import java.io.IOException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-import org.apache.log4j.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import de.schlund.pfixxml.targets.TargetGenerator;
 
 public class RetargetAction implements Action {
 
-    private Logger LOG = Logger.getLogger(RetargetAction.class);
+    private Logger LOG = LoggerFactory.getLogger(RetargetAction.class);
     
     @Override
     public void execute(HttpServletRequest req, HttpServletResponse res, PageContext pageContext) throws IOException {

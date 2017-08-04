@@ -27,7 +27,8 @@ import java.util.List;
 import java.util.Set;
 import java.util.Map.Entry;
 
-import org.apache.log4j.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.pustefixframework.config.contextxmlservice.SSLOption;
 import org.pustefixframework.config.contextxmlservice.parser.internal.ServletManagerConfigImpl;
 import org.pustefixframework.config.directoutputservice.DirectOutputPageRequestConfig;
@@ -42,7 +43,7 @@ import de.schlund.pfixxml.resources.FileResource;
  */
 public class DirectOutputServiceConfigImpl extends ServletManagerConfigImpl implements
         SSLOption, DirectOutputServiceConfig {
-    private final static Logger LOG = Logger.getLogger(DirectOutputServiceConfigImpl.class);
+    private final static Logger LOG = LoggerFactory.getLogger(DirectOutputServiceConfigImpl.class);
 
     private String servletName = null;
 

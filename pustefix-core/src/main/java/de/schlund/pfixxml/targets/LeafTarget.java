@@ -25,7 +25,6 @@ import java.util.TreeSet;
 import javax.xml.transform.Source;
 import javax.xml.transform.sax.SAXSource;
 
-import org.apache.log4j.NDC;
 import org.xml.sax.InputSource;
 
 import de.schlund.pfixxml.XMLException;
@@ -150,7 +149,6 @@ public abstract class LeafTarget extends TargetImpl {
             XMLException, IOException {
         long mymodtime = getModTime();
         long maxmodtime = ResourceUtil.getResource(getTargetKey()).lastModified();
-        NDC.push("    ");
         if(TREE.isDebugEnabled()) {
             TREE.debug("> " + getTargetKey());
         }
@@ -187,7 +185,6 @@ public abstract class LeafTarget extends TargetImpl {
                 TREE.debug("  [" + getTargetKey() + ": leaf node...]");
             }
         }
-        NDC.pop();
         return getModTime();
     }
     

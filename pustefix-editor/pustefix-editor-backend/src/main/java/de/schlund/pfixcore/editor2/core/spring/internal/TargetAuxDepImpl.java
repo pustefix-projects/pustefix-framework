@@ -30,7 +30,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-import org.apache.log4j.Logger;
 import org.pustefixframework.editor.common.dom.AbstractTarget;
 import org.pustefixframework.editor.common.dom.AbstractTheme;
 import org.pustefixframework.editor.common.dom.Image;
@@ -44,6 +43,7 @@ import org.pustefixframework.editor.common.dom.ThemeList;
 import org.pustefixframework.editor.common.dom.Variant;
 import org.pustefixframework.editor.common.exception.EditorIOException;
 import org.pustefixframework.editor.common.exception.EditorParsingException;
+import org.slf4j.LoggerFactory;
 import org.w3c.dom.Document;
 import org.xml.sax.SAXException;
 
@@ -128,17 +128,17 @@ public class TargetAuxDepImpl extends AbstractTarget {
             } catch (FileNotFoundException e) {
                 String err = "File " + file.getAbsolutePath()
                         + " could not be found!";
-                Logger.getLogger(this.getClass()).error(err, e);
+                LoggerFactory.getLogger(this.getClass()).error(err, e);
                 throw new EditorIOException(err, e);
             } catch (SAXException e) {
                 String err = "Error during parsing file "
                         + file.getAbsolutePath() + "!";
-                Logger.getLogger(this.getClass()).error(err, e);
+                LoggerFactory.getLogger(this.getClass()).error(err, e);
                 throw new EditorParsingException(err, e);
             } catch (IOException e) {
                 String err = "File " + file.getAbsolutePath()
                         + " could not be read!";
-                Logger.getLogger(this.getClass()).error(err, e);
+                LoggerFactory.getLogger(this.getClass()).error(err, e);
                 throw new EditorIOException(err, e);
             }
         }

@@ -45,9 +45,9 @@ import javax.xml.transform.dom.DOMSource;
 import javax.xml.transform.sax.SAXTransformerFactory;
 import javax.xml.transform.sax.TransformerHandler;
 
-import org.apache.log4j.Logger;
-import org.apache.log4j.xml.DOMConfigurator;
 import org.pustefixframework.util.xml.DOMUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.context.MessageSource;
 import org.springframework.web.context.ServletContextAware;
@@ -116,7 +116,7 @@ public class TargetGenerator implements ResourceVisitor, ServletContextAware, In
     
     private static final char RENDER_KEY_SEPARATOR = '#';
        
-    private static final Logger LOG = Logger.getLogger(TargetGenerator.class);
+    private static final Logger LOG = LoggerFactory.getLogger(TargetGenerator.class);
 
     private PageTargetTree pagetree = new PageTargetTree();
 
@@ -1259,13 +1259,6 @@ public class TargetGenerator implements ResourceVisitor, ServletContextAware, In
     // *******************************************************************************************
 
     public static void main(String[] args) {
-       
-        String log4jconfig = System.getProperty("log4jconfig");
-        if (log4jconfig == null || log4jconfig.equals("")) {
-            System.out.println("*** FATAL: Need the log4jconfig property. Exiting... ***");
-            System.exit(-1);
-        }
-        DOMConfigurator.configure(log4jconfig);
 
         if (args.length > 1) {
             File docroot = new File(args[0]);

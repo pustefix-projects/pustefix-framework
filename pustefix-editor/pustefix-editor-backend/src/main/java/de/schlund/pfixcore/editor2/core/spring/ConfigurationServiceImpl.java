@@ -25,9 +25,9 @@ import java.util.Map;
 
 import javax.xml.parsers.ParserConfigurationException;
 
-import org.apache.log4j.Logger;
 import org.pustefixframework.container.annotations.Inject;
 import org.pustefixframework.editor.common.exception.EditorInitializationException;
+import org.slf4j.LoggerFactory;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.NodeList;
@@ -57,12 +57,12 @@ public class ConfigurationServiceImpl implements ConfigurationService {
             Element node = (Element) nlist.item(i);
             if (!node.hasAttribute("prefix")) {
                 String err = "Mandatory attribute prefix is missing for tag namespace-declaration!";
-                Logger.getLogger(this.getClass()).error(err);
+                LoggerFactory.getLogger(this.getClass()).error(err);
                 throw new EditorInitializationException(err);
             }
             if (!node.hasAttribute("url")) {
                 String err = "Mandatory attribute url is missing for tag namespace-declaration!";
-                Logger.getLogger(this.getClass()).error(err);
+                LoggerFactory.getLogger(this.getClass()).error(err);
                 throw new EditorInitializationException(err);
             }
             String prefix = node.getAttribute("prefix");

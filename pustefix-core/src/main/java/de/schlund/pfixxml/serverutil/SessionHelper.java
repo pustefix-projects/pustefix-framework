@@ -26,14 +26,15 @@ import java.util.Properties;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
 
-import org.apache.log4j.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.pustefixframework.http.AbstractPustefixRequestHandler;
 
 import de.schlund.pfixxml.PfixServletRequest;
 
 public class SessionHelper {
 
-    private final static Logger LOG = Logger.getLogger(SessionHelper.class);
+    private final static Logger LOG = LoggerFactory.getLogger(SessionHelper.class);
 
     private static final String ENC_STR = "jsessionid";
     

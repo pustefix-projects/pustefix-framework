@@ -2091,8 +2091,145 @@
   <section xml:id="configuration.logging">
     <title>Logging configuration </title>
     <para>
-      The default logging framework used by Pustefix is Log4j. If you want to stay with this default, Pustefix helps you setting up your logging. By default it reads the Log4j configuration
-      from <literal>WEB-INF/pfixlog.xml</literal>. Within this file you can make use of the Pustefix customization tags (see <xref linkend="configuration.customization"/>).
+      Pustefix internally uses SLF4J as its logging framework (since version 0.21, older versions rely on Log4j). Thus Pustefix can be used with all logging
+      libraries supporting SLF4J. The preferred frameworks are Logback and Log4j 2, for which Pustefix includes additional support, like access to Pustefix
+      environment properties within the logging configuration.
+    </para>
+    <section xml:id="configuration.logging.logback">
+      <title>Logback</title>
+      <para>
+        You can optionally use the <literal>pustefix-logback</literal> module, which brings automatic configuration of required Maven dependencies,
+        extensions for accessing Pustefix environment properties and a sensible Pustefix default logging configuration as reference (or to be included).
+      </para>
+<programlisting language="xml"><![CDATA[
+<dependency>
+  <groupId>org.pustefixframework.logging</groupId>
+  <artifactId>pustefix-logback</artifactId>
+  <version>${pustefix.version}</version>
+</dependency>
+]]></programlisting>
+      <para>
+        You can make Pustefix environment properties available as Logback context variables using a custom <literal>EnvironmentPropertyDefiner</literal>:
+      </para>
+<programlisting language="xml"><![CDATA[
+<define name="logroot" class="org.pustefixframework.logging.logback.EnvironmentPropertyDefiner">
+  <key>logroot</key>
+</define>
+<define name="mode" class="org.pustefixframework.logging.logback.EnvironmentPropertyDefiner">
+  <key>mode</key>
+</define>
+
+<appender name="EXAMPLE" class="ch.qos.logback.core.rolling.RollingFileAppender">
+  <file>${logroot}/example.log</file>
+  ...
+</appender>
+]]></programlisting>
+      <para>
+        Or you can use a custom Logback <literal>Action</literal> to insert Pustefix environment properties as context variables:
+      </para>
+<programlisting language="xml"><![CDATA[
+<newRule pattern="*/insertFromEnvironment"
+         actionClass="org.pustefixframework.logging.logback.InsertFromEnvironmentAction"/>
+
+<insertFromEnvironment name="logroot"/>
+<insertFromEnvironment name="mode"/>
+<!-- <insertFromEnvironment name="mode" as="mymode" scope="local"/> -->
+
+<appender name="EXAMPLE" class="ch.qos.logback.core.rolling.RollingFileAppender">
+  <file>${logroot}/example.log</file>
+  ...
+</appender>
+]]></programlisting>
+      <para>
+        Pustefix provides a default logging configuration which already adds all environment properties and configures
+        according appenders and loggers with mode dependent log levels. You can include this configuration from your application's
+        <literal>logback.xml</literal> file and add your application specific stuff:
+      </para>
+<programlisting language="xml"><![CDATA[
+<configuration>
+  <include resource="org/pustefixframework/logging/logback.xml"/>
+  ...
+</configuration>
+]]></programlisting>
+    </section>
+
+    <section xml:id="configuration.logging.log4j2">
+      <title>Log4j 2</title>
+      <para>
+        You can optionally use the <literal>pustefix-log4j</literal> module, which brings automatic configuration of required Maven dependencies,
+        extensions for accessing Pustefix environment properties and a sensible Pustefix default logging configuration as reference (or to be included).
+      </para>
+<programlisting language="xml"><![CDATA[
+<dependency>
+  <groupId>org.pustefixframework.logging</groupId>
+  <artifactId>pustefix-log4j</artifactId>
+  <version>${pustefix.version}</version>
+</dependency>
+]]></programlisting>
+      <para>
+        You can make Pustefix environment properties available as Log4j2 configuration properties using a custom
+        <literal>Lookup</literal> plugin. You have to add the <literal>packages</literal> attribute as follows, so
+        that Log4j can pick up the Pustefix plugin. Then the Pustefix environment properties can be referenced
+        using their name prefixed with <literal>pfx</literal>:
+      </para>
+<programlisting language="xml"><![CDATA[
+<Configuration packages="org.pustefixframework.logging.log4j">
+  <Appenders>
+    <File name="EXAMPLE" fileName="${pfx:logroot}/example.log">
+      ...
+    </File>
+  </Appenders>
+</Configuration>
+]]></programlisting>
+      <para>
+        Pustefix provides a default logging configuration which already adds all environment properties and configures
+        according appenders and loggers with mode dependent log levels. Unfortunately Log4j only supports including configuration
+        using XInclude, and the current JDK/Xerces implementation is so limited, that it's more or less useless.
+      </para>
+      <para>
+        So you either can copy the default logging configuration and use it as a base, or you can use the XML entity resolving mechanism.
+        Therefor Pustefix also provides a default configuration splitted into according entity files, which can be included
+        using classpath URIs:
+      </para>
+
+<programlisting language="xml"><![CDATA[
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE Configuration [
+  <!ENTITY Properties SYSTEM "classpath:org/pustefixframework/logging/log4j-properties.ent">
+  <!ENTITY Appenders SYSTEM "classpath:org/pustefixframework/logging/log4j-appenders.ent">
+  <!ENTITY Loggers SYSTEM "classpath:org/pustefixframework/logging/log4j-loggers.ent">
+]>
+<Configuration status="WARN" packages="org.pustefixframework.logging.log4j">
+
+  <Properties>
+    &Properties;
+    ...
+  </Properties>
+
+  <Appenders>
+    &Appenders;
+    ...
+  </Appenders>
+
+  <Loggers>
+    &Loggers;
+    ...
+  </Loggers>
+
+</Configuration>
+]]></programlisting>
+    </section>
+
+    <section xml:id="configuration.logging.log4j">
+      <title>Log4j (deprecated)</title>
+
+    <para>
+      Log4j is the default logging framework used by older Pustefix versions (before 0.21). Meanwhile it's deprecated and only should be used with old Pustefix
+      versions or if you can't change to another logging framework because it's still required by your application.
+    </para>
+    <para>
+      By default the Log4j configuration is read from <literal>WEB-INF/pfixlog.xml</literal>.
+      Within this file you can make use of the Pustefix customization tags (see <xref linkend="configuration.customization"/>).
     </para>
     <para>
       Often you have to configure different file paths depending on your runtime environment, e.g. for development or production mode. Therefor you can use the customization tag
@@ -2157,6 +2294,6 @@
       Such includes can be placed as top-level elements in your logging configuration. Included configurations can contain includes themselves. If loggers/appenders are configured multiple times, the last occurrence will have precedence. Thus you can later override settings included before, e.g. if you include the default configuration from the Pustefix framework, you can override application specific settings afterwards (see example above).
     </para>
   </section>
-  
+</section>
       
 </chapter>

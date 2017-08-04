@@ -30,7 +30,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-import org.apache.log4j.Logger;
 import org.pustefixframework.editor.common.dom.AbstractTarget;
 import org.pustefixframework.editor.common.dom.AbstractTheme;
 import org.pustefixframework.editor.common.dom.Image;
@@ -44,6 +43,7 @@ import org.pustefixframework.editor.common.dom.ThemeList;
 import org.pustefixframework.editor.common.dom.Variant;
 import org.pustefixframework.editor.common.exception.EditorIOException;
 import org.pustefixframework.editor.common.exception.EditorParsingException;
+import org.slf4j.LoggerFactory;
 import org.w3c.dom.Document;
 import org.xml.sax.SAXException;
 
@@ -160,7 +160,7 @@ public class TargetPfixImpl extends AbstractTarget {
             } catch (TargetGenerationException e) {
                 String msg = "Could not generate target " + this.getName()
                         + "!";
-                Logger.getLogger(this.getClass()).warn(msg);
+                LoggerFactory.getLogger(this.getClass()).warn(msg);
             }
             FileResource targetFile = this.pfixTarget.getTargetGenerator().getDisccachedir();
             if (targetFile instanceof DocrootResource) {
@@ -181,17 +181,17 @@ public class TargetPfixImpl extends AbstractTarget {
             } catch (FileNotFoundException e) {
                 String err = "File " + file.getAbsolutePath()
                         + " could not be found!";
-                Logger.getLogger(this.getClass()).error(err, e);
+                LoggerFactory.getLogger(this.getClass()).error(err, e);
                 throw new EditorIOException(err, e);
             } catch (SAXException e) {
                 String err = "Error during parsing file "
                         + file.getAbsolutePath() + "!";
-                Logger.getLogger(this.getClass()).error(err, e);
+                LoggerFactory.getLogger(this.getClass()).error(err, e);
                 throw new EditorParsingException(err, e);
             } catch (IOException e) {
                 String err = "File " + file.getAbsolutePath()
                         + " could not be read!";
-                Logger.getLogger(this.getClass()).error(err, e);
+                LoggerFactory.getLogger(this.getClass()).error(err, e);
                 throw new EditorIOException(err, e);
             }
         }
@@ -293,7 +293,7 @@ public class TargetPfixImpl extends AbstractTarget {
                 if (auxmanager == null) {
                     String msg = "Could not get AuxDependencyManager for target "
                             + this.getName() + "!";
-                    Logger.getLogger(this.getClass()).warn(msg);
+                    LoggerFactory.getLogger(this.getClass()).warn(msg);
                     return deps;
                 }
 
@@ -312,7 +312,7 @@ public class TargetPfixImpl extends AbstractTarget {
         } else {
             String msg = "Page target " + this.getName()
                     + " is no VirtualTarget!";
-            Logger.getLogger(this.getClass()).warn(msg);
+            LoggerFactory.getLogger(this.getClass()).warn(msg);
             return deps;
         }
     }
@@ -353,7 +353,7 @@ public class TargetPfixImpl extends AbstractTarget {
                 if (auxmanager == null) {
                     String msg = "Could not get AuxDependencyManager for target "
                             + this.getName() + "!";
-                    Logger.getLogger(this.getClass()).warn(msg);
+                    LoggerFactory.getLogger(this.getClass()).warn(msg);
                     return deps;
                 }
 
@@ -371,7 +371,7 @@ public class TargetPfixImpl extends AbstractTarget {
         } else {
             String msg = "Page target " + this.getName()
                     + " is no VirtualTarget!";
-            Logger.getLogger(this.getClass()).warn(msg);
+            LoggerFactory.getLogger(this.getClass()).warn(msg);
             return deps;
         }
     }
@@ -401,7 +401,7 @@ public class TargetPfixImpl extends AbstractTarget {
                         + ((variant != null) ? " with variant "
                                 + variant.getName() : "") + " from project "
                         + project.getName() + "! Omitting page!";
-                Logger.getLogger(this.getClass()).warn(msg);
+                LoggerFactory.getLogger(this.getClass()).warn(msg);
                 continue;
             }
             pages.add(page);

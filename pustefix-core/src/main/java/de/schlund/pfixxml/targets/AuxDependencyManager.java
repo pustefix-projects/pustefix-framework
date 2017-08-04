@@ -26,7 +26,8 @@ import java.util.Iterator;
 import java.util.Set;
 import java.util.TreeSet;
 
-import org.apache.log4j.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.NodeList;
@@ -49,7 +50,7 @@ import de.schlund.pfixxml.util.Xml;
 
 public class AuxDependencyManager {
     
-    private final static Logger   LOG    = Logger.getLogger(AuxDependencyManager.class);
+    private final static Logger   LOG    = LoggerFactory.getLogger(AuxDependencyManager.class);
     private final static String   DEPAUX = "depaux";
     private TargetImpl   target;
     

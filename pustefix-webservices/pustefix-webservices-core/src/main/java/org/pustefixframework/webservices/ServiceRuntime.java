@@ -30,7 +30,6 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 
-import org.apache.log4j.Logger;
 import org.pustefixframework.webservices.config.Configuration;
 import org.pustefixframework.webservices.config.GlobalServiceConfig;
 import org.pustefixframework.webservices.config.ServiceConfig;
@@ -40,6 +39,8 @@ import org.pustefixframework.webservices.utils.FileCache;
 import org.pustefixframework.webservices.utils.FileCacheData;
 import org.pustefixframework.webservices.utils.RecordingRequestWrapper;
 import org.pustefixframework.webservices.utils.RecordingResponseWrapper;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.aop.framework.Advised;
 import org.springframework.beans.factory.DisposableBean;
 import org.springframework.web.context.ServletContextAware;
@@ -54,8 +55,8 @@ import de.schlund.pfixxml.serverutil.SessionAdmin;
  */
 public class ServiceRuntime implements ServletContextAware, DisposableBean {
 	
-    private final static Logger LOG=Logger.getLogger(ServiceRuntime.class);
-    private final static Logger LOGGER_WSTRAIL=Logger.getLogger("LOGGER_WSTRAIL");
+    private final static Logger LOG=LoggerFactory.getLogger(ServiceRuntime.class);
+    private final static Logger LOGGER_WSTRAIL=LoggerFactory.getLogger("LOGGER_WSTRAIL");
     
     private static ThreadLocal<ServiceCallContext> currentContext=new ThreadLocal<ServiceCallContext>();
 	
@@ -290,7 +291,7 @@ public class ServiceRuntime implements ServletContextAware, DisposableBean {
                 }
             }
         } catch(AuthenticationException x) {
-            if(LOG.isDebugEnabled()) LOG.debug(x);
+            if(LOG.isDebugEnabled()) LOG.debug(x.getMessage(), x);
             ServiceProcessor processor=processors.get(wsType);
             if(processor!=null) processor.processException(serviceReq,serviceRes,x);
             else throw x;

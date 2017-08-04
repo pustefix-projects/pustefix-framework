@@ -20,12 +20,6 @@ package de.schlund.pfixcore.oxm;
 import javax.xml.transform.Result;
 import javax.xml.transform.dom.DOMResult;
 
-import junit.framework.TestCase;
-
-import org.apache.log4j.ConsoleAppender;
-import org.apache.log4j.Level;
-import org.apache.log4j.Logger;
-import org.apache.log4j.PatternLayout;
 import org.pustefixframework.test.XmlAssert;
 import org.w3c.dom.Document;
 
@@ -34,20 +28,12 @@ import de.schlund.pfixcore.oxm.bean.SetTestBean;
 import de.schlund.pfixcore.oxm.helper.OxmTestHelper;
 import de.schlund.pfixcore.oxm.impl.MarshallerImpl;
 import de.schlund.pfixcore.oxm.impl.SerializerRegistry;
+import junit.framework.TestCase;
 
 /**
  * @author Dunja Fehrenbach <dunja.fehrenbach@1und1.de>
  */
 public class SetTest extends TestCase {
-
-    @Override
-    protected void setUp() throws Exception {
-        ConsoleAppender appender = new ConsoleAppender(new PatternLayout("%p: %m\n"));
-        Logger logger = Logger.getRootLogger();
-        logger.setLevel((Level) Level.WARN);
-        logger.removeAllAppenders();
-        logger.addAppender(appender);
-    }
 
     /**
      * Test set marshalling

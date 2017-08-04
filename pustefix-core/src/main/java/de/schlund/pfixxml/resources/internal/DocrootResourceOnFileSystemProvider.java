@@ -21,7 +21,8 @@ package de.schlund.pfixxml.resources.internal;
 import java.net.URI;
 import java.net.URL;
 
-import org.apache.log4j.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.pustefixframework.live.LiveResolver;
 
 import de.schlund.pfixcore.exception.PustefixRuntimeException;
@@ -35,7 +36,7 @@ import de.schlund.pfixxml.resources.Resource;
  */
 public class DocrootResourceOnFileSystemProvider extends DocrootResourceProvider {
 
-    private final static Logger LOG = Logger.getLogger(DocrootResourceOnFileSystemProvider.class);
+    private final static Logger LOG = LoggerFactory.getLogger(DocrootResourceOnFileSystemProvider.class);
 
     private String docroot;
 

@@ -1,0 +1,93 @@
+<!-- Make some very verbose packages quiet by default -->
+
+<Logger name="org.apache" level="WARN" additivity="false">
+  <AppenderRef ref="LOGGER_GENERAL"/>
+</Logger>
+
+<Logger name="org.springframework" level="WARN" additivity="false">
+  <AppenderRef ref="LOGGER_GENERAL"/>
+</Logger>
+
+<!-- Disable logging of Pustefix debug/info messages by default -->
+
+<Logger name="org.pustefixframework" level="WARN" additivity="false">
+  <AppenderRef ref="LOGGER_GENERAL"/>
+</Logger>
+
+<Logger name="de.schlund.pfixcore" level="WARN" additivity="false">
+  <AppenderRef ref="LOGGER_GENERAL"/>
+</Logger>
+
+<Logger name="de.schlund.pfixxml" level="WARN" additivity="false">
+  <AppenderRef ref="LOGGER_GENERAL"/>
+</Logger>
+
+<!-- Enable verbose logging of Pustefix pageflow stuff in non-prod environments -->
+
+<Logger name="de.schlund.pfixcore.workflow" level="${verboseLevel}" additivity="false">
+  <AppenderRef ref="LOGGER_GENERAL"/>
+</Logger>
+
+<!-- Enable verbose logging of Pustefix DOM rendering in non-prod environments -->
+
+<Logger name="org.pustefixframework.http" level="${verboseLevel}" additivity="false">
+  <AppenderRef ref="LOGGER_GENERAL"/>
+</Logger>
+
+<Logger name="org.pustefixframework.http.DocrootRequestHandler" level="WARN" additivity="false">
+  <AppenderRef ref="LOGGER_GENERAL"/>
+</Logger>
+
+ <!--  Enable verbose logging of HTTP requests in non-prod environments -->
+
+<Logger name="de.schlund.pfixxml.PfixServletRequestImpl" level="${verboseLevel}" additivity="false">
+  <AppenderRef ref="LOGGER_GENERAL"/>
+</Logger>
+
+<!-- Enable verbose logging of XSL extension function calls in non-prod environments -->
+
+<Logger name="de.schlund.pfixxml.util.ExtensionFunctionUtils" level="${verboseLevelAll}" additivity="false">
+  <AppenderRef ref="LOGGER_XSLT"/>
+</Logger>
+
+<!--  Enable request performance logging done by ServletFilter -->
+
+<Logger name="org.pustefixframework.http.PerformanceLoggingFilter" level="INFO" additivity="false">
+  <AppenderRef ref="LOGGER_PFXPERF"/>
+</Logger>
+
+<!-- Special loggers for Pustefix statistics log files -->
+
+<Logger name="LOGGER_VISIT" level="WARN" additivity="false">
+  <AppenderRef ref="LOGGER_VISIT"/>
+</Logger>
+
+<Logger name="LOGGER_TRAIL" level="WARN" additivity="false">
+  <AppenderRef ref="LOGGER_TRAIL"/>
+</Logger>
+
+<Logger name="LOGGER_WSTRAIL" level="WARN" additivity="false">
+  <AppenderRef ref="LOGGER_WSTRAIL"/>
+</Logger>
+
+<Logger name="LOGGER_DEREF" level="WARN" additivity="false">
+  <AppenderRef ref="LOGGER_DEREF"/>
+</Logger>
+
+<Logger name="LOGGER_SESSION" level="INFO" additivity="false">
+  <AppenderRef ref="LOGGER_SESSION"/>
+</Logger>
+
+<Logger name="LOGGER_EDITOR" level="WARN" additivity="false">
+  <AppenderRef ref="LOGGER_EDITOR"/>
+</Logger>
+
+<Logger name="LOGGER_PFXUSAGE" level="INFO" additivity="false">
+  <AppenderRef ref="LOGGER_USAGE"/>
+</Logger>
+
+<!-- Default logger -->
+
+<Root level="${defaultLevel}">
+  <AppenderRef ref="LOGGER_GENERAL"/>
+</Root>

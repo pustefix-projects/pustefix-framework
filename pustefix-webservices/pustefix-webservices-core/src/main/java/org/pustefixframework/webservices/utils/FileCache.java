@@ -21,14 +21,17 @@ package org.pustefixframework.webservices.utils;
 import java.util.LinkedHashMap;
 import java.util.Map;
 
-import org.apache.log4j.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 
 /**
  * @author mleidig@schlund.de
  */
 public class FileCache {
 
-    final static Logger LOG = Logger.getLogger(FileCache.class);
+    final static Logger LOG = LoggerFactory.getLogger(FileCache.class);
+
     private LinkedHashMap<String, FileCacheData> map;
 
     public FileCache(int size) {

@@ -21,7 +21,8 @@ package de.schlund.pfixxml.targets.cachestat;
 import java.util.Timer;
 import java.util.TimerTask;
 
-import org.apache.log4j.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * Provides a queue with QUEUE_SIZE entries which
@@ -41,7 +42,7 @@ public class AdvanceCacheStatistic {
     private CacheHitMissPair[] statQueue;
     private int index = 0;
     private int queueSize = 0;
-    private final static Logger LOG = Logger.getLogger(AdvanceCacheStatistic.class);
+    private final static Logger LOG = LoggerFactory.getLogger(AdvanceCacheStatistic.class);
 
     public AdvanceCacheStatistic(String id, Timer timer, int queuesize, int queueticks) {
         this.id = id;

@@ -90,7 +90,7 @@ public class PustefixStatuscodeMojo extends AbstractMojo {
                 try {
                     File descriptor = new File(project.getBasedir(), "src/main/resources/META-INF/pustefix-module.xml");
                     if(descriptor.exists()) {
-                        moduleInfo = ModuleDescriptor.read(descriptor.toURI().toURL());
+                        moduleInfo = ModuleDescriptor.read(descriptor.toURI().toURL(), getLog());
                     }
                 } catch (Exception e) {
                     throw new MojoExecutionException("Error reading module descriptor", e);

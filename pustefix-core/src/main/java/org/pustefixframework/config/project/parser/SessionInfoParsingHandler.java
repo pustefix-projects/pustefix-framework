@@ -18,7 +18,8 @@
 
 package org.pustefixframework.config.project.parser;
 
-import org.apache.log4j.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.pustefixframework.config.Constants;
 import org.pustefixframework.config.project.SessionTimeoutInfo;
 import org.pustefixframework.config.project.SessionTrackingStrategyInfo;
@@ -36,7 +37,7 @@ import com.marsching.flexiparse.parser.exception.ParserException;
 
 public class SessionInfoParsingHandler implements ParsingHandler {
     
-    private Logger LOG = Logger.getLogger(SessionInfoParsingHandler.class);
+    private Logger LOG = LoggerFactory.getLogger(SessionInfoParsingHandler.class);
 
     public void handleNode(HandlerContext context) throws ParserException {
 

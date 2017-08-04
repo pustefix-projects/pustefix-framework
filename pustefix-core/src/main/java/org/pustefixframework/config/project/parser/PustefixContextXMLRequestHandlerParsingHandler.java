@@ -42,7 +42,6 @@ import org.pustefixframework.http.AdditionalTrailInfo;
 import org.pustefixframework.http.DefaultAdditionalTrailInfoImpl;
 import org.pustefixframework.http.PustefixContextXMLRequestHandler;
 import org.pustefixframework.http.PustefixInternalsRequestHandler;
-import org.pustefixframework.http.internal.Log4jAdmin;
 import org.pustefixframework.web.servlet.view.XsltViewResolver;
 import org.springframework.aop.scope.ScopedProxyUtils;
 import org.springframework.beans.factory.BeanDefinitionStoreException;
@@ -236,13 +235,6 @@ public class PustefixContextXMLRequestHandlerParsingHandler extends Customizatio
         beanBuilder.setScope("singleton");
         beanDefinition = beanBuilder.getBeanDefinition();
         beanHolder = new BeanDefinitionHolder(beanDefinition, PustefixInternalsRequestHandler.class.getName());
-        context.getObjectTreeElement().addObject(beanHolder);
-        
-        beanBuilder = BeanDefinitionBuilder.genericBeanDefinition(Log4jAdmin.class);
-        beanBuilder.setScope("singleton");
-        beanBuilder.addPropertyValue("projectName", projectInfo.getProjectName());
-        beanDefinition = beanBuilder.getBeanDefinition();
-        beanHolder = new BeanDefinitionHolder(beanDefinition, Log4jAdmin.class.getName());
         context.getObjectTreeElement().addObject(beanHolder);
         
         beanBuilder = BeanDefinitionBuilder.genericBeanDefinition(SPDocumentHistory.class);

@@ -27,7 +27,8 @@ import javax.xml.transform.TransformerFactory;
 import javax.xml.transform.dom.DOMSource;
 import javax.xml.transform.stream.StreamResult;
 
-import org.apache.log4j.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.pustefixframework.container.spring.http.UriProvidingHttpRequestHandler;
 import org.pustefixframework.util.LocaleUtils;
 import org.springframework.context.ApplicationContext;
@@ -51,7 +52,7 @@ import de.schlund.pfixxml.util.MD5Utils;
 
 public class SiteMapRequestHandler implements UriProvidingHttpRequestHandler, ServletContextAware, ApplicationContextAware {
 
-    private Logger LOG = Logger.getLogger(SiteMapRequestHandler.class);
+    private Logger LOG = LoggerFactory.getLogger(SiteMapRequestHandler.class);
     
     private final static int DEFAULT_HTTP_PORT = 80;
     private final static int DEFAULT_HTTPS_PORT = 443;

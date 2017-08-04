@@ -24,13 +24,13 @@ import java.util.HashSet;
 import java.util.Iterator;
 import java.util.Set;
 
-import org.apache.log4j.Logger;
 import org.pustefixframework.editor.common.dom.AbstractImage;
 import org.pustefixframework.editor.common.dom.Page;
 import org.pustefixframework.editor.common.dom.Project;
 import org.pustefixframework.editor.common.dom.Variant;
 import org.pustefixframework.editor.common.exception.EditorIOException;
 import org.pustefixframework.editor.common.exception.EditorSecurityException;
+import org.slf4j.LoggerFactory;
 
 import de.schlund.pfixcore.editor2.core.spring.BackupService;
 import de.schlund.pfixcore.editor2.core.spring.FileSystemService;
@@ -128,7 +128,7 @@ public class ImageImpl extends AbstractImage {
     }
 
     private void writeChangeLog() {
-        Logger.getLogger("LOGGER_EDITOR").warn(
+        LoggerFactory.getLogger("LOGGER_EDITOR").warn(
                 "IMG: remote_access: "
                         + this.getPath());
     }

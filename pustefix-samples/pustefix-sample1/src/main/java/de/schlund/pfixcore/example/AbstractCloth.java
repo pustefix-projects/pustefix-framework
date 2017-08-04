@@ -18,8 +18,8 @@
 
 package de.schlund.pfixcore.example;
 
-import org.apache.log4j.Logger;
-
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * ContextTShirt.java
@@ -36,7 +36,7 @@ public abstract class AbstractCloth {
     private String       size     = null;
     private Integer      color    = null;
     private Integer[]    features = null;
-    private final Logger LOG      = Logger.getLogger(this.getClass().getName());
+    private final Logger LOG      = LoggerFactory.getLogger(this.getClass().getName());
 
     public Integer getColor() { return color; }
 

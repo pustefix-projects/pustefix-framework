@@ -25,13 +25,14 @@ import java.util.Iterator;
 import java.util.Set;
 import java.util.TreeSet;
 
-import org.apache.log4j.Logger;
 import org.apache.lucene.document.DateField;
 import org.apache.lucene.document.Document;
 import org.apache.lucene.index.IndexReader;
 import org.pustefixframework.container.annotations.Inject;
 import org.pustefixframework.editor.common.dom.IncludePartThemeVariant;
 import org.pustefixframework.editor.common.dom.Project;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import de.schlund.pfixcore.editor2.core.spring.ProjectFactoryService;
 import de.schlund.pfixxml.config.GlobalConfig;
@@ -43,7 +44,7 @@ import de.schlund.pfixxml.config.GlobalConfig;
 public class PfixReadjustment {
     private ProjectFactoryService projectfactory;
     
-    private final static Logger LOG = Logger.getLogger(PfixReadjustment.class);
+    private final static Logger LOG = LoggerFactory.getLogger(PfixReadjustment.class);
     
     public static final String LUCENE_DATA = PfixQueueManager.lucene_data_path;
     
@@ -150,7 +151,7 @@ public class PfixReadjustment {
                 stopAddLoop = System.currentTimeMillis();
             }
         } catch (IOException ioe) {
-            LOG.fatal("error reading index", ioe);
+            LOG.error("error reading index", ioe);
         }
         
         // its a treeset, it is already sorted :)

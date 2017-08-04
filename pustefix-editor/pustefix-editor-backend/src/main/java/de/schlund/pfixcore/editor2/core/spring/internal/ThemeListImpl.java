@@ -21,10 +21,10 @@ package de.schlund.pfixcore.editor2.core.spring.internal;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.apache.log4j.Logger;
 import org.pustefixframework.editor.common.dom.AbstractThemeList;
 import org.pustefixframework.editor.common.dom.Theme;
 import org.pustefixframework.editor.common.dom.ThemeList;
+import org.slf4j.LoggerFactory;
 
 import de.schlund.pfixcore.editor2.core.spring.ThemeFactoryService;
 import de.schlund.pfixxml.targets.Themes;
@@ -46,7 +46,7 @@ public class ThemeListImpl extends AbstractThemeList implements ThemeList {
     public ThemeListImpl(ThemeFactoryService themefactory, Themes themes) {
         if (themes.getThemesArr().length == 0) {
             String msg = "Themes array should not be empty!";
-            Logger.getLogger(this.getClass()).warn(msg);
+            LoggerFactory.getLogger(this.getClass()).warn(msg);
         }
         this.themes = new ArrayList<Theme>();
         String[] array = themes.getThemesArr();

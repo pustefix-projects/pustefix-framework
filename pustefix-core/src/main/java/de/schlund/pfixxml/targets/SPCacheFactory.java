@@ -20,7 +20,8 @@ package de.schlund.pfixxml.targets;
 import java.lang.reflect.Constructor;
 import java.util.concurrent.ConcurrentMap;
 
-import org.apache.log4j.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import de.schlund.pfixcore.exception.PustefixRuntimeException;
 import de.schlund.pfixxml.IncludeDocument;
@@ -46,7 +47,7 @@ import de.schlund.pfixxml.targets.cachestat.CacheStatistic;
 
 public class SPCacheFactory {
     
-    private final static Logger LOG = Logger.getLogger(SPCacheFactory.class);
+    private final static Logger LOG = LoggerFactory.getLogger(SPCacheFactory.class);
     
     private SPCache<Object, Object> targetCache;
     private SPCache<String, IncludeDocument> documentCache;

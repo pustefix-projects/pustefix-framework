@@ -12,7 +12,8 @@ import java.net.URL;
 import java.net.URLClassLoader;
 import java.util.Enumeration;
 
-import org.apache.log4j.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.pustefixframework.util.javascript.Compressor;
 import org.pustefixframework.util.javascript.CompressorException;
 
@@ -22,7 +23,7 @@ import org.pustefixframework.util.javascript.CompressorException;
  */
 public class YUICompressorAdapter implements Compressor {
     
-    private final static Logger LOG = Logger.getLogger(YUICompressorAdapter.class);
+    private final static Logger LOG = LoggerFactory.getLogger(YUICompressorAdapter.class);
     
     private final static String COMPRESSOR_CLASS = "com.yahoo.platform.yui.compressor.JavaScriptCompressor";
     private final static String REPORTER_CLASS = "org.mozilla.javascript.ErrorReporter";

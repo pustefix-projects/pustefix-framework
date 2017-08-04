@@ -1,0 +1,224 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Configuration>
+
+  <Properties>
+
+    <!-- Define the default log level based on mode from Pustefix environment properties -->
+    <Property name="defaultLevel.prod" value="WARN"/>
+    <Property name="defaultLevel.prelive" value="WARN"/>
+    <Property name="defaultLevel.stage" value="INFO"/>
+    <Property name="defaultLevel.devel" value="INFO"/>
+    <Property name="defaultLevel.test" value="INFO"/>
+    <Property name="defaultLevel" value="${defaultLevel.${pfx:mode}}"/>
+
+    <!-- Define a verbose log level based on mode from Pustefix environment properties -->
+    <Property name="verboseLevel.prod" value="WARN"/>
+    <Property name="verboseLevel.prelive" value="WARN"/>
+    <Property name="verboseLevel.stage" value="DEBUG"/>
+    <Property name="verboseLevel.devel" value="DEBUG"/>
+    <Property name="verboseLevel.test" value="DEBUG"/>
+    <Property name="verboseLevel" value="${verboseLevel.${pfx:mode}}"/>
+
+    <!-- Define a more verbose log level based on mode from Pustefix environment properties -->
+    <Property name="verboseLevelAll.prod" value="INFO"/>
+    <Property name="verboseLevelAll.prelive" value="INFO"/>
+    <Property name="verboseLevelAll.stage" value="DEBUG"/>
+    <Property name="verboseLevelAll.devel" value="DEBUG"/>
+    <Property name="verboseLevelAll.test" value="DEBUG"/>
+    <Property name="verboseLevelAll" value="${verboseLevelAll.${pfx:mode}}"/>
+
+  </Properties>
+
+  <Appenders>
+
+    <RollingFile name="LOGGER_GENERAL" fileName="${pfx:logroot}/pustefix-servlet.log"
+                 filePattern="${pfx:logroot}/pustefix-servlet.%i.log">
+      <PatternLayout pattern="%d{ISO8601} [%t] %-5p %c [%M():%L] %marker - %m%n"/>
+      <Policies>
+        <SizeBasedTriggeringPolicy size="10MB"/>
+      </Policies>
+      <DefaultRolloverStrategy max="3"/>
+    </RollingFile>
+
+    <RollingFile name="LOGGER_VISIT" fileName="${pfx:logroot}/pustefix-visit.log"
+                 filePattern="${pfx:logroot}/pustefix-visit.%i.log">
+      <PatternLayout pattern="%d{ISO8601}|%m%n"/>
+      <Policies>
+        <SizeBasedTriggeringPolicy size="10MB"/>
+      </Policies>
+      <DefaultRolloverStrategy max="3"/>
+    </RollingFile>
+
+    <RollingFile name="LOGGER_TRAIL" fileName="${pfx:logroot}/pustefix-trail.log"
+                 filePattern="${pfx:logroot}/pustefix-trail.%i.log">
+      <PatternLayout pattern="%d{ISO8601}|%m|%X{requestId}%n"/>
+      <Policies>
+        <SizeBasedTriggeringPolicy size="10MB"/>
+      </Policies>
+      <DefaultRolloverStrategy max="3"/>
+    </RollingFile>
+
+    <RollingFile name="LOGGER_WSTRAIL" fileName="${pfx:logroot}/pustefix-wstrail.log"
+                 filePattern="${pfx:logroot}/pustefix-wstrail.%i.log">
+      <PatternLayout pattern="%d{ISO8601}|%m%n"/>
+      <Policies>
+        <SizeBasedTriggeringPolicy size="10MB"/>
+      </Policies>
+      <DefaultRolloverStrategy max="3"/>
+    </RollingFile>
+
+    <RollingFile name="LOGGER_DEREF" fileName="${pfx:logroot}/pustefix-deref.log"
+                 filePattern="${pfx:logroot}/pustefix-deref.%i.log">
+      <PatternLayout pattern="%d{ISO8601}|%m%n"/>
+      <Policies>
+        <SizeBasedTriggeringPolicy size="10MB"/>
+      </Policies>
+      <DefaultRolloverStrategy max="3"/>
+    </RollingFile>
+
+    <RollingFile name="LOGGER_SESSION" fileName="${pfx:logroot}/pustefix-session.log"
+                 filePattern="${pfx:logroot}/pustefix-session.%i.log">
+      <PatternLayout pattern="%d{ISO8601}|%m%n"/>
+      <Policies>
+        <SizeBasedTriggeringPolicy size="10MB"/>
+      </Policies>
+      <DefaultRolloverStrategy max="3"/>
+    </RollingFile>
+
+    <RollingFile name="LOGGER_EDITOR" fileName="${pfx:logroot}/pustefix-editor.log"
+                 filePattern="${pfx:logroot}/pustefix-editor.%i.log">
+      <PatternLayout pattern="%d{ISO8601} %m%n"/>
+      <Policies>
+        <SizeBasedTriggeringPolicy size="10MB"/>
+      </Policies>
+      <DefaultRolloverStrategy max="3"/>
+    </RollingFile>
+
+    <RollingFile name="LOGGER_USAGE" fileName="${pfx:logroot}/pustefix-usage.log"
+                 filePattern="${pfx:logroot}/pustefix-usage.%i.log">
+      <PatternLayout pattern="%d{ISO8601} %m%n"/>
+      <Policies>
+        <SizeBasedTriggeringPolicy size="10MB"/>
+      </Policies>
+      <DefaultRolloverStrategy max="3"/>
+    </RollingFile>
+
+    <RollingFile name="LOGGER_XSLT" fileName="${pfx:logroot}/pustefix-xslt.log"
+                 filePattern="${pfx:logroot}/pustefix-xslt.%i.log">
+      <PatternLayout pattern="%d{ISO8601} %m%n"/>
+      <Policies>
+        <SizeBasedTriggeringPolicy size="10MB"/>
+      </Policies>
+      <DefaultRolloverStrategy max="3"/>
+    </RollingFile>
+
+    <RollingFile name="LOGGER_PFXPERF" fileName="${pfx:logroot}/pustefix-perf.log"
+                 filePattern="${pfx:logroot}/pustefix-perf.%i.log">
+      <PatternLayout pattern="%d{ISO8601}|%m%n"/>
+      <Policies>
+        <SizeBasedTriggeringPolicy size="10MB"/>
+      </Policies>
+      <DefaultRolloverStrategy max="3"/>
+    </RollingFile>
+
+  </Appenders>
+
+  <Loggers>
+
+    <!-- Make some very verbose packages quiet by default -->
+
+    <Logger name="org.apache" level="WARN" additivity="false">
+      <AppenderRef ref="LOGGER_GENERAL"/>
+    </Logger>
+
+    <Logger name="org.springframework" level="WARN" additivity="false">
+      <AppenderRef ref="LOGGER_GENERAL"/>
+    </Logger>
+
+    <!-- Disable logging of Pustefix debug/info messages by default -->
+
+    <Logger name="org.pustefixframework" level="WARN" additivity="false">
+      <AppenderRef ref="LOGGER_GENERAL"/>
+    </Logger>
+
+    <Logger name="de.schlund.pfixcore" level="WARN" additivity="false">
+      <AppenderRef ref="LOGGER_GENERAL"/>
+    </Logger>
+
+    <Logger name="de.schlund.pfixxml" level="WARN" additivity="false">
+      <AppenderRef ref="LOGGER_GENERAL"/>
+    </Logger>
+
+    <!-- Enable verbose logging of Pustefix pageflow stuff in non-prod environments -->
+
+    <Logger name="de.schlund.pfixcore.workflow" level="${verboseLevel}" additivity="false">
+      <AppenderRef ref="LOGGER_GENERAL"/>
+    </Logger>
+
+    <!-- Enable verbose logging of Pustefix DOM rendering in non-prod environments -->
+
+    <Logger name="org.pustefixframework.http" level="${verboseLevel}" additivity="false">
+      <AppenderRef ref="LOGGER_GENERAL"/>
+    </Logger>
+
+    <Logger name="org.pustefixframework.http.DocrootRequestHandler" level="WARN" additivity="false">
+      <AppenderRef ref="LOGGER_GENERAL"/>
+    </Logger>
+
+    <!--  Enable verbose logging of HTTP requests in non-prod environments -->
+
+    <Logger name="de.schlund.pfixxml.PfixServletRequestImpl" level="${verboseLevel}" additivity="false">
+      <AppenderRef ref="LOGGER_GENERAL"/>
+    </Logger>
+
+    <!-- Enable verbose logging of XSL extension function calls in non-prod environments -->
+
+    <Logger name="de.schlund.pfixxml.util.ExtensionFunctionUtils" level="${verboseLevelAll}" additivity="false">
+      <AppenderRef ref="LOGGER_XSLT"/>
+    </Logger>
+
+    <!--  Enable request performance logging done by ServletFilter -->
+
+    <Logger name="org.pustefixframework.http.PerformanceLoggingFilter" level="INFO" additivity="false">
+      <AppenderRef ref="LOGGER_PFXPERF"/>
+    </Logger>
+
+    <!-- Special loggers for Pustefix statistics log files -->
+
+    <Logger name="LOGGER_VISIT" level="WARN" additivity="false">
+      <AppenderRef ref="LOGGER_VISIT"/>
+    </Logger>
+
+    <Logger name="LOGGER_TRAIL" level="WARN" additivity="false">
+      <AppenderRef ref="LOGGER_TRAIL"/>
+    </Logger>
+
+    <Logger name="LOGGER_WSTRAIL" level="WARN" additivity="false">
+      <AppenderRef ref="LOGGER_WSTRAIL"/>
+    </Logger>
+
+    <Logger name="LOGGER_DEREF" level="WARN" additivity="false">
+      <AppenderRef ref="LOGGER_DEREF"/>
+    </Logger>
+
+    <Logger name="LOGGER_SESSION" level="INFO" additivity="false">
+      <AppenderRef ref="LOGGER_SESSION"/>
+    </Logger>
+
+    <Logger name="LOGGER_EDITOR" level="WARN" additivity="false">
+      <AppenderRef ref="LOGGER_EDITOR"/>
+    </Logger>
+
+    <Logger name="LOGGER_PFXUSAGE" level="INFO" additivity="false">
+      <AppenderRef ref="LOGGER_USAGE"/>
+    </Logger>
+
+    <!-- Default logger -->
+
+    <Root level="${defaultLevel}">
+      <AppenderRef ref="LOGGER_GENERAL"/>
+    </Root>
+
+  </Loggers>
+
+</Configuration>

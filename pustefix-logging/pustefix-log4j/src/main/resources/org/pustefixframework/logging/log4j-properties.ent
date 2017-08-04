@@ -1,0 +1,23 @@
+<!-- Define the default log level based on mode from Pustefix environment properties -->
+<Property name="defaultLevel.prod" value="WARN"/>
+<Property name="defaultLevel.prelive" value="WARN"/>
+<Property name="defaultLevel.stage" value="INFO"/>
+<Property name="defaultLevel.devel" value="INFO"/>
+<Property name="defaultLevel.test" value="INFO"/>
+<Property name="defaultLevel" value="${defaultLevel.${pfx:mode}}"/>
+
+<!-- Define a verbose log level based on mode from Pustefix environment properties -->
+<Property name="verboseLevel.prod" value="WARN"/>
+<Property name="verboseLevel.prelive" value="WARN"/>
+<Property name="verboseLevel.stage" value="DEBUG"/>
+<Property name="verboseLevel.devel" value="DEBUG"/>
+<Property name="verboseLevel.test" value="DEBUG"/>
+<Property name="verboseLevel" value="${verboseLevel.${pfx:mode}}"/>
+
+<!-- Define a more verbose log level based on mode from Pustefix environment properties -->
+<Property name="verboseLevelAll.prod" value="INFO"/>
+<Property name="verboseLevelAll.prelive" value="INFO"/>
+<Property name="verboseLevelAll.stage" value="DEBUG"/>
+<Property name="verboseLevelAll.devel" value="DEBUG"/>
+<Property name="verboseLevelAll.test" value="DEBUG"/>
+<Property name="verboseLevelAll" value="${verboseLevelAll.${pfx:mode}}"/>

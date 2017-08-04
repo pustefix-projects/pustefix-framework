@@ -1,0 +1,89 @@
+<RollingFile name="LOGGER_GENERAL" fileName="${pfx:logroot}/pustefix-servlet.log"
+             filePattern="${pfx:logroot}/pustefix-servlet.%i.log">
+  <PatternLayout pattern="%d{ISO8601} [%t] %-5p %c [%M():%L] %marker - %m%n"/>
+  <Policies>
+    <SizeBasedTriggeringPolicy size="10MB"/>
+  </Policies>
+  <DefaultRolloverStrategy max="3"/>
+</RollingFile>
+
+<RollingFile name="LOGGER_VISIT" fileName="${pfx:logroot}/pustefix-visit.log"
+             filePattern="${pfx:logroot}/pustefix-visit.%i.log">
+  <PatternLayout pattern="%d{ISO8601}|%m%n"/>
+  <Policies>
+    <SizeBasedTriggeringPolicy size="10MB"/>
+  </Policies>
+  <DefaultRolloverStrategy max="3"/>
+</RollingFile>
+
+<RollingFile name="LOGGER_TRAIL" fileName="${pfx:logroot}/pustefix-trail.log"
+             filePattern="${pfx:logroot}/pustefix-trail.%i.log">
+  <PatternLayout pattern="%d{ISO8601}|%m|%X{requestId}%n"/>
+  <Policies>
+    <SizeBasedTriggeringPolicy size="10MB"/>
+  </Policies>
+  <DefaultRolloverStrategy max="3"/>
+</RollingFile>
+
+<RollingFile name="LOGGER_WSTRAIL" fileName="${pfx:logroot}/pustefix-wstrail.log"
+             filePattern="${pfx:logroot}/pustefix-wstrail.%i.log">
+  <PatternLayout pattern="%d{ISO8601}|%m%n"/>
+  <Policies>
+    <SizeBasedTriggeringPolicy size="10MB"/>
+  </Policies>
+  <DefaultRolloverStrategy max="3"/>
+</RollingFile>
+
+<RollingFile name="LOGGER_DEREF" fileName="${pfx:logroot}/pustefix-deref.log"
+             filePattern="${pfx:logroot}/pustefix-deref.%i.log">
+  <PatternLayout pattern="%d{ISO8601}|%m%n"/>
+  <Policies>
+    <SizeBasedTriggeringPolicy size="10MB"/>
+  </Policies>
+  <DefaultRolloverStrategy max="3"/>
+</RollingFile>
+
+<RollingFile name="LOGGER_SESSION" fileName="${pfx:logroot}/pustefix-session.log"
+             filePattern="${pfx:logroot}/pustefix-session.%i.log">
+  <PatternLayout pattern="%d{ISO8601}|%m%n"/>
+  <Policies>
+    <SizeBasedTriggeringPolicy size="10MB"/>
+  </Policies>
+  <DefaultRolloverStrategy max="3"/>
+</RollingFile>
+
+<RollingFile name="LOGGER_EDITOR" fileName="${pfx:logroot}/pustefix-editor.log"
+             filePattern="${pfx:logroot}/pustefix-editor.%i.log">
+  <PatternLayout pattern="%d{ISO8601} %m%n"/>
+  <Policies>
+    <SizeBasedTriggeringPolicy size="10MB"/>
+  </Policies>
+  <DefaultRolloverStrategy max="3"/>
+</RollingFile>
+
+<RollingFile name="LOGGER_USAGE" fileName="${pfx:logroot}/pustefix-usage.log"
+             filePattern="${pfx:logroot}/pustefix-usage.%i.log">
+  <PatternLayout pattern="%d{ISO8601} %m%n"/>
+  <Policies>
+    <SizeBasedTriggeringPolicy size="10MB"/>
+  </Policies>
+  <DefaultRolloverStrategy max="3"/>
+</RollingFile>
+
+<RollingFile name="LOGGER_XSLT" fileName="${pfx:logroot}/pustefix-xslt.log"
+             filePattern="${pfx:logroot}/pustefix-xslt.%i.log">
+  <PatternLayout pattern="%d{ISO8601} %m%n"/>
+  <Policies>
+    <SizeBasedTriggeringPolicy size="10MB"/>
+  </Policies>
+  <DefaultRolloverStrategy max="3"/>
+</RollingFile>
+
+<RollingFile name="LOGGER_PFXPERF" fileName="${pfx:logroot}/pustefix-perf.log"
+             filePattern="${pfx:logroot}/pustefix-perf.%i.log">
+  <PatternLayout pattern="%d{ISO8601}|%m%n"/>
+  <Policies>
+    <SizeBasedTriggeringPolicy size="10MB"/>
+  </Policies>
+  <DefaultRolloverStrategy max="3"/>
+</RollingFile>

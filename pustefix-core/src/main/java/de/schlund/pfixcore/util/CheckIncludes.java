@@ -116,7 +116,6 @@ public class CheckIncludes {
 
         String dir = new File(".").getCanonicalPath() + "/";
         
-        Logging.configure("generator_quiet.xml");
         GlobalConfigurator.setDocroot(dir);
         
         CheckIncludes instance = new CheckIncludes(output, new File(confFile), new File(allincarg), new File(allimgarg));

@@ -22,12 +22,12 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 
-import org.apache.log4j.Logger;
 import org.pustefixframework.editor.common.dom.IncludeFile;
 import org.pustefixframework.editor.common.dom.IncludePart;
 import org.pustefixframework.editor.common.dom.IncludePartThemeVariant;
 import org.pustefixframework.editor.common.dom.Theme;
 import org.pustefixframework.editor.common.exception.EditorParsingException;
+import org.slf4j.LoggerFactory;
 
 import de.schlund.pfixcore.editor2.core.spring.internal.IncludeFileImpl;
 import de.schlund.pfixcore.editor2.core.spring.internal.IncludePartThemeVariantImpl;
@@ -151,7 +151,7 @@ public class IncludeFactoryServiceImpl implements IncludeFactoryService {
             }
         } else {
             String err = "Supplied AuxDependency is not of type DependencyType.TEXT!";
-            Logger.getLogger(this.getClass()).error(err);
+            LoggerFactory.getLogger(this.getClass()).error(err);
             throw new RuntimeException(err);
         }
     }

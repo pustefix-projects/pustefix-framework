@@ -23,7 +23,8 @@ import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 
-import org.apache.log4j.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.pustefixframework.config.contextxmlservice.ContextConfig;
 import org.pustefixframework.config.contextxmlservice.ContextResourceConfig;
 import org.springframework.beans.BeansException;
@@ -43,7 +44,7 @@ import de.schlund.pfixcore.exception.PustefixCoreException;
 
 public class ContextResourceManagerImpl implements ContextResourceManager, ApplicationContextAware {
     
-    private final static Logger LOG = Logger.getLogger(ContextResourceManagerImpl.class);
+    private final static Logger LOG = LoggerFactory.getLogger(ContextResourceManagerImpl.class);
     private ApplicationContext applicationContext;
     private ContextConfig contextConfig;
     

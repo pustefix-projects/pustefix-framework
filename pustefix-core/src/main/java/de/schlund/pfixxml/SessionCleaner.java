@@ -23,7 +23,8 @@ import java.util.TimerTask;
 
 import javax.servlet.http.HttpSession;
 
-import org.apache.log4j.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.DisposableBean;
 
 import de.schlund.pfixxml.util.CacheValueLRU;
@@ -44,8 +45,8 @@ import de.schlund.pfixxml.util.CacheValueLRU;
 public class SessionCleaner implements DisposableBean {
 
     private        Timer          timer;
-    private final static Logger   LOG      = Logger.getLogger(SessionCleaner.class);
-    private final static Logger LOGGER_SESSION = Logger.getLogger("LOGGER_SESSION");
+    private final static Logger   LOG      = LoggerFactory.getLogger(SessionCleaner.class);
+    private final static Logger LOGGER_SESSION = LoggerFactory.getLogger("LOGGER_SESSION");
     
     private int timeout = 300;
     

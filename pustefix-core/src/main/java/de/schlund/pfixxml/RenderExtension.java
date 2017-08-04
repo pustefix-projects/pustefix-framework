@@ -8,7 +8,8 @@ import javax.xml.transform.Result;
 import javax.xml.transform.Templates;
 import javax.xml.transform.stream.StreamResult;
 
-import org.apache.log4j.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.w3c.dom.Node;
 
 import de.schlund.pfixcore.workflow.context.RequestContextImpl;
@@ -20,7 +21,7 @@ import de.schlund.pfixxml.util.XsltContext;
 
 public class RenderExtension {
     
-    private final static Logger LOG = Logger.getLogger(RenderExtension.class);
+    private final static Logger LOG = LoggerFactory.getLogger(RenderExtension.class);
     
     public static boolean render(TargetGenerator targetGenerator, String href, 
             String part, String module, String search, Node node, RequestContextImpl requestContext, 

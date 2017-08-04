@@ -60,7 +60,6 @@ public class ImportText {
         String    dumpxml = args[1];
         GlobalConfigurator.setDocroot(docroot);
         ImportText trans = new ImportText();
-        Logging.configure("generator_quiet.xml");
         trans.importList(dumpxml);
     }
 

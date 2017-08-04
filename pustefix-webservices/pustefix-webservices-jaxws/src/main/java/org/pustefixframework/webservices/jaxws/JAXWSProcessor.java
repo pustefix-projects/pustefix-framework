@@ -33,7 +33,6 @@ import javax.xml.ws.handler.Handler;
 
 import org.aopalliance.intercept.MethodInterceptor;
 import org.aopalliance.intercept.MethodInvocation;
-import org.apache.log4j.Logger;
 import org.pustefixframework.util.BytecodeAPIUtils;
 import org.pustefixframework.webservices.Constants;
 import org.pustefixframework.webservices.InsertPIResponseWrapper;
@@ -49,6 +48,8 @@ import org.pustefixframework.webservices.ServiceRuntime;
 import org.pustefixframework.webservices.config.Configuration;
 import org.pustefixframework.webservices.config.GlobalServiceConfig;
 import org.pustefixframework.webservices.config.ServiceConfig;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.aop.framework.ProxyFactory;
 
 import com.sun.xml.ws.api.BindingID;
@@ -68,7 +69,7 @@ import de.schlund.pfixcore.workflow.ContextImpl;
  */
 public class JAXWSProcessor implements ServiceProcessor {
 
-    private static Logger LOG=Logger.getLogger(ServiceProcessor.class);
+    private static Logger LOG = LoggerFactory.getLogger(ServiceProcessor.class);
     
     private ServletContext servletContext;
     private WSServletDelegate delegate =null;

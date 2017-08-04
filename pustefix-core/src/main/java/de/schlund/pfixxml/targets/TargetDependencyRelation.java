@@ -23,7 +23,8 @@ import java.util.HashSet;
 import java.util.Iterator;
 import java.util.TreeSet;
 
-import org.apache.log4j.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import de.schlund.pfixxml.util.RefCountingCollection;
 
@@ -54,7 +55,7 @@ import de.schlund.pfixxml.util.RefCountingCollection;
 
 public class TargetDependencyRelation {
     
-    private static final Logger LOG = Logger.getLogger(TargetDependencyRelation.class);
+    private static final Logger LOG = LoggerFactory.getLogger(TargetDependencyRelation.class);
     
     private HashMap<AuxDependency, TreeSet<Target>> allauxs; 
     private HashMap<Target, TreeSet<AuxDependency>> alltargets;

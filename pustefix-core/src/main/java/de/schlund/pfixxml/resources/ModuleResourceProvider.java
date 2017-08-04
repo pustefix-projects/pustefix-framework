@@ -22,7 +22,8 @@ import java.net.MalformedURLException;
 import java.net.URI;
 import java.net.URL;
 
-import org.apache.log4j.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.pustefixframework.live.LiveResolver;
 
 import de.schlund.pfixcore.exception.PustefixRuntimeException;
@@ -37,7 +38,7 @@ import de.schlund.pfixxml.config.EnvironmentProperties;
  */
 public class ModuleResourceProvider implements ResourceProvider {
 
-    private final static Logger LOG = Logger.getLogger(ModuleResourceProvider.class);
+    private final static Logger LOG = LoggerFactory.getLogger(ModuleResourceProvider.class);
     
     private final static String MODULE_SCHEME = "module";
     

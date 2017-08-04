@@ -24,7 +24,8 @@ import java.util.TreeSet;
 
 import javax.xml.transform.TransformerException;
 
-import org.apache.log4j.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import de.schlund.pfixxml.XMLException;
 import de.schlund.pfixxml.resources.FileResource;
@@ -52,8 +53,8 @@ public abstract class TargetImpl implements TargetRW, Comparable<Target> {
     protected TreeMap<String, Object> params       = null;
     protected Target               xmlsource       = null;
     protected Target               xslsource       = null;
-    protected Logger               LOG             = Logger.getLogger(this.getClass());
-    protected Logger               TREE            = Logger.getLogger(this.getClass().getName() + ".TREE");
+    protected Logger               LOG             = LoggerFactory.getLogger(this.getClass());
+    protected Logger               TREE            = LoggerFactory.getLogger(this.getClass().getName() + ".TREE");
     // determine if the target has been generated. This affects production mode only, where
     // we do not need to handle if the target is really up to date (except make generate!!!)
     private   boolean              onceLoaded      = false;

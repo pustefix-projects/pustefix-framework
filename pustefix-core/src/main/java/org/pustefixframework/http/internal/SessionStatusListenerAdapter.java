@@ -4,15 +4,13 @@ import javax.servlet.http.HttpSession;
 import javax.servlet.http.HttpSessionEvent;
 import javax.servlet.http.HttpSessionListener;
 
-import org.apache.log4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import de.schlund.pfixcore.workflow.SessionStatusEvent;
 import de.schlund.pfixcore.workflow.SessionStatusListener;
 
 public class SessionStatusListenerAdapter implements HttpSessionListener {
 
-    private Logger LOG = Logger.getLogger(SessionStatusListenerAdapter.class);
-    
     @Override
     public void sessionCreated(HttpSessionEvent se) {
     }
@@ -30,7 +28,8 @@ public class SessionStatusListenerAdapter implements HttpSessionListener {
                         statusListener.sessionStatusChanged(event);
                     }
                 } catch(Throwable t) {
-                    LOG.error("Error calling SessionStatusListener at end of session", t);
+                    LoggerFactory.getLogger(SessionStatusListenerAdapter.class)
+                        .error("Error calling SessionStatusListener at end of session", t);
                 }
             }
         }

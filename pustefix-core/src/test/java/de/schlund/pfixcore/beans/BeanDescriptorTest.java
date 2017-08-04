@@ -22,32 +22,17 @@ import java.net.URL;
 import java.util.HashSet;
 import java.util.Set;
 
-import junit.framework.TestCase;
-
-import org.apache.log4j.ConsoleAppender;
-import org.apache.log4j.Level;
-import org.apache.log4j.Logger;
-import org.apache.log4j.PatternLayout;
-
-import de.schlund.pfixcore.beans.BeanDescriptor;
-import de.schlund.pfixcore.beans.BeanDescriptorFactory;
-import de.schlund.pfixcore.beans.InitException;
 import de.schlund.pfixcore.beans.metadata.Bean;
 import de.schlund.pfixcore.beans.metadata.Beans;
 import de.schlund.pfixcore.beans.metadata.DefaultLocator;
 import de.schlund.pfixcore.beans.metadata.Locator;
 import de.schlund.pfixcore.oxm.bean.CovariantBeanB;
+import junit.framework.TestCase;
 
 public class BeanDescriptorTest extends TestCase {
     
     public void testPropertyDetection() throws InitException {
-        
-        ConsoleAppender appender = new ConsoleAppender(new PatternLayout("%p: %m\n"));
-        Logger logger=Logger.getRootLogger();
-        logger.setLevel((Level)Level.ERROR);
-        logger.removeAllAppenders();
-        logger.addAppender(appender);
-        
+
         URL url=getClass().getResource("beanmetadata.xml");
         if(url==null) {
             try {

@@ -17,7 +17,8 @@
  */
 package org.pustefixframework.cdi;
 
-import org.apache.log4j.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.config.BeanDefinition;
 import org.springframework.beans.factory.config.BeanDefinitionHolder;
 import org.springframework.beans.factory.support.BeanDefinitionBuilder;
@@ -35,7 +36,7 @@ import com.marsching.flexiparse.parser.exception.ParserException;
  */
 public class InitParsingHandler implements ParsingHandler {
     
-    private Logger LOG = Logger.getLogger(InitParsingHandler.class);
+    private Logger LOG = LoggerFactory.getLogger(InitParsingHandler.class);
     
     public void handleNode(HandlerContext context) throws ParserException {
 

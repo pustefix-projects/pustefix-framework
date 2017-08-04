@@ -18,7 +18,8 @@
 
 package de.schlund.pfixcore.example;
 
-import org.apache.log4j.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * ContextCounter.java
@@ -35,7 +36,7 @@ public class ContextCounter {
     private Boolean  showcounter = Boolean.FALSE;
     private int      counter     = 0;
 
-    private final static Logger LOG = Logger.getLogger(ContextCounter.class);
+    private final static Logger LOG = LoggerFactory.getLogger(ContextCounter.class);
     
     public void reset() {
         showcounter = Boolean.FALSE;

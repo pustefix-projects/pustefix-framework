@@ -22,7 +22,8 @@ import java.net.URLEncoder;
 
 import javax.xml.transform.URIResolver;
 
-import org.apache.log4j.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import de.schlund.pfixxml.resources.I18NIterator;
 import de.schlund.pfixxml.resources.I18NResourceUtil;
@@ -45,7 +46,7 @@ import de.schlund.pfixxml.util.Xslt.ResourceResolver;
  */
 public class ImageThemedSrc {
     
-    private final static Logger LOG = Logger.getLogger(ImageThemedSrc.class);
+    private final static Logger LOG = LoggerFactory.getLogger(ImageThemedSrc.class);
 
     public static String getSrc(XsltContext context, String src, String themed_path, String themed_img,
             String parent_part_in, String parent_product_in,

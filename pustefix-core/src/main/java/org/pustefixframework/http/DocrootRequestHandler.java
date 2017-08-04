@@ -32,8 +32,10 @@ import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-import org.apache.log4j.Logger;
 import org.pustefixframework.config.project.Expires;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import org.pustefixframework.container.spring.beans.TenantScope;
 import org.pustefixframework.container.spring.http.UriProvidingHttpRequestHandler;
 import org.springframework.beans.factory.InitializingBean;
@@ -52,7 +54,7 @@ import de.schlund.pfixxml.util.MD5Utils;
  */
 public class DocrootRequestHandler implements UriProvidingHttpRequestHandler, ServletContextAware, InitializingBean {
     
-    private Logger LOG = Logger.getLogger(DocrootRequestHandler.class);
+    private Logger LOG = LoggerFactory.getLogger(DocrootRequestHandler.class);
     
     private String base;
     private boolean i18nBase;

@@ -10,7 +10,8 @@ public class PustefixServletContainerInitializer implements ServletContainerInit
 
     @Override
     public void onStartup(Set<Class<?>> c, ServletContext ctx) throws ServletException {
-        
+
+        PustefixInit.initEnvironmentProperties(ctx);
         ctx.addListener(new SessionStatusListenerAdapter());
     }
     

@@ -27,12 +27,12 @@ import java.util.Collection;
 import java.util.Comparator;
 import java.util.Date;
 
-import org.apache.log4j.Logger;
 import org.pustefixframework.editor.common.dom.Image;
 import org.pustefixframework.editor.common.dom.IncludePartThemeVariant;
 import org.pustefixframework.editor.common.exception.EditorIOException;
 import org.pustefixframework.editor.common.exception.EditorParsingException;
 import org.pustefixframework.editor.common.exception.EditorSecurityException;
+import org.slf4j.LoggerFactory;
 import org.w3c.dom.Document;
 import org.xml.sax.SAXException;
 
@@ -110,7 +110,7 @@ public class BackupServiceImpl implements BackupService {
         } catch (EditorIOException e) {
             String err = "Could not create backup for image " + image.getPath()
                     + "!";
-            Logger.getLogger(this.getClass()).error(err, e);
+            LoggerFactory.getLogger(this.getClass()).error(err, e);
         }
     }
 
@@ -135,7 +135,7 @@ public class BackupServiceImpl implements BackupService {
         } catch (EditorIOException e) {
             String err = "Could not restore backup " + backupFile.getPath()
                     + "!";
-            Logger.getLogger(this.getClass()).error(err, e);
+            LoggerFactory.getLogger(this.getClass()).error(err, e);
             return false;
         }
         return true;
@@ -186,11 +186,11 @@ public class BackupServiceImpl implements BackupService {
                 this.filesystem.storeXMLDocumentToFile(backupFile, doc);
             } catch (IOException e) {
                 String msg = "Could not write backup!";
-                Logger.getLogger(this.getClass()).error(msg, e);
+                LoggerFactory.getLogger(this.getClass()).error(msg, e);
             }
         } catch (EditorIOException e) {
             String msg = "Could not write backup!";
-            Logger.getLogger(this.getClass()).error(msg, e);
+            LoggerFactory.getLogger(this.getClass()).error(msg, e);
         }
     }
 
@@ -216,27 +216,27 @@ public class BackupServiceImpl implements BackupService {
             }
         } catch (FileNotFoundException e) {
             String err = "Could not restore backup!";
-            Logger.getLogger(this.getClass()).error(err, e);
+            LoggerFactory.getLogger(this.getClass()).error(err, e);
             return false;
         } catch (SAXException e) {
             String err = "Could not restore backup!";
-            Logger.getLogger(this.getClass()).error(err, e);
+            LoggerFactory.getLogger(this.getClass()).error(err, e);
             return false;
         } catch (IOException e) {
             String err = "Could not restore backup!";
-            Logger.getLogger(this.getClass()).error(err, e);
+            LoggerFactory.getLogger(this.getClass()).error(err, e);
             return false;
         } catch (EditorIOException e) {
             String err = "Could not restore backup!";
-            Logger.getLogger(this.getClass()).error(err, e);
+            LoggerFactory.getLogger(this.getClass()).error(err, e);
             return false;
         } catch (EditorParsingException e) {
             String err = "Could not restore backup!";
-            Logger.getLogger(this.getClass()).error(err, e);
+            LoggerFactory.getLogger(this.getClass()).error(err, e);
             return false;
         } catch (EditorSecurityException e) {
             String err = "Could not restore backup!";
-            Logger.getLogger(this.getClass()).error(err, e);
+            LoggerFactory.getLogger(this.getClass()).error(err, e);
             return false;
         }
         return true;

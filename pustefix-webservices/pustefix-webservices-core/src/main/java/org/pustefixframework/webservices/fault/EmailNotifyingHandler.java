@@ -20,8 +20,9 @@ package org.pustefixframework.webservices.fault;
 import java.util.ArrayList;
 import java.util.StringTokenizer;
 
-import org.apache.log4j.Logger;
 import org.pustefixframework.webservices.HttpServiceRequest;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import de.schlund.pfixcore.util.email.EmailSender;
 import de.schlund.pfixcore.util.email.EmailSenderException;
@@ -33,7 +34,7 @@ public class EmailNotifyingHandler extends FaultHandler {
      */
     private static final long serialVersionUID = 8853473850594232489L;
 
-    private Logger LOG=Logger.getLogger(getClass().getName());
+    private Logger LOG = LoggerFactory.getLogger(getClass().getName());
     
     private final static String PARAM_SMTPHOST="smtphost";
     private final static String PARAM_SENDER="sender";

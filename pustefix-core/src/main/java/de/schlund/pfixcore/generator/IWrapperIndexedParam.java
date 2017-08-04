@@ -22,7 +22,8 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Iterator;
 
-import org.apache.log4j.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import de.schlund.util.statuscodes.StatusCode;
 
@@ -52,7 +53,7 @@ public class IWrapperIndexedParam implements IWrapperParamDefinition, Comparable
     private HashMap<String, IWrapperParam> params = new HashMap<String, IWrapperParam>();
     private HashMap<String, IWrapperParam> errors = new HashMap<String, IWrapperParam>();
     // private String              prefix;
-    private Logger              LOG           = Logger.getLogger(this.getClass());
+    private Logger              LOG           = LoggerFactory.getLogger(this.getClass());
     
     public IWrapperIndexedParam(String name, boolean multiple, String type, boolean trim) {
         this.type     = type;

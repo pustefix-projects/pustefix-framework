@@ -27,7 +27,8 @@ import java.util.Properties;
 
 import javax.xml.transform.TransformerException;
 
-import org.apache.log4j.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.pustefixframework.config.contextxmlservice.PageFlowStepActionConditionConfig;
 import org.pustefixframework.config.contextxmlservice.PageFlowStepActionConfig;
 import org.pustefixframework.config.contextxmlservice.PageFlowStepConfig;
@@ -50,7 +51,7 @@ public class FlowStep {
     private ArrayList<String> tests_oncontinue = new ArrayList<String>();
     private PageFlowStepConfig config;
 
-    private final static Logger LOG = Logger.getLogger(DataDrivenPageFlow.class);
+    private final static Logger LOG = LoggerFactory.getLogger(DataDrivenPageFlow.class);
     public FlowStep(PageFlowStepConfig config) {
         this.config = config;
         

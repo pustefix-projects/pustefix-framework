@@ -31,7 +31,8 @@ import java.util.Set;
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 
-import org.apache.log4j.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.util.AntPathMatcher;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
@@ -44,7 +45,7 @@ import org.w3c.dom.NodeList;
  */
 public class ModuleDescriptor {
 
-    private final static Logger LOG = Logger.getLogger(ModuleDescriptor.class);
+    private final static Logger LOG = LoggerFactory.getLogger(ModuleDescriptor.class);
 
     private final static String DEPRECATED_NS_MODULE_DESCRIPTOR = "http://pustefix.sourceforge.net/moduledescriptor200702"; 
     private final static String NS_MODULE_DESCRIPTOR = "http://www.pustefix-framework.org/2008/namespace/module-descriptor";

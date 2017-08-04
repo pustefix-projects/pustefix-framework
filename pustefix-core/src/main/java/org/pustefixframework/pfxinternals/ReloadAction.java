@@ -13,14 +13,15 @@ import javax.management.ObjectName;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-import org.apache.log4j.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.pustefixframework.admin.mbeans.Admin;
 
 import de.schlund.pfixxml.serverutil.SessionAdmin;
 
 public class ReloadAction implements Action {
 
-    private Logger LOG = Logger.getLogger(ReloadAction.class);
+    private Logger LOG = LoggerFactory.getLogger(ReloadAction.class);
     
     private long startTime = System.currentTimeMillis();
     private long reloadTimeout = 1000 * 5;

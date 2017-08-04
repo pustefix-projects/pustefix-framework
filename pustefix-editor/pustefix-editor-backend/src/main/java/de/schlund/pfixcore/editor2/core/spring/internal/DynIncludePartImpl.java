@@ -24,13 +24,13 @@ import java.util.HashSet;
 
 import javax.xml.transform.TransformerException;
 
-import org.apache.log4j.Logger;
 import org.pustefixframework.editor.common.dom.IncludeFile;
 import org.pustefixframework.editor.common.dom.IncludePartThemeVariant;
 import org.pustefixframework.editor.common.dom.Theme;
 import org.pustefixframework.editor.common.exception.EditorIOException;
 import org.pustefixframework.editor.common.exception.EditorParsingException;
 import org.pustefixframework.editor.common.exception.EditorSecurityException;
+import org.slf4j.LoggerFactory;
 import org.w3c.dom.Element;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
@@ -170,7 +170,7 @@ public class DynIncludePartImpl extends CommonIncludePartImpl {
         } catch (TransformerException e) {
             // Should NEVER happen
             // So if it does, assume variant for theme is not existing
-            Logger.getLogger(this.getClass()).error("XPath error!", e);
+            LoggerFactory.getLogger(this.getClass()).error("XPath error!", e);
             return false;
         }
     }
@@ -180,7 +180,7 @@ public class DynIncludePartImpl extends CommonIncludePartImpl {
         synchronized (this.cache) {
             super.deleteThemeVariant(variant);
             
-            Logger.getLogger("LOGGER_EDITOR").warn(
+            LoggerFactory.getLogger("LOGGER_EDITOR").warn(
                     "DYNTXT: remote_access: " + variant.toString() + ": DELETED");
             
             // Remove from cache

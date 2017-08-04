@@ -8,11 +8,12 @@ import java.util.jar.JarFile;
 import java.util.jar.Manifest;
 import java.util.zip.ZipEntry;
 
-import org.apache.log4j.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 public class FrameworkInfo {
 
-    private final static Logger LOG = Logger.getLogger(FrameworkInfo.class);
+    private final static Logger LOG = LoggerFactory.getLogger(FrameworkInfo.class);
     
     private final static String version = detectVersion();
     private final static String scmUrl = detectSCMUrl();

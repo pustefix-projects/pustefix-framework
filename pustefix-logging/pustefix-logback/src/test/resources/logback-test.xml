@@ -1,0 +1,37 @@
+<configuration>
+
+  <newRule pattern="*/insertFromEnvironment"
+           actionClass="org.pustefixframework.logging.logback.InsertFromEnvironmentAction"/>
+  <insertFromEnvironment name="mylevel"/>
+
+  <define name="mode" class="org.pustefixframework.logging.logback.EnvironmentPropertyDefiner" scope="context">
+    <key>mode</key>
+  </define>
+
+  <property name="defaultLevel.prod" value="WARN"/>
+  <property name="defaultLevel.test" value="DEBUG"/>
+  <property name="defaultLevel" value="${defaultLevel.${mode}}"/>
+
+  <appender name="STDOUT" class="ch.qos.logback.core.ConsoleAppender">
+    <encoder>
+      <pattern>%d [%t] %-5p %c [%M\(\):%L] %marker - %m%n</pattern>
+    </encoder>
+  </appender>
+
+  <logger name="org.pustefixframework.logging.logback.PropertyConfigTest" level="${defaultLevel}" additivity="false">
+    <appender-ref ref="STDOUT"/>
+  </logger>
+
+  <logger name="${mode}" level="INFO" additivity="false">
+    <appender-ref ref="STDOUT"/>
+  </logger>
+
+  <logger name="mylogger" level="${mylevel}" additivity="false">
+    <appender-ref ref="STDOUT"/>
+  </logger>
+
+  <root level="WARN">
+    <appender-ref ref="STDOUT" />
+  </root>
+
+</configuration>

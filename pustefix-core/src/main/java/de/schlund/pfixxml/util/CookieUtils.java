@@ -23,7 +23,8 @@ import java.util.List;
 import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletRequest;
 
-import org.apache.log4j.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * Provides basic manual cookie parsing.
@@ -33,7 +34,7 @@ import org.apache.log4j.Logger;
  */
 public class CookieUtils {
     
-    private static Logger LOG = Logger.getLogger(CookieUtils.class);
+    private static Logger LOG = LoggerFactory.getLogger(CookieUtils.class);
     
     public static Cookie[] getCookies(HttpServletRequest request) {
         

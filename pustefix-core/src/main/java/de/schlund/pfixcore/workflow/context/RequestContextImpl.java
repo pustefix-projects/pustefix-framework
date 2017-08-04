@@ -31,7 +31,8 @@ import java.util.Set;
 import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpSession;
 
-import org.apache.log4j.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.pustefixframework.config.contextxmlservice.PageRequestConfig;
 import org.pustefixframework.config.contextxmlservice.PreserveParams;
 import org.pustefixframework.config.contextxmlservice.ProcessActionPageRequestConfig;
@@ -81,7 +82,7 @@ import de.schlund.util.statuscodes.StatusCode;
  */
 public class RequestContextImpl implements Cloneable, AuthorizationInterceptor {
 
-    private final static Logger LOG                 = Logger.getLogger(ContextImpl.class);
+    private final static Logger LOG                 = LoggerFactory.getLogger(ContextImpl.class);
     public final static String  PARAM_ACTION        = "__action";
     private final static String PARAM_JUMPPAGE      = "__jumptopage";
     private final static String PARAM_JUMPPAGEFLOW  = "__jumptopageflow";

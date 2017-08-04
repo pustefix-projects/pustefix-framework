@@ -17,12 +17,13 @@
  */
 package de.schlund.pfixcore.util;
 
-import org.apache.log4j.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 
 public final class Meminfo {
 
-    private final static Logger LOG = Logger.getLogger(Meminfo.class);
+    private final static Logger LOG = LoggerFactory.getLogger(Meminfo.class);
     
     private long last_used = -1L;
     

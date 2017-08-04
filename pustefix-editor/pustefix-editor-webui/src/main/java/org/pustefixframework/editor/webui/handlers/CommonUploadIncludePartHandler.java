@@ -18,7 +18,6 @@
 
 package org.pustefixframework.editor.webui.handlers;
 
-import org.apache.log4j.Logger;
 import org.pustefixframework.container.annotations.Inject;
 import org.pustefixframework.editor.common.exception.EditorException;
 import org.pustefixframework.editor.common.exception.EditorIncludeHasChangedException;
@@ -26,6 +25,7 @@ import org.pustefixframework.editor.generated.EditorStatusCodes;
 import org.pustefixframework.editor.webui.resources.CommonIncludesResource;
 import org.pustefixframework.editor.webui.resources.SessionResource;
 import org.pustefixframework.editor.webui.wrappers.CommonUploadIncludePart;
+import org.slf4j.LoggerFactory;
 import org.xml.sax.SAXException;
 
 import de.schlund.pfixcore.generator.IHandler;
@@ -71,7 +71,7 @@ public abstract class CommonUploadIncludePartHandler implements IHandler {
                 this.getResource(context).setContent(content, (input.getPreserveFormat() != null) ? !input.getPreserveFormat().booleanValue() : true, input.getHash());
                 input.setHash(this.getResource(context).getMD5());
             } catch (SAXException e) {
-                Logger.getLogger(this.getClass()).warn(e);
+                LoggerFactory.getLogger(this.getClass()).warn(e.getMessage(), e);
                 input
                         .addSCodeContent(EditorStatusCodes.INCLUDESUPLOAD_PARSE_ERR);
             } catch (EditorIncludeHasChangedException e) {

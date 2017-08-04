@@ -32,7 +32,8 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 
-import org.apache.log4j.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.pustefixframework.config.contextxmlservice.AbstractXMLServletConfig;
 import org.pustefixframework.config.contextxmlservice.ContextXMLServletConfig;
 import org.pustefixframework.config.contextxmlservice.PageRequestConfig;
@@ -72,7 +73,7 @@ import de.schlund.pfixxml.targets.PageInfo;
 
 public class PustefixContextXMLRequestHandler extends AbstractPustefixXMLRequestHandler {
    
-    private final static Logger LOG       = Logger.getLogger(PustefixContextXMLRequestHandler.class);
+    private final static Logger LOG       = LoggerFactory.getLogger(PustefixContextXMLRequestHandler.class);
     
     // private final static String ALREADY_SSL = "__CONTEXT_ALREADY_SSL__";
 

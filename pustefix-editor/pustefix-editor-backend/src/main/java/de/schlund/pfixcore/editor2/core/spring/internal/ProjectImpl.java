@@ -27,7 +27,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.TreeSet;
 
-import org.apache.log4j.Logger;
 import org.pustefixframework.editor.common.dom.AbstractProject;
 import org.pustefixframework.editor.common.dom.Image;
 import org.pustefixframework.editor.common.dom.IncludeFile;
@@ -39,6 +38,7 @@ import org.pustefixframework.editor.common.dom.Variant;
 import org.pustefixframework.editor.common.exception.EditorInitializationException;
 import org.pustefixframework.editor.common.exception.EditorParsingException;
 import org.pustefixframework.util.xml.DOMUtils;
+import org.slf4j.LoggerFactory;
 import org.springframework.util.xml.DomUtils;
 import org.w3c.dom.Element;
 
@@ -263,7 +263,7 @@ public class ProjectImpl extends AbstractProject {
         if (pinfos == null) {
             String msg = "Could not load PageInfo from PageTree for page "
                     + pageName + "! No target for page defined?";
-            Logger.getLogger(this.getClass()).warn(msg);
+            LoggerFactory.getLogger(this.getClass()).warn(msg);
         } else {
             for (Iterator<PageInfo> iter = pinfos.iterator(); iter.hasNext();) {
                 PageInfo pinfo = iter.next();
@@ -316,7 +316,7 @@ public class ProjectImpl extends AbstractProject {
             MutablePage page = iter.next();
             if (page == null) {
                 String err = "Page returned by iteration is null!";
-                Logger.getLogger(this.getClass()).error(err);
+                LoggerFactory.getLogger(this.getClass()).error(err);
             }
             page.setSubPages(subpages);
         }
@@ -458,7 +458,7 @@ public class ProjectImpl extends AbstractProject {
             } catch (EditorParsingException e) {
                 String msg = "Failed to get include part " + part + ":" + theme
                         + "@" + file + "!";
-                Logger.getLogger(this.getClass()).warn(msg, e);
+                LoggerFactory.getLogger(this.getClass()).warn(msg, e);
                 return null;
             }
         } else {

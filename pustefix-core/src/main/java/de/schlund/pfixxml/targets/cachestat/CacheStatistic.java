@@ -28,7 +28,8 @@ import java.util.Timer;
 import javax.management.MBeanServer;
 import javax.management.ObjectName;
 
-import org.apache.log4j.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.DisposableBean;
 import org.springframework.beans.factory.InitializingBean;
 import org.w3c.dom.Document;
@@ -61,7 +62,7 @@ import de.schlund.pfixxml.util.Xml;
  */
 public class CacheStatistic implements CacheStatisticMBean, InitializingBean, DisposableBean {
     
-    private final static Logger LOG = Logger.getLogger(CacheStatistic.class);
+    private final static Logger LOG = LoggerFactory.getLogger(CacheStatistic.class);
     private int queueSize = 0;
     private int queueTicks = 0;
     

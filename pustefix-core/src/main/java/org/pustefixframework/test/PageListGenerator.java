@@ -35,10 +35,6 @@ import javax.xml.xpath.XPathConstants;
 import javax.xml.xpath.XPathExpression;
 import javax.xml.xpath.XPathFactory;
 
-import org.apache.log4j.ConsoleAppender;
-import org.apache.log4j.Level;
-import org.apache.log4j.Logger;
-import org.apache.log4j.PatternLayout;
 import org.pustefixframework.util.LocaleUtils;
 import org.pustefixframework.util.xml.DOMUtils;
 import org.pustefixframework.util.xml.XPathUtils;
@@ -70,7 +66,7 @@ public class PageListGenerator {
     private LanguageInfo languageInfo;
     private Resource confFile;
 
-    public List<File> generate(File docroot, File outputDir, String mode) throws Exception {
+    public List<File> generate(File docroot, File outputDir, String mode, File logroot) throws Exception {
         
         if(!docroot.exists()) throw new Exception("TargetGenerator docroot " + docroot.getAbsolutePath() + " doesn't exist");
         
@@ -80,13 +76,9 @@ public class PageListGenerator {
         String projectConfigLocation = getProjectConfigLocation(webXml);
         if(projectConfigLocation == null) throw new Exception("Can't get project config location from web.xml");
         
-        Logger rootLogger = Logger.getRootLogger();
-        rootLogger.setLevel(Level.toLevel("error"));
-        ConsoleAppender rootAppender = new ConsoleAppender(new PatternLayout("[%p] %c - %m\n"));
-        rootLogger.addAppender(rootAppender);
-        
         Properties props = new Properties();
         props.setProperty("mode", mode);
+        props.setProperty("logroot", logroot.getAbsolutePath());
         EnvironmentProperties.setProperties(props);
         
         GlobalConfigurator.setDocroot(docroot.getPath());

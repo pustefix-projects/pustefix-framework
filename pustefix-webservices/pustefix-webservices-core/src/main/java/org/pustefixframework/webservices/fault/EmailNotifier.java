@@ -19,14 +19,15 @@ package org.pustefixframework.webservices.fault;
 
 import java.util.ArrayList;
 
-import org.apache.log4j.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import de.schlund.pfixcore.util.email.EmailSender;
 import de.schlund.pfixcore.util.email.EmailSenderException;
 
 public class EmailNotifier extends Thread {
 	
-	Logger LOG=Logger.getLogger(getClass().getName());
+	Logger LOG = LoggerFactory.getLogger(getClass().getName());
 	
 	private static EmailNotifier instance=new EmailNotifier();
 	

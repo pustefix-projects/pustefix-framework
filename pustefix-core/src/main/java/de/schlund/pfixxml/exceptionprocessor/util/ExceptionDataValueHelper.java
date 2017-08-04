@@ -26,7 +26,8 @@ import java.util.LinkedList;
 
 import javax.servlet.http.HttpSession;
 
-import org.apache.log4j.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.pustefixframework.container.spring.beans.PustefixWebApplicationContext;
 import org.springframework.beans.factory.NoSuchBeanDefinitionException;
 
@@ -41,7 +42,7 @@ import de.schlund.pfixxml.serverutil.SessionInfoStruct;
  * Window - Preferences - Java - Code Generation - Code and Comments
  */
 public class ExceptionDataValueHelper {
-    private final static Logger LOG = Logger.getLogger(ExceptionDataValueHelper.class);
+    private final static Logger LOG = LoggerFactory.getLogger(ExceptionDataValueHelper.class);
 	/**
 	 * @param exception
 	 * @param pfixReq

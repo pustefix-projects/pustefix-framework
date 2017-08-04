@@ -20,7 +20,8 @@ import java.io.UnsupportedEncodingException;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 
-import org.apache.log4j.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 
@@ -34,7 +35,7 @@ import org.w3c.dom.NodeList;
  */
 public class MD5Utils {
     
-    private final static Logger logger = Logger.getLogger(MD5Utils.class);
+    private final static Logger logger = LoggerFactory.getLogger(MD5Utils.class);
  
     
     public static final String CHARSET_UTF8 = "UTF-8";

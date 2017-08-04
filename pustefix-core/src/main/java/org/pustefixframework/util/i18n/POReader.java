@@ -31,14 +31,15 @@ import java.util.Map;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-import org.apache.log4j.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * Parser for gettext PO files.
  */
 public class POReader {
 
-    private Logger LOG = Logger.getLogger(POReader.class);
+    private Logger LOG = LoggerFactory.getLogger(POReader.class);
     
     private final Pattern PO_LINE_PATTERN = 
             Pattern.compile("^(msgctxt|msgid|msgid_plural|msgstr|msgstr\\[(\\d+)\\])?\\s*\"(.*)\"$");

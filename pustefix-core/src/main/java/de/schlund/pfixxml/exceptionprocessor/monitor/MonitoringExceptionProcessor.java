@@ -36,7 +36,8 @@ import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-import org.apache.log4j.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import de.schlund.pfixxml.PfixServletRequest;
 import de.schlund.pfixxml.exceptionprocessor.ExceptionConfig;
@@ -49,7 +50,7 @@ import de.schlund.pfixxml.exceptionprocessor.ExceptionProcessor;
  */
 public class MonitoringExceptionProcessor implements ExceptionProcessor, ErrorMonitoringMXBean {
 
-    private final static Logger LOG = Logger.getLogger(MonitoringExceptionProcessor.class);
+    private final static Logger LOG = LoggerFactory.getLogger(MonitoringExceptionProcessor.class);
     
     private ExceptionProcessor delegate;
     private TimedList<ErrorMessage> errors = new TimedList<ErrorMessage>(1000, 1000 * 60 * 30);

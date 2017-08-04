@@ -32,7 +32,8 @@ import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.transform.Templates;
 import javax.xml.transform.stream.StreamResult;
 
-import org.apache.log4j.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.pustefixframework.container.spring.http.UriProvidingHttpRequestHandler;
 import org.pustefixframework.pfxinternals.Action;
 import org.pustefixframework.pfxinternals.CacheCategory;
@@ -78,7 +79,7 @@ import de.schlund.pfixxml.util.XsltVersion;
 public class PustefixInternalsRequestHandler implements UriProvidingHttpRequestHandler, ServletContextAware, 
         ApplicationContextAware, PageContext {
     
-    private final static Logger LOG = Logger.getLogger(PustefixInternalsRequestHandler.class);
+    private final static Logger LOG = LoggerFactory.getLogger(PustefixInternalsRequestHandler.class);
     
     private final static String STYLESHEET = "module://pustefix-core/xsl/pfxinternals.xsl";
       
@@ -189,7 +190,7 @@ public class PustefixInternalsRequestHandler implements UriProvidingHttpRequestH
            Xslt.transform(doc, stvalue, params, new StreamResult(res.getOutputStream()));
         
        } catch(Exception x) {
-           LOG.error(x);
+           LOG.error(x.getMessage(), x);
            throw new ServletException("Error while creating info page", x);
        }
     }

@@ -30,7 +30,8 @@ import javax.xml.transform.TransformerFactory;
 import javax.xml.transform.dom.DOMSource;
 import javax.xml.transform.stream.StreamResult;
 
-import org.apache.log4j.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 
@@ -46,7 +47,7 @@ import de.schlund.pfixxml.util.XsltVersion;
  */
 public class IWrapperInfo {
 
-    private final static Logger                  LOG               = Logger.getLogger(IWrapperInfo.class);
+    private final static Logger                  LOG               = LoggerFactory.getLogger(IWrapperInfo.class);
     private static DocumentBuilderFactory  docBuilderFactory = DocumentBuilderFactory.newInstance();
     private static Map<Class<?>, Document> docCache          = new HashMap<Class<?>, Document>();
 

@@ -15,10 +15,6 @@ import javax.xml.xpath.XPathConstants;
 import javax.xml.xpath.XPathExpression;
 import javax.xml.xpath.XPathFactory;
 
-import org.apache.log4j.ConsoleAppender;
-import org.apache.log4j.Level;
-import org.apache.log4j.Logger;
-import org.apache.log4j.PatternLayout;
 import org.pustefixframework.container.spring.util.PustefixResourceLoader;
 import org.pustefixframework.util.i18n.POMessageSource;
 import org.pustefixframework.util.xml.DOMUtils;
@@ -65,11 +61,6 @@ public class TargetGeneratorRunner {
         
         String projectConfigLocation = getProjectConfigLocation(webXml);
         if(projectConfigLocation == null) throw new Exception("Can't get project config location from web.xml");
-        
-        Logger rootLogger = Logger.getRootLogger();
-        rootLogger.setLevel(Level.toLevel("error"));
-        ConsoleAppender rootAppender = new ConsoleAppender(new PatternLayout("[%p] %c - %m\n"));
-        rootLogger.addAppender(rootAppender);
         
         Properties props = new Properties();
         props.setProperty("mode", mode);

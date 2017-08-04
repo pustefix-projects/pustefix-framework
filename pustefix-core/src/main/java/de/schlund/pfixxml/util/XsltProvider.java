@@ -22,7 +22,8 @@ import java.lang.reflect.Field;
 import java.util.HashMap;
 import java.util.Map;
 
-import org.apache.log4j.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import com.icl.saxon.om.NamePool;
 
@@ -33,7 +34,7 @@ import de.schlund.pfixxml.config.EnvironmentProperties;
  */
 public class XsltProvider {
     
-    final static Logger LOG=Logger.getLogger(XsltProvider.class);
+    final static Logger LOG=LoggerFactory.getLogger(XsltProvider.class);
 
     final static String DETECT_SAXON1="com.icl.saxon.TransformerFactoryImpl";
     final static String DETECT_SAXON2="net.sf.saxon.TransformerFactoryImpl";

@@ -21,7 +21,8 @@ package de.schlund.pfixcore.workflow;
 
 import java.util.HashMap;
 
-import org.apache.log4j.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.pustefixframework.config.contextxmlservice.ContextConfig;
 
 import de.schlund.pfixxml.Variant;
@@ -39,7 +40,7 @@ import de.schlund.pfixxml.Variant;
 public class VariantManager {
     private ContextConfig           contextConfig;
     private HashMap<String, String> variantpagecache = new HashMap<String, String>();
-    private Logger                  LOG              = Logger.getLogger(this.getClass());
+    private Logger                  LOG              = LoggerFactory.getLogger(this.getClass());
     
     public VariantManager(ContextConfig config) {
         contextConfig = config;

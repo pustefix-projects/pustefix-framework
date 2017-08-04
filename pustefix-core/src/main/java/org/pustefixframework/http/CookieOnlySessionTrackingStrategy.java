@@ -11,7 +11,8 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 
-import org.apache.log4j.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import de.schlund.pfixxml.PfixServletRequest;
 import de.schlund.pfixxml.PfixServletRequestImpl;
@@ -23,7 +24,7 @@ import de.schlund.pfixxml.util.CookieUtils;
 
 public class CookieOnlySessionTrackingStrategy implements SessionTrackingStrategy {
 
-    private Logger LOGGER_SESSION = Logger.getLogger("LOGGER_SESSION");
+    private Logger LOGGER_SESSION = LoggerFactory.getLogger("LOGGER_SESSION");
     
     private static final String STORED_REQUEST = "__STORED_PFIXSERVLETREQUEST__";
     static final String COOKIE_SESSION_SSL = "_PFXSSL_";

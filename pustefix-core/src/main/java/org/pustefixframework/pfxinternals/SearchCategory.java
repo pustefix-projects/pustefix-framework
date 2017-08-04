@@ -8,7 +8,6 @@ import java.util.regex.PatternSyntaxException;
 
 import javax.servlet.http.HttpServletRequest;
 
-import org.pustefixframework.pfxinternals.FullTextSearch;
 import org.w3c.dom.Element;
 
 import de.schlund.pfixcore.util.ModuleInfo;

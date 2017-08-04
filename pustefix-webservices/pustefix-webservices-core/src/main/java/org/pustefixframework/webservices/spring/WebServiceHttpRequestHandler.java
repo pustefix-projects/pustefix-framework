@@ -30,7 +30,6 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 
-import org.apache.log4j.Logger;
 import org.pustefixframework.container.spring.http.UriProvidingHttpRequestHandler;
 import org.pustefixframework.http.SessionUtils;
 import org.pustefixframework.util.BytecodeAPIUtils;
@@ -43,6 +42,8 @@ import org.pustefixframework.webservices.ServiceStubGenerator;
 import org.pustefixframework.webservices.config.Configuration;
 import org.pustefixframework.webservices.config.ConfigurationReader;
 import org.pustefixframework.webservices.config.ServiceConfig;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.ApplicationContextAware;
@@ -58,7 +59,7 @@ import de.schlund.pfixxml.resources.ResourceUtil;
  */
 public class WebServiceHttpRequestHandler implements UriProvidingHttpRequestHandler, InitializingBean, ServletContextAware, ApplicationContextAware {
 
-    private Logger LOG = Logger.getLogger(WebServiceHttpRequestHandler.class.getName());
+    private Logger LOG = LoggerFactory.getLogger(WebServiceHttpRequestHandler.class.getName());
 
     private ServiceRuntime runtime;
 

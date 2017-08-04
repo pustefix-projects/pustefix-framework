@@ -28,7 +28,8 @@ import java.util.Set;
 import java.util.TreeMap;
 import java.util.TreeSet;
 
-import org.apache.log4j.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.pustefixframework.config.contextxmlservice.IWrapperConfig;
 import org.pustefixframework.config.contextxmlservice.ProcessActionStateConfig;
 import org.pustefixframework.config.contextxmlservice.StateConfig;
@@ -58,7 +59,7 @@ import de.schlund.pfixxml.resources.ResourceUtil;
  */
 
 public class IWrapperContainerImpl implements IWrapperContainer {
-    protected Logger                  LOG              = Logger.getLogger(this.getClass());
+    protected Logger                  LOG              = LoggerFactory.getLogger(this.getClass());
     private TreeMap<String, IWrapper> wrappers         = new TreeMap<String, IWrapper>();
     private Set<IWrapper>             allwrappers      = new TreeSet<IWrapper>();
     private Set<IWrapper>             allsubmit        = new TreeSet<IWrapper>();

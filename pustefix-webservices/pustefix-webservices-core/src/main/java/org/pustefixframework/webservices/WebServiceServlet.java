@@ -29,9 +29,10 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-import org.apache.log4j.Logger;
 import org.pustefixframework.webservices.config.Configuration;
 import org.pustefixframework.webservices.config.ConfigurationReader;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import de.schlund.pfixxml.resources.FileResource;
 import de.schlund.pfixxml.resources.ResourceUtil;
@@ -45,7 +46,7 @@ public class WebServiceServlet extends HttpServlet {
 
     private static final long serialVersionUID = -5686011510105975584L;
 
-    private Logger LOG = Logger.getLogger(getClass().getName());
+    private Logger LOG = LoggerFactory.getLogger(getClass().getName());
 
     private static Object initLock = new Object();
     private ServiceRuntime runtime;

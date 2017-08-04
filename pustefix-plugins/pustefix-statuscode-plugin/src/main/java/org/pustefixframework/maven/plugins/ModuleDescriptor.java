@@ -31,7 +31,7 @@ import java.util.Set;
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 
-import org.apache.log4j.Logger;
+import org.apache.maven.plugin.logging.Log;
 import org.springframework.util.AntPathMatcher;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
@@ -43,8 +43,6 @@ import org.w3c.dom.NodeList;
  *
  */
 public class ModuleDescriptor {
-
-    private final static Logger LOG = Logger.getLogger(ModuleDescriptor.class);
 
     private final static String DEPRECATED_NS_MODULE_DESCRIPTOR = "http://pustefix.sourceforge.net/moduledescriptor200702"; 
     private final static String NS_MODULE_DESCRIPTOR = "http://www.pustefix-framework.org/2008/namespace/module-descriptor";
@@ -185,7 +183,7 @@ public class ModuleDescriptor {
         return "MODULE " + name;
     }
 
-    public static ModuleDescriptor read(URL url) throws Exception {
+    public static ModuleDescriptor read(URL url, Log log) throws Exception {
         ModuleDescriptor moduleInfo;
         DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
         factory.setNamespaceAware(true);
@@ -203,7 +201,7 @@ public class ModuleDescriptor {
                DEPRECATED_NS_MODULE_DESCRIPTOR.equals(root.getAttribute("xmlns"))) {
                 String msg = "[DEPRECATED] Module descriptor file '" + url.toString() + "' uses deprecated namespace '" + 
                         DEPRECATED_NS_MODULE_DESCRIPTOR + "'. It should be replaced by '" + NS_MODULE_DESCRIPTOR + "'.";
-                LOG.warn(msg);
+                log.warn(msg);
             }
             Element nameElem = getSingleChildElement(root, "module-name", true);
             String name = nameElem.getTextContent().trim();

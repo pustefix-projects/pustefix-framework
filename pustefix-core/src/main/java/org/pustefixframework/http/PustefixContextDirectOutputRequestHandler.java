@@ -29,7 +29,8 @@ import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 
-import org.apache.log4j.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.pustefixframework.config.contextxmlservice.ServletManagerConfig;
 import org.pustefixframework.config.directoutputservice.DirectOutputPageRequestConfig;
 import org.pustefixframework.config.directoutputservice.DirectOutputServiceConfig;
@@ -74,7 +75,7 @@ import de.schlund.pfixxml.resources.FileResource;
  */
 public class PustefixContextDirectOutputRequestHandler extends AbstractPustefixRequestHandler implements PageProvider {
     
-    private Logger                    LOG       = Logger.getLogger(this.getClass());
+    private Logger                    LOG       = LoggerFactory.getLogger(this.getClass());
     private DirectOutputServiceConfig config;
     private Map<String, DirectOutputState> stateMap;
     

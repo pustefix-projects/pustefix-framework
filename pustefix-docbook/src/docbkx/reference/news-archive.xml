@@ -783,4 +783,129 @@
     <para>Added Eclipse m2e lifecycle mappings for Pustefix plugins to improve Eclipse IDE integration of Pustefix projects.</para>
   </section>
 
+  <section xml:id="news.0_20_0">
+    <title>What's new in Pustefix 0.20.0</title>
+    <para>
+      Added support for custom page URL paths: you can group pages using a common path prefix (so-called page <literal>page groups</literal>,
+      see <xref linkend="configuration.sitemap"/>) or map pageflow names to a URL path prefix.
+    </para>
+  </section>
+
+  <section xml:id="news.0_20_1">
+    <title>What's new in Pustefix 0.20.1</title>
+    <para>
+      Added a DOM history in development mode, i.e. on the DOM view page, you can not only view last DOM but select an older version
+      from a list of the previously used DOMs.
+    </para>
+    <para>
+      Added support for headless rendering of Pustefix pages, i.e. you can programmatically do the rendering of a page or part
+      and process the resulting content on the server side.
+    </para>
+  </section>
+
+  <section xml:id="news.0_20_14">
+    <title>What's new in Pustefix 0.20.14</title>
+    <para>
+      Pustefix backported some useful XPath 2.0 functions to make them avaiable with XSLT 1: <literal>pfx:encode-for-uri()</literal>,
+      <literal>pfx:string-length()</literal> and <literal>pfx:substring()</literal> (see <xref linkend="xslt.extensions.xpathfunctions.string"/>).
+    </para>
+    <para>
+      Extended the <literal>pfx:button</literal> template to support the creation of REST-style links using the new <literal>@path</literal> attribute,
+      or the <literal>pfx:path</literal>/<literal>pfx:segment</literal> elements (see <xref linkend="xslt.pfx.button"/>).
+    </para>
+    <para>
+      Added the new method <literal>getModelAndView()</literal> to the <literal>ResultDocument</literal> class. This enables you to retrieve
+      the <literal>ModelAndView</literal> instance created by Spring MVC when using <literal>RequestMappings</literal>, e.g. when overriding the
+      <literal>getDocument()</literal> method of a <literal>State</literal> and you need to check for model changes.
+    </para>
+  </section>
+
+  <section xml:id="news.0_20_19">
+    <title>What's new in Pustefix 0.20.19</title>
+    <para>
+      Added <literal>&lt;pfx:checkmessage&gt;</literal> and <literal>&lt;pfx:checknomessage&gt;</literal> tags for checking if a <literal>MessageSource</literal>
+      message is existing or not (see <xref linkend="xslt.messages.tags"/>).
+    </para>
+    <para>
+      Added support for configuring the Spring <literal>MessageSource</literal> in <literal>project.xml</literal>, which makes it available
+      during page pre-generation too (see <xref linkend="xslt.messages.configuration"/>).
+    </para>
+  </section>
+
+  <section xml:id="news.0_20_20">
+    <title>What's new in Pustefix 0.20.20</title>
+    <para>
+      Added support for markup in message arguments and strings (unescaped rendering is enable by setting the new <literal>&lt;pfx:message&gt;</literal>
+      attribute <literal>disable-output-escaping</literal> to <literal>yes</literal> (see <xref linkend="xslt.messages.tags"/>).
+   </para>
+  </section>
+
+  <section xml:id="news.0_20_25">
+    <title>What's new in Pustefix 0.20.25</title>
+    <para>
+      Added support for configuring if a matching <literal>RequestMapping</literal> method is call before/after <literal>IHandlers</literal> are processed.
+      By default the <literal>RequestMapping</literal> is called first. This behaviour can be changed by setting <literal>&lt;input premvc="true"/&gt;</literal>
+      (see <xref linkend="configuration.servlet.contextxml.input"/>).
+   </para>
+  </section>
+
+  <section xml:id="news.0_20_26">
+    <title>What's new in Pustefix 0.20.26</title>
+    <para>
+      Added multilanguage support for projects without tenants, i.e. specifying multiple supported languages in <literal>project.xml</literal>, an own version
+      of a page per language can be generated (like it's already done for multitenant projects with multiple languages).
+    </para>
+    <para>
+      Added support for the Spring <literal>Locale</literal> mechanism, i.e. by default Pustefix makes its currently set language available via Spring's
+      <literal>LocaleResolver</literal> mechanism, e.g. for passing the <literal>Locale</literal> to request dispatching methods.
+    </para>
+  </section>
+
+  <section xml:id="news.0_20_27">
+    <title>What's new in Pustefix 0.20.27</title>
+    <para>
+      Added support for session tracking modes introduced with Servlet API 3.0, i.e. the Pustefix <literal>SessionTrackingStrategy</literal> now is derived
+      from the session tracking mode setting done in <literal>web.xml</literal> (or directly via Servlet API). The <literal>&lt;session-tracking-strategy&gt;</literal>
+      configuration element becomes deprecated and should be replaced by according <literal>&lt;tracking-mode&gt;</literal> settings in <literal>web.xml</literal>
+      (by default <literal>COOKIE</literal> and <literal>URL</literal> tracking modes are set, which corresponds to the Pustefix <literal>COOKIE</literal>
+      session tracking strategy using cookies with URL fallback, if you want <literal>COOKIEONLY</literal> strategy, you have to set the <literal>COOKIE</literal> tracking mode only).
+   </para>
+  </section>
+
+  <section xml:id="news.0_20_28">
+    <title>What's new in Pustefix 0.20.28</title>
+    <para>
+      Added support for setting the expiration time of static resources. You can set a default time for all resources or specify it per content type.
+      The setting is done within the <literal>&lt;static&gt;</literal> element of the project configuration file
+      (see <xref linkend="configuration.project.projectxml"/>).
+    </para>
+    <para>
+      Pustefix now can generate CSP nonce randoms for explicitely permitting inline script, i.e. if you add an according response header, e.g.
+      <literal>&lt;prop name="responseheader.Content-Security-Policy"&gt;script-src 'self' 'nonce-[NONCE]';&lt;/prop&gt;</literal>, Pustefix will
+      replace <literal>[NONCE]</literal> by a secure random value, which will be automatically added as <literal>nonce</literal> attribute to
+      the <literal>script</literal> elements of a page (if using the <literal>&lt;pfx:script&gt;</literal> tag). The value will be also accessible
+      as <literal>nonce</literal> XSLT parameter.
+    </para>
+  </section>
+
+  <section xml:id="news.0_20_29">
+    <title>What's new in Pustefix 0.20.29</title>
+    <para>
+      Added support for generating <literal>lastmod</literal> elements into the searchengine sitemap
+      (see <link xlink:href="http://www.sitemaps.org/protocol.html">Sitemaps protocol specification</link>). Therefor you have
+      to add according <literal>lastmod</literal> attributes to the <literal>page</literal> or <literal>alt</literal> elements within
+      the Pustefix <literal>sitemap.xml</literal> configuration file (see <xref linkend="configuration.sitemap"/>).
+    </para>
+  </section>
+
+  <section xml:id="news.0_20_31">
+    <title>What's new in Pustefix 0.20.31</title>
+    <para>
+      Pustefix states acting as Spring MVC controllers (<xref linkend="springmvc.controllerstates"/>) now support redirecting
+      using redirect prefixes, i.e. a request mapped method can return a view name prefixed with <literal>redirect:</literal>
+      or you can set an according view name at the <literal>ModelAndView</literal> object. The redirect will be handled by Spring,
+      thus URI template variables are working too.
+    </para>
+  </section>
+
 </chapter>

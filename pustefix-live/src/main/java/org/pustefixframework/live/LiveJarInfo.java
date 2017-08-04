@@ -27,7 +27,6 @@ import java.net.URLConnection;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -44,7 +43,8 @@ import javax.xml.transform.TransformerFactory;
 import javax.xml.transform.dom.DOMSource;
 import javax.xml.transform.stream.StreamResult;
 
-import org.apache.log4j.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.Node;
@@ -54,7 +54,7 @@ import org.w3c.dom.Node;
  */
 public class LiveJarInfo {
 
-    private static Logger LOG = Logger.getLogger(LiveJarInfo.class);
+    private static Logger LOG = LoggerFactory.getLogger(LiveJarInfo.class);
     
     public static final String[] DEFAULT_DOCROOT_LIVE_EXCLUSIONS = { 
             File.separator + "WEB-INF" + File.separator + "web.xml",

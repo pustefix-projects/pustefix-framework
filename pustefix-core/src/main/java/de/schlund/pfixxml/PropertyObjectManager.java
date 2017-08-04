@@ -22,7 +22,8 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.WeakHashMap;
 
-import org.apache.log4j.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * This class manages shared objects, which are build from properties. 
@@ -31,7 +32,7 @@ import org.apache.log4j.Logger;
  */
 public class PropertyObjectManager {
 
-    private        Logger LOG = Logger.getLogger(this.getClass());
+    private        Logger LOG = LoggerFactory.getLogger(this.getClass());
     private static PropertyObjectManager instance=new PropertyObjectManager();
     private        Map<Object, HashMap<Class<? extends ConfigurableObject>, ConfigurableObject>> confMaps;
     

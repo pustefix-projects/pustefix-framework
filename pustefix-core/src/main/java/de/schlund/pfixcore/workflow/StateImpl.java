@@ -18,7 +18,8 @@
 
 package de.schlund.pfixcore.workflow;
 
-import org.apache.log4j.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.pustefixframework.config.contextxmlservice.StateConfig;
 import org.pustefixframework.web.mvc.internal.ControllerStateAdapter;
 import org.springframework.ui.ModelMap;
@@ -35,7 +36,7 @@ import de.schlund.pfixxml.ResultDocument;
 
 public abstract class StateImpl implements ConfigurableState {
   
-    protected final Logger CAT = Logger.getLogger(this.getClass());
+    protected final Logger CAT = LoggerFactory.getLogger(this.getClass());
 
     public  static final String PROP_INSERTCR = "insertcr";
     

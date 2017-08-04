@@ -30,7 +30,8 @@ import java.util.Map.Entry;
 import java.util.Properties;
 import java.util.Set;
 
-import org.apache.log4j.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.pustefixframework.config.contextxmlservice.ContextConfig;
 import org.pustefixframework.config.contextxmlservice.ContextResourceConfig;
 import org.pustefixframework.config.contextxmlservice.PreserveParams;
@@ -61,7 +62,7 @@ public class ContextConfigImpl implements ContextConfig {
     // Caution: This implementation is not thread-safe. However, it
     // does not have to be as a configuration is initialized only once.
     
-    private final static Logger LOG = Logger.getLogger(ContextConfigImpl.class);
+    private final static Logger LOG = LoggerFactory.getLogger(ContextConfigImpl.class);
     private Class<? extends State> defaultStateClass = null;
     private String defaultStateParentBeanName;
     private State defaultState = null;

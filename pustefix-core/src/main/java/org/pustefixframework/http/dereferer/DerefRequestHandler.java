@@ -26,7 +26,8 @@ import java.net.URLEncoder;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-import org.apache.log4j.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.pustefixframework.config.contextxmlservice.ServletManagerConfig;
 import org.pustefixframework.http.AbstractPustefixRequestHandler;
 
@@ -45,8 +46,8 @@ import de.schlund.pfixxml.util.Base64Utils;
 
 public class DerefRequestHandler extends AbstractPustefixRequestHandler {
     
-    protected final static Logger   DEREFLOG        = Logger.getLogger("LOGGER_DEREF");
-    protected final static Logger   LOG             = Logger.getLogger(DerefRequestHandler.class);
+    protected final static Logger   DEREFLOG        = LoggerFactory.getLogger("LOGGER_DEREF");
+    protected final static Logger   LOG             = LoggerFactory.getLogger(DerefRequestHandler.class);
     
     private long validTime;
     private boolean mustSign;

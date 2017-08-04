@@ -23,7 +23,8 @@ import java.util.List;
 import javax.xml.transform.ErrorListener;
 import javax.xml.transform.TransformerException;
 
-import org.apache.log4j.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * ErrorListener logging out all TransformerExceptions.
@@ -31,7 +32,7 @@ import org.apache.log4j.Logger;
  */
 public class ErrorListenerBase implements ErrorListener {
 
-    private Logger LOG = Logger.getLogger(ErrorListenerBase.class);
+    private Logger LOG = LoggerFactory.getLogger(ErrorListenerBase.class);
     
     private List<TransformerException> errors = new ArrayList<TransformerException>();
     

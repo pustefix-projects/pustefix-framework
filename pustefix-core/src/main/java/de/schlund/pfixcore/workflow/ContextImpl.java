@@ -28,7 +28,8 @@ import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSessionBindingEvent;
 import javax.servlet.http.HttpSessionBindingListener;
 
-import org.apache.log4j.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.pustefixframework.config.contextxmlservice.ContextConfig;
 import org.pustefixframework.config.contextxmlservice.PageRequestConfig;
 import org.pustefixframework.config.project.ProjectInfo;
@@ -60,7 +61,7 @@ import de.schlund.util.statuscodes.StatusCode;
 
 public class ContextImpl implements AccessibilityChecker, ExtendedContext, TokenManager, HttpSessionBindingListener {
     
-    private Logger LOG = Logger.getLogger(ContextImpl.class);
+    private Logger LOG = LoggerFactory.getLogger(ContextImpl.class);
 
     private SessionContextImpl              sessioncontext;
     private ServerContextImpl               servercontext;

@@ -24,7 +24,6 @@ import java.util.Iterator;
 import java.util.Set;
 import java.util.TreeSet;
 
-import org.apache.log4j.Logger;
 import org.pustefixframework.editor.common.dom.Image;
 import org.pustefixframework.editor.common.dom.IncludePart;
 import org.pustefixframework.editor.common.dom.IncludePartThemeVariant;
@@ -33,6 +32,7 @@ import org.pustefixframework.editor.common.dom.Project;
 import org.pustefixframework.editor.common.dom.Theme;
 import org.pustefixframework.editor.common.dom.Variant;
 import org.pustefixframework.editor.common.exception.EditorParsingException;
+import org.slf4j.LoggerFactory;
 
 import de.schlund.pfixcore.editor2.core.spring.BackupService;
 import de.schlund.pfixcore.editor2.core.spring.ConfigurationService;
@@ -227,7 +227,7 @@ public class IncludePartThemeVariantImpl extends
 
     @Override
     protected void writeChangeLog() {
-        Logger.getLogger("LOGGER_EDITOR").warn(
+        LoggerFactory.getLogger("LOGGER_EDITOR").warn(
                 "TXT: remote_access: "
                         + this.toString());
     }

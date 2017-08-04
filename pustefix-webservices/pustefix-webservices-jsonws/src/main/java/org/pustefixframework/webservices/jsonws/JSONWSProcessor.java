@@ -31,7 +31,6 @@ import java.util.List;
 import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletResponse;
 
-import org.apache.log4j.Logger;
 import org.pustefixframework.webservices.ProcessingInfo;
 import org.pustefixframework.webservices.ServiceCallContext;
 import org.pustefixframework.webservices.ServiceDescriptor;
@@ -47,6 +46,8 @@ import org.pustefixframework.webservices.fault.FaultHandler;
 import org.pustefixframework.webservices.json.JSONArray;
 import org.pustefixframework.webservices.json.JSONObject;
 import org.pustefixframework.webservices.json.parser.JSONParser;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import de.schlund.pfixcore.beans.BeanDescriptorFactory;
 import de.schlund.pfixcore.beans.InitException;
@@ -59,7 +60,7 @@ import de.schlund.pfixcore.workflow.ContextImpl;
  */
 public class JSONWSProcessor implements ServiceProcessor {
 
-    private Logger LOG=Logger.getLogger(JSONWSProcessor.class);
+    private Logger LOG = LoggerFactory.getLogger(JSONWSProcessor.class);
     
     private BeanDescriptorFactory beanDescFactory;
     private SerializerRegistry serializerRegistry;
@@ -229,7 +230,7 @@ public class JSONWSProcessor implements ServiceProcessor {
                     if(LOG.isDebugEnabled()) LOG.debug("Serialization: "+(t2-t1)+"ms");
                 } else {
                     //Handle error
-                    LOG.error(error,error);
+                    LOG.error(error.getMessage(), error);
                     try {LOG.error(req.dump());} catch(Exception x) {LOG.error("No dump available",x);}
                     ServiceCallContext callContext=ServiceCallContext.getCurrentContext();
                     Fault fault=new Fault(serviceName,callContext.getServiceRequest(),
@@ -250,7 +251,7 @@ public class JSONWSProcessor implements ServiceProcessor {
             }
         } catch (Exception e) {
             ServiceException se=new ServiceException("Error while processing service request.",e);
-            LOG.error(se);
+            LOG.error(se.getMessage(), se);
             try {LOG.error(req.dump());} catch(Exception x) {LOG.error("No dump available",x);}
             throw se;
         } finally {

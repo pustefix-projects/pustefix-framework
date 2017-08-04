@@ -22,7 +22,8 @@ package de.schlund.pfixcore.workflow;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationTargetException;
 
-import org.apache.log4j.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * @author: jtl
@@ -31,7 +32,7 @@ import org.apache.log4j.Logger;
 
 public class FlowStepActionFactory {
     
-    private final static Logger LOG = Logger.getLogger(FlowStepActionFactory.class);
+    private final static Logger LOG = LoggerFactory.getLogger(FlowStepActionFactory.class);
     private final static FlowStepActionFactory instance = new FlowStepActionFactory();
     private final static String JUMPTO = "jumpto";
     private final static String SETFLOW = "setflow";

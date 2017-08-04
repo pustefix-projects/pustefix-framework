@@ -43,7 +43,8 @@ import javax.xml.transform.dom.DOMSource;
 import javax.xml.transform.sax.SAXSource;
 import javax.xml.transform.stream.StreamResult;
 
-import org.apache.log4j.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.w3c.dom.Comment;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
@@ -63,7 +64,7 @@ import de.schlund.pfixxml.resources.Resource;
 
 public class Xml {
     
-    static final Logger               CAT     = Logger.getLogger(Xml.class);
+    static final Logger               CAT     = LoggerFactory.getLogger(Xml.class);
     
     private static final String DEFAULT_XMLREADER = "com.sun.org.apache.xerces.internal.parsers.SAXParser";
     private static final String DEFAULT_DOCUMENTBUILDERFACTORY = "com.sun.org.apache.xerces.internal.jaxp.DocumentBuilderFactoryImpl";

@@ -51,7 +51,8 @@ import javax.xml.transform.TransformerFactoryConfigurationError;
 import javax.xml.transform.dom.DOMSource;
 import javax.xml.transform.stream.StreamResult;
 
-import org.apache.log4j.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.pustefixframework.config.contextxmlservice.AbstractXMLServletConfig;
 import org.pustefixframework.config.contextxmlservice.ServletManagerConfig;
 import org.pustefixframework.container.spring.http.PustefixHandlerMapping;
@@ -185,8 +186,8 @@ public abstract class AbstractPustefixXMLRequestHandler extends AbstractPustefix
     private boolean renderExternal = false;
     private boolean includePartsEditableByDefault = true;
     
-    private final static Logger LOGGER_TRAIL = Logger.getLogger("LOGGER_TRAIL");
-    private final static Logger LOGGER       = Logger.getLogger(AbstractPustefixXMLRequestHandler.class);
+    private final static Logger LOGGER_TRAIL = LoggerFactory.getLogger("LOGGER_TRAIL");
+    private final static Logger LOGGER       = LoggerFactory.getLogger(AbstractPustefixXMLRequestHandler.class);
     
     private AdditionalTrailInfo additionalTrailInfo = null;
     

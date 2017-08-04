@@ -343,6 +343,7 @@
     <module>pustefix-editor</module>
     <module>pustefix-docbook</module>
     <module>pustefix-live</module>
+    <module>pustefix-logging</module>
     <module>pustefix-tutorial</module>
     <module>pustefix-agent</module>
     <module>pustefix-cdi</module>

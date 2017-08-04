@@ -124,7 +124,6 @@ public class DocumentCache {
         try {
             xmlreader.parse(new InputSource(f.getInputStream()));
         } catch (Exception e) {
-//            org.apache.log4j.Logger.getLogger(DocumentCache.class).warn("bad xml: " + f);
             return new Vector<Document>();
         }
         return handler.getScannedDocumentsAsVector();
