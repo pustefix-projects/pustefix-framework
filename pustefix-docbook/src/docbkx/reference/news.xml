@@ -3,7 +3,7 @@
   xmlns:xi="http://www.w3.org/2001/XInclude" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
   xsi:schemaLocation="http://docbook.org/ns/docbook http://www.docbook.org/xml/5.0CR7/xsd/docbook.xsd"
 >
-  <title>What's new in Pustefix 0.21.x</title>
+  <title>What's new in Pustefix 0.22.x</title>
   
   <para>This section lists the new features and enhancements of the current Pustefix release line. 
         If you're interested in new features which already became available with the prior Pustefix release line,
@@ -11,12 +11,16 @@
 
   <para>If you're migrating an existing appliation to the new Pustefix version, you should have a look at <xref linkend="upgrade"/>.</para>
 
-  <section xml:id="news.0_21_0">
-    <title>What's new in Pustefix 0.21.0</title>
+  <section xml:id="news.0_22_0">
+    <title>What's new in Pustefix 0.22.0</title>
     <para>
-      Pustefix now uses SLF4J as logging framework. It still supports the, meanwhile deprecated, first version of Log4j, but
-      you're recommended to switch over to Logback or Log4j 2 instead. For both frameworks Pustefix provides some useful extensions
-      (see <xref linkend="configuration.logging"/> and <xref linkend="upgrade.0_20_to_0_21"/> for details).
+      Added support for Spring 5. The minimum requirement now is Spring version 4.3.
+    </para>
+    <para>
+      Pustefix states used as Spring MVC controllers with <literal>RequestMappings</literal> now work either with the deprecated
+      Spring <literal>WebArgumentResolvers</literal>, or with <literal>HandlerMethodArgumentResolvers</literal>. Using Spring 4.3
+      both are supported by Pustefix, since Spring 5 <literal>HandlerMethodArgumentResolvers</literal> are required
+      (see <xref linkend="springmvc.annotationmethodhandleradapter"/> and <xref linkend="springmvc.requestmappinghandleradapter"/>).
     </para>
   </section>
 

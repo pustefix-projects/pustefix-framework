@@ -18,13 +18,31 @@
   </section>
 
   <section xml:id="springmvc.annotationmethodhandleradapter">
-    <title>AnnotationMethodHandlerAdapter customization</title>
-    <para>Spring MVC's request mapping and parameter binding can be customized by configuring the responsible <literal>AnnotationMethodHandlerAdapter</literal> instance. Pustefix by default registers such an instance, which can be customized by adding a bean definition of type <literal>org.pustefixframework.web.mvc.AnnotationMethodHandlerAdapterConfig</literal> to the Spring configuration. See the following example which configures two argument resolvers:
+    <title>AnnotationMethodHandlerAdapter customization (deprecated)</title>
+    <para>Spring MVC's request mapping and parameter binding (before Spring 5) can be customized by configuring the responsible <literal>AnnotationMethodHandlerAdapter</literal> instance. Pustefix by default registers such an instance, which can be customized by adding a bean definition of type <literal>org.pustefixframework.web.mvc.AnnotationMethodHandlerAdapterConfig</literal> to the Spring configuration. See the following example which configures two argument resolvers:
     </para>
 <programlisting language="xml"><![CDATA[<bean class="org.pustefixframework.web.mvc.AnnotationMethodHandlerAdapterConfig">
    <property name="customArgumentResolvers">
       <list>
          <bean class="org.springframework.data.web.PageableArgumentResolver"/>
+         <bean class="org.pustefixframework.web.mvc.filter.FilterResolver"/>
+      </list>
+   </property>
+</bean>]]></programlisting>
+    <para>
+      If you're still using Spring 4.3, but you already want to use Spring's <literal>RequestMappingHandlerAdapter</literal>, you can do so
+      by adding a custom <literal>RequestMappingHandlerAdapterConfig</literal> (see <xref linkend="springmvc.requestmappinghandleradapter"/>). 
+    </para>
+  </section>
+
+  <section xml:id="springmvc.requestmappinghandleradapter">
+    <title>RequestMappingHandlerAdapter customization</title>
+    <para>Spring MVC's request mapping and parameter binding can be customized by configuring the responsible <literal>RequestMappingHandlerAdapter</literal> instance. Pustefix by default registers such an instance, which can be customized by adding a bean definition of type <literal>org.pustefixframework.web.mvc.RequestMappingHandlerAdapterConfig</literal> to the Spring configuration. See the following example which configures two argument resolvers:
+    </para>
+<programlisting language="xml"><![CDATA[<bean class="org.pustefixframework.web.mvc.RequestMappingHandlerAdapterConfig">
+   <property name="customArgumentResolvers">
+      <list>
+         <bean class="org.springframework.data.web.PageableHandlerMethodArgumentResolver"/>
          <bean class="org.pustefixframework.web.mvc.filter.FilterResolver"/>
       </list>
    </property>

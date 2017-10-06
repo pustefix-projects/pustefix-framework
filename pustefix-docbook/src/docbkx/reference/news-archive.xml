@@ -908,4 +908,13 @@
     </para>
   </section>
 
+  <section xml:id="news.0_21_0">
+    <title>What's new in Pustefix 0.21.0</title>
+    <para>
+      Pustefix now uses SLF4J as logging framework. It still supports the, meanwhile deprecated, first version of Log4j, but
+      you're recommended to switch over to Logback or Log4j 2 instead. For both frameworks Pustefix provides some useful extensions
+      (see <xref linkend="configuration.logging"/> and <xref linkend="upgrade.0_20_to_0_21"/> for details).
+    </para>
+  </section>
+
 </chapter>

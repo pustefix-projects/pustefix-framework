@@ -5,6 +5,22 @@
 >
   <title>Upgrading to a newer Pustefix version</title>
 
+  <section xml:id="upgrade.0_21_to_0_22">
+    <title>Upgrading from Pustefix 0.21 to 0.22</title>
+
+    <para>
+      Pustefix now requires at least version 4.3 of the Spring framework (and supports version 5.0). If you rely on an older version
+      you will have to update your application accordingly.
+    </para>
+    <para>
+      No Pustefix specific changes will be required to make your application work with Spring 4.3. 
+      If you want to switch to Spring 5 and you are using Pustefix states as MVC controllers together with custom <literal>WebArgumentResolvers</literal>,
+      you have to migrate them to <literal>HandlerMethodArgumentResolvers</literal> and change the configuration from
+      <xref linkend="springmvc.annotationmethodhandleradapter"/> to <xref linkend="springmvc.requestmappinghandleradapter"/>. 
+    </para>
+
+  </section>
+
   <section xml:id="upgrade.0_20_to_0_21">
     <title>Upgrading from Pustefix 0.20 to 0.21</title>
 
