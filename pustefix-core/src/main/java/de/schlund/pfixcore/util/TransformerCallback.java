@@ -614,7 +614,7 @@ public class TransformerCallback {
         
         try {
         HttpServletRequest req = ((ServletRequestAttributes)RequestContextHolder.getRequestAttributes()).getRequest();
-        ApplicationContext ctx = RequestContextUtils.getWebApplicationContext(req);
+        ApplicationContext ctx = RequestContextUtils.findWebApplicationContext(req);
         Object bean;
         try {
             bean = ctx.getBean(nameOrType);

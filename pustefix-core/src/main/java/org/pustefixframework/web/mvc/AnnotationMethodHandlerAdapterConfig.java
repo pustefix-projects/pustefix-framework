@@ -17,6 +17,10 @@
  */
 package org.pustefixframework.web.mvc;
 
+import java.util.ArrayList;
+import java.util.List;
+
+import org.pustefixframework.web.mvc.filter.FilterResolver;
 import org.springframework.web.bind.support.WebArgumentResolver;
 import org.springframework.web.bind.support.WebBindingInitializer;
 
@@ -48,6 +52,23 @@ public class AnnotationMethodHandlerAdapterConfig {
 
     public WebBindingInitializer getWebBindingInitializer() {
         return webBindingInitializer;
+    }
+
+    public static AnnotationMethodHandlerAdapterConfig createDefaultConfig() {
+        List<WebArgumentResolver> resolvers = new ArrayList<>();
+        try {
+            Class<?> clazz = Class.forName("org.springframework.data.web.PageableArgumentResolver");
+            WebArgumentResolver resolver = (WebArgumentResolver)clazz.newInstance();
+            resolvers.add(resolver);
+        } catch(IllegalAccessException|InstantiationException x) {
+            throw new RuntimeException("Error creating AnnotationMethodHandlerAdapter default configuration", x);
+        } catch(ClassNotFoundException x) {
+            //ignore optional resolver
+        }
+        resolvers.add(new FilterResolver());
+        AnnotationMethodHandlerAdapterConfig adapterConfig = new AnnotationMethodHandlerAdapterConfig();
+        adapterConfig.setCustomArgumentResolvers(resolvers.toArray(new WebArgumentResolver[resolvers.size()]));
+        return adapterConfig;
     }
 
 }

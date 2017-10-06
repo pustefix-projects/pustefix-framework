@@ -6,9 +6,12 @@ import java.util.List;
 
 import org.springframework.core.MethodParameter;
 import org.springframework.web.bind.support.WebArgumentResolver;
+import org.springframework.web.bind.support.WebDataBinderFactory;
 import org.springframework.web.context.request.NativeWebRequest;
+import org.springframework.web.method.support.HandlerMethodArgumentResolver;
+import org.springframework.web.method.support.ModelAndViewContainer;
 
-public class FilterResolver implements WebArgumentResolver {
+public class FilterResolver implements WebArgumentResolver, HandlerMethodArgumentResolver {
     
     @Override
     public Object resolveArgument(MethodParameter methodParameter,
@@ -47,4 +50,19 @@ public class FilterResolver implements WebArgumentResolver {
         return WebArgumentResolver.UNRESOLVED;
     }
     
+    @Override
+    public Object resolveArgument(MethodParameter parameter, ModelAndViewContainer mavContainer,
+            NativeWebRequest webRequest, WebDataBinderFactory binderFactory) {
+        try {
+            return resolveArgument(parameter, webRequest);
+        } catch(Exception x) {
+            throw new RuntimeException(x);
+        }
+    }
+
+    @Override
+    public boolean supportsParameter(MethodParameter methodParameter) {
+        return methodParameter.getParameterType() == Filter.class;
+    }
+
 }

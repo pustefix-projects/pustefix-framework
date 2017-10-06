@@ -9,7 +9,14 @@
     <table>
       <tr>
         <td colspan="4">
-          <a href="?page.size={/formresult/data/@size}&amp;page.page={/formresult/data/@number + 1}&amp;page.sort=id&amp;page.sort.dir=asc&amp;filter.enabled=true">Show enabled items only</a>
+          <ixsl:choose>
+            <ixsl:when test="/formresult/myfilter/filter/@enabled='true'">
+              <a href="?page.size={/formresult/data/@size}&amp;page.page={/formresult/data/@number + 1}&amp;page.sort=id&amp;page.sort.dir=asc&amp;filter.enabled">Show all items</a>
+            </ixsl:when>
+            <ixsl:otherwise>
+              <a href="?page.size={/formresult/data/@size}&amp;page.page={/formresult/data/@number + 1}&amp;page.sort=id&amp;page.sort.dir=asc&amp;filter.enabled=true">Show enabled items only</a>
+            </ixsl:otherwise>
+          </ixsl:choose>
         </td>
       </tr>
       <tr>

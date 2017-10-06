@@ -12,6 +12,11 @@
 
   <context:annotation-config/>
 
+  <!-- Use RequestMappingHandlerAdapter instead of AnnotationMethodHandlerAdapter before Spring 5 -->
+  <!--
+  <bean class="org.pustefixframework.web.mvc.RequestMappingHandlerAdapterConfig" factory-method="createDefaultConfig"/>
+  -->
+
   <!-- MessageSources can/should be configured in project.xml to be available during pre-generation of pages -->
   <!--
   <bean id="messageSource"

@@ -25,13 +25,13 @@ import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.ParserConfigurationException;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.pustefixframework.container.spring.util.PustefixPropertiesPersister;
 import org.pustefixframework.http.internal.PustefixInit;
 import org.pustefixframework.http.internal.PustefixTempDirs;
-import org.pustefixframework.web.mvc.internal.ControllerStateAdapter;
+import org.pustefixframework.web.mvc.internal.ControllerStatePostProcessor;
 import org.pustefixframework.web.mvc.internal.InputHandlerProcessor;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.BeansException;
 import org.springframework.beans.factory.config.BeanDefinition;
 import org.springframework.beans.factory.config.BeanFactoryPostProcessor;
@@ -143,9 +143,9 @@ public class PustefixWebApplicationContext extends AbstractRefreshableWebApplica
         }
 
         beanFactory.registerScope("tenant", new TenantScope());
-        addAnnotationMethodHandlerAdapter(beanFactory);
         addBeanFactoryPostProcessor(AnnotationBeanDefinitionPostProcessor.class, beanFactory);
         addBeanFactoryPostProcessor(InputHandlerProcessor.class, beanFactory);
+        addBeanFactoryPostProcessor(ControllerStatePostProcessor.class, beanFactory);
     }
     
     private void addBeanFactoryPostProcessor(Class<? extends BeanFactoryPostProcessor> processorClass, BeanDefinitionRegistry registry) {
@@ -192,14 +192,6 @@ public class PustefixWebApplicationContext extends AbstractRefreshableWebApplica
         registry.registerBeanDefinition(name, definition);
     }
 
-    private void addAnnotationMethodHandlerAdapter(BeanDefinitionRegistry registry) {
-        BeanDefinitionBuilder beanBuilder = BeanDefinitionBuilder.genericBeanDefinition(ControllerStateAdapter.class);
-        beanBuilder.setScope("singleton");
-        BeanDefinition definition = beanBuilder.getBeanDefinition();
-        String beanName = ControllerStateAdapter.class.getName();
-        registry.registerBeanDefinition(beanName, definition);
-    }
-    
     @Override
     public Resource getResource(String location) {
         if(location.startsWith("module:") || location.startsWith("dynamic:")) {

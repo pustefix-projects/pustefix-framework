@@ -86,8 +86,8 @@
     
     <dependency>
       <groupId>org.springframework.data</groupId>
-      <artifactId>spring-data-commons-core</artifactId>
-      <version>1.4.1.RELEASE</version>
+      <artifactId>spring-data-commons</artifactId>
+      <version>1.7.3.RELEASE</version>
       <exclusions>
         <exclusion>
           <groupId>org.springframework</groupId>
@@ -155,6 +155,47 @@
           <useSeparateTomcatClassLoader>true</useSeparateTomcatClassLoader>
         </configuration>
       </plugin>
+      <plugin>
+        <groupId>org.codehaus.cargo</groupId>
+        <artifactId>cargo-maven2-plugin</artifactId>
+        <version>1.6.4</version>
+        <configuration>
+          <container>
+            <containerId>tomcat8x</containerId>
+            <artifactInstaller>
+              <groupId>org.apache.tomcat</groupId>
+              <artifactId>tomcat</artifactId>
+              <version>8.5.20</version>
+            </artifactInstaller>
+          </container>
+          <configuration>
+            <type>standalone</type>
+            <home>${project.build.directory}/tomcat</home>
+            <properties>
+              <cargo.servlet.port>8080</cargo.servlet.port>
+              <cargo.logging>low</cargo.logging>
+            </properties>
+            <configfiles>
+              <configfile>
+                <file>${project.build.directory}/addtomcatconf/context.xml</file>
+                <todir>conf</todir>
+                <tofile>context.xml</tofile>
+              </configfile>
+            </configfiles>
+          </configuration>
+          <deployables>
+            <deployable>
+              <groupId>${project.groupId}</groupId>
+              <artifactId>${project.artifactId}</artifactId>
+              <type>war</type>
+              <properties>
+                <context>/</context>
+              </properties>
+            </deployable>
+          </deployables>
+        </configuration>
+      </plugin>
+
 
       <plugin>
         <!--  some tests operated on the exploded webapp -->

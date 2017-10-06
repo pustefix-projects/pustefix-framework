@@ -17,94 +17,12 @@
  */
 package org.pustefixframework.web.mvc.internal;
 
-import java.lang.reflect.Method;
-import java.util.concurrent.ConcurrentHashMap;
-
-import org.pustefixframework.web.mvc.AnnotationMethodHandlerAdapterConfig;
-import org.pustefixframework.web.mvc.filter.FilterResolver;
-import org.springframework.beans.factory.InitializingBean;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.support.WebArgumentResolver;
 import org.springframework.web.servlet.ModelAndView;
-import org.springframework.web.servlet.mvc.annotation.AnnotationMethodHandlerAdapter;
-import org.springframework.web.servlet.mvc.multiaction.NoSuchRequestHandlingMethodException;
 
 import de.schlund.pfixxml.PfixServletRequest;
 
-/**
- * Bridge to Spring MVC's AnnotationMethodHandlerAdapter.
- * Called by Pustefix States during ResultDocument creation.
- */
-public class ControllerStateAdapter implements InitializingBean {
+public interface ControllerStateAdapter {
 
-    private AnnotationMethodHandlerAdapter adapter;
-    private AnnotationMethodHandlerAdapterConfig adapterConfig;
-    private ConcurrentHashMap<Class<?>, Boolean> mappedClassCache = new ConcurrentHashMap<Class<?>, Boolean>();
-
-    @Autowired(required=false)
-    public void setAdapterConfig(AnnotationMethodHandlerAdapterConfig adapterConfig) {
-        this.adapterConfig = adapterConfig;
-    }
-
-    public AnnotationMethodHandlerAdapter getAdapter() {
-        return adapter;
-    }
-
-    /**
-     * Call AnnotationMethodHandlerAdapter if State class contains request mappings.
-     */
-    public ModelAndView tryHandle(PfixServletRequest request, Object handler, String pageName) throws Exception {
-        if(hasRequestMapping(handler.getClass())) {
-            try {
-                ControllerRequestWrapper wrappedRequest = new ControllerRequestWrapper(request, pageName);
-                ControllerResponseWrapper response = new ControllerResponseWrapper();
-                return adapter.handle(wrappedRequest, response, handler);
-            } catch(NoSuchRequestHandlingMethodException x) {
-                //let implementing a handler method be optional and ignore this exception
-            }
-        }
-        return null;
-    }
-
-    @Override
-    public void afterPropertiesSet() throws Exception {
-        if(adapterConfig == null) {
-            adapterConfig = new AnnotationMethodHandlerAdapterConfig();
-            try {
-                Class<?> clazz = Class.forName("org.springframework.data.web.PageableArgumentResolver");
-                WebArgumentResolver resolver = (WebArgumentResolver)clazz.newInstance();
-                WebArgumentResolver[] resolvers = new WebArgumentResolver[] {resolver, new FilterResolver()};
-                adapterConfig.setCustomArgumentResolvers(resolvers);
-            } catch(ClassNotFoundException x) {
-                //ignore optional resolver
-            }
-        }
-        adapter = new AnnotationMethodHandlerAdapter();
-        adapter.setCustomArgumentResolvers(adapterConfig.getCustomArgumentResolvers());
-        adapter.setWebBindingInitializer(adapterConfig.getWebBindingInitializer());
-    }
-    
-    /**
-     * Check if class contains request mapping methods.
-     */
-    private boolean hasRequestMapping(Class<?> clazz) {
-        Boolean hasMapping = mappedClassCache.get(clazz);
-        if(hasMapping == null) {
-            Method[] methods = clazz.getMethods();
-            for(Method method: methods) {
-                RequestMapping mapping = method.getAnnotation(RequestMapping.class);
-                if(mapping != null) {
-                    hasMapping = true;
-                    break;
-                }
-            }
-            if(hasMapping == null) {
-                hasMapping = false;
-            }
-            mappedClassCache.putIfAbsent(clazz, hasMapping);
-        }
-        return hasMapping;
-    }
+	public ModelAndView tryHandle(PfixServletRequest request, Object handler, String pageName) throws Exception;
 
 }
