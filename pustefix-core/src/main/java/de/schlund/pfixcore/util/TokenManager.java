@@ -23,5 +23,6 @@ public interface TokenManager {
     public void invalidateToken(String tokenName);
     public String getToken(String tokenName);
     public boolean isValidToken(String tokenName,String token);
-    
+    public String getCSRFToken();
+
 }

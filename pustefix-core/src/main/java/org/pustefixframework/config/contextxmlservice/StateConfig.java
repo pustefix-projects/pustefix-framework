@@ -115,4 +115,10 @@ public interface StateConfig {
      */
     boolean preMVC();
 
+    /**
+     * Return if submitting data is security protected, i.e. the HTTP
+     * POST method and a valid CSRF token is required for data to be processed.
+     */
+    boolean isProtected();
+
 }

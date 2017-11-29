@@ -35,6 +35,9 @@ import org.springframework.test.context.junit4.AbstractJUnit4SpringContextTests;
 import org.springframework.web.context.request.RequestContextHolder;
 import org.springframework.web.context.request.ServletRequestAttributes;
 
+import de.schlund.pfixcore.workflow.Context;
+import de.schlund.pfixcore.workflow.ContextImpl;
+
 /**
  * Integration test of the scripted flows from the sample application.
  */
@@ -47,6 +50,9 @@ public class ScriptedFlowTest extends AbstractJUnit4SpringContextTests {
     
     @Autowired
     private PustefixContextXMLRequestHandler requestHandler;
+    
+    @Autowired
+    private Context context;
     
     @Test
     public void testFlow() throws Exception {
@@ -98,10 +104,12 @@ public class ScriptedFlowTest extends AbstractJUnit4SpringContextTests {
         Assert.assertTrue(res.getContentAsString(), res.getContentAsString().contains("<title>Pustefix Sample</title>"));
         
         req = new MockHttpServletRequest();
+        req.setMethod("POST");
         req.setPathInfo("/");
         req.addParameter("__lf", "OrderFlow");
         req.addParameter("__sendingdata", "1");
         req.addParameter("info.Adult", "false");
+        req.addParameter("__csrf", ((ContextImpl)context).getCSRFToken());
         req.setSession(session);
         RequestContextHolder.setRequestAttributes(new ServletRequestAttributes(req));
         res = new MockHttpServletResponse();

@@ -36,8 +36,6 @@ import javax.xml.transform.TransformerFactory;
 import javax.xml.transform.dom.DOMSource;
 import javax.xml.transform.stream.StreamResult;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.pustefixframework.config.contextxmlservice.IWrapperConfig;
 import org.pustefixframework.config.contextxmlservice.PageRequestConfig;
 import org.pustefixframework.config.contextxmlservice.ProcessActionPageRequestConfig;
@@ -48,6 +46,8 @@ import org.pustefixframework.http.BotDetector;
 import org.pustefixframework.http.PathMapping;
 import org.pustefixframework.util.FrameworkInfo;
 import org.pustefixframework.util.javascript.JSUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.NoSuchBeanDefinitionException;
 import org.springframework.cache.interceptor.SimpleKeyGenerator;
 import org.springframework.context.ApplicationContext;
@@ -72,6 +72,7 @@ import de.schlund.pfixcore.workflow.IWrapperState;
 import de.schlund.pfixcore.workflow.PageRequest;
 import de.schlund.pfixcore.workflow.RequestTokenAwareState;
 import de.schlund.pfixcore.workflow.State;
+import de.schlund.pfixcore.workflow.app.DefaultIWrapperState;
 import de.schlund.pfixcore.workflow.context.AccessibilityChecker;
 import de.schlund.pfixcore.workflow.context.PageFlow;
 import de.schlund.pfixcore.workflow.context.RequestContextImpl;
@@ -214,6 +215,36 @@ public class TransformerCallback {
         }
     }
     
+    public static String getCSRFToken(RequestContextImpl requestContext) throws Exception {
+        try {
+            return requestContext.getParentContext().getCSRFToken();
+        } catch (Exception x) {
+            ExtensionFunctionUtils.setExtensionFunctionError(x);
+            throw x;
+        }
+    }
+
+    public static boolean requiresCSRFToken(RequestContextImpl requestContext, String pageName) throws Exception {
+        try {
+            ContextImpl context = requestContext.getParentContext();
+            State state;
+            if (pageName != null) {
+                state = context.getPageMap().getState(pageName);
+            } else {
+                state = context.getPageMap().getState(context.getCurrentPageRequest());
+            }
+            if (state instanceof DefaultIWrapperState) {
+                StateConfig stateConfig = ((DefaultIWrapperState)state).getConfig();
+                return stateConfig != null && stateConfig.isProtected();
+            } else {
+                return false;
+            }
+        } catch (Exception x) {
+            ExtensionFunctionUtils.setExtensionFunctionError(x);
+            throw x;
+        }
+    }
+
     public static Node getIWrapperInfo(RequestContextImpl requestContext, Node docNode, String pageName, String prefix) {
         try {
             PageRequest pageRequest;

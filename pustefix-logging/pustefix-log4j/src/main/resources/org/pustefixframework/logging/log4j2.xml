@@ -121,6 +121,15 @@
       <DefaultRolloverStrategy max="3"/>
     </RollingFile>
 
+    <RollingFile name="LOGGER_CSRF" fileName="${pfx:logroot}/pustefix-csrf.log"
+                 filePattern="${pfx:logroot}/pustefix-csrf.%i.log">
+      <PatternLayout pattern="%d{ISO8601}|%m%n"/>
+      <Policies>
+        <SizeBasedTriggeringPolicy size="10MB"/>
+      </Policies>
+      <DefaultRolloverStrategy max="3"/>
+    </RollingFile>
+
   </Appenders>
 
   <Loggers>
@@ -211,6 +220,10 @@
 
     <Logger name="LOGGER_PFXUSAGE" level="INFO" additivity="false">
       <AppenderRef ref="LOGGER_USAGE"/>
+    </Logger>
+
+    <Logger name="LOGGER_CSRF" level="INFO" additivity="false">
+      <AppenderRef ref="LOGGER_CSRF"/>
     </Logger>
 
     <!-- Default logger -->

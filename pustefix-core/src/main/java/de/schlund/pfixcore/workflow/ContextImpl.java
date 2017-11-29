@@ -391,6 +391,10 @@ public class ContextImpl implements AccessibilityChecker, ExtendedContext, Token
         return sessioncontext.isValidToken(tokenName, token);
     }
 
+    public String getCSRFToken() {
+        return sessioncontext.getCSRFToken();
+    }
+
     public Authentication getAuthentication() {
         return sessioncontext.getAuthentication();
     }

@@ -18,16 +18,24 @@
 package de.schlund.pfixcore.util;
 
 import java.nio.ByteBuffer;
+import java.security.SecureRandom;
 import java.util.Base64;
 import java.util.UUID;
 
 public class TokenUtils {
 
     private final static Base64.Encoder encoder = Base64.getEncoder().withoutPadding();
-    
+    private final static SecureRandom secureRandom = new SecureRandom();
+
     public static String createRandomToken() {
         UUID id = UUID.randomUUID();
         byte[] bytes = ByteBuffer.allocate(16).putLong(id.getMostSignificantBits()).putLong(id.getLeastSignificantBits()).array();
+        return encoder.encodeToString(bytes);
+    }
+
+    public static String createSecureRandomToken(int length) {
+        byte[] bytes = new byte[length];
+        secureRandom.nextBytes(bytes);
         return encoder.encodeToString(bytes);
     }
 

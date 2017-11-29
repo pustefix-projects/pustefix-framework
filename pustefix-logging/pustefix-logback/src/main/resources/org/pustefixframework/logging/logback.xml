@@ -203,6 +203,21 @@
     </encoder>
   </appender>
 
+  <appender name="LOGGER_CSRF" class="ch.qos.logback.core.rolling.RollingFileAppender">
+    <file>${logroot}/pustefix-csrf.log</file>
+    <rollingPolicy class="ch.qos.logback.core.rolling.FixedWindowRollingPolicy">
+      <fileNamePattern>${logroot}/pustefix-csrf.%i.log</fileNamePattern>
+      <minIndex>1</minIndex>
+      <maxIndex>3</maxIndex>
+    </rollingPolicy>
+    <triggeringPolicy class="ch.qos.logback.core.rolling.SizeBasedTriggeringPolicy">
+      <maxFileSize>10MB</maxFileSize>
+    </triggeringPolicy>
+    <encoder>
+      <pattern>%d|%m%n</pattern>
+    </encoder>
+  </appender>
+
   <!-- Make some very verbose packages quiet by default --> 
 
   <logger name="org.apache" level="WARN" additivity="false">
@@ -289,6 +304,10 @@
 
   <logger name="LOGGER_PFXUSAGE" level="INFO" additivity="false">
     <appender-ref ref="LOGGER_USAGE"/>
+  </logger>
+
+  <logger name="LOGGER_CSRF" level="INFO" additivity="false">
+    <appender-ref ref="LOGGER_CSRF"/>
   </logger>
 
   <!-- Default logger -->

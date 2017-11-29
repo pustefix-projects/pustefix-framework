@@ -87,3 +87,12 @@
   </Policies>
   <DefaultRolloverStrategy max="3"/>
 </RollingFile>
+
+<RollingFile name="LOGGER_CSRF" fileName="${pfx:logroot}/pustefix-csrf.log"
+             filePattern="${pfx:logroot}/pustefix-csrf.%i.log">
+  <PatternLayout pattern="%d{ISO8601}|%m%n"/>
+  <Policies>
+    <SizeBasedTriggeringPolicy size="10MB"/>
+  </Policies>
+  <DefaultRolloverStrategy max="3"/>
+</RollingFile>

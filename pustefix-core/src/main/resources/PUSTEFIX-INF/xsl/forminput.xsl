@@ -256,6 +256,21 @@
         </input>
       </ixsl:if>
     </xsl:if>
+    <xsl:if test="not(.//pfx:csrftoken)">
+      <ixsl:if>
+        <xsl:attribute name="test">
+          <xsl:choose>
+            <xsl:when test="@send-to-page">pfx:requiresCSRFToken('<xsl:value-of select="@send-to-page"/>')</xsl:when>
+            <xsl:otherwise>pfx:requiresCSRFToken($page)</xsl:otherwise>
+          </xsl:choose>
+        </xsl:attribute>
+        <input type="hidden" name="__csrf">
+          <ixsl:attribute name="value">
+            <ixsl:value-of select="pfx:getCSRFToken()"/>
+          </ixsl:attribute>
+        </input>
+      </ixsl:if>
+    </xsl:if>
   </xsl:template>
   
   <xsl:template match="pfx:hiddenfields">
@@ -769,6 +784,14 @@
     </input>
   </xsl:template>
   
+  <xsl:template match="pfx:csrftoken">
+    <input type="hidden" name="__csrf">
+      <ixsl:attribute name="value">
+        <ixsl:value-of select="pfx:getCSRFToken()"/>
+      </ixsl:attribute>
+    </input>
+  </xsl:template>
+
   <xsl:template match="pfx:externalform">
   <form method="post">
     <ixsl:attribute name="action">

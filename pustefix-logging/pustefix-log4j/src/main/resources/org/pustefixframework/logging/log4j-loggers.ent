@@ -86,6 +86,10 @@
   <AppenderRef ref="LOGGER_USAGE"/>
 </Logger>
 
+<Logger name="LOGGER_CSRF" level="INFO" additivity="false">
+  <AppenderRef ref="LOGGER_CSRF"/>
+</Logger>
+
 <!-- Default logger -->
 
 <Root level="${defaultLevel}">

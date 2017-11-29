@@ -22,6 +22,9 @@ import java.util.Map;
 import org.pustefixframework.config.contextxmlservice.IWrapperConfig;
 import org.pustefixframework.config.contextxmlservice.StateConfig;
 import org.pustefixframework.generated.CoreStatusCodes;
+import org.pustefixframework.util.LogUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.web.servlet.ModelAndView;
 
 import de.schlund.pfixcore.generator.IWrapper;
@@ -37,6 +40,7 @@ import de.schlund.pfixxml.RequestParam;
 import de.schlund.pfixxml.ResultDocument;
 import de.schlund.pfixxml.Tenant;
 import de.schlund.pfixxml.XMLException;
+import de.schlund.util.statuscodes.StatusCode;
 
 /**
  * State implementation used for pages which need to process input data.
@@ -45,6 +49,8 @@ public class DefaultIWrapperState extends StateImpl implements IWrapperState, Re
 
     private final static String IHDL_CONT_MANAGER = "de.schlund.pfixcore.workflow.app.IHandlerContainerManager";
     
+    private final Logger CSRF_LOG = LoggerFactory.getLogger("LOGGER_CSRF");
+
     /**
      * @see de.schlund.pfixcore.workflow.State#isAccessible(Context,
      *      PfixServletRequest)
@@ -91,6 +97,9 @@ public class DefaultIWrapperState extends StateImpl implements IWrapperState, Re
     protected IWrapperContainer handleWrappers(Context context, PfixServletRequest preq, ResultDocument resdoc) throws Exception {
         IWrapperContainer wrp_container =  getIHandlerContainer(context).createIWrapperContainerInstance(context, preq, resdoc);
         if (isSubmitTrigger(context, preq)) {
+            if(handleCSRF(context, preq, wrp_container)) {
+                return wrp_container;
+            }
             boolean valid = true;
             RequestParam rp = preq.getRequestParam("__token");
             if (rp != null) {
@@ -185,6 +194,46 @@ public class DefaultIWrapperState extends StateImpl implements IWrapperState, Re
 
     public boolean requiresToken() {
         return getConfig().requiresToken();
+    }
+
+    /**
+     * Handles CSRF protection, i.e. checks HTTP method and CSRF token
+     * and sets according status code as page message if CSRF is detected.
+     *
+     * @param context
+     * @param preq
+     * @param container
+     * @return true if CSRF is detected, false otherwise
+     * @throws Exception
+     */
+    protected boolean handleCSRF(Context context, PfixServletRequest preq, IWrapperContainer container) throws Exception {
+        if(getConfig() != null && getConfig().isProtected() && !(preq.getRequest() instanceof VirtualHttpServletRequest)) {
+            StatusCode sc = null;
+            if(!preq.getRequest().getMethod().equals("POST")) {
+                sc = CoreStatusCodes.INVALID_HTTP_REQUEST_METHOD;
+            } else {
+                RequestParam rp = preq.getRequestParam("__csrf");
+                if(rp == null) {
+                    sc = CoreStatusCodes.CSRF_TOKEN_MISSING;
+                } else {
+                    TokenManager tm = (TokenManager)context;
+                    if(!tm.getCSRFToken().equals(rp.getValue())) {
+                        sc = CoreStatusCodes.CSRF_TOKEN_INVALID;
+                    }
+                }
+            }
+            if(sc != null) {
+                CSRF_LOG.warn(context.getVisitId() + "|" + sc.getStatusCodeId()
+                        + "|" + preq.getRequest().getMethod()
+                        + "|" + LogUtils.makeLogSafe(preq.getContextPath() + preq.getPathInfo())
+                        + "|" + LogUtils.makeLogSafe(preq.getQueryString()));
+                context.addPageMessage(sc, null, null);
+                container.retrieveCurrentStatus(true);
+                context.prohibitContinue();
+                return true;
+            }
+        }
+        return false;
     }
 
     /**

@@ -139,7 +139,7 @@
 
   <pagerequest name="home">
     <default>
-      <input>
+      <input protected="true">
         <wrapper prefix="info" class="de.schlund.pfixcore.example.iwrapper.AdultInfo" />
         <wrapper prefix="prefix" class="de.schlund.pfixcore.example.iwrapper.IndexedTest" />
         <wrapper prefix="search" class="de.schlund.pfixcore.example.iwrapper.Search" />

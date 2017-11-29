@@ -63,6 +63,7 @@ public class SessionContextImpl {
     private Authentication             authentication;
     private Set<String>                visitedPages = Collections.synchronizedSet(new HashSet<String>());
     private Map<String, String>        tokens;
+    private String                     csrfToken;
     private String                     lastFlow;
     private final Set<SessionStatusListener> sessionStatusListeners = new LinkedHashSet<>();
     
@@ -173,6 +174,15 @@ public class SessionContextImpl {
             }
             tokens.put(tokenName, token);
             return token;
+        }
+    }
+
+    public String getCSRFToken() {
+        synchronized (this) {
+            if(csrfToken == null) {
+                csrfToken = TokenUtils.createSecureRandomToken(32);
+            }
+            return csrfToken;
         }
     }
 

@@ -1926,6 +1926,25 @@ msgstr "Message text with arguments {0} and {1}"
   </pagerequest>
 </contextxmlserver>]]></programlisting>
     </section>
+    <section xml:id="xslt.forms.csrftoken">
+      <title>Preventing CSRF attacks</title>
+      <para>
+        The best solution against CSRF attacks is to allow requests which change data only when they
+        use the <literal>POST</literal> method together with sending a secure random synchronizer token
+        (bound to the user's session).
+      </para>
+      <para>
+        This can be enforced in the according <literal>pagerequest</literal> configuration by setting
+        the <literal>protected</literal> attribute at the <literal>&lt;input&gt;</literal> element to <literal>true</literal>
+        (see <xref linkend="configuration.servlet.contextxml.input"/>).
+        The token will be automatically added as hidden input parameter if you're using the <literal>&lt;pfx:forminput&gt;</literal>
+        element, alternatively you can use the tag <literal>&lt;pfx:csrftoken/&gt;</literal> to manually insert the element.
+      </para>
+      <para>
+        If Pustefix detects a protection violation, the submit will be cancelled, a log entry will be written
+        (<literal>LOGGER_CSRF</literal>), an according page message will be set and the page will be re-displayed.
+      </para>
+    </section>
   </section>
 
   <section>

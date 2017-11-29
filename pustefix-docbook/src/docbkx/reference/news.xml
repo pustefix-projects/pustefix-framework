@@ -24,4 +24,14 @@
     </para>
   </section>
 
+  <section xml:id="news.0_22_1">
+    <title>What's new in Pustefix 0.22.1</title>
+    <para>
+      Added support for so-called protected submits, i.e. only the HTTP request method POST is allowed and a synchronizer token
+      is used to prevent CSRF attacks. Protected submits are enabled by setting the <literal>protected</literal> attribute at the
+      <literal>&lt;input&gt;</literal> element to <literal>true</literal> (see <xref linkend="configuration.servlet.contextxml.input"/>
+      and <xref linkend="xslt.forms.csrftoken"/>).
+    </para>
+  </section>
+
 </chapter>

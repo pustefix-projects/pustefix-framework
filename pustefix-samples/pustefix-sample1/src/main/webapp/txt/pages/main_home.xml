@@ -4,6 +4,7 @@
   <part name="content">
     <theme name="default">
       <center>
+        <pagemsgs/>
         <pfx:forminput>
           <table width="400">
             <tr>

@@ -1305,7 +1305,7 @@
           </para>
         </note>
         <programlisting language="xml"><![CDATA[
-      <input premvc="false|true" policy="ANY|ALL|NONE">
+      <input premvc="false|true" policy="ANY|ALL|NONE" protected="false|true">
         ]]></programlisting>
         <para xml:id="configuration.servlet.contextxml.input">The whole node is optional. It may only be given for a 
         <classname>State</classname> that is either 
@@ -1335,6 +1335,9 @@
         <literal>false</literal> on calling 
         <methodname>prerequisitesMet()</methodname>, the page is of 
         course still inaccessible.
+        <para>The attribute <tag class="attribute">protected</tag> is optional (default is <literal>false</literal>).
+        If set to <literal>true</literal> submits are only allowed using the POST method together with a secure
+        synchronizer token to prevent CSRF attacks.</para>
         <programlisting language="xml"><![CDATA[
         <wrapper prefix="AName" class="AClassName" checkactive="true|false" tenant="aTenant"/>
         ]]></programlisting>

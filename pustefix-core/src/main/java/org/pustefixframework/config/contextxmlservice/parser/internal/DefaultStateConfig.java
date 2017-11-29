@@ -80,4 +80,8 @@ public class DefaultStateConfig implements StateConfig {
         return false;
     }
 
+    public boolean isProtected() {
+        return false;
+    }
+
 }

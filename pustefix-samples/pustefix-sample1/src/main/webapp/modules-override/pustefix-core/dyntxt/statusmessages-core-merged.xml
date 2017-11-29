@@ -183,4 +183,28 @@ Adding new statuscodes has to be done within the originating module.
   <part name="pagemessages.level.warn">
     <theme name="default">WARNING:</theme>
   </part>
+  <part name="CSRF_TOKEN_INVALID">
+    <theme name="default">
+      <pfx:langselect>
+        <pfx:lang name="default">Invalid CSRF token.</pfx:lang>
+        <pfx:lang name="de_*">Ungültiger CSRF-Token.</pfx:lang>
+      </pfx:langselect>
+    </theme>
+  </part>
+  <part name="CSRF_TOKEN_MISSING">
+    <theme name="default">
+      <pfx:langselect>
+        <pfx:lang name="default">Missing CSRF token.</pfx:lang>
+        <pfx:lang name="de_*">Fehlender CSRF-Token.</pfx:lang>
+      </pfx:langselect>
+    </theme>
+  </part>
+  <part name="INVALID_HTTP_REQUEST_METHOD">
+    <theme name="default">
+      <pfx:langselect>
+        <pfx:lang name="default">Invalid HTTP request method.</pfx:lang>
+        <pfx:lang name="de_*">Ungültige HTTP Anfragemethode.</pfx:lang>
+      </pfx:langselect>
+    </theme>
+  </part>
 </include_parts>

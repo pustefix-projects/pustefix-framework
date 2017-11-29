@@ -243,6 +243,7 @@ public class PageRequestParsingHandler implements ParsingHandler {
                 beanBuilder.addPropertyValue("lazyContextResources", stateConfig.getLazyContextResources());
                 beanBuilder.addPropertyValue("requiresToken", stateConfig.requiresToken());
                 beanBuilder.addPropertyValue("preMVC", stateConfig.preMVC());
+                beanBuilder.addPropertyValue("protected", stateConfig.isProtected());
                 beanBuilder.addPropertyValue("IWrapperPolicy", stateConfig.getIWrapperPolicy());
                 beanBuilder.addPropertyValue("IWrappers", wrapperList);
                 beanBuilder.addPropertyValue("processActions", stateConfig.getProcessActions());
