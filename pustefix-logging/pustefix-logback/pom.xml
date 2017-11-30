@@ -6,7 +6,7 @@
   <parent>
     <groupId>org.pustefixframework.logging</groupId>
     <artifactId>pustefix-logging</artifactId>
-    <version>0.22.1-SNAPSHOT</version>
+    <version>0.22.1</version>
   </parent>
 
   <artifactId>pustefix-logback</artifactId>
@@ -18,7 +18,7 @@
     <dependency>
       <groupId>org.pustefixframework</groupId>
       <artifactId>pustefix-core</artifactId>
-      <version>0.22.1-SNAPSHOT</version>
+      <version>0.22.1</version>
     </dependency>
     <dependency>
       <groupId>ch.qos.logback</groupId>
