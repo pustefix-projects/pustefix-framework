@@ -520,21 +520,21 @@ public class LiveJarInfo {
                     LOG.warn("Error reading POM: " + file.getAbsolutePath(), e);
                 }
                 if(entry != null) {
-                    File resDir = new File(file.getParentFile(), "src/main/resources");
+                    File resDir = new File(file.getParentFile(), "src/main/webapp");
                     if(resDir.exists()) {
                         List<File> resDirs = new ArrayList<File>();
                         resDirs.add(resDir);
                         entry.setDirectories(resDirs);
-                        jarEntries.put(entry.getId(), entry);
-                        jarEntriesNoVersion.put(entry.getGroupId() + "+" + entry.getArtifactId(), entry);
+                        warEntries.put(entry.getId(), entry);
+                        warEntriesNoVersion.put(entry.getGroupId() + "+" + entry.getArtifactId(), entry);
                     } else {
-                        resDir = new File(file.getParentFile(), "src/main/webapp");
+                        resDir = new File(file.getParentFile(), "src/main/resources");
                         if(resDir.exists()) {
                             List<File> resDirs = new ArrayList<File>();
                             resDirs.add(resDir);
                             entry.setDirectories(resDirs);
-                            warEntries.put(entry.getId(), entry);
-                            warEntriesNoVersion.put(entry.getGroupId() + "+" + entry.getArtifactId(), entry);
+                            jarEntries.put(entry.getId(), entry);
+                            jarEntriesNoVersion.put(entry.getGroupId() + "+" + entry.getArtifactId(), entry);
                         }
                     }
                 }
