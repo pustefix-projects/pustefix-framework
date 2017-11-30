@@ -358,7 +358,7 @@
       </xsl:when>
       <xsl:otherwise>
         <ixsl:choose>
-          <ixsl:when test="(callback:checkAuthorization($__context__,$page_{generate-id()}) = 3) or (callback:isAccessible($__context__, $__target_gen, $page_{generate-id()}) = 0) and not('{$mode_impl}' = 'force')">
+          <ixsl:when test="(callback:checkAuthorization($__context__,$page_{generate-id()}) = 3) or not('{$mode_impl}' = 'force') and (callback:isAccessible($__context__, $__target_gen, $page_{generate-id()}) = 0)">
             <span>
               <xsl:if test="name()='pfx:button'"><xsl:copy-of select="@*[not(contains($excluded_button_span_attrs,concat('|',name(),'|')))]"/></xsl:if>
               <xsl:attribute name="class">
