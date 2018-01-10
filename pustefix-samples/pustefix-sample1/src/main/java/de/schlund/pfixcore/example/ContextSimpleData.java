@@ -71,8 +71,8 @@ public class ContextSimpleData {
     /**
      * Describe <code>setValue</code> method here.
      *
-     * @param string a <code>String</code> value
-     * @param string1 a <code>String</code> value
+     * @param key a <code>String</code> value
+     * @param value a <code>String</code> value
      */
     public void setValue(final String key, final String value) {
         data.put(key, value);

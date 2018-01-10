@@ -298,6 +298,10 @@ public <xsl:if test="not(./iwrp:ihandler) and not(@extends)">abstract </xsl:if>c
     
     /**
       * @deprecated use addScode<xsl:value-of select="$cpname"/>(scode, args, null, index)
+      *
+      * @param scode statuscode
+      * @param args  arguments
+      * @param index index
       */
     @Deprecated
     public void addSCodeWithArgs<xsl:value-of select="$cpname"/>(de.schlund.util.statuscodes.StatusCode scode, String[] args, String index) {
@@ -333,6 +337,9 @@ public <xsl:if test="not(./iwrp:ihandler) and not(@extends)">abstract </xsl:if>c
 
     /**
       * @deprecated use addScode<xsl:value-of select="$cpname"/>(scode, args, null)
+      *
+      * @param scode statuscode
+      * @param args  arguments
       */
     @Deprecated
     public void addSCodeWithArgs<xsl:value-of select="$cpname"/>(de.schlund.util.statuscodes.StatusCode scode, String[] args) {

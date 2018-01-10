@@ -30,9 +30,7 @@ import de.schlund.pfixxml.targets.TargetGenerationException;
 import de.schlund.pfixxml.targets.TargetGenerator;
 
 /**
- * Helper class for the TargetGenerator benchmark utility.  
- * 
- * @author Sebastian Marsching <sebastian.marsching@1und1.de>
+ * Helper class for the TargetGenerator benchmark utility.
  */
 public class TargetGeneratorBenchmarkFactory {
     

@@ -38,7 +38,7 @@ public class AdultInfoHandler implements InputHandler<AdultInfo> {
 
     private ContextAdultInfo cai;
 
-    /**
+    /*
     @Autowired
     private ServletContext servletContext;
     @Autowired

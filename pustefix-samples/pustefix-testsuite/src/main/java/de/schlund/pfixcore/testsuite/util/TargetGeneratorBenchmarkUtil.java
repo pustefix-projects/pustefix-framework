@@ -25,8 +25,6 @@ import de.schlund.pfixxml.config.GlobalConfigurator;
 
 /**
  * Command-line utitlity that test the performance of a TargetGenerator.
- * 
- * @author Sebastian Marsching <sebastian.marsching@1und1.de>
  */
 public class TargetGeneratorBenchmarkUtil {
 
