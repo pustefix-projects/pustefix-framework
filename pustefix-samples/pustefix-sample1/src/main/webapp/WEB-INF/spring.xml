@@ -12,6 +12,25 @@
 
   <context:annotation-config/>
 
+  <!-- BeanDefinitionRegistryPostProcessor used to configure Pustefix beans when used without PustefixWebApplicationContext -->
+  <!-- <bean id="pustefixConfigPostProcessor" class="org.pustefixframework.container.spring.beans.PustefixConfigPostProcessor"/> -->
+
+  <!-- PropertyConfigurers registered by default when using PustefixWebApplicationContext with spring.xml -->
+  <!--
+  <bean id="propertyConfigurer" class="org.springframework.beans.factory.config.PropertyPlaceholderConfigurer">
+    <property name="location" value="WEB-INF/spring-properties.xml"/>
+    <property name="propertiesPersister">
+        <bean class="org.pustefixframework.container.spring.util.PustefixPropertiesPersister"/>
+    </property>
+  </bean>
+  <bean id="propertyOverrideConfigurer" class="org.springframework.beans.factory.config.PropertyOverrideConfigurer">
+    <property name="location" value="WEB-INF/spring-properties-override.xml"/>
+    <property name="propertiesPersister">
+        <bean class="org.pustefixframework.container.spring.util.PustefixPropertiesPersister"/>
+    </property>
+  </bean>
+  -->
+
   <!-- Use RequestMappingHandlerAdapter instead of AnnotationMethodHandlerAdapter before Spring 5 -->
   <!--
   <bean class="org.pustefixframework.web.mvc.RequestMappingHandlerAdapterConfig" factory-method="createDefaultConfig"/>

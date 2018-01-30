@@ -24,6 +24,8 @@ import java.io.StringReader;
 import java.lang.management.ManagementFactory;
 import java.net.URI;
 import java.net.URISyntaxException;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
@@ -768,6 +770,13 @@ public class TargetGenerator implements ResourceVisitor, ServletContextAware, In
 
         if(cacheDir == null) {
             cacheDir = ResourceUtil.getFileResourceFromDocroot(CACHEDIR);
+            //If docroot is set to src/main/webapp within tests (e.g. within Maven
+            //or IDE test runs), use the target/.cache directory instead.
+            String uri = cacheDir.getFile().toURI().toString();
+            if(uri.endsWith("/src/main/webapp/" + CACHEDIR)) {
+                String newUri = uri.replace("src/main/webapp", "target");
+                cacheDir = ResourceUtil.getFileResource(newUri);
+            }
             if(cacheDir.exists()) {
             	if(!cacheDir.isDirectory()) {
             		throw new XMLException("File " + cacheDir + " is is no directory");

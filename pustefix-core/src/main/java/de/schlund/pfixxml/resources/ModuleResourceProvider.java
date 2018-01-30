@@ -81,6 +81,9 @@ public class ModuleResourceProvider implements ResourceProvider {
                     throw new PustefixRuntimeException(e);
                 }
             }
+            if(url.getProtocol().equals("file")) {
+                return new ModuleSourceResource(uri, new File(url.getFile()), desc.getResourcePath());
+            }
             return new ModuleResource(uri, url, desc.getResourcePath());
         }
         return new ModuleResource(uri);

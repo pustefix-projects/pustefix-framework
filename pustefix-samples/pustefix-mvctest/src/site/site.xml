@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project>
+  <bannerLeft>
+    <name>Pustefix</name>
+    <src>http://dev.pustefix-framework.org/static/pustefix_logo.gif</src>
+    <href>http://www.pustefixframework.org/</href>
+  </bannerLeft>
+
+  <body>
+    <menu name="Documents">
+      <item name="Home" href="index.html"/>
+    </menu>
+
+    ${reports}
+
+    ${modules}
+
+  </body>
+</project>

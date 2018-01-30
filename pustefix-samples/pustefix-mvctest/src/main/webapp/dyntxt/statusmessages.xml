@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<include_parts xmlns:ixsl="http://www.w3.org/1999/XSL/Transform" xmlns:pfx="http://www.schlund.de/pustefix/core">
+
+  <!-- add your custom statuscodes/error message to this file -->
+
+  <part name="INVALID_NAME">
+    <theme name="default">
+      Name isn't valid, it requires at least 3 characters.
+    </theme>
+  </part>
+
+</include_parts>

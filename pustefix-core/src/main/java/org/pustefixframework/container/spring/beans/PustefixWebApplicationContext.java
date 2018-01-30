@@ -15,12 +15,12 @@
  * along with Pustefix; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  */
-
 package org.pustefixframework.container.spring.beans;
 
 import java.io.IOException;
 import java.util.Properties;
 
+import javax.servlet.ServletContext;
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.ParserConfigurationException;
@@ -45,7 +45,9 @@ import org.springframework.beans.factory.support.DefaultListableBeanFactory;
 import org.springframework.beans.factory.xml.ResourceEntityResolver;
 import org.springframework.beans.factory.xml.XmlBeanDefinitionReader;
 import org.springframework.context.ApplicationContextException;
+import org.springframework.core.env.ConfigurableEnvironment;
 import org.springframework.core.io.Resource;
+import org.springframework.core.io.ResourceLoader;
 import org.springframework.web.context.support.AbstractRefreshableWebApplicationContext;
 import org.w3c.dom.Document;
 import org.xml.sax.SAXException;
@@ -57,7 +59,7 @@ import de.schlund.pfixxml.resources.ResourceUtil;
 
 public class PustefixWebApplicationContext extends AbstractRefreshableWebApplicationContext {
     
-    private Logger LOG = LoggerFactory.getLogger(PustefixWebApplicationContext.class);
+    private static Logger LOG = LoggerFactory.getLogger(PustefixWebApplicationContext.class);
 
     private PustefixInit pustefixInit;
 
@@ -72,16 +74,21 @@ public class PustefixWebApplicationContext extends AbstractRefreshableWebApplica
 
     @Override
     protected void loadBeanDefinitions(DefaultListableBeanFactory beanFactory) throws IOException, BeansException {
-        
+       load(beanFactory, pustefixInit, getServletContext(), getEnvironment(), getConfigLocations(), this);
+    }
+
+    static void load(DefaultListableBeanFactory beanFactory, PustefixInit pustefixInit, ServletContext servletContext,
+            ConfigurableEnvironment environment, String[] configLocations, ResourceLoader resourceLoader) throws IOException, BeansException {
+
         //disable bean definition overriding as it turned out to be more cumbersome
         //finding errors caused by this feature, than that it's bringing real benefit
         //beanFactory.setAllowBeanDefinitionOverriding(false);
 
         if(pustefixInit == null) {
-            pustefixInit = (PustefixInit)getServletContext().getAttribute(PustefixInit.SERVLET_CONTEXT_ATTRIBUTE_NAME);
+            pustefixInit = (PustefixInit)servletContext.getAttribute(PustefixInit.SERVLET_CONTEXT_ATTRIBUTE_NAME);
             if(pustefixInit == null) {
                 try {
-                    pustefixInit = new PustefixInit(getServletContext());
+                    pustefixInit = new PustefixInit(servletContext);
                 } catch(PustefixCoreException x) {
                     throw new PustefixRuntimeException("Pustefix initialization failed", x);
                 }
@@ -89,7 +96,7 @@ public class PustefixWebApplicationContext extends AbstractRefreshableWebApplica
         }
 
         //activate mode profile (using Pustefix execution environment mode as profile name)
-        getEnvironment().addActiveProfile(EnvironmentProperties.getProperties().getProperty("mode"));
+        environment.addActiveProfile(EnvironmentProperties.getProperties().getProperty("mode"));
         
         if(LOG.isInfoEnabled()) {
             Properties props = EnvironmentProperties.getProperties();
@@ -100,46 +107,39 @@ public class PustefixWebApplicationContext extends AbstractRefreshableWebApplica
                 ", uid=" + props.getProperty("uid"));
         }
 
-        String configLocations[] = getConfigLocations();
-        if (configLocations == null) {
-            configLocations = getDefaultConfigLocations();
-            if (configLocations == null) {
-                return;
+        if(configLocations != null) {
+
+            XmlBeanDefinitionReader springReader = new XmlBeanDefinitionReader(beanFactory);
+            springReader.setResourceLoader(resourceLoader);
+            springReader.setEntityResolver(new ResourceEntityResolver(resourceLoader));
+            springReader.setEnvironment(environment);
+
+            PustefixProjectBeanDefinitionReader pustefixReader = new PustefixProjectBeanDefinitionReader(beanFactory);
+            pustefixReader.setResourceLoader(resourceLoader);
+
+            for (int i = 0; i < configLocations.length; i++) {
+                String configLocation = configLocations[i];
+                Resource configResource = resourceLoader.getResource(configLocation);
+                DocumentBuilderFactory dbf = DocumentBuilderFactory.newInstance();
+                dbf.setNamespaceAware(true);
+                dbf.setXIncludeAware(true);
+                DocumentBuilder db;
+                Document doc;
+                try {
+                    db = dbf.newDocumentBuilder();
+                    doc = db.parse(configResource.getInputStream());
+                } catch (ParserConfigurationException e) {
+                    throw new ApplicationContextException("Error while reading " + configResource + ": " + e.getMessage(), e);
+                } catch (SAXException e) {
+                    throw new ApplicationContextException("Error while reading " + configResource + ": " + e.getMessage(), e);
+                }
+                if (doc.getDocumentElement().getNamespaceURI() != null && doc.getDocumentElement().getNamespaceURI().equals("http://www.pustefix-framework.org/2008/namespace/project-config")) {
+                    pustefixReader.loadBeanDefinitions(configResource);
+                } else {
+                    tryAddPropertyConfigurer(configLocation, beanFactory, resourceLoader);
+                    springReader.loadBeanDefinitions(configResource);
+                }
             }
-        }
-
-        XmlBeanDefinitionReader springReader = new XmlBeanDefinitionReader(beanFactory);
-        springReader.setResourceLoader(this);
-        springReader.setEntityResolver(new ResourceEntityResolver(this));
-        springReader.setEnvironment(getEnvironment());
-        
-
-        PustefixProjectBeanDefinitionReader pustefixReader = new PustefixProjectBeanDefinitionReader(beanFactory);
-        pustefixReader.setResourceLoader(this);
-
-        for (int i = 0; i < configLocations.length; i++) {
-            String configLocation = configLocations[i];
-            Resource configResource = this.getResource(configLocation);
-            DocumentBuilderFactory dbf = DocumentBuilderFactory.newInstance();
-            dbf.setNamespaceAware(true);
-            dbf.setXIncludeAware(true);
-            DocumentBuilder db;
-            Document doc;
-            try {
-                db = dbf.newDocumentBuilder();
-                doc = db.parse(configResource.getInputStream());
-            } catch (ParserConfigurationException e) {
-                throw new ApplicationContextException("Error while reading " + configResource + ": " + e.getMessage(), e);
-            } catch (SAXException e) {
-                throw new ApplicationContextException("Error while reading " + configResource + ": " + e.getMessage(), e);
-            }
-            if (doc.getDocumentElement().getNamespaceURI() != null && doc.getDocumentElement().getNamespaceURI().equals("http://www.pustefix-framework.org/2008/namespace/project-config")) {
-                pustefixReader.loadBeanDefinitions(configResource);
-            } else {
-                tryAddPropertyConfigurer(configLocation, beanFactory);
-                springReader.loadBeanDefinitions(configResource);
-            }
-
         }
 
         beanFactory.registerScope("tenant", new TenantScope());
@@ -148,7 +148,7 @@ public class PustefixWebApplicationContext extends AbstractRefreshableWebApplica
         addBeanFactoryPostProcessor(ControllerStatePostProcessor.class, beanFactory);
     }
     
-    private void addBeanFactoryPostProcessor(Class<? extends BeanFactoryPostProcessor> processorClass, BeanDefinitionRegistry registry) {
+    private static void addBeanFactoryPostProcessor(Class<? extends BeanFactoryPostProcessor> processorClass, BeanDefinitionRegistry registry) {
         BeanDefinitionBuilder beanBuilder = BeanDefinitionBuilder.genericBeanDefinition(processorClass);
         beanBuilder.setScope("singleton");
         BeanDefinition definition = beanBuilder.getBeanDefinition();
@@ -157,25 +157,25 @@ public class PustefixWebApplicationContext extends AbstractRefreshableWebApplica
         registry.registerBeanDefinition(name, definition);
     }
 
-    private void tryAddPropertyConfigurer(String configLocation, BeanDefinitionRegistry registry) {
+    private static void tryAddPropertyConfigurer(String configLocation, BeanDefinitionRegistry registry, ResourceLoader resourceLoader) {
         int ind = configLocation.lastIndexOf(".");
         if(ind > -1) {
             String propConfigLocation = configLocation.substring(0,ind) + "-properties" +
                 configLocation.substring(ind);
-            Resource propConfigResource = getResource(propConfigLocation);
+            Resource propConfigResource = resourceLoader.getResource(propConfigLocation);
             if(propConfigResource.exists()) {
                 addPropertyConfigurer(PropertyPlaceholderConfigurer.class, propConfigResource, registry);
             }
             propConfigLocation = configLocation.substring(0,ind) + "-properties-override" +
                 configLocation.substring(ind);
-            propConfigResource = getResource(propConfigLocation);
+            propConfigResource = resourceLoader.getResource(propConfigLocation);
             if(propConfigResource.exists()) {
                 addPropertyConfigurer(PropertyOverrideConfigurer.class, propConfigResource, registry);
             }
         }
     }
 
-    private void addPropertyConfigurer(Class<? extends PropertyResourceConfigurer> clazz, Resource location, BeanDefinitionRegistry registry) {
+    private static void addPropertyConfigurer(Class<? extends PropertyResourceConfigurer> clazz, Resource location, BeanDefinitionRegistry registry) {
         BeanDefinitionBuilder beanBuilder = BeanDefinitionBuilder.genericBeanDefinition(clazz);
         beanBuilder.setScope("singleton");
         beanBuilder.addPropertyValue("location", location);

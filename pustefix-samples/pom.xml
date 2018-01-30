@@ -26,6 +26,7 @@
     <module>moduletest</module>
     <module>pustefix-i18n</module>
     <module>pustefix-cditest</module>
+    <module>pustefix-mvctest</module>
   </modules>  
   <build>
     <plugins>
@@ -59,7 +60,7 @@
             <phase>prepare-package</phase>
             <configuration>
               <target>
-                <mkdir dir="${project.build.directory}/addtomcatconf" />
+                <mkdir dir="${project.build.directory}/addtomcatconf"/>
                 <echo file="${project.build.directory}/addtomcatconf/context.xml"><![CDATA[<?xml version='1.0' encoding='utf-8'?>
 <Context cookies="true" useHttpOnly="true">
   <Parameter name="mode" value="${pustefix.mode}" override="false" />

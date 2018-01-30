@@ -74,6 +74,12 @@ public class PageListGenerator {
         if(!webXml.exists()) throw new Exception("Can't find web.xml: " + webXml.getAbsolutePath());
         
         String projectConfigLocation = getProjectConfigLocation(webXml);
+        if(projectConfigLocation == null) {
+            File file = new File(docroot, "WEB-INF/project.xml");
+            if(file.exists()) {
+                projectConfigLocation = "WEB-INF/project.xml";
+            }
+        }
         if(projectConfigLocation == null) throw new Exception("Can't get project config location from web.xml");
         
         Properties props = new Properties();

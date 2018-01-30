@@ -1,0 +1,171 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+
+  <modelVersion>4.0.0</modelVersion>
+
+  <parent>
+    <artifactId>pustefix-samples</artifactId>
+    <groupId>org.pustefixframework</groupId>
+    <version>0.22.2-SNAPSHOT</version>
+  </parent>
+
+  <groupId>org.pustefixframework.samples</groupId>
+  <artifactId>pustefix-mvctest</artifactId>
+  <version>0.22.2-SNAPSHOT</version>
+  <packaging>war</packaging>
+
+  <name>Pustefix MVC Test</name>
+
+  <properties>
+    <pustefix.mode>test</pustefix.mode>
+    <pustefix.version>0.22.2-SNAPSHOT</pustefix.version>
+    <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+  </properties>
+
+  <dependencies>
+    <dependency>
+      <groupId>org.pustefixframework</groupId>
+      <artifactId>pustefix-core</artifactId>
+      <version>${pustefix.version}</version>
+    </dependency>
+    <dependency>
+      <groupId>org.pustefixframework.webservices</groupId>
+      <artifactId>pustefix-webservices-core</artifactId>
+      <version>${pustefix.version}</version>
+    </dependency>
+    <dependency>
+      <groupId>org.pustefixframework.webservices</groupId>
+      <artifactId>pustefix-webservices-jsonws</artifactId>
+      <version>${pustefix.version}</version>
+    </dependency>
+
+    <dependency>
+      <groupId>org.pustefixframework.logging</groupId>
+      <artifactId>pustefix-logback</artifactId>
+      <version>0.22.2-SNAPSHOT</version>
+    </dependency>
+
+    <dependency>
+      <groupId>org.springframework</groupId>
+      <artifactId>spring-context</artifactId>
+      <version>5.0.2.RELEASE</version>
+    </dependency>
+    <dependency>
+      <groupId>org.springframework</groupId>
+      <artifactId>spring-webmvc</artifactId>
+      <version>5.0.2.RELEASE</version>
+    </dependency>
+    <dependency>
+      <groupId>org.springframework</groupId>
+      <artifactId>spring-test</artifactId>
+      <version>5.0.2.RELEASE</version>
+    </dependency>
+
+    <dependency>
+      <groupId>javax.servlet</groupId>
+      <artifactId>javax.servlet-api</artifactId>
+      <version>3.0.1</version>
+      <scope>test</scope>
+    </dependency>
+
+  </dependencies>
+
+  <build>
+    <plugins>
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-compiler-plugin</artifactId>
+        <version>3.3</version>
+        <configuration>
+          <source>1.8</source>
+          <target>1.8</target>
+        </configuration>
+      </plugin>
+      <plugin>
+        <groupId>org.pustefixframework.maven.plugins</groupId>
+        <artifactId>pustefix-webapp-plugin</artifactId>
+        <version>${pustefix.version}</version>
+        <executions>
+          <execution>
+            <goals>
+              <goal>merge-statusmessages</goal>
+            </goals>
+          </execution>
+        </executions>
+      </plugin>
+      <plugin>
+        <groupId>org.pustefixframework.maven.plugins</groupId>
+        <artifactId>pustefix-statuscode-plugin</artifactId>
+        <version>${pustefix.version}</version>
+        <executions>
+          <execution>
+            <goals>
+              <goal>generate</goal>
+            </goals>
+          </execution>
+        </executions>
+      </plugin>
+      <plugin>
+        <groupId>org.pustefixframework.maven.plugins</groupId>
+        <artifactId>pustefix-iwrapper-plugin</artifactId>
+        <version>${pustefix.version}</version>
+        <executions>
+          <execution>
+            <goals>
+              <goal>generate</goal>
+            </goals>
+          </execution>
+        </executions>
+      </plugin>
+      <plugin>
+        <groupId>org.pustefixframework.maven.plugins</groupId>
+        <artifactId>pustefix-pagelist-plugin</artifactId>
+        <version>${pustefix.version}</version>
+        <executions>
+          <execution>
+            <goals>
+              <goal>generate</goal>
+            </goals>
+          </execution>
+        </executions>
+      </plugin>
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-antrun-plugin</artifactId>
+        <version>1.8</version>
+        <executions>
+          <execution>
+            <id>tomcatconf</id>
+            <phase>prepare-package</phase>
+            <configuration>
+              <target>
+                <mkdir dir="${project.build.directory}/addtomcatconf" />
+                <echo file="${project.build.directory}/addtomcatconf/context.xml">&lt;?xml version='1.0' encoding='utf-8'?&gt;
+&lt;Context cookies="true" useHttpOnly="true"&gt;
+  &lt;Parameter name="mode" value="${pustefix.mode}" override="false" /&gt;
+  &lt;Manager pathname="" /&gt;
+&lt;/Context&gt;</echo>
+              </target>
+            </configuration>
+            <goals>
+              <goal>run</goal>
+            </goals>
+          </execution>
+        </executions>
+      </plugin>
+      <plugin>
+        <groupId>org.apache.tomcat.maven</groupId>
+        <artifactId>tomcat7-maven-plugin</artifactId>
+        <version>2.2</version>
+        <configuration>
+          <path>/</path>
+          <contextFile>${project.build.directory}/addtomcatconf/context.xml</contextFile>
+          <warDirectory>${war.dir}</warDirectory>
+          <uriEncoding>UTF-8</uriEncoding>
+          <useSeparateTomcatClassLoader>true</useSeparateTomcatClassLoader>
+        </configuration>
+      </plugin>
+    </plugins>
+  </build>
+
+</project>
