@@ -1921,11 +1921,72 @@
   <section xml:id="configuration.spring">
     <title>Spring configuration and customization</title>
     <para>
-      Pustefix is based on Spring MVC and uses its DispatcherServlet to bootstrap the ApplicationContext on webapp startup. It configures its own ApplicationContext implementation by passing the <literal>PustefixWebApplicationContext</literal> class as <literal>contextClass</literal> init parameter in the webapp's <literal>web.xml</literal> configuration file.
+      Pustefix is based on Spring MVC. On ApplicationContext startup the Pustefix configuration has to be read and framework specific
+      bean definitions have to be created. This can either be done by using Pustefix's own <literal>ApplicationContext</literal> implementation
+      <literal>org.pustefixframework.container.spring.beans.PustefixWebApplicationContext</literal>, or you can alternatively use a standard
+      Spring <literal>ApplicationContext</literal> and add Pustefix's <literal>BeanDefinitionRegistryPostProcessor</literal> implementation
+      <literal>org.pustefixframework.container.spring.beans.PustefixConfigPostProcessor</literal>.
     </para>
+    <para>
+      The following example shows how you can configure the Spring <literal>ApplicationContext</literal> in the <literal>web.xml</literal> configuration
+      file of your application using the classical XML configuration style:
+    </para>
+    <programlisting language="xml"><![CDATA[
+  <servlet>
+      <servlet-name>dispatcher</servlet-name>
+      <servlet-class>org.springframework.web.servlet.DispatcherServlet</servlet-class>
+      <init-param>
+         <param-name>contextClass</param-name>
+         <param-value>org.pustefixframework.container.spring.beans.PustefixWebApplicationContext</param-value>
+      </init-param>
+      <init-param>
+         <param-name>contextConfigLocation</param-name>
+         <param-value>WEB-INF/project.xml WEB-INF/spring.xml</param-value>
+      </init-param>
+      <load-on-startup>1</load-on-startup>
+   </servlet>
+   <servlet-mapping>
+      <servlet-name>dispatcher</servlet-name>
+      <url-pattern>/*</url-pattern>
+   </servlet-mapping>
+]]></programlisting>
     <para>
       The configuration file locations are passed to the DispatcherServlet using the standard <literal>contextConfigLocation</literal> init parameter. By default Pustefix passes the Pustefix configuration file <literal>WEB-INF/project.xml</literal> and, if exisiting, the file <literal>WEB-INF/spring.xml</literal>, which is intended to contain a standard Spring XML bean configuration. 
     </para>
+    <para>
+      The next example shows how you can configure Spring in <literal>web.xml</literal> for using annotation configuration and how to
+      add the required <literal>BeanDefinitionRegistryPostProcessor</literal> in your Java configuration:
+    </para>
+    <programlisting language="xml"><![CDATA[
+   <servlet>
+      <servlet-name>dispatcher</servlet-name>
+      <servlet-class>org.springframework.web.servlet.DispatcherServlet</servlet-class>
+      <init-param>
+         <param-name>contextClass</param-name>
+         <param-value>org.springframework.web.context.support.AnnotationConfigWebApplicationContext</param-value>
+      </init-param>
+      <init-param>
+         <param-name>contextConfigLocation</param-name>
+         <param-value>org.pustefixframework.samples.mvctest.SpringConfig</param-value>
+      </init-param>
+      <load-on-startup>1</load-on-startup>
+   </servlet>
+   <servlet-mapping>
+      <servlet-name>dispatcher</servlet-name>
+      <url-pattern>/*</url-pattern>
+   </servlet-mapping>
+]]></programlisting>
+   <programlisting language="java"><![CDATA[
+@Configuration
+@EnableWebMvc
+@ComponentScan(basePackages = "org.pustefixframework.samples.mvctest")
+public class SpringConfig implements WebMvcConfigurer {
+
+    @Bean
+    public PustefixConfigPostProcessor registerPustefix() {
+        return new PustefixConfigPostProcessor();
+    }
+}]]></programlisting>
     <section xml:id="configuration.spring.custom">
       <title>Customizing the Spring configuration</title>
       <para>
