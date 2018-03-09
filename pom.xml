@@ -4,7 +4,7 @@
 
   <groupId>org.pustefixframework</groupId>
   <artifactId>pustefixframework</artifactId>
-  <version>0.20.30</version>
+  <version>0.20.31-SNAPSHOT</version>
   <packaging>pom</packaging>
   <name>Pustefix Framework</name>
   <url>http://pustefix-framework.org</url>
