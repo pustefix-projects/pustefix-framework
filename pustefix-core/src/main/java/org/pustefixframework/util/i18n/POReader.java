@@ -124,6 +124,13 @@ public class POReader {
                 
                 parseHeader(context.messageStrings[0], headers);
             }
+            for(int i = 0; i < context.messageStrings.length; i++) {
+                if(context.messageStrings[i].contains("{")) {
+                    context.messageStrings[i] = context.messageStrings[i].replace("\\'", "''");
+                } else {
+                    context.messageStrings[i] = context.messageStrings[i].replace("\\'", "'");
+                }
+            }
             POMessage message = new POMessage(context.messageContext, context.messageId, 
                     context.messageIdPlural, context.messageStrings);
             messages.add(message);
