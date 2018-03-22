@@ -18,15 +18,8 @@
 
 package org.pustefixframework.config.project.parser;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.pustefixframework.config.Constants;
 import org.pustefixframework.config.project.SessionTimeoutInfo;
-import org.pustefixframework.config.project.SessionTrackingStrategyInfo;
-import org.pustefixframework.http.CookieOnlySessionTrackingStrategy;
-import org.pustefixframework.http.CookieSessionTrackingStrategy;
-import org.pustefixframework.http.SessionTrackingStrategy;
-import org.pustefixframework.http.URLRewriteSessionTrackingStrategy;
 import org.w3c.dom.Element;
 import org.w3c.dom.NodeList;
 
@@ -36,39 +29,11 @@ import com.marsching.flexiparse.parser.exception.ParserException;
 
 
 public class SessionInfoParsingHandler implements ParsingHandler {
-    
-    private Logger LOG = LoggerFactory.getLogger(SessionInfoParsingHandler.class);
 
     public void handleNode(HandlerContext context) throws ParserException {
 
         Element elem = (Element) context.getNode();
-        NodeList nodes = elem.getElementsByTagNameNS(Constants.NS_PROJECT, "session-tracking-strategy");
-        if(nodes.getLength() == 1) {
-            String content = nodes.item(0).getTextContent().trim().toUpperCase();
-            String warning;
-            Class<? extends SessionTrackingStrategy> clazz;
-            if(content.equals("COOKIE")) {
-                clazz = CookieSessionTrackingStrategy.class;
-                warning = getDeprecationWarning(new String[] {"COOKIE", "URL"});
-            } else if(content.equals("URL")) {
-                clazz = URLRewriteSessionTrackingStrategy.class;
-                warning = getDeprecationWarning(new String[] {"URL"});
-            } else if(content.equals("COOKIEONLY")) {
-            	clazz = CookieOnlySessionTrackingStrategy.class;
-                warning = getDeprecationWarning(new String[] {"COOKIE"});
-            } else {
-                throw new ParserException("Session tracking strategy '" + content + "' not supported.");
-            }
-            LOG.warn(warning);
-            System.out.println(warning);
-            SessionTrackingStrategyInfo strategyInfo = new SessionTrackingStrategyInfo();
-            strategyInfo.setSessionTrackingStrategy(clazz);
-            context.getObjectTreeElement().addObject(strategyInfo);
-        } else if(nodes.getLength() > 1) {
-            throw new ParserException("Multiple session-tracking-strategy elements found");
-        }
-        
-        nodes = elem.getElementsByTagNameNS(Constants.NS_PROJECT, "initial-session-timeout");
+        NodeList nodes = elem.getElementsByTagNameNS(Constants.NS_PROJECT, "initial-session-timeout");
         if(nodes.getLength() == 1) {
             Element node = (Element)nodes.item(0);
             int timeout = Integer.parseInt(node.getAttribute("value"));
@@ -81,28 +46,6 @@ public class SessionInfoParsingHandler implements ParsingHandler {
             throw new ParserException("Multiple initial-session-timeout elements found");
         }
         
-    }
-    
-    private String getDeprecationWarning(String[] modes) {
-        StringBuilder sb = new StringBuilder();
-        sb.append("################################## !!! DEPRECATION WARNING !!! #########################################\n");
-        sb.append("#                                                                                                      #\n");
-        sb.append("#  Configuration element <session-tracking-strategy> is deprecated and will be removed in the future.  #\n");
-        sb.append("#  You should use the standard mechanism for session tracking mode configuration in web.xml instead.   #\n");
-        sb.append("#  The currently selected session tracking strategy can be set in your web.xml as follows:             #\n");
-        sb.append("#                                                                                                      #\n");
-        sb.append("#    <session-config>                                                                                  #\n");
-        for(String mode: modes) {
-            if(mode.equals("COOKIE")) {
-                sb.append("#      <tracking-mode>COOKIE</tracking-mode>                                                           #\n");
-            } else if(mode.equals("URL")) {
-                sb.append("#      <tracking-mode>URL</tracking-mode>                                                              #\n"); 
-            }
-        }
-        sb.append("#    </session-config>                                                                                 #\n");
-        sb.append("#                                                                                                      #\n");
-        sb.append("########################################################################################################");
-        return sb.toString();
     }
 
 }

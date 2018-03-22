@@ -204,37 +204,9 @@ public abstract class AbstractPustefixXMLRequestHandler extends AbstractPustefix
      * @return void
      * @exception ServletException thrown when the initialisation goes havoc somehow
      */
-    @Override
     public void init() throws ServletException {
-        super.init();
-        if (LOGGER.isDebugEnabled()) {
-            LOGGER.debug("\n>>>> In init of AbstractXMLServlet <<<<");
-        }
-        initValues();
-        if (LOGGER.isDebugEnabled()) {
-            LOGGER.debug("End of init AbstractXMLServlet");
-        }
+        servletname = getAbstractXMLServletConfig().getServletName();
         verifyDirExists(System.getProperty(DEF_PROP_TMPDIR));
-    }
-
-    private void initValues() throws ServletException {
-        servletname = this.getAbstractXMLServletConfig().getServletName();
-
-        if (generator == null) {
-            LOGGER.error("Error: TargetGenerator has not been set.");
-            throw new ServletException("TargetGenerator is not set");
-        }
-        
-        if (LOGGER.isInfoEnabled()) {
-            StringBuffer sb = new StringBuffer(255);
-            sb.append("\n").append("AbstractXMLServlet properties after initValues(): \n");
-            sb.append("               servletname = ").append(servletname).append("\n");
-            sb.append("                   showDom = ").append(showDom).append("\n");
-            sb.append("             maxStoredDoms = ").append(maxStoredDoms).append("\n");
-            sb.append("                   timeout = ").append(sessionCleaner.getTimeout()).append("\n");
-            sb.append("           render_external = ").append(renderExternal).append("\n");
-            LOGGER.info(sb.toString());
-        }
     }
 
     /**
@@ -723,7 +695,6 @@ public abstract class AbstractPustefixXMLRequestHandler extends AbstractPustefix
          if (spdoc.isResponseErrorPageOverride()) {
              res.setStatus(statusCode);
              res.setContentType("text/plain");
-             res.setCharacterEncoding(getServletEncoding());
              if (errorMessage != null) {
                  PrintWriter writer = res.getWriter();
                  writer.write(errorMessage);
@@ -847,7 +818,7 @@ public abstract class AbstractPustefixXMLRequestHandler extends AbstractPustefix
         try {
             long t1 = System.currentTimeMillis();
             ExtensionFunctionUtils.resetExtensionFunctionTime();
-            Xslt.transform(spdoc.getDocument(), stylevalue, paramhash, new StreamResult(output), getServletEncoding());
+            Xslt.transform(spdoc.getDocument(), stylevalue, paramhash, new StreamResult(output), res.getCharacterEncoding());
             long t2 = System.currentTimeMillis();
             if(LOGGER.isDebugEnabled()) LOGGER.debug("Transformation time => Total: " + (t2-t1) + " REX-Create: " + 
                     renderContext.getTemplateCreationTime() + " REX-Trafo: " + renderContext.getTransformationTime());

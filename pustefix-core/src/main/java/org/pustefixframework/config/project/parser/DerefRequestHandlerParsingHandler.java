@@ -20,8 +20,6 @@ package org.pustefixframework.config.project.parser;
 import org.pustefixframework.config.Constants;
 import org.pustefixframework.config.contextxmlservice.ServletManagerConfig;
 import org.pustefixframework.config.derefservice.internal.DerefServiceConfig;
-import org.pustefixframework.config.generic.ParsingUtils;
-import org.pustefixframework.config.project.SessionTrackingStrategyInfo;
 import org.pustefixframework.http.dereferer.DerefRequestHandler;
 import org.springframework.beans.factory.config.BeanDefinition;
 import org.springframework.beans.factory.config.BeanDefinitionHolder;
@@ -54,16 +52,11 @@ public class DerefRequestHandlerParsingHandler implements ParsingHandler {
 
             beanBuilder = BeanDefinitionBuilder.genericBeanDefinition(DerefRequestHandler.class);
             beanBuilder.setScope("singleton");
-            beanBuilder.setInitMethodName("init");
             beanBuilder.addPropertyValue("handlerURI", "/deref");
             beanBuilder.addPropertyValue("validTime", 1000 * 60 * 60);
             beanBuilder.addPropertyValue("mustSign", true);
             beanBuilder.addPropertyValue("configuration", config);
             beanBuilder.addPropertyValue("sessionAdmin", new RuntimeBeanReference(SessionAdmin.class.getName()));
-            SessionTrackingStrategyInfo strategyInfo = ParsingUtils.getSingleSubObjectFromRoot(SessionTrackingStrategyInfo.class, context, false);
-            if(strategyInfo != null) {
-                beanBuilder.addPropertyValue("sessionTrackingStrategy", strategyInfo.getSessionTrackingStrategyInstance());
-            }
             beanBuilder.addPropertyValue("tenantInfo", new RuntimeBeanReference(TenantInfo.class.getName()));
             beanBuilder.addPropertyValue("languageInfo", new RuntimeBeanReference(LanguageInfo.class.getName()));
             beanBuilder.addPropertyValue("siteMap", new RuntimeBeanReference(SiteMap.class.getName()));

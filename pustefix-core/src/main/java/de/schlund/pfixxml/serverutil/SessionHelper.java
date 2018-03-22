@@ -174,7 +174,7 @@ public class SessionHelper {
 
         rcBuf = new StringBuffer();
         rcBuf.append(scheme).append("://").append(host);
-        if (!AbstractPustefixRequestHandler.isDefault(req.getScheme(), req.getServerPort())) {
+        if (!isDefaultPort(req.getScheme(), req.getServerPort())) {
             // we are using non-default ports and are redirecting to ssl:
             // try to get the right ssl port from the configuration
             if ("https".equals(scheme) && !req.isSecure()) {
@@ -193,7 +193,17 @@ public class SessionHelper {
         }
         return rcBuf;
     }
-    
+
+    private static boolean isDefaultPort(String scheme, int port) {
+        if (scheme.equals("http") && port == 80) {
+            return true;
+        } else if (scheme.equals("https") && port == 443) {
+            return true;
+        } else {
+            return false;
+        }
+    }
+
     protected static String stripUriSessionId(String oldSessionId, String uri, StringBuffer rcUri) {
         String rc = oldSessionId;
         try {

@@ -23,15 +23,6 @@
             <xsd:attribute name="type" type="xsd:string" use="optional"/>
           </xsd:complexType>
         </xsd:element>
-        <xsd:element name="session-tracking-strategy" minOccurs="0">
-          <xsd:simpleType>
-            <xsd:restriction base="xsd:string">
-              <xsd:enumeration value="COOKIE"/>
-              <xsd:enumeration value="COOKIEONLY"/>
-              <xsd:enumeration value="URL"/>
-            </xsd:restriction>
-          </xsd:simpleType>
-        </xsd:element>
         <xsd:element name="initial-session-timeout" minOccurs="0">
           <xsd:complexType>
             <xsd:attribute name="value" type="xsd:int"/>

@@ -20,10 +20,13 @@ package org.pustefixframework.container.spring.http;
 
 import java.util.List;
 
+import org.pustefixframework.http.PustefixInitInterceptor;
+import org.pustefixframework.http.SessionTrackingInterceptor;
 import org.springframework.context.ApplicationContext;
 import org.springframework.web.context.request.WebRequestInterceptor;
 import org.springframework.web.servlet.HandlerInterceptor;
 import org.springframework.web.servlet.handler.AbstractDetectingUrlHandlerMapping;
+import org.springframework.web.servlet.handler.MappedInterceptor;
 
 public class PustefixHandlerMapping extends AbstractDetectingUrlHandlerMapping {
 
@@ -54,6 +57,11 @@ public class PustefixHandlerMapping extends AbstractDetectingUrlHandlerMapping {
             if(clazz != null) {
                 if (HandlerInterceptor.class.isAssignableFrom(clazz)
                         || WebRequestInterceptor.class.isAssignableFrom(clazz)) {
+                    if(clazz == PustefixInitInterceptor.class || clazz == SessionTrackingInterceptor.class ||
+                            MappedInterceptor.class.isAssignableFrom(clazz)) {
+                        //don't register MappedInterceptors as they are automatically registered
+                        continue;
+                    }
                     // Ignore scoped beans - there should be a scoped proxy that
                     // will be used instead.
                     if (!applicationContext.isPrototype(beanName)

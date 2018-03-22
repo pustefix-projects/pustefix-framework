@@ -36,8 +36,6 @@ import org.pustefixframework.config.customization.PropertiesBasedCustomizationIn
 import org.pustefixframework.config.generic.ParsingUtils;
 import org.pustefixframework.config.project.EditorInfo;
 import org.pustefixframework.config.project.ProjectInfo;
-import org.pustefixframework.config.project.SessionTimeoutInfo;
-import org.pustefixframework.config.project.SessionTrackingStrategyInfo;
 import org.pustefixframework.http.AdditionalTrailInfo;
 import org.pustefixframework.http.DefaultAdditionalTrailInfoImpl;
 import org.pustefixframework.http.PustefixContextXMLRequestHandler;
@@ -191,7 +189,6 @@ public class PustefixContextXMLRequestHandlerParsingHandler extends Customizatio
         }
         
         ContextXMLServletConfig config = context.getObjectTreeElement().getObjectsOfTypeFromSubTree(ContextXMLServletConfig.class).iterator().next();
-        SessionTimeoutInfo timeoutInfo = ParsingUtils.getFirstTopObject(SessionTimeoutInfo.class, context, false);
         EditorInfo editorInfo = ParsingUtils.getSingleSubObjectFromRoot(EditorInfo.class, context, false);
         
         BeanDefinitionBuilder beanBuilder = BeanDefinitionBuilder.genericBeanDefinition(PustefixContextXMLRequestHandler.class);
@@ -214,13 +211,6 @@ public class PustefixContextXMLRequestHandlerParsingHandler extends Customizatio
         beanBuilder.addPropertyValue("maxStoredDoms", maxStoredDoms);
         beanBuilder.addPropertyValue("showDom", showDom);
         beanBuilder.addPropertyValue("exceptionProcessingConfiguration", new RuntimeBeanReference(ExceptionProcessingConfiguration.class.getName()));
-        SessionTrackingStrategyInfo strategyInfo = ParsingUtils.getSingleTopObject(SessionTrackingStrategyInfo.class, context, false);
-        if(strategyInfo != null) {
-            beanBuilder.addPropertyValue("sessionTrackingStrategy", strategyInfo.getSessionTrackingStrategyInstance());
-        }
-        if(timeoutInfo != null) {
-            beanBuilder.addPropertyValue("sessionTimeoutInfo", timeoutInfo);
-        }
         beanBuilder.addPropertyValue("tenantInfo", new RuntimeBeanReference(TenantInfo.class.getName()));
         beanBuilder.addPropertyValue("languageInfo", new RuntimeBeanReference(LanguageInfo.class.getName()));
         beanBuilder.addPropertyValue("siteMap", new RuntimeBeanReference(SiteMap.class.getName()));

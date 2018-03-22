@@ -21,15 +21,18 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 
+import org.pustefixframework.config.contextxmlservice.ContextXMLServletConfig;
 import org.pustefixframework.config.customization.CustomizationAwareParsingHandler;
 import org.pustefixframework.config.generic.ParsingUtils;
 import org.pustefixframework.http.PustefixInitInterceptor;
+import org.pustefixframework.http.SessionTrackingInterceptor;
 import org.pustefixframework.web.servlet.i18n.PustefixLocaleResolverPostProcessor;
 import org.pustefixframework.web.servlet.view.XsltView;
 import org.pustefixframework.web.servlet.view.XsltViewResolver;
 import org.springframework.beans.factory.config.BeanDefinition;
 import org.springframework.beans.factory.support.BeanDefinitionBuilder;
 import org.springframework.beans.factory.support.BeanDefinitionRegistry;
+import org.springframework.web.servlet.handler.MappedInterceptor;
 
 import com.marsching.flexiparse.configuration.RunOrder;
 import com.marsching.flexiparse.parser.HandlerContext;
@@ -38,6 +41,7 @@ import com.marsching.flexiparse.parser.exception.ParserException;
 import de.schlund.pfixxml.LanguageInfo;
 import de.schlund.pfixxml.Tenant;
 import de.schlund.pfixxml.TenantInfo;
+import de.schlund.pfixxml.serverutil.SessionAdmin;
 
 public class ProjectParsingHandler extends CustomizationAwareParsingHandler {
 
@@ -62,6 +66,24 @@ public class ProjectParsingHandler extends CustomizationAwareParsingHandler {
             beanBuilder.addPropertyReference("tenantInfo", TenantInfo.class.getName());
             beanBuilder.addPropertyReference("languageInfo", LanguageInfo.class.getName());
             beanRegistry.registerBeanDefinition(PustefixInitInterceptor.class.getName(), beanBuilder.getBeanDefinition());
+            beanBuilder = BeanDefinitionBuilder.genericBeanDefinition(MappedInterceptor.class);
+            beanBuilder.setScope("singleton");
+            beanBuilder.addConstructorArgValue("/**");
+            beanBuilder.addConstructorArgReference(PustefixInitInterceptor.class.getName());
+            beanRegistry.registerBeanDefinition(PustefixInitInterceptor.class.getName() + "#Mapped", beanBuilder.getBeanDefinition());
+
+            beanBuilder = BeanDefinitionBuilder.genericBeanDefinition(SessionTrackingInterceptor.class);
+            beanBuilder.setScope("singleton");
+            ContextXMLServletConfig config = context.getObjectTreeElement().getObjectsOfTypeFromSubTree(ContextXMLServletConfig.class).iterator().next();
+            beanBuilder.addPropertyValue("forceSSL", config.isSSL());
+            beanBuilder.addPropertyReference("sessionAdmin", SessionAdmin.class.getName());
+            beanBuilder.addPropertyValue("properties", config.getProperties());
+            beanRegistry.registerBeanDefinition(SessionTrackingInterceptor.class.getName(), beanBuilder.getBeanDefinition());
+            beanBuilder = BeanDefinitionBuilder.genericBeanDefinition(MappedInterceptor.class);
+            beanBuilder.setScope("singleton");
+            beanBuilder.addConstructorArgValue("/**");
+            beanBuilder.addConstructorArgReference(SessionTrackingInterceptor.class.getName());
+            beanRegistry.registerBeanDefinition(SessionTrackingInterceptor.class.getName() + "#Mapped", beanBuilder.getBeanDefinition());
 
             beanBuilder = BeanDefinitionBuilder.genericBeanDefinition(PustefixLocaleResolverPostProcessor.class);
             beanBuilder.setScope("singleton");

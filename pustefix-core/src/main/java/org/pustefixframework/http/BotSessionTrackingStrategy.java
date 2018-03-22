@@ -1,6 +1,7 @@
 package org.pustefixframework.http;
 
 import java.io.IOException;
+import java.util.Properties;
 
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
@@ -9,30 +10,30 @@ import javax.servlet.http.HttpSession;
 
 import de.schlund.pfixxml.PfixServletRequest;
 import de.schlund.pfixxml.PfixServletRequestImpl;
+import de.schlund.pfixxml.serverutil.SessionAdmin;
 import de.schlund.pfixxml.serverutil.SessionHelper;
 
-public class BotSessionTrackingStrategy implements SessionTrackingStrategy {
-    
-    private SessionTrackingStrategyContext context;
-    
-    public void init(SessionTrackingStrategyContext context) {
-        this.context = context;
+public class BotSessionTrackingStrategy extends AbstractSessionTrackingStrategy {
+
+    public BotSessionTrackingStrategy(SessionAdmin sessionAdmin, Properties properties) {
+        super(sessionAdmin, properties);
     }
-    
-    public void handleRequest(HttpServletRequest req, HttpServletResponse res) throws ServletException, IOException {
+
+    public boolean handleRequest(HttpServletRequest req, HttpServletResponse res,
+            SessionTrackingStrategyContext context) throws ServletException, IOException {
         
         if(req.getRequestedSessionId() != null && req.isRequestedSessionIdFromURL()) {
-            String redirect_uri = SessionHelper.getClearedURL(req.getScheme(), AbstractPustefixRequestHandler.getServerName(req), req, context.getServletManagerConfig().getProperties());
+            String redirect_uri = SessionHelper.getClearedURL(req.getScheme(), AbstractPustefixRequestHandler.getServerName(req), req, properties);
             AbstractPustefixRequestHandler.relocate(res, HttpServletResponse.SC_MOVED_PERMANENTLY, redirect_uri);
-            return;
+            return false;
         }
         
-        PfixServletRequest preq = new PfixServletRequestImpl(req, context.getServletManagerConfig().getProperties(), context);
+        PfixServletRequest preq = new PfixServletRequestImpl(req, properties, context);
         
         if(!req.isSecure() && context.needsSSL(preq)) {
-            String redirect_uri = SessionHelper.getClearedURL("https", AbstractPustefixRequestHandler.getServerName(req), req, context.getServletManagerConfig().getProperties());
+            String redirect_uri = SessionHelper.getClearedURL("https", AbstractPustefixRequestHandler.getServerName(req), req, properties);
             AbstractPustefixRequestHandler.relocate(res, HttpServletResponse.SC_MOVED_PERMANENTLY, redirect_uri);
-            return;
+            return false;
         }
         
         HttpSession session = null;
@@ -40,11 +41,11 @@ public class BotSessionTrackingStrategy implements SessionTrackingStrategy {
             session = req.getSession(false);
             if(session == null) {
                 session = req.getSession(true);
-                context.registerSession(req, session);
+                registerSession(req, session);
                 session.setMaxInactiveInterval(30);
             } else if(session.isNew() && session.getAttribute(AbstractPustefixRequestHandler.VISIT_ID) == null) {
                 //Assimilate session created within this request but outside of Pustefix
-                context.registerSession(req, session);
+                registerSession(req, session);
                 session.setMaxInactiveInterval(30);
             } else {
                 if(session.getMaxInactiveInterval() == 30) {
@@ -54,8 +55,9 @@ public class BotSessionTrackingStrategy implements SessionTrackingStrategy {
             session.setAttribute(AbstractPustefixRequestHandler.SESSION_ATTR_COOKIE_SESSION, true);
             preq.updateRequest(req);
         }
-        
-        context.callProcess(preq, req, res);
+
+        req.setAttribute(PfixServletRequest.class.getName(), preq);
+        return true;
     }
     
 }

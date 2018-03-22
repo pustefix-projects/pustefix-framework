@@ -28,11 +28,14 @@ import org.springframework.web.servlet.HandlerInterceptor;
 import org.springframework.web.servlet.ModelAndView;
 
 import de.schlund.pfixxml.LanguageInfo;
+import de.schlund.pfixxml.PfixServletRequest;
 import de.schlund.pfixxml.Tenant;
 import de.schlund.pfixxml.TenantInfo;
 import de.schlund.pfixxml.config.EnvironmentProperties;
 
 public class PustefixInitInterceptor implements HandlerInterceptor {
+
+    private final static String DEFAULT_ENCODING = "UTF-8";
 
     private TenantInfo tenantInfo;
     private LanguageInfo langInfo;
@@ -40,6 +43,33 @@ public class PustefixInitInterceptor implements HandlerInterceptor {
     @Override
     public boolean preHandle(HttpServletRequest request, HttpServletResponse response, Object handler)
             throws Exception {
+
+        //Set character encoding of request to default if not already set.
+        if(request.getCharacterEncoding() == null) {
+            request.setCharacterEncoding(DEFAULT_ENCODING);
+        }
+        //Set character encoding of response to default if not already set, i.e. if it's set to null or to
+        //the Servlet API default value 'ISO-8859-1' (we can't detect if it's intentionally set or the default
+        //value applies, so we just override the default, when the request encoding doesn't equal to it).
+        if(response.getCharacterEncoding() == null || (response.getCharacterEncoding().equals("ISO-8859-1")
+                && !"ISO-8859-1".equals(request.getCharacterEncoding()))) {
+            response.setCharacterEncoding(DEFAULT_ENCODING);
+        }
+
+        //Simple means of switching to other tenant using URL parameter (during development only).
+        String tenantParam = request.getParameter("__tenant");
+        if(tenantParam != null && !"prod".equals(EnvironmentProperties.getProperties().getProperty("mode"))) {
+            Tenant tenant = tenantInfo.getTenant(tenantParam);
+            if(tenant != null) {
+                response.addCookie(new Cookie(TenantScope.REQUEST_ATTRIBUTE_TENANT, tenant.getName()));
+            }
+            HttpSession session = request.getSession(false);
+            if(session != null) {
+                session.invalidate();
+            }
+            response.sendRedirect(request.getRequestURL().toString());
+            return false;
+        }
 
         if(tenantInfo != null && !tenantInfo.getTenants().isEmpty()) {
             
@@ -118,6 +148,11 @@ public class PustefixInitInterceptor implements HandlerInterceptor {
 
         request.removeAttribute(AbstractPustefixRequestHandler.REQUEST_ATTR_LANGUAGE);
         request.removeAttribute(TenantScope.REQUEST_ATTRIBUTE_TENANT);
+
+        PfixServletRequest preq = (PfixServletRequest)request.getAttribute(PfixServletRequest.class.getName());
+        if(preq != null) {
+            preq.resetRequest();
+        }
     }
 
     public void setTenantInfo(TenantInfo tenantInfo) {

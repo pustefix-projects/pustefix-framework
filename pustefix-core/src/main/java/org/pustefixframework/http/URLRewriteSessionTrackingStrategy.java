@@ -5,6 +5,7 @@ import java.util.Enumeration;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.LinkedList;
+import java.util.Properties;
 import java.util.TreeSet;
 
 import javax.servlet.ServletException;
@@ -25,7 +26,7 @@ import de.schlund.pfixxml.serverutil.SessionInfoStruct.TrailElement;
 import de.schlund.pfixxml.util.CookieUtils;
 import de.schlund.pfixxml.util.MD5Utils;
 
-public class URLRewriteSessionTrackingStrategy implements SessionTrackingStrategy {
+public class URLRewriteSessionTrackingStrategy extends AbstractSessionTrackingStrategy {
 
     private static Logger LOG = LoggerFactory.getLogger(URLRewriteSessionTrackingStrategy.class);
     private static Logger LOGGER_SESSION = LoggerFactory.getLogger("LOGGER_SESSION");
@@ -41,14 +42,13 @@ public class URLRewriteSessionTrackingStrategy implements SessionTrackingStrateg
     private static final String SESSION_COOKIES_MARKER = "__COOKIES_USED_DURING_SESSION__";
     private static final String STORED_REQUEST = "__STORED_PFIXSERVLETREQUEST__";
     private static final String TEST_COOKIE = "__PFIX_TST_";
-    
-    private SessionTrackingStrategyContext context;
-    
-    public void init(SessionTrackingStrategyContext context) {
-        this.context = context;
+
+    public URLRewriteSessionTrackingStrategy(SessionAdmin sessionAdmin, Properties properties) {
+        super(sessionAdmin, properties);
     }
-    
-    public void handleRequest(HttpServletRequest req, HttpServletResponse res) throws ServletException, IOException {
+
+    public boolean handleRequest(HttpServletRequest req, HttpServletResponse res,
+            SessionTrackingStrategyContext context) throws ServletException, IOException {
         
         HttpSession session = null;
         boolean has_session = false;
@@ -176,7 +176,7 @@ public class URLRewriteSessionTrackingStrategy implements SessionTrackingStrateg
                         } else {
                             // We don't do cookies, so we simply have to believe it
                             // or check IP and User-Agent header at least
-                            boolean ok = AbstractPustefixRequestHandler.checkClientIdentity(req);
+                            boolean ok = checkClientIdentity(req);
                             if(!ok) {
                                 LOG.warn("Invalidate session " + session.getId() + " because client identity changed!");
                                 LOGGER_SESSION.info("Invalidate session IV: " + session.getId() + dumpRequest(req));
@@ -205,9 +205,9 @@ public class URLRewriteSessionTrackingStrategy implements SessionTrackingStrateg
             // of the browser, the user may have come back to a (non-ssl) page (in his browser history) that contains
             // links with the old "parent" session id embedded. We need to check for this and create a
             // new session but reuse the visit id of the currently running SSL session.
-            if (!req.isSecure() && context.getSessionAdmin().idWasParentSession(req.getRequestedSessionId())) {
+            if (!req.isSecure() && sessionAdmin.idWasParentSession(req.getRequestedSessionId())) {
                 LOG.debug("    ... but this session was the parent of a currently running secure session.");
-                HttpSession secure_session = context.getSessionAdmin().getChildSessionForParentId(req.getRequestedSessionId());
+                HttpSession secure_session = sessionAdmin.getChildSessionForParentId(req.getRequestedSessionId());
                 if (secure_session != null) {
                     does_cookies = doCookieTest(req, res, secure_session);
                 }
@@ -236,15 +236,14 @@ public class URLRewriteSessionTrackingStrategy implements SessionTrackingStrateg
                     LOG.debug("    ... but found __forcelocal parameter to be set.");
                 } else {
                     LOG.debug("    ... and __forcelocal is NOT set.");
-                    redirectToClearedRequest(req, res);
-                    return;
+                    redirectToClearedRequest(req, res, context);
+                    return false;
                     // End of request cycle.
                 }
             }
         }
 
         PfixServletRequest preq = null;
-        try {
         
         if (has_session) {
             preq = (PfixServletRequest) session.getAttribute(STORED_REQUEST);
@@ -256,58 +255,53 @@ public class URLRewriteSessionTrackingStrategy implements SessionTrackingStrateg
         }
         if (preq == null) {
             LOG.debug("*** Creating PfixServletRequest object.");
-            preq = new PfixServletRequestImpl(req, context.getServletManagerConfig().getProperties(), context);
+            preq = new PfixServletRequestImpl(req, properties, context);
         }
 
         // End of initialization. Now we handle all cases where we need to redirect.
 
         if (force_jump_back_to_ssl && context.allowSessionCreate()) {
             LOG.debug("=> I");
-            forceRedirectBackToInsecureSSL(preq, req, res);
-            return;
+            forceRedirectBackToInsecureSSL(preq, req, res, context);
+            return false;
             // End of request cycle.
         }
         if (force_reuse_visit_id && context.allowSessionCreate()) {
             LOG.debug("=> II");
-            forceNewSessionSameVisit(preq, req, res);
-            return;
+            forceNewSessionSameVisit(preq, req, res, context);
+            return false;
             // End of request cycle.
         }
         if (has_ssl_session_insecure) {
             LOG.debug("=> III");
-            redirectToSecureSSLSession(preq, req, res);
-            return;
+            redirectToSecureSSLSession(preq, req, res, context);
+            return false;
             // End of request cycle.
         }
         if (context.needsSession() && context.allowSessionCreate() && context.needsSSL(preq) && !has_ssl_session_secure) {
             LOG.debug("=> IV");
-            redirectToInsecureSSLSession(preq, req, res);
-            return;
+            redirectToInsecureSSLSession(preq, req, res, context);
+            return false;
             // End of request cycle.
         }
         if (!has_session && context.needsSession() && context.allowSessionCreate() && !context.needsSSL(preq)) {
             LOG.debug("=> V");
-            redirectToSession(preq, req, res);
-            return;
+            redirectToSession(preq, req, res, context);
+            return false;
             // End of request cycle.
         }
         if (!has_session && !context.needsSession() && context.needsSSL(preq) && !req.isSecure()) {
             LOG.debug("=> VI");
-            redirectToSSL(req, res);
-            return;
+            redirectToSSL(req, res, context);
+            return false;
             // End of request cycle.
         }
 
         LOG.debug("*** >>> End of redirection management, handling request now.... <<< ***\n");
         createTestCookie(req, res);
         
-        context.callProcess(preq, req, res);
-        
-        } finally {
-            if(preq != null) {
-                preq.resetRequest();
-            }
-        }
+        req.setAttribute(PfixServletRequest.class.getName(), preq);
+        return true;
     }
    
     private boolean doCookieTest(HttpServletRequest req, HttpServletResponse res, HttpSession sess) {
@@ -380,22 +374,23 @@ public class URLRewriteSessionTrackingStrategy implements SessionTrackingStrateg
     
 
     
-    private void redirectToClearedRequest(HttpServletRequest req, HttpServletResponse res) {
+    private void redirectToClearedRequest(HttpServletRequest req, HttpServletResponse res, SessionTrackingStrategyContext context) {
         LOG.debug("===> Redirecting to cleared Request URL");
-        String redirect_uri = SessionHelper.getClearedURL(req.getScheme(), AbstractPustefixRequestHandler.getServerName(req), req, context.getServletManagerConfig().getProperties());
+        String redirect_uri = SessionHelper.getClearedURL(req.getScheme(), AbstractPustefixRequestHandler.getServerName(req), req, properties);
         AbstractPustefixRequestHandler.relocate(res, HttpServletResponse.SC_MOVED_PERMANENTLY, redirect_uri);
     }
     
-    private void redirectToSSL(HttpServletRequest req, HttpServletResponse res) {
+    private void redirectToSSL(HttpServletRequest req, HttpServletResponse res, SessionTrackingStrategyContext context) {
         LOG.debug("===> Redirecting to session-less request URL under SSL");
-        String redirect_uri = SessionHelper.getClearedURL("https", AbstractPustefixRequestHandler.getServerName(req), req, context.getServletManagerConfig().getProperties());
+        String redirect_uri = SessionHelper.getClearedURL("https", AbstractPustefixRequestHandler.getServerName(req), req, properties);
         AbstractPustefixRequestHandler.relocate(res, redirect_uri);
     }
     
-    private void redirectToInsecureSSLSession(PfixServletRequest preq, HttpServletRequest req, HttpServletResponse res) {
+    private void redirectToInsecureSSLSession(PfixServletRequest preq, HttpServletRequest req, HttpServletResponse res,
+            SessionTrackingStrategyContext context) {
         HttpSession session = req.getSession(true);
-        AbstractPustefixRequestHandler.storeClientIdentity(req);
-        context.registerSession(req, session);
+        storeClientIdentity(req);
+        registerSession(req, session);
 
         LOG.debug("*** Setting INSECURE flag in session (Id: " + session.getId() + ")");
         session.setAttribute(SessionAdmin.SESSION_IS_SECURE, Boolean.FALSE);
@@ -404,29 +399,31 @@ public class URLRewriteSessionTrackingStrategy implements SessionTrackingStrateg
         createTestCookie(req, res);
 
         LOG.debug("===> Redirecting to insecure SSL URL with session (Id: " + session.getId() + ")");
-        String redirect_uri = SessionHelper.encodeURL("https", AbstractPustefixRequestHandler.getServerName(req), req, context.getServletManagerConfig().getProperties());
+        String redirect_uri = SessionHelper.encodeURL("https", AbstractPustefixRequestHandler.getServerName(req), req, properties);
         AbstractPustefixRequestHandler.relocate(res, redirect_uri);
     }
     
-    private void redirectToSession(PfixServletRequest preq, HttpServletRequest req, HttpServletResponse res) {
+    private void redirectToSession(PfixServletRequest preq, HttpServletRequest req, HttpServletResponse res,
+            SessionTrackingStrategyContext context) {
         HttpSession session = req.getSession(true);
-        AbstractPustefixRequestHandler.storeClientIdentity(req);
-        context.registerSession(req, session);
+        storeClientIdentity(req);
+        registerSession(req, session);
         createTestCookie(req, res);
 
         LOG.debug("===> Redirecting to URL with session (Id: " + session.getId() + ")");
         session.setAttribute(STORED_REQUEST, preq);
-        String redirect_uri = SessionHelper.encodeURL(req.getScheme(), AbstractPustefixRequestHandler.getServerName(req), req, context.getServletManagerConfig().getProperties());
+        String redirect_uri = SessionHelper.encodeURL(req.getScheme(), AbstractPustefixRequestHandler.getServerName(req), req, properties);
         AbstractPustefixRequestHandler.relocate(res, redirect_uri);
     }
     
-    private void redirectToSecureSSLSession(PfixServletRequest preq, HttpServletRequest req, HttpServletResponse res) {
+    private void redirectToSecureSSLSession(PfixServletRequest preq, HttpServletRequest req, HttpServletResponse res,
+            SessionTrackingStrategyContext context) {
         HttpSession session = req.getSession(false);
         String visit_id = (String) session.getAttribute(AbstractPustefixRequestHandler.VISIT_ID);
         String parentid = (String) session.getAttribute(CHECK_FOR_RUNNING_SSL_SESSION);
         if (parentid != null && !parentid.equals("")) {
             LOG.debug("*** The current insecure SSL session says to check for a already running SSL session for reuse");
-            HttpSession secure_session = context.getSessionAdmin().getChildSessionForParentId(parentid);
+            HttpSession secure_session = sessionAdmin.getChildSessionForParentId(parentid);
             if (secure_session != null) {
                 String secure_id = secure_session.getId();
                 String sec_testid = (String) secure_session.getAttribute(SECURE_SESS_COOKIE + MD5Utils.hex_md5(secure_id));
@@ -443,7 +440,7 @@ public class URLRewriteSessionTrackingStrategy implements SessionTrackingStrateg
                     if (tmp_sec.equals(sec_testid)) {
                         LOG.debug("   ... and the value is correct! (" + tmp_sec + ")");
                         LOG.debug("==> Redirecting to the secure SSL URL with the already running secure session " + secure_id);
-                        String redirect_uri = SessionHelper.encodeURL("https", AbstractPustefixRequestHandler.getServerName(req), req, secure_id, context.getServletManagerConfig().getProperties());
+                        String redirect_uri = SessionHelper.encodeURL("https", AbstractPustefixRequestHandler.getServerName(req), req, secure_id, properties);
                         AbstractPustefixRequestHandler.relocate(res, redirect_uri);
                         return;
                     } else {
@@ -461,11 +458,11 @@ public class URLRewriteSessionTrackingStrategy implements SessionTrackingStrateg
         HashMap<String, Object> map = new HashMap<String, Object>();
         SessionHelper.saveSessionData(map, session);
         // Before we invalidate the current session we save the traillog
-        SessionInfoStruct infostruct = context.getSessionAdmin().getInfo(session);
+        SessionInfoStruct infostruct = sessionAdmin.getInfo(session);
         LinkedList<TrailElement> traillog = new LinkedList<TrailElement>();
         String old_id = session.getId();
         if (infostruct != null) {
-            traillog = context.getSessionAdmin().getInfo(session).getTraillog();
+            traillog = sessionAdmin.getInfo(session).getTraillog();
         } else {
             LOG.warn("*** Infostruct == NULL ***");
         }
@@ -474,17 +471,17 @@ public class URLRewriteSessionTrackingStrategy implements SessionTrackingStrateg
         LOGGER_SESSION.info("Invalidate session VI: " + session.getId() + dumpRequest(req));
         SessionUtils.invalidate(session);
         session = req.getSession(true);
-        AbstractPustefixRequestHandler.storeClientIdentity(req);
+        storeClientIdentity(req);
 
         // First of all we put the old session id into the new session (__PARENT_SESSION_ID__)
         session.setAttribute(SessionAdmin.PARENT_SESS_ID, old_id);
         if (visit_id != null) {
             // Don't call this.registerSession(...) here. We don't want to log this as a different visit.
             // Now we register the new session with saved traillog
-            context.getSessionAdmin().registerSession(session, traillog, infostruct.getData().getServerName(), infostruct.getData().getRemoteAddr());
+            sessionAdmin.registerSession(session, traillog, infostruct.getData().getServerName(), infostruct.getData().getRemoteAddr());
         } else {
             // Register a new session now.
-            context.registerSession(req, session);
+            registerSession(req, session);
         }
         LOG.debug("*** Got new Session (Id: " + session.getId() + ")");
         LOG.debug("*** Copying data back to new session");
@@ -518,7 +515,7 @@ public class URLRewriteSessionTrackingStrategy implements SessionTrackingStrateg
         createTestCookie(req, res);
         
         LOG.debug("===> Redirecting to secure SSL URL with session (Id: " + session.getId() + ")");
-        String redirect_uri = SessionHelper.encodeURL("https", AbstractPustefixRequestHandler.getServerName(req), req, context.getServletManagerConfig().getProperties());
+        String redirect_uri = SessionHelper.encodeURL("https", AbstractPustefixRequestHandler.getServerName(req), req, properties);
         AbstractPustefixRequestHandler.relocate(res, redirect_uri);
     }
     
@@ -597,18 +594,19 @@ public class URLRewriteSessionTrackingStrategy implements SessionTrackingStrateg
         }
     }
     
-    private void forceRedirectBackToInsecureSSL(PfixServletRequest preq, HttpServletRequest req, HttpServletResponse res) {
+    private void forceRedirectBackToInsecureSSL(PfixServletRequest preq, HttpServletRequest req, HttpServletResponse res,
+            SessionTrackingStrategyContext context) {
         // When we come here, we KNOW that there's a secure SSL session already running, so this session here is
         // only used for the jump to SSL so we can get the cookie to check the identity of the caller.
         String parentid = req.getRequestedSessionId();
         HttpSession session = req.getSession(true);
-        AbstractPustefixRequestHandler.storeClientIdentity(req);
+        storeClientIdentity(req);
         session.setAttribute(CHECK_FOR_RUNNING_SSL_SESSION, parentid);
         LOG.debug("*** Setting INSECURE flag in session (Id: " + session.getId() + ")");
         session.setAttribute(SessionAdmin.SESSION_IS_SECURE, Boolean.FALSE);
         session.setAttribute(STORED_REQUEST, preq);
 
-        HttpSession child = context.getSessionAdmin().getChildSessionForParentId(parentid);
+        HttpSession child = sessionAdmin.getChildSessionForParentId(parentid);
         String testrand = (String) child.getAttribute(RAND_SESS_COOKIE_VALUE);
         if (testrand == null || testrand.equals("")) {
             // Make sure a test cookie is created
@@ -618,20 +616,21 @@ public class URLRewriteSessionTrackingStrategy implements SessionTrackingStrateg
         }
 
         LOG.debug("===> Redirecting to SSL URL with session (Id: " + session.getId() + ")");
-        String redirect_uri = SessionHelper.encodeURL("https", AbstractPustefixRequestHandler.getServerName(req), req, context.getServletManagerConfig().getProperties());
+        String redirect_uri = SessionHelper.encodeURL("https", AbstractPustefixRequestHandler.getServerName(req), req, properties);
         AbstractPustefixRequestHandler.relocate(res, redirect_uri);
     }
     
-    private void forceNewSessionSameVisit(PfixServletRequest preq, HttpServletRequest req, HttpServletResponse res) {
+    private void forceNewSessionSameVisit(PfixServletRequest preq, HttpServletRequest req, HttpServletResponse res,
+            SessionTrackingStrategyContext context) {
         // When we come here, we KNOW that there's a secure SSL session already running, but unfortunately
         // it seems that the browser doesn't send cookies. So we will not be able to know for sure that the request comes
         // from the legitimate user. The only thing we can do is to copy the VISIT_ID, which helps to keep the
         // statistic clean :-)
         String parentid = req.getRequestedSessionId();
-        HttpSession child = context.getSessionAdmin().getChildSessionForParentId(parentid);
+        HttpSession child = sessionAdmin.getChildSessionForParentId(parentid);
         String curr_visit_id = (String) child.getAttribute(AbstractPustefixRequestHandler.VISIT_ID);
         HttpSession session = req.getSession(true);
-        AbstractPustefixRequestHandler.storeClientIdentity(req);
+        storeClientIdentity(req);
         String testrand = (String) child.getAttribute(RAND_SESS_COOKIE_VALUE);
         if (testrand == null || testrand.equals("")) {
             // Make sure a test cookie is created
@@ -640,12 +639,12 @@ public class URLRewriteSessionTrackingStrategy implements SessionTrackingStrateg
             session.setAttribute(RAND_SESS_COOKIE_VALUE, testrand);
         }
 
-        LinkedList<TrailElement> traillog = context.getSessionAdmin().getInfo(child).getTraillog();
+        LinkedList<TrailElement> traillog = sessionAdmin.getInfo(child).getTraillog();
         session.setAttribute(AbstractPustefixRequestHandler.VISIT_ID, curr_visit_id);
-        context.getSessionAdmin().registerSession(session, traillog, AbstractPustefixRequestHandler.getServerName(req), req.getRemoteAddr());
+        sessionAdmin.registerSession(session, traillog, AbstractPustefixRequestHandler.getServerName(req), req.getRemoteAddr());
         LOG.debug("===> Redirecting with session (Id: " + session.getId() + ") using OLD VISIT_ID: " + curr_visit_id);
         session.setAttribute(STORED_REQUEST, preq);
-        String redirect_uri = SessionHelper.encodeURL(req.getScheme(), AbstractPustefixRequestHandler.getServerName(req), req, context.getServletManagerConfig().getProperties());
+        String redirect_uri = SessionHelper.encodeURL(req.getScheme(), AbstractPustefixRequestHandler.getServerName(req), req, properties);
         AbstractPustefixRequestHandler.relocate(res, redirect_uri);
     }
     

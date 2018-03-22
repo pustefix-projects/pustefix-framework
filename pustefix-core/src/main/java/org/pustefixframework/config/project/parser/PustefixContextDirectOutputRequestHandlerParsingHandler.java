@@ -34,8 +34,6 @@ import org.pustefixframework.config.customization.CustomizationInfo;
 import org.pustefixframework.config.directoutputservice.DirectOutputPageRequestConfig;
 import org.pustefixframework.config.directoutputservice.DirectOutputServiceConfig;
 import org.pustefixframework.config.generic.ParsingUtils;
-import org.pustefixframework.config.project.SessionTimeoutInfo;
-import org.pustefixframework.config.project.SessionTrackingStrategyInfo;
 import org.pustefixframework.http.PustefixContextDirectOutputRequestHandler;
 import org.springframework.beans.factory.config.BeanDefinition;
 import org.springframework.beans.factory.config.MapFactoryBean;
@@ -123,8 +121,7 @@ public class PustefixContextDirectOutputRequestHandlerParsingHandler extends Cus
         for (DirectOutputPageRequestConfig pConfig : config.getPageRequests()) {
             stateMap.put(pConfig.getPageName(), new RuntimeBeanReference(pConfig.getBeanName()));
         }
-        SessionTimeoutInfo timeoutInfo = ParsingUtils.getFirstTopObject(SessionTimeoutInfo.class, context, false);
-        
+
         BeanNameGenerator nameGenerator = new DefaultBeanNameGenerator();
         BeanDefinitionBuilder beanBuilder;
         BeanDefinition beanDefinition;
@@ -141,24 +138,16 @@ public class PustefixContextDirectOutputRequestHandlerParsingHandler extends Cus
         
         beanBuilder = BeanDefinitionBuilder.genericBeanDefinition(PustefixContextDirectOutputRequestHandler.class);
         beanBuilder.setScope("singleton");
-        beanBuilder.setInitMethodName("init");
         if(path != null && !path.equals("") && !path.equals("/")) beanBuilder.addPropertyValue("handlerURI", path + "/**");
         beanBuilder.addPropertyValue("context", new RuntimeBeanReference(ContextImpl.class.getName()));
         beanBuilder.addPropertyValue("stateMap", new RuntimeBeanReference(mapBeanName));
         beanBuilder.addPropertyValue("configuration", config);
         beanBuilder.addPropertyValue("sessionAdmin", new RuntimeBeanReference(SessionAdmin.class.getName()));
-        SessionTrackingStrategyInfo strategyInfo = ParsingUtils.getSingleTopObject(SessionTrackingStrategyInfo.class, context, false);
-        if(strategyInfo != null) {
-            beanBuilder.addPropertyValue("sessionTrackingStrategy", strategyInfo.getSessionTrackingStrategyInstance());
-        }
         beanBuilder.addPropertyValue("tenantInfo", new RuntimeBeanReference(TenantInfo.class.getName()));
         beanBuilder.addPropertyValue("languageInfo", new RuntimeBeanReference(LanguageInfo.class.getName()));
         beanBuilder.addPropertyValue("siteMap", new RuntimeBeanReference(SiteMap.class.getName()));
         beanBuilder.addPropertyValue("pageMap", new RuntimeBeanReference(PageMap.class.getName()));
         beanBuilder.addPropertyValue("exceptionProcessingConfiguration", new RuntimeBeanReference(ExceptionProcessingConfiguration.class.getName()));
-        if(timeoutInfo != null) {
-            beanBuilder.addPropertyValue("sessionTimeoutInfo", timeoutInfo);
-        }
         beanDefinition = beanBuilder.getBeanDefinition();
         registry.registerBeanDefinition(nameGenerator.generateBeanName(beanDefinition, registry), beanDefinition);
     }
