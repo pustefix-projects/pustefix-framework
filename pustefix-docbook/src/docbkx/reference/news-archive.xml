@@ -917,4 +917,39 @@
     </para>
   </section>
 
+  <section xml:id="news.0_22_0">
+    <title>What's new in Pustefix 0.22.0</title>
+    <para>
+      Added support for Spring 5. The minimum requirement now is Spring version 4.3.
+    </para>
+    <para>
+      Pustefix states used as Spring MVC controllers with <literal>RequestMappings</literal> now work either with the deprecated
+      Spring <literal>WebArgumentResolvers</literal>, or with <literal>HandlerMethodArgumentResolvers</literal>. Using Spring 4.3
+      both are supported by Pustefix, since Spring 5 <literal>HandlerMethodArgumentResolvers</literal> are required
+      (see <xref linkend="springmvc.annotationmethodhandleradapter"/> and <xref linkend="springmvc.requestmappinghandleradapter"/>).
+    </para>
+  </section>
+
+  <section xml:id="news.0_22_1">
+    <title>What's new in Pustefix 0.22.1</title>
+    <para>
+      Added support for so-called protected submits, i.e. only the HTTP request method POST is allowed and a synchronizer token
+      is used to prevent CSRF attacks. Protected submits are enabled by setting the <literal>protected</literal> attribute at the
+      <literal>&lt;input&gt;</literal> element to <literal>true</literal> (see <xref linkend="configuration.servlet.contextxml.input"/>
+      and <xref linkend="xslt.forms.csrftoken"/>).
+    </para>
+  </section>
+
+  <section xml:id="news.0_22_2">
+    <title>What's new in Pustefix 0.22.2</title>
+    <para>
+      Pustefix now can be used together with the standard Spring <literal>ApplicationContext</literal> implementations, i.e. without using the custom
+      <literal>PustefixWebApplicationContext</literal> implementation. Therefore Pustefix provides a <literal>BeanDefinitionRegistryPostProcessor</literal>
+      implementation, which does all the necessary setup (e.g. reading the Pustefix configuration and creating bean definitions). Thus you can configure the
+      Spring part of your application in a standard way, e.g. using an <literal>AnnotationConfigWebApplicationContext</literal> and Spring Java Config
+      (see <xref linkend="configuration.spring"/> or the Pustefix <link xlink:href="https://github.com/pustefix-projects/pustefix-framework/tree/master/pustefix-samples/pustefix-mvctest">
+      pustefix-mvctest</link> sample application).
+    </para>
+  </section>
+
 </chapter>

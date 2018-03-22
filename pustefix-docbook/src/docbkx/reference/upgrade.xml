@@ -5,6 +5,21 @@
 >
   <title>Upgrading to a newer Pustefix version</title>
 
+  <section xml:id="upgrade.0_22_to_0_23">
+    <title>Upgrading from Pustefix 0.22 to 0.23</title>
+    <para>
+      Support for the already deprecated <literal>&lt;session-tracking-strategy&gt;</literal> element was finally removed from the project configuration.
+      The session tracking strategy now always is derived from the <literal>&lt;tracking-mode&gt;</literal> settings within the <literal>&lt;session-config&gt;</literal>
+      element of your applications's <literal>web.xml</literal> descriptor.
+    </para>
+    <para>
+      By default - without having a tracking-mode set - the <literal>CookieSessionTrackingStrategy</literal> (session cookie with URL parameter fallback) will be used.
+      If you prefer another strategy, you have to set the according tracking modes in <literal>web.xml</literal>. Add
+      <literal>&lt;tracking-mode&gt;COOKIE&lt;/tracking-mode&gt;</literal> for <literal>CookieOnlySessionTrackingStrategy</literal> (session cookie only) or
+      <literal>&lt;tracking-mode&gt;URL&lt;/tracking-mode&gt;</literal> for <literal>URLRewriteSessionTrackingStrategy</literal> (session URL parameter only).
+    </para>
+  </section>
+
   <section xml:id="upgrade.0_21_to_0_22">
     <title>Upgrading from Pustefix 0.21 to 0.22</title>
 

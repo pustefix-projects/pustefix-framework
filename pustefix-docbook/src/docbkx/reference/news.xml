@@ -3,7 +3,7 @@
   xmlns:xi="http://www.w3.org/2001/XInclude" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
   xsi:schemaLocation="http://docbook.org/ns/docbook http://www.docbook.org/xml/5.0CR7/xsd/docbook.xsd"
 >
-  <title>What's new in Pustefix 0.22.x</title>
+  <title>What's new in Pustefix 0.23.x</title>
   
   <para>This section lists the new features and enhancements of the current Pustefix release line. 
         If you're interested in new features which already became available with the prior Pustefix release line,
@@ -11,38 +11,18 @@
 
   <para>If you're migrating an existing appliation to the new Pustefix version, you should have a look at <xref linkend="upgrade"/>.</para>
 
-  <section xml:id="news.0_22_0">
-    <title>What's new in Pustefix 0.22.0</title>
+  <section xml:id="news.0_23_0">
+    <title>What's new in Pustefix 0.23.0</title>
     <para>
-      Added support for Spring 5. The minimum requirement now is Spring version 4.3.
+      The main focus of this release is better integration with Spring MVC, i.e. refactoring Pustefix's internal architecture to get rid of 
+      some legacy design flaws and making use of Spring MVC's abstractions wherever it is possible. Thus you should be able to use almost all
+      Spring MVC features together with or in parallel to Pustefix, e.g. the Spring <literal>ViewResolver</literal> mechanism will be supported,
+      so that you can use regular Spring controllers and render their view with Pustefix.
     </para>
     <para>
-      Pustefix states used as Spring MVC controllers with <literal>RequestMappings</literal> now work either with the deprecated
-      Spring <literal>WebArgumentResolvers</literal>, or with <literal>HandlerMethodArgumentResolvers</literal>. Using Spring 4.3
-      both are supported by Pustefix, since Spring 5 <literal>HandlerMethodArgumentResolvers</literal> are required
-      (see <xref linkend="springmvc.annotationmethodhandleradapter"/> and <xref linkend="springmvc.requestmappinghandleradapter"/>).
-    </para>
-  </section>
-
-  <section xml:id="news.0_22_1">
-    <title>What's new in Pustefix 0.22.1</title>
-    <para>
-      Added support for so-called protected submits, i.e. only the HTTP request method POST is allowed and a synchronizer token
-      is used to prevent CSRF attacks. Protected submits are enabled by setting the <literal>protected</literal> attribute at the
-      <literal>&lt;input&gt;</literal> element to <literal>true</literal> (see <xref linkend="configuration.servlet.contextxml.input"/>
-      and <xref linkend="xslt.forms.csrftoken"/>).
-    </para>
-  </section>
-
-  <section xml:id="news.0_22_2">
-    <title>What's new in Pustefix 0.22.2</title>
-    <para>
-      Pustefix now can be used together with the standard Spring <literal>ApplicationContext</literal> implementations, i.e. without using the custom
-      <literal>PustefixWebApplicationContext</literal> implementation. Therefore Pustefix provides a <literal>BeanDefinitionRegistryPostProcessor</literal>
-      implementation, which does all the necessary setup (e.g. reading the Pustefix configuration and creating bean definitions). Thus you can configure the
-      Spring part of your application in a standard way, e.g. using an <literal>AnnotationConfigWebApplicationContext</literal> and Spring Java Config
-      (see <xref linkend="configuration.spring"/> or the Pustefix <link xlink:href="https://github.com/pustefix-projects/pustefix-framework/tree/master/pustefix-samples/pustefix-mvctest">
-      pustefix-mvctest</link> sample application).
+      In a first refactoring step, the Pustefix session tracking support was moved from the <literal>HttpRequestHandler</literal> responsible for 
+      page requests to a <literal>HandlerInterceptor</literal>. Thus Pustefix's session tracking extensions can also be applied to requests which are dispatched to
+      other handlers, e.g. you can directly use a <literal>RequestMapping</literal> annotated Spring controller without losing Pustefix's session control.
     </para>
   </section>
 
