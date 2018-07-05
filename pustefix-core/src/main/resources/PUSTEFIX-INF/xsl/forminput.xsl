@@ -328,7 +328,7 @@
       <ixsl:attribute name="value"><xsl:value-of select="@frame"/>|<xsl:apply-templates select="./node()"/></ixsl:attribute></input>
     </xsl:for-each>    
     <xsl:for-each select="./pfx:command">
-      <input type="hidden"><ixsl:attribute name="name">__SYNT:<ixsl:value-of select="$genname_{$current}"/>:__CMD[<xsl:choose>
+      <input type="hidden"><ixsl:attribute name="name">__SYNT:<ixsl:value-of select="$genname_{$current}"/>:__CMD(<xsl:choose>
       <xsl:when test="@page">
         <xsl:value-of select="@page"/>
       </xsl:when>
@@ -338,7 +338,7 @@
       <xsl:otherwise>
         <ixsl:value-of select="$page"/>
       </xsl:otherwise>
-    </xsl:choose>]:<xsl:value-of select="@name"/></ixsl:attribute><ixsl:attribute name="value"><xsl:apply-templates select="./node()"/></ixsl:attribute></input>
+    </xsl:choose>):<xsl:value-of select="@name"/></ixsl:attribute><ixsl:attribute name="value"><xsl:apply-templates select="./node()"/></ixsl:attribute></input>
     </xsl:for-each>
   </xsl:template>
 
