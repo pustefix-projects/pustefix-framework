@@ -79,14 +79,15 @@ public class RequestDataImpl implements RequestData {
     }
 
     private void initData(PfixServletRequest preq) {
-        String cmds_prefix = CMDS_PREFIX + "[" + page + "]:";
+        String cmdsPrefix = CMDS_PREFIX + "(" + page + "):";
+        String cmdsPrefixDeprecated = CMDS_PREFIX + "[" + page + "]:";
 
         String[] paramnames = preq.getRequestParamNames();
         for (int i = 0; i < paramnames.length; i++) {
             String name = paramnames[i];
 
-            if (name.startsWith(cmds_prefix)) {
-                String         key     = name.substring(cmds_prefix.length());
+            if (name.startsWith(cmdsPrefix) || name.startsWith(cmdsPrefixDeprecated)) {
+                String         key     = name.substring(cmdsPrefix.length());
                 RequestParam[] cmdvals = preq.getAllRequestParams(name);
                 if (cmdvals != null && cmdvals.length > 0) {
                     String[] cmdstrs = new String[cmdvals.length];
