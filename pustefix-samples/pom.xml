@@ -86,6 +86,47 @@
           <useSeparateTomcatClassLoader>true</useSeparateTomcatClassLoader>
         </configuration>
       </plugin>
+      <plugin>
+        <groupId>org.codehaus.cargo</groupId>
+        <artifactId>cargo-maven2-plugin</artifactId>
+        <version>1.6.4</version>
+        <configuration>
+          <container>
+            <containerId>tomcat9x</containerId>
+            <artifactInstaller>
+              <groupId>org.apache.tomcat</groupId>
+              <artifactId>tomcat</artifactId>
+              <version>9.0.10</version>
+            </artifactInstaller>
+          </container>
+          <configuration>
+            <type>standalone</type>
+            <home>${project.build.directory}/tomcat</home>
+            <properties>
+              <cargo.servlet.port>8080</cargo.servlet.port>
+              <cargo.tomcat.uriencoding>UTF-8</cargo.tomcat.uriencoding>
+              <cargo.logging>low</cargo.logging>
+            </properties>
+            <configfiles>
+              <configfile>
+                <file>${project.build.directory}/addtomcatconf/context.xml</file>
+                <todir>conf</todir>
+                <tofile>context.xml</tofile>
+              </configfile>
+            </configfiles>
+          </configuration>
+          <deployables>
+            <deployable>
+              <groupId>${project.groupId}</groupId>
+              <artifactId>${project.artifactId}</artifactId>
+              <type>war</type>
+              <properties>
+                <context>/</context>
+              </properties>
+            </deployable>
+          </deployables>
+        </configuration>
+      </plugin>
     </plugins>
   </build>
 </project>

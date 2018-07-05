@@ -119,85 +119,6 @@
   <build>
     <plugins>
       <plugin>
-        <groupId>org.apache.maven.plugins</groupId>
-        <artifactId>maven-antrun-plugin</artifactId>
-        <version>1.8</version>
-        <executions>
-          <execution>
-            <id>tomcatconf</id>
-            <phase>prepare-package</phase>
-            <configuration>
-              <target>
-                <mkdir dir="${project.build.directory}/addtomcatconf" />
-                <echo file="${project.build.directory}/addtomcatconf/context.xml"><![CDATA[<?xml version='1.0' encoding='utf-8'?>
-<Context cookies="true" useHttpOnly="true">
-  <Parameter name="mode" value="${pustefix.mode}" override="false" />
-  <Manager pathname="" />
-</Context>
-]]></echo>
-              </target>
-            </configuration>
-            <goals>
-              <goal>run</goal>
-            </goals>
-          </execution>
-        </executions>
-      </plugin>
-      <plugin>
-        <groupId>org.apache.tomcat.maven</groupId>
-        <artifactId>tomcat7-maven-plugin</artifactId>
-        <version>2.2</version>
-        <configuration>
-          <path>/</path>
-          <contextFile>${project.build.directory}/addtomcatconf/context.xml</contextFile>
-          <warDirectory>${war.dir}</warDirectory>
-          <uriEncoding>UTF-8</uriEncoding>
-          <useSeparateTomcatClassLoader>true</useSeparateTomcatClassLoader>
-        </configuration>
-      </plugin>
-      <plugin>
-        <groupId>org.codehaus.cargo</groupId>
-        <artifactId>cargo-maven2-plugin</artifactId>
-        <version>1.6.4</version>
-        <configuration>
-          <container>
-            <containerId>tomcat8x</containerId>
-            <artifactInstaller>
-              <groupId>org.apache.tomcat</groupId>
-              <artifactId>tomcat</artifactId>
-              <version>8.5.20</version>
-            </artifactInstaller>
-          </container>
-          <configuration>
-            <type>standalone</type>
-            <home>${project.build.directory}/tomcat</home>
-            <properties>
-              <cargo.servlet.port>8080</cargo.servlet.port>
-              <cargo.logging>low</cargo.logging>
-            </properties>
-            <configfiles>
-              <configfile>
-                <file>${project.build.directory}/addtomcatconf/context.xml</file>
-                <todir>conf</todir>
-                <tofile>context.xml</tofile>
-              </configfile>
-            </configfiles>
-          </configuration>
-          <deployables>
-            <deployable>
-              <groupId>${project.groupId}</groupId>
-              <artifactId>${project.artifactId}</artifactId>
-              <type>war</type>
-              <properties>
-                <context>/</context>
-              </properties>
-            </deployable>
-          </deployables>
-        </configuration>
-      </plugin>
-
-
-      <plugin>
         <!--  some tests operated on the exploded webapp -->
         <artifactId>maven-surefire-plugin</artifactId>
         <configuration>
@@ -310,7 +231,7 @@
            <plugin>
              <groupId>org.apache.tomcat.maven</groupId>
              <artifactId>tomcat7-maven-plugin</artifactId>
-             <version>2.0</version>
+             <version>2.2</version>
              <configuration>
                <path>/</path>
                <contextFile>${project.build.directory}/addtomcatconf/context.xml</contextFile>
