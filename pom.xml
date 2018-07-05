@@ -346,7 +346,6 @@
     <module>pustefix-logging</module>
     <module>pustefix-tutorial</module>
     <module>pustefix-agent</module>
-    <module>pustefix-cdi</module>
     <module>pustefix-security</module>
     <module>pustefix-cmis</module>
   </modules>
