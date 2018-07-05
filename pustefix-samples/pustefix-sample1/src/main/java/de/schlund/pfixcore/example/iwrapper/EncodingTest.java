@@ -17,11 +17,11 @@ public class EncodingTest {
         return text;
     }
     
-    @Param(mandatory=false)
     public void setEncoding(String encoding) {
         this.encoding = encoding;
     }
-    
+
+    @Param(mandatory=false)
     public String getEncoding() {
         return encoding;
     }

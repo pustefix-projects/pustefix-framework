@@ -6,8 +6,8 @@
 
   <ihandler class="de.schlund.pfixcore.example.EncodingTestUploadHandler"/>
 
-  <param name="Text" type="java.lang.String" occurrence="optional"/>
-  <param name="File" type="java.io.File" occurrence="optional">
+  <param name="Text" type="java.lang.String"/>
+  <param name="File" type="java.io.File">
     <caster class="de.schlund.pfixcore.generator.casters.ToFile"/>
   </param>
 
