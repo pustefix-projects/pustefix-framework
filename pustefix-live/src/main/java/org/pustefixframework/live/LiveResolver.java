@@ -173,6 +173,15 @@ public class LiveResolver {
         File docrootDir = new File(docroot);
         if (docrootDir.exists() && docrootDir.isDirectory()) {
             File targetDir = docrootDir.getParentFile();
+            //if running with Maven Cargo Plugin and Tomcat, climb up to target dir
+            if (targetDir != null && targetDir.getName().equals("webapps")) {
+                targetDir = targetDir.getParentFile();
+                if(targetDir != null && targetDir.getName().equals("tomcat")) {
+                    targetDir = targetDir.getParentFile();
+                } else {
+                    return null;
+                }
+            }
             if (targetDir != null && targetDir.getName().equals("target")) {
                 File projectDir = targetDir.getParentFile();
                 if (projectDir != null) {
