@@ -106,6 +106,7 @@
               <cargo.servlet.port>8080</cargo.servlet.port>
               <cargo.tomcat.uriencoding>UTF-8</cargo.tomcat.uriencoding>
               <cargo.logging>low</cargo.logging>
+              <cargo.start.jvmargs>${cargo-jvmargs}</cargo.start.jvmargs>
             </properties>
             <configfiles>
               <configfile>
@@ -129,4 +130,17 @@
       </plugin>
     </plugins>
   </build>
+  <profiles>
+    <profile>
+      <id>cargo-debug</id>
+      <properties>
+        <cargo-jvmargs>
+          -Xdebug
+          -Xrunjdwp:transport=dt_socket,server=y,suspend=y,address=8000
+          -Xnoagent
+          -Djava.compiler=NONE
+        </cargo-jvmargs>
+      </properties>
+    </profile>
+  </profiles>
 </project>
