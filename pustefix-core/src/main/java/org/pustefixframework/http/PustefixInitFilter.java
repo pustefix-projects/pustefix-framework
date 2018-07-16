@@ -1,22 +1,13 @@
-/*
- * This file is part of PFIXCORE.
- *
- * PFIXCORE is free software; you can redistribute it and/or modify
- * it under the terms of the GNU Lesser General Public License as published by
- * the Free Software Foundation; either version 2 of the License, or
- * (at your option) any later version.
- *
- * PFIXCORE is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU Lesser General Public License for more details.
- *
- * You should have received a copy of the GNU Lesser General Public License
- * along with PFIXCORE; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
- */
 package org.pustefixframework.http;
 
+import java.io.IOException;
+
+import javax.servlet.Filter;
+import javax.servlet.FilterChain;
+import javax.servlet.FilterConfig;
+import javax.servlet.ServletException;
+import javax.servlet.ServletRequest;
+import javax.servlet.ServletResponse;
 import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -24,8 +15,6 @@ import javax.servlet.http.HttpSession;
 
 import org.pustefixframework.container.spring.beans.TenantScope;
 import org.pustefixframework.util.URLUtils;
-import org.springframework.web.servlet.HandlerInterceptor;
-import org.springframework.web.servlet.ModelAndView;
 
 import de.schlund.pfixxml.LanguageInfo;
 import de.schlund.pfixxml.PfixServletRequest;
@@ -33,7 +22,7 @@ import de.schlund.pfixxml.Tenant;
 import de.schlund.pfixxml.TenantInfo;
 import de.schlund.pfixxml.config.EnvironmentProperties;
 
-public class PustefixInitInterceptor implements HandlerInterceptor {
+public class PustefixInitFilter implements Filter {
 
     private final static String DEFAULT_ENCODING = "UTF-8";
 
@@ -41,8 +30,15 @@ public class PustefixInitInterceptor implements HandlerInterceptor {
     private LanguageInfo langInfo;
 
     @Override
-    public boolean preHandle(HttpServletRequest request, HttpServletResponse response, Object handler)
-            throws Exception {
+    public void init(FilterConfig filterConfig) throws ServletException {
+    }
+
+    @Override
+    public void doFilter(ServletRequest servletRequest, ServletResponse servletResponse, FilterChain chain)
+            throws IOException, ServletException {
+
+        HttpServletRequest request = (HttpServletRequest)servletRequest;
+        HttpServletResponse response = (HttpServletResponse)servletResponse;
 
         //Set character encoding of request to default if not already set.
         if(request.getCharacterEncoding() == null) {
@@ -68,11 +64,11 @@ public class PustefixInitInterceptor implements HandlerInterceptor {
                 session.invalidate();
             }
             response.sendRedirect(request.getRequestURL().toString());
-            return false;
+            return;
         }
 
         if(tenantInfo != null && !tenantInfo.getTenants().isEmpty()) {
-            
+
             Tenant tenant = tenantInfo.getMatchingTenant(request);
             if(tenant == null) {
                 //check if tenant was provided as cookie (only allowed at development time)
@@ -95,7 +91,7 @@ public class PustefixInitInterceptor implements HandlerInterceptor {
                 }
             }
             request.setAttribute(TenantScope.REQUEST_ATTRIBUTE_TENANT, tenant);
-            
+
             if(tenant.useLangPrefix()) {
                 String matchingLanguage = tenant.getDefaultLanguage();
                 String pathPrefix = URLUtils.getFirstPathComponent(request.getPathInfo());
@@ -134,25 +130,22 @@ public class PustefixInitInterceptor implements HandlerInterceptor {
             }
             request.setAttribute(AbstractPustefixRequestHandler.REQUEST_ATTR_LANGUAGE, matchingLanguage);
         }
-        return true;
-    }
 
-    @Override
-    public void postHandle(HttpServletRequest request, HttpServletResponse response, Object handler,
-            ModelAndView modelAndView) throws Exception {
-    }
-
-    @Override
-    public void afterCompletion(HttpServletRequest request, HttpServletResponse response, Object handler, Exception ex)
-            throws Exception {
-
-        request.removeAttribute(AbstractPustefixRequestHandler.REQUEST_ATTR_LANGUAGE);
-        request.removeAttribute(TenantScope.REQUEST_ATTRIBUTE_TENANT);
-
-        PfixServletRequest preq = (PfixServletRequest)request.getAttribute(PfixServletRequest.class.getName());
-        if(preq != null) {
-            preq.resetRequest();
+        try {
+            chain.doFilter(request, response);
+        } finally {
+            request.removeAttribute(AbstractPustefixRequestHandler.REQUEST_ATTR_LANGUAGE);
+            request.removeAttribute(TenantScope.REQUEST_ATTRIBUTE_TENANT);
+            PfixServletRequest preq = (PfixServletRequest)request.getAttribute(PfixServletRequest.class.getName());
+            if(preq != null) {
+                preq.resetRequest();
+            }
         }
+
+    }
+
+    @Override
+    public void destroy() {
     }
 
     public void setTenantInfo(TenantInfo tenantInfo) {

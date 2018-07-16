@@ -24,7 +24,7 @@ import java.util.List;
 import org.pustefixframework.config.contextxmlservice.ContextXMLServletConfig;
 import org.pustefixframework.config.customization.CustomizationAwareParsingHandler;
 import org.pustefixframework.config.generic.ParsingUtils;
-import org.pustefixframework.http.PustefixInitInterceptor;
+import org.pustefixframework.http.PustefixInitFilter;
 import org.pustefixframework.http.SessionTrackingInterceptor;
 import org.pustefixframework.web.servlet.i18n.PustefixLocaleResolverPostProcessor;
 import org.pustefixframework.web.servlet.view.XsltView;
@@ -61,17 +61,6 @@ public class ProjectParsingHandler extends CustomizationAwareParsingHandler {
             beanRegistry.registerBeanDefinition(TenantInfo.class.getName(), beanDefinition);
             beanRegistry.registerAlias(TenantInfo.class.getName(), "pustefixTenantInfo");
 
-            beanBuilder = BeanDefinitionBuilder.genericBeanDefinition(PustefixInitInterceptor.class);
-            beanBuilder.setScope("singleton");
-            beanBuilder.addPropertyReference("tenantInfo", TenantInfo.class.getName());
-            beanBuilder.addPropertyReference("languageInfo", LanguageInfo.class.getName());
-            beanRegistry.registerBeanDefinition(PustefixInitInterceptor.class.getName(), beanBuilder.getBeanDefinition());
-            beanBuilder = BeanDefinitionBuilder.genericBeanDefinition(MappedInterceptor.class);
-            beanBuilder.setScope("singleton");
-            beanBuilder.addConstructorArgValue("/**");
-            beanBuilder.addConstructorArgReference(PustefixInitInterceptor.class.getName());
-            beanRegistry.registerBeanDefinition(PustefixInitInterceptor.class.getName() + "#Mapped", beanBuilder.getBeanDefinition());
-
             beanBuilder = BeanDefinitionBuilder.genericBeanDefinition(SessionTrackingInterceptor.class);
             beanBuilder.setScope("singleton");
             ContextXMLServletConfig config = context.getObjectTreeElement().getObjectsOfTypeFromSubTree(ContextXMLServletConfig.class).iterator().next();
@@ -93,6 +82,12 @@ public class ProjectParsingHandler extends CustomizationAwareParsingHandler {
             beanBuilder.setScope("singleton");
             beanBuilder.addPropertyValue("viewClass", XsltView.class);
             beanRegistry.registerBeanDefinition(XsltViewResolver.class.getName(), beanBuilder.getBeanDefinition());
+
+            beanBuilder = BeanDefinitionBuilder.genericBeanDefinition(PustefixInitFilter.class);
+            beanBuilder.setScope("singleton");
+            beanBuilder.addPropertyReference("tenantInfo", TenantInfo.class.getName());
+            beanBuilder.addPropertyReference("languageInfo", LanguageInfo.class.getName());
+            beanRegistry.registerBeanDefinition(PustefixInitFilter.class.getName(), beanBuilder.getBeanDefinition());
         }
     }
 
