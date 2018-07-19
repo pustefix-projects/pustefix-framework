@@ -23,13 +23,19 @@ import java.util.Enumeration;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.LinkedList;
+import java.util.Map;
 
+import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.pustefixframework.container.spring.beans.PustefixWebApplicationContext;
 import org.springframework.beans.factory.NoSuchBeanDefinitionException;
+import org.springframework.context.ApplicationContext;
+import org.springframework.util.ClassUtils;
+import org.springframework.web.context.request.RequestContextHolder;
+import org.springframework.web.context.request.ServletRequestAttributes;
+import org.springframework.web.servlet.support.RequestContextUtils;
 
 import de.schlund.pfixxml.PfixServletRequest;
 import de.schlund.pfixxml.serverutil.SessionAdmin;
@@ -74,8 +80,7 @@ public class ExceptionDataValueHelper {
 			keysnvalues.put(param_names[i], pfixReq.getRequestParam(param_names[i]).getValue());
 		}
 		exdata.setRequestParams(keysnvalues);
-		
-		 
+
 		SessionAdmin sessionAdmin = getSessionAdmin(pfixReq);
 		if(sessionAdmin!=null) {
     		SessionInfoStruct info = sessionAdmin.getInfo(id);
@@ -92,22 +97,25 @@ public class ExceptionDataValueHelper {
     	    exdata.setLastSteps(steps);
 		}
 	    
-	    HashMap<String,String> sessdata = new HashMap<String, String>();
+	    HashMap<String, String> sessdata = new HashMap<String, String>();
 	    try {
 	        Enumeration<?> enm = session.getAttributeNames();
 	        while (enm.hasMoreElements()) {
 	            String key = (String) enm.nextElement();
 	            Object value = session.getAttribute(key);
 	            String strvalue = null;
-	            try {
-	                strvalue = value.toString();
-	            } catch(Exception e) {
-	                // Catch all exceptions here. If an exception occurs in context.toString
-	                // we definitly want the exception-info to be generated.
-	                LOG.error("Exception while dumping session!", e);
-	                strvalue = e.getMessage() == null ? e.toString() : e.getMessage();
+	            if(value != null) {
+	                if(ClassUtils.isPrimitiveOrWrapper(value.getClass()) || value instanceof String) {
+	                    try {
+	                        strvalue = value.toString();
+	                    } catch(Exception e) {
+	                        strvalue = e.toString();
+	                    }
+	                } else {
+	                    strvalue = value.getClass().getName() + '@' + Integer.toHexString(value.hashCode());
+	                }
+	                sessdata.put(key, strvalue);
 	            }
-	            sessdata.put(key, strvalue);
 	        }
 	    } catch(IllegalStateException x) {
 	    	//Session is already invalidated
@@ -117,26 +125,19 @@ public class ExceptionDataValueHelper {
 		return exdata;
 	}
 
-	private static SessionAdmin getSessionAdmin(PfixServletRequest pfixReq) {
-	    //TODO: get SessionAdmin in a smarter way
-	    HttpSession session = pfixReq.getSession(false);
-	    if(session != null) {
-	        Enumeration<?> e = session.getServletContext().getAttributeNames();
-	        while(e.hasMoreElements()) {
-	            String name = (String)e.nextElement();
-	            Object value = session.getServletContext().getAttribute(name);
-	            if(value instanceof PustefixWebApplicationContext) {
-	                PustefixWebApplicationContext appContext = (PustefixWebApplicationContext)value;
-	                try {
-	                    SessionAdmin sessionAdmin = (SessionAdmin)appContext.getBean(SessionAdmin.class.getName());
-	                    return sessionAdmin;
-	                } catch(NoSuchBeanDefinitionException x) {
-	                    LOG.error("Can't get SessionAdmin bean from ApplicationContext");
-	                }
-	            }
-	        }
-	    } 
-	    return null;
-	}
+    private static SessionAdmin getSessionAdmin(PfixServletRequest pfixReq) {
+        HttpServletRequest req = pfixReq.getRequest();
+        if(req == null) {
+            req = ((ServletRequestAttributes)RequestContextHolder.getRequestAttributes()).getRequest();
+        }
+        ApplicationContext appContext = RequestContextUtils.findWebApplicationContext(req);
+        try {
+            SessionAdmin sessionAdmin = (SessionAdmin)appContext.getBean(SessionAdmin.class.getName());
+            return sessionAdmin;
+        } catch(NoSuchBeanDefinitionException x) {
+            LOG.error("Can't get SessionAdmin bean from ApplicationContext");
+        }
+        return null;
+    }
 
 }

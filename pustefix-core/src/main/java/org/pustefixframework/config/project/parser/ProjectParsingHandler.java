@@ -24,6 +24,7 @@ import java.util.List;
 import org.pustefixframework.config.contextxmlservice.ContextXMLServletConfig;
 import org.pustefixframework.config.customization.CustomizationAwareParsingHandler;
 import org.pustefixframework.config.generic.ParsingUtils;
+import org.pustefixframework.http.ErrorFilter;
 import org.pustefixframework.http.PustefixInitFilter;
 import org.pustefixframework.http.SessionTrackingInterceptor;
 import org.pustefixframework.web.servlet.i18n.PustefixLocaleResolverPostProcessor;
@@ -41,6 +42,7 @@ import com.marsching.flexiparse.parser.exception.ParserException;
 import de.schlund.pfixxml.LanguageInfo;
 import de.schlund.pfixxml.Tenant;
 import de.schlund.pfixxml.TenantInfo;
+import de.schlund.pfixxml.exceptionprocessor.ExceptionProcessingConfiguration;
 import de.schlund.pfixxml.serverutil.SessionAdmin;
 
 public class ProjectParsingHandler extends CustomizationAwareParsingHandler {
@@ -88,6 +90,12 @@ public class ProjectParsingHandler extends CustomizationAwareParsingHandler {
             beanBuilder.addPropertyReference("tenantInfo", TenantInfo.class.getName());
             beanBuilder.addPropertyReference("languageInfo", LanguageInfo.class.getName());
             beanRegistry.registerBeanDefinition(PustefixInitFilter.class.getName(), beanBuilder.getBeanDefinition());
+
+            beanBuilder = BeanDefinitionBuilder.genericBeanDefinition(ErrorFilter.class);
+            beanBuilder.setScope("singleton");
+            beanBuilder.addPropertyReference("exceptionProcessingConfiguration", ExceptionProcessingConfiguration.class.getName());
+            beanBuilder.addPropertyValue("properties", config.getProperties());
+            beanRegistry.registerBeanDefinition(ErrorFilter.class.getName(), beanBuilder.getBeanDefinition());
         }
     }
 

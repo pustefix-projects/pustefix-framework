@@ -61,9 +61,6 @@ import de.schlund.pfixxml.PfixServletRequest;
 import de.schlund.pfixxml.PfixServletRequestImpl;
 import de.schlund.pfixxml.Tenant;
 import de.schlund.pfixxml.TenantInfo;
-import de.schlund.pfixxml.exceptionprocessor.ExceptionConfig;
-import de.schlund.pfixxml.exceptionprocessor.ExceptionProcessingConfiguration;
-import de.schlund.pfixxml.exceptionprocessor.ExceptionProcessor;
 import de.schlund.pfixxml.serverutil.SessionAdmin;
 
 /**
@@ -109,7 +106,6 @@ public abstract class AbstractPustefixRequestHandler implements PageProvider, Se
     private ServletContext servletContext;
     protected String handlerURI;
     private SessionAdmin sessionAdmin;
-    private ExceptionProcessingConfiguration exceptionProcessingConfig;
     protected TenantInfo tenantInfo;
     protected LanguageInfo languageInfo;
     protected SiteMap siteMap;
@@ -258,51 +254,8 @@ public abstract class AbstractPustefixRequestHandler implements PageProvider, Se
 				}
             }
             process(preq, res);
-        } catch (Throwable e) {
-            if((e instanceof IOException) &&
-                    (e.getClass().getSimpleName().equals("ClientAbortException") || 
-                            e.getClass().getName().equals("org.mortbay.jetty.EofException"))) {
-                LOG.warn("Client aborted request.");
-                req.setAttribute(REQUEST_ATTR_CLIENT_ABORTED, true);
-            } else {
-                //Check if exception occurred while having a session which wasn't created by Pustefix,
-                //i.e. the session was created after the Pustefix session timed out and the request thread
-                //tried to access request/session-scoped beans, which let's Spring create a new one.
-                //If no response was written we invalidate the illegal session and make a temporary
-                //redirect to negotiate a new Pustefix session.
-                session = req.getSession(false);
-                if(session != null) {
-                    String visitId = (String)session.getAttribute(VISIT_ID);
-                    if(visitId == null && !res.isCommitted()) {
-                        LOG.warn("Error occurred while using non-Pustefix session '" + session.getId() + 
-                                "' -> invalidate it and redirect for new session negotiation", e);
-                        session.invalidate();
-                        res.sendRedirect(req.getRequestURL().toString());
-                        return;
-                    }
-                } 
-                //Check if IllegalStateException thrown because of accessing already invalidated session.
-                //If no response was written yet make a temporary redirect to get a new Pustefix session.
-                if(needsSession() && session == null && e instanceof IllegalStateException) {
-                    if(!res.isCommitted()) {
-                        LOG.warn("Error occurred while accessing already invalidated session " +
-                                "-> redirect to new Pustefix session", e);
-                        res.sendRedirect(req.getRequestURL().toString());
-                        return;
-                    }
-                }
-                LOG.error("Exception in process", e);
-                ExceptionConfig exconf = exceptionProcessingConfig.getExceptionConfigForThrowable(e.getClass());
-                if(exconf != null && exconf.getProcessor()!= null) { 
-                    if ( preq.getLastException() == null ) {  
-                        ExceptionProcessor eproc = exconf.getProcessor();
-                        eproc.processException(e, exconf, preq,
-                                           getServletContext(),
-                                           req, res, this.getServletManagerConfig().getProperties());
-                    }
-                } 
-                if(!res.isCommitted()) throw new ServletException("Exception in process.",e);
-            }
+        } catch(Exception x) {
+            throw new ServletException(x);
         } finally {
             try {
                 if (session != null && (session.getAttribute(REQUEST_ATTR_INVALIDATE_SESSION_AFTER_COMPLETION) != null)) {
@@ -445,10 +398,6 @@ public abstract class AbstractPustefixRequestHandler implements PageProvider, Se
     
     public SessionAdmin getSessionAdmin() {
         return sessionAdmin;
-    }
-    
-    public void setExceptionProcessingConfiguration(ExceptionProcessingConfiguration exceptionProcessingConfig) {
-        this.exceptionProcessingConfig = exceptionProcessingConfig;
     }
     
     public void setTenantInfo(TenantInfo tenantInfo) {
