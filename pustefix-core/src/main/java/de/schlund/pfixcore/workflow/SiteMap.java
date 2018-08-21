@@ -372,12 +372,16 @@ public class SiteMap {
             if(defaultAlt) {
             	page.defaultPageAlt = pageAlt;
             }
+            String internalAlt = childAlt.getAttribute("internal").trim();
+            if(internalAlt.length() > 0) {
+                pageAlt.internal = Boolean.valueOf(internalAlt);
+            }
             NamedNodeMap altMap = childAlt.getAttributes();
             if(altMap != null) {
                 for(int i=0; i<altMap.getLength(); i++) {
                     Node attrNode = altMap.item(i);
                     String attrName = attrNode.getNodeName();
-                    if(!("name".equals(attrName)||("key").equals(attrName)||"default".equals(attrName))) {
+                    if(!("name".equals(attrName)||("key").equals(attrName)||"default".equals(attrName)||"internal".equals(attrName))) {
                         pageAlt.customAttributes.put(attrName, attrNode.getNodeValue());
                     }
                 }
@@ -646,9 +650,11 @@ public class SiteMap {
                 aliases.add(getNameAlias(pageName, lang, null));
             }
             for(String pageAltKey: page.pageAltKeyToName.keySet()) {
-                aliases.add(getAlias(pageName, lang, pageAltKey, null));
-                if(includeInternalPages) {
-                    aliases.add(getAlias(pageName, lang, pageAltKey, null, false, false));
+                if(includeInternalPages || !page.isInternalPageAlternative(pageAltKey)) {
+                    aliases.add(getAlias(pageName, lang, pageAltKey, null));
+                    if(includeInternalPages) {
+                        aliases.add(getAlias(pageName, lang, pageAltKey, null, false, false));
+                    }
                 }
             }
         }
@@ -673,9 +679,11 @@ public class SiteMap {
                     }
                 }
                 for(String pageAltKey: page.pageAltKeyToName.keySet()) {
-                    aliases.add(getAlias(pageName, lang, pageAltKey, pageGroup.key));
-                    if(includeInternalPages) {
-                        aliases.add(getAlias(pageName, lang, pageAltKey, pageGroup.key, false, false));
+                    if(includeInternalPages || !page.isInternalPageAlternative(pageAltKey)) {
+                        aliases.add(getAlias(pageName, lang, pageAltKey, pageGroup.key));
+                        if(includeInternalPages) {
+                            aliases.add(getAlias(pageName, lang, pageAltKey, pageGroup.key, false, false));
+                        }
                     }
                 }
             }
@@ -951,11 +959,19 @@ public class SiteMap {
             this.name = name;
         }
         
+        boolean isInternalPageAlternative(String pageAltKey) {
+            PageAlternative p = pageAltKeyMap.get(pageAltKey);
+            if(p != null) {
+                return p.internal;
+            }
+            return false;
+        }
     }
     
     private class PageAlternative {
     	
     	String key;
+        boolean internal;
     	
     	Map<String, String> customAttributes = new HashMap<String, String>();
     	
