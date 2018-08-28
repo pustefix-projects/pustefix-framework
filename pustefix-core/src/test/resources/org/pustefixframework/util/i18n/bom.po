@@ -1,0 +1,2 @@
+﻿msgid "BOM"
+msgstr "File with BOM"
