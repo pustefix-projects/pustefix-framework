@@ -40,5 +40,13 @@ public class POReaderTest extends TestCase {
         assertEquals("\ta\nb\\", reader.unescape("\\ta\\nb\\\\"));
     }
 
+    public void testBOM() throws IOException {
+
+        InputStream input = getClass().getResourceAsStream("bom.po");
+        POReader reader = new POReader();
+        POData messages = reader.read(input, "utf8");
+        assertEquals("File with BOM", messages.getText("BOM"));
+    }
+
 }
 

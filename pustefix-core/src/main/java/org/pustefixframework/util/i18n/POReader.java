@@ -41,6 +41,8 @@ public class POReader {
 
     private Logger LOG = LoggerFactory.getLogger(POReader.class);
     
+    private final String UTF8_BOM = "\uFEFF";
+
     private final Pattern PO_LINE_PATTERN = 
             Pattern.compile("^(msgctxt|msgid|msgid_plural|msgstr|msgstr\\[(\\d+)\\])?\\s*\"(.*)\"$");
 
@@ -59,9 +61,16 @@ public class POReader {
             Map<String, String> headers = new HashMap<>();
             ParserContext context = null;    
             String lastCommand = null;
+            boolean bomChecked = false;
             String line = null;
             while((line = reader.readLine()) != null) {
                 line = line.trim();
+                if(!bomChecked) {
+                    if(line.startsWith(UTF8_BOM)) {
+                        line = line.substring(1);
+                    }
+                    bomChecked = true;
+                }
                 if(line.isEmpty()) {
                     lastCommand = null;
                 } else {
