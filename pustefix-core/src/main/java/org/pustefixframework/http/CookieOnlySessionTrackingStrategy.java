@@ -155,9 +155,12 @@ public class CookieOnlySessionTrackingStrategy extends AbstractSessionTrackingSt
                         } else {
                             
                             resetSession(req, res);
-                            redirect(req, res, HttpServletResponse.SC_MOVED_PERMANENTLY, req.getScheme(), context);
+                            if(req.getMethod().equals("POST")) {
+                                redirect(req, res, HttpServletResponse.SC_TEMPORARY_REDIRECT, req.getScheme(), context);
+                            } else {
+                                redirect(req, res, HttpServletResponse.SC_MOVED_PERMANENTLY, req.getScheme(), context);
+                            }
                             return false;
-        
                         }
                     
                     }
