@@ -157,7 +157,11 @@ public class CookieOnlySessionTrackingStrategy implements SessionTrackingStrateg
                         } else {
                             
                             resetSession(req, res);
-                            redirect(req, res, HttpServletResponse.SC_MOVED_PERMANENTLY, req.getScheme());
+                            if(req.getMethod().equals("POST")) {
+                                redirect(req, res, HttpServletResponse.SC_TEMPORARY_REDIRECT, req.getScheme());
+                            } else {
+                                redirect(req, res, HttpServletResponse.SC_MOVED_PERMANENTLY, req.getScheme());
+                            }
                             return;
         
                         }
