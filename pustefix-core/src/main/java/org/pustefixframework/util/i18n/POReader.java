@@ -46,6 +46,15 @@ public class POReader {
     private final Pattern PO_LINE_PATTERN = 
             Pattern.compile("^(msgctxt|msgid|msgid_plural|msgstr|msgstr\\[(\\d+)\\])?\\s*\"(.*)\"$");
 
+    private MessageSourcePreProcessor processor;
+
+    public POReader() {
+    }
+
+    public POReader(MessageSourcePreProcessor processor) {
+        this.processor = processor;
+    }
+
     /**
      * Reads a PO file and returns the message data.
      * 
@@ -139,6 +148,9 @@ public class POReader {
                 } else {
                     context.messageStrings[i] = context.messageStrings[i].replace("\\'", "'");
                 }
+            }
+            if(processor != null) {
+                context.messageStrings = processor.process(context.messageStrings);
             }
             POMessage message = new POMessage(context.messageContext, context.messageId, 
                     context.messageIdPlural, context.messageStrings);

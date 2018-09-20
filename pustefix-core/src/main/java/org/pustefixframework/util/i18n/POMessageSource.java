@@ -35,7 +35,6 @@ import org.springframework.context.MessageSource;
 import org.springframework.context.MessageSourceResolvable;
 import org.springframework.context.NoSuchMessageException;
 import org.springframework.context.ResourceLoaderAware;
-import org.springframework.context.i18n.LocaleContextHolder;
 import org.springframework.core.io.DefaultResourceLoader;
 import org.springframework.core.io.Resource;
 import org.springframework.core.io.ResourceLoader;
@@ -63,6 +62,12 @@ public class POMessageSource implements HierarchicalMessageSource, ResourceLoade
 
     private ConcurrentMap<String, CachedPOData> cache = new ConcurrentHashMap<>();
     private ConcurrentMap<Locale, CachedLocaleData> localeCache = new ConcurrentHashMap<>();
+
+    private MessageSourcePreProcessor processor;
+
+    public void setMessagePreProcessor(MessageSourcePreProcessor processor) {
+        this.processor = processor;
+    }
 
     /**
      * Resolves message. Returns the default message if no message found.
@@ -293,7 +298,7 @@ public class POMessageSource implements HierarchicalMessageSource, ResourceLoade
             if(res.exists()) {
                 if(cachedData == null || res.lastModified() > cachedData.lastModified) {
                     try (InputStream in = res.getInputStream()) {
-                        POReader reader = new POReader();
+                        POReader reader = new POReader(processor);
                         POData messages = reader.read(in, defaultEncoding);
                         cachedData = new CachedPOData(messages, res.lastModified()); 
                         cache.put(fileName, cachedData);

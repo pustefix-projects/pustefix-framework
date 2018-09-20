@@ -1,0 +1,2 @@
+msgid "test.preprocess.po"
+msgstr "This is the preprocessed value: {PRE}"
