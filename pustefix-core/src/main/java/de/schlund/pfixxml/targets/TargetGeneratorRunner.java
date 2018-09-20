@@ -16,15 +16,17 @@ import javax.xml.xpath.XPathExpression;
 import javax.xml.xpath.XPathFactory;
 
 import org.pustefixframework.container.spring.util.PustefixResourceLoader;
+import org.pustefixframework.util.i18n.MessageSourcePreProcessor;
 import org.pustefixframework.util.i18n.POMessageSource;
+import org.pustefixframework.util.i18n.PreProcessableMessageSource;
 import org.pustefixframework.util.xml.DOMUtils;
 import org.pustefixframework.util.xml.XPathUtils;
 import org.springframework.context.HierarchicalMessageSource;
 import org.springframework.context.MessageSource;
 import org.springframework.context.support.DelegatingMessageSource;
-import org.springframework.context.support.ReloadableResourceBundleMessageSource;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
+import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 import org.xml.sax.InputSource;
 
@@ -174,6 +176,15 @@ public class TargetGeneratorRunner {
                 languageInfo.setDefaultLanguage(defaultLanguage);
             }
 
+            MessageSourcePreProcessor processor = null;
+            xp = xpf.newXPath();
+            xp.setNamespaceContext(nc);
+            xpe = xp.compile("/p:project-config/p:messagesources/p:preprocess");
+            Node node = (Node)xpe.evaluate(doc, XPathConstants.NODE);
+            if(node != null) {
+                processor = MessageSourcePreProcessor.create((Element)node);
+            }
+
             xp = xpf.newXPath();
             xp.setNamespaceContext(nc);
             xpe = xp.compile("/p:project-config/p:messagesources/p:messagesource");
@@ -196,14 +207,16 @@ public class TargetGeneratorRunner {
                         POMessageSource src = new POMessageSource();
                         src.setBasenames(baseNames.toArray(new String[baseNames.size()]));
                         src.setResourceLoader(new PustefixResourceLoader());
+                        src.setMessagePreProcessor(processor);
                         if(lastMessageSource != null) {
                             lastMessageSource.setParentMessageSource(src);
                         }
                         lastMessageSource = src;
                     } else if(type.equals("properties")) {
-                        ReloadableResourceBundleMessageSource src = new ReloadableResourceBundleMessageSource();
+                        PreProcessableMessageSource src = new PreProcessableMessageSource();
                         src.setBasenames(baseNames.toArray(new String[baseNames.size()]));
                         src.setResourceLoader(new PustefixResourceLoader());
+                        src.setMessagePreProcessor(processor);
                         if(lastMessageSource != null) {
                             lastMessageSource.setParentMessageSource(src);
                         }

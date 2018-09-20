@@ -125,9 +125,13 @@
   </dynamic-includes>
   
   <messagesources>
+    <preprocess>
+      <replace pattern="\{PRE\}" value="REPLACED VALUE"/>
+    </preprocess>
     <messagesource type="po">
       <basename>module://common-module/i18n/messages</basename>
       <basename>module://common-module/i18n/errors</basename>
+      <basename>WEB-INF/messages</basename>
     </messagesource>
     <messagesource type="properties" basename="/WEB-INF/messages"/>
   </messagesources>

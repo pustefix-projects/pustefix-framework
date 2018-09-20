@@ -24,14 +24,15 @@ import java.util.ListIterator;
 import org.pustefixframework.config.Constants;
 import org.pustefixframework.config.customization.CustomizationAwareParsingHandler;
 import org.pustefixframework.config.generic.ParsingUtils;
+import org.pustefixframework.util.i18n.MessageSourcePreProcessor;
 import org.pustefixframework.util.i18n.POMessageSource;
+import org.pustefixframework.util.i18n.PreProcessableMessageSource;
 import org.pustefixframework.util.xml.DOMUtils;
 import org.springframework.beans.factory.config.BeanDefinition;
 import org.springframework.beans.factory.support.BeanDefinitionBuilder;
 import org.springframework.beans.factory.support.BeanDefinitionRegistry;
 import org.springframework.beans.factory.support.DefaultBeanNameGenerator;
 import org.springframework.context.MessageSource;
-import org.springframework.context.support.ReloadableResourceBundleMessageSource;
 import org.w3c.dom.Element;
 
 import com.marsching.flexiparse.parser.HandlerContext;
@@ -51,6 +52,14 @@ public class MessageSourcesParsingHandler extends CustomizationAwareParsingHandl
         String lastMsgSrcName = null;
         List<Element> msgSrcElems = DOMUtils.getChildElementsByTagNameNS((Element)context.getNode(), Constants.NS_PROJECT, "messagesource");
         
+        MessageSourcePreProcessor preProc = null;
+        List<Element> preProcElems = DOMUtils.getChildElementsByTagNameNS((Element)context.getNode(), Constants.NS_PROJECT, "preprocess");
+        if(preProcElems.size() == 1) {
+            preProc = MessageSourcePreProcessor.create(preProcElems.get(0));
+        } else if(preProcElems.size() > 1) {
+            throw new ParserException("Multiple 'preprocess' elements not allowed");
+        }
+
         for(ListIterator<Element> it = msgSrcElems.listIterator(msgSrcElems.size()); it.hasPrevious();) {
             Element msgSrcElem = it.previous();
             String type = msgSrcElem.getAttribute("type").trim();
@@ -58,7 +67,7 @@ public class MessageSourcesParsingHandler extends CustomizationAwareParsingHandl
             if(type.equals("po")) {
                 msgSrcClass = POMessageSource.class;
             } else if(type.isEmpty() || type.equals("properties")) {
-                msgSrcClass = ReloadableResourceBundleMessageSource.class;
+                msgSrcClass = PreProcessableMessageSource.class;
             } else {
                 throw new ParserException("Illegal messagesource type: " + type);
             }
@@ -85,6 +94,9 @@ public class MessageSourcesParsingHandler extends CustomizationAwareParsingHandl
             beanBuilder.addPropertyValue("cacheSeconds", cacheSeconds);
             if(lastMsgSrcName != null) {
                 beanBuilder.addPropertyReference("parentMessageSource", lastMsgSrcName);
+            }
+            if(preProc != null) {
+                beanBuilder.addPropertyValue("messagePreProcessor", preProc);
             }
 
             BeanDefinition beanDef = beanBuilder.getBeanDefinition();
