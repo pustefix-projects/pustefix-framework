@@ -21,8 +21,6 @@ import javax.xml.transform.Result;
 
 /**
  * Object/XML-Mapping (OXM) abstraction for marshalling/serializing objects to XML
- * 
- * @author mleidig@schlund.de
  */
 public interface Marshaller {
 
@@ -34,5 +32,7 @@ public interface Marshaller {
      * @throws MarshallingException
      */
     public void marshal(Object obj,Result result) throws MarshallingException;
-    
+
+    public boolean isSupported(Class<?> objectClass);
+
 }

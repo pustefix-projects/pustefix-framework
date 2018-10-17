@@ -81,8 +81,7 @@ function equals(obj1,obj2) {
 }
 
 
-var wsTypeTest=new WS_TypeTest();
-var jwsTypeTest=new JWS_TypeTest();
+var ws=new WS_TypeTest();
 
 var timer=new Timer();
 
@@ -90,7 +89,6 @@ function serviceCall() {
     consoleReset();
     timer.reset();
     timer.start();
-    var ws=soapEnabled()?wsTypeTest:jwsTypeTest;
     
     var total1=(new Date()).getTime();
         
@@ -120,8 +118,6 @@ function serviceCall() {
         consolePrint("echoByteObj",(t2-t1),ex);
     }
 
-    if(!soapEnabled()) {
-    
     //echoChar
     var t1=(new Date()).getTime();
     try {
@@ -146,8 +142,6 @@ function serviceCall() {
     } catch(ex) {
         var t2=(new Date()).getTime();
         consolePrint("echoCharacter",(t2-t1),ex);
-    }
-    
     }
     
     //echoShort

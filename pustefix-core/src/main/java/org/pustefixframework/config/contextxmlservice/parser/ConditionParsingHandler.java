@@ -148,7 +148,7 @@ public class ConditionParsingHandler implements ParsingHandler {
         if (className.equals("")) throw new ParserException("Condition needs class attribute.");
         try {
             Class<?> clazz = Class.forName(className);
-            return (Condition) clazz.newInstance();
+            return (Condition) clazz.getDeclaredConstructor().newInstance();
         } catch (ClassNotFoundException x) {
             throw new ParserException("Condition class not found: " + className);
         } catch (Exception x) {

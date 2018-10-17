@@ -47,7 +47,6 @@ import org.xml.sax.InputSource;
 import org.xml.sax.SAXException;
 import org.xml.sax.XMLReader;
 import org.xml.sax.helpers.DefaultHandler;
-import org.xml.sax.helpers.XMLReaderFactory;
 
 import de.schlund.pfixcore.editor2.core.spring.BackupService;
 import de.schlund.pfixcore.editor2.core.spring.ConfigurationService;
@@ -359,13 +358,8 @@ public abstract class CommonIncludePartThemeVariantImpl extends
     }
 
     private Collection<String> extractPrefixDeclarationsFromFileRoot(File xmlFile) {
-        XMLReader xreader;
-        try {
-            xreader = XMLReaderFactory.createXMLReader();
-        } catch (SAXException e) {
-            throw new RuntimeException("Could not create XMLReader", e);
-        }
-        
+        XMLReader xreader = Xml.createXMLReader();
+
         final Collection<String> prefixes = new HashSet<String>();
         ContentHandler nsPrefixHandler = new DefaultHandler() {
             private boolean foundFirstElement = false;

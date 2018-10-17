@@ -62,7 +62,7 @@ public class ToDouble extends SimpleCheck implements IWrapperParamCaster {
         for (int i = 0; i < param.length; i++) {
             try {
                 par = param[i].getValue().replace(',', '.');
-                val = new Double(par);
+                val = Double.valueOf(par);
                 out.add(val);
             } catch (NumberFormatException e) {
                 addSCode(scode);

@@ -15,7 +15,6 @@
  * along with Pustefix; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  */
-
 package org.pustefixframework.webservices;
 
 import java.util.ArrayList;
@@ -27,9 +26,6 @@ import org.pustefixframework.webservices.config.Configuration;
 import org.pustefixframework.webservices.config.ServiceConfig;
 
 
-/**
- * @author mleidig@schlund.de
- */
 public class ServiceRegistry {
 	
 	public enum RegistryType {APPLICATION,SESSION};
@@ -118,7 +114,7 @@ public class ServiceRegistry {
 	private Object createServiceObject(ServiceConfig srvConf) throws ServiceException {
         try {
             Class<?> clazz=Class.forName(srvConf.getImplementationName());
-            Object serviceObject=clazz.newInstance();
+            Object serviceObject=clazz.getDeclaredConstructor().newInstance();
             return serviceObject;
 		} catch(Exception x) {
 			throw new ServiceException("Can't create instance of service '"+srvConf.getName()+"'.",x);

@@ -84,7 +84,7 @@ public class ExtensionFunctionUtils {
                 t2 = System.nanoTime();
                 Long totalTime = extFuncTime.get();
                 if(totalTime == null) {
-                    totalTime = new Long(t2 - t1);
+                    totalTime = Long.valueOf(t2 - t1);
                 } else {
                     totalTime = totalTime + t2 - t1;
                 }

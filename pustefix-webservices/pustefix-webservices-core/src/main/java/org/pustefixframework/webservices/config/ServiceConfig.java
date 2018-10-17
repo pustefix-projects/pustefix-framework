@@ -15,13 +15,13 @@
  * along with Pustefix; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  */
-
 package org.pustefixframework.webservices.config;
 
 import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.io.Serializable;
+import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
 import java.util.HashMap;
@@ -31,18 +31,8 @@ import java.util.regex.Pattern;
 import org.pustefixframework.webservices.fault.FaultHandler;
 
 
-/**
- * ServiceConfig.java
- * 
- * Created: 27.07.2004
- * 
- * @author mleidig@schlund.de
- */
 public class ServiceConfig implements Serializable {
 
-    /**
-     * 
-     */
     private static final long serialVersionUID = -7058920718918701708L;
 
     private GlobalServiceConfig    globConf;
@@ -57,8 +47,6 @@ public class ServiceConfig implements Serializable {
     private String                 scopeType;
     private Boolean                sslForce;
     private String                 protocolType;
-    private String                 encStyle;
-    private String                 encUse;
     private Boolean                jsonClassHinting;
     private List<Pattern>          deserWhiteList;
     private transient FaultHandler faultHandler;
@@ -155,24 +143,6 @@ public class ServiceConfig implements Serializable {
         this.protocolType = protocolType;
     }
 
-    public String getEncodingStyle() {
-        if (encStyle == null && globConf != null) return globConf.getEncodingStyle();
-        return encStyle;
-    }
-
-    public void setEncodingStyle(String encStyle) {
-        this.encStyle = encStyle;
-    }
-
-    public String getEncodingUse() {
-        if (encUse == null && globConf != null) return globConf.getEncodingUse();
-        return encUse;
-    }
-
-    public void setEncodingUse(String encUse) {
-        this.encUse = encUse;
-    }
-
     public Boolean getJSONClassHinting() {
         if (jsonClassHinting == null && globConf != null) return globConf.getJSONClassHinting();
         return jsonClassHinting;
@@ -263,13 +233,11 @@ public class ServiceConfig implements Serializable {
         if (str != null) {
             Class<?> clazz = Class.forName(str);
             try {
-                faultHandler = (FaultHandler) clazz.newInstance();
+                faultHandler = (FaultHandler) clazz.getDeclaredConstructor().newInstance();
                 HashMap<String, String> params = (HashMap<String, String>) in.readObject();
                 if (params != null) faultHandler.setParams(params);
-            } catch (IllegalAccessException x) {
-
-            } catch (InstantiationException x) {
-
+            } catch (IllegalAccessException | InstantiationException | NoSuchMethodException| InvocationTargetException x) {
+                //ignore
             }
         }
     }

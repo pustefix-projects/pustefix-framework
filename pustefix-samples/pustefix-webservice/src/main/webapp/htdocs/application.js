@@ -1,11 +1,3 @@
-function soapEnabled() {
-	return document.getElementById('protocol_soap').checked;
-}
-
-function jsonEnabled() {
-	return document.getElementById('protocol_json').checked;
-}
-
 function printTime(time) {
 	var elem=document.getElementById('service_time_value');
 	elem.innerHTML=time;

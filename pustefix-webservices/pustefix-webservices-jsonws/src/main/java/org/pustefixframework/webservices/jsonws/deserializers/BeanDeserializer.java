@@ -15,7 +15,6 @@
  * along with Pustefix; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  */
-
 package org.pustefixframework.webservices.jsonws.deserializers;
 
 import java.lang.reflect.Field;
@@ -34,9 +33,7 @@ import org.pustefixframework.webservices.jsonws.Deserializer;
 import de.schlund.pfixcore.beans.BeanDescriptor;
 import de.schlund.pfixcore.beans.BeanDescriptorFactory;
 
-/**
- * @author mleidig@schlund.de
- */
+
 public class BeanDeserializer extends Deserializer {
 
     BeanDescriptorFactory beanDescFactory;
@@ -117,7 +114,7 @@ public class BeanDeserializer extends Deserializer {
                 Map map = null;
                 if (!targetClass.isInterface()) {
                     try {
-                        map = (Map) targetClass.newInstance();
+                        map = (Map) targetClass.getDeclaredConstructor().newInstance();
                     } catch (Exception x) {}
                 }
                 if (map == null) {
@@ -154,7 +151,7 @@ public class BeanDeserializer extends Deserializer {
                     }
                     BeanDescriptor bd = beanDescFactory.getBeanDescriptor(targetClass);
 
-                    Object newObj = targetClass.newInstance();
+                    Object newObj = targetClass.getDeclaredConstructor().newInstance();
                     Iterator<String> it = jsonObj.getMemberNames();
                     while (it.hasNext()) {
                         String prop = it.next();

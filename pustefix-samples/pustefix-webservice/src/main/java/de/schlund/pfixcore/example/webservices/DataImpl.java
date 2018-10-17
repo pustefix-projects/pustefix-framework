@@ -17,18 +17,9 @@
  */
 package de.schlund.pfixcore.example.webservices;
 
-import javax.jws.WebService;
-
 import org.pustefixframework.webservices.AbstractService;
 
-/**
- * DataImpl.java 
- * 
- * Created: 30.06.2004
- * 
- * @author mleidig
- */
-@WebService
+
 public class DataImpl extends AbstractService implements Data {
     
     public String exchangeData(String data,int strSize) throws Exception {

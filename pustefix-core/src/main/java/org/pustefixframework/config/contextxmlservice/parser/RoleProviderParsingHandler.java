@@ -18,6 +18,8 @@
 
 package org.pustefixframework.config.contextxmlservice.parser;
 
+import java.lang.reflect.InvocationTargetException;
+
 import org.pustefixframework.config.contextxmlservice.parser.internal.ContextXMLServletConfigImpl;
 import org.pustefixframework.config.generic.ParsingUtils;
 import org.w3c.dom.Element;
@@ -49,14 +51,12 @@ public class RoleProviderParsingHandler implements ParsingHandler {
             Class<?> clazz = Class.forName(className);
             if (!RoleProvider.class.isAssignableFrom(clazz))
                 throw new ParserException("Class '" + className + "' doesn't implement the RoleProvider interface.");
-            roleProvider = (RoleProvider) clazz.newInstance();
+            roleProvider = (RoleProvider) clazz.getDeclaredConstructor().newInstance();
             config.getContextConfig().setCustomRoleProvider(roleProvider);
             context.getObjectTreeElement().addObject(roleProvider);
         } catch (ClassNotFoundException x) {
             throw new ParserException("RoleProvider class not found: " + className);
-        } catch (InstantiationException x) {
-            throw new ParserException("RoleProvider class can't be instantiated: " + className, x);
-        } catch (IllegalAccessException x) {
+        } catch (InstantiationException | IllegalAccessException | NoSuchMethodException | InvocationTargetException x) {
             throw new ParserException("RoleProvider class can't be instantiated: " + className, x);
         }
         

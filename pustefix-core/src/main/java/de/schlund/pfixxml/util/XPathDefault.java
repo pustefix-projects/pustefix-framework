@@ -15,7 +15,6 @@
  * along with Pustefix; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  */
-
 package de.schlund.pfixxml.util;
 
 import java.util.ArrayList;
@@ -30,9 +29,7 @@ import javax.xml.xpath.XPathFactoryConfigurationException;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 
-/**
- * @author mleidig@schlund.de
- */
+
 public class XPathDefault implements XPathSupport {
 
     private final static String DEFAULT_XPATHFACTORY = "com.sun.org.apache.xpath.internal.jaxp.XPathFactoryImpl";
@@ -43,8 +40,7 @@ public class XPathDefault implements XPathSupport {
         try {
             ClassLoader cl = Thread.currentThread().getContextClassLoader();
             if(cl == null) cl = getClass().getClassLoader();
-            Class<?> clazz = Class.forName(DEFAULT_XPATHFACTORY,true,cl);
-            xpathFactory = (XPathFactory)clazz.newInstance();
+            xpathFactory = XPathFactory.newInstance(XPathFactory.DEFAULT_OBJECT_MODEL_URI, DEFAULT_XPATHFACTORY, cl);
         } catch (Exception x) {
             x.printStackTrace();
             //ignore and try to get XPathFactory via factory finder in next step

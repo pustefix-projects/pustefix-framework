@@ -73,7 +73,7 @@ public class DumpText implements IDumpText {
         IDumpText trans;
         if (args.length == 3) {
             Class<?> clazz = Class.forName(args[2]);
-            trans = (IDumpText) clazz.newInstance();
+            trans = (IDumpText) clazz.getDeclaredConstructor().newInstance();
         } else {
             trans = new DumpText();
         }

@@ -1,11 +1,8 @@
-var wsChat=new WS_Chat();
-var jwsChat=new JWS_Chat();
-
 function ChatApp() {
 	this.name=null;
 	this.msgIv=null;
 	this.nameIv=null;
-	this.chat=null;
+	this.chat=new WS_Chat();
 }
 
 ChatApp.prototype.restartService=function() {
@@ -13,13 +10,6 @@ ChatApp.prototype.restartService=function() {
 }
 	
 ChatApp.prototype.getChat=function() {
-   if(this.chat==null) {
-      if(soapEnabled()) this.chat=wsChat;
-      else this.chat=jwsChat;
-   } else {
-      if(soapEnabled()&&this.chat==jwsChat) this.chat=wsChat;
-      else if(!soapEnabled()&&this.chat==wsChat) this.chat=jwsChat;
-   }
    return this.chat;
 }
    

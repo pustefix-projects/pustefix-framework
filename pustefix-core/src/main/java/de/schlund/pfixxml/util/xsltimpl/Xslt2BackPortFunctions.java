@@ -1,6 +1,5 @@
 package de.schlund.pfixxml.util.xsltimpl;
 
-import java.io.UnsupportedEncodingException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.Locale;
@@ -119,9 +118,6 @@ public class Xslt2BackPortFunctions {
     public static String encodeForUri(String uriPart) {
         try {
             return UriUtils.encode(uriPart, "UTF-8");
-        } catch (UnsupportedEncodingException e) {
-            //should never be thrown
-            throw new RuntimeException(e);
         } catch (RuntimeException err) {
             ExtensionFunctionUtils.setExtensionFunctionError(err);
             throw err;

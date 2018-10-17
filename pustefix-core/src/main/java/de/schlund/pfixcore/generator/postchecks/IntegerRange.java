@@ -62,8 +62,8 @@ public class IntegerRange extends SimpleCheck implements IWrapperParamPostCheck 
         
         StringTokenizer tok = new StringTokenizer(param, " :", false);
         if (tok.countTokens() == 2) {
-            Integer thelower = new Integer(tok.nextToken());
-            Integer theupper = new Integer(tok.nextToken());
+            Integer thelower = Integer.valueOf(tok.nextToken());
+            Integer theupper = Integer.valueOf(tok.nextToken());
             lower = thelower.intValue();
             upper = theupper.intValue();
         } else {

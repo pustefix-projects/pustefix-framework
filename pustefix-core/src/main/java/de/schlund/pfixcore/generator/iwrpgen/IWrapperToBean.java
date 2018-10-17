@@ -50,7 +50,7 @@ public class IWrapperToBean {
 
     public static <T> T createBean(IWrapper wrapper, Class<T> beanClass) {
         try {
-            T instance = beanClass.newInstance();
+            T instance = beanClass.getDeclaredConstructor().newInstance();
             populateBean(wrapper, instance);
             return instance;
         } catch (Exception x) {

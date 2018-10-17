@@ -40,7 +40,6 @@ import org.xml.sax.InputSource;
 import org.xml.sax.SAXException;
 import org.xml.sax.XMLReader;
 import org.xml.sax.helpers.DefaultHandler;
-import org.xml.sax.helpers.XMLReaderFactory;
 
 import de.schlund.pfixxml.config.CustomizationHandler;
 import de.schlund.pfixxml.resources.Resource;
@@ -142,12 +141,7 @@ public class FileSystemServiceImpl implements FileSystemService {
     }
     
     private static void customize(InputSource input, Result result, String namespace) throws FileNotFoundException, TransformerException {
-        XMLReader xreader;
-        try {
-            xreader = XMLReaderFactory.createXMLReader();
-        } catch (SAXException e) {
-            throw new RuntimeException("Could not create XMLReader", e);
-        }
+        XMLReader xreader = Xml.createXMLReader();
         TransformerFactory tf = TransformerFactory.newInstance();
         if (tf.getFeature(SAXTransformerFactory.FEATURE)) {
             SAXTransformerFactory stf = (SAXTransformerFactory) tf;

@@ -49,7 +49,9 @@ public class LibraryPatchMojo extends AbstractMojo {
      */
     private File outputDirectory;
 
-    /** @parameter default-value="${project}" */
+    /**
+     * @parameter default-value="${project}"
+     */
     private MavenProject mavenProject;
 
     public void execute() throws MojoExecutionException {

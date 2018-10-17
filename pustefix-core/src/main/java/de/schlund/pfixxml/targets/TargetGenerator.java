@@ -24,8 +24,6 @@ import java.io.StringReader;
 import java.lang.management.ManagementFactory;
 import java.net.URI;
 import java.net.URISyntaxException;
-import java.nio.file.Path;
-import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
@@ -62,7 +60,6 @@ import org.xml.sax.InputSource;
 import org.xml.sax.SAXException;
 import org.xml.sax.XMLReader;
 import org.xml.sax.helpers.DefaultHandler;
-import org.xml.sax.helpers.XMLReaderFactory;
 
 import de.schlund.pfixcore.util.Meminfo;
 import de.schlund.pfixcore.workflow.SiteMap;
@@ -659,7 +656,7 @@ public class TargetGenerator implements ResourceVisitor, ServletContextAware, In
 
         fullXml = Xml.serialize(confDoc, false, true);
 
-        XMLReader xreader = XMLReaderFactory.createXMLReader();
+        XMLReader xreader = Xml.createXMLReader();
         TransformerFactory tf = TransformerFactory.newInstance();
         if (tf.getFeature(SAXTransformerFactory.FEATURE)) {
             SAXTransformerFactory stf = (SAXTransformerFactory) tf;

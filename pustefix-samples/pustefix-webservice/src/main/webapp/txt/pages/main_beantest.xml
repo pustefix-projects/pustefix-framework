@@ -4,8 +4,7 @@
     <theme name="default">
 
       <div class="service_caption">BeanTest service</div>
-      
-      <pfx:include href="txt/common.xml" part="protocol_select"/>
+
       <pfx:include href="txt/common.xml" part="service_time"/>
       <pfx:include href="txt/common.xml" part="service_error"/>
       <pfx:include href="txt/common.xml" part="service_result"/>

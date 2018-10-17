@@ -90,7 +90,7 @@ public class Test extends TestCase {
         ComplexTestBean bean = new ComplexTestBean();
         bean.setBoolVal(true);
         bean.setIntVal(1);
-        bean.setFloatVal(new Float(2.2));
+        bean.setFloatVal(Float.valueOf(2.2f));
         bean.setStrVal("aaa");
         bean.setBooleanArray(new Boolean[] { Boolean.TRUE, Boolean.FALSE });
         bean.type = ComplexTestBean.class;
@@ -104,14 +104,14 @@ public class Test extends TestCase {
         ComplexTestBean bean1 = new ComplexTestBean();
         bean1.setBoolVal(false);
         bean1.setIntVal(2);
-        bean1.setFloatVal(new Float(3.3));
+        bean1.setFloatVal(Float.valueOf(3.3f));
         bean1.setStrVal("bbb");
         bean1.setBooleanArray(new Boolean[] { Boolean.TRUE, Boolean.TRUE });
 
         ComplexTestBean bean2 = new ComplexTestBean();
         bean2.setBoolVal(true);
         bean2.setIntVal(3);
-        bean2.setFloatVal(new Float(4.4));
+        bean2.setFloatVal(Float.valueOf(4.4f));
         bean2.setStrVal("ccc");
         bean2.setBooleanArray(new Boolean[] { Boolean.FALSE, Boolean.FALSE });
 

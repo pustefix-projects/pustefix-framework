@@ -23,16 +23,12 @@ import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
-import java.lang.management.ManagementFactory;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
-import java.net.ServerSocket;
 import java.net.URL;
 import java.util.Enumeration;
 import java.util.Properties;
 
-import javax.management.MBeanServer;
-import javax.management.ObjectName;
 import javax.servlet.ServletContext;
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
@@ -50,7 +46,6 @@ import javax.xml.transform.sax.TransformerHandler;
 import javax.xml.transform.stream.StreamResult;
 import javax.xml.transform.stream.StreamSource;
 
-import org.pustefixframework.admin.mbeans.Admin;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.Node;
@@ -62,7 +57,6 @@ import org.xml.sax.SAXException;
 import org.xml.sax.SAXParseException;
 import org.xml.sax.XMLReader;
 import org.xml.sax.helpers.DefaultHandler;
-import org.xml.sax.helpers.XMLReaderFactory;
 
 import de.schlund.pfixcore.exception.PustefixCoreException;
 import de.schlund.pfixcore.util.JarFileCache;
@@ -74,6 +68,7 @@ import de.schlund.pfixxml.resources.FileResource;
 import de.schlund.pfixxml.resources.Resource;
 import de.schlund.pfixxml.resources.ResourceUtil;
 import de.schlund.pfixxml.util.TransformerHandlerAdapter;
+import de.schlund.pfixxml.util.Xml;
 import de.schlund.pfixxml.util.XsltProvider;
 
 /**
@@ -124,7 +119,6 @@ public class PustefixInit {
     	}
 
         configureLogging(properties, servletContext);
-    	initAdminMBean();
     	initDone = true;
     }
 
@@ -173,7 +167,7 @@ public class PustefixInit {
     static Document readLoggingConfig(InputStream in, String systemID, boolean validating) 
             throws SAXException, FileNotFoundException, IOException {
 
-        XMLReader xreader = XMLReaderFactory.createXMLReader();
+        XMLReader xreader = Xml.createXMLReader();
         TransformerFactory tf = XsltProvider.getXsltSupport(XsltProvider.getPreferredXsltVersion()).getThreadTransformerFactory();
         SAXTransformerFactory stf = (SAXTransformerFactory) tf;
         TransformerHandler th;
@@ -248,50 +242,7 @@ public class PustefixInit {
         return confDoc;
     }
 
-    private static void initAdminMBean() {
-        String mode = EnvironmentProperties.getProperties().getProperty("mode");
-        if(!mode.equalsIgnoreCase("prod")) {
-            try {
-                String mletClass = "javax.management.loading.MLet";
-                ObjectName mletName = new ObjectName(Admin.JMX_NAME + ",subtype=MLet");
-                MBeanServer server = ManagementFactory.getPlatformMBeanServer();
-                if(!server.isRegistered(mletName)) {
-                    ClassLoader cl = Thread.currentThread().getContextClassLoader();
-                    try {
-                        Thread.currentThread().setContextClassLoader(null);
-                        server.createMBean(mletClass, mletName);
-                        Object mletParams[] = {PustefixInit.class.getProtectionDomain().getCodeSource().getLocation()};
-                        String mletSignature[] = {"java.net.URL"};
-                        server.invoke(mletName, "addURL", mletParams, mletSignature);
-                        String mbeanClass = "org.pustefixframework.admin.mbeans.Admin";
-                        ObjectName mbeanName = new ObjectName(Admin.JMX_NAME);
-                        if(!server.isRegistered(mbeanName)) {
-                            Object[] params = new Object[] {findFreePort()};
-                            String[] signature = new String[] {"int"};
-                            server.createMBean(mbeanClass, mbeanName, mletName, params, signature);
-                        }
-                    } finally {
-                        Thread.currentThread().setContextClassLoader(cl);
-                    }
-                }
-            } catch(Exception x) {
-                System.err.println("WARN: Can't register Admin MBean [ " + x.getMessage() + "]");
-            }
-        }
-    }
-    
-    private static int findFreePort() {
-        try {
-            ServerSocket server = new ServerSocket(0);
-            int port = server.getLocalPort();
-            server.close();
-            return port;
-        } catch(IOException x) {
-            throw new RuntimeException("Can't get free port", x);
-        }
-    }
-    
-   
+
     static class Resolver implements URIResolver {
         
         private URIResolver defaultResolver;

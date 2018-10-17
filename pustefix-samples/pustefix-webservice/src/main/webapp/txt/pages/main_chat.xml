@@ -4,9 +4,7 @@
     <theme name="default">
 
       <div class="service_caption">Chat service</div>
-      
-      <pfx:include href="txt/common.xml" part="protocol_select"/>
-    
+
       <div class="service_content"> 
 		  
             <table cellpadding="5" cellspacing="5" style="background-color:#b6cfe4;">

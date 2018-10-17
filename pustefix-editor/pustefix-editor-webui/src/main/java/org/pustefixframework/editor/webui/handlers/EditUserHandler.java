@@ -128,22 +128,22 @@ public class EditUserHandler implements IHandler {
         input.setSection(user.getSectionName());
         input.setPhone(user.getPhoneNumber());
         if (user.getGlobalPermissions().isAdmin()) {
-            input.setAdminPrivilege(new Boolean(true));
+            input.setAdminPrivilege(Boolean.TRUE);
         } else {
-            input.setAdminPrivilege(new Boolean(false));
+            input.setAdminPrivilege(Boolean.FALSE);
         }
         for (String projectName : usersResource.getProjectNames()) {
             EditorProjectPermissions permissions = user
                     .getProjectPermissions(projectName);
             if (permissions.isEditImages()) {
-                input.setEditImagesPrivilege(new Boolean(true), projectName);
+                input.setEditImagesPrivilege(Boolean.TRUE, projectName);
             } else {
-                input.setEditImagesPrivilege(new Boolean(false), projectName);
+                input.setEditImagesPrivilege(Boolean.FALSE, projectName);
             }
             if (permissions.isEditIncludes()) {
-                input.setEditIncludesPrivilege(new Boolean(true), projectName);
+                input.setEditIncludesPrivilege(Boolean.TRUE, projectName);
             } else {
-                input.setEditIncludesPrivilege(new Boolean(false), projectName);
+                input.setEditIncludesPrivilege(Boolean.FALSE, projectName);
             }
         }
     }

@@ -22,19 +22,9 @@ import java.util.Date;
 import java.util.List;
 import java.util.Map;
 
-import javax.jws.WebMethod;
-import javax.jws.WebService;
-
 import org.w3c.dom.Element;
 
-/**
- * TypeTestImpl.java 
- * 
- * Created: 30.07.2004
- * 
- * @author mleidig
- */
-@WebService
+
 public class TypeTestImpl implements TypeTest {
     
     public String info() {
@@ -152,13 +142,11 @@ public class TypeTestImpl implements TypeTest {
     public Object[] echoObjectArray(Object[] objs) {
         return objs;
     }
-    
-    @WebMethod(exclude=true)
+
     public Element echoElement(Element elem) {
         return elem;
     }
-    
-    @WebMethod(exclude=true)
+
     public Element[] echoElementArray(Element[] elems) {
         return elems;
     }
@@ -170,23 +158,19 @@ public class TypeTestImpl implements TypeTest {
     public DataBean[] echoDataBeanArray(DataBean[] data) {
         return data;
     }
-    
-    @WebMethod(exclude=true)
+
     public List<String> echoStringList(List<String> stringList) {
         return stringList;
     }
-    
-    @WebMethod(exclude=true)
+
     public List<DataBean> echoDataBeanList(List<DataBean> dataBeanList) {
         return dataBeanList;
     }
-    
-    @WebMethod(exclude=true)
+
     public Map<String,String> echoStringMap(Map<String,String> map) {
         return map;
     }
-    
-    @WebMethod(exclude=true)
+
     public Map<String,DataBean> echoDataBeanMap(Map<String,DataBean> dataBeanMap) {
         return dataBeanMap;
     }
@@ -194,13 +178,11 @@ public class TypeTestImpl implements TypeTest {
     public BeanImpl[] echoBeanArray(BeanImpl[] beanArray) {
         return beanArray;
     }
-    
-    @WebMethod(exclude=true)
+
     public TestEnum echoEnum(TestEnum testEnum) {
     	return testEnum;
     }
-    
-    @WebMethod(exclude=true)
+
     public EnumTestBean echoEnumBean(EnumTestBean testEnumBean) {
     	return testEnumBean;
     }

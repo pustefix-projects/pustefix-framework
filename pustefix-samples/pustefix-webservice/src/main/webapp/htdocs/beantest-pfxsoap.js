@@ -30,32 +30,12 @@ function checkResult(res,ref) {
    return true;
 }
 
-var wsCall=new WS_BeanTest();
-var jwsCall=new JWS_BeanTest();
-var ws=null;
-
-var wsRef1={"foo":1,"bar":2,"baz":3,"pub":4,"ro":5,"blah":9};
-var jwsRef1={"foo":1,"test":3,"public":4,"ro":5};
-var ref1=null;
-
-var wsRef2={"foo":1,"bar":2,"baz":3,"pub":4,"ro":5,"blah":9,"one":10,"two":11,"three":12};
-var jwsRef2={"foo":1,"test":3,"public":4,"ro":5,"one":10,"oneplusone":11};
-var ref2=null;
-
-function initWS() {
-   if(soapEnabled()) {
-      ws=wsCall;
-      ref1=wsRef1;
-      ref2=wsRef2;
-   } else {
-      ws=jwsCall;
-      ref1=jwsRef1;
-      ref2=jwsRef2;
-   }
-}
+var ws=new WS_BeanTest();
+var ref1={"foo":1,"test":3,"public":4,"ro":5};
+var ref2={"foo":1,"test":3,"public":4,"ro":5,"one":10,"oneplusone":11};
 
 function testAsync1() {
-  var test="bean with annotations (ignored by soap)";
+  var test="bean with annotations";
   var f=function(res,id,ex) {
     if(res!=null && checkResult(res,ref1)) consolePrint(test+" OK");
     else consolePrint(test+" ERROR");
@@ -65,7 +45,7 @@ function testAsync1() {
 }
 
 function testAsync2() {
-  var test="bean with xml metadata (ignored by soap)";
+  var test="bean with xml metadata";
   var f=function(res,id,ex) {
     if(res!=null && checkResult(res,ref2)) consolePrint(test+" OK");
     else consolePrint(test+" ERROR");
@@ -82,7 +62,6 @@ function serviceCall() {
   cnt=0;
   totalCnt=2;
   consoleReset();
-  initWS();
   
   timer.reset();
   timer.start();

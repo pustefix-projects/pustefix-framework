@@ -8,9 +8,6 @@
   <import href="WEB-INF/webservice-import.xml"/>
 
   <webservice-global>
-  
-    <stubgeneration jsnamespace="COMPAT_UNIQUE"/>
-    <protocol type="ANY"/>
     
     <choose>
       <when test="$mode = 'prod'">

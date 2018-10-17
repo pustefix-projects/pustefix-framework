@@ -42,7 +42,7 @@ import javax.lang.model.type.MirroredTypeException;
 import javax.lang.model.type.PrimitiveType;
 import javax.lang.model.type.TypeKind;
 import javax.lang.model.type.TypeMirror;
-import javax.lang.model.util.ElementScanner6;
+import javax.lang.model.util.ElementScanner7;
 import javax.tools.Diagnostic.Kind;
 import javax.tools.JavaFileObject;
 import javax.xml.parsers.DocumentBuilder;
@@ -68,10 +68,8 @@ import de.schlund.pfixcore.generator.annotation.PreCheck;
 import de.schlund.pfixcore.generator.annotation.Property;
 import de.schlund.pfixcore.generator.annotation.Transient;
 
-/**
- * @author mleidig@schlund.de
- */
-@SupportedSourceVersion(SourceVersion.RELEASE_6)
+
+@SupportedSourceVersion(SourceVersion.RELEASE_7)
 @SupportedAnnotationTypes(value= {"de.schlund.pfixcore.generator.annotation.IWrapper"})
 public class IWrapperAnnotationProcessor extends AbstractProcessor {
 
@@ -143,7 +141,7 @@ public class IWrapperAnnotationProcessor extends AbstractProcessor {
         return "set" + Character.toUpperCase(propName.charAt(0)) + propName.substring(1);
     }
 
-    class TypeVisitor extends ElementScanner6<Void,Void> {
+    class TypeVisitor extends ElementScanner7<Void,Void> {
 
         Document doc;
         Element root;

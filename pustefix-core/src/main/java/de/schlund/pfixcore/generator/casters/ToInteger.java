@@ -63,7 +63,7 @@ public class ToInteger extends SimpleCheck implements IWrapperParamCaster {
         Integer   val;
         for (int i = 0; i < param.length; i++) {
             try {
-                val = new Integer(param[i].getValue());
+                val = Integer.valueOf(param[i].getValue());
                 out.add(val);
             } catch (NumberFormatException e) {
                 val = null;

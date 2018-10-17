@@ -134,7 +134,7 @@ public class BeanSerializer implements ComplexTypeSerializer {
                             de.schlund.pfixcore.oxm.impl.annotation.SimpleTypeSerializerClass serAnno = anno.annotationType().getAnnotation(
                                     de.schlund.pfixcore.oxm.impl.annotation.SimpleTypeSerializerClass.class);
                             Class<? extends SimpleTypeSerializer> serClass = serAnno.value();
-                            SimpleTypeSerializer serializer = serClass.newInstance();
+                            SimpleTypeSerializer serializer = serClass.getDeclaredConstructor().newInstance();
                             if (AnnotationAware.class.isAssignableFrom(serClass)) {
                                 AnnotationAware aa = (AnnotationAware) serializer;
                                 aa.setAnnotation(anno);
@@ -145,7 +145,7 @@ public class BeanSerializer implements ComplexTypeSerializer {
                             de.schlund.pfixcore.oxm.impl.annotation.ComplexTypeSerializerClass serAnno = anno.annotationType().getAnnotation(
                                     de.schlund.pfixcore.oxm.impl.annotation.ComplexTypeSerializerClass.class);
                             Class<? extends ComplexTypeSerializer> serClass = serAnno.value();
-                            ComplexTypeSerializer serializer = serClass.newInstance();
+                            ComplexTypeSerializer serializer = serClass.getDeclaredConstructor().newInstance();
                             if (AnnotationAware.class.isAssignableFrom(serClass)) {
                                 AnnotationAware aa = (AnnotationAware) serializer;
                                 aa.setAnnotation(anno);
@@ -162,7 +162,7 @@ public class BeanSerializer implements ComplexTypeSerializer {
                             de.schlund.pfixcore.oxm.impl.annotation.SimpleTypeSerializerClass serAnno = anno.annotationType().getAnnotation(
                                     de.schlund.pfixcore.oxm.impl.annotation.SimpleTypeSerializerClass.class);
                             Class<? extends SimpleTypeSerializer> serClass = serAnno.value();
-                            SimpleTypeSerializer serializer = serClass.newInstance();
+                            SimpleTypeSerializer serializer = serClass.getDeclaredConstructor().newInstance();
                             if (AnnotationAware.class.isAssignableFrom(serClass)) {
                                 AnnotationAware aa = (AnnotationAware) serializer;
                                 aa.setAnnotation(anno);
@@ -173,7 +173,7 @@ public class BeanSerializer implements ComplexTypeSerializer {
                             de.schlund.pfixcore.oxm.impl.annotation.ComplexTypeSerializerClass serAnno = anno.annotationType().getAnnotation(
                                     de.schlund.pfixcore.oxm.impl.annotation.ComplexTypeSerializerClass.class);
                             Class<? extends ComplexTypeSerializer> serClass = serAnno.value();
-                            ComplexTypeSerializer serializer = serClass.newInstance();
+                            ComplexTypeSerializer serializer = serClass.getDeclaredConstructor().newInstance();
                             if (AnnotationAware.class.isAssignableFrom(serClass)) {
                                 AnnotationAware aa = (AnnotationAware) serializer;
                                 aa.setAnnotation(anno);

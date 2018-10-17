@@ -24,7 +24,7 @@ package de.schlund.pfixcore.oxm.bean;
  */
 public class BooleanPropertyBean {
     protected boolean admin = true;
-    protected Boolean deleted = new Boolean(false);
+    protected Boolean deleted = Boolean.FALSE;
 
     public boolean isAdmin() {
         return admin;

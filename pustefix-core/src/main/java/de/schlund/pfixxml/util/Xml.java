@@ -34,6 +34,7 @@ import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.FactoryConfigurationError;
 import javax.xml.parsers.ParserConfigurationException;
+import javax.xml.parsers.SAXParserFactory;
 import javax.xml.transform.OutputKeys;
 import javax.xml.transform.Result;
 import javax.xml.transform.Source;
@@ -55,7 +56,6 @@ import org.xml.sax.InputSource;
 import org.xml.sax.SAXException;
 import org.xml.sax.SAXParseException;
 import org.xml.sax.XMLReader;
-import org.xml.sax.helpers.XMLReaderFactory;
 
 import de.schlund.pfixxml.SPDocument;
 import de.schlund.pfixxml.resources.FileResource;
@@ -65,8 +65,8 @@ import de.schlund.pfixxml.resources.Resource;
 public class Xml {
     
     static final Logger               CAT     = LoggerFactory.getLogger(Xml.class);
-    
-    private static final String DEFAULT_XMLREADER = "com.sun.org.apache.xerces.internal.parsers.SAXParser";
+
+    private static final String DEFAULT_SAXPARSERFACTORY = "com.sun.org.apache.xerces.internal.jaxp.SAXParserFactoryImpl";
     private static final String DEFAULT_DOCUMENTBUILDERFACTORY = "com.sun.org.apache.xerces.internal.jaxp.DocumentBuilderFactoryImpl";
     
     private static final DocumentBuilderFactory factory = createDocumentBuilderFactory();
@@ -76,15 +76,19 @@ public class Xml {
     public static XMLReader createXMLReader() {
         XMLReader reader = null;
         try {
-            reader = XMLReaderFactory.createXMLReader(DEFAULT_XMLREADER);
-        } catch(SAXException x) {
+            SAXParserFactory spf = SAXParserFactory.newInstance(DEFAULT_SAXPARSERFACTORY, null);
+            spf.setNamespaceAware(true);
+            reader = spf.newSAXParser().getXMLReader();
+        } catch(SAXException | ParserConfigurationException x) {
             x.printStackTrace();
             //ignore and try to get XMLReader via factory finder in next step
         }
         if(reader == null) {
             try {
-                reader = XMLReaderFactory.createXMLReader();
-            } catch(SAXException x)  {
+                SAXParserFactory spf = SAXParserFactory.newInstance();
+                spf.setNamespaceAware(true);
+                reader = spf.newSAXParser().getXMLReader();
+            } catch(SAXException | ParserConfigurationException x)  {
                 throw new RuntimeException("Can't get XMLReader",x);
             }
         }
@@ -356,8 +360,7 @@ public class Xml {
         try {
             ClassLoader cl = Thread.currentThread().getContextClassLoader();
             if(cl == null) cl = Xml.class.getClassLoader();
-            Class<?> clazz = Class.forName(DEFAULT_DOCUMENTBUILDERFACTORY, true, cl);
-            fact = (DocumentBuilderFactory)clazz.newInstance();
+            fact = DocumentBuilderFactory.newInstance(DEFAULT_DOCUMENTBUILDERFACTORY, cl);
         } catch(Exception x) {
             x.printStackTrace();
             //ignore and try to get DocumentBuilderFactory via factory finder in next step

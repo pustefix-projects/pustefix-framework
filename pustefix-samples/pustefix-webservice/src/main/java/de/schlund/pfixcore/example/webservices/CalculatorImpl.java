@@ -17,16 +17,7 @@
  */
 package de.schlund.pfixcore.example.webservices;
 
-import javax.jws.WebService;
 
-/**
- * CalculatorImpl.java 
- * 
- * Created: 30.06.2004
- * 
- * @author mleidig
- */
-@WebService
 public class CalculatorImpl implements Calculator {
 
     public int add(int value1,int value2) {

@@ -17,19 +17,10 @@
  */
 package de.schlund.pfixcore.example.webservices;
 
-import javax.jws.WebService;
-
 import de.schlund.pfixcore.example.ContextCounter;
 import org.pustefixframework.webservices.AbstractService;
 
-/**
- * CounterImpl.java 
- * 
- * Created: 29.06.2004
- * 
- * @author mleidig
- */
-@WebService
+
 public class CounterImpl extends AbstractService implements Counter {
 
     public int getValue() throws Exception {

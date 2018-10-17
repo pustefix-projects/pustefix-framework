@@ -47,9 +47,9 @@ public class TrouserHandler implements InputHandler<Trouser> {
         Integer[]      feature = trouser.getFeature();
 
         // Sample Check: reject a certain combination
-        if (feature != null && color.equals(new Integer(2))) {
+        if (feature != null && color.equals(Integer.valueOf(2))) {
             HashSet<Integer> set = new HashSet<Integer>(Arrays.asList(feature));
-            if (set.contains(new Integer(1))) {
+            if (set.contains(Integer.valueOf(1))) {
                 // The combination of feature 1 and color No. 2 is invalid (maybe out of stock) 
                 String[]   args  = new String[2];
                 args[0] = "1";

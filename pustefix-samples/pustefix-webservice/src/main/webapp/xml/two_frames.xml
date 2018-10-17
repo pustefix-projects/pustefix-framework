@@ -28,33 +28,26 @@
         <head>
           <link rel="stylesheet" type="text/css" href="{$__contextpath}/webservice.css"/>
           <script type="text/javascript" src="{$__contextpath}/application.js"></script>
-          <script type="text/javascript" src="{$__contextpath}/modules/pustefix-core/script/xmlRequest.js"></script>
-          <script type="text/javascript" src="{$__contextpath}/modules/pustefix-webservices-jaxws/script/webservice.js"></script>
           <script type="text/javascript" src="{$__contextpath}/modules/pustefix-core/script/httpRequest.js"></script>
           <script type="text/javascript" src="{$__contextpath}/modules/pustefix-webservices-jsonws/script/webservice_json.js"></script>
           <ixsl:choose>
             <ixsl:when test="$page='calculator'">
-              <pfx:wsscript name="Calculator" type="soap"/>
               <pfx:wsscript name="Calculator"/>
               <script type="text/javascript" src="{$__contextpath}/calc-pfxsoap.js"></script>
             </ixsl:when>
             <ixsl:when test="$page='chat'">
-              <pfx:wsscript name="Chat" type="soap"/>
               <pfx:wsscript name="Chat"/>
               <script type="text/javascript" src="{$__contextpath}/chat-pfxsoap.js"></script>
             </ixsl:when>
             <ixsl:when test="$page='counter'"> 
-              <pfx:wsscript name="Counter" type="soap"/>
               <pfx:wsscript name="Counter"/>
               <script type="text/javascript" src="{$__contextpath}/counter-pfxsoap.js"></script>		
             </ixsl:when>
             <ixsl:when test="$page='data'">
-              <pfx:wsscript name="Data" type="soap"/>
               <pfx:wsscript name="Data"/>
               <script type="text/javascript" src="{$__contextpath}/data-pfxsoap.js"></script>		
             </ixsl:when>
             <ixsl:when test="$page='typetest'">
-              <pfx:wsscript name="TypeTest" type="soap"/>
               <pfx:wsscript name="TypeTest"/>
               <script type="text/javascript" src="{$__contextpath}/typetest-pfxsoap.js"></script>		
             </ixsl:when>
@@ -64,7 +57,6 @@
               <script type="text/javascript" src="{$__contextpath}/calltest-pfxsoap.js"></script>   
             </ixsl:when>
             <ixsl:when test="$page='beantest'">
-              <pfx:wsscript name="BeanTest" type="soap"/>
               <pfx:wsscript name="BeanTest"/>
               <script type="text/javascript" src="{$__contextpath}/beantest-pfxsoap.js"></script>   
             </ixsl:when>

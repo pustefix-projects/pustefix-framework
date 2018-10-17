@@ -17,8 +17,6 @@
  */
 package de.schlund.pfixcore.oxm.impl;
 
-import javax.xml.bind.annotation.XmlRootElement;
-
 import org.pustefixframework.util.BytecodeAPIUtils;
 
 import de.schlund.pfixcore.beans.BeanDescriptorFactory;
@@ -40,24 +38,30 @@ public class MarshallerFactory {
         }
         SerializerRegistry registry = new SerializerRegistry(factory);
         defaultMarshaller = new MarshallerImpl(registry);
-        jaxbMarshaller = new de.schlund.pfixcore.oxm.impl.JAXBMarshaller();
+        try {
+            Class.forName("javax.xml.bind.JAXBContext");
+            jaxbMarshaller = new de.schlund.pfixcore.oxm.impl.JAXBMarshaller();
+        } catch(ClassNotFoundException x) {
+            //JAXB not in classpath, always use default Marshaller
+        }
     }
     
     public static Marshaller getMarshaller(Object object) {
-    	
-    	Class<?> objectClass = object.getClass();
-    	if(BytecodeAPIUtils.isProxy(objectClass)) {
-    		objectClass = objectClass.getSuperclass();
-    	}
-    	XmlRootElement jaxbElem = objectClass.getAnnotation(XmlRootElement.class);
-    	Marshaller marshaller;
-    	if(jaxbElem == null) {
-    		marshaller = defaultMarshaller;
-    	} else {
-    		marshaller = jaxbMarshaller;
-    	}
-    	return marshaller;
-    	
+        Marshaller marshaller;
+        if(jaxbMarshaller != null && jaxbMarshaller.isSupported(getObjectClass(object))) {
+            marshaller = jaxbMarshaller;
+        } else {
+            marshaller = defaultMarshaller;
+        }
+        return marshaller;
+    }
+
+    private static Class<?> getObjectClass(Object object) {
+        Class<?> objectClass = object.getClass();
+        if(BytecodeAPIUtils.isProxy(objectClass)) {
+            objectClass = objectClass.getSuperclass();
+        }
+        return objectClass;
     }
 
 }

@@ -72,8 +72,8 @@ public class FloatRange extends SimpleCheck implements IWrapperParamPostCheck {
         
         StringTokenizer tok = new StringTokenizer(param, "()[] :", false);
         if (tok.countTokens() == 2) {
-            Float thelower = new Float(tok.nextToken());
-            Float theupper = new Float(tok.nextToken());
+            Float thelower = Float.valueOf(tok.nextToken());
+            Float theupper = Float.valueOf(tok.nextToken());
             lower = thelower.intValue();
             upper = theupper.intValue();
         } else {

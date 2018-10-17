@@ -308,7 +308,7 @@ public class IWrapperContainerImpl implements IWrapperContainer {
                 IWrapper wrapper = null;
                 try {
                     thewrapper = Class.forName(iface);
-                    wrapper = (IWrapper) thewrapper.newInstance();
+                    wrapper = (IWrapper) thewrapper.getDeclaredConstructor().newInstance();
                 } catch (ClassNotFoundException e) {
                     throw new XMLException("unable to find class [" + iface + "] :" + e.getMessage());
                 } catch (InstantiationException e) {

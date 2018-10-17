@@ -30,11 +30,11 @@ import org.apache.lucene.document.Document;
 import org.xml.sax.InputSource;
 import org.xml.sax.SAXException;
 import org.xml.sax.XMLReader;
-import org.xml.sax.helpers.XMLReaderFactory;
 
 import de.schlund.pfixcore.lucefix.Tripel.Type;
 import de.schlund.pfixxml.resources.FileResource;
 import de.schlund.pfixxml.resources.ResourceUtil;
+import de.schlund.pfixxml.util.Xml;
 
 /**
  * @author schuppi
@@ -114,7 +114,7 @@ public class DocumentCache {
 
     private static Collection<Document> getDocumentsFromFileAsCollection(FileResource f) throws FileNotFoundException, IOException,
             SAXException {
-        XMLReader xmlreader = XMLReaderFactory.createXMLReader();
+        XMLReader xmlreader = Xml.createXMLReader();
         IncludeFileHandler handler = new IncludeFileHandler(f);
         xmlreader.setContentHandler(handler);
         xmlreader.setDTDHandler(handler);

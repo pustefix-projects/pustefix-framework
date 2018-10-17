@@ -102,7 +102,7 @@ public abstract class RenderContext {
         } else throw new IllegalArgumentException("No RenderContext implementation available for " + xsltVersion);
         try {
             Class<?> clazz = Class.forName(className);
-            return (RenderContext)clazz.newInstance();
+            return (RenderContext)clazz.getDeclaredConstructor().newInstance();
         } catch(Exception x) {
             throw new PustefixRuntimeException("Can't create RenderContext", x);
         }

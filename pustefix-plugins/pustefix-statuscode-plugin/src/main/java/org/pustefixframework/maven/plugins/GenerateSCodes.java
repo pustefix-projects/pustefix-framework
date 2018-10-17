@@ -403,7 +403,7 @@ public class GenerateSCodes {
             ClassLoader cl = Thread.currentThread().getContextClassLoader();
             if (cl == null) cl = GenerateSCodes.class.getClassLoader();
             Class<?> clazz = Class.forName(DEFAULT_DOCUMENTBUILDERFACTORY, true, cl);
-            fact = (DocumentBuilderFactory)clazz.newInstance();
+            fact = (DocumentBuilderFactory)clazz.getDeclaredConstructor().newInstance();
         } catch(Exception x) {
             //ignore and try to get DocumentBuilderFactory via factory finder in next step
         }

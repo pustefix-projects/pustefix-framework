@@ -437,7 +437,7 @@ public class PfixServletRequestImpl implements PfixServletRequest {
             maxsize = DEF_MAXPARTSIZE;
         }
         MultipartHandler multi = new MultipartHandler(req, tmpdir);
-        multi.setMaxPartSize((new Long(maxsize)).longValue());
+        multi.setMaxPartSize(Long.parseLong(maxsize));
         try {
             multi.parseRequest();
             multiPartExceptions.addAll(multi.getExceptionList());

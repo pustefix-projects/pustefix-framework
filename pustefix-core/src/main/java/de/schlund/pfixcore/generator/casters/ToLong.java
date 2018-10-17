@@ -63,7 +63,7 @@ public class ToLong extends SimpleCheck implements IWrapperParamCaster {
         Long   val;
         for (int i = 0; i < param.length; i++) {
             try {
-                val = new Long(param[i].getValue());
+                val = Long.valueOf(param[i].getValue());
                 out.add(val);
             } catch (NumberFormatException e) {
                 val = null;

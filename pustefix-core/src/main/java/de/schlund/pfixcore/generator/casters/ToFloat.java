@@ -62,7 +62,7 @@ public class ToFloat extends SimpleCheck implements IWrapperParamCaster {
         for (int i = 0; i < param.length; i++) {
             try {
                 par = param[i].getValue().replace(',', '.');
-                val = new Float(par);
+                val = Float.valueOf(par);
                 out.add(val);
             } catch (NumberFormatException e) {
                 addSCode(scode);

@@ -60,7 +60,9 @@ public class PageListGeneratorMojo extends AbstractMojo {
      */
     private File logroot;
 
-    /** @parameter default-value="${project}" */
+    /**
+     * @parameter default-value="${project}"
+     */
     private MavenProject mavenProject;
 
     public void execute() throws MojoExecutionException {
@@ -77,7 +79,7 @@ public class PageListGeneratorMojo extends AbstractMojo {
         try {
             Class<?> generator = Class.forName("org.pustefixframework.test.PageListGenerator", true, loader);
             Method meth = generator.getMethod("generate", File.class, File.class, String.class, File.class);
-            Object instance = generator.newInstance();
+            Object instance = generator.getDeclaredConstructor().newInstance();
             Thread.currentThread().setContextClassLoader(loader);
             List<File> files = (List<File>)meth.invoke(instance, docroot, outputDirectory, mode, logroot);
             if(getLog().isDebugEnabled()) {

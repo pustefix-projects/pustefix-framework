@@ -15,13 +15,13 @@
  * along with Pustefix; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  */
-
 package org.pustefixframework.webservices.config;
 
 import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.io.Serializable;
+import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
 import java.net.URL;
@@ -31,19 +31,10 @@ import org.pustefixframework.webservices.Constants;
 import org.pustefixframework.webservices.fault.FaultHandler;
 
 
-/**
- * GlobalServiceConfig.java
- * 
- * Created: 27.07.2004
- * 
- * @author mleidig@schlund.de
- */
 public class GlobalServiceConfig implements Serializable {
 
-    /**
-     * 
-     */
     private static final long serialVersionUID = -8134435783633908273L;
+
     private String                 server;
     private String                 reqPath          = "/webservice";
     private Boolean                wsdlSupport      = Boolean.TRUE;
@@ -52,8 +43,6 @@ public class GlobalServiceConfig implements Serializable {
     private String                 stubRepo         = "/wsscript";
     private String                 jsNamespace      = Constants.STUBGEN_JSNAMESPACE_COMPAT;
     private String                 protocolType     = Constants.PROTOCOL_TYPE_JSONWS;
-    private String                 encStyle         = Constants.ENCODING_STYLE_RPC;
-    private String                 encUse           = Constants.ENCODING_USE_ENCODED;
     private Boolean                jsonClassHinting = Boolean.FALSE;
     private String                 sessType         = Constants.SESSION_TYPE_SERVLET;
     private String                 scopeType        = Constants.SERVICE_SCOPE_APPLICATION;
@@ -133,22 +122,6 @@ public class GlobalServiceConfig implements Serializable {
 
     public void setProtocolType(String protocolType) {
         this.protocolType = protocolType;
-    }
-
-    public String getEncodingStyle() {
-        return encStyle;
-    }
-
-    public void setEncodingStyle(String encStyle) {
-        this.encStyle = encStyle;
-    }
-
-    public String getEncodingUse() {
-        return encUse;
-    }
-
-    public void setEncodingUse(String encUse) {
-        this.encUse = encUse;
     }
 
     public Boolean getJSONClassHinting() {
@@ -319,13 +292,11 @@ public class GlobalServiceConfig implements Serializable {
         if (str != null) {
             Class<?> clazz = Class.forName(str);
             try {
-                faultHandler = (FaultHandler) clazz.newInstance();
+                faultHandler = (FaultHandler) clazz.getDeclaredConstructor().newInstance();
                 HashMap<String, String> params = (HashMap<String, String>) in.readObject();
                 if (params != null) faultHandler.setParams(params);
-            } catch (IllegalAccessException x) {
-
-            } catch (InstantiationException x) {
-
+            } catch (IllegalAccessException | InstantiationException | NoSuchMethodException | InvocationTargetException x) {
+                //ignore
             }
         }
     }

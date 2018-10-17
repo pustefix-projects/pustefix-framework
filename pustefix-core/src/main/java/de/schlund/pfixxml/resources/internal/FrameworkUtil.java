@@ -1100,7 +1100,7 @@ public class FrameworkUtil {
 				return false;
 			}
 			try {
-				if (!constructor.isAccessible())
+				if (!constructor.canAccess(value1))
 					AccessController.doPrivileged(new SetAccessibleAction(
 							constructor));
 				value2 = constructor
@@ -1144,7 +1144,7 @@ public class FrameworkUtil {
 				return false;
 			}
 			try {
-				if (!constructor.isAccessible())
+				if (!constructor.canAccess(value1))
 					AccessController.doPrivileged(new SetAccessibleAction(
 							constructor));
 				value2 = constructor
