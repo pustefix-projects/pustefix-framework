@@ -23,6 +23,11 @@
       <artifactId>pustefix-core</artifactId>
       <version>${symbol_dollar}{pustefix.version}</version>
     </dependency>
+    <dependency>
+      <groupId>org.pustefixframework.logging</groupId>
+      <artifactId>pustefix-logback</artifactId>
+      <version>${symbol_dollar}{pustefix.version}</version>
+    </dependency>
   </dependencies>
  
   <build>
@@ -111,6 +116,48 @@
           <warDirectory>${symbol_dollar}{war.dir}</warDirectory>
           <uriEncoding>UTF-8</uriEncoding>
           <useSeparateTomcatClassLoader>true</useSeparateTomcatClassLoader>
+        </configuration>
+      </plugin>
+      <plugin>
+        <groupId>org.codehaus.cargo</groupId>
+        <artifactId>cargo-maven2-plugin</artifactId>
+        <version>1.6.11</version>
+        <configuration>
+          <container>
+            <containerId>tomcat9x</containerId>
+            <artifactInstaller>
+              <groupId>org.apache.tomcat</groupId>
+              <artifactId>tomcat</artifactId>
+              <version>9.0.12</version>
+            </artifactInstaller>
+          </container>
+          <configuration>
+            <type>standalone</type>
+            <home>${symbol_dollar}{project.build.directory}/tomcat</home>
+            <properties>
+              <cargo.servlet.port>8080</cargo.servlet.port>
+              <cargo.tomcat.uriencoding>UTF-8</cargo.tomcat.uriencoding>
+              <cargo.logging>low</cargo.logging>
+              <cargo.start.jvmargs>${symbol_dollar}{cargo.start.jvmargs}</cargo.start.jvmargs>
+            </properties>
+            <configfiles>
+              <configfile>
+                <file>${symbol_dollar}{project.build.directory}/addtomcatconf/context.xml</file>
+                <todir>conf</todir>
+                <tofile>context.xml</tofile>
+              </configfile>
+            </configfiles>
+          </configuration>
+          <deployables>
+            <deployable>
+              <groupId>${symbol_dollar}{project.groupId}</groupId>
+              <artifactId>${symbol_dollar}{project.artifactId}</artifactId>
+              <type>war</type>
+              <properties>
+                <context>/</context>
+              </properties>
+            </deployable>
+          </deployables>
         </configuration>
       </plugin>
     </plugins>

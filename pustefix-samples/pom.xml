@@ -26,7 +26,14 @@
     <module>moduletest</module>
     <module>pustefix-i18n</module>
     <module>pustefix-mvctest</module>
-  </modules>  
+  </modules>
+
+  <properties>
+    <cargo.start.jvmargs>
+      --illegal-access=deny
+    </cargo.start.jvmargs>
+  </properties>
+
   <build>
     <plugins>
       <!--
@@ -89,14 +96,14 @@
       <plugin>
         <groupId>org.codehaus.cargo</groupId>
         <artifactId>cargo-maven2-plugin</artifactId>
-        <version>1.6.4</version>
+        <version>1.6.11</version>
         <configuration>
           <container>
             <containerId>tomcat9x</containerId>
             <artifactInstaller>
               <groupId>org.apache.tomcat</groupId>
               <artifactId>tomcat</artifactId>
-              <version>9.0.10</version>
+              <version>9.0.12</version>
             </artifactInstaller>
           </container>
           <configuration>
@@ -106,7 +113,7 @@
               <cargo.servlet.port>8080</cargo.servlet.port>
               <cargo.tomcat.uriencoding>UTF-8</cargo.tomcat.uriencoding>
               <cargo.logging>low</cargo.logging>
-              <cargo.start.jvmargs>${cargo-jvmargs}</cargo.start.jvmargs>
+              <cargo.start.jvmargs>${cargo.start.jvmargs}</cargo.start.jvmargs>
             </properties>
             <configfiles>
               <configfile>
@@ -134,12 +141,13 @@
     <profile>
       <id>cargo-debug</id>
       <properties>
-        <cargo-jvmargs>
+        <cargo.start.jvmargs>
           -Xdebug
           -Xrunjdwp:transport=dt_socket,server=y,suspend=y,address=8000
           -Xnoagent
           -Djava.compiler=NONE
-        </cargo-jvmargs>
+          --illegal-access=deny
+        </cargo.start.jvmargs>
       </properties>
     </profile>
   </profiles>

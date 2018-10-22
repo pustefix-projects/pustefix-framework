@@ -21,6 +21,11 @@
       <version>0.23.1-SNAPSHOT</version>
     </dependency>
     <dependency>
+      <groupId>org.pustefixframework.logging</groupId>
+      <artifactId>pustefix-logback</artifactId>
+      <version>0.23.1-SNAPSHOT</version>
+    </dependency>
+    <dependency>
       <groupId>org.pustefixframework.webservices</groupId>
       <artifactId>pustefix-webservices-core</artifactId>
       <version>0.23.1-SNAPSHOT</version>      

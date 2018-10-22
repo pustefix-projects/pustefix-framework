@@ -17,59 +17,17 @@
  */
 package org.pustefixframework.http.internal;
 
-import java.io.ByteArrayInputStream;
-import java.io.ByteArrayOutputStream;
 import java.io.File;
-import java.io.FileNotFoundException;
 import java.io.IOException;
-import java.io.InputStream;
-import java.lang.reflect.InvocationTargetException;
-import java.lang.reflect.Method;
-import java.net.URL;
 import java.util.Enumeration;
-import java.util.Properties;
 
 import javax.servlet.ServletContext;
-import javax.xml.parsers.DocumentBuilder;
-import javax.xml.parsers.DocumentBuilderFactory;
-import javax.xml.parsers.ParserConfigurationException;
-import javax.xml.transform.Source;
-import javax.xml.transform.Transformer;
-import javax.xml.transform.TransformerConfigurationException;
-import javax.xml.transform.TransformerException;
-import javax.xml.transform.TransformerFactory;
-import javax.xml.transform.URIResolver;
-import javax.xml.transform.dom.DOMResult;
-import javax.xml.transform.dom.DOMSource;
-import javax.xml.transform.sax.SAXTransformerFactory;
-import javax.xml.transform.sax.TransformerHandler;
-import javax.xml.transform.stream.StreamResult;
-import javax.xml.transform.stream.StreamSource;
-
-import org.w3c.dom.Document;
-import org.w3c.dom.Element;
-import org.w3c.dom.Node;
-import org.w3c.dom.NodeList;
-import org.xml.sax.EntityResolver;
-import org.xml.sax.ErrorHandler;
-import org.xml.sax.InputSource;
-import org.xml.sax.SAXException;
-import org.xml.sax.SAXParseException;
-import org.xml.sax.XMLReader;
-import org.xml.sax.helpers.DefaultHandler;
 
 import de.schlund.pfixcore.exception.PustefixCoreException;
 import de.schlund.pfixcore.util.JarFileCache;
-import de.schlund.pfixxml.config.CustomizationHandler;
 import de.schlund.pfixxml.config.EnvironmentProperties;
 import de.schlund.pfixxml.config.GlobalConfig;
 import de.schlund.pfixxml.config.GlobalConfigurator;
-import de.schlund.pfixxml.resources.FileResource;
-import de.schlund.pfixxml.resources.Resource;
-import de.schlund.pfixxml.resources.ResourceUtil;
-import de.schlund.pfixxml.util.TransformerHandlerAdapter;
-import de.schlund.pfixxml.util.Xml;
-import de.schlund.pfixxml.util.XsltProvider;
 
 /**
  * This Servlet is just there to have it's init method called on startup of the
@@ -80,7 +38,6 @@ import de.schlund.pfixxml.util.XsltProvider;
  */
 public class PustefixInit {
 
-    private final static String log4jconfig = "/WEB-INF/pfixlog.xml";
     public final static String SERVLET_CONTEXT_ATTRIBUTE_NAME = "___PUSTEFIX_INIT___";
 
     private boolean initDone;
@@ -93,9 +50,7 @@ public class PustefixInit {
 
         //avoid re-initializations, e.g. when ApplicationContext is refreshed
         if(initDone) return;
-        
-    	Properties properties = new Properties(System.getProperties());
-    	
+
     	try {
     	    final File cacheDir = PustefixTempDirs.getInstance(servletContext).createTempDir("pustefix-jar-cache-");
     	    JarFileCache.setCacheDir(cacheDir);
@@ -118,7 +73,6 @@ public class PustefixInit {
     	    GlobalConfigurator.setDocroot(docrootstr);
     	}
 
-        configureLogging(properties, servletContext);
     	initDone = true;
     }
 
@@ -134,182 +88,4 @@ public class PustefixInit {
         }
     }
 
-    private void configureLogging(Properties properties, ServletContext servletContext) throws PustefixCoreException {
-    	FileResource l4jfile = ResourceUtil.getFileResourceFromDocroot(log4jconfig);
-        if(l4jfile.exists()) {
-            try {
-                configureLog4j(l4jfile);
-            } catch (FileNotFoundException e) {
-                throw new PustefixCoreException(l4jfile + ": file for log4j configuration not found!", e);
-            } catch (SAXException e) {
-                throw new PustefixCoreException(l4jfile + ": error on parsing log4j configuration file", e);
-            } catch (IOException e) {
-                throw new PustefixCoreException(l4jfile + ": error on reading log4j configuration file!", e);
-            }
-        }
-    }
-
-    private void configureLog4j(FileResource configFile) throws SAXException, FileNotFoundException, IOException {
-        Document confDoc = readLoggingConfig(configFile.getInputStream(), configFile.getURI().toString(), true);
-        try {
-            Class<?> clazz = Class.forName("org.apache.log4j.xml.DOMConfigurator");
-            Method meth = clazz.getMethod("configure", Element.class);
-            meth.invoke(null, confDoc.getDocumentElement());
-        } catch(ClassNotFoundException x) {
-            System.err.println("[ERROR] Configuring deprecated Log4j failed: either remove pfixlog.xml and use Logback"
-                    + " or Log4j 2 instead, or add the missing deprecated Log4j library (not recommended).");
-            x.printStackTrace(System.err);
-        } catch(NoSuchMethodException|InvocationTargetException|IllegalAccessException x) {
-            throw new RuntimeException("Log4j DOM configuration failed", x);
-        }
-    }
-
-    static Document readLoggingConfig(InputStream in, String systemID, boolean validating) 
-            throws SAXException, FileNotFoundException, IOException {
-
-        XMLReader xreader = Xml.createXMLReader();
-        TransformerFactory tf = XsltProvider.getXsltSupport(XsltProvider.getPreferredXsltVersion()).getThreadTransformerFactory();
-        SAXTransformerFactory stf = (SAXTransformerFactory) tf;
-        TransformerHandler th;
-        try {
-            th = stf.newTransformerHandler();
-        } catch (TransformerConfigurationException e) {
-            throw new RuntimeException("Failed to configure TransformerFactory!", e);
-        }
-        DOMResult dr = new DOMResult();
-        th.setResult(dr);
-        DefaultHandler dh = new TransformerHandlerAdapter(th);
-        CustomizationHandler cushandler = new CustomizationHandler(dh);
-        cushandler.setFallbackDocroot();
-        xreader.setContentHandler(cushandler);
-        xreader.setDTDHandler(cushandler);
-        xreader.setErrorHandler(cushandler);
-        xreader.setEntityResolver(cushandler);
-        InputSource source = new InputSource(in);
-        source.setSystemId(systemID);
-        xreader.parse(source);
-        ByteArrayOutputStream bufferStream = new ByteArrayOutputStream();
-        try {
-            URIResolver resolver = new Resolver(tf.getURIResolver()); 
-            tf.setURIResolver(resolver);
-            Transformer transformer = tf.newTransformer(new StreamSource(PustefixInit.class.getResource("/pustefix/xsl/log4j.xsl").toString()));
-            transformer.setURIResolver(resolver);
-            transformer.transform(new DOMSource(dr.getNode()), new StreamResult(bufferStream));
-        } catch (TransformerException e) {
-            throw new SAXException(e);
-        }
-        DocumentBuilderFactory dbf = DocumentBuilderFactory.newInstance();
-        dbf.setValidating(validating);
-        dbf.setNamespaceAware(true);
-        Document confDoc;
-        try {
-            DocumentBuilder db = dbf.newDocumentBuilder();
-            db.setEntityResolver(new EntityResolver() {
-                
-                public InputSource resolveEntity(String publicId, String systemId) throws SAXException, IOException {
-                    if (systemId.equals("http://logging.apache.org/log4j/docs/api/org/apache/log4j/xml/log4j.dtd")) {
-                        return new InputSource(getClass().getClassLoader().getResourceAsStream("PUSTEFIX-INF/schema/log4j.dtd"));
-                    }
-                    return null;
-                }     
-            });
-            db.setErrorHandler(new ErrorHandler() {
-
-                public void warning(SAXParseException exception) throws SAXException {
-                    System.err.println("Warning while parsing log4j configuration: ");
-                    exception.printStackTrace(System.err);
-                }
-
-                public void error(SAXParseException exception) throws SAXException {
-                    System.err.println("Error while parsing log4j configuration: ");
-                    exception.printStackTrace(System.err);
-                }
-
-                public void fatalError(SAXParseException exception) throws SAXException {
-                    System.err.println("Fatal error while parsing log4j configuration: ");
-                    exception.printStackTrace(System.err);                    }
-                    
-            });
-            confDoc = db.parse(new ByteArrayInputStream(bufferStream.toByteArray()));
-        } catch (SAXException e) {
-            throw e;
-        } catch (IOException e) {
-            throw e;
-        } catch (ParserConfigurationException e) {
-            String msg = "Error while trying to create DOM document";
-            throw new RuntimeException(msg, e);
-        }
-        return confDoc;
-    }
-
-
-    static class Resolver implements URIResolver {
-        
-        private URIResolver defaultResolver;
-        
-        public Resolver(URIResolver defaultResolver) {
-            this.defaultResolver = defaultResolver;
-        }
-
-        public Source resolve(String href, String base) throws TransformerException {
-            
-            if(href.startsWith("module:")) {
-                Resource res = ResourceUtil.getResource(href);
-                try {
-                    Document doc = readLoggingConfig(res.getInputStream(), res.toURI().toString(), false);
-                    return new DOMSource(doc);
-                } catch (Exception x) {
-                    throw new TransformerException("Error resolving includes", x);
-                }
-                
-            } else if(href.startsWith("classpath:")) {
-                try {
-                    String path = href.substring(10);
-                    if(path.startsWith("/") && path.length() > 1) {
-                    	path = path.substring(1);
-                    }
-                    Enumeration<URL> urls = PustefixInit.class.getClassLoader().getResources(path);
-                    if(urls.hasMoreElements()) {
-                        try {
-                            DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
-                            factory.setNamespaceAware(true);
-                            DocumentBuilder builder = factory.newDocumentBuilder();
-                            Document includesDoc = builder.newDocument();
-                            Element includesElem = includesDoc.createElement("includes");
-                            includesDoc.appendChild(includesElem);
-                            while(urls.hasMoreElements()) {
-                                URL url = urls.nextElement();
-                                Document doc = readLoggingConfig(url.openStream(), url.toString(), false);
-                                Element root = doc.getDocumentElement();
-                                if(root.hasChildNodes()) {
-                                    NodeList nodes = root.getChildNodes();
-                                    for(int i=0; i<nodes.getLength(); i++) {
-                                        Node node = includesDoc.importNode(nodes.item(i), true);
-                                        includesElem.appendChild(node);
-                                    }
-                                }
-                            }
-                            return new DOMSource(includesElem);
-                        } catch(Exception x) {
-                            throw new TransformerException("Error resolving includes", x);
-                        }
-                    }
-                } catch (IOException e) {
-                    throw new TransformerException("Error during resource resolving: " + href);
-                }
-            }
-            String ref;
-            if (href.contains(":")) {
-                ref = href;
-            } else {
-                int idx = base.lastIndexOf('/');
-                if (idx == -1) {
-                    ref = href;
-                } else {
-                    ref = base.substring(0, idx) + "/" + href;
-                }
-            }
-            return defaultResolver == null ? null : defaultResolver.resolve(ref, base);
-        }
-    }
 }
