@@ -20,8 +20,8 @@ package org.pustefixframework.editor.webui.resources;
 
 import java.util.Map;
 
-import org.pustefixframework.container.annotations.Inject;
 import org.pustefixframework.editor.common.dom.Project;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.w3c.dom.Element;
 
 import de.schlund.pfixcore.beans.InsertStatus;
@@ -30,7 +30,7 @@ import de.schlund.pfixxml.ResultDocument;
 public class NamespaceInfoResource {
     ProjectsResource projectsResource;
     
-    @Inject
+    @Autowired
     public void setProjectsResource(ProjectsResource projectsResource) {
         this.projectsResource = projectsResource;
     }

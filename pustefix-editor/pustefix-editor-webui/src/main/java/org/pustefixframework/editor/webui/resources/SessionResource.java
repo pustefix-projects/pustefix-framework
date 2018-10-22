@@ -21,12 +21,12 @@ package org.pustefixframework.editor.webui.resources;
 import java.security.Principal;
 import java.util.Date;
 
-import org.pustefixframework.container.annotations.Inject;
 import org.pustefixframework.editor.common.dom.IncludePartThemeVariant;
 import org.pustefixframework.editor.common.dom.Project;
 import org.pustefixframework.editor.common.exception.EditorSecurityException;
 import org.pustefixframework.editor.common.exception.EditorUserNotExistingException;
 import org.pustefixframework.editor.webui.resources.util.SessionInfoStore;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.w3c.dom.Element;
 
 import de.schlund.pfixcore.beans.InitResource;
@@ -187,27 +187,27 @@ public class SessionResource {
         }
     }
 
-    @Inject
+    @Autowired
     public void setUserPasswordAuthenticationService(UserPasswordAuthenticationService upas) {
         this.upas = upas;
     }
 
-    @Inject
+    @Autowired
     public void setUserManagementService(UserManagementService usermanagement) {
         this.usermanagement = usermanagement;
     }
 
-    @Inject
+    @Autowired
     public void setSecurityManagerService(SecurityManagerService secman) {
         this.secman = secman;
     }
 
-    @Inject
+    @Autowired
     public void setSessionInfoStore(SessionInfoStore sessionInfoStore) {
         this.sessionInfoStore = sessionInfoStore;
     }
     
-    @Inject
+    @Autowired
     public void setProjectsResource(ProjectsResource projectsResource) {
         this.projectsResource = projectsResource;
     }

@@ -18,9 +18,9 @@
 
 package org.pustefixframework.editor.webui.handlers;
 
-import org.pustefixframework.container.annotations.Inject;
 import org.pustefixframework.editor.webui.resources.CommonIncludesResource;
 import org.pustefixframework.editor.webui.resources.DynIncludesResource;
+import org.springframework.beans.factory.annotation.Autowired;
 
 import de.schlund.pfixcore.workflow.Context;
 
@@ -32,7 +32,7 @@ import de.schlund.pfixcore.workflow.Context;
 public class BranchDynIncludePartHandler extends CommonBranchIncludePartHandler {
     private DynIncludesResource dynIncludeResource;
     
-    @Inject
+    @Autowired
     public void setDynIncludeResource(DynIncludesResource dynIncludeResource) {
         this.dynIncludeResource = dynIncludeResource;
     }

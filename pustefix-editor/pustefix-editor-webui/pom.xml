@@ -16,6 +16,13 @@
   
   <packaging>war</packaging>
   
+  <properties>
+    <cargo.start.jvmargs>
+      --illegal-access=deny
+      --add-opens java.base/java.lang=ALL-UNNAMED
+    </cargo.start.jvmargs>
+  </properties>
+
   <build>
     <plugins> 
       <plugin>
@@ -43,9 +50,73 @@
         </executions>
       </plugin>
       <plugin>
-        <groupId>org.mortbay.jetty</groupId>
-        <artifactId>maven-jetty-plugin</artifactId>
-        <version>6.1.26</version>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-antrun-plugin</artifactId>
+        <version>1.8</version>
+        <executions>
+          <execution>
+            <id>tomcatconf</id>
+            <phase>prepare-package</phase>
+            <configuration>
+              <target>
+                <mkdir dir="${project.build.directory}/addtomcatconf" />
+                <echo file="${project.build.directory}/addtomcatconf/context.xml"><![CDATA[<?xml version='1.0' encoding='utf-8'?>
+<Context cookies="true" useHttpOnly="true">
+  <Parameter name="mode" value="${pustefix.mode}" override="false" />
+  <Manager pathname="" />
+</Context>
+]]></echo>
+              </target>
+            </configuration>
+            <goals>
+              <goal>run</goal>
+            </goals>
+          </execution>
+        </executions>
+      </plugin>
+      <plugin>
+        <groupId>org.codehaus.cargo</groupId>
+        <artifactId>cargo-maven2-plugin</artifactId>
+        <version>1.6.11</version>
+        <configuration>
+          <container>
+            <containerId>tomcat9x</containerId>
+            <artifactInstaller>
+              <groupId>org.apache.tomcat</groupId>
+              <artifactId>tomcat</artifactId>
+              <version>9.0.12</version>
+            </artifactInstaller>
+          </container>
+          <configuration>
+            <type>standalone</type>
+            <home>${project.build.directory}/tomcat</home>
+            <properties>
+              <cargo.servlet.port>9090</cargo.servlet.port>
+              <cargo.tomcat.uriencoding>UTF-8</cargo.tomcat.uriencoding>
+              <cargo.logging>low</cargo.logging>
+              <cargo.start.jvmargs>${cargo.start.jvmargs}</cargo.start.jvmargs>
+              <cargo.rmi.port>8206</cargo.rmi.port>
+              <cargo.tomcat.ajp.port>8010</cargo.tomcat.ajp.port>
+            </properties>
+            <configfiles>
+              <configfile>
+                <file>${project.build.directory}/addtomcatconf/context.xml</file>
+                <todir>conf</todir>
+                <tofile>context.xml</tofile>
+              </configfile>
+            </configfiles>
+          </configuration>
+          <deployables>
+            <deployable>
+              <groupId>${project.groupId}</groupId>
+              <artifactId>${project.artifactId}</artifactId>
+              <type>war</type>
+              <properties>
+                <context>/</context>
+              </properties>
+            </deployable>
+          </deployables>
+        </configuration>
       </plugin>
     </plugins>
   </build>
@@ -64,9 +135,30 @@
     <dependency>
       <groupId>com.caucho</groupId>
       <artifactId>hessian</artifactId>
-      <version>4.0.33</version>
+      <version>4.0.51</version>
+    </dependency>
+    <dependency>
+      <groupId>org.pustefixframework.logging</groupId>
+      <artifactId>pustefix-logback</artifactId>
+      <version>0.23.1-SNAPSHOT</version>
     </dependency>
   </dependencies>
-  
+
+  <profiles>
+    <profile>
+      <id>cargo-debug</id>
+      <properties>
+        <cargo.start.jvmargs>
+          -Xdebug
+          -Xrunjdwp:transport=dt_socket,server=y,suspend=y,address=8000
+          -Xnoagent
+          -Djava.compiler=NONE
+          --illegal-access=deny
+          --add-opens java.base/java.lang=ALL-UNNAMED
+        </cargo.start.jvmargs>
+      </properties>
+    </profile>
+  </profiles>
+
 </project>
 

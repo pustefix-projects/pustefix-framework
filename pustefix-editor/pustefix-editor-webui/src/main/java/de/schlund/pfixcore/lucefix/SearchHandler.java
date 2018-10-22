@@ -19,12 +19,12 @@
 package de.schlund.pfixcore.lucefix;
 
 import org.apache.lucene.queryParser.ParseException;
-import org.pustefixframework.container.annotations.Inject;
 import org.pustefixframework.editor.common.dom.Project;
 import org.pustefixframework.editor.common.exception.EditorSearchIndexException;
 import org.pustefixframework.editor.common.exception.EditorSearchQueryException;
 import org.pustefixframework.editor.generated.EditorStatusCodes;
 import org.pustefixframework.editor.webui.resources.ProjectsResource;
+import org.springframework.beans.factory.annotation.Autowired;
 
 import de.schlund.pfixcore.generator.IHandler;
 import de.schlund.pfixcore.generator.IWrapper;
@@ -78,12 +78,12 @@ public class SearchHandler implements IHandler {
         return true;
     }
 
-    @Inject
+    @Autowired
     public void setProjectsResource(ProjectsResource projectsResource) {
         this.projectsResource = projectsResource;
     }
     
-    @Inject
+    @Autowired
     public void setSearchResource(ContextSearch searchResource) {
         this.searchResource = searchResource;
     }

@@ -36,14 +36,6 @@
       <servlet-name>dispatcher</servlet-name>
       <url-pattern>/*</url-pattern>
    </servlet-mapping>
-   <filter>
-      <filter-name>editor-session-cookie-filter</filter-name>
-      <filter-class>org.pustefixframework.editor.webui.util.SessionCookieFilter</filter-class>
-   </filter>
-   <filter-mapping>
-      <filter-name>editor-session-cookie-filter</filter-name>
-      <url-pattern>/*</url-pattern>
-   </filter-mapping>
    <session-config>
       <tracking-mode>COOKIE</tracking-mode>
       <session-timeout>60</session-timeout>

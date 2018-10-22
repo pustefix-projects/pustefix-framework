@@ -18,11 +18,11 @@
 
 package org.pustefixframework.editor.webui.handlers;
 
-import org.pustefixframework.container.annotations.Inject;
 import org.pustefixframework.editor.webui.resources.DynIncludesResource;
 import org.pustefixframework.editor.webui.resources.IncludesResource;
 import org.pustefixframework.editor.webui.resources.ProjectsResource;
 import org.pustefixframework.editor.webui.wrappers.JumpToIncludePart;
+import org.springframework.beans.factory.annotation.Autowired;
 
 import de.schlund.pfixcore.generator.IHandler;
 import de.schlund.pfixcore.generator.IWrapper;
@@ -83,17 +83,17 @@ public class JumpToIncludePartHandler implements IHandler {
         return false;
     }
 
-    @Inject
+    @Autowired
     public void setProjectsResource(ProjectsResource projectsResource) {
         this.projectsResource = projectsResource;
     }
 
-    @Inject
+    @Autowired
     public void setIncludesResource(IncludesResource includesResource) {
         this.includesResource = includesResource;
     }
 
-    @Inject
+    @Autowired
     public void setDynIncludesResource(DynIncludesResource dynIncludesResource) {
         this.dynIncludesResource = dynIncludesResource;
     }

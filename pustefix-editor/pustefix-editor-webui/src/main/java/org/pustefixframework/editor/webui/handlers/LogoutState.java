@@ -18,9 +18,9 @@
 
 package org.pustefixframework.editor.webui.handlers;
 
-import org.pustefixframework.container.annotations.Inject;
 import org.pustefixframework.editor.webui.resources.ProjectsResource;
 import org.pustefixframework.editor.webui.resources.SessionResource;
+import org.springframework.beans.factory.annotation.Autowired;
 
 import de.schlund.pfixcore.workflow.Context;
 import de.schlund.pfixcore.workflow.StateImpl;
@@ -51,12 +51,12 @@ public class LogoutState extends StateImpl {
         return new ResultDocument();                
     }
 
-    @Inject
+    @Autowired
     public void setSessionResource(SessionResource sessionResource) {
         this.sessionResource = sessionResource;
     }
 
-    @Inject
+    @Autowired
     public void setProjectsResource(ProjectsResource projectsResource) {
         this.projectsResource = projectsResource;
     }

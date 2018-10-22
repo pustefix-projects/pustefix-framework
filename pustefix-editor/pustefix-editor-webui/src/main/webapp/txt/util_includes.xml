@@ -65,7 +65,7 @@
     <theme name="default">
       <pfx:forminput name="my_form" target="bottom">
         <pfx:xinp name="__anchor" type="hidden">
-          <ixsl:attribute name="value">left_navi|<ixsl:value-of select="./currentinclude/@path"/></ixsl:attribute>
+          <ixsl:attribute name="value">left_navi%7C<ixsl:value-of select="./currentinclude/@path"/></ixsl:attribute>
         </pfx:xinp>
         
         <pfx:include part="showcurrentinclude"/>

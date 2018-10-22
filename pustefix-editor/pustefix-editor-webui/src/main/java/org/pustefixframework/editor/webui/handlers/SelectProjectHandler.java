@@ -18,10 +18,10 @@
 
 package org.pustefixframework.editor.webui.handlers;
 
-import org.pustefixframework.container.annotations.Inject;
 import org.pustefixframework.editor.generated.EditorStatusCodes;
 import org.pustefixframework.editor.webui.resources.ProjectsResource;
 import org.pustefixframework.editor.webui.wrappers.SelectProject;
+import org.springframework.beans.factory.annotation.Autowired;
 
 import de.schlund.pfixcore.generator.IHandler;
 import de.schlund.pfixcore.generator.IWrapper;
@@ -62,7 +62,7 @@ public class SelectProjectHandler implements IHandler {
         return (projectsResource.getSelectedProject() == null);
     }
 
-    @Inject
+    @Autowired
     public void setProjectsResource(ProjectsResource projectsResource) {
         this.projectsResource = projectsResource;
     }

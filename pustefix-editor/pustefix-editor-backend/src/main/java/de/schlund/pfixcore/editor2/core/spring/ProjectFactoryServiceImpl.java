@@ -18,10 +18,10 @@
 
 package de.schlund.pfixcore.editor2.core.spring;
 
-import org.pustefixframework.container.annotations.Inject;
 import org.pustefixframework.editor.backend.config.EditorProjectInfo;
 import org.pustefixframework.editor.common.dom.Project;
 import org.pustefixframework.editor.common.exception.EditorInitializationException;
+import org.springframework.beans.factory.annotation.Autowired;
 
 import de.schlund.pfixcore.editor2.core.spring.internal.ProjectImpl;
 import de.schlund.pfixxml.targets.TargetGenerator;
@@ -60,12 +60,12 @@ public class ProjectFactoryServiceImpl implements ProjectFactoryService {
     
     private ProjectImpl project;
 
-    @Inject
+    @Autowired
     public void setEditorProjectInfo(EditorProjectInfo editorProjectInfo) {
         this.editorProjectInfo = editorProjectInfo;
     }
     
-    @Inject
+    @Autowired
     public void setTargetGenerator(TargetGenerator targetGenerator) {
         this.targetGenerator = targetGenerator;
     }

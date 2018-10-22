@@ -18,11 +18,11 @@
 
 package org.pustefixframework.editor.webui.handlers;
 
-import org.pustefixframework.container.annotations.Inject;
 import org.pustefixframework.editor.generated.EditorStatusCodes;
 import org.pustefixframework.editor.webui.resources.UsersResource;
 import org.pustefixframework.editor.webui.wrappers.EditUser;
 import org.pustefixframework.generated.CoreStatusCodes;
+import org.springframework.beans.factory.annotation.Autowired;
 
 import de.schlund.pfixcore.editor2.core.vo.EditorGlobalPermissions;
 import de.schlund.pfixcore.editor2.core.vo.EditorProjectPermissions;
@@ -163,7 +163,7 @@ public class EditUserHandler implements IHandler {
         return true;
     }
     
-    @Inject
+    @Autowired
     public void setUsersResource(UsersResource usersResource) {
         this.usersResource = usersResource;
     }

@@ -28,11 +28,11 @@ import java.util.TreeSet;
 import org.apache.lucene.document.DateField;
 import org.apache.lucene.document.Document;
 import org.apache.lucene.index.IndexReader;
-import org.pustefixframework.container.annotations.Inject;
 import org.pustefixframework.editor.common.dom.IncludePartThemeVariant;
 import org.pustefixframework.editor.common.dom.Project;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
 
 import de.schlund.pfixcore.editor2.core.spring.ProjectFactoryService;
 import de.schlund.pfixxml.config.GlobalConfig;
@@ -193,7 +193,7 @@ public class PfixReadjustment {
         return retval;
     }
     
-    @Inject
+    @Autowired
     public void setProjectFactoryService(ProjectFactoryService projectfactory) {
         this.projectfactory = projectfactory;
     }

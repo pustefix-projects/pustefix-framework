@@ -18,13 +18,13 @@
 
 package de.schlund.pfixcore.lucefix;
 
-import org.pustefixframework.container.annotations.Inject;
 import org.pustefixframework.editor.common.dom.Project;
 import org.pustefixframework.editor.common.exception.EditorSearchIndexException;
 import org.pustefixframework.editor.common.exception.EditorSearchQueryException;
 import org.pustefixframework.editor.common.remote.transferobjects.SearchResultRecordTO;
 import org.pustefixframework.editor.common.remote.transferobjects.SearchResultTO;
 import org.pustefixframework.editor.webui.resources.ProjectsResource;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.w3c.dom.Element;
 
 import de.schlund.pfixcore.beans.InsertStatus;
@@ -38,12 +38,12 @@ public class ContextSearch {
     
     private SearchResultTO searchResult;
 
-    @Inject
+    @Autowired
     public void setProjectsResource(ProjectsResource projectsResource) {
         this.projectsResource = projectsResource;
     }
 
-    @Inject
+    @Autowired
     public void setProjectPool(ProjectPool projectPool) {
         this.projectPool = projectPool;
     }

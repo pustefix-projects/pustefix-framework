@@ -51,7 +51,6 @@ public class IncludeFileHandler extends DefaultHandler implements LexicalHandler
     private static final String PART              = "part";
     private static final String INCLUDE_PARTS     = "include_parts";
 
-    private int                 includepart_count = 0;
     private int                 part_count        = 0;
     private int                 product_count     = 0;
     private Part                currentPart       = null;
@@ -71,7 +70,6 @@ public class IncludeFileHandler extends DefaultHandler implements LexicalHandler
         super.startElement(uri, name, qName, atts);
         String internal = qName;
         if (INCLUDE_PARTS.equals(internal)) {
-            includepart_count++;
             return;
         } else if (PART.equals(internal)) {
             part_count++;
@@ -118,7 +116,6 @@ public class IncludeFileHandler extends DefaultHandler implements LexicalHandler
         super.endElement(uri, name, qName);
         String internal = qName;
         if (INCLUDE_PARTS.equals(internal)) {
-            includepart_count--;
         } else if (PART.equals(internal)) {
             part_count--;
         } else if (PRODUCT.equals(internal)) {

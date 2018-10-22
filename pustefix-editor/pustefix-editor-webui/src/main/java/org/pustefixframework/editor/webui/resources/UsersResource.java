@@ -22,10 +22,10 @@ import java.util.Collection;
 import java.util.Iterator;
 import java.util.TreeSet;
 
-import org.pustefixframework.container.annotations.Inject;
 import org.pustefixframework.editor.common.exception.EditorDuplicateUsernameException;
 import org.pustefixframework.editor.common.exception.EditorSecurityException;
 import org.pustefixframework.editor.common.exception.EditorUserNotExistingException;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.w3c.dom.Element;
 
 import de.schlund.pfixcore.beans.InsertStatus;
@@ -43,7 +43,7 @@ public class UsersResource {
     
     private UserManagementService usermanagement;
     
-    @Inject
+    @Autowired
     public void setUserManagementService(UserManagementService usermanagement) {
         this.usermanagement = usermanagement;
     }

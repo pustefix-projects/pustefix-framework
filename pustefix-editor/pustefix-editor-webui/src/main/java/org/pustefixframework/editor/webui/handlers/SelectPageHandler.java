@@ -18,11 +18,11 @@
 
 package org.pustefixframework.editor.webui.handlers;
 
-import org.pustefixframework.container.annotations.Inject;
 import org.pustefixframework.editor.generated.EditorStatusCodes;
 import org.pustefixframework.editor.webui.resources.PagesResource;
 import org.pustefixframework.editor.webui.resources.ProjectsResource;
 import org.pustefixframework.editor.webui.wrappers.SelectPage;
+import org.springframework.beans.factory.annotation.Autowired;
 
 import de.schlund.pfixcore.generator.IHandler;
 import de.schlund.pfixcore.generator.IWrapper;
@@ -64,12 +64,12 @@ public class SelectPageHandler implements IHandler {
         return (pagesResource.getSelectedPage() == null);
     }
 
-    @Inject
+    @Autowired
     public void setPagesResource(PagesResource pagesResource) {
         this.pagesResource = pagesResource;
     }
 
-    @Inject
+    @Autowired
     public void setProjectsResource(ProjectsResource projectsResource) {
         this.projectsResource = projectsResource;
     }

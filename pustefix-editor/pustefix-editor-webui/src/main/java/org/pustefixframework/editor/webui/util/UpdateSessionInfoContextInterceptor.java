@@ -18,8 +18,8 @@
 
 package org.pustefixframework.editor.webui.util;
 
-import org.pustefixframework.container.annotations.Inject;
 import org.pustefixframework.editor.webui.resources.SessionResource;
+import org.springframework.beans.factory.annotation.Autowired;
 
 import de.schlund.pfixcore.workflow.Context;
 import de.schlund.pfixcore.workflow.ContextInterceptor;
@@ -29,7 +29,7 @@ public class UpdateSessionInfoContextInterceptor implements ContextInterceptor {
     
     private SessionResource sessionResource;
     
-    @Inject
+    @Autowired
     public void setSessionResource(SessionResource sessionResource) {
         this.sessionResource = sessionResource;
     }

@@ -18,9 +18,9 @@
 
 package org.pustefixframework.editor.webui.handlers;
 
-import org.pustefixframework.container.annotations.Inject;
 import org.pustefixframework.editor.webui.resources.CommonIncludesResource;
 import org.pustefixframework.editor.webui.resources.DynIncludesResource;
+import org.springframework.beans.factory.annotation.Autowired;
 
 import de.schlund.pfixcore.workflow.Context;
 
@@ -38,7 +38,7 @@ public class RestoreDynIncludePartHandler extends CommonRestoreIncludePartHandle
         return dynIncludesResource;
     }
 
-    @Inject
+    @Autowired
     public void setDynIncludesResource(DynIncludesResource dynIncludesResource) {
         this.dynIncludesResource = dynIncludesResource;
     }

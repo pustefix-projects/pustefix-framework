@@ -18,9 +18,9 @@
 
 package org.pustefixframework.editor.webui.handlers;
 
-import org.pustefixframework.container.annotations.Inject;
 import org.pustefixframework.editor.webui.resources.SessionResource;
 import org.pustefixframework.editor.webui.wrappers.UserLoginSwitch;
+import org.springframework.beans.factory.annotation.Autowired;
 
 import de.schlund.pfixcore.generator.IHandler;
 import de.schlund.pfixcore.generator.IWrapper;
@@ -63,7 +63,7 @@ public class UserLoginSwitchHandler implements IHandler {
         return false;
     }
 
-    @Inject
+    @Autowired
     public void setSessionResource(SessionResource sessionResource) {
         this.sessionResource = sessionResource;
     }

@@ -18,9 +18,9 @@
 
 package org.pustefixframework.editor.webui.handlers;
 
-import org.pustefixframework.container.annotations.Inject;
 import org.pustefixframework.editor.webui.resources.CommonIncludesResource;
 import org.pustefixframework.editor.webui.resources.IncludesResource;
+import org.springframework.beans.factory.annotation.Autowired;
 
 import de.schlund.pfixcore.workflow.Context;
 
@@ -38,7 +38,7 @@ public class UploadIncludePartHandler extends CommonUploadIncludePartHandler {
         return includesResource;
     }
 
-    @Inject
+    @Autowired
     public void setIncludesResource(IncludesResource includesResource) {
         this.includesResource = includesResource;
     }

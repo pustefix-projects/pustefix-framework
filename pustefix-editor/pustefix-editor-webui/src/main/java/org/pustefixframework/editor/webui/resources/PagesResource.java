@@ -21,13 +21,13 @@ package org.pustefixframework.editor.webui.resources;
 import java.util.Iterator;
 import java.util.TreeSet;
 
-import org.pustefixframework.container.annotations.Inject;
 import org.pustefixframework.editor.common.dom.Image;
 import org.pustefixframework.editor.common.dom.IncludePartThemeVariant;
 import org.pustefixframework.editor.common.dom.Page;
 import org.pustefixframework.editor.common.dom.Project;
 import org.pustefixframework.editor.common.dom.Target;
 import org.pustefixframework.editor.common.dom.TargetType;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 
@@ -216,12 +216,12 @@ public class PagesResource {
         this.selectedPage = null;
     }
 
-    @Inject
+    @Autowired
     public void setProjectsResource(ProjectsResource projectsResource) {
         this.projectsResource = projectsResource;
     }
     
-    @Inject
+    @Autowired
     public void setProjectPool(ProjectPool projectPool) {
         this.projectPool = projectPool;
     }

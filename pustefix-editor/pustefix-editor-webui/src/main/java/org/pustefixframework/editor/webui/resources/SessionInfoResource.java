@@ -21,10 +21,10 @@ package org.pustefixframework.editor.webui.resources;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 
-import org.pustefixframework.container.annotations.Inject;
 import org.pustefixframework.editor.common.dom.IncludePartThemeVariant;
 import org.pustefixframework.editor.common.dom.Project;
 import org.pustefixframework.editor.webui.resources.util.SessionInfoStore;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.w3c.dom.Element;
 
 import de.schlund.pfixcore.beans.InsertStatus;
@@ -62,12 +62,12 @@ public class SessionInfoResource {
         }
     }
     
-    @Inject
+    @Autowired
     public void setSessionInfoStore(SessionInfoStore sessionInfoStore) {
         this.sessionInfoStore = sessionInfoStore;
     }
     
-    @Inject
+    @Autowired
     public void setProjectPool(ProjectPool projectPool) {
         this.projectPool = projectPool;
     }

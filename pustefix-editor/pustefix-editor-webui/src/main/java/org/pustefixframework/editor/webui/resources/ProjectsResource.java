@@ -20,8 +20,8 @@ package org.pustefixframework.editor.webui.resources;
 
 import java.util.Iterator;
 
-import org.pustefixframework.container.annotations.Inject;
 import org.pustefixframework.editor.common.dom.Project;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.w3c.dom.Element;
 
 import de.schlund.pfixcore.beans.InitResource;
@@ -42,7 +42,7 @@ public class ProjectsResource {
     private IncludesResource includesResource;
     private ContextSearch contextSearch;
     
-    @Inject
+    @Autowired
     public void setProjectPool(ProjectPool projectPool) {
         this.projectPool = projectPool;
     }
@@ -101,27 +101,27 @@ public class ProjectsResource {
         return this.selectedProject;
     }
 
-    @Inject
+    @Autowired
     public void setPagesResource(PagesResource pagesResource) {
         this.pagesResource = pagesResource;
     }
 
-    @Inject
+    @Autowired
     public void setTargetsResource(TargetsResource targetsResource) {
         this.targetsResource = targetsResource;
     }
 
-    @Inject
+    @Autowired
     public void setImagesResource(ImagesResource imagesResource) {
         this.imagesResource = imagesResource;
     }
 
-    @Inject
+    @Autowired
     public void setIncludesResource(IncludesResource includesResource) {
         this.includesResource = includesResource;
     }
 
-    @Inject
+    @Autowired
     public void setContextSearch(ContextSearch contextSearch) {
         this.contextSearch = contextSearch;
     }

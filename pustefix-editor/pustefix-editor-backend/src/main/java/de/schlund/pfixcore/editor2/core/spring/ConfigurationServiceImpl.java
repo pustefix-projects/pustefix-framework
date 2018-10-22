@@ -25,9 +25,9 @@ import java.util.Map;
 
 import javax.xml.parsers.ParserConfigurationException;
 
-import org.pustefixframework.container.annotations.Inject;
 import org.pustefixframework.editor.common.exception.EditorInitializationException;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.NodeList;
@@ -75,7 +75,7 @@ public class ConfigurationServiceImpl implements ConfigurationService {
         return new HashMap<String, String>(this.map);
     }
     
-    @Inject
+    @Autowired
     public void setTargetGenerator(TargetGenerator targetGenerator) {
         this.targetGenerator = targetGenerator;
     }

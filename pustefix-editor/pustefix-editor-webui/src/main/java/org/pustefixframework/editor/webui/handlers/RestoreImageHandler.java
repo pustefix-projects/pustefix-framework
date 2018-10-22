@@ -18,10 +18,10 @@
 
 package org.pustefixframework.editor.webui.handlers;
 
-import org.pustefixframework.container.annotations.Inject;
 import org.pustefixframework.editor.generated.EditorStatusCodes;
 import org.pustefixframework.editor.webui.resources.ImagesResource;
 import org.pustefixframework.editor.webui.wrappers.RestoreImage;
+import org.springframework.beans.factory.annotation.Autowired;
 
 import de.schlund.pfixcore.generator.IHandler;
 import de.schlund.pfixcore.generator.IWrapper;
@@ -67,7 +67,7 @@ public class RestoreImageHandler implements IHandler {
         return true;
     }
 
-    @Inject
+    @Autowired
     public void setImagesResource(ImagesResource imagesResource) {
         this.imagesResource = imagesResource;
     }

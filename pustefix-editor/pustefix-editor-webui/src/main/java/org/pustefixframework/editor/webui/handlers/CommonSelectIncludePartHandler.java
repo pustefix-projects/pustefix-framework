@@ -18,11 +18,11 @@
 
 package org.pustefixframework.editor.webui.handlers;
 
-import org.pustefixframework.container.annotations.Inject;
 import org.pustefixframework.editor.generated.EditorStatusCodes;
 import org.pustefixframework.editor.webui.resources.CommonIncludesResource;
 import org.pustefixframework.editor.webui.resources.ProjectsResource;
 import org.pustefixframework.editor.webui.wrappers.CommonSelectIncludePart;
+import org.springframework.beans.factory.annotation.Autowired;
 
 import de.schlund.pfixcore.generator.IHandler;
 import de.schlund.pfixcore.generator.IWrapper;
@@ -67,7 +67,7 @@ public abstract class CommonSelectIncludePartHandler implements IHandler {
         return true;
     }
 
-    @Inject
+    @Autowired
     public void setProjectsResource(ProjectsResource projectsResource) {
         this.projectsResource = projectsResource;
     }

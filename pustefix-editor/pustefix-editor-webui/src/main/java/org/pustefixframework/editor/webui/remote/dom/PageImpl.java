@@ -56,6 +56,9 @@ public class PageImpl extends AbstractPage {
         this.remoteServiceUtil = remoteServiceUtil;
         this.name = pageTO.name;
         this.pageTO = pageTO;
+        if(pageTO.variant != null) {
+            this.variant = new VariantImpl(pageTO.variant);
+        }
     }
     
     public String getName() {

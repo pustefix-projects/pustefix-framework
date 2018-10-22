@@ -28,7 +28,6 @@ import java.util.Set;
 import java.util.SortedSet;
 import java.util.TreeSet;
 
-import org.pustefixframework.container.annotations.Inject;
 import org.pustefixframework.editor.common.dom.Image;
 import org.pustefixframework.editor.common.dom.IncludeFile;
 import org.pustefixframework.editor.common.dom.IncludePartThemeVariant;
@@ -43,6 +42,7 @@ import org.pustefixframework.editor.common.exception.EditorSecurityException;
 import org.pustefixframework.editor.webui.resources.util.SessionInfoStore;
 import org.pustefixframework.editor.webui.util.DiffUtil;
 import org.pustefixframework.editor.webui.util.DiffUtil.ComparedLine;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.Node;
@@ -85,7 +85,7 @@ public abstract class CommonIncludesResource {
 
     protected abstract Set<IncludePartThemeVariant> getIncludePartsInFile(String filename, Project project);
 
-    @Inject
+    @Autowired
     public void setSecurityManagerService(SecurityManagerService securitymanager) {
         this.securitymanager = securitymanager;
     }
@@ -632,17 +632,17 @@ public abstract class CommonIncludesResource {
         return project.isIncludePartsEditableByDefault();
     }
 
-    @Inject
+    @Autowired
     public void setProjectsResource(ProjectsResource projectsResource) {
         this.projectsResource = projectsResource;
     }
 
-    @Inject
+    @Autowired
     public void setProjectPool(ProjectPool projectPool) {
         this.projectPool = projectPool;
     }
     
-    @Inject
+    @Autowired
     public void setSessionInfoStore(SessionInfoStore sessionInfoStore) {
         this.sessionInfoStore = sessionInfoStore;
     }

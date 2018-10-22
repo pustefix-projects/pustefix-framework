@@ -18,11 +18,11 @@
 
 package org.pustefixframework.editor.webui.handlers;
 
-import org.pustefixframework.container.annotations.Inject;
 import org.pustefixframework.editor.generated.EditorStatusCodes;
 import org.pustefixframework.editor.webui.resources.ProjectsResource;
 import org.pustefixframework.editor.webui.resources.TargetsResource;
 import org.pustefixframework.editor.webui.wrappers.SelectTarget;
+import org.springframework.beans.factory.annotation.Autowired;
 
 import de.schlund.pfixcore.generator.IHandler;
 import de.schlund.pfixcore.generator.IWrapper;
@@ -66,12 +66,12 @@ public class SelectTargetHandler implements IHandler {
         return true;
     }
 
-    @Inject
+    @Autowired
     public void setTargetsResource(TargetsResource targetsResource) {
         this.targetsResource = targetsResource;
     }
 
-    @Inject
+    @Autowired
     public void setProjectsResource(ProjectsResource projectsResource) {
         this.projectsResource = projectsResource;
     }

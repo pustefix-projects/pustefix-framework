@@ -78,13 +78,14 @@ public class ImageImpl extends AbstractImage {
     public void replaceFile(File newFile) throws EditorIOException, EditorSecurityException {
         try {
             byte[] buffer = new byte[4096];
-            FileInputStream s = new FileInputStream(newFile);
             int totalBytesRead = 0;
-            int bytesRead;
-            while ((bytesRead = s.read(buffer, totalBytesRead, buffer.length - totalBytesRead)) != -1) {
-                totalBytesRead += bytesRead;
-                if (buffer.length <= totalBytesRead) {
-                    buffer = copy(buffer, buffer.length * 2);
+            try (FileInputStream s = new FileInputStream(newFile)) {
+                int bytesRead;
+                while ((bytesRead = s.read(buffer, totalBytesRead, buffer.length - totalBytesRead)) != -1) {
+                    totalBytesRead += bytesRead;
+                    if (buffer.length <= totalBytesRead) {
+                        buffer = copy(buffer, buffer.length * 2);
+                    }
                 }
             }
             buffer = copy(buffer, totalBytesRead);
