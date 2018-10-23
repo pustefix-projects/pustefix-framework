@@ -128,6 +128,7 @@ public class WebServiceBeanConfigReader {
         return value;
     }
     
+    @SuppressWarnings("unchecked")
     private static List<Pattern> getPatternValue(MutablePropertyValues props, String propName, boolean mandatory) {
         List<Pattern> value = null;
         PropertyValue prop = props.getPropertyValue(propName);

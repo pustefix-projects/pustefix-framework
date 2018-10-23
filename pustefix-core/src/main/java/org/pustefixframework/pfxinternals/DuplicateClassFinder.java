@@ -22,22 +22,23 @@ public class DuplicateClassFinder {
         for(URL url: urls) {
             if(url.getProtocol().equals("file")) {
                 if(url.getPath().endsWith(".jar")) {
-                    JarFile file = new JarFile(new File(url.toURI()));
-                    Enumeration<JarEntry> e = file.entries();
-                    while(e.hasMoreElements()) {
-                        JarEntry entry = e.nextElement();
-                        if(entry.getName().endsWith(".class")) {
-                            String className = entry.getName();
-                            className = className.substring(0, className.length() -6).replace('/', '.');
-                            if(includePattern.matcher(className).matches() && !excludePattern.matcher(className).matches()) {
-                                String[] locations = classToLocation.get(className);
-                                if(locations == null) {
-                                    locations = new String[] {url.toString()};
-                                } else {
-                                    locations = Arrays.copyOf(locations, locations.length + 1);
-                                    locations[locations.length -1] = url.toString();
+                    try (JarFile file = new JarFile(new File(url.toURI()))) {
+                        Enumeration<JarEntry> e = file.entries();
+                        while(e.hasMoreElements()) {
+                            JarEntry entry = e.nextElement();
+                            if(entry.getName().endsWith(".class")) {
+                                String className = entry.getName();
+                                className = className.substring(0, className.length() -6).replace('/', '.');
+                                if(includePattern.matcher(className).matches() && !excludePattern.matcher(className).matches()) {
+                                    String[] locations = classToLocation.get(className);
+                                    if(locations == null) {
+                                        locations = new String[] {url.toString()};
+                                    } else {
+                                        locations = Arrays.copyOf(locations, locations.length + 1);
+                                        locations[locations.length -1] = url.toString();
+                                    }
+                                    classToLocation.put(className, locations);
                                 }
-                                classToLocation.put(className, locations);
                             }
                         }
                     }

@@ -14,9 +14,6 @@ import java.util.TreeSet;
 
 import javax.management.relation.RoleList;
 
-import junit.framework.TestCase;
-
-import org.springframework.context.ApplicationContext;
 import org.springframework.context.support.ClassPathXmlApplicationContext;
 import org.springframework.mock.web.MockHttpServletRequest;
 import org.springframework.web.context.request.RequestAttributes;
@@ -24,6 +21,7 @@ import org.springframework.web.context.request.RequestContextHolder;
 import org.springframework.web.context.request.ServletRequestAttributes;
 
 import de.schlund.pfixxml.Tenant;
+import junit.framework.TestCase;
 
 public class TenantTargetSourceTest extends TestCase {
 
@@ -78,7 +76,7 @@ public class TenantTargetSourceTest extends TestCase {
 
     public void testIntegration() {
 
-        ApplicationContext context = new ClassPathXmlApplicationContext("classpath:/org/pustefixframework/container/spring/beans/spring.xml");
+        try (ClassPathXmlApplicationContext context = new ClassPathXmlApplicationContext("classpath:/org/pustefixframework/container/spring/beans/spring.xml")) {
 
         MockHttpServletRequest req = new MockHttpServletRequest();
         RequestAttributes attrs = new ServletRequestAttributes(req);
@@ -100,6 +98,7 @@ public class TenantTargetSourceTest extends TestCase {
         assertEquals(1, ((CounterImpl)context.getBean("counterByClass")).count());
         assertEquals(2, ((CounterImpl)context.getBean("counterByClass")).count());
 
+        }
     }
 
     public void testCommonBaseClassDetection() {

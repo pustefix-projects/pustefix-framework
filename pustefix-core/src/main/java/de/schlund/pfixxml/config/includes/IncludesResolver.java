@@ -65,7 +65,7 @@ public class IncludesResolver {
     
     private final static String CONFIG_FRAGMENTS_ROOT_TAG = "config-fragments";
     
-    private ThreadLocal<Set<Tupel<String, String>>> includesList = new ThreadLocal<Set<Tupel<String, String>>>();
+    private ThreadLocal<Set<String>> includesList = new ThreadLocal<Set<String>>();
 
     public IncludesResolver(String namespace) {
         this(namespace, TAGNAME);
@@ -171,9 +171,9 @@ public class IncludesResolver {
             for(String includePath: includePaths) {
                 // Look if the same include has been performed ealier in the recursion
                 // If yes, we have a cyclic dependency
-                Set<Tupel<String, String>> list = includesList.get();
+                Set<String> list = includesList.get();
                 if (list == null) {
-                    list = new HashSet<Tupel<String, String>>();
+                    list = new HashSet<String>();
                     includesList.set(list);
                 }
                 if (list.contains(includePath + "#" + xpath)) {
@@ -194,11 +194,12 @@ public class IncludesResolver {
                         throw new SAXException("File " + includePath + " seems not to be a valid configuration fragments file!");
                     }
         
-                    list.add(new Tupel<String, String>(includePath, xpath));
+                    String tupel = includePath + "#" + xpath;
+                    list.add(tupel);
                     try {
                         resolveIncludes(includeDocument);
                     } finally {
-                        list.remove(new Tupel<String, String>(includePath, xpath));
+                        list.remove(tupel);
                     }
                     
                     NodeList includeNodes;
@@ -262,33 +263,5 @@ public class IncludesResolver {
             return false;
         }
     }
-    
-    private class Tupel<A, B> {
-        private A obj1;
-        private B obj2;
-        
-        public Tupel(A v1, B v2) {
-            obj1 = v1;
-            obj2 = v2;
-        }
-        
-        @Override
-        public boolean equals(Object obj) {
-            if (obj == null) {
-                return false;
-            }
-            
-            if (!(obj instanceof Tupel)) {
-                return false;
-            }
-            Tupel<?, ?> tupel = (Tupel<?, ?>) obj;
-            
-            return obj1.equals(tupel.obj1) && obj2.equals(tupel.obj2);
-        }
-        
-        @Override
-        public int hashCode() {
-            return obj1.hashCode() + obj2.hashCode();
-        }
-    }
+
 }

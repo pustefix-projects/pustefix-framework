@@ -75,7 +75,7 @@ public class BeanDeserializer extends Deserializer {
         return false;
     }
 
-    @SuppressWarnings("unchecked")
+    @SuppressWarnings({ "unchecked", "rawtypes" })
     @Override
     public Object deserialize(DeserializationContext ctx, Object jsonValue, Type targetType) throws DeserializationException {
 

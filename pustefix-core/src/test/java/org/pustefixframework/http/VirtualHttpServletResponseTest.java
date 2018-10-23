@@ -5,8 +5,7 @@ import org.springframework.mock.web.MockHttpServletResponse;
 import junit.framework.TestCase;
 
 public class VirtualHttpServletResponseTest extends TestCase {
-    
-    
+
     public void testAgainstSpringMock() {
         
         MockHttpServletResponse mockRes = new MockHttpServletResponse();
@@ -14,10 +13,7 @@ public class VirtualHttpServletResponseTest extends TestCase {
         mockRes.setCharacterEncoding("utf8");
         System.out.println(mockRes.getContentType());
         
-        VirtualHttpServletResponse virtRes = new VirtualHttpServletResponse();
-        
-        
+        new VirtualHttpServletResponse();
     }
-    
 
 }

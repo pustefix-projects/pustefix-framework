@@ -156,7 +156,7 @@
             	else uri = 'module://' + data[3] + '/' + data[2];
             	window.open('<ixsl:value-of select="$__editor_url"/>?__scriptedflow=selectinclude&amp;' +
             	            'theme=' + data[1] + '&amp;path=' + uri + '&amp;part=' + data[0] + '&amp;' +
-            	            'uri=<ixsl:value-of select="$__application_url"/>&amp;type=include&amp;__anchor=left_navi|' + data[2]
+                            'uri=<ixsl:value-of select="$__application_url"/>&amp;type=include&amp;__anchor=left_navi%7C' + data[2]
             	            ,'PustefixEditor','menubar=yes,status=yes,resizable=yes');
             	return false;
             }

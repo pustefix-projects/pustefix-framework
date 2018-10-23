@@ -15,7 +15,6 @@
  * along with Pustefix; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  */
-
 package de.schlund.pfixcore.workflow;
 
 import java.util.Properties;
@@ -31,10 +30,7 @@ import de.schlund.pfixxml.Tenant;
 import de.schlund.pfixxml.Variant;
 import de.schlund.util.statuscodes.StatusCode;
 
-/**
- * 
- * @author Sebastian Marsching <sebastian.marsching@1und1.de>
- */
+
 public interface Context extends PageFlowContext {
     
     Properties getProperties();
@@ -124,9 +120,6 @@ public interface Context extends PageFlowContext {
     Tenant getTenant();
 
     void addPageMessage(StatusCode scode, String[] args, String level);
-
-    void addSessionStatusListener(SessionStatusListener l);
-    void removeSessionStatusListener(SessionStatusListener l);
 
     /**
      * Tells the servlet that the session for this context is not longer needed

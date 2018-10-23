@@ -98,13 +98,11 @@ public class VirtualHttpServletRequest implements HttpServletRequest {
         return orig.getHeader(arg0);
     }
 
-    @SuppressWarnings("rawtypes")
-    public Enumeration getHeaders(String arg0) {
+    public Enumeration<String> getHeaders(String arg0) {
         return orig.getHeaders(arg0);
     }
 
-    @SuppressWarnings("rawtypes")
-    public Enumeration getHeaderNames() {
+    public Enumeration<String> getHeaderNames() {
         return orig.getHeaderNames();
     }
 
@@ -227,8 +225,7 @@ public class VirtualHttpServletRequest implements HttpServletRequest {
         return orig.getAttribute(arg0);
     }
 
-    @SuppressWarnings("rawtypes")
-    public Enumeration getAttributeNames() {
+    public Enumeration<String> getAttributeNames() {
         return orig.getAttributeNames();
     }
 
@@ -270,8 +267,7 @@ public class VirtualHttpServletRequest implements HttpServletRequest {
         }
     }
 
-    @SuppressWarnings("rawtypes")
-    public Enumeration getParameterNames() {
+    public Enumeration<String> getParameterNames() {
         return Collections.enumeration(params.keySet());
     }
 
@@ -279,8 +275,7 @@ public class VirtualHttpServletRequest implements HttpServletRequest {
         return params.get(arg0);
     }
 
-    @SuppressWarnings("rawtypes")
-    public Map getParameterMap() {
+    public Map<String, String[]> getParameterMap() {
         return Collections.unmodifiableMap(params);
     }
 
@@ -325,8 +320,7 @@ public class VirtualHttpServletRequest implements HttpServletRequest {
         return orig.getLocale();
     }
 
-    @SuppressWarnings("rawtypes")
-    public Enumeration getLocales() {
+    public Enumeration<Locale> getLocales() {
         return orig.getLocales();
     }
 

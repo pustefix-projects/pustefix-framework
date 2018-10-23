@@ -143,7 +143,6 @@ public class PustefixWebApplicationContext extends AbstractRefreshableWebApplica
         }
 
         beanFactory.registerScope("tenant", new TenantScope());
-        addBeanFactoryPostProcessor(AnnotationBeanDefinitionPostProcessor.class, beanFactory);
         addBeanFactoryPostProcessor(InputHandlerProcessor.class, beanFactory);
         addBeanFactoryPostProcessor(ControllerStatePostProcessor.class, beanFactory);
     }

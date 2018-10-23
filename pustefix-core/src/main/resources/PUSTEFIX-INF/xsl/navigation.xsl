@@ -341,7 +341,7 @@
       <xsl:if test="$action">&amp;__action=<xsl:value-of select="$action"/></xsl:if>
       <xsl:variable name="node" select="."/>
       <xsl:for-each select="$cmds">&amp;__CMD(<xsl:choose><xsl:when test="./@page"><xsl:value-of select="./@page"/></xsl:when><xsl:otherwise><ixsl:value-of select="$page_{generate-id($node)}"/></xsl:otherwise></xsl:choose>):<xsl:value-of select="./@name"/>=<xsl:apply-templates select="./node()"/></xsl:for-each>
-      <xsl:for-each select="$anchors[@frame != '']">&amp;__anchor=<xsl:value-of select="@frame"/>|<xsl:apply-templates select="./node()"/></xsl:for-each>
+      <xsl:for-each select="$anchors[@frame != '']">&amp;__anchor=<xsl:value-of select="@frame"/>%7C<xsl:apply-templates select="./node()"/></xsl:for-each>
       </ixsl:variable>
       <ixsl:value-of select="pfx:__addParams($params)"/>
       <xsl:if test="$anchors[not(@frame) or @frame = '']">#<xsl:apply-templates select="$anchors[not(@frame) or @frame = ''][1]/node()"/></xsl:if>

@@ -170,21 +170,21 @@ public class GenerateSCodes {
         List<URI> paths = new ArrayList<URI>();
         String regexp = "\\s*new URI\\(\"([^\\)]+)\"\\).*";
         Pattern pattern = Pattern.compile(regexp);
-        BufferedReader reader = new BufferedReader(new InputStreamReader(new FileInputStream(scLibFile), "ISO-8859-1"));
-        String line;
-        while((line=reader.readLine())!=null) {
-            Matcher matcher = pattern.matcher(line);
-            if(matcher.matches()) {
-                URI uri;
-                try {
-                    uri = new URI(matcher.group(1));
-                } catch (URISyntaxException e) {
-                    throw new RuntimeException("Illegal URI: "+matcher.group(1), e);
+        try (BufferedReader reader = new BufferedReader(new InputStreamReader(new FileInputStream(scLibFile), "ISO-8859-1"))) {
+            String line;
+            while((line=reader.readLine())!=null) {
+                Matcher matcher = pattern.matcher(line);
+                if(matcher.matches()) {
+                    URI uri;
+                    try {
+                        uri = new URI(matcher.group(1));
+                    } catch (URISyntaxException e) {
+                        throw new RuntimeException("Illegal URI: "+matcher.group(1), e);
+                    }
+                    paths.add(uri);
                 }
-                paths.add(uri);
             }
         }
-        reader.close();
         return paths;
     }
     

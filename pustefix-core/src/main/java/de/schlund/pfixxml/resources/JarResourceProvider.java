@@ -37,9 +37,4 @@ public class JarResourceProvider implements ResourceProvider {
         return new JarResource(uri);
     }
 
-    public static void main(String[] args) throws Exception {
-    	URI uri = new URI("jar:file:/data/checkouts/pustefix.svn.sourceforge.net/pustefix-zero/pustefix-samples/pustefix-i18n/pustefix-i18n-webapp/target/pustefix-i18n-webapp-0.18.38-SNAPSHOT/WEB-INF/lib/log4j-1.2.17.jar!/META-INF/maven/log4j/log4j/pom.xml");
-    	System.out.println(uri.getRawSchemeSpecificPart());
-    }
-    
 }

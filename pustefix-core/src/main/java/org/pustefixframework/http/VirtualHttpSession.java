@@ -16,6 +16,7 @@ import javax.servlet.http.HttpSessionContext;
  * Implementation of HttpSession interface for simulating sessions
  * on the server-side without being in a real request thread.
  */
+@SuppressWarnings("deprecation")
 public class VirtualHttpSession implements HttpSession {
 
     private static AtomicInteger generatedId = new AtomicInteger();

@@ -102,8 +102,7 @@ public class ResourceIndexMap {
 
 		ResourceIndexMap index = new ResourceIndexMap();
 		SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss,SSS Z");
-        try {
-        	BufferedReader reader = new BufferedReader(new InputStreamReader(in, "UTF-8"));
+        try (BufferedReader reader = new BufferedReader(new InputStreamReader(in, "UTF-8"))) {
             String line = reader.readLine();
             if(line != null) {
             	if(!line.equals("/")) {

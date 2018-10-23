@@ -81,6 +81,7 @@ public class PageListGeneratorMojo extends AbstractMojo {
             Method meth = generator.getMethod("generate", File.class, File.class, String.class, File.class);
             Object instance = generator.getDeclaredConstructor().newInstance();
             Thread.currentThread().setContextClassLoader(loader);
+            @SuppressWarnings("unchecked")
             List<File> files = (List<File>)meth.invoke(instance, docroot, outputDirectory, mode, logroot);
             if(getLog().isDebugEnabled()) {
                 for(File file : files) {

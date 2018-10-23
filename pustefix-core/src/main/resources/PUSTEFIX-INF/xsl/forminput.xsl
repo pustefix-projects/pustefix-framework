@@ -325,7 +325,7 @@
     <xsl:for-each select="./pfx:anchor">
       <input type="hidden">
         <ixsl:attribute name="name">__SYNT:<ixsl:value-of select="$genname_{$current}"/>:__anchor</ixsl:attribute>
-      <ixsl:attribute name="value"><xsl:value-of select="@frame"/>|<xsl:apply-templates select="./node()"/></ixsl:attribute></input>
+      <ixsl:attribute name="value"><xsl:value-of select="@frame"/>%7C<xsl:apply-templates select="./node()"/></ixsl:attribute></input>
     </xsl:for-each>    
     <xsl:for-each select="./pfx:command">
       <input type="hidden"><ixsl:attribute name="name">__SYNT:<ixsl:value-of select="$genname_{$current}"/>:__CMD(<xsl:choose>

@@ -36,7 +36,6 @@ import de.schlund.pfixcore.workflow.Context;
 import de.schlund.pfixcore.workflow.ContextResourceManager;
 import de.schlund.pfixcore.workflow.PageRequest;
 import de.schlund.pfixcore.workflow.PageRequestStatus;
-import de.schlund.pfixcore.workflow.SessionStatusListener;
 import de.schlund.pfixcore.workflow.context.PageFlow;
 import de.schlund.pfixxml.Tenant;
 import de.schlund.pfixxml.PfixServletRequest;
@@ -52,9 +51,6 @@ import de.schlund.util.statuscodes.StatusCode;
  * single classes. But it doesn't implement the behaviour of the
  * real Context implementation, e.g. you can't test a complete
  * pageflow using this implementation.
- * 
- * @author mleidig@schlund.de
- *
  */
 public class MockContext implements Context {
 
@@ -232,15 +228,6 @@ public class MockContext implements Context {
     
     public void prohibitContinue() {
         prohibitContinue = true;
-    }
-
-    
-    public void addSessionStatusListener(SessionStatusListener l) {
-        // do nothing
-    }
-    
-    public void removeSessionStatusListener(SessionStatusListener l) {
-        // do nothing  
     }
 
     public void setCurrentPageFlow(String pageflow) {

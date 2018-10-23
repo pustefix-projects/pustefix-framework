@@ -15,7 +15,6 @@
  * along with Pustefix; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  */
-
 package de.schlund.pfixcore.workflow;
 
 import java.util.List;
@@ -438,14 +437,6 @@ public class ContextImpl implements AccessibilityChecker, ExtendedContext, Token
     
     public void invalidateSessionAfterCompletion() {
         this.sessioncontext.invalidateSessionAfterCompletion();
-    }
-
-    public void addSessionStatusListener(SessionStatusListener l) {
-        this.sessioncontext.addSessionStatusListener(l);
-    }
-
-    public void removeSessionStatusListener(SessionStatusListener l) {
-        this.sessioncontext.removeSessionStatusListener(l);
     }
 
     // Notification on session binding / unbinding

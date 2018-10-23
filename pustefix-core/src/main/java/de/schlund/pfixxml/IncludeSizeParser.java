@@ -28,45 +28,42 @@ public class IncludeSizeParser {
 	private static Stack<Include> includeStack = new Stack<Include>();
 	private static List<Include> includeList = new ArrayList<Include>();
 	private static List<Include> topLevelIncludes = new ArrayList<Include>();
-	
-	public static IncludeStatistics parse(File file) throws IOException {
-		
-		FileInputStream in = new FileInputStream(file);
-		BufferedReader reader = new BufferedReader(new InputStreamReader(in));
-		
-		IncludeStatistics statistics = new IncludeStatistics(file.getName(), (int)file.length());
-		statistics.systemId = file.toURI().toString();
-		int bytes = 0;
-		String line = null;
-        while((line = reader.readLine()) != null) {
-        	bytes += line.getBytes("utf8").length;
-			Matcher matcher = START_PATTERN.matcher(line);
-			if(matcher.matches()) {
-				Include include = new Include();
-				if(includeStack.isEmpty()) {
-					topLevelIncludes.add(include);
-					statistics.childIncludes.add(include);
-				} else {
-					includeStack.peek().childIncludes.add(include);
-				}
-				include.start = bytes;
-				includeStack.add(include);
-				includeList.add(include);
-			} else {
-				matcher = END_PATTERN.matcher(line);
-				if(matcher.matches()) {
-					Include include = includeStack.pop();
-					include.end = bytes;
-					include.title = getTitle(matcher.group(1));
-				}
-			}
-		
+
+    public static IncludeStatistics parse(File file) throws IOException {
+
+        IncludeStatistics statistics = null;
+        try (BufferedReader reader = new BufferedReader(new InputStreamReader(new FileInputStream(file)))) {
+            statistics = new IncludeStatistics(file.getName(), (int)file.length());
+            statistics.systemId = file.toURI().toString();
+            int bytes = 0;
+            String line = null;
+            while((line = reader.readLine()) != null) {
+                bytes += line.getBytes("utf8").length;
+                Matcher matcher = START_PATTERN.matcher(line);
+                if(matcher.matches()) {
+                    Include include = new Include();
+                    if(includeStack.isEmpty()) {
+                        topLevelIncludes.add(include);
+                        statistics.childIncludes.add(include);
+                    } else {
+                        includeStack.peek().childIncludes.add(include);
+                    }
+                    include.start = bytes;
+                    includeStack.add(include);
+                    includeList.add(include);
+                } else {
+                    matcher = END_PATTERN.matcher(line);
+                    if(matcher.matches()) {
+                        Include include = includeStack.pop();
+                        include.end = bytes;
+                        include.title = getTitle(matcher.group(1));
+                    }
+                }
+            }
         }
-		
-		return statistics;
-		
-	}
-	
+        return statistics;
+    }
+
 	private static String getTitle(String str) {
 		if(str.startsWith("{")) {
 			Matcher matcher = TITLE_PATTERN.matcher(str);

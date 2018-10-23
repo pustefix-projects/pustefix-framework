@@ -21,7 +21,6 @@ import java.util.Collections;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.LinkedHashMap;
-import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -41,7 +40,6 @@ import de.schlund.pfixcore.util.TokenUtils;
 import de.schlund.pfixcore.workflow.Context;
 import de.schlund.pfixcore.workflow.ContextResourceManager;
 import de.schlund.pfixcore.workflow.ContextResourceManagerImpl;
-import de.schlund.pfixcore.workflow.SessionStatusListener;
 import de.schlund.pfixxml.Tenant;
 import de.schlund.pfixxml.Variant;
 
@@ -49,8 +47,6 @@ import de.schlund.pfixxml.Variant;
  * Implementation of the session part of the context used by
  * ContextXMLServlet, DirectOutputServlet and WebServiceServlet. This class
  * should never be directly used by application developers.
- * 
- * @author Sebastian Marsching <sebastian.marsching@1und1.de>
  */
 public class SessionContextImpl {
 
@@ -65,8 +61,7 @@ public class SessionContextImpl {
     private Map<String, String>        tokens;
     private String                     csrfToken;
     private String                     lastFlow;
-    private final Set<SessionStatusListener> sessionStatusListeners = new LinkedHashSet<>();
-    
+
     public void init(Context context) throws PustefixApplicationException, PustefixCoreException {
         
         synchronized(this) {
@@ -219,24 +214,5 @@ public class SessionContextImpl {
     public void invalidateSessionAfterCompletion() {
         session.setAttribute(AbstractPustefixRequestHandler.REQUEST_ATTR_INVALIDATE_SESSION_AFTER_COMPLETION, true);
     }
-    
-    public void addSessionStatusListener(SessionStatusListener listener) {
-        synchronized (sessionStatusListeners) {
-            sessionStatusListeners.add(listener);
-            if(session != null) {
-                SessionStatusListener[] listeners = sessionStatusListeners.toArray(new SessionStatusListener[sessionStatusListeners.size()]);
-                session.setAttribute(SessionStatusListener.class.getName(), listeners);
-            }
-        }
-    }
 
-    public void removeSessionStatusListener(SessionStatusListener listener) {
-        synchronized (sessionStatusListeners) {
-            sessionStatusListeners.remove(listener);
-            if(session != null && sessionStatusListeners.isEmpty()) {
-                session.removeAttribute(SessionStatusListener.class.getName());
-            }
-        }
-    }
-    
 }
