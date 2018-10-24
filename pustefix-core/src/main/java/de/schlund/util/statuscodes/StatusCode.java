@@ -15,27 +15,15 @@
  * along with Pustefix; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  */
-
 package de.schlund.util.statuscodes;
 
 import java.net.URI;
 
-import de.schlund.pfixxml.resources.DocrootResource;
-import de.schlund.pfixxml.resources.Resource;
-
 public class StatusCode {
 	
     private String part;
-    private DocrootResource path;
     private URI uri;
-    
-    @Deprecated
-    public StatusCode(String part, DocrootResource path) { 
-        this.part = part;
-        this.path = path;
-        this.uri = path.toURI();
-    }
-    
+
     public StatusCode(String part, URI uri) {
     	this.part = part;
     	this.uri = uri;
@@ -45,11 +33,6 @@ public class StatusCode {
         return part;
     }
 
-    @Deprecated
-    public Resource getStatusCodePath() {
-        return path;
-    }
-    
     public URI getStatusCodeURI() {
     	return uri;
     }

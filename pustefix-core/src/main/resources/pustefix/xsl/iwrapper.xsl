@@ -295,18 +295,6 @@ public <xsl:if test="not(./iwrp:ihandler) and not(@extends)">abstract </xsl:if>c
     public void addSCode<xsl:value-of select="$cpname"/>(de.schlund.util.statuscodes.StatusCode scode, String[] args, String level, String index) {
         gimmeIndexedParamForKey("<xsl:value-of select="$pname"/>").addSCode(scode, args, level, index);
     }
-    
-    /**
-      * @deprecated use addScode<xsl:value-of select="$cpname"/>(scode, args, null, index)
-      *
-      * @param scode statuscode
-      * @param args  arguments
-      * @param index index
-      */
-    @Deprecated
-    public void addSCodeWithArgs<xsl:value-of select="$cpname"/>(de.schlund.util.statuscodes.StatusCode scode, String[] args, String index) {
-        gimmeIndexedParamForKey("<xsl:value-of select="$pname"/>").addSCode(scode, args, null, index);
-    }
         </xsl:when>
         <xsl:otherwise>
     // <xsl:value-of select="$pname"/>
@@ -333,17 +321,6 @@ public <xsl:if test="not(./iwrp:ihandler) and not(@extends)">abstract </xsl:if>c
 
     public void addSCode<xsl:value-of select="$cpname"/>(de.schlund.util.statuscodes.StatusCode scode, String[] args, String level) {
         addSCode(gimmeParamForKey("<xsl:value-of select="$pname"/>"), scode, args, level);
-    }
-
-    /**
-      * @deprecated use addScode<xsl:value-of select="$cpname"/>(scode, args, null)
-      *
-      * @param scode statuscode
-      * @param args  arguments
-      */
-    @Deprecated
-    public void addSCodeWithArgs<xsl:value-of select="$cpname"/>(de.schlund.util.statuscodes.StatusCode scode, String[] args) {
-        addSCode(gimmeParamForKey("<xsl:value-of select="$pname"/>"), scode, args, null);
     }
         </xsl:otherwise>
       </xsl:choose>

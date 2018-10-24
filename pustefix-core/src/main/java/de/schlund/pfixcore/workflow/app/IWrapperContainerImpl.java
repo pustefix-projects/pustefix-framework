@@ -15,7 +15,6 @@
  * along with Pustefix; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  */
-
 package de.schlund.pfixcore.workflow.app;
 
 import java.util.Arrays;
@@ -52,12 +51,7 @@ import de.schlund.pfixxml.resources.ResourceUtil;
 
 /**
  * Default implementation of the <code>IWrapperContainer</code> interface.
- * <br/>
- * 
- * @author <a href="mailto:jtl@schlund.de">Jens Lautenbacher</a>
- * 
  */
-
 public class IWrapperContainerImpl implements IWrapperContainer {
     protected Logger                  LOG              = LoggerFactory.getLogger(this.getClass());
     private TreeMap<String, IWrapper> wrappers         = new TreeMap<String, IWrapper>();
@@ -432,10 +426,5 @@ public class IWrapperContainerImpl implements IWrapperContainer {
             
         }
     }
-    
-    @Deprecated
-    public Context getAssociatedContext() {
-        return context;
-    }
 
-}// IWrapperSimpleContainer
+}

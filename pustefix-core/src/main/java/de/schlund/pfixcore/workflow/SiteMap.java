@@ -552,12 +552,7 @@ public class SiteMap {
         }
         return pageGroup == null ? null : pageGroup.key;
     }
-    
-    @Deprecated
-    public String getAlias(String name, String lang, String pageAlternativeKey) {
-        return getAlias(name, lang, pageAlternativeKey, null);
-    }
-    
+
     public String getAlias(String name, String lang, String pageAlternativeKey, String pageGroupKey) {
         return getAlias(name, lang, pageAlternativeKey, pageGroupKey, true, false);
     }

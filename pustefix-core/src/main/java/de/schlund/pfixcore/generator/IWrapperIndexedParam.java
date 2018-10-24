@@ -15,7 +15,6 @@
  * along with Pustefix; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  */
-
 package de.schlund.pfixcore.generator;
 
 import java.util.ArrayList;
@@ -27,16 +26,6 @@ import org.slf4j.LoggerFactory;
 
 import de.schlund.util.statuscodes.StatusCode;
 
-/**
- * IWrapperIndexedParam.java
- *
- *
- * Created: Mon Aug 20 18:45:30 2001
- *
- * @author <a href="mailto:jtl@schlund.de">Jens Lautenbacher</a>
- *
- *
- */
 
 public class IWrapperIndexedParam implements IWrapperParamDefinition, Comparable<IWrapperParamDefinition> {
 
@@ -61,11 +50,6 @@ public class IWrapperIndexedParam implements IWrapperParamDefinition, Comparable
         this.caster   = null;
         this.multiple = multiple;
         this.trim       = trim;
-    }
-    
-    @Deprecated
-    public IWrapperIndexedParam(String name, boolean multiple, String type) {
-        this(name,multiple,type,true);
     }
 
     public String getOccurance() {
@@ -195,4 +179,4 @@ public class IWrapperIndexedParam implements IWrapperParamDefinition, Comparable
     public int compareTo(IWrapperParamDefinition in) {
         return name.compareTo(in.getName());
     }
-}// IWrapperIndexedParam
+}

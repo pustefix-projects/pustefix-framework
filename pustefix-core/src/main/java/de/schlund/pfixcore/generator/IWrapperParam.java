@@ -15,7 +15,6 @@
  * along with Pustefix; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  */
-
 package de.schlund.pfixcore.generator;
 
 import java.util.ArrayList;
@@ -33,13 +32,6 @@ import de.schlund.pfixxml.SimpleRequestParam;
 import de.schlund.util.statuscodes.StatusCode;
 import de.schlund.util.statuscodes.StatusCodeHelper;
 
-/**
- * Describe class <code>IWrapperParam</code> here.
- *
- * @author <a href="mailto:jtl@schlund.de">Jens Lautenbacher</a>
- *
- *
- */
 
 public class IWrapperParam implements IWrapperParamCheck, IWrapperParamDefinition, Comparable<IWrapperParamDefinition> {
 
@@ -72,12 +64,6 @@ public class IWrapperParam implements IWrapperParamCheck, IWrapperParamDefinitio
         this.defaultval = defaultval;
         this.trim = trim;
     }
-    
-    @Deprecated
-    public IWrapperParam(String name, boolean multiple, boolean optional, RequestParam[] defaultval, String type) {
-        this(name,multiple,optional,defaultval,type,true);
-    }
-    
 
     public void setValue(Object[] value) {
         this.value = value;

@@ -40,6 +40,4 @@ public interface IWrapperContainer {
     void    addIWrapperStatus() throws Exception;
     boolean errorHappened() throws Exception;
     IWrapper[] getIWrappersWithError();
-    @Deprecated
-    Context getAssociatedContext();
 }

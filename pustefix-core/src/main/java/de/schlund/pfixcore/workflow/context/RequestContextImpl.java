@@ -1171,11 +1171,6 @@ public class RequestContextImpl implements Cloneable, AuthorizationInterceptor {
         return state;
     }
 
-    @Deprecated
-    public boolean needsLastFlow(String pageName, String lastFlowName) {
-        return parentcontext.needsLastFlow(pageName, lastFlowName);
-    }
-    
     public boolean needsPageFlowParameter(String pageName, String flowName) {
     	
     	//Page name starts with page flow prefix

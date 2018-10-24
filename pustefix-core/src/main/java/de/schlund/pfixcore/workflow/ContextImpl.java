@@ -27,14 +27,14 @@ import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSessionBindingEvent;
 import javax.servlet.http.HttpSessionBindingListener;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.pustefixframework.config.contextxmlservice.ContextConfig;
 import org.pustefixframework.config.contextxmlservice.PageRequestConfig;
 import org.pustefixframework.config.project.ProjectInfo;
 import org.pustefixframework.container.spring.beans.TenantScope;
 import org.pustefixframework.http.AbstractPustefixRequestHandler;
 import org.pustefixframework.util.LocaleUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.cache.interceptor.SimpleKeyGenerator;
 import org.springframework.web.context.request.RequestAttributes;
 import org.springframework.web.context.request.RequestContextHolder;
@@ -244,20 +244,10 @@ public class ContextImpl implements AccessibilityChecker, ExtendedContext, Token
         }
     }
 
-    @Deprecated
-    public void setPageAlternative(String key) {
-        setCurrentPageAlternative(key);
-    }
-    
     public void setCurrentPageAlternative(String key) {
         getRequestContextForCurrentThreadWithError().setCurrentPageAlternative(key);
     }
-    
-    @Deprecated
-    public String getPageAlternative() {
-        return getCurrentPageAlternative();
-    }
-    
+
     public String getCurrentPageAlternative() {
         return getRequestContextForCurrentThreadWithError().getCurrentPageAlternative();
     }
@@ -331,7 +321,7 @@ public class ContextImpl implements AccessibilityChecker, ExtendedContext, Token
         }
         String pageAltKey = (String)req.getAttribute(AbstractPustefixRequestHandler.REQUEST_ATTR_PAGE_ALTERNATIVE);
         if(pageAltKey != null) {
-            setPageAlternative(pageAltKey);
+            setCurrentPageAlternative(pageAltKey);
         }
         String langParam = req.getParameter("__language");
         if(langParam != null && langParam.length() > 0) {

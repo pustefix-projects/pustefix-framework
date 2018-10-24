@@ -98,18 +98,6 @@ public interface Context extends PageFlowContext {
     
     void setLanguage(String lang);
     String getLanguage();
-    
-    /**
-     * @deprecated  As of release 0.19.13, replaced by {@link #setCurrentPageAlternative(String)}
-     */
-    @Deprecated
-    void setPageAlternative(String key);
-
-    /**
-     * @deprecated  As of release 0.19.13, replaced by {@link #getCurrentPageAlternative()}
-     */
-    @Deprecated
-    String getPageAlternative();
 
     void addCookie(Cookie cookie);
     Cookie[] getRequestCookies();
