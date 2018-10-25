@@ -126,7 +126,7 @@ public class PustefixStatuscodeMojo extends AbstractMojo {
         }
         
         try {
-            Result result = GenerateSCodes.generateFromInfo(resList, docRoot.getAbsolutePath(), genDir, module, dynamic);
+            Result result = GenerateSCodes.generateFromInfo(resList, docRoot.getAbsolutePath(), genDir, module, dynamic, getLog());
             if(result.generatedClasses.size()>0) {
                 getLog().info("Generated "+result.generatedClasses.size()+" statuscode class"+
                         (result.generatedClasses.size()>1?"es":""));

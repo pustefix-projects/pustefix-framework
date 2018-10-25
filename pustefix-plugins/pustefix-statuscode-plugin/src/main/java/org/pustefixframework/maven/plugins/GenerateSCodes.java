@@ -38,6 +38,7 @@ import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.FactoryConfigurationError;
 import javax.xml.parsers.ParserConfigurationException;
 
+import org.apache.maven.plugin.logging.Log;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.NodeList;
@@ -47,30 +48,28 @@ import org.xml.sax.SAXParseException;
 
 
 public class GenerateSCodes {
-    
-    private final static String DEPRECATED_NS_STATUSCODEINFO = "http://pustefix-framework.org/statuscodeinfo";
+
     private final static String NS_STATUSCODEINFO = "http://www.pustefix-framework.org/2008/namespace/statuscodeinfo";
 
-
-    public static Result generateFromInfo(List<String> infoFiles, String resDir, File genDir, String module, boolean dynamic) throws Exception {
+    public static Result generateFromInfo(List<String> infoFiles, String resDir, File genDir, String module, boolean dynamic, Log log) throws Exception {
         Result totalResult = new Result();
         for(String infoFile:infoFiles) {
-            Result result = generate(infoFile, resDir, genDir, module, dynamic);
+            Result result = generate(infoFile, resDir, genDir, module, dynamic, log);
             totalResult.addResult(result);
         }
         return totalResult;
     }
     
-    public static Result generate(String infoFile, String resDir, File genDir, String module, boolean dynamic) throws Exception {
+    public static Result generate(String infoFile, String resDir, File genDir, String module, boolean dynamic, Log log) throws Exception {
         DocumentBuilderFactory dbf = DocumentBuilderFactory.newInstance();
         DocumentBuilder db = dbf.newDocumentBuilder();
         File file = new File(resDir, infoFile);
         Document doc = db.parse(file);
-        if(DEPRECATED_NS_STATUSCODEINFO.equals(doc.getDocumentElement().getNamespaceURI()) || 
-                DEPRECATED_NS_STATUSCODEINFO.equals(doc.getDocumentElement().getAttribute("xmlns"))) {
-            String msg = "[DEPRECATED] Statuscode info file '" + infoFile + "' uses deprecated namespace '" + 
-                         DEPRECATED_NS_STATUSCODEINFO + "'. It should be replaced by '" + NS_STATUSCODEINFO + "'.";
-            System.out.println("[WARNING] " + msg);
+        String nsuri = doc.getDocumentElement().getAttribute("xmlns");
+        if(nsuri.isEmpty()) {
+            log.warn("Statuscode info file '" + infoFile + "' declares no namespace.");
+        } else if(!nsuri.equals(NS_STATUSCODEINFO)) {
+            log.warn("Statuscode info file '" + infoFile + "' declares wrong namespace: " + nsuri);
         }
         NodeList scElems = doc.getDocumentElement().getElementsByTagName("statuscodes");
         List<String> genClasses = new ArrayList<String>();

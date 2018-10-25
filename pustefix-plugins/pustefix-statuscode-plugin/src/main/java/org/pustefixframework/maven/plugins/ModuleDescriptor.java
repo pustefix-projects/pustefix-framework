@@ -44,7 +44,6 @@ import org.w3c.dom.NodeList;
  */
 public class ModuleDescriptor {
 
-    private final static String DEPRECATED_NS_MODULE_DESCRIPTOR = "http://pustefix.sourceforge.net/moduledescriptor200702"; 
     private final static String NS_MODULE_DESCRIPTOR = "http://www.pustefix-framework.org/2008/namespace/module-descriptor";
 
     final static String DEFAULT_RESOURCE_PATH = "/PUSTEFIX-INF";
@@ -197,11 +196,11 @@ public class ModuleDescriptor {
         }
         Element root = document.getDocumentElement();
         if(root.getLocalName().equals("module-descriptor")) {
-            if(DEPRECATED_NS_MODULE_DESCRIPTOR.equals(root.getNamespaceURI()) || 
-               DEPRECATED_NS_MODULE_DESCRIPTOR.equals(root.getAttribute("xmlns"))) {
-                String msg = "[DEPRECATED] Module descriptor file '" + url.toString() + "' uses deprecated namespace '" + 
-                        DEPRECATED_NS_MODULE_DESCRIPTOR + "'. It should be replaced by '" + NS_MODULE_DESCRIPTOR + "'.";
-                log.warn(msg);
+            String nsuri = root.getNamespaceURI();
+            if(nsuri == null) {
+                log.warn("Module descriptor file '" + url.toString() + "' declares no namespace.");
+            } else if(!nsuri.equals(NS_MODULE_DESCRIPTOR)) {
+                log.warn("Module descriptor file '" + url.toString() + "' declares wrong namespace: " + nsuri);
             }
             Element nameElem = getSingleChildElement(root, "module-name", true);
             String name = nameElem.getTextContent().trim();

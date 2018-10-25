@@ -135,34 +135,6 @@
                 </xs:restriction>
               </xs:simpleType>
             </xs:attribute>
-            <xs:attribute name="occurence" use="optional" default="mandatory">
-              <xs:annotation>
-                <xs:documentation xml:lang="de">DEPRECATED use occu_rr_ence instead. mandatory: the formsubmit won't complete if the value for the parameter is missing or empty, that is IHandler.handleSubmittedData(Context,IWrapper) won't be called unless a value is supplied by the user or a default value is supplied via the &lt;default&gt; element.
-                  optional: parameter does not have to be submitted.
-                  indexed: The html-form submits 0 or more values whose names are in the form "parametername.key". "key" is an arbitrary string. Example: the value of &lt;input name="Paramname.3"/&gt; can be retrieved as getParamname("3").</xs:documentation>
-              </xs:annotation>
-              <xs:simpleType>
-                <xs:restriction base="xs:string">
-                  <xs:enumeration value="mandatory"/>
-                  <xs:enumeration value="optional"/>
-                  <xs:enumeration value="indexed"/>
-                </xs:restriction>
-              </xs:simpleType>
-            </xs:attribute>
-            <xs:attribute name="occurance" use="optional" default="mandatory">
-              <xs:annotation>
-                <xs:documentation xml:lang="de">DEPRECATED use occu_rre_nce instead. mandatory: the formsubmit won't complete if the value for the parameter is missing or empty, that is IHandler.handleSubmittedData(Context,IWrapper) won't be called unless a value is supplied by the user or a default value is supplied via the &lt;default&gt; element.
-                  optional: parameter does not have to be submitted. // TODO_DOC(what does the get method of the iwrapper supply empty strings? null? i suppose null.) 
-                  indexed: The html-form submits 0 or more values whose names are in the form "parametername.key". "key" is an arbitrary string. Example: the value of &lt;input name="Paramname.3"/&gt; can be retrieved as getParamname("3").</xs:documentation>
-              </xs:annotation>
-              <xs:simpleType>
-                <xs:restriction base="xs:string">
-                  <xs:enumeration value="mandatory"/>
-                  <xs:enumeration value="optional"/>
-                  <xs:enumeration value="indexed"/>
-                </xs:restriction>
-              </xs:simpleType>
-            </xs:attribute>
             <xs:attribute name="missingscode">
               <xs:annotation>
                 <xs:documentation xml:lang="en">pfixcore.example.home.AGE_MISSING</xs:documentation>

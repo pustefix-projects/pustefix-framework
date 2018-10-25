@@ -1370,8 +1370,8 @@ public class B extends A {
           your beans using a XML configuration file. The file has to be named beanmetadata.xml and has to be placed
           in the project configuration directory or in a META-INF directory that's part of the classpath.
         </para>
-        <programlisting language="xml"><![CDATA[<bean-metadata xsi:schemaLocation="http://pustefix.sourceforge.net/bean-metadata 
-                                   http://pustefix.sourceforge.net/beanmetadata.xsd">
+        <programlisting language="xml"><![CDATA[<bean-metadata xsi:schemaLocation="http://www.pustefix-framework.org/2008/namespace/bean-metadata
+                                   http://www.pustefix-framework.org/2008/namespace/bean-metadata.xsd">
   <bean class="de.schlund.pfixcore.webservice.beans.A">
     <property name="foo" alias="myfoo"/>
     <property name="bar" exclude="true"/>

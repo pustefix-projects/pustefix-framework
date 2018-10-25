@@ -15,7 +15,6 @@
  * along with Pustefix; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  */
-
 package de.schlund.pfixcore.beans.metadata;
 
 import java.io.FileNotFoundException;
@@ -33,14 +32,11 @@ import org.xml.sax.ErrorHandler;
 import org.xml.sax.SAXException;
 import org.xml.sax.SAXParseException;
 
-/**
- * @author mleidig@schlund.de
- */
+
 public class DOMInit {
     
     protected final static Logger LOG=LoggerFactory.getLogger(DOMInit.class);
-    
-    private final static String DEPRECATED_NS_BEAN_METADATA = "http://pustefix.sourceforge.net/bean-metadata";
+
     private final static String NS_BEAN_METADATA = "http://www.pustefix-framework.org/2008/namespace/bean-metadata";
     
     private Beans beans;
@@ -103,11 +99,11 @@ public class DOMInit {
             DocumentBuilder db=dbf.newDocumentBuilder();
             db.setErrorHandler(new MyErrorHandler());
             Document doc=db.parse(metadataUrl.openStream());
-            if(DEPRECATED_NS_BEAN_METADATA.equals(doc.getDocumentElement().getNamespaceURI()) || 
-                    DEPRECATED_NS_BEAN_METADATA.equals(doc.getDocumentElement().getAttribute("xmlns"))) {
-                String msg = "[DEPRECATED] Bean metadata file '" + metadataUrl.toString() + "' uses deprecated namespace '" + 
-                    DEPRECATED_NS_BEAN_METADATA + "'. It should be replaced by '" + NS_BEAN_METADATA + "'.";
-                LOG.warn(msg);
+            String nsuri = doc.getDocumentElement().getNamespaceURI();
+            if(nsuri == null) {
+                LOG.warn("Bean metadata file '" + metadataUrl.toString() + "' declares no namespace.");
+            } else if(!nsuri.equals(NS_BEAN_METADATA)) {
+                LOG.warn("Bean metadata file '" + metadataUrl.toString() + "' declares wrong namespace: " + nsuri);
             }
             update(doc);
         } catch(FileNotFoundException x) {

@@ -1,6 +1,5 @@
 <xsl:stylesheet version="1.1" xmlns:xsl="http://www.w3.org/1999/XSL/Transform"
   xmlns:iwrp="http://www.pustefix-framework.org/2008/namespace/iwrapper"
-  xmlns:old="http://pustefix.sourceforge.net/interfacewrapper200401"
   >
   <xsl:output method="text" encoding="UTF-8" indent="no"/>
 
@@ -8,37 +7,13 @@
   <xsl:param name="package"/>
   
   <xsl:variable name="newns">http://www.pustefix-framework.org/2008/namespace/iwrapper</xsl:variable>
-  <xsl:variable name="oldns">http://pustefix.sourceforge.net/interfacewrapper200401</xsl:variable>
-  
-  <!--
-  // TODO 2004-12-06 adam corrected spelling of occurence (was occurance).
-  changed schema example/core/schema/interfacewrapper200401.xsd
-  to allow both, correct: "occurence" old one with typo "occurence" 
-  remove the "occurance" stuff herein, once it can be expected anyone has updated its files
-  to the new spelling. Mind to update schema file.
-  -->
-  
-  <xsl:template match="old:interface">
-    <xsl:message>[WARNING] [DEPRECATED] IWrapper definition for '<xsl:value-of select="$classname"/>' uses deprecated namespace: '<xsl:value-of select="$oldns"/>'. It should be replaced by '<xsl:value-of select="$newns"/>'.</xsl:message>
-    <xsl:variable name="upgraded">
-      <xsl:apply-templates select="." mode="old"/>
-    </xsl:variable>
-    <xsl:apply-templates select="$upgraded"/>
-  </xsl:template>
-  
-  <xsl:template match="*" mode="old">
-    <xsl:element name="{local-name()}" namespace="{$newns}">
-      <xsl:copy-of select="@*"/>
-      <xsl:apply-templates mode="old"/>
-    </xsl:element>
-  </xsl:template>
   
   <xsl:template match="iwrp:interface" ><xsl:param name="extends">
   <xsl:if test="./iwrp:param/@occurance">
-    <xsl:message>[WARNING] [DEPRECATED] IWrapper definition for '<xsl:value-of select="$classname"/>' uses deprecated attribute: the use of 'occurance' (with 'a') is deprecated, use occurrence (with 'e') instead.</xsl:message>
+    <xsl:message terminate="yes">[ERROR] IWrapper definition for '<xsl:value-of select="$classname"/>' uses misspelled attribute 'occurance'.</xsl:message>
   </xsl:if>
   <xsl:if test="./iwrp:param/@occurence">
-    <xsl:message>[WARNING] [DEPRECATED] IWrapper definition for '<xsl:value-of select="$classname"/>' uses deprecated attribute: the use of 'occurence' (with one 'r')is deprecated, use occurrence (with double 'r') instead.</xsl:message>
+    <xsl:message terminate="yes">[ERROR] IWrapper definition for '<xsl:value-of select="$classname"/>' uses misspelled attribute 'occurence'.</xsl:message>
   </xsl:if>
       <xsl:choose>
         <xsl:when test="@extends">
@@ -93,10 +68,10 @@ public <xsl:if test="not(./iwrp:ihandler) and not(@extends)">abstract </xsl:if>c
 
     @Override
     protected synchronized void registerParams() {
-        <xsl:if test="./iwrp:param[not(@occurance='indexed' or @occurence='indexed' or @occurrence ='indexed')]">
+        <xsl:if test="./iwrp:param[not(@occurrence ='indexed')]">
         IWrapperParam          pinfo;
         </xsl:if>
-        <xsl:if test="./iwrp:param[@occurance='indexed' or @occurence='indexed' or @occurrence='indexed']">
+        <xsl:if test="./iwrp:param[@occurrence='indexed']">
         IWrapperIndexedParam   pindx;
         </xsl:if>
         <xsl:if test="./iwrp:param/iwrp:caster or ./iwrp:param/@type=$javaBoolean or ./iwrp:param/@type=$javaInteger or ./iwrp:param/@type=$javaLong or ./iwrp:param/@type=$javaDouble or ./iwrp:param/@type=$javaFloat">
@@ -118,10 +93,6 @@ public <xsl:if test="not(./iwrp:ihandler) and not(@extends)">abstract </xsl:if>c
       </xsl:variable>
       <xsl:variable name="occurrence">
         <xsl:choose>
-          <xsl:when test="@occurance = 'optional'">true</xsl:when>
-          <xsl:when test="@occurance = 'indexed'">indexed</xsl:when>
-          <xsl:when test="@occurence = 'optional'">true</xsl:when>
-          <xsl:when test="@occurence = 'indexed'">indexed</xsl:when>
           <xsl:when test="@occurrence = 'optional'">true</xsl:when>
           <xsl:when test="@occurrence = 'indexed'">indexed</xsl:when>
           <xsl:otherwise>false</xsl:otherwise>
@@ -245,11 +216,7 @@ public <xsl:if test="not(./iwrp:ihandler) and not(@extends)">abstract </xsl:if>c
     <xsl:for-each select="./iwrp:param">
       <xsl:variable name="occurrence">
         <xsl:choose>
-          <xsl:when test="@occurence = 'optional'">true</xsl:when>
-          <xsl:when test="@occurance = 'optional'">true</xsl:when>
           <xsl:when test="@occurrence = 'optional'">true</xsl:when>
-          <xsl:when test="@occurence = 'indexed'">indexed</xsl:when>
-          <xsl:when test="@occurance = 'indexed'">indexed</xsl:when>
           <xsl:when test="@occurrence = 'indexed'">indexed</xsl:when>
           <xsl:otherwise>false</xsl:otherwise>
         </xsl:choose>
