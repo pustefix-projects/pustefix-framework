@@ -6,12 +6,12 @@
   <parent>
     <artifactId>pustefix-samples</artifactId>
     <groupId>org.pustefixframework</groupId>
-    <version>0.23.1-SNAPSHOT</version>
+    <version>1.0.0-SNAPSHOT</version>
   </parent>
 
   <groupId>org.pustefixframework.samples</groupId>
   <artifactId>pustefix-mvctest</artifactId>
-  <version>0.23.1-SNAPSHOT</version>
+  <version>1.0.0-SNAPSHOT</version>
   <packaging>war</packaging>
 
   <name>Pustefix MVC Test</name>
@@ -25,23 +25,23 @@
     <dependency>
       <groupId>org.pustefixframework</groupId>
       <artifactId>pustefix-core</artifactId>
-      <version>0.23.1-SNAPSHOT</version>
+      <version>1.0.0-SNAPSHOT</version>
     </dependency>
     <dependency>
       <groupId>org.pustefixframework.webservices</groupId>
       <artifactId>pustefix-webservices-core</artifactId>
-      <version>0.23.1-SNAPSHOT</version>
+      <version>1.0.0-SNAPSHOT</version>
     </dependency>
     <dependency>
       <groupId>org.pustefixframework.webservices</groupId>
       <artifactId>pustefix-webservices-jsonws</artifactId>
-      <version>0.23.1-SNAPSHOT</version>
+      <version>1.0.0-SNAPSHOT</version>
     </dependency>
 
     <dependency>
       <groupId>org.pustefixframework.logging</groupId>
       <artifactId>pustefix-logback</artifactId>
-      <version>0.23.1-SNAPSHOT</version>
+      <version>1.0.0-SNAPSHOT</version>
     </dependency>
 
     <dependency>
@@ -74,7 +74,7 @@
       <plugin>
         <groupId>org.pustefixframework.maven.plugins</groupId>
         <artifactId>pustefix-webapp-plugin</artifactId>
-        <version>0.23.1-SNAPSHOT</version>
+        <version>1.0.0-SNAPSHOT</version>
         <executions>
           <execution>
             <goals>
@@ -86,7 +86,7 @@
       <plugin>
         <groupId>org.pustefixframework.maven.plugins</groupId>
         <artifactId>pustefix-statuscode-plugin</artifactId>
-        <version>0.23.1-SNAPSHOT</version>
+        <version>1.0.0-SNAPSHOT</version>
         <executions>
           <execution>
             <goals>
@@ -98,7 +98,7 @@
       <plugin>
         <groupId>org.pustefixframework.maven.plugins</groupId>
         <artifactId>pustefix-iwrapper-plugin</artifactId>
-        <version>0.23.1-SNAPSHOT</version>
+        <version>1.0.0-SNAPSHOT</version>
         <executions>
           <execution>
             <goals>
@@ -110,7 +110,7 @@
       <plugin>
         <groupId>org.pustefixframework.maven.plugins</groupId>
         <artifactId>pustefix-pagelist-plugin</artifactId>
-        <version>0.23.1-SNAPSHOT</version>
+        <version>1.0.0-SNAPSHOT</version>
         <executions>
           <execution>
             <goals>
