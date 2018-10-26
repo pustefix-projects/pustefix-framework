@@ -27,10 +27,7 @@ import de.schlund.pfixcore.oxm.Marshaller;
 import de.schlund.pfixcore.oxm.MarshallingException;
 
 /**
- * 
  * Marshaller implementation which serializes an object into a W3C DOM
- * 
- * @author mleidig@schlund.de
  */
 public class MarshallerImpl implements Marshaller {
 
@@ -52,6 +49,11 @@ public class MarshallerImpl implements Marshaller {
         } catch (SerializationException x) {
             throw new MarshallingException("Error while marshalling object.", x);
         }
+    }
+
+    @Override
+    public boolean isSupported(Class<?> objectClass) {
+        return true;
     }
 
 }

@@ -356,8 +356,7 @@ public class Xml {
         try {
             ClassLoader cl = Thread.currentThread().getContextClassLoader();
             if(cl == null) cl = Xml.class.getClassLoader();
-            Class<?> clazz = Class.forName(DEFAULT_DOCUMENTBUILDERFACTORY, true, cl);
-            fact = (DocumentBuilderFactory)clazz.newInstance();
+            fact = DocumentBuilderFactory.newInstance(DEFAULT_DOCUMENTBUILDERFACTORY, cl);
         } catch(Exception x) {
             x.printStackTrace();
             //ignore and try to get DocumentBuilderFactory via factory finder in next step

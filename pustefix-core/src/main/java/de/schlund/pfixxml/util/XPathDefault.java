@@ -43,8 +43,7 @@ public class XPathDefault implements XPathSupport {
         try {
             ClassLoader cl = Thread.currentThread().getContextClassLoader();
             if(cl == null) cl = getClass().getClassLoader();
-            Class<?> clazz = Class.forName(DEFAULT_XPATHFACTORY,true,cl);
-            xpathFactory = (XPathFactory)clazz.newInstance();
+            xpathFactory = XPathFactory.newInstance(XPathFactory.DEFAULT_OBJECT_MODEL_URI, DEFAULT_XPATHFACTORY, cl);
         } catch (Exception x) {
             x.printStackTrace();
             //ignore and try to get XPathFactory via factory finder in next step
