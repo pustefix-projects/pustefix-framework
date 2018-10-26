@@ -1015,6 +1015,11 @@
         <literal>basenames</literal>.
       </para>
       <programlisting language="xml"><![CDATA[<messagesources>
+   <!-- MessageSources can be preprocessed by doing regular expression based search and replace on its messages.
+        The regular expression pattern follows the syntax of java.util.regex.Pattern.
+   <preprocess>
+      <replace pattern="\{MY_PLACEHOLDER\}" value="MY_REPLACEMENT"/>
+   </preprocess> -->
    <messagesource type="po">
       <basename>module://common-module/i18n/messages</basename>
       <basename>module://common-module/i18n/errors</basename>
