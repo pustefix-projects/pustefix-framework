@@ -26,4 +26,21 @@
     </para>
   </section>
 
+  <section xml:id="news.0_22_6">
+    <title>What's new in Pustefix 0.22.6</title>
+    <para>
+      Added support for <literal>MessageSource</literal> preprocessing, i.e. now you can do regular expression based search and replace 
+      on <literal>MessageSource</literal> messages, e.g. you could introduce global placeholders processed at runtime, which avoids needing
+      multiple versions of a file (see <xref linkend="xslt.messages.configuration"/>).
+    </para>
+  </section>
+
+  <section xml:id="news.0_22_7">
+    <title>What's new in Pustefix 0.22.7</title>
+    <para>
+      Pustefix now supports running under Java 11 without doing any illegal access operations, i.e. will work with having the JVM option
+      <literal>--illegal-access=deny</literal> enabled too.
+    </para>
+  </section>
+
 </chapter>
