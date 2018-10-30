@@ -27,17 +27,17 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+import javax.servlet.RequestDispatcher;
 import javax.servlet.ServletContext;
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import org.pustefixframework.config.project.Expires;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
 import org.pustefixframework.container.spring.beans.TenantScope;
 import org.pustefixframework.container.spring.http.UriProvidingHttpRequestHandler;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.web.context.ServletContextAware;
 
@@ -206,29 +206,31 @@ public class DocrootRequestHandler implements UriProvidingHttpRequestHandler, Se
         
         long contentLength = inputResource.length();
         long lastModified = inputResource.lastModified();
-            
-        String reqETag = req.getHeader("If-None-Match");
-        if(reqETag != null) {
-            String etag = createETag(path, contentLength, lastModified);
-            if(etag.equals(reqETag)) {
-                res.setStatus(HttpServletResponse.SC_NOT_MODIFIED);
-                res.flushBuffer();
-                if(LOG.isDebugEnabled()) {
-                    LOG.debug("ETag didn't change -> send 'not modified' for resource: " + path);
+
+        if(req.getAttribute(RequestDispatcher.FORWARD_REQUEST_URI) == null) {
+            //only do conditional processing if request is not internally forwarded
+            String reqETag = req.getHeader("If-None-Match");
+            if(reqETag != null) {
+                String etag = createETag(path, contentLength, lastModified);
+                if(etag.equals(reqETag)) {
+                    res.setStatus(HttpServletResponse.SC_NOT_MODIFIED);
+                    res.flushBuffer();
+                    if(LOG.isDebugEnabled()) {
+                        LOG.debug("ETag didn't change -> send 'not modified' for resource: " + path);
+                    }
+                    return;
                 }
-                return;
             }
-        }
-     
-        long reqMod = req.getDateHeader("If-Modified-Since");
-        if(reqMod != -1) {
-            if(lastModified < reqMod + 1000) {
-                res.setStatus(HttpServletResponse.SC_NOT_MODIFIED);
-                res.flushBuffer();
-                if(LOG.isDebugEnabled()) {
-                    LOG.debug("Modification time didn't change -> send 'not modified' for resource: " + path);
+            long reqMod = req.getDateHeader("If-Modified-Since");
+            if(reqMod != -1) {
+                if(lastModified < reqMod + 1000) {
+                    res.setStatus(HttpServletResponse.SC_NOT_MODIFIED);
+                    res.flushBuffer();
+                    if(LOG.isDebugEnabled()) {
+                        LOG.debug("Modification time didn't change -> send 'not modified' for resource: " + path);
+                    }
+                    return;
                 }
-                return;
             }
         }
 
@@ -247,7 +249,7 @@ public class DocrootRequestHandler implements UriProvidingHttpRequestHandler, Se
         String etag = MD5Utils.hex_md5(path+contentLength+lastModified);
         res.setHeader("ETag", etag);
         
-        Integer errorStatus = (Integer)req.getAttribute("javax.servlet.error.status_code");
+        Integer errorStatus = (Integer)req.getAttribute(RequestDispatcher.ERROR_STATUS_CODE);
         if(errorStatus != null) {
             res.setHeader("Cache-Control", "no-cache, no-store, private, must-revalidate");
             res.setHeader("Pragma", "no-cache");
