@@ -28,7 +28,10 @@ public class StatusCode {
     private String part;
     private DocrootResource path;
     private URI uri;
-    
+
+    /**
+     * @deprecated Will be removed in Pustefix 1.0.
+     */
     @Deprecated
     public StatusCode(String part, DocrootResource path) { 
         this.part = part;
@@ -45,6 +48,9 @@ public class StatusCode {
         return part;
     }
 
+    /**
+     * @deprecated Will be removed in Pustefix 1.0.
+     */
     @Deprecated
     public Resource getStatusCodePath() {
         return path;

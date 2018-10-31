@@ -297,7 +297,7 @@ public <xsl:if test="not(./iwrp:ihandler) and not(@extends)">abstract </xsl:if>c
     }
     
     /**
-      * @deprecated use addScode<xsl:value-of select="$cpname"/>(scode, args, null, index)
+      * @deprecated Will be removed in Pustefix 1.0, use addScode<xsl:value-of select="$cpname"/>(scode, args, null, index)
       *
       * @param scode statuscode
       * @param args  arguments
@@ -336,7 +336,7 @@ public <xsl:if test="not(./iwrp:ihandler) and not(@extends)">abstract </xsl:if>c
     }
 
     /**
-      * @deprecated use addScode<xsl:value-of select="$cpname"/>(scode, args, null)
+      * @deprecated Will be removed in Pustefix 1.0, use addScode<xsl:value-of select="$cpname"/>(scode, args, null)
       *
       * @param scode statuscode
       * @param args  arguments

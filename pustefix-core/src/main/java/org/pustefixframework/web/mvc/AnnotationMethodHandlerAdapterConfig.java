@@ -28,7 +28,10 @@ import org.springframework.web.bind.support.WebBindingInitializer;
  * Configures the AnnotationMethodHandlerAdapter used by Pustefix States.
  * The Pustefix default configuration can be overridden by adding an own
  * bean definition of this type to the Spring configuration.
+ *
+ * @deprecated Will be removed in Pustefix 1.0.
  */
+@Deprecated
 public class AnnotationMethodHandlerAdapterConfig {
 
     private WebArgumentResolver[] argumentResolvers;

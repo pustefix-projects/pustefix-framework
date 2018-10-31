@@ -21,7 +21,8 @@ package de.schlund.pfixcore.workflow;
 /**
  * Represents an event related to the life-cycle of a session.  
  * 
- * @deprecated Will be removed, because since Servlet API 2.3 you can use {@link javax.servlet.http.HttpSessionEvent}
+ * @deprecated Will be removed in Pustefix 1.0, because since Servlet API 2.3 you can
+ * use {@link javax.servlet.http.HttpSessionEvent}
  */
 @Deprecated
 public class SessionStatusEvent {

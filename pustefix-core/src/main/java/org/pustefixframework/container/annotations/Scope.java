@@ -29,10 +29,11 @@ import java.lang.annotation.Target;
  * <code>prototype</code> and <code>singleton</code> scope should always be
  * available.
  * 
- * @author Sebastian Marsching <sebastian.marsching@1und1.de>
+ * @deprecated Will be removed in Pustefix 1.0, use Spring dependency injection instead.
  */
 @Target(ElementType.TYPE)
 @Retention(RetentionPolicy.RUNTIME)
+@Deprecated
 public @interface Scope {
     /**
      * Scope in which the annotated object should be instantiated.

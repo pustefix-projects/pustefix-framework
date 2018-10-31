@@ -82,7 +82,7 @@ public class Xslt {
     }
     
     /**
-     * @deprecated Use {@link #loadTemplates(FileResource)} instead
+     * @deprecated Will be removed in Pustefix 1.0, use {@link #loadTemplates(FileResource)} instead
      */
     @Deprecated
     public static Templates loadTemplates(Path path) throws TransformerConfigurationException {

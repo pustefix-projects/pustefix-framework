@@ -16,6 +16,7 @@ import de.schlund.pfixcore.exception.PustefixRuntimeException;
  * 
  * Without using this listener, everything is done at the beginning of the ApplicationContext creation.
  *
+ * @deprecated Will be removed in Pustefix 1.0, because obsolete after upgrading to Log4J 2 or Logback.
  */
 @Deprecated
 public class Log4jConfigListener implements ServletContextListener {

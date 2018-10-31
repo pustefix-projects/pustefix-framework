@@ -102,15 +102,17 @@ public interface Context extends PageFlowContext {
     
     void setLanguage(String lang);
     String getLanguage();
-    
+
     /**
-     * @deprecated  As of release 0.19.13, replaced by {@link #setCurrentPageAlternative(String)}
+     * @deprecated  As of release 0.19.13, replaced by {@link #setCurrentPageAlternative(String)},
+     * will be removed in Pustefix 1.0.
      */
     @Deprecated
     void setPageAlternative(String key);
 
     /**
-     * @deprecated  As of release 0.19.13, replaced by {@link #getCurrentPageAlternative()}
+     * @deprecated  As of release 0.19.13, replaced by {@link #getCurrentPageAlternative()},
+     * will be removed in Pustefix 1.0.
      */
     @Deprecated
     String getPageAlternative();

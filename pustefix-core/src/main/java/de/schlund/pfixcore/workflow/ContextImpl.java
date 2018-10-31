@@ -245,6 +245,9 @@ public class ContextImpl implements AccessibilityChecker, ExtendedContext, Token
         }
     }
 
+    /**
+     * @deprecated Will be removed in Pustefix 1.0.
+     */
     @Deprecated
     public void setPageAlternative(String key) {
         setCurrentPageAlternative(key);
@@ -253,7 +256,10 @@ public class ContextImpl implements AccessibilityChecker, ExtendedContext, Token
     public void setCurrentPageAlternative(String key) {
         getRequestContextForCurrentThreadWithError().setCurrentPageAlternative(key);
     }
-    
+
+    /**
+     * @deprecated Will be removed in Pustefix 1.0.
+     */
     @Deprecated
     public String getPageAlternative() {
         return getCurrentPageAlternative();
@@ -440,10 +446,16 @@ public class ContextImpl implements AccessibilityChecker, ExtendedContext, Token
         this.sessioncontext.invalidateSessionAfterCompletion();
     }
 
+    /**
+     * @deprecated Will be removed in Pustefix 1.0.
+     */
     public void addSessionStatusListener(SessionStatusListener l) {
         this.sessioncontext.addSessionStatusListener(l);
     }
 
+    /**
+     * @deprecated Will be removed in Pustefix 1.0.
+     */
     public void removeSessionStatusListener(SessionStatusListener l) {
         this.sessioncontext.removeSessionStatusListener(l);
     }

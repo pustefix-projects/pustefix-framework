@@ -25,9 +25,8 @@ import de.schlund.pfixxml.resources.FileResource;
  * Similar to java.io.File, but the base directory for relative paths can be 
  * specified.  
  * 
- * @deprecated Use {@link FileResource} instead
+ * @deprecated Will be removed in Pustefix 1.0, use {@link FileResource} instead
  */
-
 @Deprecated
 public class Path implements Comparable<Path> {
     private static final String SEP = File.separator; 

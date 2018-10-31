@@ -39,7 +39,7 @@ import de.schlund.pfixcore.workflow.Context;
  * 
  * @author Sebastian Marsching <sebastian.marsching@1und1.de>
  * 
- * @deprecated you should use javax.servlet.Filter directly instead
+ * @deprecated Will be removed in Pustefix 1.0, you should use javax.servlet.Filter directly instead
  */
 @Deprecated
 public abstract class AbstractContextServletFilter implements Filter {

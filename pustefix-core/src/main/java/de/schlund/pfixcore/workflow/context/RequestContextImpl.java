@@ -1171,6 +1171,9 @@ public class RequestContextImpl implements Cloneable, AuthorizationInterceptor {
         return state;
     }
 
+    /**
+     * @deprecated Will be removed in Pustefix 1.0.
+     */
     @Deprecated
     public boolean needsLastFlow(String pageName, String lastFlowName) {
         return parentcontext.needsLastFlow(pageName, lastFlowName);

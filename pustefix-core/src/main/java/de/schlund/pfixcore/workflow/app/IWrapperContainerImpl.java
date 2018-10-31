@@ -432,7 +432,10 @@ public class IWrapperContainerImpl implements IWrapperContainer {
             
         }
     }
-    
+
+    /**
+     * @deprecated Will be removed in Pustefix 1.0.
+     */
     @Deprecated
     public Context getAssociatedContext() {
         return context;

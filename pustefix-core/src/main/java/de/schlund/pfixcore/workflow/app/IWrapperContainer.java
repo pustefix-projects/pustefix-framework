@@ -40,6 +40,9 @@ public interface IWrapperContainer {
     void    addIWrapperStatus() throws Exception;
     boolean errorHappened() throws Exception;
     IWrapper[] getIWrappersWithError();
+    /**
+     * @deprecated Will be removed in Pustefix 1.0.
+     */
     @Deprecated
     Context getAssociatedContext();
 }

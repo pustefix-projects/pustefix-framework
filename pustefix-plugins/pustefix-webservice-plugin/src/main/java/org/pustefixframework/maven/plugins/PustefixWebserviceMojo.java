@@ -113,6 +113,10 @@ public class PustefixWebserviceMojo extends AbstractMojo {
      * descriptions, Javascript stubs and endpoint configurations.
      */
     public void execute() throws MojoExecutionException {
+
+        getLog().warn("!!! DEPRECATED - This plugin is deprecated and will be removed"
+                + " in Pustefix 1.0, use JSON webservices instead !!!");
+
         // because all executions operate on the same pfixcore classes:
         GlobalConfig.reset();
         

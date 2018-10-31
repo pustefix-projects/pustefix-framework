@@ -553,7 +553,10 @@ public class SiteMap {
         }
         return pageGroup == null ? null : pageGroup.key;
     }
-    
+
+    /**
+     * @deprecated Will be removed in Pustefix 1.0.
+     */
     @Deprecated
     public String getAlias(String name, String lang, String pageAlternativeKey) {
         return getAlias(name, lang, pageAlternativeKey, null);

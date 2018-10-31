@@ -72,7 +72,10 @@ public class IWrapperParam implements IWrapperParamCheck, IWrapperParamDefinitio
         this.defaultval = defaultval;
         this.trim = trim;
     }
-    
+
+    /**
+     * @deprecated Will be removed in Pustefix 1.0.
+     */
     @Deprecated
     public IWrapperParam(String name, boolean multiple, boolean optional, RequestParam[] defaultval, String type) {
         this(name,multiple,optional,defaultval,type,true);

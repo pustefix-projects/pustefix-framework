@@ -62,7 +62,10 @@ public class IWrapperIndexedParam implements IWrapperParamDefinition, Comparable
         this.multiple = multiple;
         this.trim       = trim;
     }
-    
+
+    /**
+     * @deprecated Will be removed in Pustefix 1.0.
+     */
     @Deprecated
     public IWrapperIndexedParam(String name, boolean multiple, String type) {
         this(name,multiple,type,true);

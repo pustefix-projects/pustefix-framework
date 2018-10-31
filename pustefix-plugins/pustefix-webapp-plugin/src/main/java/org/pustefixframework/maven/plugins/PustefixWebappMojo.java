@@ -57,6 +57,9 @@ public class PustefixWebappMojo extends AbstractMojo {
      */
     public void execute() throws MojoExecutionException {
 
+        getLog().warn("!!! DEPRECATED - This plugin is deprecated and will be removed"
+                + " in Pustefix 1.0 !!!");
+
         // allow plugin declaration in parent pom
         if ("pom".equals(project.getPackaging())) {
             return;

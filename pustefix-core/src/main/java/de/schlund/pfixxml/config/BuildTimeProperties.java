@@ -22,7 +22,7 @@ import java.util.Properties;
 
 @Deprecated
 /**
- * Replaced by EnvironmentProperties.
+ * @deprecated Will be removed in Pustefix 1.0, replaced by EnvironmentProperties.
  */
 public class BuildTimeProperties {
 

@@ -29,7 +29,7 @@ import java.lang.annotation.Target;
  * annotated method. It is an error, if the annotated method is not a setter
  * method.  
  * 
- * @author Sebastian Marsching <sebastian.marsching@1und1.de>
+ * @deprecated Will be removed in Pustefix 1.0, use Spring dependency injection instead.
  */
 @Target(ElementType.METHOD)
 @Retention(RetentionPolicy.RUNTIME)
