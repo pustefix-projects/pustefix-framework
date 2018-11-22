@@ -38,7 +38,9 @@ import javax.xml.transform.URIResolver;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.owasp.encoder.Encode;
 import org.pustefixframework.util.LocaleUtils;
+import org.pustefixframework.util.javascript.JSUtils;
 import org.springframework.cache.interceptor.SimpleKeyGenerator;
 import org.springframework.context.MessageSource;
 import org.springframework.context.NoSuchMessageException;
@@ -651,6 +653,16 @@ public final class IncludeDocumentExtension {
             ExtensionFunctionUtils.setExtensionFunctionError(x);
             throw x;
         }
+    }
+
+    public static String getEncodedMessage(TargetGenerator targetGen, String key, String lang,
+            String encode, Object arg1, Object arg2, Object arg3, Object arg4, Object arg5) throws Exception {
+
+        String msg = getMessage(targetGen, key, lang, arg1, arg2, arg3, arg5, arg5);
+        if("js".equalsIgnoreCase(encode) || "javascript".equalsIgnoreCase(encode)) {
+            msg = Encode.forJavaScript(msg);
+        }
+        return msg;
     }
 
     public static boolean messageExists(TargetGenerator targetGen, String key, String lang) {

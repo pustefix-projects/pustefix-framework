@@ -127,6 +127,16 @@ public class IncludeDocumentExtensionSaxon1 {
         return IncludeDocumentExtension.getMessage(targetGen, key, lang, arg1, arg2, arg3, arg4, arg5);
     }
 
+    public static String getEncodedMessage(Context context, TargetGenerator targetGen, String key, String lang,
+            String encode, Object arg1, Object arg2, Object arg3, Object arg4, Object arg5) throws Exception {
+        arg1 = stringify(arg1, context);
+        arg2 = stringify(arg2, context);
+        arg3 = stringify(arg3, context);
+        arg4 = stringify(arg4, context);
+        arg5 = stringify(arg5, context);
+        return IncludeDocumentExtension.getEncodedMessage(targetGen, key, lang, encode, arg1, arg2, arg3, arg4, arg5);
+    }
+
     private static Object stringify(Object arg, Context context) throws TransformerException {
         if(arg instanceof Value) {
             Controller controller = context.getController();

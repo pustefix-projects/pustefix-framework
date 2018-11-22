@@ -1028,6 +1028,7 @@
             <xsl:apply-templates select="pfx:arg[5]/node()"><xsl:with-param name="__env" select="$__env"/></xsl:apply-templates>
           </xsl:with-param>
           <xsl:with-param name="disable-output-escaping" select="@disable-output-escaping"/>
+          <xsl:with-param name="encode" select="@encode"/>
         </xsl:call-template>
       </xsl:when>
       <xsl:otherwise>
@@ -1048,12 +1049,16 @@
               <xsl:if test="@disable-output-escaping">
                 <ixsl:with-param name="disable-output-escaping" select="'{@disable-output-escaping}'"/>
               </xsl:if>
+              <xsl:if test="@encode">
+                <ixsl:with-param name="encode" select="'{@encode}'"/>
+              </xsl:if>
             </ixsl:call-template>
           </xsl:when>
           <xsl:otherwise>
             <xsl:call-template name="pfx:message">
               <xsl:with-param name="key" select="@key"/>
               <xsl:with-param name="disable-output-escaping" select="@disable-output-escaping"/>
+              <xsl:with-param name="encode" select="@encode"/>
             </xsl:call-template>
           </xsl:otherwise>
         </xsl:choose>
@@ -1069,12 +1074,13 @@
     <xsl:param name="arg4"/>
     <xsl:param name="arg5"/>
     <xsl:param name="disable-output-escaping">no</xsl:param>
+    <xsl:param name="encode"/>
     <xsl:choose>
       <xsl:when test="$disable-output-escaping='yes'">
-        <xsl:value-of disable-output-escaping="yes" select="include:getMessage($__target_gen, $key, $lang, $arg1, $arg2, $arg3, $arg4, $arg5)"/>
+        <xsl:value-of disable-output-escaping="yes" select="include:getEncodedMessage($__target_gen, $key, $lang, $encode, $arg1, $arg2, $arg3, $arg4, $arg5)"/>
       </xsl:when>
       <xsl:otherwise>
-        <xsl:value-of select="include:getMessage($__target_gen, $key, $lang, $arg1, $arg2, $arg3, $arg4, $arg5)"/>
+        <xsl:value-of select="include:getEncodedMessage($__target_gen, $key, $lang, $encode, $arg1, $arg2, $arg3, $arg4, $arg5)"/>
       </xsl:otherwise>
     </xsl:choose>
   </xsl:template>
