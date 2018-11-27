@@ -94,6 +94,7 @@ import de.schlund.pfixxml.resources.ResourceVisitor;
 import de.schlund.pfixxml.util.FileUtils;
 import de.schlund.pfixxml.util.SimpleResolver;
 import de.schlund.pfixxml.util.TransformerHandlerAdapter;
+import de.schlund.pfixxml.util.WhiteSpaceStripping;
 import de.schlund.pfixxml.util.Xml;
 import de.schlund.pfixxml.util.XsltVersion;
 
@@ -898,6 +899,25 @@ public class TargetGenerator implements ResourceVisitor, ServletContextAware, In
         }
         LOG.info("\n=====> Include parsing took " + (System.currentTimeMillis() - start) + "ms. Ready...");
         
+        NodeList wsNodes = dependXmlDoc.getElementsByTagName("whitespace-stripping");
+        if(wsNodes != null) {
+            if(wsNodes.getLength() == 1) {
+                WhiteSpaceStripping stripping = new WhiteSpaceStripping();
+                Element elem = (Element)wsNodes.item(0);
+                String val = elem.getAttribute("strip-space");
+                if(!val.isEmpty()) {
+                    stripping.setStripSpaceElements(val);
+                }
+                val = elem.getAttribute("preserve-space");
+                if(!val.isEmpty()) {
+                    stripping.setPreserveSpaceElements(val);
+                }
+                includeDocumentFactory.setWhiteSpaceStripping(stripping);
+            } else if(wsNodes.getLength() > 1) {
+                throw new XMLException("Multiple 'whitespace-stripping' elements in '" +
+                        configFile.getFilename() + "' not supported.");
+            }
+        }
     }
 
     public void visit(Resource resource) {

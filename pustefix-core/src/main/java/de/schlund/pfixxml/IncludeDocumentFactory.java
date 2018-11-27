@@ -15,7 +15,6 @@
  * along with Pustefix; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  */
-
 package de.schlund.pfixxml;
 
 import java.io.IOException;
@@ -27,17 +26,10 @@ import org.xml.sax.SAXException;
 import de.schlund.pfixxml.resources.Resource;
 import de.schlund.pfixxml.targets.SPCache;
 import de.schlund.pfixxml.targets.SPCacheFactory;
+import de.schlund.pfixxml.util.WhiteSpaceStripping;
 import de.schlund.pfixxml.util.XsltVersion;
 
 /**
- * IncludeDocumentFactory.java  
- * 
- * 
- * Created: 20021029
- * 
- * @author <a href="mailto:haecker@schlund.de">Joerg Haecker</a>
- * 
- * 
  * This class realises the factory and the singleton pattern. It is responsible to 
  * create and store objects of type {@link IncludeDocument}  in a {@link SPCache} 
  * cache created by  {@link SPCacheFactory}. If a requested IncludeDocument is found 
@@ -49,12 +41,17 @@ public class IncludeDocumentFactory {
 
     private SPCacheFactory cacheFactory;
     private SPCache<String, IncludeDocument> cache;
+    private WhiteSpaceStripping stripping;
        
     public IncludeDocumentFactory(SPCacheFactory cacheFactory) {
         this.cacheFactory = cacheFactory;
         cache = cacheFactory.getDocumentCache();
     }
     
+    public void setWhiteSpaceStripping(WhiteSpaceStripping stripping) {
+        this.stripping = stripping;
+    }
+
     // FIXME! Don't do the whole method synchronized!!
     public synchronized IncludeDocument getIncludeDocument(XsltVersion xsltVersion, Resource path, boolean mutable) throws SAXException, IOException, TransformerException  {
         //TODO: change method signature (create multiple methods) to reflect mutable vs. immutable document creation
@@ -64,7 +61,7 @@ public class IncludeDocumentFactory {
         
         if (!isDocumentInCache(key) || isDocumentInCacheObsolete(path, key)) {
             includeDocument = new IncludeDocument();
-            includeDocument.createDocument(xsltVersion, path, mutable);
+            includeDocument.createDocument(xsltVersion, path, mutable, stripping);
             cache.setValue(key, includeDocument);
         } else {
             includeDocument = (IncludeDocument) cache.getValue(key);

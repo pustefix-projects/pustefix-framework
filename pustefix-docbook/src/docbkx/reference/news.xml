@@ -43,4 +43,17 @@
     </para>
   </section>
 
+  <section xml:id="news.0_22_8">
+    <title>What's new in Pustefix 0.22.8</title>
+    <para>
+      Added XSLT whitespace stripping support for include parts. Now you can configure for which elements whitespace nodes should be stripped
+      or preserved when an include file is parsed. This can either be done globally for all include parts (see <xref linkend="configuration.depend"/>),
+      or only for specific include files (see <xref linkend="xslt.pfx.include"/>).
+    </para>
+    <para>
+      Added support for directly encoding messages when used within Javascript using the <literal>pfx:message</literal> attribute <literal>encode</literal>
+      (see <xref linkend="xslt.messages.tags"/>).
+    </para>
+  </section>
+
 </chapter>

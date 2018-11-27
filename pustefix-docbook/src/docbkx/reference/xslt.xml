@@ -464,7 +464,10 @@
         application, so the selection of the right language subtree (if more than one is
         present) is done at runtime.
       </para>
-      <programlisting language="xml"><![CDATA[<include_parts>
+      <programlisting language="xml"><![CDATA[<include_parts strip-space="..." preserve-space="...">
+  <!-- The strip-space and preserve-space attributes are optional. You can use them for specifying
+       the whitespace-preserving elements (all by default). They only apply if you enabled the XSLT
+       whitespace-stripping in depend.xml. -->
   <part name="Foo">
     <theme name="default">
       <pfx:langselect>
@@ -976,6 +979,11 @@
 </pfx:message>
 ]]></programlisting>
       <para>
+        If the message is used within Javascript, you should ensure that reserved or special characters are encoded by setting the <literal>encode</literal>
+        attribute to <literal>javascript</literal> (or short form <literal>js</literal>):
+      </para>
+      <programlisting language="xml"><![CDATA[<pfx:message key="my.message.key" encode="js"/>]]></programlisting>
+      <para>
         Besides the message arguments, the message key itself can be set at runtime, e.g. for dynamically including messages based on values from
         the DOM tree:
       </para>
@@ -1048,6 +1056,11 @@ msgstr "My message text"
 msgid "another.key"
 msgstr "Message text with arguments {0} and {1}"
 ]]></screen>
+     <note>
+       <para>
+         Single or double quotes within a message string can be escaped using a leading backslash.
+       </para>
+     </note>
     </section>
   </section>
 

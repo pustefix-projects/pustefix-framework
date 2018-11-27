@@ -11,6 +11,9 @@
     <namespace-declaration prefix="ixsl" url="http://www.w3.org/1999/XSL/Transform"/>
   </namespaces>
 
+  <!-- Enable XSLT whitespace stripping for parsing of include parts. -->
+  <whitespace-stripping/>
+
   <global>
     <include stylesheet="xsl/runtime.xsl"/>
     <!-- <param   name="outputmethod"         value="html"/> -->

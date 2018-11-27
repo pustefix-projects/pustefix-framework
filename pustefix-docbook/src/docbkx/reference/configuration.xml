@@ -379,6 +379,14 @@
         The structure of the config file is show below:
         <programlisting language="xml"><![CDATA[<make project="MyProject" lang="en" themes="ThemeA ThemeB ... default">
 
+  <!-- Activates whitespace stripping for include parts following the XSLT whitespace stripping rules.
+       By default when include parts are parsed all whitespace is preserved, like it's done with XSLT source documents.
+       Using the strip-space and preserve-space attributes you can configure the list of whitespace stripping/preserving
+       elements, or you can leave out these attributes and set them at the include-part root element of the according
+       include file (which can also be used to override the global settings).
+  -->
+  <whitespace-stripping strip-space="..." preserve-space="..."/>
+
   <!--
     The global section allows to set default values for ALL pages defined via the
     standardpage tag (see below). It's possible to set default params, and runtime

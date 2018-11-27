@@ -36,11 +36,10 @@ import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.transform.TransformerException;
 import javax.xml.transform.URIResolver;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.owasp.encoder.Encode;
 import org.pustefixframework.util.LocaleUtils;
-import org.pustefixframework.util.javascript.JSUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.cache.interceptor.SimpleKeyGenerator;
 import org.springframework.context.MessageSource;
 import org.springframework.context.NoSuchMessageException;
