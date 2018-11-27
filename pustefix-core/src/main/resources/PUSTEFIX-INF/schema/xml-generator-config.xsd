@@ -6,6 +6,7 @@
     <xsd:complexType>
       <xsd:sequence>
         <xsd:element name="namespaces" type="namespaces-type"/>
+        <xsd:element name="whitespace-stripping" type="whitespace-stripping-type" minOccurs="0"/>
         <xsd:element name="global" type="global-type" minOccurs="0"/>
         <xsd:choice minOccurs="1" maxOccurs="unbounded">
           <xsd:element name="standardmaster" type="standardmaster-type"/>
@@ -51,6 +52,11 @@
     </xsd:sequence>
   </xsd:complexType>
   
+  <xsd:complexType name="whitespace-stripping-type">
+    <xsd:attribute name="strip-space" type="xsd:string" use="optional"/>
+    <xsd:attribute name="preserve-space" type="xsd:string" use="optional"/>
+  </xsd:complexType>
+
   <xsd:complexType name="namespace-declaration-type">
     <xsd:attribute name="prefix" type="xsd:string" use="required"/>
     <xsd:attribute name="url" type="xsd:string" use="required"/>

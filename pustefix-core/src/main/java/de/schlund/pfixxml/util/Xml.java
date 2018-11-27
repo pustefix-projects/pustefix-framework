@@ -64,7 +64,7 @@ import de.schlund.pfixxml.resources.Resource;
 
 public class Xml {
     
-    static final Logger               CAT     = LoggerFactory.getLogger(Xml.class);
+    static final Logger CAT = LoggerFactory.getLogger(Xml.class);
     
     private static final String DEFAULT_XMLREADER = "com.sun.org.apache.xerces.internal.parsers.SAXParser";
     private static final String DEFAULT_DOCUMENTBUILDERFACTORY = "com.sun.org.apache.xerces.internal.jaxp.DocumentBuilderFactoryImpl";
@@ -148,12 +148,16 @@ public class Xml {
     }
     
     public static Document parse(XsltVersion xsltVersion, Resource res) throws TransformerException {
+        return parse(xsltVersion, res, null);
+    }
+
+    public static Document parse(XsltVersion xsltVersion, Resource res, WhiteSpaceStripping stripping) throws TransformerException {
         InputSource is = new InputSource();
         is.setSystemId(res.toURI().toString());
         try {
             is.setByteStream(res.getInputStream());
             SAXSource src = new SAXSource(createXMLReader(), is);
-            return parse(xsltVersion,src);
+            return parse(xsltVersion, src, stripping);
         } catch(IOException x) {
             throw new TransformerException("Can't read XML resource: " + res.toURI().toString(), x);
         }
@@ -171,8 +175,12 @@ public class Xml {
     }
 
     public static Document parse(XsltVersion xsltVersion, Source input) throws TransformerException {
+        return parse(xsltVersion, input, null);
+    }
+
+    public static Document parse(XsltVersion xsltVersion, Source input, WhiteSpaceStripping stripping) throws TransformerException {
         try {
-            Document doc=XsltProvider.getXmlSupport(xsltVersion).createInternalDOM(input);
+            Document doc=XsltProvider.getXmlSupport(xsltVersion).createInternalDOM(input, stripping);
             return doc;
         } catch (TransformerException e) {
             StringBuffer sb = new StringBuffer();
@@ -185,7 +193,7 @@ public class Xml {
             throw e;
         }
     }
-    
+
     //-- parse mutable
 
     public static Document parseStringMutable(String text) throws SAXException {

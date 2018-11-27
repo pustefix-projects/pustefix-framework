@@ -15,7 +15,6 @@
  * along with Pustefix; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  */
-
 package de.schlund.pfixxml.util.xsltimpl;
 
 import javax.xml.transform.Source;
@@ -28,28 +27,36 @@ import org.w3c.dom.Document;
 import org.w3c.dom.Node;
 
 import com.icl.saxon.Controller;
+import com.icl.saxon.Mode;
 import com.icl.saxon.om.NamePool;
 import com.icl.saxon.om.NodeInfo;
+import com.icl.saxon.om.Stripper;
 import com.icl.saxon.output.SaxonOutputKeys;
 import com.icl.saxon.tinytree.TinyBuilder;
 
+import de.schlund.pfixxml.util.WhiteSpaceStripping;
 import de.schlund.pfixxml.util.XmlSupport;
 import de.schlund.pfixxml.util.Xslt;
 import de.schlund.pfixxml.util.XsltVersion;
 
-/**
- * @author mleidig@schlund.de
- */
 public class XmlSaxon1 implements XmlSupport {
-    
-    public Document createInternalDOM(Source input) throws TransformerException {
-        
+
+    public Document createInternalDOM(Source input, WhiteSpaceStripping stripping) throws TransformerException {
         //use internal Saxon API instead of identity transformation
         //to preserve line numbers if SAXSource is available
         if(input instanceof SAXSource){
             TinyBuilder builder = new TinyBuilder();
             builder.setLineNumbering(true);
-            builder.setNamePool(NamePool.getDefaultNamePool());
+            NamePool namePool = NamePool.getDefaultNamePool();
+            builder.setNamePool(namePool);
+            if(stripping != null) {
+                Stripper stripper = new Saxon1Stripper(stripping);
+                builder.setStripper(stripper);
+                Controller controller = new Controller();
+                controller.setNamePool(namePool);
+                builder.setController(controller);
+                stripper.setController(controller);
+            }
             return (Document)builder.build((SAXSource)input);
         } else {
             Transformer trans = Xslt.createIdentityTransformer(XsltVersion.XSLT1);
@@ -59,7 +66,11 @@ public class XmlSaxon1 implements XmlSupport {
             return (Document)result.getNode();
         } 
     }
-    
+
+    public Document createInternalDOM(Source input) throws TransformerException {
+        return createInternalDOM(input, null);
+    }
+
     public boolean isInternalDOM(Node node) {
         return node instanceof NodeInfo;
     }

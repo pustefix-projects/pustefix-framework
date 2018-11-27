@@ -15,13 +15,19 @@
  * along with Pustefix; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  */
-
 package de.schlund.pfixxml.util.xsltimpl;
 
 import javax.xml.transform.Source;
 import javax.xml.transform.Transformer;
 import javax.xml.transform.TransformerException;
 
+import org.w3c.dom.Document;
+import org.w3c.dom.Node;
+
+import de.schlund.pfixxml.util.WhiteSpaceStripping;
+import de.schlund.pfixxml.util.XmlSupport;
+import de.schlund.pfixxml.util.Xslt;
+import de.schlund.pfixxml.util.XsltVersion;
 import net.sf.saxon.Configuration;
 import net.sf.saxon.dom.NodeOverNodeInfo;
 import net.sf.saxon.event.PipelineConfiguration;
@@ -29,16 +35,6 @@ import net.sf.saxon.lib.SaxonOutputKeys;
 import net.sf.saxon.om.NodeInfo;
 import net.sf.saxon.tree.tiny.TinyBuilder;
 
-import org.w3c.dom.Document;
-import org.w3c.dom.Node;
-
-import de.schlund.pfixxml.util.XmlSupport;
-import de.schlund.pfixxml.util.Xslt;
-import de.schlund.pfixxml.util.XsltVersion;
-
-/**
- * @author mleidig@schlund.de
- */
 public class XmlSaxon2 implements XmlSupport {
 
     public Document createInternalDOM(Source input) throws TransformerException {
@@ -49,6 +45,10 @@ public class XmlSaxon2 implements XmlSupport {
         t.transform(input, builder);
         NodeInfo node = builder.getCurrentRoot();
         return (Document)NodeOverNodeInfo.wrap(node);
+    }
+
+    public Document createInternalDOM(Source input, WhiteSpaceStripping stripping) throws TransformerException {
+        return createInternalDOM(input);
     }
 
     public boolean isInternalDOM(Node node) {

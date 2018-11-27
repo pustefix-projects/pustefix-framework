@@ -15,7 +15,6 @@
  * along with Pustefix; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  */
-
 package de.schlund.pfixxml;
 
 import java.io.IOException;
@@ -30,20 +29,12 @@ import org.w3c.dom.Node;
 import org.xml.sax.SAXException;
 
 import de.schlund.pfixxml.resources.Resource;
+import de.schlund.pfixxml.util.WhiteSpaceStripping;
 import de.schlund.pfixxml.util.XPath;
 import de.schlund.pfixxml.util.Xml;
 import de.schlund.pfixxml.util.XsltVersion;
 
-
 /**
- * IncludeDocument.java
- * 
- * 
- * Created: 20021031
- * 
- * @author <a href="mailto:haecker@schlund.de">Joerg Haecker</a>
- * 
- * 
  * This class encapsulates an include-module of the PUSTEFIX-system.
  * A IncludeDocument stores a Document created from a file. Currently
  * there are two types of Documents: mutable and immutable. The user
@@ -64,15 +55,14 @@ public class IncludeDocument {
      * @param mutable determine if the document is mutable or not. Any attempts
      * to modify an immutable document will cause an exception.
      */
-    public void createDocument(XsltVersion xsltVersion, Resource path, boolean mutable) throws SAXException, IOException, TransformerException {
+    public void createDocument(XsltVersion xsltVersion, Resource path, boolean mutable, WhiteSpaceStripping stripping) throws SAXException, IOException, TransformerException {
         modTime  = path.lastModified();
 
         if (mutable) {
             doc = Xml.parseMutable(path);
         } else {
-            //TODO: avoid exception by providing an appropriate method signature
             if(xsltVersion==null) throw new IllegalArgumentException("XsltVersion is required!");
-            doc = Xml.parse(xsltVersion, path);
+            doc = Xml.parse(xsltVersion, path, stripping);
         }
     }
 

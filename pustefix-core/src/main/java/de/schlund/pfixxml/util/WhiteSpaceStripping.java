@@ -17,17 +17,37 @@
  */
 package de.schlund.pfixxml.util;
 
-import javax.xml.transform.Source;
-import javax.xml.transform.TransformerException;
+/**
+ * Global whitespace settings used when parsing
+ * include parts loaded during XSL transformations.
+ */
+public class WhiteSpaceStripping {
 
-import org.w3c.dom.Document;
-import org.w3c.dom.Node;
+    private String stripSpace;
+    private String preserveSpace;
 
-public interface XmlSupport {
+    public WhiteSpaceStripping() {
+    }
 
-    public Document createInternalDOM(Source input) throws TransformerException;
-    public Document createInternalDOM(Source input, WhiteSpaceStripping stripping) throws TransformerException;
-    public boolean isInternalDOM(Node node);
-    public String getIndentOutputKey();
-    
+    public WhiteSpaceStripping(String stripSpace, String preserveSpace) {
+        this.stripSpace = stripSpace;
+        this.preserveSpace = preserveSpace;
+    }
+
+    public String getStripSpaceElements() {
+        return stripSpace;
+    }
+
+    public void setStripSpaceElements(String stripSpace) {
+        this.stripSpace = stripSpace;
+    }
+
+    public String getPreserveSpaceElements() {
+        return preserveSpace;
+    }
+
+    public void setPreserveSpaceElements(String preserveSpace) {
+        this.preserveSpace = preserveSpace;
+    }
+
 }
