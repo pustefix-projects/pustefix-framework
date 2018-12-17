@@ -311,7 +311,8 @@ public class ContextImpl implements AccessibilityChecker, ExtendedContext, Token
             } else {
                 if(!currentTenant.equals(matchingTenant)) {
                     //TODO: handle this case
-                    throw new PustefixRuntimeException("Illegal tenant switch");
+                    throw new PustefixRuntimeException("Illegal tenant switch: " + currentTenant.getName() +
+                            " => " + matchingTenant.getName() + " (" + req.getServerName() + ")");
                 }
             }
         }
