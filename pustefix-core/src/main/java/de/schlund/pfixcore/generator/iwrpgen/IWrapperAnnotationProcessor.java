@@ -206,7 +206,7 @@ public class IWrapperAnnotationProcessor extends AbstractProcessor {
                     } catch(MirroredTypeException x) {
                         ihandlerClass = ((TypeElement)((DeclaredType)x.getTypeMirror()).asElement()).getQualifiedName().toString();
                     }
-                    if(ihandlerClass.equals(IHandler.class.getName())) {
+                    if(IHandler.class.getName().equals(ihandlerClass)) {
                         try {
                             iwrpAnno.inputHandler();
                         } catch(MirroredTypeException x) {

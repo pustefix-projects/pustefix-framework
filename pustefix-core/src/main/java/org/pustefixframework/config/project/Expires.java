@@ -32,7 +32,7 @@ public class Expires {
             if("M".equals(matcher.group(1))) {
                 base = Base.MODIFICATION;
             }
-            return new Expires(base, Long.valueOf(matcher.group(2)));
+            return new Expires(base, Long.parseLong(matcher.group(2)));
         } else {
             throw new IllegalArgumentException("Expires value doesn't match pattern '" +
                     EXPIRES_PATTERN + "': " + value);

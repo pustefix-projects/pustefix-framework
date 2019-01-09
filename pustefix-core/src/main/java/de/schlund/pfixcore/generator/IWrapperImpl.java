@@ -70,7 +70,7 @@ public abstract class IWrapperImpl implements IWrapper {
     public void tryErrorLogging() throws IOException {
         if (logdir != null && pagename != null && visitid != null) {
             FileResource    log    = ResourceUtil.getFileResource(logdir, pagename + "#" + prefix);
-            Writer          out    = new OutputStreamWriter(new BufferedOutputStream(log.getOutputStream(true)));
+            Writer          out    = new OutputStreamWriter(new BufferedOutputStream(log.getOutputStream(true)), "UTF-8");
             IWrapperParam[] tmperrors = gimmeAllParamsWithErrors();
             if (tmperrors != null && tmperrors.length > 0) {
                 StringBuffer buff = getLogBuffer("ERRORS");
@@ -90,7 +90,7 @@ public abstract class IWrapperImpl implements IWrapper {
     public void tryParamLogging() throws IOException {
         if (logdir != null && pagename != null && visitid != null) {
             FileResource log = ResourceUtil.getFileResource(logdir,pagename+"#"+prefix);
-            Writer       out  = new OutputStreamWriter(new BufferedOutputStream(log.getOutputStream(true)));
+            Writer       out  = new OutputStreamWriter(new BufferedOutputStream(log.getOutputStream(true)), "UTF-8");
             StringBuffer buff = getLogBuffer("VALUES");
             for (Iterator<IWrapperParam> iter = params.values().iterator(); iter.hasNext(); ) {
                 appendParamLog(iter.next(), buff);

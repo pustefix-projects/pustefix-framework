@@ -17,7 +17,7 @@
  */
 package de.schlund.pfixcore.oxm.impl;
 
-import java.io.ByteArrayInputStream;
+import java.io.StringReader;
 
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
@@ -26,6 +26,7 @@ import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
+import org.xml.sax.InputSource;
 
 /**
  * @author mleidig@schlund.de
@@ -88,11 +89,8 @@ public class DOMWriter implements XMLWriter {
 
             // make sure, that we have a root node
             xmlFragment = "<root>" + xmlFragment + "</root>";
-
-            byte currentXMLBytes[] = xmlFragment.getBytes();
-            ByteArrayInputStream byteArrayInputStream = new ByteArrayInputStream(currentXMLBytes);
-
-            Document doc = builder.parse(byteArrayInputStream);
+            StringReader reader = new StringReader(xmlFragment);
+            Document doc = builder.parse(new InputSource(reader));
             Element root = doc.getDocumentElement();
 
             Document originalDoc = this.root.getOwnerDocument();

@@ -667,7 +667,8 @@ public class UnixCrypt extends Object
     int numSaltChars = saltChars.length;
     String salt;
     
-    salt = (new StringBuffer()).append(saltChars[Math.abs(randomGenerator.nextInt()) % numSaltChars]).append(saltChars[Math.abs(randomGenerator.nextInt()) % numSaltChars]).toString();
+    salt = (new StringBuffer()).append(saltChars[randomGenerator.nextInt(Integer.MAX_VALUE) % numSaltChars])
+            .append(saltChars[randomGenerator.nextInt(Integer.MAX_VALUE) % numSaltChars]).toString();
     
     return crypt(salt, original);
   }

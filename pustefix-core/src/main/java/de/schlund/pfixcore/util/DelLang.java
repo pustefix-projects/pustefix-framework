@@ -21,7 +21,8 @@ package de.schlund.pfixcore.util;
 
 import java.io.BufferedReader;
 import java.io.File;
-import java.io.FileReader;
+import java.io.FileInputStream;
+import java.io.InputStreamReader;
 import java.util.Iterator;
 import java.util.Set;
 import java.util.TreeSet;
@@ -76,7 +77,7 @@ public class DelLang {
 
     public void transform(String files) throws Exception {
 
-        BufferedReader input  = new BufferedReader(new FileReader(files));
+        BufferedReader input  = new BufferedReader(new InputStreamReader(new FileInputStream(files), "UTF-8"));
         Set<FileResource>      inames = new TreeSet<FileResource>();
         String         line;
         

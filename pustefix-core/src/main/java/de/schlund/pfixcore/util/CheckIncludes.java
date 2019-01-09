@@ -18,7 +18,8 @@
 package de.schlund.pfixcore.util;
 import java.io.BufferedReader;
 import java.io.File;
-import java.io.FileReader;
+import java.io.FileInputStream;
+import java.io.InputStreamReader;
 import java.util.Iterator;
 import java.util.TreeSet;
 
@@ -62,14 +63,13 @@ public class CheckIncludes {
         this.outfile = outfile;
         String         line;
         BufferedReader input;
-        
-        input = new BufferedReader(new FileReader(allincs));
+        input = new BufferedReader(new InputStreamReader(new FileInputStream(allincs), "UTF-8"));
         while ((line = input.readLine()) != null) {
             includefilenames.add(ResourceUtil.getFileResourceFromDocroot(line));
         }
         input.close();
 
-        input = new BufferedReader(new FileReader(allimgs));
+        input = new BufferedReader(new InputStreamReader(new FileInputStream(allimgs), "UTF-8"));
         while ((line = input.readLine()) != null) {
             imagefilenames.add(ResourceUtil.getFileResourceFromDocroot(line));
         }

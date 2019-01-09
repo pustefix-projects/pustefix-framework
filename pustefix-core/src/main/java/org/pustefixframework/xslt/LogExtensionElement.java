@@ -21,6 +21,7 @@ package org.pustefixframework.xslt;
 import java.io.OutputStreamWriter;
 import java.io.PrintWriter;
 import java.io.StringWriter;
+import java.io.UnsupportedEncodingException;
 import java.util.Properties;
 
 import javax.xml.transform.OutputKeys;
@@ -111,7 +112,11 @@ public class LogExtensionElement extends StyleElement {
                     emitter = context.getController().makeMessageEmitter();
                 }
                 if (emitter.getWriter()==null) {
-                    emitter.setWriter(new OutputStreamWriter(System.err));
+                    try {
+                        emitter.setWriter(new OutputStreamWriter(System.err, "UTF-8"));
+                    } catch(UnsupportedEncodingException x) {
+                        throw new RuntimeException(x);
+                    }
                 }
                 output(context, emitter);
 

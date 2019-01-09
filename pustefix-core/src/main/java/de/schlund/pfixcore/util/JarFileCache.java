@@ -4,6 +4,7 @@ import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.net.URI;
 import java.net.URISyntaxException;
 import java.net.URL;
 import java.nio.file.FileSystems;
@@ -18,16 +19,13 @@ import de.schlund.pfixxml.util.FileUtils;
 
 /**
  * JarFile instance cache providing JarEntries backed by file system cache.
- * 
- * @author mleidig@schlund.de
- *
  */
 public class JarFileCache {
 
     private static JarFileCache instance;
 
     private final File cacheDir;
-    private final Map<URL,CacheEntry> jarFileCache = new HashMap<URL,CacheEntry>();
+    private final Map<URI,CacheEntry> jarFileCache = new HashMap<URI,CacheEntry>();
 
     public synchronized static JarFileCache getInstance() {
         if(instance == null) instance = new JarFileCache();
@@ -67,20 +65,20 @@ public class JarFileCache {
     }
 
     private synchronized CacheEntry getCachedJarFile(URL url) throws IOException {
-        //no "findbugs : DMI_COLLECTION_OF_URLS" here, because only file URLs in use
-        CacheEntry entry = jarFileCache.get(url);
+        URI uri;
+        try {
+            uri = url.toURI();
+        } catch(URISyntaxException x) {
+            throw new IOException("Illegal jarfile URI", x);
+        }
+        CacheEntry entry = jarFileCache.get(uri);
         if(entry == null || (entry.file.lastModified() > entry.lastMod)) {
             entry = new CacheEntry();
-            try {
-                entry.file = new File(url.toURI());
-            } catch (URISyntaxException e) {
-                throw new RuntimeException("Illegal jarfile URI", e);
-            }
+            entry.file = new File(uri);
             entry.jarFile = new JarFile(entry.file);
             entry.lastMod = entry.file.lastModified();
             entry.id = jarFileCache.size();
-            //no "findbugs : DMI_COLLECTION_OF_URLS" here, because only file URLs in use
-            jarFileCache.put(url, entry);
+            jarFileCache.put(uri, entry);
         }
         return entry;
     }

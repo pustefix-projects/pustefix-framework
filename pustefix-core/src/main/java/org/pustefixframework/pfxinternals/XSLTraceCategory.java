@@ -28,7 +28,7 @@ public class XSLTraceCategory implements Category {
             if(enabled) {
                 String sizeParam = req.getParameter("traceCacheSize");
                 if(sizeParam != null) {
-                    int size = Integer.valueOf(sizeParam);
+                    int size = Integer.parseInt(sizeParam);
                     tracing.setTraceCacheSize(size);
                 }
                 String granularParam = req.getParameter("instructionGranularity");

@@ -32,7 +32,7 @@ public class IncludeSizeParser {
     public static IncludeStatistics parse(File file) throws IOException {
 
         IncludeStatistics statistics = null;
-        try (BufferedReader reader = new BufferedReader(new InputStreamReader(new FileInputStream(file)))) {
+        try (BufferedReader reader = new BufferedReader(new InputStreamReader(new FileInputStream(file), "UTF-8"))) {
             statistics = new IncludeStatistics(file.getName(), (int)file.length());
             statistics.systemId = file.toURI().toString();
             int bytes = 0;

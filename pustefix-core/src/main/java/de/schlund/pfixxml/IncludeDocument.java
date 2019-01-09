@@ -85,7 +85,7 @@ public class IncludeDocument {
             return res;
         }
         res = XPath.select(doc, "/include_parts/part[@name='" + part + "']");
-        xpathCache.putIfAbsent(key, res);
+        xpathCache.put(key, res);
         return res;
     }
 
@@ -96,7 +96,7 @@ public class IncludeDocument {
             return res;
         }
         res = XPath.select(doc, "/include_parts/part[@name='" + part + "']/theme[@name = '" + theme + "']");
-        xpathCache.putIfAbsent(key, res);
+        xpathCache.put(key, res);
         return res;
     }
 

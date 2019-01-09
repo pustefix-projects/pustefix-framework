@@ -20,6 +20,7 @@ package de.schlund.pfixxml.util;
 import java.io.CharArrayWriter;
 import java.io.IOException;
 import java.io.OutputStreamWriter;
+import java.io.UnsupportedEncodingException;
 import java.io.Writer;
 
 public class XsltMessageWriter extends Writer {
@@ -28,7 +29,11 @@ public class XsltMessageWriter extends Writer {
     Writer writer;
 
     public XsltMessageWriter() {
-        writer = new OutputStreamWriter(System.err);
+        try {
+            writer = new OutputStreamWriter(System.err, "UTF-8");
+        } catch(UnsupportedEncodingException x) {
+            throw new RuntimeException(x);
+        }
         chars=new CharArrayWriter();
     }
 

@@ -192,13 +192,13 @@ public class RefCountingCollection<E> implements Collection<E> {
 
     @Override
     public final boolean equals(final Object object) {
-        RefCountingCollection<?> incoll;
-        try {
-            incoll = (RefCountingCollection<?>) object;
-        } catch (ClassCastException e) {
+        if (object == null || !(object instanceof RefCountingCollection<?>)) {
             return false;
         }
-        return incoll.isInternalMapEqualToMap(map);
+        if (object == this) {
+            return true;
+        }
+        return ((RefCountingCollection<?>)object).isInternalMapEqualToMap(map);
     }
 
     public final boolean containsAll(final Collection<?> collection) {

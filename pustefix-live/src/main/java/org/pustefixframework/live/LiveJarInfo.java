@@ -64,9 +64,9 @@ public class LiveJarInfo {
             File.separator + ".editorbackup", 
             File.separator + "htdocs" + File.separator + "sitemap.xml"};
 
-    public static String PROP_LIVEROOT = "pustefix.liveroot";
-    public static String PROP_LIVEROOT_MAXDEPTH = "pustefix.liveroot.maxdepth";
-    public static String PROP_LIVE_FORCE_VERSION = "pustefix.live.forceversion";
+    public static final String PROP_LIVEROOT = "pustefix.liveroot";
+    public static final String PROP_LIVEROOT_MAXDEPTH = "pustefix.liveroot.maxdepth";
+    public static final String PROP_LIVE_FORCE_VERSION = "pustefix.live.forceversion";
     
     private static int DEFAULT_LIVEROOT_MAXDEPTH = 4;
     

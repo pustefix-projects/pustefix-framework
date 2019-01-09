@@ -140,7 +140,7 @@ public class CacheValueLRU<K,V> implements Map<K, V> {
         
         @Override
         protected boolean removeEldestEntry(Entry<V,Object> eldest) {
-            if (size() > maxsize) {
+            if (super.size() > maxsize) {
                 V value = eldest.getKey();
                 HashSet<K> keys = valuetokeys.get(value);
                 for (Iterator<K> iter = keys.iterator(); iter.hasNext();) {
@@ -157,7 +157,7 @@ public class CacheValueLRU<K,V> implements Map<K, V> {
         public String toString() {
             StringBuffer buf = new StringBuffer();
             
-            for (Iterator<Entry<V,Object>> iter = entrySet().iterator(); iter.hasNext();) {
+            for (Iterator<Entry<V,Object>> iter = super.entrySet().iterator(); iter.hasNext();) {
                 Entry<V,Object> entry = iter.next();
                 V value = entry.getKey();
                 HashSet<K> keys = valuetokeys.get(value);

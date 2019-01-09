@@ -7,6 +7,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.net.MalformedURLException;
+import java.net.URI;
 import java.net.URL;
 import java.net.URLClassLoader;
 import java.util.ArrayList;
@@ -21,9 +22,9 @@ import java.util.jar.JarFile;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import org.pustefixframework.live.LiveResolver;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.pustefixframework.live.LiveResolver;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 
@@ -56,7 +57,7 @@ public class FullTextSearch {
             }
         }
 
-        Set<URL> searchedJars = new HashSet<URL>();
+        Set<URI> searchedJars = new HashSet<URI>();
 
         if(searchModules) {
 
@@ -82,7 +83,7 @@ public class FullTextSearch {
                         if(moduleDesc.getURL().getProtocol().equals("jar")) {
                             URL jarURL = getJarURL(moduleDesc.getURL());
                             //no "findbugs : DMI_COLLECTION_OF_URLS" here, because only file URLs in use
-                            searchedJars.add(jarURL);
+                            searchedJars.add(jarURL.toURI());
                             searchJar(jarURL, filePattern, textPattern, resultElem);
                         }
                     }
@@ -104,7 +105,7 @@ public class FullTextSearch {
                             try {
                                 URL jarURL = new URL("jar:" + url.toString() + "!/");
                                 //no "findbugs : DMI_COLLECTION_OF_URLS" here, because only file URLs in use
-                                if(!searchedJars.contains(jarURL)) {
+                                if(!searchedJars.contains(jarURL.toURI())) {
                                     searchJar(jarURL, filePattern, textPattern, resultElem);
                                 }
                             } catch(Exception x) {
