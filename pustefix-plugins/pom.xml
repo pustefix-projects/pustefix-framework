@@ -28,6 +28,7 @@
     <module>pustefix-resourceindex-plugin</module>
     <module>pustefix-pagelist-plugin</module>
     <module>pustefix-patch-plugin</module>
+    <module>pustefix-tomcat-plugin</module>
   </modules>
 
   <profiles>
