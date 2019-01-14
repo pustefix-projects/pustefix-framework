@@ -29,9 +29,8 @@
   </modules>
 
   <properties>
-    <cargo.start.jvmargs>
-      --illegal-access=deny
-    </cargo.start.jvmargs>
+    <cargo.debug.jvmargs>--illegal-access=deny</cargo.debug.jvmargs>
+    <cargo.live.jvmargs></cargo.live.jvmargs>
   </properties>
 
   <build>
@@ -113,7 +112,7 @@
               <cargo.servlet.port>8080</cargo.servlet.port>
               <cargo.tomcat.uriencoding>UTF-8</cargo.tomcat.uriencoding>
               <cargo.logging>low</cargo.logging>
-              <cargo.start.jvmargs>${cargo.start.jvmargs}</cargo.start.jvmargs>
+              <cargo.start.jvmargs>${cargo.debug.jvmargs} ${cargo.live.jvmargs}</cargo.start.jvmargs>
             </properties>
             <configfiles>
               <configfile>
@@ -137,18 +136,33 @@
       </plugin>
     </plugins>
   </build>
+
   <profiles>
     <profile>
       <id>cargo-debug</id>
       <properties>
-        <cargo.start.jvmargs>
+        <cargo.debug.jvmargs>
           -Xdebug
           -Xrunjdwp:transport=dt_socket,server=y,suspend=y,address=8000
           -Xnoagent
           -Djava.compiler=NONE
           --illegal-access=deny
-        </cargo.start.jvmargs>
+        </cargo.debug.jvmargs>
+      </properties>
+    </profile>
+    <profile>
+      <id>cargo-live</id>
+      <activation>
+        <property>
+          <name>pustefix.liveroot</name>
+        </property>
+      </activation>
+      <properties>
+      <cargo.live.jvmargs>
+        -Dpustefix.liveroot=${pustefix.liveroot}
+      </cargo.live.jvmargs>
       </properties>
     </profile>
   </profiles>
+
 </project>

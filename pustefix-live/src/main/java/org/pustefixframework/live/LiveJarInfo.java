@@ -24,6 +24,8 @@ import java.io.InputStream;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.net.URLConnection;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -103,12 +105,16 @@ public class LiveJarInfo {
         
         String liveRoot = System.getProperty(PROP_LIVEROOT);
         if(liveRoot != null) {
-            
-            liveRootDir = new File(liveRoot);
-            try {
-                liveRootDir = liveRootDir.getCanonicalFile();
-            } catch (IOException e) {
-                throw new RuntimeException("Can't read liveroot dir '" + liveRootDir.getPath() + "'.");
+            Path path = Paths.get(liveRoot);
+            if(path.isAbsolute()) {
+                liveRootDir = path.normalize().toFile();
+            } else {
+                Path userDir = Paths.get(System.getProperty("user.dir"));
+                Path cargoTomcatPath = Paths.get("target", "tomcat");
+                if(userDir.endsWith(cargoTomcatPath)) {
+                    userDir = userDir.getParent().getParent();
+                }
+                liveRootDir = userDir.resolve(path).normalize().toFile();
             }
             if(!liveRootDir.exists()) throw new RuntimeException("Liveroot dir '" + liveRootDir.getPath() + "' doesn't exist.");
             
