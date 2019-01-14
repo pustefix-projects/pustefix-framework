@@ -27,7 +27,13 @@
     <module>pustefix-i18n</module>
     <module>pustefix-cditest</module>
     <module>pustefix-mvctest</module>
-  </modules>  
+  </modules>
+
+  <properties>
+    <cargo.debug.jvmargs></cargo.debug.jvmargs>
+    <cargo.live.jvmargs></cargo.live.jvmargs>
+  </properties>
+
   <build>
     <plugins>
       <!--
@@ -87,6 +93,76 @@
           <useSeparateTomcatClassLoader>true</useSeparateTomcatClassLoader>
         </configuration>
       </plugin>
+      <plugin>
+        <groupId>org.codehaus.cargo</groupId>
+        <artifactId>cargo-maven2-plugin</artifactId>
+        <version>1.6.11</version>
+        <configuration>
+          <container>
+            <containerId>tomcat9x</containerId>
+            <artifactInstaller>
+              <groupId>org.apache.tomcat</groupId>
+              <artifactId>tomcat</artifactId>
+              <version>9.0.12</version>
+            </artifactInstaller>
+          </container>
+          <configuration>
+            <type>standalone</type>
+            <home>${project.build.directory}/tomcat</home>
+            <properties>
+              <cargo.servlet.port>8080</cargo.servlet.port>
+              <cargo.tomcat.uriencoding>UTF-8</cargo.tomcat.uriencoding>
+              <cargo.logging>low</cargo.logging>
+              <cargo.start.jvmargs>${cargo.debug.jvmargs} ${cargo.live.jvmargs}</cargo.start.jvmargs>
+            </properties>
+            <configfiles>
+              <configfile>
+                <file>${project.build.directory}/addtomcatconf/context.xml</file>
+                <todir>conf</todir>
+                <tofile>context.xml</tofile>
+              </configfile>
+            </configfiles>
+          </configuration>
+          <deployables>
+            <deployable>
+              <groupId>${project.groupId}</groupId>
+              <artifactId>${project.artifactId}</artifactId>
+              <type>war</type>
+              <properties>
+                <context>/</context>
+              </properties>
+            </deployable>
+          </deployables>
+        </configuration>
+      </plugin>
     </plugins>
   </build>
+
+  <profiles>
+    <profile>
+      <id>cargo-debug</id>
+      <properties>
+        <cargo.debug.jvmargs>
+          -Xdebug
+          -Xrunjdwp:transport=dt_socket,server=y,suspend=y,address=8000
+          -Xnoagent
+          -Djava.compiler=NONE
+        </cargo.debug.jvmargs>
+      </properties>
+    </profile>
+    <profile>
+      <id>cargo-live</id>
+      <activation>
+        <property>
+          <name>pustefix.liveroot</name>
+        </property>
+      </activation>
+      <properties>
+      <cargo.live.jvmargs>
+        -Dpustefix.liveroot=${pustefix.liveroot}
+      </cargo.live.jvmargs>
+      </properties>
+    </profile>
+  </profiles>
+
 </project>
