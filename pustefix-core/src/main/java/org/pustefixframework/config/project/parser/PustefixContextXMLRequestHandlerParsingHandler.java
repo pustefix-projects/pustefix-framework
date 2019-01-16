@@ -70,7 +70,6 @@ import de.schlund.pfixxml.TenantInfo;
 import de.schlund.pfixxml.config.EnvironmentProperties;
 import de.schlund.pfixxml.config.includes.IncludesResolver;
 import de.schlund.pfixxml.resources.ResourceUtil;
-import de.schlund.pfixxml.serverutil.SessionAdmin;
 import de.schlund.pfixxml.targets.TargetGenerator;
 
 public class PustefixContextXMLRequestHandlerParsingHandler extends CustomizationAwareParsingHandler {
@@ -198,7 +197,6 @@ public class PustefixContextXMLRequestHandlerParsingHandler extends Customizatio
         beanBuilder.addPropertyValue("context", new RuntimeBeanReference(ContextImpl.class.getName()));
         beanBuilder.addPropertyValue("serverContext", new RuntimeBeanReference(ServerContextImpl.class.getName()));
         beanBuilder.addPropertyValue("configuration", config);
-        beanBuilder.addPropertyValue("sessionAdmin", new RuntimeBeanReference(SessionAdmin.class.getName()));
         if(editorInfo != null && editorInfo.getLocation() != null) {
             beanBuilder.addPropertyValue("editorLocation", editorInfo.getLocation());
             beanBuilder.addPropertyValue("includePartsEditableByDefault", editorInfo.isIncludePartsEditableByDefault());

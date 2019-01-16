@@ -40,16 +40,11 @@ public class PustefixInit {
 
     public final static String SERVLET_CONTEXT_ATTRIBUTE_NAME = "___PUSTEFIX_INIT___";
 
-    private boolean initDone;
-
     public PustefixInit(ServletContext servletContext) throws PustefixCoreException {
         this(servletContext, null);
     }
     
     public PustefixInit(ServletContext servletContext, String docrootstr) throws PustefixCoreException {
-
-        //avoid re-initializations, e.g. when ApplicationContext is refreshed
-        if(initDone) return;
 
     	try {
     	    final File cacheDir = PustefixTempDirs.getInstance(servletContext).createTempDir("pustefix-jar-cache-");
@@ -72,8 +67,6 @@ public class PustefixInit {
     	} else {
     	    GlobalConfigurator.setDocroot(docrootstr);
     	}
-
-    	initDone = true;
     }
 
     public static void initEnvironmentProperties(ServletContext servletContext) {

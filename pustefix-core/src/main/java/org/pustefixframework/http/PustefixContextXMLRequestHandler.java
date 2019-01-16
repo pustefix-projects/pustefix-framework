@@ -37,6 +37,7 @@ import org.pustefixframework.config.contextxmlservice.PageRequestConfig;
 import org.pustefixframework.config.contextxmlservice.PreserveParams;
 import org.pustefixframework.container.spring.http.MVCStateHandlerMapping;
 import org.pustefixframework.util.LocaleUtils;
+import org.pustefixframework.web.ServletUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -280,12 +281,8 @@ public class PustefixContextXMLRequestHandler extends AbstractPustefixXMLRequest
                     // are redirected to the page selected by the business logic below
                     String scheme = preq.getScheme();
                     String port = String.valueOf(preq.getServerPort());
-                    String sessionIdPath = "";
-                    HttpSession session = preq.getSession(false);
-                    if(session.getAttribute(AbstractPustefixRequestHandler.SESSION_ATTR_COOKIE_SESSION) == null) {
-                        sessionIdPath = ";jsessionid=" + session.getId();
-                    }
-                    String redirectURL = scheme + "://" + getServerName(preq.getRequest()) 
+                    String sessionIdPath = ServletUtils.getSessionIdPath(preq.getRequest());
+                    String redirectURL = scheme + "://" + preq.getServerName()
                         + ":" + port + preq.getContextPath() + preq.getServletPath() + "/" 
                         + (expectedPageName == null ? "" : expectedPageName)
                         + sessionIdPath;

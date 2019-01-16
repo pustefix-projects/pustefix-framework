@@ -192,4 +192,9 @@ public class ControllerResponseWrapper implements HttpServletResponse {
         return null;
     }
 
+    @Override
+    public void setContentLengthLong(long len) {
+        throw new UnsupportedOperationException();
+    }
+
 }

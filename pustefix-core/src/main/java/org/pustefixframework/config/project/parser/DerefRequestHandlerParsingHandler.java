@@ -35,7 +35,7 @@ import de.schlund.pfixcore.workflow.PageMap;
 import de.schlund.pfixcore.workflow.SiteMap;
 import de.schlund.pfixxml.LanguageInfo;
 import de.schlund.pfixxml.TenantInfo;
-import de.schlund.pfixxml.serverutil.SessionAdmin;
+
 
 public class DerefRequestHandlerParsingHandler implements ParsingHandler {
     
@@ -56,7 +56,6 @@ public class DerefRequestHandlerParsingHandler implements ParsingHandler {
             beanBuilder.addPropertyValue("validTime", 1000 * 60 * 60);
             beanBuilder.addPropertyValue("mustSign", true);
             beanBuilder.addPropertyValue("configuration", config);
-            beanBuilder.addPropertyValue("sessionAdmin", new RuntimeBeanReference(SessionAdmin.class.getName()));
             beanBuilder.addPropertyValue("tenantInfo", new RuntimeBeanReference(TenantInfo.class.getName()));
             beanBuilder.addPropertyValue("languageInfo", new RuntimeBeanReference(LanguageInfo.class.getName()));
             beanBuilder.addPropertyValue("siteMap", new RuntimeBeanReference(SiteMap.class.getName()));

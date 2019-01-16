@@ -48,11 +48,8 @@ import org.springframework.web.context.ServletContextAware;
 import de.schlund.pfixcore.auth.AuthConstraint;
 import de.schlund.pfixcore.workflow.ContextImpl;
 import de.schlund.pfixcore.workflow.context.ServerContextImpl;
-import de.schlund.pfixxml.serverutil.SessionAdmin;
 
-/**
- * @author mleidig@schlund.de
- */
+
 public class ServiceRuntime implements ServletContextAware, DisposableBean {
 	
     private final static Logger LOG=LoggerFactory.getLogger(ServiceRuntime.class);
@@ -177,11 +174,6 @@ public class ServiceRuntime implements ServletContextAware, DisposableBean {
                 if(session==null) throw new AuthenticationException("Authentication failed: No valid session.");
                 if(srvConf.getSSLForce() && !req.getScheme().equals("https")) 
                     throw new AuthenticationException("Authentication failed: SSL connection required");
-                if(req.getScheme().equals("https")) {
-                    Boolean secure=(Boolean)session.getAttribute(SessionAdmin.SESSION_IS_SECURE);
-                    if(secure==null || !secure.booleanValue()) 
-                        throw new AuthenticationException("Authentication failed: No secure session");
-                }
                             
                 //Find authconstraint using the following search order:
                 //   - authconstraint referenced by webservice 

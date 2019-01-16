@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<include_parts xmlns:ixsl="http://www.w3.org/1999/XSL/Transform" xmlns:pfx="http://www.schlund.de/pustefix/core">
+
+  <part name="content">
+    <theme name="default">
+      <h2>test</h2>
+      <pfx:button page="home">go home</pfx:button>
+      <pfx:button page="ssl">go to ssl page</pfx:button>
+    </theme>
+  </part>
+
+</include_parts>

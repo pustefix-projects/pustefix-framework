@@ -318,6 +318,7 @@
       </xsl:choose>
     </xsl:variable>
     <xsl:variable name="fulllink">
+      <ixsl:value-of select="pfx:__omitURLStart($page_{generate-id()})"/>
       <xsl:choose>
         <xsl:when test="pfx:path or @path">
           <ixsl:variable name="pathstart" select="concat($__contextpath, '/', pfx:__omitPage($page_{generate-id()}, $lang, $tmpaltkey_{generate-id()}, '{$pageflow}', '{$pagegroup}'))"/>

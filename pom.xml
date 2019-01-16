@@ -205,7 +205,23 @@
              <additionalparam>-Xdoclint:none</additionalparam>
            </configuration>
          </plugin>
-
+        <plugin>
+          <groupId>com.github.spotbugs</groupId>
+          <artifactId>spotbugs-maven-plugin</artifactId>
+          <version>3.1.10</version>
+          <dependencies>
+            <!-- overwrite dependency on spotbugs if you want to specify the version of spotbugs -->
+            <dependency>
+              <groupId>com.github.spotbugs</groupId>
+              <artifactId>spotbugs</artifactId>
+              <version>3.1.10</version>
+            </dependency>
+          </dependencies>
+          <configuration>
+            <threshold>Low</threshold>
+            <effort>Max</effort>
+          </configuration>
+        </plugin>
         <plugin>
           <groupId>org.eclipse.m2e</groupId>
           <artifactId>lifecycle-mapping</artifactId>

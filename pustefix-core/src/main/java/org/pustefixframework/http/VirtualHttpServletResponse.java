@@ -13,6 +13,7 @@ import java.util.Map;
 import java.util.Set;
 
 import javax.servlet.ServletOutputStream;
+import javax.servlet.WriteListener;
 import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletResponse;
 
@@ -310,6 +311,22 @@ public class VirtualHttpServletResponse implements HttpServletResponse {
             out.write(b);
         }
 
+        @Override
+        public boolean isReady() {
+            throw new UnsupportedOperationException();
+        }
+
+        @Override
+        public void setWriteListener(WriteListener writeListener) {
+            throw new UnsupportedOperationException();
+        }
+
+    }
+
+
+    @Override
+    public void setContentLengthLong(long len) {
+        throw new UnsupportedOperationException();
     }
 
 }

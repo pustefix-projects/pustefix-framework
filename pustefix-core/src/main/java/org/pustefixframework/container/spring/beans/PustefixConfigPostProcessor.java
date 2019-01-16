@@ -66,7 +66,7 @@ public class PustefixConfigPostProcessor implements BeanDefinitionRegistryPostPr
         ((DefaultResourceLoader)resourceLoader).addProtocolResolver(new PustefixProtocolResolver());
         try {
             DefaultListableBeanFactory beanFactory = (DefaultListableBeanFactory)registry;
-            PustefixWebApplicationContext.load(beanFactory, null, servletContext,
+            PustefixWebApplicationContext.load(beanFactory, servletContext,
                     (ConfigurableEnvironment)environment, configLocations, resourceLoader);
         } catch(IOException | BeansException x) {
             throw new FatalBeanException("Error loading bean definitions", x);

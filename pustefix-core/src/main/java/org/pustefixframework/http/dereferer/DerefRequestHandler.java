@@ -26,14 +26,14 @@ import java.net.URLEncoder;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.pustefixframework.config.contextxmlservice.ServletManagerConfig;
 import org.pustefixframework.http.AbstractPustefixRequestHandler;
+import org.pustefixframework.web.ServletUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import de.schlund.pfixxml.PfixServletRequest;
 import de.schlund.pfixxml.RequestParam;
-import de.schlund.pfixxml.serverutil.SessionHelper;
 import de.schlund.pfixxml.util.Base64Utils;
 
 /**
@@ -184,7 +184,7 @@ public class DerefRequestHandler extends AbstractPustefixRequestHandler {
             String             enclink  = Base64Utils.encode(link.getBytes("utf8"),false);
             if(!signed && !mustSign) timeStamp = System.currentTimeMillis();
             String             reallink = getServerURL(preq) +
-                SessionHelper.getClearedURI(preq) + SignUtil.getFakeSessionIdArgument(preq.getRequestedSessionId()) + "?__enclink=" + URLEncoder.encode(enclink, "utf8") +
+                ServletUtils.getUnencodedRequestURI(preq.getRequest()) + SignUtil.getFakeSessionIdArgument(preq.getRequestedSessionId()) + "?__enclink=" + URLEncoder.encode(enclink, "utf8") +
                 "&__sign=" + signString(enclink, timeStamp) + "&__ts=" + timeStamp;
             
             LOG.debug("===> Meta refresh to link: " + reallink);

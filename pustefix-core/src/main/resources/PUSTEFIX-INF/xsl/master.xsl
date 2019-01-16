@@ -139,19 +139,6 @@
       
       <!-- these parameters will always be passed in by the servlet -->
       <ixsl:param name="__uri"/>
-
-      <!-- e.g. 1E668C65F42697962A31177EB5319D8B.foo -->
-      <!--
-          This is used whenever a session id has to be passed to the
-          outside for being able to jump back into the
-          application. When not running under SSL, this is the usual
-          session id.  Whenever running under it's the (now invalid)
-          parent session id, that will still allow to jump back into
-          the running SSL session if the client can be identified by a
-          also supplied secure cookie. (See ServletManager for
-          initimidating details)
-      -->
-      <ixsl:param name="__external_session_ref"/>
       
       <!-- e.g. /context -->
       <ixsl:param name="__contextpath"/>

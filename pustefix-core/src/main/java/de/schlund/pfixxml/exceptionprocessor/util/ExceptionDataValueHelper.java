@@ -20,28 +20,19 @@ package de.schlund.pfixxml.exceptionprocessor.util;
 import java.util.ArrayList;
 import java.util.Enumeration;
 import java.util.HashMap;
-import java.util.Iterator;
-import java.util.LinkedList;
 
-import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.NoSuchBeanDefinitionException;
-import org.springframework.context.ApplicationContext;
+import org.pustefixframework.http.ErrorFilter;
+import org.pustefixframework.http.ErrorFilter.TraceBackEntry;
+import org.pustefixframework.http.ErrorFilter.TraceBackList;
 import org.springframework.util.ClassUtils;
-import org.springframework.web.context.request.RequestContextHolder;
-import org.springframework.web.context.request.ServletRequestAttributes;
-import org.springframework.web.servlet.support.RequestContextUtils;
 
 import de.schlund.pfixxml.PfixServletRequest;
-import de.schlund.pfixxml.serverutil.SessionAdmin;
-import de.schlund.pfixxml.serverutil.SessionInfoStruct;
 
 
 public class ExceptionDataValueHelper {
-    private final static Logger LOG = LoggerFactory.getLogger(ExceptionDataValueHelper.class);
+
 	/**
 	 * @param exception
 	 * @param pfixReq
@@ -55,8 +46,9 @@ public class ExceptionDataValueHelper {
 		exdata.setPort(pfixReq.getServerPort());
 		exdata.setUri(pfixReq.getRequestURI());
 		final HttpSession session = pfixReq.getSession(false);
-		final String id = session.getId();
-		exdata.setSessionid(id);
+		if(session != null) {
+		    exdata.setSessionid(session.getId());
+		}
 		exdata.setServlet(pfixReq.getServletName());
         String pagename = pfixReq.getPageName();
 		if (pagename == null) {
@@ -74,63 +66,44 @@ public class ExceptionDataValueHelper {
 		}
 		exdata.setRequestParams(keysnvalues);
 
-		SessionAdmin sessionAdmin = getSessionAdmin(pfixReq);
-		if(sessionAdmin!=null) {
-    		SessionInfoStruct info = sessionAdmin.getInfo(id);
-    		ArrayList<String> steps = new ArrayList<String>();
-    	    if(info != null) {
-    	    	LinkedList<SessionInfoStruct.TrailElement> trail = info.getTraillog();
-    	    	if (trail != null && trail.size() > 0) {
-    	    		for (Iterator<SessionInfoStruct.TrailElement> j = trail.listIterator(); j.hasNext();) {
-    	    			SessionInfoStruct.TrailElement step = j.next();
-    	        		steps.add("[" + step.getCounter() + "] " + step.getStylesheetname() + " [" + step.getServletname() + "]");
-    	        	}
-    	        }
-    	    }
-    	    exdata.setLastSteps(steps);
-		}
-	    
+        ArrayList<String> lastSteps = new ArrayList<>();
+        TraceBackList traceList = ErrorFilter.getTraceBackList(pfixReq.getRequest());
+        if(traceList != null) {
+            for(TraceBackEntry entry:traceList.getEntries()) {
+                lastSteps.add("[" + entry.count + "] " + entry.method + " " + entry.requestURI
+                        + " (" + entry.status + ")");
+            }
+        }
+        exdata.setLastSteps(lastSteps);
+
 	    HashMap<String, String> sessdata = new HashMap<String, String>();
 	    try {
-	        Enumeration<?> enm = session.getAttributeNames();
-	        while (enm.hasMoreElements()) {
-	            String key = (String) enm.nextElement();
-	            Object value = session.getAttribute(key);
-	            String strvalue = null;
-	            if(value != null) {
-	                if(ClassUtils.isPrimitiveOrWrapper(value.getClass()) || value instanceof String) {
-	                    try {
-	                        strvalue = value.toString();
-	                    } catch(Exception e) {
-	                        strvalue = e.toString();
-	                    }
-	                } else {
-	                    strvalue = value.getClass().getName() + '@' + Integer.toHexString(value.hashCode());
-	                }
-	                sessdata.put(key, strvalue);
-	            }
-	        }
-	    } catch(IllegalStateException x) {
-	    	//Session is already invalidated
-	    }
-	    
-        exdata.setSessionKeysAndValues(sessdata);
-		return exdata;
-	}
+            if(session != null) {
+                Enumeration<?> enm = session.getAttributeNames();
+                while (enm.hasMoreElements()) {
+                    String key = (String) enm.nextElement();
+                    Object value = session.getAttribute(key);
+                    String strvalue = null;
+                    if(value != null) {
+                        if(ClassUtils.isPrimitiveOrWrapper(value.getClass()) || value instanceof String) {
+                            try {
+                                strvalue = value.toString();
+                            } catch(Exception e) {
+                                strvalue = e.toString();
+                            }
+                        } else {
+                            strvalue = value.getClass().getName() + '@' + Integer.toHexString(value.hashCode());
+                        }
+                        sessdata.put(key, strvalue);
+                    }
+                }
+            }
+        } catch(IllegalStateException x) {
+            //Session is already invalidated
+        }
 
-    private static SessionAdmin getSessionAdmin(PfixServletRequest pfixReq) {
-        HttpServletRequest req = pfixReq.getRequest();
-        if(req == null) {
-            req = ((ServletRequestAttributes)RequestContextHolder.getRequestAttributes()).getRequest();
-        }
-        ApplicationContext appContext = RequestContextUtils.findWebApplicationContext(req);
-        try {
-            SessionAdmin sessionAdmin = (SessionAdmin)appContext.getBean(SessionAdmin.class.getName());
-            return sessionAdmin;
-        } catch(NoSuchBeanDefinitionException x) {
-            LOG.error("Can't get SessionAdmin bean from ApplicationContext");
-        }
-        return null;
+        exdata.setSessionKeysAndValues(sessdata);
+        return exdata;
     }
 
 }

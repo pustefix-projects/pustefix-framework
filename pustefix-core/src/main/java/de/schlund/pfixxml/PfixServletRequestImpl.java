@@ -17,9 +17,6 @@
  */
 package de.schlund.pfixxml;
 
-
-
-
 import java.util.ArrayList;
 import java.util.Enumeration;
 import java.util.HashMap;
@@ -32,14 +29,13 @@ import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
 
+import org.pustefixframework.http.AbstractPustefixXMLRequestHandler;
+import org.pustefixframework.web.ServletUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.pustefixframework.http.AbstractPustefixRequestHandler;
-import org.pustefixframework.http.AbstractPustefixXMLRequestHandler;
 
 import de.schlund.pfixxml.multipart.MultipartHandler;
 import de.schlund.pfixxml.multipart.PartData;
-import de.schlund.pfixxml.serverutil.SessionHelper;
 import de.schlund.pfixxml.util.CookieUtils;
 
 /**
@@ -262,7 +258,9 @@ public class PfixServletRequestImpl implements PfixServletRequest {
      * @see de.schlund.pfixxml.PfixServletRequest#getRequestURI()
      */
     public String getRequestURI() {
-        return SessionHelper.encodeURI(request);
+        String uri = ServletUtils.getUnencodedRequestURI(request);
+        uri += ServletUtils.getSessionIdPath(request);
+        return uri;
     }
 
     /* (non-Javadoc)
@@ -301,7 +299,7 @@ public class PfixServletRequestImpl implements PfixServletRequest {
      * @see de.schlund.pfixxml.PfixServletRequest#getRemoteAddr()
      */
     public String getRemoteAddr() {
-        return AbstractPustefixRequestHandler.getRemoteAddr(request);
+        return ServletUtils.getRemoteAddr(request);
     }
 
     /* (non-Javadoc)

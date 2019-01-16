@@ -26,13 +26,12 @@ import java.util.Map;
 import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletResponse;
 
-import org.pustefixframework.http.AbstractPustefixRequestHandler;
+import org.pustefixframework.web.ServletUtils;
 import org.springframework.web.servlet.ModelAndView;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 
 import de.schlund.pfixcore.util.TokenUtils;
-import de.schlund.pfixxml.serverutil.SessionHelper;
 import de.schlund.pfixxml.util.Xml;
 
 
@@ -333,10 +332,10 @@ public class SPDocument extends ModelAndView {
      * @param preq Current request
      */
     public void setRedirect(String page, boolean permanent, PfixServletRequest preq) {
-        String url = preq.getScheme() + "://" + AbstractPustefixRequestHandler.getServerName(preq.getRequest()) 
+        String url = preq.getScheme() + "://" + preq.getServerName()
                 + ((preq.getServerPort() != 80 && preq.getServerPort() != 443) ? ":" + preq.getServerPort() : "" ) 
                 + preq.getContextPath() + preq.getServletPath() + "/" + page
-                + SessionHelper.getSessionIdPath(preq.getRequest());
+                + ServletUtils.getSessionIdPath(preq.getRequest());
         setRedirect(url, permanent);
     }
 

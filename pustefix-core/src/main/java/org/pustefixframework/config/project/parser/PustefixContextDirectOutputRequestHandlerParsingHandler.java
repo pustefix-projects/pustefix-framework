@@ -60,7 +60,7 @@ import de.schlund.pfixxml.LanguageInfo;
 import de.schlund.pfixxml.TenantInfo;
 import de.schlund.pfixxml.config.includes.IncludesResolver;
 import de.schlund.pfixxml.resources.ResourceUtil;
-import de.schlund.pfixxml.serverutil.SessionAdmin;
+
 
 public class PustefixContextDirectOutputRequestHandlerParsingHandler extends CustomizationAwareParsingHandler {
 
@@ -141,7 +141,6 @@ public class PustefixContextDirectOutputRequestHandlerParsingHandler extends Cus
         beanBuilder.addPropertyValue("context", new RuntimeBeanReference(ContextImpl.class.getName()));
         beanBuilder.addPropertyValue("stateMap", new RuntimeBeanReference(mapBeanName));
         beanBuilder.addPropertyValue("configuration", config);
-        beanBuilder.addPropertyValue("sessionAdmin", new RuntimeBeanReference(SessionAdmin.class.getName()));
         beanBuilder.addPropertyValue("tenantInfo", new RuntimeBeanReference(TenantInfo.class.getName()));
         beanBuilder.addPropertyValue("languageInfo", new RuntimeBeanReference(LanguageInfo.class.getName()));
         beanBuilder.addPropertyValue("siteMap", new RuntimeBeanReference(SiteMap.class.getName()));

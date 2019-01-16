@@ -43,7 +43,7 @@ public class PerformanceLoggingFilter implements Filter {
                 
                 long endTime = System.currentTimeMillis();
                 StringBuilder sb = new StringBuilder();
-                sb.append(LogUtils.makeLogSafe(AbstractPustefixRequestHandler.getServerName(req))).append("|");
+                sb.append(LogUtils.makeLogSafe(req.getServerName())).append("|");
                 sb.append(success ? res.getStatus() : "500").append("|");
                 sb.append(req.getMethod()).append("|");
                 String path = req.getContextPath() + req.getServletPath();

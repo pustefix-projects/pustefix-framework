@@ -61,7 +61,6 @@ import org.xml.sax.SAXException;
 import org.xml.sax.XMLReader;
 import org.xml.sax.helpers.DefaultHandler;
 
-import de.schlund.pfixcore.util.Meminfo;
 import de.schlund.pfixcore.workflow.SiteMap;
 import de.schlund.pfixxml.IncludeDocumentFactory;
 import de.schlund.pfixxml.IncludePartInfo;
@@ -218,10 +217,7 @@ public class TargetGenerator implements ResourceVisitor, ServletContextAware, In
         sharedLeafFactory = new SharedLeafFactory();
         pageInfoFactory = new PageInfoFactory();
         includePartsInfo = ((DynamicResourceProvider)ResourceProviderRegistry.getResourceProvider("dynamic")).getIncludePartsInfoFactory();
-        Meminfo meminfo = new Meminfo();
-        meminfo.print("TG: Before loading " + config_path.toString());
         loadConfig(config_path);
-        meminfo.print("TG: after loading targets for " + config_path.toString());
     }
     
     private void reload() throws Exception {

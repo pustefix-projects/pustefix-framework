@@ -28,7 +28,6 @@ import org.pustefixframework.config.project.ProjectInfo;
 import de.schlund.pfixcore.workflow.PageMap;
 import de.schlund.pfixcore.workflow.SiteMap;
 import de.schlund.pfixcore.workflow.VariantManager;
-import de.schlund.pfixxml.Variant;
 
 /**
  * Provides server-wide context information for the {@link de.schlund.pfixxml.ContextXMLServlet}.
@@ -88,15 +87,7 @@ public class ServerContextImpl {
     public PageMap getPageMap() {
         return pagemap;
     }
-    
-    public String getPageMatchingVariant(String pagename, Variant variant) {
-        if (variant != null & variant.getVariantFallbackArray() != null && variantmanager != null) {
-            return variantmanager.getVariantMatchingPageRequestName(pagename, variant);
-        } else {
-            return pagename;
-        }
-    }
-    
+
     public ProjectInfo getProjectInfo() {
         return projectInfo;
     }

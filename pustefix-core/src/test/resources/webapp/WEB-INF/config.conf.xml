@@ -13,6 +13,10 @@
     <state class="org.pustefixframework.example.ParameterState" />
   </pagerequest>
 
+  <pagerequest name="test">
+    <state class="org.pustefixframework.example.ParameterState" />
+  </pagerequest>
+
   <pagerequest name="ssl">
     <force-ssl>true</force-ssl>
     <state class="org.pustefixframework.example.ParameterState" />

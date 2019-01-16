@@ -160,6 +160,11 @@
     <func:result select="callback:omitPage($__context__,$__target_gen,$pageName,$language,$altKey,$__lf,$pageFlow,$groupKey)"/>
   </func:function>
   
+  <func:function name="pfx:__omitURLStart">
+    <xsl:param name="pageName"/>
+    <func:result select="callback:omitURLStart($__context__,$pageName)"/>
+  </func:function>
+
   <func:function name="pfx:getHomePage">
     <func:result select="callback:getHomePage($__context__,$__target_gen)"/>
   </func:function>

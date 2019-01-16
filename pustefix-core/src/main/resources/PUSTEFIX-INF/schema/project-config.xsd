@@ -23,12 +23,6 @@
             <xsd:attribute name="type" type="xsd:string" use="optional"/>
           </xsd:complexType>
         </xsd:element>
-        <xsd:element name="initial-session-timeout" minOccurs="0">
-          <xsd:complexType>
-            <xsd:attribute name="value" type="xsd:int"/>
-            <xsd:attribute name="requestlimit" type="xsd:int"/>
-          </xsd:complexType>
-        </xsd:element>
         <xsd:element name="application" type="application-type"/>
         <xsd:element name="dynamic-includes" type="dynamic-includes-type" minOccurs="0"/>
         <xsd:element name="messagesources" type="messagesources-type" minOccurs="0"/>

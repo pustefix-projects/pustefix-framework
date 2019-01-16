@@ -19,6 +19,7 @@
   <standardmaster/>
  
   <standardpage name="home" xml="xml/frame.xml"/>
+  <standardpage name="test" xml="xml/frame.xml"/>
   <standardpage name="ssl" xml="xml/frame.xml"/>
   
 </make>

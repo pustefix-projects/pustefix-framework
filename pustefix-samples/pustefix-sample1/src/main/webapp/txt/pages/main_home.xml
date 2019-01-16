@@ -320,9 +320,6 @@
           <td>Query String</td><td><ixsl:value-of select="$__querystring"/></td>
         </tr>
         <tr>
-          <td>Session for ext. reference</td><td><ixsl:value-of select="$__external_session_ref"/></td>
-        </tr>
-        <tr>
           <td>Page name</td><td><ixsl:value-of select="$page"/></td>
         </tr>
         <tr>

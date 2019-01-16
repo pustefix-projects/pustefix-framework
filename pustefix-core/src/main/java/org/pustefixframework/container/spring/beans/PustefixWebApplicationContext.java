@@ -61,37 +61,26 @@ public class PustefixWebApplicationContext extends AbstractRefreshableWebApplica
     
     private static Logger LOG = LoggerFactory.getLogger(PustefixWebApplicationContext.class);
 
-    private PustefixInit pustefixInit;
-
-    public PustefixWebApplicationContext() {
-        super();
-    }
-
-    public PustefixWebApplicationContext(PustefixInit pustefixInit) {
-        super();
-        this.pustefixInit = pustefixInit;
-    }
-
     @Override
     protected void loadBeanDefinitions(DefaultListableBeanFactory beanFactory) throws IOException, BeansException {
-       load(beanFactory, pustefixInit, getServletContext(), getEnvironment(), getConfigLocations(), this);
+       load(beanFactory, getServletContext(), getEnvironment(), getConfigLocations(), this);
     }
 
-    static void load(DefaultListableBeanFactory beanFactory, PustefixInit pustefixInit, ServletContext servletContext,
-            ConfigurableEnvironment environment, String[] configLocations, ResourceLoader resourceLoader) throws IOException, BeansException {
+    static void load(DefaultListableBeanFactory beanFactory, ServletContext servletContext,
+            ConfigurableEnvironment environment, String[] configLocations, ResourceLoader resourceLoader)
+                    throws IOException, BeansException {
 
         //disable bean definition overriding as it turned out to be more cumbersome
         //finding errors caused by this feature, than that it's bringing real benefit
         //beanFactory.setAllowBeanDefinitionOverriding(false);
 
+        PustefixInit pustefixInit = (PustefixInit)servletContext.getAttribute(PustefixInit.SERVLET_CONTEXT_ATTRIBUTE_NAME);
         if(pustefixInit == null) {
-            pustefixInit = (PustefixInit)servletContext.getAttribute(PustefixInit.SERVLET_CONTEXT_ATTRIBUTE_NAME);
-            if(pustefixInit == null) {
-                try {
-                    pustefixInit = new PustefixInit(servletContext);
-                } catch(PustefixCoreException x) {
-                    throw new PustefixRuntimeException("Pustefix initialization failed", x);
-                }
+            try {
+                pustefixInit = new PustefixInit(servletContext);
+                servletContext.setAttribute(PustefixInit.SERVLET_CONTEXT_ATTRIBUTE_NAME, pustefixInit);
+            } catch(PustefixCoreException x) {
+                throw new PustefixRuntimeException("Pustefix initialization failed", x);
             }
         }
 

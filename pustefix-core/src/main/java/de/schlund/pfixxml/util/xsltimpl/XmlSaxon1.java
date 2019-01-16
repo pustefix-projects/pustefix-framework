@@ -27,7 +27,6 @@ import org.w3c.dom.Document;
 import org.w3c.dom.Node;
 
 import com.icl.saxon.Controller;
-import com.icl.saxon.Mode;
 import com.icl.saxon.om.NamePool;
 import com.icl.saxon.om.NodeInfo;
 import com.icl.saxon.om.Stripper;

@@ -4,7 +4,10 @@
     <head>
       <title>Pustefix Sample</title>
     </head>
-    <body><pfx:maincontent part="content" path="txt/pages" prefix="main_"/></body>
+    <body>
+      <h1>test</h1>
+      <pfx:maincontent part="content" path="txt/pages" prefix="main_"/>
+    </body>
     <ixsl:if test="/formresult/param[@name='foo']">
       <ixsl:comment>foo=<ixsl:value-of select="/formresult/param[@name='foo']"/></ixsl:comment>
     </ixsl:if>

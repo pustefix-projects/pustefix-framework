@@ -26,6 +26,7 @@ import org.junit.Test;
 import org.pustefixframework.http.AbstractPustefixRequestHandler;
 import org.pustefixframework.http.PustefixContextXMLRequestHandler;
 import org.pustefixframework.test.PustefixWebApplicationContextLoader;
+import org.pustefixframework.web.ServletUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.mock.web.MockHttpServletRequest;
 import org.springframework.mock.web.MockHttpServletResponse;
@@ -58,7 +59,7 @@ public class ScriptedFlowTest extends AbstractJUnit4SpringContextTests {
     public void testFlow() throws Exception {
         
         MockHttpSession session = new MockHttpSession(servletContext);
-        session.setAttribute(AbstractPustefixRequestHandler.VISIT_ID, "foo");
+        session.setAttribute(ServletUtils.SESSION_ATTR_VISIT_ID, "foo");
         
         MockHttpServletRequest req = new MockHttpServletRequest();
         req.setPathInfo("/");
@@ -89,7 +90,7 @@ public class ScriptedFlowTest extends AbstractJUnit4SpringContextTests {
     public void testInteractiveFlow() throws Exception {
         
         MockHttpSession session = new MockHttpSession(servletContext);
-        session.setAttribute(AbstractPustefixRequestHandler.VISIT_ID, "bar");
+        session.setAttribute(ServletUtils.SESSION_ATTR_VISIT_ID, "bar");
         
         MockHttpServletRequest req = new MockHttpServletRequest();
         req.setPathInfo("/");

@@ -26,14 +26,12 @@ import org.pustefixframework.config.customization.CustomizationAwareParsingHandl
 import org.pustefixframework.config.generic.ParsingUtils;
 import org.pustefixframework.http.ErrorFilter;
 import org.pustefixframework.http.PustefixInitFilter;
-import org.pustefixframework.http.SessionTrackingInterceptor;
 import org.pustefixframework.web.servlet.i18n.PustefixLocaleResolverPostProcessor;
 import org.pustefixframework.web.servlet.view.XsltView;
 import org.pustefixframework.web.servlet.view.XsltViewResolver;
 import org.springframework.beans.factory.config.BeanDefinition;
 import org.springframework.beans.factory.support.BeanDefinitionBuilder;
 import org.springframework.beans.factory.support.BeanDefinitionRegistry;
-import org.springframework.web.servlet.handler.MappedInterceptor;
 
 import com.marsching.flexiparse.configuration.RunOrder;
 import com.marsching.flexiparse.parser.HandlerContext;
@@ -43,7 +41,6 @@ import de.schlund.pfixxml.LanguageInfo;
 import de.schlund.pfixxml.Tenant;
 import de.schlund.pfixxml.TenantInfo;
 import de.schlund.pfixxml.exceptionprocessor.ExceptionProcessingConfiguration;
-import de.schlund.pfixxml.serverutil.SessionAdmin;
 
 public class ProjectParsingHandler extends CustomizationAwareParsingHandler {
 
@@ -63,19 +60,6 @@ public class ProjectParsingHandler extends CustomizationAwareParsingHandler {
             beanRegistry.registerBeanDefinition(TenantInfo.class.getName(), beanDefinition);
             beanRegistry.registerAlias(TenantInfo.class.getName(), "pustefixTenantInfo");
 
-            beanBuilder = BeanDefinitionBuilder.genericBeanDefinition(SessionTrackingInterceptor.class);
-            beanBuilder.setScope("singleton");
-            ContextXMLServletConfig config = context.getObjectTreeElement().getObjectsOfTypeFromSubTree(ContextXMLServletConfig.class).iterator().next();
-            beanBuilder.addPropertyValue("forceSSL", config.isSSL());
-            beanBuilder.addPropertyReference("sessionAdmin", SessionAdmin.class.getName());
-            beanBuilder.addPropertyValue("properties", config.getProperties());
-            beanRegistry.registerBeanDefinition(SessionTrackingInterceptor.class.getName(), beanBuilder.getBeanDefinition());
-            beanBuilder = BeanDefinitionBuilder.genericBeanDefinition(MappedInterceptor.class);
-            beanBuilder.setScope("singleton");
-            beanBuilder.addConstructorArgValue("/**");
-            beanBuilder.addConstructorArgReference(SessionTrackingInterceptor.class.getName());
-            beanRegistry.registerBeanDefinition(SessionTrackingInterceptor.class.getName() + "#Mapped", beanBuilder.getBeanDefinition());
-
             beanBuilder = BeanDefinitionBuilder.genericBeanDefinition(PustefixLocaleResolverPostProcessor.class);
             beanBuilder.setScope("singleton");
             beanRegistry.registerBeanDefinition(PustefixLocaleResolverPostProcessor.class.getName(), beanBuilder.getBeanDefinition());
@@ -94,6 +78,7 @@ public class ProjectParsingHandler extends CustomizationAwareParsingHandler {
             beanBuilder = BeanDefinitionBuilder.genericBeanDefinition(ErrorFilter.class);
             beanBuilder.setScope("singleton");
             beanBuilder.addPropertyReference("exceptionProcessingConfiguration", ExceptionProcessingConfiguration.class.getName());
+            ContextXMLServletConfig config = context.getObjectTreeElement().getObjectsOfTypeFromSubTree(ContextXMLServletConfig.class).iterator().next();
             beanBuilder.addPropertyValue("properties", config.getProperties());
             beanRegistry.registerBeanDefinition(ErrorFilter.class.getName(), beanBuilder.getBeanDefinition());
         }

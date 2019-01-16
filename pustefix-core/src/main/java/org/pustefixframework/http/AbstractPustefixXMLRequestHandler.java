@@ -51,13 +51,14 @@ import javax.xml.transform.TransformerFactoryConfigurationError;
 import javax.xml.transform.dom.DOMSource;
 import javax.xml.transform.stream.StreamResult;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.pustefixframework.config.contextxmlservice.AbstractXMLServletConfig;
 import org.pustefixframework.config.contextxmlservice.ServletManagerConfig;
 import org.pustefixframework.container.spring.http.PustefixHandlerMapping;
 import org.pustefixframework.util.LogUtils;
 import org.pustefixframework.util.URLUtils;
+import org.pustefixframework.web.ServletUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.ApplicationContextAware;
 import org.springframework.context.i18n.LocaleContextHolder;
@@ -84,8 +85,6 @@ import de.schlund.pfixxml.SPDocument;
 import de.schlund.pfixxml.SPDocumentHistory;
 import de.schlund.pfixxml.SessionCleaner;
 import de.schlund.pfixxml.Variant;
-import de.schlund.pfixxml.serverutil.SessionAdmin;
-import de.schlund.pfixxml.serverutil.SessionHelper;
 import de.schlund.pfixxml.targets.PageInfo;
 import de.schlund.pfixxml.targets.PageTargetTree;
 import de.schlund.pfixxml.targets.Target;
@@ -275,14 +274,14 @@ public abstract class AbstractPustefixXMLRequestHandler extends AbstractPustefix
         // Check if session has been scheduled for invalidation
         if (!doreuse && session.getAttribute(SESS_CLEANUP_FLAG_STAGE2) != null) {
             HttpServletRequest req = preq.getRequest();
-            String redirectUri = SessionHelper.getClearedURL(req.getScheme(), getServerName(req), req, getAbstractXMLServletConfig().getProperties());
+            String redirectUri = ServletUtils.getRedirectURL(req, true);
             if(req.isRequestedSessionIdFromCookie()) {
-                Cookie cookie = new Cookie(getSessionCookieName(req), "");
+                Cookie cookie = new Cookie(ServletUtils.getSessionCookieName(req.getServletContext()), "");
                 cookie.setMaxAge(0);
                 cookie.setPath((req.getContextPath().equals("")) ? "/" : req.getContextPath());
                 res.addCookie(cookie);
             }
-            relocate(res, redirectUri);
+            ServletUtils.redirect(res, HttpServletResponse.SC_MOVED_TEMPORARILY, redirectUri);
             return;
         }
 
@@ -322,9 +321,7 @@ public abstract class AbstractPustefixXMLRequestHandler extends AbstractPustefix
         
         if (session != null) {
             params.put(XSLPARAM_SESSION_ID, session.getId());
-            if(session.getAttribute(AbstractPustefixRequestHandler.SESSION_ATTR_COOKIE_SESSION) == null) {
-                params.put(XSLPARAM_SESSION_ID_PATH, ";jsessionid=" + session.getId());
-            }
+            params.put(XSLPARAM_SESSION_ID_PATH, ServletUtils.getSessionIdPath(preq.getRequest()));
             if (doreuse) {
                 synchronized (session) {
                     // Make sure redirect is only done once
@@ -405,7 +402,7 @@ public abstract class AbstractPustefixXMLRequestHandler extends AbstractPustefix
             // This will store just the last dom, but only when editmode is allowed (so this normally doesn't apply to production mode)
             // This is a seperate place from the SessionCleaner as we don't want to interfere with this, nor do we want to use 
             // the whole queue of possible stored SPDocs only for the viewing of the DOM during development.
-            if ((showDom || isDebugSession(preq))) {
+            if (showDom) {
                 if(preq.getRequestParam(PARAM_RENDER_HREF) == null) {
                     session.setAttribute(ATTR_SHOWXMLDOC, spdoc);
                 }
@@ -615,10 +612,6 @@ public abstract class AbstractPustefixXMLRequestHandler extends AbstractPustefix
         }
         
         if (! doreuse) {
-            // we only want to update the Session hit when we are not handling a "reuse" request
-            if (session != null) {
-                getSessionAdmin().touchSession(servletname, stylesheet, session);
-            }
             // Only process cookies if we don't reuse
             setCookies(spdoc,res);
         }
@@ -635,7 +628,7 @@ public abstract class AbstractPustefixXMLRequestHandler extends AbstractPustefix
         
         if (session != null && !spdoc.getTrailLogged()) {
             StringBuffer logbuff = new StringBuffer();
-            logbuff.append(session.getAttribute(VISIT_ID) + "|");
+            logbuff.append(session.getAttribute(ServletUtils.SESSION_ATTR_VISIT_ID) + "|");
             logbuff.append(session.getId() + "|");
             logbuff.append(LogUtils.makeLogSafe(preq.getRemoteAddr()) + "|");
             logbuff.append(LogUtils.makeLogSafe(preq.getServerName()) + "|");
@@ -796,10 +789,6 @@ public abstract class AbstractPustefixXMLRequestHandler extends AbstractPustefix
         Target    target = generator.getTarget(stylesheet);
         paramhash.put("themes", target.getThemes().getId());
         stylevalue = (Templates) target.getValue();
-        if (stylevalue == null) { // AH 2004-09-21 added for bugtracing 
-            LOGGER.warn("stylevalue MUST NOT be null: stylesheet=" + stylesheet + "; " +
-                     ((spdoc != null) ? ("pagename=" +  spdoc.getPagename()) : "spdoc==null")); 
-        }
         paramhash.put("__stylesheet", stylesheet);
         paramhash.put("page", spdoc.getPagename());
         String definingModule = generator.getDefiningModule(spdoc.getPagename());
@@ -918,7 +907,7 @@ public abstract class AbstractPustefixXMLRequestHandler extends AbstractPustefix
         } else {
             throw new IllegalArgumentException("invalid value for " + PARAM_XMLONLY + ": " + value);
         }
-        if (showDom || isDebugSession(pfreq)) {
+        if (showDom) {
             return rendering;
         } else {
             return RENDERMODE.RENDER_NORMAL;
@@ -955,8 +944,6 @@ public abstract class AbstractPustefixXMLRequestHandler extends AbstractPustefix
         paramhash.put(TargetGenerator.XSLPARAM_SITEMAP, generator.getSiteMap().getSiteMapXMLElement(generator.getXsltVersion(), spdoc.getLanguage()));
         paramhash.put(XSLPARAM_EDITOR_INCLUDE_PARTS_EDITABLE_BY_DEFAULT, Boolean.toString(includePartsEditableByDefault));
 
-        String session_to_link_from_external = getSessionAdmin().getExternalSessionId(session);
-        paramhash.put("__external_session_ref", session_to_link_from_external);
         paramhash.put("__spdoc__", spdoc);
         paramhash.put("__register_frame_helper__", new RegisterFrameHelper(getLRU(session), spdoc));
         return paramhash;
@@ -1205,18 +1192,7 @@ public abstract class AbstractPustefixXMLRequestHandler extends AbstractPustefix
             }
         }
     }
-    
-    private boolean isDebugSession(PfixServletRequest request) {
-        HttpSession session = request.getSession(false);
-        if(session != null) {
-            Boolean value = (Boolean)session.getAttribute(SessionAdmin.SESSION_IS_DEBUG);
-            if(value != null && value) {
-                return true;
-            }
-        }
-        return false;
-    }
-    
+
     /**
      * Called before the XML result tree is rendered. This method can
      * be overidden in sub-implementations to do initializiation stuff,

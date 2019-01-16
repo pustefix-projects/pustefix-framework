@@ -28,6 +28,7 @@ import javax.servlet.ServletException;
 
 import org.pustefixframework.http.ErrorFilter;
 import org.pustefixframework.http.PustefixInitFilter;
+import org.pustefixframework.web.PustefixSessionListener;
 import org.springframework.web.filter.DelegatingFilterProxy;
 
 public class PustefixServletContainerInitializer implements ServletContainerInitializer {
@@ -44,6 +45,8 @@ public class PustefixServletContainerInitializer implements ServletContainerInit
         filterProxy = new DelegatingFilterProxy(ErrorFilter.class.getName());
         filterReg = ctx.addFilter("ErrorFilter", filterProxy);
         filterReg.addMappingForUrlPatterns(EnumSet.of(DispatcherType.REQUEST), false, "/*");
+
+        ctx.addListener(new PustefixSessionListener());
     }
     
 }

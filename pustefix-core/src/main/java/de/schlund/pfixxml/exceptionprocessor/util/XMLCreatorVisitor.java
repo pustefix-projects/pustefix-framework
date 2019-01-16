@@ -91,16 +91,18 @@ public class XMLCreatorVisitor implements ExceptionDataValueVisitor {
 			req_params.appendChild(req_p);
 		}
 		e.appendChild(req_params);
-		
-		Element last_steps = doc.createElement("laststeps");
-		for(Iterator<String> iter = data.getLastSteps().iterator(); iter.hasNext(); ) {
-			Element step = doc.createElement("step");
-			Text step_txt = doc.createTextNode(iter.next());
-			step.appendChild(step_txt);
-			last_steps.appendChild(step);
-		}
-		e.appendChild(last_steps);
-		
+
+        if(data.getLastSteps() != null) {
+            Element last_steps = doc.createElement("laststeps");
+            for(Iterator<String> iter = data.getLastSteps().iterator(); iter.hasNext(); ) {
+                Element step = doc.createElement("step");
+                Text step_txt = doc.createTextNode(iter.next());
+                step.appendChild(step_txt);
+                last_steps.appendChild(step);
+            }
+            e.appendChild(last_steps);
+        }
+
 		Element sess_keysnvals = doc.createElement("session_dump");
 		HashMap<String, String> map = data.getSessionKeysAndValues();
 		for(Iterator<String> iter = map.keySet().iterator(); iter.hasNext(); ) {

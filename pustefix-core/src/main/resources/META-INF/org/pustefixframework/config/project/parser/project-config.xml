@@ -24,10 +24,6 @@
     <match>/p:project-config/p:tenant//p:host</match>
   </handler>
   
-  <handler class="org.pustefixframework.config.project.parser.SessionInfoParsingHandler">
-    <match>/p:project-config</match>
-  </handler>
-  
   <handler class="org.pustefixframework.config.project.parser.EditorInfoParsingHandler">
     <match>/p:project-config/p:application</match>
   </handler>
@@ -72,11 +68,6 @@
   <handler class="org.pustefixframework.config.project.parser.ExceptionProcessingParsingHandler">
     <match>/p:project-config/p:application</match>
     <match>/p:project-config/p:application//p:exception-processing</match>
-  </handler>
-  
-  <!-- Adds SessionAdmin bean -->
-  <handler class="org.pustefixframework.config.project.parser.SessionAdminParsingHandler">
-    <match>/p:project-config/p:application</match>
   </handler>
   
   <!-- Reads path to depend.xml file -->

@@ -29,10 +29,7 @@ import java.util.Properties;
 import java.util.Set;
 
 import javax.servlet.http.Cookie;
-import javax.servlet.http.HttpSession;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.pustefixframework.config.contextxmlservice.PageRequestConfig;
 import org.pustefixframework.config.contextxmlservice.PreserveParams;
 import org.pustefixframework.config.contextxmlservice.ProcessActionPageRequestConfig;
@@ -42,6 +39,9 @@ import org.pustefixframework.http.AbstractPustefixXMLRequestHandler;
 import org.pustefixframework.http.PustefixContextXMLRequestHandler;
 import org.pustefixframework.util.LocaleUtils;
 import org.pustefixframework.util.LogUtils;
+import org.pustefixframework.web.ServletUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 
@@ -353,13 +353,9 @@ public class RequestContextImpl implements Cloneable, AuthorizationInterceptor {
 
         if (spdoc != null && forceSSL) {
             // Make sure connection is switched to SSL if current page is marked as "secure"
-            int port = AbstractPustefixRequestHandler.getSSLRedirectPort(preq.getOriginalServerPort(), getServerContext().getProperties());
-            String sessionIdPath = "";
-            HttpSession session = preq.getSession(false);
-            if(session.getAttribute(AbstractPustefixRequestHandler.SESSION_ATTR_COOKIE_SESSION) == null) {
-                sessionIdPath = ";jsessionid=" + session.getId();
-            }
-            String redirectURL = "https://" + AbstractPustefixRequestHandler.getServerName(preq.getRequest()) 
+            int port = ServletUtils.getHTTPSPort(preq.getRequest());
+            String sessionIdPath = ServletUtils.getSessionIdPath(preq.getRequest());
+            String redirectURL = "https://" + preq.getServerName()
                     + ( port == 443 ? "" : ":" + port ) + preq.getContextPath()
                     + preq.getServletPath() + "/" + spdoc.getPagename() + sessionIdPath;
             boolean firstParam = true;

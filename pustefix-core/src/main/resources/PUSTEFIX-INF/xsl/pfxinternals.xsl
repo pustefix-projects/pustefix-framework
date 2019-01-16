@@ -1212,7 +1212,6 @@
               <div class="actiongrouptitle">General</div>
               <div><a href="{$__contextpath}/pfxinternals?action=reload">Schedule webapp reload</a></div>
               <div><a href="javascript:removeCookies()">Remove cookies</a></div>
-              <div><a href="{$__contextpath}/pfxinternals?action=invalidate">Invalidate all running sessions</a></div>
             </div>
             <div class="actiongroup">
               <div class="actiongrouptitle">Target generator</div>

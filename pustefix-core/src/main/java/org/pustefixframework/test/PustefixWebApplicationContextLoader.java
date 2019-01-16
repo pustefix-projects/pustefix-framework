@@ -108,6 +108,7 @@ public class PustefixWebApplicationContextLoader implements ContextLoader {
         PustefixInit pustefixInit;
         try {
             pustefixInit = new PustefixInit(servletContext, docroot.getAbsolutePath());
+            servletContext.setAttribute(PustefixInit.SERVLET_CONTEXT_ATTRIBUTE_NAME, pustefixInit);
         } catch(PustefixCoreException x) {
             throw new RuntimeException("Pustfix initialization error", x);
         }
@@ -125,7 +126,7 @@ public class PustefixWebApplicationContextLoader implements ContextLoader {
         }
         
         //Set up PustefixWebApplicationContext
-        PustefixWebApplicationContext appContext = new PustefixWebApplicationContext(pustefixInit);
+        PustefixWebApplicationContext appContext = new PustefixWebApplicationContext();
         appContext.registerShutdownHook();
         appContext.setServletContext(servletContext);
         servletContext.setAttribute(WebApplicationContext.ROOT_WEB_APPLICATION_CONTEXT_ATTRIBUTE, appContext);

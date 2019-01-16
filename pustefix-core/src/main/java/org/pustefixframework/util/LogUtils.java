@@ -19,6 +19,19 @@ public class LogUtils {
       return str;
    }
 
+   public static String createLogMessage(String... fields) {
+       StringBuilder sb = new StringBuilder();
+       for(int i=0; i<fields.length; i++) {
+           if(i > 0) {
+               sb.append('|');
+           }
+           if(fields[i] != null) {
+               sb.append(makeLogSafe(fields[i]));
+           }
+       }
+       return sb.toString();
+   }
+
    public static String shortenClassName(Class<?> clazz, int maxLength) {
        String name = clazz.getSimpleName();
        Package pkg = clazz.getPackage();

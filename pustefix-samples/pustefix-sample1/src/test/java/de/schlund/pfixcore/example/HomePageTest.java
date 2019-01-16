@@ -24,6 +24,7 @@ import org.junit.Test;
 import org.pustefixframework.http.AbstractPustefixRequestHandler;
 import org.pustefixframework.http.PustefixContextXMLRequestHandler;
 import org.pustefixframework.test.PustefixWebApplicationContextLoader;
+import org.pustefixframework.web.ServletUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.mock.web.MockHttpServletRequest;
 import org.springframework.mock.web.MockHttpServletResponse;
@@ -52,7 +53,7 @@ public class HomePageTest extends AbstractJUnit4SpringContextTests {
         MockHttpSession session = new MockHttpSession(servletContext);
         req.setSession(session);
         RequestContextHolder.setRequestAttributes(new ServletRequestAttributes(req));
-        session.setAttribute(AbstractPustefixRequestHandler.VISIT_ID, "foo");
+        session.setAttribute(ServletUtils.SESSION_ATTR_VISIT_ID, "foo");
         
         requestHandler.handleRequest(req, res);
         Assert.assertTrue(res.getContentAsString(), res.getContentAsString().contains("<title>Pustefix Sample</title>"));

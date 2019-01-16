@@ -46,6 +46,7 @@ import org.pustefixframework.http.BotDetector;
 import org.pustefixframework.http.PathMapping;
 import org.pustefixframework.util.FrameworkInfo;
 import org.pustefixframework.util.javascript.JSUtils;
+import org.pustefixframework.web.ServletUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.NoSuchBeanDefinitionException;
@@ -522,6 +523,22 @@ public class TransformerCallback {
             ExtensionFunctionUtils.setExtensionFunctionError(x);
             throw x;
         }
+    }
+
+    public static String omitURLStart(RequestContextImpl requestContext, String pageName) {
+        HttpServletRequest req = ((ServletRequestAttributes)RequestContextHolder.getRequestAttributes()).getRequest();
+        if(!req.isSecure()) {
+            PageRequestConfig config = requestContext.getServerContext().getContextConfig().getPageRequestConfig(pageName);
+            if(config != null && config.isSSL()) {
+                String urlStart = "https://" + req.getServerName();
+                int httpsPort = ServletUtils.getHTTPSPort(req);
+                if(httpsPort != 443) {
+                    urlStart += ":" + httpsPort;
+                }
+                return urlStart;
+            }
+        }
+        return "";
     }
 
     public static String getPageAlias(TargetGenerator gen, String pageName, String lang) throws Exception {

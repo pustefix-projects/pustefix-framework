@@ -30,6 +30,7 @@ import javax.servlet.http.HttpSession;
 import org.pustefixframework.container.spring.beans.TenantScope;
 import org.pustefixframework.http.AbstractPustefixRequestHandler;
 import org.pustefixframework.http.AbstractPustefixXMLRequestHandler;
+import org.pustefixframework.web.ServletUtils;
 
 import de.schlund.pfixcore.auth.Authentication;
 import de.schlund.pfixcore.auth.AuthenticationImpl;
@@ -125,7 +126,7 @@ public class SessionContextImpl {
 
     public String getVisitId() {
         if (visitId == null) {
-            visitId = (String) session.getAttribute(AbstractPustefixRequestHandler.VISIT_ID);
+            visitId = (String) session.getAttribute(ServletUtils.SESSION_ATTR_VISIT_ID);
             if (visitId == null) {
                 throw new RuntimeException("visit_id not set, but asked for!!!!");
             }

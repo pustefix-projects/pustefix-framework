@@ -30,8 +30,8 @@ import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 
 import org.pustefixframework.container.spring.http.UriProvidingHttpRequestHandler;
-import org.pustefixframework.http.SessionUtils;
 import org.pustefixframework.util.BytecodeAPIUtils;
+import org.pustefixframework.web.ServletUtils;
 import org.pustefixframework.webservices.AdminWebapp;
 import org.pustefixframework.webservices.Constants;
 import org.pustefixframework.webservices.ServiceProcessor;
@@ -180,7 +180,7 @@ public class WebServiceHttpRequestHandler implements UriProvidingHttpRequestHand
             if(req.getMethod().equals("POST")) {
             	HttpSession session = req.getSession(false);
             	if(session != null) {
-            		ReadWriteLock lock = (ReadWriteLock)session.getAttribute(SessionUtils.SESSION_ATTR_LOCK);
+                    ReadWriteLock lock = ServletUtils.getSessionLock(session);
      				if(lock != null) {
      					Lock readLock = lock.readLock();
      					readLock.lock();

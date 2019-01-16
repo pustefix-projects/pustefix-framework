@@ -22,6 +22,7 @@ import java.util.Set;
 
 import javax.servlet.AsyncContext;
 import javax.servlet.DispatcherType;
+import javax.servlet.ReadListener;
 import javax.servlet.RequestDispatcher;
 import javax.servlet.ServletContext;
 import javax.servlet.ServletException;
@@ -32,6 +33,7 @@ import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
+import javax.servlet.http.HttpUpgradeHandler;
 import javax.servlet.http.Part;
 
 /**
@@ -168,6 +170,21 @@ public class VirtualHttpServletRequest implements HttpServletRequest {
                 public int read() throws IOException {
                     return in.read();
                 }
+
+                @Override
+                public boolean isFinished() {
+                    throw new UnsupportedOperationException();
+                }
+
+                @Override
+                public boolean isReady() {
+                    throw new UnsupportedOperationException();
+                }
+
+                @Override
+                public void setReadListener(ReadListener readListener) {
+                    throw new UnsupportedOperationException();
+                }
             };
         }
     }
@@ -266,7 +283,7 @@ public class VirtualHttpServletRequest implements HttpServletRequest {
             InputStream in = new ByteArrayInputStream(content);
             Reader reader;
             if(characterEncoding == null) {
-                reader = new InputStreamReader(in);
+                reader = new InputStreamReader(in, "UTF-8");
             } else {
                 reader = new InputStreamReader(in, characterEncoding);
             }
@@ -646,6 +663,21 @@ public class VirtualHttpServletRequest implements HttpServletRequest {
     @Override
     public Part getPart(String name) throws IOException, ServletException {
         return null;
+    }
+
+    @Override
+    public long getContentLengthLong() {
+        throw new UnsupportedOperationException();
+    }
+
+    @Override
+    public String changeSessionId() {
+        throw new UnsupportedOperationException();
+    }
+
+    @Override
+    public <T extends HttpUpgradeHandler> T upgrade(Class<T> handlerClass) throws IOException, ServletException {
+        throw new UnsupportedOperationException();
     }
 
 }

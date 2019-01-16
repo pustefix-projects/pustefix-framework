@@ -14,7 +14,11 @@ import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 
 import org.pustefixframework.container.spring.beans.TenantScope;
+import org.pustefixframework.util.LogUtils;
 import org.pustefixframework.util.URLUtils;
+import org.pustefixframework.web.ServletUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import de.schlund.pfixxml.LanguageInfo;
 import de.schlund.pfixxml.PfixServletRequest;
@@ -25,6 +29,8 @@ import de.schlund.pfixxml.config.EnvironmentProperties;
 public class PustefixInitFilter implements Filter {
 
     private final static String DEFAULT_ENCODING = "UTF-8";
+
+    private final static Logger LOGGER_VISIT = LoggerFactory.getLogger("LOGGER_VISIT");
 
     private TenantInfo tenantInfo;
     private LanguageInfo langInfo;
@@ -139,6 +145,16 @@ public class PustefixInitFilter implements Filter {
             PfixServletRequest preq = (PfixServletRequest)request.getAttribute(PfixServletRequest.class.getName());
             if(preq != null) {
                 preq.resetRequest();
+            }
+
+            HttpSession session = request.getSession(false);
+            if(session != null && session.isNew()) {
+                String msg = LogUtils.createLogMessage(
+                        (String)session.getAttribute(ServletUtils.SESSION_ATTR_VISIT_ID),
+                        session.getId(), request.getServerName(),
+                        ServletUtils.getRemoteAddr(request), request.getHeader("user-agent"),
+                        request.getHeader("referer"), request.getHeader("accept-language"));
+                LOGGER_VISIT.warn(msg);
             }
         }
 

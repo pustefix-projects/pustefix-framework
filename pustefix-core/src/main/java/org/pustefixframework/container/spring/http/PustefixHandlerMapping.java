@@ -20,7 +20,6 @@ package org.pustefixframework.container.spring.http;
 
 import java.util.List;
 
-import org.pustefixframework.http.SessionTrackingInterceptor;
 import org.springframework.context.ApplicationContext;
 import org.springframework.web.context.request.WebRequestInterceptor;
 import org.springframework.web.servlet.HandlerInterceptor;
@@ -43,7 +42,7 @@ public class PustefixHandlerMapping extends AbstractDetectingUrlHandlerMapping {
             UriProvidingHttpRequestHandler handler = (UriProvidingHttpRequestHandler) bean;
             return handler.getRegisteredURIs();
         }
-        return null;
+        return new String[0];
     }
 
     @Override
@@ -56,8 +55,7 @@ public class PustefixHandlerMapping extends AbstractDetectingUrlHandlerMapping {
             if(clazz != null) {
                 if (HandlerInterceptor.class.isAssignableFrom(clazz)
                         || WebRequestInterceptor.class.isAssignableFrom(clazz)) {
-                    if(clazz == SessionTrackingInterceptor.class ||
-                            MappedInterceptor.class.isAssignableFrom(clazz)) {
+                    if(MappedInterceptor.class.isAssignableFrom(clazz)) {
                         //don't register MappedInterceptors as they are automatically registered
                         continue;
                     }

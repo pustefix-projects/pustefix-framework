@@ -79,7 +79,7 @@ public class SiteMapRequestHandler implements UriProvidingHttpRequestHandler, Se
         
         CacheEntry entry = null;
         
-        String host = AbstractPustefixRequestHandler.getServerName(request);
+        String host = request.getServerName();
         String scheme = request.getScheme();
         int port = request.getServerPort();
         String cacheKey = scheme + "-" + host;

@@ -39,6 +39,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 
+import org.pustefixframework.web.ServletUtils;
 import org.pustefixframework.webservices.config.ServiceConfig;
 import org.pustefixframework.webservices.monitor.MonitorHistory;
 import org.pustefixframework.webservices.monitor.MonitorRecord;
@@ -48,7 +49,6 @@ import org.springframework.util.ClassUtils;
 import de.schlund.pfixcore.beans.BeanDescriptor;
 import de.schlund.pfixxml.resources.Resource;
 import de.schlund.pfixxml.resources.ResourceUtil;
-import de.schlund.pfixxml.serverutil.SessionHelper;
 
 
 public class AdminWebapp {
@@ -176,7 +176,7 @@ public class AdminWebapp {
                 writer.println("<b>"+name+"</b>");
                 if(srvConf.getProtocolType().equals(Constants.PROTOCOL_TYPE_ANY)||
                         srvConf.getProtocolType().equals(Constants.PROTOCOL_TYPE_SOAP)) {
-                    String wsdlUri=req.getRequestURI()+"/"+name+SessionHelper.getSessionIdPath(req)+"?WSDL";
+                    String wsdlUri=req.getRequestURI()+"/"+name+ServletUtils.getSessionIdPath(req)+"?WSDL";
                     writer.println("&nbsp;&nbsp;<a class=\"srvlink\" target=\"_blank\" href=\""+wsdlUri+"\" title=\"Show generated WSDL\">WSDL</a>");
                     String soapUri=req.getRequestURI()+"?wsscript&amp;name="+srvConf.getName()+"&amp;type=soap";
                     writer.println("&nbsp;&nbsp;<a class=\"srvlink\" target=\"_blank\" href=\""+soapUri+"\" title=\"Show generated SOAP Javascript stub\">SOAP JS</a>");
@@ -222,7 +222,7 @@ public class AdminWebapp {
 	                            writer.println("</ul>");
                             }
                             writer.println(") ");
-                            String href = req.getContextPath() + "/webservice" + SessionHelper.getSessionIdPath(req) +
+                            String href = req.getContextPath() + "/webservice" + ServletUtils.getSessionIdPath(req) +
                                     "?test&amp;service=" + srvConf.getName() + "&amp;method=" + meth.getName();
                             String idSuffix = srvConf.getName() + "_" + meth.getName();
                             

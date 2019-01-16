@@ -3,7 +3,7 @@ package de.schlund.pfixcore.example;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
 
-import org.pustefixframework.http.SessionUtils;
+import org.pustefixframework.web.ServletUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.ui.ModelMap;
 import org.springframework.web.context.request.ServletWebRequest;
@@ -28,7 +28,7 @@ public class InvalidationWebRequestInterceptor implements WebRequestInterceptor 
 				String param = request.getParameter("invalidate");
 				if(param != null) {
 					if(adultInfo.getAdult() != null) {
-						SessionUtils.invalidate(session);
+						ServletUtils.invalidate(session);
 					}
 				}
 			}

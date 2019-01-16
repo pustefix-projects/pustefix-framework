@@ -2,7 +2,11 @@
 <include_parts xmlns:ixsl="http://www.w3.org/1999/XSL/Transform" xmlns:pfx="http://www.schlund.de/pustefix/core">
 
   <part name="content">
-    <theme name="default">test</theme>
+    <theme name="default">
+      <h2>home</h2>
+      <pfx:button page="test">go to test page</pfx:button>
+      <pfx:button page="ssl">go to ssl page</pfx:button>
+    </theme>
   </part>
 
 </include_parts>
