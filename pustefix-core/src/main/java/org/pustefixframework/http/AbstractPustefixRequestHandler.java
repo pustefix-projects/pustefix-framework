@@ -92,7 +92,7 @@ public abstract class AbstractPustefixRequestHandler implements PageAliasResolve
 
     public void handleRequest(HttpServletRequest req, HttpServletResponse res) throws ServletException, IOException {
 
-        PfixServletRequest preq = new PfixServletRequestImpl(req, getServletManagerConfig().getProperties());
+        PfixServletRequest preq = new PfixServletRequestImpl(req, getServletManagerConfig().getProperties(), this);
 
         if(!req.isSecure() && needsSSL(preq)) {
             ServletUtils.redirectToSSL(req, res, HttpServletResponse.SC_TEMPORARY_REDIRECT);

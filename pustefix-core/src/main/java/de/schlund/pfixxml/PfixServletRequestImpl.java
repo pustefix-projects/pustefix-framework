@@ -507,8 +507,11 @@ public class PfixServletRequestImpl implements PfixServletRequest {
         }
     }
     
-    /* (non-Javadoc)
-     * @see de.schlund.pfixxml.PfixServletRequest#getPageName()
+    /**
+     * Returns the requested page name, i.e. the page name as
+     * specified by the __page request parameter or if not available,
+     * the extra path information from the request without leading "/"
+     * (or null if no extra path information given).
      */
     public String getRequestedPageName() {
         String       pagename = "";
@@ -533,6 +536,11 @@ public class PfixServletRequestImpl implements PfixServletRequest {
         }
     }
     
+    /**
+     * Returns the real page name, i.e. if the requested page
+     * name is an alias name, the internal page name will be
+     * resolved/returned (or null if no page name was requested).
+     */
     public String getPageName() {
         if(internalPageName == null) {
             String pageName = getRequestedPageName();
