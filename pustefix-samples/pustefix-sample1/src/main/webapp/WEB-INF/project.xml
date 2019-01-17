@@ -64,7 +64,6 @@
       <config-file>docroot:/WEB-INF/config.conf.xml</config-file>
       <!-- Set this to true if you want to skip the last transformation and only get a
            xml document containing all needed information for an external renderer -->
-      <!-- <render-external>true</render-external> -->  
       <!-- <max-stored-doms>5</max-stored-doms> -->
       <!-- Set the timeout for removing old SPDocuments. (in seconds) -->
       <choose>

@@ -46,9 +46,6 @@ import javax.servlet.http.HttpSession;
 import javax.xml.transform.Templates;
 import javax.xml.transform.TransformerConfigurationException;
 import javax.xml.transform.TransformerException;
-import javax.xml.transform.TransformerFactory;
-import javax.xml.transform.TransformerFactoryConfigurationError;
-import javax.xml.transform.dom.DOMSource;
 import javax.xml.transform.stream.StreamResult;
 
 import org.pustefixframework.config.contextxmlservice.AbstractXMLServletConfig;
@@ -110,7 +107,7 @@ public abstract class AbstractPustefixXMLRequestHandler extends AbstractPustefix
 
     //~ Instance/static variables ..................................................................
     // how to write xml to the result stream
-    private enum RENDERMODE { RENDER_NORMAL, RENDER_EXTERNAL, RENDER_FONTIFY, RENDER_XMLONLY, RENDER_LASTDOM };
+    private enum RENDERMODE { RENDER_NORMAL, RENDER_FONTIFY, RENDER_XMLONLY, RENDER_LASTDOM };
     
     public static final String DEF_PROP_TMPDIR = "java.io.tmpdir";
     private static final String FONTIFY_SSHEET        = "module://pustefix-core/xsl/xmlfontify.xsl";
@@ -181,8 +178,7 @@ public abstract class AbstractPustefixXMLRequestHandler extends AbstractPustefix
     }
     
     protected abstract AbstractXMLServletConfig getAbstractXMLServletConfig();
-    
-    private boolean renderExternal = false;
+
     private boolean includePartsEditableByDefault = true;
     
     private final static Logger LOGGER_TRAIL = LoggerFactory.getLogger("LOGGER_TRAIL");
@@ -755,9 +751,6 @@ public abstract class AbstractPustefixXMLRequestHandler extends AbstractPustefix
             case RENDER_FONTIFY:
                 renderFontify(spdoc, res, paramhash);
                 break;
-            case RENDER_EXTERNAL:
-                renderExternal(spdoc, res, paramhash, stylesheet);
-                break;
             case RENDER_XMLONLY:
             case RENDER_LASTDOM:
                 renderXmlonly(spdoc, res);
@@ -834,31 +827,6 @@ public abstract class AbstractPustefixXMLRequestHandler extends AbstractPustefix
         }
     }
 
-
-    // FIXME Remove external render mode as it is NOT WORKING
-    private void renderExternal(SPDocument spdoc, HttpServletResponse res, TreeMap<String, Object> paramhash, String stylesheet) throws
-        TransformerException, TransformerConfigurationException, TransformerFactoryConfigurationError, IOException {
-        Document doc  = spdoc.getDocument();
-        Document ext  = doc;
-        if (/* !spdoc.getNostore() || */ spdoc.isRedirect()) {
-            ext = Xml.createDocument();
-            ext.appendChild(ext.importNode(doc.getDocumentElement(), true));
-        }
-        
-        ext.insertBefore(ext.createProcessingInstruction("xml-stylesheet", "type=\"text/xsl\" media=\"all\" href=\"file: //"
-                                                         + stylesheet + "\""),
-                         ext.getDocumentElement()); 
-        for (Iterator<String> i = paramhash.keySet().iterator(); i.hasNext();) {
-            String key = i.next();
-            String val = (String) paramhash.get(key);
-            ext.insertBefore(ext.createProcessingInstruction("modxslt-param", "name=\"" + key + "\" value=\"" + val + "\""),
-                             ext.getDocumentElement());
-        }
-        res.setContentType("text/xml");
-        TransformerFactory.newInstance().newTransformer().transform(new DOMSource(ext),
-                                                                    new StreamResult(res.getOutputStream()));
-    }
-
     private void renderFontify(SPDocument spdoc, HttpServletResponse res, TreeMap<String, Object> paramhash) throws TargetGenerationException, TransformerException, IOException {
         Templates stylevalue = (Templates) generator.createXSLLeafTarget(FONTIFY_SSHEET).getValue();
         Document doc = Xml.createDocument();
@@ -889,10 +857,7 @@ public abstract class AbstractPustefixXMLRequestHandler extends AbstractPustefix
         String value;
         RENDERMODE rendering;
         RequestParam xmlonly;
-        
-        if (renderExternal) {
-            return RENDERMODE.RENDER_EXTERNAL;
-        }
+
         xmlonly = pfreq.getRequestParam(PARAM_XMLONLY);
         if (xmlonly == null) {
             return RENDERMODE.RENDER_NORMAL;
@@ -1268,11 +1233,7 @@ public abstract class AbstractPustefixXMLRequestHandler extends AbstractPustefix
     public void setSessionCleaner(SessionCleaner sessionCleaner) {
         this.sessionCleaner = sessionCleaner;
     }
-    
-    public void setRenderExternal(boolean renderExternal) {
-        this.renderExternal = renderExternal;
-    }
-    
+
     public void setAdditionalTrailInfo(AdditionalTrailInfo additionalTrailInfo) {
         this.additionalTrailInfo = additionalTrailInfo;
     }

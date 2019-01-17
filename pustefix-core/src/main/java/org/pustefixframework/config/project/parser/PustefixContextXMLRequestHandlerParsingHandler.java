@@ -92,13 +92,7 @@ public class PustefixContextXMLRequestHandlerParsingHandler extends Customizatio
             if(configurationFile.startsWith("/")) configurationFile = configurationFile.substring(1);
             configurationFile = "module://" + projectInfo.getDefiningModule() + "/" + configurationFile;
         }
-        
-        boolean renderExternal = false;
-        Element renderExtElement = (Element) serviceElement.getElementsByTagNameNS(Constants.NS_PROJECT, "render-external").item(0);
-        if (renderExtElement != null) {
-            renderExternal = Boolean.parseBoolean(renderExtElement.getTextContent().trim());
-        }
-        
+
         Class<?> trailInfoClass = DefaultAdditionalTrailInfoImpl.class;
         Element infoElement = (Element) serviceElement.getElementsByTagNameNS(Constants.NS_PROJECT, "additional-trail-info").item(0);
         if (infoElement != null) {
@@ -202,7 +196,6 @@ public class PustefixContextXMLRequestHandlerParsingHandler extends Customizatio
             beanBuilder.addPropertyValue("includePartsEditableByDefault", editorInfo.isIncludePartsEditableByDefault());
         }
         beanBuilder.addPropertyValue("sessionCleaner", new RuntimeBeanReference(SessionCleaner.class.getName()));
-        beanBuilder.addPropertyValue("renderExternal", renderExternal);
         if(additionalTrailInfoRef!=null) 
             beanBuilder.addPropertyValue("additionalTrailInfo", new RuntimeBeanReference(additionalTrailInfoRef));
         beanBuilder.addPropertyValue("maxStoredDoms", maxStoredDoms);

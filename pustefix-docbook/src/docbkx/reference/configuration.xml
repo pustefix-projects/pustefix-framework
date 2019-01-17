@@ -265,7 +265,6 @@
       <config-file>docroot:/WEB-INF/config.conf.xml</config-file>
       <!-- Set this to true if you want to skip the last transformation and only get a
            xml document containing all needed information for an external renderer: -->
-      <!-- <render-external>true</render-external> -->
       <!-- Set the maximum number of DOMs stored for reusage (default 5): -->
       <!-- <max-stored-doms>5</max-stored-doms> -->
       <!-- Set the timeout (in seconds) for removing old DOMs (default 300): -->
