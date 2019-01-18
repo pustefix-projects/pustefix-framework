@@ -28,11 +28,9 @@ import java.security.DigestOutputStream;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.util.Collections;
-import java.util.Enumeration;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
-import java.util.Properties;
 import java.util.Set;
 import java.util.TreeMap;
 import java.util.TreeSet;
@@ -251,7 +249,6 @@ public abstract class AbstractPustefixXMLRequestHandler extends AbstractPustefix
         }
         preq.getRequest().setAttribute(REQUEST_ATTR_REQUEST_TYPE, requestType);
         
-        Properties  params     = new Properties();
         HttpSession session    = preq.getSession(false);
         CacheValueLRU<String,SPDocument> storeddoms = null;
         if (session != null) {
@@ -295,29 +292,9 @@ public abstract class AbstractPustefixXMLRequestHandler extends AbstractPustefix
         // parameters in apply Stylesheet
         // if __reuse is set, we will try to reuse a stored DomTree, if __reuse is
         // not set, we store the DomTree from getDom in the Session as servletname + _saved_dom
-        if ((value = preq.getRequestParam(PARAM_FRAME)) != null)
-            if (value.getValue() != null && !value.getValue().equals("")) {
-                params.put(XSLPARAM_FRAME, value.getValue());
-            }
-        params.put(XSLPARAM_URI, preq.getRequestURI());
-        params.put(XSLPARAM_CONTEXTPATH, preq.getContextPath());
-        if (preq.getRemoteAddr() != null)
-            params.put(XSLPARAM_REMOTE_ADDR, preq.getRemoteAddr());
-        if (preq.getServerName() != null)
-            params.put(XSLPARAM_SERVER_NAME, preq.getServerName());
-        if (preq.getScheme() != null)
-            params.put(XSLPARAM_REQUEST_SCHEME, preq.getScheme());
-        if (preq.getQueryString() != null)
-            params.put(XSLPARAM_QUERYSTRING, preq.getQueryString());
 
-        if (editorLocation != null) {
-            params.put(XSLPARAM_EDITOR_URL, editorLocation);
-        }
-        params.put(XSL_PARAM_APP_URL, getApplicationURL(preq));
         
         if (session != null) {
-            params.put(XSLPARAM_SESSION_ID, session.getId());
-            params.put(XSLPARAM_SESSION_ID_PATH, ServletUtils.getSessionIdPath(preq.getRequest()));
             if (doreuse) {
                 synchronized (session) {
                     // Make sure redirect is only done once
@@ -336,11 +313,6 @@ public abstract class AbstractPustefixXMLRequestHandler extends AbstractPustefix
                     } else {
                         session.setAttribute(PARAM_EDITMODE, "none");
                     }
-                }
-            }
-            if (generator.getToolingExtensions()) {
-                if (session.getAttribute(PARAM_EDITMODE) != null) {
-                    params.put(PARAM_EDITMODE, session.getAttribute(PARAM_EDITMODE));
                 }
             }
         }
@@ -387,12 +359,8 @@ public abstract class AbstractPustefixXMLRequestHandler extends AbstractPustefix
             spdoc.setCreationTime(getdomtime);
         }
         preq.getRequest().setAttribute(GETDOMTIME, spdoc.getCreationTime());
-        params.put(XSLPARAM_REUSE, "" + spdoc.getTimestamp());
-        if (spdoc.getLanguage() != null) {
-            params.put(XSLPARAM_LANG, spdoc.getLanguage());
-        }
         
-        handleDocument(preq, res, spdoc, params, doreuse);
+        handleDocument(preq, res, spdoc, doreuse);
         if (session != null && (getRendering(preq) != RENDERMODE.RENDER_FONTIFY) && 
                 (getRendering(preq) != RENDERMODE.RENDER_LASTDOM) && !doreuse) {
             // This will store just the last dom, but only when editmode is allowed (so this normally doesn't apply to production mode)
@@ -480,7 +448,7 @@ public abstract class AbstractPustefixXMLRequestHandler extends AbstractPustefix
     }
    
     protected void handleDocument(PfixServletRequest preq, HttpServletResponse res,
-                                  SPDocument spdoc, Properties params, boolean doreuse) throws IOException, PustefixCoreException {
+                                  SPDocument spdoc, boolean doreuse) throws IOException, PustefixCoreException {
         long currtime = System.currentTimeMillis();
         
         // Check the document for supplied headers...
@@ -565,7 +533,7 @@ public abstract class AbstractPustefixXMLRequestHandler extends AbstractPustefix
 
         // So no error happened, let's go on with normal processing.
         HttpSession   session    = preq.getSession(false);
-        TreeMap<String, Object> paramhash  = constructParameters(spdoc, params, session);
+        TreeMap<String, Object> paramhash  = constructParameters(spdoc, session, preq);
         String        stylesheet = extractStylesheetFromSPDoc(spdoc, preq, res);
         if (stylesheet == null) {
         	if(spdoc.getPagename()!=null && !isPageDefined(spdoc.getPagename())) {
@@ -879,22 +847,42 @@ public abstract class AbstractPustefixXMLRequestHandler extends AbstractPustefix
         }
     }
 
-    private TreeMap<String, Object> constructParameters(SPDocument spdoc, Properties gen_params, HttpSession session) {
+    private TreeMap<String, Object> constructParameters(SPDocument spdoc, HttpSession session, PfixServletRequest preq) {
         TreeMap<String, Object> paramhash = new TreeMap<String, Object>();
-        HashMap<String, Object> params = spdoc.getProperties();
-        // These are properties which have been set in the process method
-        //  e.g. Frame handling is stored here
-        if (gen_params != null) {
-            for (Enumeration<?> e = gen_params.keys(); e.hasMoreElements();) {
-                String name  = (String) e.nextElement();
-                String value = gen_params.getProperty(name);
-                if (name != null && value != null) {
-                    paramhash.put(name, value);
+
+        RequestParam reqParam = preq.getRequestParam(PARAM_FRAME);
+        if (reqParam != null && reqParam.getValue() != null && !reqParam.getValue().equals("")) {
+            paramhash.put(XSLPARAM_FRAME, reqParam.getValue());
+        }
+        paramhash.put(XSLPARAM_URI, preq.getRequestURI());
+        paramhash.put(XSLPARAM_CONTEXTPATH, preq.getContextPath());
+        paramhash.put(XSLPARAM_REMOTE_ADDR, preq.getRemoteAddr());
+        paramhash.put(XSLPARAM_SERVER_NAME, preq.getServerName());
+        paramhash.put(XSLPARAM_REQUEST_SCHEME, preq.getScheme());
+        if (preq.getQueryString() != null) {
+            paramhash.put(XSLPARAM_QUERYSTRING, preq.getQueryString());
+        }
+        if (editorLocation != null) {
+            paramhash.put(XSLPARAM_EDITOR_URL, editorLocation);
+        }
+        paramhash.put(XSL_PARAM_APP_URL, getApplicationURL(preq));
+        if(session != null) {
+            paramhash.put(XSLPARAM_SESSION_ID, session.getId());
+            paramhash.put(XSLPARAM_SESSION_ID_PATH, ServletUtils.getSessionIdPath(preq.getRequest()));
+            if (generator.getToolingExtensions()) {
+                if (session.getAttribute(PARAM_EDITMODE) != null) {
+                    paramhash.put(PARAM_EDITMODE, session.getAttribute(PARAM_EDITMODE));
                 }
             }
         }
+        paramhash.put(XSLPARAM_REUSE, "" + spdoc.getTimestamp());
+        if (spdoc.getLanguage() != null) {
+            paramhash.put(XSLPARAM_LANG, spdoc.getLanguage());
+        }
+
         // These are the parameters that may be set by the DOM tree producing
         // method of the servlet (something that implements the abstract method getDom())
+        HashMap<String, Object> params = spdoc.getProperties();
         if (params != null) {
             for (Iterator<String> iter = params.keySet().iterator(); iter.hasNext(); ) {
                 String name  = iter.next();
