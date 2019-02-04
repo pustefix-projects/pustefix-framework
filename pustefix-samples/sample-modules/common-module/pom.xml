@@ -13,4 +13,48 @@
   <packaging>jar</packaging>
   <name>Pustefix Common Sample Module</name>
 
+  <build>
+    <plugins>
+      <plugin>
+        <groupId>org.pustefixframework.maven.plugins</groupId>
+        <artifactId>pustefix-translation-plugin</artifactId>
+        <version>1.0.0-SNAPSHOT</version>
+        <configuration>
+          <sourceLocale>en</sourceLocale>
+          <targetLocales>
+            <targetLocale>de</targetLocale>
+          </targetLocales>
+          <translatorSettings>
+            <properties>
+              <property>
+                <name>deepl.endpoint</name>
+                <value>http://localhost:42487/v2/translate</value>
+                <!-- <value>https://api.deepl.com/v2/translate</value> -->
+              </property>
+              <property>
+                <name>deepl.authkey</name>
+                <value>dummy</value>
+              </property>
+            </properties>
+            <!-- You can additionally use a property file, e.g. for
+                 loading secret settings, like the authkey, from an
+                 external file not under source control. -->
+            <!--
+            <propertyFile>${user.home}/.deeplconfig</propertyFile>
+            -->
+          </translatorSettings>
+        </configuration>
+        <!--
+        <executions>
+          <execution>
+            <goals>
+              <goal>translate</goal>
+            </goals>
+          </execution>
+        </executions>
+        -->
+      </plugin>
+    </plugins>
+  </build>
+
 </project>

@@ -1,0 +1,7 @@
+# TODO: review
+msgid "foo"
+msgstr "[foo]"
+
+# TODO: review
+msgid "bar"
+msgstr "[bar]"

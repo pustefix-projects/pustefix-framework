@@ -72,8 +72,10 @@ public class POReader {
             String lastCommand = null;
             boolean bomChecked = false;
             String line = null;
+            int lineNo = 0;
             while((line = reader.readLine()) != null) {
                 line = line.trim();
+                lineNo++;
                 if(!bomChecked) {
                     if(line.startsWith(UTF8_BOM)) {
                         line = line.substring(1);
@@ -85,7 +87,7 @@ public class POReader {
                 } else {
                     if(line.startsWith("#")) {
                         if(!"#".equals(lastCommand)) {
-                            context = flush(messages, headers, context);
+                            context = flush(messages, headers, context, lineNo);
                         }
                         lastCommand = "#";
                     } else {
@@ -101,12 +103,12 @@ public class POReader {
                                 }
                             } else if(cmd.equals("msgctxt")) {
                                 if(!"#".equals(lastCommand)) {
-                                    context = flush(messages, headers, context);
+                                    context = flush(messages, headers, context, lineNo);
                                 }
                                 context.messageContext = str;
                             } else if(cmd.equals("msgid")) {
                                 if(!("#".equals(lastCommand) || "msgctxt".equals(lastCommand))) {
-                                    context = flush(messages, headers, context);
+                                    context = flush(messages, headers, context, lineNo);
                                 }
                                 context.messageId = str;
                             } else if(cmd.equals("msgid_plural")) {
@@ -131,12 +133,13 @@ public class POReader {
                     }
                 }
             }
-            flush(messages, headers, context);
+            flush(messages, headers, context, lineNo + 1);
             return new POData(messages, headers);
         }
     }
 
-    private ParserContext flush(List<POMessage> messages, Map<String, String> headers, ParserContext context) throws IOException {
+    private ParserContext flush(List<POMessage> messages, Map<String, String> headers,
+            ParserContext context, int lineNo) throws IOException {
         if(context != null && context.messageId != null) {
             if(context.messageId.isEmpty() && messages.isEmpty()) {
                 
@@ -153,10 +156,12 @@ public class POReader {
                 context.messageStrings = processor.process(context.messageStrings);
             }
             POMessage message = new POMessage(context.messageContext, context.messageId, 
-                    context.messageIdPlural, context.messageStrings);
+                    context.messageIdPlural, context.messageStrings, context.startLineNo, lineNo - 1);
             messages.add(message);
         }
-        return new ParserContext();
+        ParserContext newContext = new ParserContext();
+        newContext.startLineNo = lineNo;
+        return newContext;
     }
 
     private void parseHeader(String str, Map<String, String> headers) throws IOException {
@@ -210,6 +215,7 @@ public class POReader {
         String messageIdPlural = null;
         String[] messageStrings = new String[0];
         int messageStringIndex = 0;
+        int startLineNo;
     }
 
 }

@@ -15,7 +15,6 @@
  * along with Pustefix; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  */
-
 package org.pustefixframework.util.i18n;
 
 /**
@@ -27,6 +26,8 @@ public class POMessage {
     private final String messageId;
     private final String messageIdPlural;
     private final String[] messageStrings;
+    private int startLineNo;
+    private int endLineNo;
 
     /**
      * Creates a message object.
@@ -51,6 +52,23 @@ public class POMessage {
         this.messageId = messageId;
         this.messageIdPlural = messageIdPlural;
         this.messageStrings = messageStrings;
+    }
+
+    /**
+     * Creates a message object with line numbering information.
+     *
+     * @param messageContext  context
+     * @param messageId  untranslated string
+     * @param messageIdPlural  untranslated plural string
+     * @param messageStrings  translated strings
+     * @param startLineNo line number where message entry starts
+     * @param endLineNo line number where message entry ends
+     */
+    public POMessage(String messageContext, String messageId, String messageIdPlural,
+            String[] messageStrings, int startLineNo, int endLineNo) {
+        this(messageContext, messageId, messageIdPlural, messageStrings);
+        this.startLineNo = startLineNo;
+        this.endLineNo = endLineNo;
     }
 
     /**
@@ -89,4 +107,21 @@ public class POMessage {
         return messageStrings;
     }
 
+    /**
+     * Returns original line number where message entry
+     * starts in PO file.
+     * @return starting line number
+     */
+    public int getStartLineNo() {
+        return startLineNo;
+    }
+
+    /**
+     * Returns original line number where message entry
+     * ends in PO file.
+     * @return ending line number
+     */
+    public int getEndLineNo() {
+        return endLineNo;
+    }
 }

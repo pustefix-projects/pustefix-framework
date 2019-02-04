@@ -1,0 +1,18 @@
+# test3
+
+msgid "baz"
+msgstr "[baz]"
+
+# TODO: review
+msgid "ho"
+msgstr "[ho]"
+
+msgid "bar"
+msgstr "[bar]"
+
+msgid "foo"
+msgstr "[foo]"
+
+# TODO: review
+msgid "hey"
+msgstr "[hey]"
