@@ -45,8 +45,6 @@ import org.codehaus.plexus.util.DirectoryScanner;
 /**
  * Generate IWrapper classes from .iwrp files.
  *
- * @author mleidig@schlund.de
- *
  * @goal generate
  * @phase generate-sources
  * @requiresDependencyResolution compile
@@ -79,7 +77,9 @@ public class GenerateIWrappersMojo extends AbstractMojo {
      */
     private MavenProject project;
     
-    /** @parameter property="plugin.artifacts" */
+    /**
+     * @parameter property="plugin.artifacts"
+     */
     private java.util.List<Artifact> pluginArtifacts;
 
     /**

@@ -60,7 +60,9 @@ public class PageListGeneratorMojo extends AbstractMojo {
      */
     private File logroot;
 
-    /** @parameter default-value="${project}" */
+    /**
+     * @parameter default-value="${project}"
+     */
     private MavenProject mavenProject;
 
     public void execute() throws MojoExecutionException {
