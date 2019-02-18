@@ -17,7 +17,7 @@
       <groupId>org.pustefixframework.webservices</groupId>
       <artifactId>pustefix-webservices-core</artifactId>
       <version>0.23.1-SNAPSHOT</version>
-    </dependency> 
+    </dependency>
   </dependencies>
   
   <profiles>
@@ -46,6 +46,23 @@
           <version>2.2.8</version>
         </dependency>
       </dependencies>  
+    </profile>
+    <profile>
+      <activation>
+        <jdk>11</jdk>
+      </activation>
+      <dependencies>
+        <dependency>
+          <groupId>com.sun.xml.ws</groupId>
+          <artifactId>jaxws-rt</artifactId>
+	  <version>2.3.2</version>
+        </dependency>
+	<dependency>
+          <groupId>com.sun.xml.ws</groupId>
+          <artifactId>jaxws-tools</artifactId>
+	  <version>2.3.2</version>
+        </dependency>
+      </dependencies>
     </profile>
   </profiles>
 

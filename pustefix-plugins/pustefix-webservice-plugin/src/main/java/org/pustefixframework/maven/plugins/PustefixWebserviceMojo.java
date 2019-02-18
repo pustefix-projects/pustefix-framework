@@ -38,7 +38,7 @@ import org.pustefixframework.webservices.spring.WebServiceBeanConfigReader;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 
-import com.sun.tools.ws.ant.WsGen;
+import com.sun.tools.ws.ant.WsGen2;
 
 import de.schlund.pfixxml.config.GlobalConfig;
 import de.schlund.pfixxml.config.GlobalConfigurator;
@@ -84,12 +84,6 @@ public class PustefixWebserviceMojo extends AbstractMojo {
      * @parameter default-value="${basedir}/target/${project.artifactId}-${project.version}/"
      */
     private File webappdir;
-    
-    /**
-     * The relative port for the Tomcat.
-     * @parameter default-value="80"
-     */
-    private int portbase;
 
     /** 
      * @parameter default-value="${basedir}/src/main/webapp/WEB-INF/project.xml"
@@ -222,21 +216,21 @@ public class PustefixWebserviceMojo extends AbstractMojo {
                                 if(!wsgenDirs.contains(wsgenDir)) {
                                 
                                     if(!wsgenDir.exists()) wsgenDir.mkdirs();
-                                    WsGen wsgen = new WsGen();
+                                    WsGen2 wsgen2 = new WsGen2();
                                     Project antProject = new Project();
-                                    wsgen.setProject(antProject);
-                                    wsgen.setDynamicAttribute("keep", "true");
+                                    wsgen2.setProject(antProject);
+                                    wsgen2.setKeep(true);
                                     if(!gendir.exists()) gendir.mkdirs();
-                                    wsgen.setDynamicAttribute("sourcedestdir", gendir.getAbsolutePath());
-                                    wsgen.setDynamicAttribute("genwsdl", "true");
-                                    wsgen.setDynamicAttribute("destdir", builddir.getAbsolutePath());
-                                    wsgen.setDynamicAttribute("resourcedestdir", wsgenDir.getAbsolutePath());
-                                    wsgen.setDynamicAttribute("classpath", reflection.getClasspath());
-                                    wsgen.setDynamicAttribute("sei", conf.getImplementationName());
+                                    wsgen2.setSourcedestdir(gendir);
+                                    wsgen2.setGenwsdl(true);
+                                    wsgen2.setDestdir(builddir);
+                                    wsgen2.setResourcedestdir(wsgenDir);
+                                    wsgen2.setClasspath(reflection.getClasspath());
+                                    wsgen2.setSei(conf.getImplementationName());
                                     String serviceName = "{" + Reflection.getTargetNamespace(implClass) + "}" + conf.getName();
-                                    wsgen.setDynamicAttribute("servicename", serviceName);
+                                    wsgen2.setServicename(serviceName);
                                     try {
-                                        wsgen.execute();
+                                        wsgen2.execute();
                                     } catch(Exception x) {
                                         x.printStackTrace();
                                         throw x;

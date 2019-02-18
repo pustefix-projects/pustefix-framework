@@ -39,33 +39,12 @@
       <version>0.23.1-SNAPSHOT</version>
     </dependency>
   </dependencies>
-  
+
   <profiles>
-    <profile><!-- see http://maven.apache.org/general.html#tools-jar-dependency -->
-      <id>sun-tools.jar</id>
+    <profile>
+      <id>tools.jar</id>
       <activation>
-        <property>
-          <name>java.vendor</name>
-          <value>Sun Microsystems Inc.</value>
-        </property>
-      </activation>
-      <dependencies>
-        <dependency>
-          <groupId>com.sun</groupId>
-          <artifactId>tools</artifactId>
-          <version>1.8</version>
-          <scope>system</scope>
-          <systemPath>${java.home}/../lib/tools.jar</systemPath>
-        </dependency>
-      </dependencies>
-    </profile>
-    <profile><!-- see http://maven.apache.org/general.html#tools-jar-dependency -->
-      <id>oracle-tools.jar</id>
-      <activation>
-        <property>
-          <name>java.vendor</name>
-          <value>Oracle Corporation</value>
-        </property>
+        <jdk>1.8</jdk>
       </activation>
       <dependencies>
         <dependency>

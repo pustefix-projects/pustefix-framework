@@ -37,36 +37,38 @@ import javax.xml.parsers.DocumentBuilderFactory;
 import org.apache.maven.artifact.Artifact;
 import org.apache.maven.plugin.MojoExecutionException;
 import org.apache.maven.project.MavenProject;
+import org.apache.tools.ant.Project;
+import org.apache.tools.ant.types.Path;
+import org.apache.tools.ant.types.Path.PathElement;
 import org.w3c.dom.Document;
 
 /**
  * Utility methods used by the mojo.
- * 
- * @author mleidig@schlund.de
  */
 public class Reflection {
     public static Reflection create(MavenProject project) throws MojoExecutionException {
         URL[] cp;
         List<Artifact> artifacts;
-        StringBuilder classpath;
         File file;
 
-        classpath = new StringBuilder();
+        Path classpath = new Path(new Project());
         try {
             artifacts = extracted(project);
             cp = new URL[artifacts.size() + 1];
             file = new File(project.getBuild().getOutputDirectory());
             cp[0] = file.toURI().toURL();
-            classpath.append(file);
+            PathElement pe = classpath.createPathElement();
+            pe.setLocation(file);
             for (int i = 1; i < cp.length; i++) {
                 file = artifacts.get(i - 1).getFile();
                 cp[i] = file.toURI().toURL();
-                classpath.append(':').append(file.getAbsolutePath());
+                pe = classpath.createPathElement();
+                pe.setLocation(file);
             }
         } catch (MalformedURLException e) {
             throw new MojoExecutionException("invalid url", e); 
         }
-        return new Reflection(new URLClassLoader(cp, Reflection.class.getClassLoader()), classpath.toString());
+        return new Reflection(new URLClassLoader(cp, Reflection.class.getClassLoader()), classpath);
     }
 
     @SuppressWarnings("unchecked")
@@ -75,14 +77,14 @@ public class Reflection {
     }
     
     private final URLClassLoader loader;
-    private final String classpath;
+    private final Path classpath;
     
-    public Reflection(URLClassLoader loader, String classpath) {
+    public Reflection(URLClassLoader loader, Path classpath) {
         this.loader = loader;
         this.classpath = classpath;
     }
     
-    public String getClasspath() {
+    public Path getClasspath() {
         return classpath;
     }
     

@@ -5,6 +5,7 @@ import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.net.JarURLConnection;
 import java.net.URL;
+import java.nio.file.NoSuchFileException;
 import java.util.zip.ZipException;
 
 import junit.framework.Assert;
@@ -56,6 +57,9 @@ public class JarFileURLConnectionTest extends TestCase {
         } catch(FileNotFoundException x) {
             //since JDK 1.7
             error = x;
+        } catch(NoSuchFileException x) {
+            //since Java 9
+            error = x;
         }
         assertNotNull(error);
         error = null;
@@ -66,6 +70,9 @@ public class JarFileURLConnectionTest extends TestCase {
             error = x;
         } catch(FileNotFoundException x) {
             //since JDK 1.7
+            error = x;
+        } catch(NoSuchFileException x) {
+            //since Java 9
             error = x;
         }
         assertNotNull(error);
