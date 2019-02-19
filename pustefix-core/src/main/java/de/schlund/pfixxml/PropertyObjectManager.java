@@ -71,7 +71,7 @@ public class PropertyObjectManager {
                 confObj = confObjs.get(objClass);
                 if (confObj == null) {
                     LOG.info("******* Creating new ConfigurableObject " + objClass.getName());
-                    confObj = objClass.newInstance();
+                    confObj = objClass.getDeclaredConstructor().newInstance();
                     confObj.init(config);
                     confObjs.put(objClass, confObj);
                 }

@@ -15,7 +15,6 @@
  * along with Pustefix; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  */
-
 package de.schlund.pfixcore.workflow;
 
 import java.io.File;
@@ -44,9 +43,9 @@ import javax.xml.transform.dom.DOMResult;
 import javax.xml.transform.sax.SAXTransformerFactory;
 import javax.xml.transform.sax.TransformerHandler;
 
+import org.pustefixframework.util.xml.DOMUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.pustefixframework.util.xml.DOMUtils;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.NamedNodeMap;
@@ -55,7 +54,6 @@ import org.xml.sax.InputSource;
 import org.xml.sax.SAXException;
 import org.xml.sax.XMLReader;
 import org.xml.sax.helpers.DefaultHandler;
-import org.xml.sax.helpers.XMLReaderFactory;
 
 import de.schlund.pfixcore.util.ModuleInfo;
 import de.schlund.pfixxml.XMLException;
@@ -173,7 +171,7 @@ public class SiteMap {
                 th.setResult(dr);
                 DefaultHandler dh = new TransformerHandlerAdapter(th);
                 DefaultHandler ch = new CustomizationHandler(dh);
-                XMLReader xreader = XMLReaderFactory.createXMLReader();
+                XMLReader xreader = Xml.createXMLReader();
                 xreader.setContentHandler(ch);
                 xreader.setDTDHandler(ch);
                 xreader.setEntityResolver(ch);

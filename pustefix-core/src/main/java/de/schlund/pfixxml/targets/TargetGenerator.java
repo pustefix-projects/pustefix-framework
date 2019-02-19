@@ -15,7 +15,6 @@
  * along with Pustefix; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  */
-
 package de.schlund.pfixxml.targets;
 
 import java.io.File;
@@ -60,7 +59,6 @@ import org.xml.sax.InputSource;
 import org.xml.sax.SAXException;
 import org.xml.sax.XMLReader;
 import org.xml.sax.helpers.DefaultHandler;
-import org.xml.sax.helpers.XMLReaderFactory;
 
 import de.schlund.pfixcore.util.Meminfo;
 import de.schlund.pfixcore.workflow.SiteMap;
@@ -102,9 +100,7 @@ import de.schlund.pfixxml.util.XsltVersion;
 /**
  * The TargetGenerator holds all the targets belonging to a certain
  * project (as defined by the config file used to init the Generator).
- *
  */
-
 public class TargetGenerator implements ResourceVisitor, ServletContextAware, InitializingBean {
 
     public static final String XSLPARAM_TG = "__target_gen";
@@ -658,7 +654,7 @@ public class TargetGenerator implements ResourceVisitor, ServletContextAware, In
 
         fullXml = Xml.serialize(confDoc, false, true);
 
-        XMLReader xreader = XMLReaderFactory.createXMLReader();
+        XMLReader xreader = Xml.createXMLReader();
         TransformerFactory tf = TransformerFactory.newInstance();
         if (tf.getFeature(SAXTransformerFactory.FEATURE)) {
             SAXTransformerFactory stf = (SAXTransformerFactory) tf;

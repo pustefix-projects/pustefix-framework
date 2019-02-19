@@ -12,7 +12,7 @@ public class SessionTrackingStrategyInfo {
     
     public SessionTrackingStrategy getSessionTrackingStrategyInstance() {
         try {
-            return sessionTrackingStrategy.newInstance();
+            return sessionTrackingStrategy.getDeclaredConstructor().newInstance();
         } catch(Exception x) {
             throw new RuntimeException("Can't instantiate session tracking strategy", x);
         }

@@ -15,8 +15,8 @@
  * along with Pustefix; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  */
-
 package de.schlund.pfixcore.generator.casters;
+
 import java.util.ArrayList;
 
 import org.pustefixframework.generated.CoreStatusCodes;
@@ -27,18 +27,8 @@ import de.schlund.pfixxml.RequestParam;
 import de.schlund.util.statuscodes.StatusCode;
 import de.schlund.util.statuscodes.StatusCodeHelper;
 
-/**
- * ToDouble.java
- *
- *
- * Created: Tue Mar 08 16:17:48 2005
- *
- * @author <a href="mailto:tanjev.stuhr@schlund.de">Tanjev Stuhr</a>
- *
- *
- */
-
 public class ToDouble extends SimpleCheck implements IWrapperParamCaster {
+
     private Double[]    value = null;
     private StatusCode scode;
 
@@ -62,7 +52,7 @@ public class ToDouble extends SimpleCheck implements IWrapperParamCaster {
         for (int i = 0; i < param.length; i++) {
             try {
                 par = param[i].getValue().replace(',', '.');
-                val = new Double(par);
+                val = Double.valueOf(par);
                 out.add(val);
             } catch (NumberFormatException e) {
                 addSCode(scode);
@@ -74,4 +64,4 @@ public class ToDouble extends SimpleCheck implements IWrapperParamCaster {
         }
     }
     
-}// ToDouble
+}

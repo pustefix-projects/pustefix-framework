@@ -149,7 +149,7 @@ public class GenerateMojo extends AbstractMojo {
         try {
             Class<?> generator = Class.forName("de.schlund.pfixxml.targets.TargetGeneratorRunner", true, loader);
             Method meth = generator.getMethod("run", File.class, File.class, String.class, boolean.class, Logger.class);
-            Object instance = generator.newInstance();
+            Object instance = generator.getDeclaredConstructor().newInstance();
             Thread.currentThread().setContextClassLoader(loader);
             boolean ok = (Boolean) meth.invoke(instance, docroot, cache, "prod", parallel, reportLogger);
             if (!ok)

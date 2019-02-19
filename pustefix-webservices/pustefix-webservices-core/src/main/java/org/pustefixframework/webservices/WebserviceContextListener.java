@@ -32,8 +32,6 @@ import javax.servlet.ServletContextListener;
  * This ServletContextListener implementation checks if a JAXWS endpoint configuration
  * can be found and, if so, creates a JAXWS ServletContextListener implementation and
  * delegates all calls to it.
- * 
- * @author mleidig@schlund.de
  */
 public class WebserviceContextListener implements ServletContextAttributeListener, ServletContextListener {
     
@@ -66,7 +64,7 @@ public class WebserviceContextListener implements ServletContextAttributeListene
         if(configURL != null) {
             try {
                 Class<?> clazz=Class.forName(JAXWS_LISTENER);
-                Object listener=clazz.newInstance();
+                Object listener=clazz.getDeclaredConstructor().newInstance();
                 //in JAXWS 2.1.3 the methods implementing this interface are empty,
                 //so let's ignore if the interface isn't implmented in future versions
                 if(ServletContextAttributeListener.class.isAssignableFrom(clazz)) 

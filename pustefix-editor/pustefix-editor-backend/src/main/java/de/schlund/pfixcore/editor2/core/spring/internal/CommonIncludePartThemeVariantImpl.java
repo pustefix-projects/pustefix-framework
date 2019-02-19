@@ -15,7 +15,6 @@
  * along with Pustefix; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  */
-
 package de.schlund.pfixcore.editor2.core.spring.internal;
 
 import java.io.File;
@@ -47,7 +46,6 @@ import org.xml.sax.InputSource;
 import org.xml.sax.SAXException;
 import org.xml.sax.XMLReader;
 import org.xml.sax.helpers.DefaultHandler;
-import org.xml.sax.helpers.XMLReaderFactory;
 
 import de.schlund.pfixcore.editor2.core.spring.BackupService;
 import de.schlund.pfixcore.editor2.core.spring.ConfigurationService;
@@ -61,8 +59,6 @@ import de.schlund.pfixxml.util.Xml;
 
 /**
  * Common implementation of IncludePartThemeVariant
- * 
- * @author Sebastian Marsching <sebastian.marsching@1und1.de>
  */
 public abstract class CommonIncludePartThemeVariantImpl extends
         AbstractIncludePartThemeVariant {
@@ -359,13 +355,7 @@ public abstract class CommonIncludePartThemeVariantImpl extends
     }
 
     private Collection<String> extractPrefixDeclarationsFromFileRoot(File xmlFile) {
-        XMLReader xreader;
-        try {
-            xreader = XMLReaderFactory.createXMLReader();
-        } catch (SAXException e) {
-            throw new RuntimeException("Could not create XMLReader", e);
-        }
-        
+        XMLReader xreader = Xml.createXMLReader();
         final Collection<String> prefixes = new HashSet<String>();
         ContentHandler nsPrefixHandler = new DefaultHandler() {
             private boolean foundFirstElement = false;

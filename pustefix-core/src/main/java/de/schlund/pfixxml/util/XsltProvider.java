@@ -15,7 +15,6 @@
  * along with Pustefix; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  */
-
 package de.schlund.pfixxml.util;
 
 import java.lang.reflect.Field;
@@ -29,9 +28,6 @@ import com.icl.saxon.om.NamePool;
 
 import de.schlund.pfixxml.config.EnvironmentProperties;
 
-/**
- * @author mleidig@schlund.de
- */
 public class XsltProvider {
     
     final static Logger LOG=LoggerFactory.getLogger(XsltProvider.class);
@@ -64,7 +60,7 @@ public class XsltProvider {
             if(namePoolImpl != null) {
                 try {
                     Class<?> clazz = Class.forName(namePoolImpl);
-                    NamePool namePool = (NamePool)clazz.newInstance();
+                    NamePool namePool = (NamePool)clazz.getDeclaredConstructor().newInstance();
                     namePool.loadStandardNames();
                     Field field = NamePool.class.getDeclaredField("defaultNamePool");
                     field.setAccessible(true);
@@ -88,19 +84,19 @@ public class XsltProvider {
         if(saxon1Available) {
             try {
                 Class<? extends XmlSupport> clazz=Class.forName(XML_SAXON1).asSubclass(XmlSupport.class);
-                xmlSupport.put(XsltVersion.XSLT1,clazz.newInstance());
+                xmlSupport.put(XsltVersion.XSLT1,clazz.getDeclaredConstructor().newInstance());
             } catch(Exception x) {
                 LOG.error("Can't initialize XmlSupport: "+XML_SAXON1,x);
             }
             try {
                 Class<? extends XPathSupport> clazz=Class.forName(XPATH_SAXON1).asSubclass(XPathSupport.class);
-                xpathSupport.put(XsltVersion.XSLT1,clazz.newInstance());
+                xpathSupport.put(XsltVersion.XSLT1,clazz.getDeclaredConstructor().newInstance());
             } catch(Exception x) {
                 LOG.error("Can't initialize XPathSupport: "+XPATH_SAXON1,x);
             }
             try {
                 Class<? extends XsltSupport> clazz=Class.forName(XSLT_SAXON1).asSubclass(XsltSupport.class);
-                xsltSupport.put(XsltVersion.XSLT1,clazz.newInstance());
+                xsltSupport.put(XsltVersion.XSLT1,clazz.getDeclaredConstructor().newInstance());
             } catch(Exception x) {
                 LOG.error("Can't initialize XsltSupport: "+XSLT_SAXON1,x);
             }
@@ -108,19 +104,19 @@ public class XsltProvider {
         if(saxon2Available) {
             try {
                 Class<? extends XmlSupport> clazz=Class.forName(XML_SAXON2).asSubclass(XmlSupport.class);
-                xmlSupport.put(XsltVersion.XSLT2,clazz.newInstance());
+                xmlSupport.put(XsltVersion.XSLT2,clazz.getDeclaredConstructor().newInstance());
             } catch(Exception x) {
                 LOG.error("Can't initialize XmlSupport: "+XML_SAXON2,x);
             }
             try {
                 Class<? extends XPathSupport> clazz=Class.forName(XPATH_SAXON2).asSubclass(XPathSupport.class);
-                xpathSupport.put(XsltVersion.XSLT2,clazz.newInstance());
+                xpathSupport.put(XsltVersion.XSLT2,clazz.getDeclaredConstructor().newInstance());
             } catch(Exception x) {
                 LOG.error("Can't initialize XPathSupport: "+XPATH_SAXON2,x);
             }
             try {
                 Class<? extends XsltSupport> clazz=Class.forName(XSLT_SAXON2).asSubclass(XsltSupport.class);
-                xsltSupport.put(XsltVersion.XSLT2,clazz.newInstance());
+                xsltSupport.put(XsltVersion.XSLT2,clazz.getDeclaredConstructor().newInstance());
             } catch(Exception x) {
                 LOG.error("Can't initialize XsltSupport: "+XSLT_SAXON2,x);
             }

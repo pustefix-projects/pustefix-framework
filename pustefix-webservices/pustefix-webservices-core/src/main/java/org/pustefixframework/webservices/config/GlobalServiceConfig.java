@@ -15,13 +15,13 @@
  * along with Pustefix; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  */
-
 package org.pustefixframework.webservices.config;
 
 import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.io.Serializable;
+import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
 import java.net.URL;
@@ -30,19 +30,8 @@ import java.util.HashMap;
 import org.pustefixframework.webservices.Constants;
 import org.pustefixframework.webservices.fault.FaultHandler;
 
-
-/**
- * GlobalServiceConfig.java
- * 
- * Created: 27.07.2004
- * 
- * @author mleidig@schlund.de
- */
 public class GlobalServiceConfig implements Serializable {
 
-    /**
-     * 
-     */
     private static final long serialVersionUID = -8134435783633908273L;
     private String                 server;
     private String                 reqPath          = "/webservice";
@@ -319,13 +308,11 @@ public class GlobalServiceConfig implements Serializable {
         if (str != null) {
             Class<?> clazz = Class.forName(str);
             try {
-                faultHandler = (FaultHandler) clazz.newInstance();
+                faultHandler = (FaultHandler) clazz.getDeclaredConstructor().newInstance();
                 HashMap<String, String> params = (HashMap<String, String>) in.readObject();
                 if (params != null) faultHandler.setParams(params);
-            } catch (IllegalAccessException x) {
-
-            } catch (InstantiationException x) {
-
+            } catch (IllegalAccessException | InstantiationException | NoSuchMethodException | InvocationTargetException x) {
+                //ignore
             }
         }
     }

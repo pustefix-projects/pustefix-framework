@@ -41,8 +41,6 @@ import de.schlund.pfixxml.RenderExtensionSaxon1;
  * function can catch its exceptions and store it calling the method
  * setExtensionFunctionError. Later, during exception handling, the 
  * exception can be retrieved calling getExtensionFunctionError().
- * 
- * @author mleidig@schlund.de
  */
 public class ExtensionFunctionUtils {
 
@@ -84,7 +82,7 @@ public class ExtensionFunctionUtils {
                 t2 = System.nanoTime();
                 Long totalTime = extFuncTime.get();
                 if(totalTime == null) {
-                    totalTime = new Long(t2 - t1);
+                    totalTime = t2 - t1;
                 } else {
                     totalTime = totalTime + t2 - t1;
                 }

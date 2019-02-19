@@ -19,12 +19,11 @@ package de.schlund.pfixcore.oxm.bean;
 
 /**
  * Simple test bean for OXM
- * 
- * @author  Stephan Schmidt <schst@stubbles.net>
  */
 public class BooleanPropertyBean {
+
     protected boolean admin = true;
-    protected Boolean deleted = new Boolean(false);
+    protected Boolean deleted = Boolean.FALSE;
 
     public boolean isAdmin() {
         return admin;

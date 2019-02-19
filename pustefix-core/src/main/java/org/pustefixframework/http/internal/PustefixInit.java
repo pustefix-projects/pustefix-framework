@@ -57,7 +57,6 @@ import org.xml.sax.SAXException;
 import org.xml.sax.SAXParseException;
 import org.xml.sax.XMLReader;
 import org.xml.sax.helpers.DefaultHandler;
-import org.xml.sax.helpers.XMLReaderFactory;
 
 import de.schlund.pfixcore.exception.PustefixCoreException;
 import de.schlund.pfixcore.util.JarFileCache;
@@ -69,6 +68,7 @@ import de.schlund.pfixxml.resources.FileResource;
 import de.schlund.pfixxml.resources.Resource;
 import de.schlund.pfixxml.resources.ResourceUtil;
 import de.schlund.pfixxml.util.TransformerHandlerAdapter;
+import de.schlund.pfixxml.util.Xml;
 import de.schlund.pfixxml.util.XsltProvider;
 
 /**
@@ -167,7 +167,7 @@ public class PustefixInit {
     static Document readLoggingConfig(InputStream in, String systemID, boolean validating) 
             throws SAXException, FileNotFoundException, IOException {
 
-        XMLReader xreader = XMLReaderFactory.createXMLReader();
+        XMLReader xreader = Xml.createXMLReader();
         TransformerFactory tf = XsltProvider.getXsltSupport(XsltProvider.getPreferredXsltVersion()).getThreadTransformerFactory();
         SAXTransformerFactory stf = (SAXTransformerFactory) tf;
         TransformerHandler th;

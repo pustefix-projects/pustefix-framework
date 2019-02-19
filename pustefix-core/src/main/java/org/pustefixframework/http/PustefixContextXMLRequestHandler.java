@@ -430,7 +430,7 @@ public class PustefixContextXMLRequestHandler extends AbstractPustefixXMLRequest
         if(renderOutputListenerClass != null) {
             try {
                 Class<? extends RenderOutputListener> clazz = Class.forName(renderOutputListenerClass).asSubclass(RenderOutputListener.class);
-                renderOutputListener = clazz.newInstance();
+                renderOutputListener = clazz.getDeclaredConstructor().newInstance();
             } catch (Exception x) {
                 LOG.error("Can't instantiate RenderOutputListener", x);
             }

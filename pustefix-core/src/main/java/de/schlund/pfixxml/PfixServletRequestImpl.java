@@ -17,9 +17,6 @@
  */
 package de.schlund.pfixxml;
 
-
-
-
 import java.util.ArrayList;
 import java.util.Enumeration;
 import java.util.HashMap;
@@ -52,11 +49,6 @@ import de.schlund.pfixxml.util.CookieUtils;
  * all others methods work on the currently set request, which may
  * be the original request used when the instance was created, or
  * any other request that has been set via <code>updateRequest()</code>.</p>
- *
- *
- * Created: Tue May  7 23:55:50 2002
- *
- * @author <a href="mailto:jtl@schlund.de">Jens Lautenbacher</a>
  */
 public class PfixServletRequestImpl implements PfixServletRequest {
 
@@ -437,7 +429,7 @@ public class PfixServletRequestImpl implements PfixServletRequest {
             maxsize = DEF_MAXPARTSIZE;
         }
         MultipartHandler multi = new MultipartHandler(req, tmpdir);
-        multi.setMaxPartSize((new Long(maxsize)).longValue());
+        multi.setMaxPartSize(Long.parseLong(maxsize));
         try {
             multi.parseRequest();
             multiPartExceptions.addAll(multi.getExceptionList());
@@ -549,4 +541,4 @@ public class PfixServletRequestImpl implements PfixServletRequest {
         return internalPageName;
     }
     
-} // PfixServletRequest
+}

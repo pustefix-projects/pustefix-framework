@@ -42,16 +42,10 @@ import de.schlund.pfixxml.targets.TargetGenerator;
 import de.schlund.pfixxml.util.XPath;
 import de.schlund.pfixxml.util.Xml;
 
-
-/**
- * DumpText.java
- *
- * @author <a href="mailto:jtl@schlund.de">Jens Lautenbacher</a>
- * @version 1.0
- */
-
 public class DumpText implements IDumpText {
+
     private final static DocumentBuilderFactory dbfac = DocumentBuilderFactory.newInstance();
+
     static {
         dbfac.setNamespaceAware(true);
     }
@@ -73,7 +67,7 @@ public class DumpText implements IDumpText {
         IDumpText trans;
         if (args.length == 3) {
             Class<?> clazz = Class.forName(args[2]);
-            trans = (IDumpText) clazz.newInstance();
+            trans = (IDumpText) clazz.getDeclaredConstructor().newInstance();
         } else {
             trans = new DumpText();
         }

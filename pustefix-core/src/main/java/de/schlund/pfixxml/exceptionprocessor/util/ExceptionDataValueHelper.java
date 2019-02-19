@@ -15,7 +15,6 @@
  * along with Pustefix; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  */
-
 package de.schlund.pfixxml.exceptionprocessor.util;
 
 import java.util.ArrayList;
@@ -26,21 +25,17 @@ import java.util.LinkedList;
 
 import javax.servlet.http.HttpSession;
 
+import org.pustefixframework.container.spring.beans.PustefixWebApplicationContext;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.pustefixframework.container.spring.beans.PustefixWebApplicationContext;
 import org.springframework.beans.factory.NoSuchBeanDefinitionException;
+import org.springframework.context.ApplicationContext;
 
 import de.schlund.pfixxml.PfixServletRequest;
 import de.schlund.pfixxml.serverutil.SessionAdmin;
 import de.schlund.pfixxml.serverutil.SessionInfoStruct;
 
-/**
- * @author jh
- *
- * To change the template for this generated type comment go to
- * Window - Preferences - Java - Code Generation - Code and Comments
- */
+
 public class ExceptionDataValueHelper {
     private final static Logger LOG = LoggerFactory.getLogger(ExceptionDataValueHelper.class);
 	/**
@@ -126,7 +121,7 @@ public class ExceptionDataValueHelper {
 	            String name = (String)e.nextElement();
 	            Object value = session.getServletContext().getAttribute(name);
 	            if(value instanceof PustefixWebApplicationContext) {
-	                PustefixWebApplicationContext appContext = (PustefixWebApplicationContext)value;
+	                ApplicationContext appContext = (ApplicationContext)value;
 	                try {
 	                    SessionAdmin sessionAdmin = (SessionAdmin)appContext.getBean(SessionAdmin.class.getName());
 	                    return sessionAdmin;

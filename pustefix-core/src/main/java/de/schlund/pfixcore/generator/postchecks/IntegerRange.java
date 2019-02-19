@@ -15,8 +15,8 @@
  * along with Pustefix; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  */
-
 package de.schlund.pfixcore.generator.postchecks;
+
 import java.util.StringTokenizer;
 
 import org.pustefixframework.generated.CoreStatusCodes;
@@ -26,18 +26,8 @@ import de.schlund.pfixcore.generator.SimpleCheck;
 import de.schlund.util.statuscodes.StatusCode;
 import de.schlund.util.statuscodes.StatusCodeHelper;
 
-/**
- * IntegerRange.java
- *
- *
- * Created: Thu Aug 16 17:18:57 2001
- *
- * @author <a href="mailto: "Jens Lautenbacher</a>
- *
- *
- */
-
 public class IntegerRange extends SimpleCheck implements IWrapperParamPostCheck {
+
     private int        lower;
     private int        upper;
     private StatusCode scode_small;
@@ -62,8 +52,8 @@ public class IntegerRange extends SimpleCheck implements IWrapperParamPostCheck 
         
         StringTokenizer tok = new StringTokenizer(param, " :", false);
         if (tok.countTokens() == 2) {
-            Integer thelower = new Integer(tok.nextToken());
-            Integer theupper = new Integer(tok.nextToken());
+            Integer thelower = Integer.valueOf(tok.nextToken());
+            Integer theupper = Integer.valueOf(tok.nextToken());
             lower = thelower.intValue();
             upper = theupper.intValue();
         } else {
@@ -85,4 +75,4 @@ public class IntegerRange extends SimpleCheck implements IWrapperParamPostCheck 
         }
     }
 
-}// IntegerRange
+}

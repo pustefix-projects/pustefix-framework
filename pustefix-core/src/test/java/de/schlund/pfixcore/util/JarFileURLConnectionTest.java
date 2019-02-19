@@ -8,7 +8,6 @@ import java.net.URL;
 import java.nio.file.NoSuchFileException;
 import java.util.zip.ZipException;
 
-import junit.framework.Assert;
 import junit.framework.TestCase;
 
 public class JarFileURLConnectionTest extends TestCase {
@@ -47,7 +46,7 @@ public class JarFileURLConnectionTest extends TestCase {
         URL url = new URL(urlStr);   
         JarURLConnection con = (JarURLConnection)url.openConnection();
         JarURLConnection conFile = new JarFileURLConnection(url);
-        Assert.assertEquals(con.getLastModified(), con.getLastModified());
+        assertEquals(con.getLastModified(), con.getLastModified());
         IOException error = null;
         try {
             con.getJarFile();

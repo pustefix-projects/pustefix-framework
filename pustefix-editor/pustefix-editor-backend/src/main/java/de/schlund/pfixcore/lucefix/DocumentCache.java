@@ -15,7 +15,6 @@
  * along with Pustefix; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  */
-
 package de.schlund.pfixcore.lucefix;
 
 import java.io.FileNotFoundException;
@@ -30,16 +29,13 @@ import org.apache.lucene.document.Document;
 import org.xml.sax.InputSource;
 import org.xml.sax.SAXException;
 import org.xml.sax.XMLReader;
-import org.xml.sax.helpers.XMLReaderFactory;
 
 import de.schlund.pfixcore.lucefix.Tripel.Type;
 import de.schlund.pfixxml.resources.FileResource;
 import de.schlund.pfixxml.resources.ResourceUtil;
+import de.schlund.pfixxml.util.Xml;
 
-/**
- * @author schuppi
- * @date Jun 14, 2005
- */
+
 public class DocumentCache {
     private Map<String, Document> cache;
     // private static Logger LOG = Logger.getLogger(DocumentCache.class);
@@ -114,7 +110,7 @@ public class DocumentCache {
 
     private static Collection<Document> getDocumentsFromFileAsCollection(FileResource f) throws FileNotFoundException, IOException,
             SAXException {
-        XMLReader xmlreader = XMLReaderFactory.createXMLReader();
+        XMLReader xmlreader = Xml.createXMLReader();
         IncludeFileHandler handler = new IncludeFileHandler(f);
         xmlreader.setContentHandler(handler);
         xmlreader.setDTDHandler(handler);

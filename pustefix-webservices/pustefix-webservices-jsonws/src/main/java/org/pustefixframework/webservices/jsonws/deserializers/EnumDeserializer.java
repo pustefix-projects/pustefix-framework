@@ -15,7 +15,6 @@
  * along with Pustefix; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  */
-
 package org.pustefixframework.webservices.jsonws.deserializers;
 
 import java.lang.reflect.Type;
@@ -24,10 +23,6 @@ import org.pustefixframework.webservices.jsonws.DeserializationContext;
 import org.pustefixframework.webservices.jsonws.DeserializationException;
 import org.pustefixframework.webservices.jsonws.Deserializer;
 
-
-/**
- * @author mleidig@schlund.de
- */
 public class EnumDeserializer extends Deserializer {
 
     @Override
@@ -37,7 +32,7 @@ public class EnumDeserializer extends Deserializer {
     }
     
     @Override
-    @SuppressWarnings("unchecked")
+    @SuppressWarnings({"unchecked", "rawtypes"})
     public Object deserialize(DeserializationContext ctx,Object jsonValue,Type targetType) throws DeserializationException {
         if(jsonValue instanceof String) {
         	Class<? extends Enum> targetClass=(Class<? extends Enum>)targetType;

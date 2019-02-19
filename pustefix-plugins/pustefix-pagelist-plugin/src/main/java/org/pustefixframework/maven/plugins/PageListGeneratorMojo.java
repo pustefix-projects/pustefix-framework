@@ -79,7 +79,7 @@ public class PageListGeneratorMojo extends AbstractMojo {
         try {
             Class<?> generator = Class.forName("org.pustefixframework.test.PageListGenerator", true, loader);
             Method meth = generator.getMethod("generate", File.class, File.class, String.class, File.class);
-            Object instance = generator.newInstance();
+            Object instance = generator.getDeclaredConstructor().newInstance();
             Thread.currentThread().setContextClassLoader(loader);
             List<File> files = (List<File>)meth.invoke(instance, docroot, outputDirectory, mode, logroot);
             if(getLog().isDebugEnabled()) {

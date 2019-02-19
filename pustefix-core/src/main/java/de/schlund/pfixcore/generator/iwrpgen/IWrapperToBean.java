@@ -30,11 +30,6 @@ import java.util.Set;
 
 import de.schlund.pfixcore.generator.IWrapper;
 
-/**
- * 
- * @author mleidig@schlund.de
- * 
- */
 public class IWrapperToBean {
 
     private static Map<Class<?>, BeanDescriptor> descriptors = new HashMap<Class<?>, BeanDescriptor>();
@@ -50,7 +45,7 @@ public class IWrapperToBean {
 
     public static <T> T createBean(IWrapper wrapper, Class<T> beanClass) {
         try {
-            T instance = beanClass.newInstance();
+            T instance = beanClass.getDeclaredConstructor().newInstance();
             populateBean(wrapper, instance);
             return instance;
         } catch (Exception x) {

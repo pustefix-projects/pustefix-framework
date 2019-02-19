@@ -61,7 +61,7 @@ public class RequestMappingHandlerAdapterConfig {
         List<HandlerMethodArgumentResolver> resolvers = new ArrayList<>();
         try {
             Class<?> sortClass = Class.forName("org.springframework.data.web.SortHandlerMethodArgumentResolver");
-            HandlerMethodArgumentResolver sortResolver = (HandlerMethodArgumentResolver)sortClass.newInstance();
+            HandlerMethodArgumentResolver sortResolver = (HandlerMethodArgumentResolver)sortClass.getDeclaredConstructor().newInstance();
             Method meth = sortClass.getMethod("setSortParameter", String.class);
             meth.invoke(sortResolver, "page.sort");
             Class<?> clazz = Class.forName("org.springframework.data.web.PageableHandlerMethodArgumentResolver");

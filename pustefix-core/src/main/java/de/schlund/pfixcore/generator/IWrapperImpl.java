@@ -15,7 +15,6 @@
  * along with Pustefix; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  */
-
 package de.schlund.pfixcore.generator;
 
 import java.io.BufferedOutputStream;
@@ -36,21 +35,11 @@ import org.slf4j.LoggerFactory;
 import de.schlund.pfixxml.resources.FileResource;
 import de.schlund.pfixxml.resources.ResourceUtil;
 
-/**
- * IWrapperImpl.java
- *
- *
- * Created: Wed Aug  8 14:19:39 2001
- *
- * @author <a href="mailto: "Jens Lautenbacher</a>
- *
- *
- */
-
 public abstract class IWrapperImpl implements IWrapper {
+
     protected RequestData req;
     protected String      prefix   = "__undef";
-    protected Integer     order    = new Integer(0);
+    protected Integer     order    = 0;
     private   Logger      LOG      = LoggerFactory.getLogger(this.getClass());
     private   FileResource logdir  = null; 
     private   String      pagename = null;
@@ -156,7 +145,7 @@ public abstract class IWrapperImpl implements IWrapper {
     }
 
     public final void defineOrder(int order) {
-        this.order = new Integer(order);
+        this.order = Integer.valueOf(order);
     }
 
     public final Integer gimmeOrder() {
@@ -322,4 +311,4 @@ public abstract class IWrapperImpl implements IWrapper {
             param.setStringValue(values);
         }
     }
-} // IWrapperImpl
+}

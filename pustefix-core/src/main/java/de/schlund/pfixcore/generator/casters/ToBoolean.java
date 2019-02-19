@@ -15,8 +15,8 @@
  * along with Pustefix; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  */
-
 package de.schlund.pfixcore.generator.casters;
+
 import java.util.ArrayList;
 
 import org.pustefixframework.generated.CoreStatusCodes;
@@ -27,18 +27,8 @@ import de.schlund.pfixxml.RequestParam;
 import de.schlund.util.statuscodes.StatusCode;
 import de.schlund.util.statuscodes.StatusCodeHelper;
 
-/**
- * ToBoolean.java
- *
- *
- * Created: Thu Aug 16 01:07:36 2001
- *
- * @author <a href="mailto: "Jens Lautenbacher</a>
- *
- *
- */
-
 public class ToBoolean extends SimpleCheck implements IWrapperParamCaster {
+
     private Boolean[]  value = null;
     private StatusCode scode;
 
@@ -64,10 +54,10 @@ public class ToBoolean extends SimpleCheck implements IWrapperParamCaster {
         for (int i = 0; i < param.length; i++) {
             String tmp = param[i].getValue();
             if (tmp.equals("true") || tmp.equals("1") || tmp.equals("yes")) {
-                val = new Boolean(true);
+                val = Boolean.TRUE;
                 out.add(val);
             } else if (tmp.equals("false") || tmp.equals("0") || tmp.equals("no")) {
-                val = new Boolean(false);
+                val = Boolean.FALSE;
                 out.add(val);
             } else {
                 val = null;
@@ -80,4 +70,4 @@ public class ToBoolean extends SimpleCheck implements IWrapperParamCaster {
         }
     }
     
-}// ToBoolean
+}

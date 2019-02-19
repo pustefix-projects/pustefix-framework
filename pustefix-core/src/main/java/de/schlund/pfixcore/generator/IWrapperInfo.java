@@ -42,9 +42,6 @@ import de.schlund.pfixcore.generator.annotation.Property;
 import de.schlund.pfixxml.util.Xml;
 import de.schlund.pfixxml.util.XsltVersion;
 
-/**
- * @author mleidig@schlund.de
- */
 public class IWrapperInfo {
 
     private final static Logger                  LOG               = LoggerFactory.getLogger(IWrapperInfo.class);
@@ -64,7 +61,7 @@ public class IWrapperInfo {
                     Element root = doc.createElement("iwrapper");
                     root.setAttribute("class", iwrpClass.getName());
                     doc.appendChild(root);
-                    IWrapper iw = iwrpClass.newInstance();
+                    IWrapper iw = iwrpClass.getDeclaredConstructor().newInstance();
                     iw.init("dummy");
                     IWrapperParamDefinition[] defs = iw.gimmeAllParamDefinitions();
                     for (IWrapperParamDefinition def : defs) {

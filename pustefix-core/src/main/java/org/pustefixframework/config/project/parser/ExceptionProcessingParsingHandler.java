@@ -95,7 +95,7 @@ public class ExceptionProcessingParsingHandler extends CustomizationAwareParsing
                 ExceptionConfig config = new ExceptionConfig();
                 ExceptionProcessor instance;
                 try {
-                    instance = clazz.newInstance();
+                    instance = clazz.getDeclaredConstructor().newInstance();
                 } catch (Exception x) {
                     throw new ParserException("Can't get exception processor instance", x);
                 } 

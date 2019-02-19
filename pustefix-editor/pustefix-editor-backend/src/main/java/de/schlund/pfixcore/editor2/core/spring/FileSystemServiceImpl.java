@@ -15,7 +15,6 @@
  * along with Pustefix; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  */
-
 package de.schlund.pfixcore.editor2.core.spring;
 
 import java.io.File;
@@ -40,7 +39,6 @@ import org.xml.sax.InputSource;
 import org.xml.sax.SAXException;
 import org.xml.sax.XMLReader;
 import org.xml.sax.helpers.DefaultHandler;
-import org.xml.sax.helpers.XMLReaderFactory;
 
 import de.schlund.pfixxml.config.CustomizationHandler;
 import de.schlund.pfixxml.resources.Resource;
@@ -49,8 +47,6 @@ import de.schlund.pfixxml.util.Xml;
 
 /**
  * Implementation of FileSystemService.
- * 
- * @author Sebastian Marsching <sebastian.marsching@1und1.de>
  */
 public class FileSystemServiceImpl implements FileSystemService {
     private HashMap<File, Object> locks;
@@ -142,12 +138,7 @@ public class FileSystemServiceImpl implements FileSystemService {
     }
     
     private static void customize(InputSource input, Result result, String namespace) throws FileNotFoundException, TransformerException {
-        XMLReader xreader;
-        try {
-            xreader = XMLReaderFactory.createXMLReader();
-        } catch (SAXException e) {
-            throw new RuntimeException("Could not create XMLReader", e);
-        }
+        XMLReader xreader = Xml.createXMLReader();
         TransformerFactory tf = TransformerFactory.newInstance();
         if (tf.getFeature(SAXTransformerFactory.FEATURE)) {
             SAXTransformerFactory stf = (SAXTransformerFactory) tf;

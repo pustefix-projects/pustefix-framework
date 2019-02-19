@@ -15,7 +15,6 @@
  * along with Pustefix; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  */
-
 package de.schlund.pfixcore.example;
 
 import java.util.Arrays;
@@ -25,16 +24,6 @@ import org.pustefixframework.web.mvc.InputHandler;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import de.schlund.pfixcore.example.iwrapper.Trouser;
-
-/**
- * TrouserHandler.java
- *
- *
- * Created: Thu Oct 18 18:53:20 2001
- *
- * @author <a href="mailto:jtl@schlund.de">Jens Lautenbacher</a>
- *
- */
 
 public class TrouserHandler implements InputHandler<Trouser> {
 
@@ -47,9 +36,9 @@ public class TrouserHandler implements InputHandler<Trouser> {
         Integer[]      feature = trouser.getFeature();
 
         // Sample Check: reject a certain combination
-        if (feature != null && color.equals(new Integer(2))) {
+        if (feature != null && color.equals(2)) {
             HashSet<Integer> set = new HashSet<Integer>(Arrays.asList(feature));
-            if (set.contains(new Integer(1))) {
+            if (set.contains(1)) {
                 // The combination of feature 1 and color No. 2 is invalid (maybe out of stock) 
                 String[]   args  = new String[2];
                 args[0] = "1";

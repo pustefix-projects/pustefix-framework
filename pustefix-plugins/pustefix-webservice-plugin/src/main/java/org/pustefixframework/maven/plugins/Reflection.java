@@ -29,6 +29,7 @@ import java.net.JarURLConnection;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.net.URLClassLoader;
+import java.util.ArrayList;
 import java.util.List;
 
 import javax.xml.parsers.DocumentBuilder;
@@ -71,9 +72,10 @@ public class Reflection {
         return new Reflection(new URLClassLoader(cp, Reflection.class.getClassLoader()), classpath);
     }
 
-    @SuppressWarnings("unchecked")
     private static List<Artifact> extracted(MavenProject project) {
-        return project.getCompileArtifacts();
+        List<Artifact> artifacts = new ArrayList<>();
+        artifacts.addAll(project.getArtifacts());
+        return artifacts;
     }
     
     private final URLClassLoader loader;

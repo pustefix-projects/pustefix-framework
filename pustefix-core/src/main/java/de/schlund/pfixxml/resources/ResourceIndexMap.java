@@ -15,7 +15,6 @@
  * along with Pustefix; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  */
-
 package de.schlund.pfixxml.resources;
 
 import java.io.BufferedReader;
@@ -33,7 +32,6 @@ import de.schlund.pfixcore.exception.PustefixRuntimeException;
 /**
  * Data structure for holding and querying the resource 
  * index entries of an application or module.
- *  
  */
 public class ResourceIndexMap {
 
@@ -102,8 +100,7 @@ public class ResourceIndexMap {
 
 		ResourceIndexMap index = new ResourceIndexMap();
 		SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss,SSS Z");
-        try {
-        	BufferedReader reader = new BufferedReader(new InputStreamReader(in, "UTF-8"));
+        try (BufferedReader reader = new BufferedReader(new InputStreamReader(in, "UTF-8"))) {
             String line = reader.readLine();
             if(line != null) {
             	if(!line.equals("/")) {

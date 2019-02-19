@@ -13,13 +13,15 @@ import java.net.URL;
 import java.util.HashMap;
 import java.util.Map;
 
+import javax.xml.parsers.ParserConfigurationException;
+import javax.xml.parsers.SAXParserFactory;
+
 import org.apache.maven.plugin.AbstractMojo;
 import org.apache.maven.plugin.MojoExecutionException;
 import org.xml.sax.EntityResolver;
 import org.xml.sax.InputSource;
 import org.xml.sax.SAXException;
 import org.xml.sax.XMLReader;
-import org.xml.sax.helpers.XMLReaderFactory;
 
 /**
  * Validates configuration files.
@@ -96,7 +98,9 @@ public class ValidatorMojo extends AbstractMojo {
     private void validate(File file) throws MojoExecutionException {
         ValidatorErrorHandler handler = new ValidatorErrorHandler(getLog());
         try {
-            XMLReader reader = XMLReaderFactory.createXMLReader();
+            SAXParserFactory spf = SAXParserFactory.newInstance();
+            spf.setNamespaceAware(true);
+            XMLReader reader = spf.newSAXParser().getXMLReader();
             reader.getEntityResolver();
             reader.setFeature("http://apache.org/xml/features/validation/schema", true);
             reader.setFeature("http://xml.org/sax/features/validation", true);
@@ -116,7 +120,7 @@ public class ValidatorMojo extends AbstractMojo {
             
             reader.parse(in);
             writer.close();
-        } catch(SAXException e) {
+        } catch(SAXException | ParserConfigurationException e) {
             getLog().error("Error parsing file '" + file.getPath() + "': " + e.getMessage());
         } catch(IOException e) {
             throw new MojoExecutionException("Can't validate file: " + file.getPath(), e);

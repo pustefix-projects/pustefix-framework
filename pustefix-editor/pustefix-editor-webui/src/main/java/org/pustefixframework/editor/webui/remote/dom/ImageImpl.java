@@ -15,7 +15,6 @@
  * along with Pustefix; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  */
-
 package org.pustefixframework.editor.webui.remote.dom;
 
 import java.io.File;
@@ -31,7 +30,6 @@ import org.pustefixframework.editor.common.exception.EditorIOException;
 import org.pustefixframework.editor.common.exception.EditorSecurityException;
 import org.pustefixframework.editor.common.remote.transferobjects.ImageTO;
 import org.pustefixframework.editor.webui.remote.dom.util.RemoteServiceUtil;
-
 
 
 public class ImageImpl extends AbstractImage {
@@ -76,9 +74,8 @@ public class ImageImpl extends AbstractImage {
     }
 
     public void replaceFile(File newFile) throws EditorIOException, EditorSecurityException {
-        try {
+        try (FileInputStream s = new FileInputStream(newFile)) {
             byte[] buffer = new byte[4096];
-            FileInputStream s = new FileInputStream(newFile);
             int totalBytesRead = 0;
             int bytesRead;
             while ((bytesRead = s.read(buffer, totalBytesRead, buffer.length - totalBytesRead)) != -1) {

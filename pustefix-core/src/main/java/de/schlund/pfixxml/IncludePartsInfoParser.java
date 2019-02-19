@@ -15,7 +15,6 @@
  * along with Pustefix; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  */
-
 package de.schlund.pfixxml;
 
 import java.io.IOException;
@@ -29,9 +28,9 @@ import org.xml.sax.InputSource;
 import org.xml.sax.SAXException;
 import org.xml.sax.XMLReader;
 import org.xml.sax.helpers.DefaultHandler;
-import org.xml.sax.helpers.XMLReaderFactory;
 
 import de.schlund.pfixxml.resources.Resource;
+import de.schlund.pfixxml.util.Xml;
 
 public class IncludePartsInfoParser {
  
@@ -55,7 +54,7 @@ public class IncludePartsInfoParser {
     public static IncludePartsInfo parse(InputSource source) throws IncludePartsInfoParsingException {
         Handler handler;
         try {
-            XMLReader xr = XMLReaderFactory.createXMLReader();
+            XMLReader xr = Xml.createXMLReader();
             handler = new Handler();
             xr.setContentHandler(handler);
             xr.setErrorHandler(handler);

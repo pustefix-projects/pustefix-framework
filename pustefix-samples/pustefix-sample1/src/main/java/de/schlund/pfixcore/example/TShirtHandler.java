@@ -15,24 +15,12 @@
  * along with Pustefix; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  */
-
 package de.schlund.pfixcore.example;
 
 import org.pustefixframework.web.mvc.InputHandler;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import de.schlund.pfixcore.example.iwrapper.TShirt;
-
-/**
- * TShirtHandler.java
- *
- *
- * Created: Thu Oct 18 18:53:20 2001
- *
- * @author <a href="mailto:jtl@schlund.de">Jens Lautenbacher</a>
- *
- *
- */
 
 public class TShirtHandler implements InputHandler<TShirt> {
 
@@ -43,7 +31,7 @@ public class TShirtHandler implements InputHandler<TShirt> {
         String        size    = tshirt.getSize();
         Integer[]     feature = tshirt.getFeature();
 
-        if (size.equals("L") && color.equals(new Integer(2))) {
+        if (size.equals("L") && color.equals(2)) {
             // The combination size "L" and color No. "2" is considered invalid (maybe out of stock) 
             tshirt.addSCodeSize(StatusCodeLib.TSHIRT_SIZECOLOR_OUTOF_STOCK, new String[]{"L", "2"}, "note");
             return;
@@ -55,7 +43,7 @@ public class TShirtHandler implements InputHandler<TShirt> {
         if (feature != null) {
             cts.setFeature(feature);
         } else {
-            cts.setFeature(new Integer[]{new Integer(-1)});
+            cts.setFeature(new Integer[] {-1});
             // This is needed so we produce some output at all on retrieveCurrentStatus when
             // the user decided to NOT check any checkbox in the UI (this makes defaults work)
         }

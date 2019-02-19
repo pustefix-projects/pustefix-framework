@@ -15,20 +15,15 @@
  * along with Pustefix; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  */
-
 package org.pustefixframework.editor.common.dom;
 
 import java.util.Collection;
 import java.util.Map;
 
-import de.schlund.pfixxml.targets.TargetGenerator;
-
 /**
  * Represents a Pustefix project. A project is the top-level organization unit
  * of Pustefix. All pages belonging to a project build a functional unit, having
  * remote dependencies to the "common" and "core" project only.
- * 
- * @author Sebastian Marsching <sebastian.marsching@1und1.de>
  */
 public interface Project {
     /**

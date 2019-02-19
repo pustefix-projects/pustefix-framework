@@ -28,7 +28,7 @@ public class ParameterState extends StaticState {
         HttpSession session = preq.getSession(false);
         Integer counter = (Integer)session.getAttribute("counter");
         if(counter == null) {
-            counter = new Integer(1);
+            counter = 1;
         } else {
             counter += 1;
         }

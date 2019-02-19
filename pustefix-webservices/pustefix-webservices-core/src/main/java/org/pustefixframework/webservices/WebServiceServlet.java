@@ -15,7 +15,6 @@
  * along with Pustefix; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  */
-
 package org.pustefixframework.webservices;
 
 import java.io.IOException;
@@ -39,8 +38,6 @@ import de.schlund.pfixxml.resources.ResourceUtil;
 
 /**
  * Webservice HTTP endpoint handling service requests (along with admin/tool stuff).
- * 
- * @author mleidig@schlund.de
  */
 public class WebServiceServlet extends HttpServlet {
 
@@ -65,7 +62,7 @@ public class WebServiceServlet extends HttpServlet {
         else if(protocolType.equals(Constants.PROTOCOL_TYPE_JSONWS)) procClass = PROCESSOR_IMPL_JSONWS;
         try {
             Class<?> clazz = Class.forName(procClass);
-            ServiceProcessor proc = (ServiceProcessor)clazz.newInstance();
+            ServiceProcessor proc = (ServiceProcessor)clazz.getDeclaredConstructor().newInstance();
             return proc;
         } catch(ClassNotFoundException x) {
             if(LOG.isDebugEnabled()) LOG.debug("ServiceProcessor '"+procClass+"' for protocol '"+
@@ -106,7 +103,7 @@ public class WebServiceServlet extends HttpServlet {
                             runtime.addServiceProcessor(Constants.PROTOCOL_TYPE_JSONWS, sp);
                             try {
                                 Class<?> clazz = Class.forName(GENERATOR_IMPL_JSONWS);
-                                ServiceStubGenerator gen = (ServiceStubGenerator)clazz.newInstance();
+                                ServiceStubGenerator gen = (ServiceStubGenerator)clazz.getDeclaredConstructor().newInstance();
                                 runtime.addServiceStubGenerator(Constants.PROTOCOL_TYPE_JSONWS, gen);
                             } catch(Exception x) {
                                 throw new ServletException("Can't instantiate ServiceStubGenerator: "+GENERATOR_IMPL_JSONWS,x);

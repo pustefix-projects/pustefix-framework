@@ -15,7 +15,6 @@
  * along with Pustefix; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  */
-
 package org.pustefixframework.webservices.config;
 
 import java.io.CharArrayWriter;
@@ -47,9 +46,6 @@ import de.schlund.pfixxml.resources.FileResource;
 import de.schlund.pfixxml.resources.Resource;
 import de.schlund.pfixxml.resources.ResourceUtil;
 
-/**
- * @author mleidig@schlund.de
- */
 public class ConfigurationReader extends DefaultHandler {
 
     Resource configFile;
@@ -381,7 +377,7 @@ public class ConfigurationReader extends DefaultHandler {
         }
         try {
             Class<?> clazz=Class.forName(val);
-            Object obj=clazz.newInstance();
+            Object obj=clazz.getDeclaredConstructor().newInstance();
             if(!superClazz.isInstance(obj)) throw new ClassCastException("Class '"+val+"' can't be casted to '"+superClazz.getName()+"'.");
             return obj;
         } catch(Exception x) {
