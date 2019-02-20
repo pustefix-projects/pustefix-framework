@@ -1,0 +1,7 @@
+# test2
+
+msgid "foo"
+msgstr "foo"
+
+msgid "bar"
+msgstr "bar"

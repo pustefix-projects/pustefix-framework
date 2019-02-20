@@ -18,7 +18,8 @@
 
 package org.pustefixframework.util.i18n;
 
-import java.util.HashMap;
+import java.util.Collections;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -46,7 +47,7 @@ public class POData {
 
     public POData(List<POMessage> messageList) {
 
-        messages = new HashMap<>(messageList.size());
+        messages = new LinkedHashMap<>(messageList.size());
         for(POMessage message: messageList) {
             if(message.getMessageId() != null) {
                 messages.put(message.getMessageId(), message);
@@ -135,6 +136,15 @@ public class POData {
             }
         }
         return n == 1 ? msgid : msgidPlural;
+    }
+
+    /**
+     * Returns a read-only map of all POMessages with
+     * predictable iteration order.
+     * @return map of POMessages
+     */
+    public Map<String, POMessage> getMessages() {
+        return Collections.unmodifiableMap(messages);
     }
 
     static class PluralForms {

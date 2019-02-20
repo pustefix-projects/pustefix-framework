@@ -135,6 +135,11 @@
           </deployables>
         </configuration>
       </plugin>
+      <plugin>
+        <groupId>org.pustefixframework.maven.plugins</groupId>
+        <artifactId>pustefix-tomcat-plugin</artifactId>
+        <version>0.23.1-SNAPSHOT</version>
+      </plugin>
     </plugins>
   </build>
 

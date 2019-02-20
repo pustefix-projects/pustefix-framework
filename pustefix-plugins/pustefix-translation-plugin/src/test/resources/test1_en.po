@@ -1,0 +1,16 @@
+# test1
+
+msgid "foo"
+msgstr "foo"
+
+msgid "hey"
+msgstr "hey"
+
+msgid "bar"
+msgstr "bar"
+
+msgid "baz"
+msgstr "baz"
+
+msgid "ho"
+msgstr "ho"
