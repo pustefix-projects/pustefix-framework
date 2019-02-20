@@ -17,7 +17,6 @@
  */
 package org.pustefixframework.web.mvc.internal;
 
-import org.pustefixframework.web.mvc.AnnotationMethodHandlerAdapterConfig;
 import org.pustefixframework.web.mvc.RequestMappingHandlerAdapterConfig;
 import org.springframework.beans.BeansException;
 import org.springframework.beans.factory.config.BeanDefinition;
@@ -31,52 +30,26 @@ public class ControllerStatePostProcessor implements BeanFactoryPostProcessor {
     @Override
     public void postProcessBeanFactory(ConfigurableListableBeanFactory beanFactory) throws BeansException {
 
-        String legacyConfigBeanName = null;
         String configBeanName = null;
         String[] beanNames = beanFactory.getBeanDefinitionNames();
         for(String beanName: beanNames) {
             BeanDefinition beanDef = beanFactory.getBeanDefinition(beanName);
-            if(AnnotationMethodHandlerAdapterConfig.class.getName().equals(beanDef.getBeanClassName())) {
-                legacyConfigBeanName = beanName;
-            } else if(RequestMappingHandlerAdapterConfig.class.getName().equals(beanDef.getBeanClassName())) {
+            if(RequestMappingHandlerAdapterConfig.class.getName().equals(beanDef.getBeanClassName())) {
                 configBeanName = beanName;
             }
         }
-
-        if(configBeanName == null && hasLegacyAdapter()) {
-            if(legacyConfigBeanName == null) {
-                BeanDefinitionBuilder beanBuilder = BeanDefinitionBuilder.genericBeanDefinition(AnnotationMethodHandlerAdapterConfig.class);
-                beanBuilder.setFactoryMethod("createDefaultConfig");
-                BeanDefinition beanDefinition = beanBuilder.getBeanDefinition();
-                legacyConfigBeanName = AnnotationMethodHandlerAdapterConfig.class.getName();
-                ((DefaultListableBeanFactory)beanFactory).registerBeanDefinition(legacyConfigBeanName, beanDefinition);
-            }
-            BeanDefinitionBuilder beanBuilder = BeanDefinitionBuilder.genericBeanDefinition(ControllerStateAdapterLegacyImpl.class);
-            beanBuilder.addPropertyReference("adapterConfig", legacyConfigBeanName);
-            BeanDefinition definition = beanBuilder.getBeanDefinition();
-            ((DefaultListableBeanFactory)beanFactory).registerBeanDefinition(ControllerStateAdapter.class.getName(), definition);
-        } else {
-            if(configBeanName == null) {
-                BeanDefinitionBuilder beanBuilder = BeanDefinitionBuilder.genericBeanDefinition(RequestMappingHandlerAdapterConfig.class);
-                beanBuilder.setFactoryMethod("createDefaultConfig");
-                BeanDefinition beanDefinition = beanBuilder.getBeanDefinition();
-                configBeanName = RequestMappingHandlerAdapterConfig.class.getName();
-                ((DefaultListableBeanFactory)beanFactory).registerBeanDefinition(configBeanName, beanDefinition);
-            }
-            BeanDefinitionBuilder beanBuilder = BeanDefinitionBuilder.genericBeanDefinition(ControllerStateAdapterImpl.class);
-            beanBuilder.addPropertyReference("adapterConfig", configBeanName);
-            BeanDefinition definition = beanBuilder.getBeanDefinition();
-            ((DefaultListableBeanFactory)beanFactory).registerBeanDefinition(ControllerStateAdapter.class.getName(), definition);
+        if(configBeanName == null) {
+            BeanDefinitionBuilder beanBuilder = BeanDefinitionBuilder.genericBeanDefinition(RequestMappingHandlerAdapterConfig.class);
+            beanBuilder.setFactoryMethod("createDefaultConfig");
+            BeanDefinition beanDefinition = beanBuilder.getBeanDefinition();
+            configBeanName = RequestMappingHandlerAdapterConfig.class.getName();
+            ((DefaultListableBeanFactory)beanFactory).registerBeanDefinition(configBeanName, beanDefinition);
         }
-    }
+        BeanDefinitionBuilder beanBuilder = BeanDefinitionBuilder.genericBeanDefinition(ControllerStateAdapterImpl.class);
+        beanBuilder.addPropertyReference("adapterConfig", configBeanName);
+        BeanDefinition definition = beanBuilder.getBeanDefinition();
+        ((DefaultListableBeanFactory)beanFactory).registerBeanDefinition(ControllerStateAdapter.class.getName(), definition);
 
-    private boolean hasLegacyAdapter() {
-        try {
-            Class.forName("org.springframework.web.servlet.mvc.annotation.AnnotationMethodHandlerAdapter");
-            return true;
-        } catch(ClassNotFoundException x) {
-            return false;
-        }
     }
 
 }
