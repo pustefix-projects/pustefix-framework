@@ -128,7 +128,6 @@ public class TargetGenerator implements ResourceVisitor, ServletContextAware, In
 
     private Set<Resource> configFileDependencies = new HashSet<Resource>();
     private long configMaxModtime = -1;
-    private long configReadTime;
 
     private String name;
     
@@ -475,7 +474,7 @@ public class TargetGenerator implements ResourceVisitor, ServletContextAware, In
 
     private boolean needsReload() {
         for (Resource file : configFileDependencies) {
-            if (file.lastModified() > configReadTime) {
+            if (file.lastModified() > configMaxModtime) {
                 return true;
             }
         }
@@ -494,7 +493,7 @@ public class TargetGenerator implements ResourceVisitor, ServletContextAware, In
     }
 
     private void loadConfig(Resource configFile) throws XMLException, IOException, SAXException {
-        configReadTime = System.currentTimeMillis();
+
         String path = configFile.toURI().toString();
         LOG.info("\n***** CAUTION! ***** loading config " + path + "...");
         
