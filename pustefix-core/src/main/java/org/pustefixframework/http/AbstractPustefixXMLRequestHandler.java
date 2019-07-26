@@ -303,7 +303,7 @@ public abstract class AbstractPustefixXMLRequestHandler extends AbstractPustefix
         // Check if session has been scheduled for invalidation
         if (!doreuse && session.getAttribute(SESS_CLEANUP_FLAG_STAGE2) != null) {
             HttpServletRequest req = preq.getRequest();
-            String redirectUri = SessionHelper.getClearedURL(req.getScheme(), getServerName(req), req, getAbstractXMLServletConfig().getProperties());
+            String redirectUri = SessionHelper.getClearedURL(req.getScheme(), req.getServerName(), req, getAbstractXMLServletConfig().getProperties());
             if(req.isRequestedSessionIdFromCookie()) {
                 Cookie cookie = new Cookie(getSessionCookieName(req), "");
                 cookie.setMaxAge(0);

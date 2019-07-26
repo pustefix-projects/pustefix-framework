@@ -113,7 +113,7 @@ public class DocrootRequestHandler implements UriProvidingHttpRequestHandler, Se
         // Handle default (root) request
         if(path == null || path.length() == 0 || (path.equals("/") && !defaultpath.equals("/"))) {
             StringBuilder sb = new StringBuilder();
-            sb.append(req.getScheme()).append("://").append(getServerName(req));
+            sb.append(req.getScheme()).append("://").append(req.getServerName());
             if(!(req.getServerPort() == 80 || req.getServerPort() == 443)) sb.append(":" + req.getServerPort());
             sb.append(req.getContextPath()).append(defaultpath);
             if(req.getQueryString() != null && !req.getQueryString().equals("")) sb.append("?" + req.getQueryString());
@@ -327,13 +327,9 @@ public class DocrootRequestHandler implements UriProvidingHttpRequestHandler, Se
         }
     }
 
+    @Deprecated
     public static String getServerName(HttpServletRequest req) {
-        String forward = req.getHeader("X-Forwarded-Server");
-        if (forward != null && !forward.equals("")) {
-            return forward;
-        } else {
-            return req.getServerName();
-        }
+        return req.getServerName();
     }
 
 }

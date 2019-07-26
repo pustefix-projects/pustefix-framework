@@ -309,7 +309,7 @@ public class PustefixContextXMLRequestHandler extends AbstractPustefixXMLRequest
                     if(session.getAttribute(AbstractPustefixRequestHandler.SESSION_ATTR_COOKIE_SESSION) == null) {
                         sessionIdPath = ";jsessionid=" + session.getId();
                     }
-                    String redirectURL = scheme + "://" + getServerName(preq.getRequest()) 
+                    String redirectURL = scheme + "://" + preq.getRequest().getServerName()
                         + ":" + port + preq.getContextPath() + preq.getServletPath() + "/" 
                         + (expectedPageName == null ? "" : expectedPageName)
                         + sessionIdPath;
