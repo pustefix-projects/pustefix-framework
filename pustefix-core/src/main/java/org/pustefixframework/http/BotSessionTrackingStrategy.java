@@ -22,7 +22,7 @@ public class BotSessionTrackingStrategy implements SessionTrackingStrategy {
     public void handleRequest(HttpServletRequest req, HttpServletResponse res) throws ServletException, IOException {
         
         if(req.getRequestedSessionId() != null && req.isRequestedSessionIdFromURL()) {
-            String redirect_uri = SessionHelper.getClearedURL(req.getScheme(), AbstractPustefixRequestHandler.getServerName(req), req, context.getServletManagerConfig().getProperties());
+            String redirect_uri = SessionHelper.getClearedURL(req.getScheme(), req.getServerName(), req, context.getServletManagerConfig().getProperties());
             AbstractPustefixRequestHandler.relocate(res, HttpServletResponse.SC_MOVED_PERMANENTLY, redirect_uri);
             return;
         }
@@ -30,7 +30,7 @@ public class BotSessionTrackingStrategy implements SessionTrackingStrategy {
         PfixServletRequest preq = new PfixServletRequestImpl(req, context.getServletManagerConfig().getProperties(), context);
         
         if(!req.isSecure() && context.needsSSL(preq)) {
-            String redirect_uri = SessionHelper.getClearedURL("https", AbstractPustefixRequestHandler.getServerName(req), req, context.getServletManagerConfig().getProperties());
+            String redirect_uri = SessionHelper.getClearedURL("https", req.getServerName(), req, context.getServletManagerConfig().getProperties());
             AbstractPustefixRequestHandler.relocate(res, HttpServletResponse.SC_MOVED_PERMANENTLY, redirect_uri);
             return;
         }

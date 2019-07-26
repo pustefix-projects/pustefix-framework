@@ -163,16 +163,12 @@ public abstract class AbstractPustefixRequestHandler implements PageProvider, Se
         }
         return DEFAULT_SESSION_COOKIE_NAME;
     }
-    
+
+    @Deprecated
     public static String getServerName(HttpServletRequest req) {
-        String forward = req.getHeader("X-Forwarded-Server");
-        if (forward != null && !forward.equals("")) {
-            return forward;
-        } else {
-            return req.getServerName();
-        }
+        return req.getServerName();
     }
-    
+
     public static String getRemoteAddr(HttpServletRequest req) {
         String remoteIp = req.getRemoteAddr();
         String forward = req.getHeader("X-Forwarded-For");
@@ -300,7 +296,7 @@ public abstract class AbstractPustefixRequestHandler implements PageProvider, Se
         
         if (LOG.isDebugEnabled()) {
             LOG.debug("\n ------------------- Start of new Request ---------------");
-            LOG.debug("====> Scheme://Server:Port " + req.getScheme() + "://" + getServerName(req) + ":" + req.getServerPort());
+            LOG.debug("====> Scheme://Server:Port " + req.getScheme() + "://" + req.getServerName() + ":" + req.getServerPort());
             LOG.debug("====> URI:   " + req.getRequestURI());
             LOG.debug("====> Query: " + req.getQueryString());
             LOG.debug("----> needsSession=" + needsSession() + " allowSessionCreate=" + allowSessionCreate());
@@ -599,7 +595,7 @@ public abstract class AbstractPustefixRequestHandler implements PageProvider, Se
             session.setAttribute(SessionUtils.SESSION_ATTR_LOCK, new ReentrantReadWriteLock());
             StringBuffer logbuff = new StringBuffer();
             logbuff.append(session.getAttribute(VISIT_ID) + "|" + session.getId() + "|");
-            logbuff.append(LogUtils.makeLogSafe(getServerName(req)) + "|" + LogUtils.makeLogSafe(getRemoteAddr(req)) + "|");
+            logbuff.append(LogUtils.makeLogSafe(req.getServerName()) + "|" + LogUtils.makeLogSafe(getRemoteAddr(req)) + "|");
             logbuff.append(LogUtils.makeLogSafe(req.getHeader("user-agent")) + "|");
             if (req.getHeader("referer") != null) {
                 logbuff.append(LogUtils.makeLogSafe(req.getHeader("referer")));
@@ -609,7 +605,7 @@ public abstract class AbstractPustefixRequestHandler implements PageProvider, Se
                 logbuff.append(LogUtils.makeLogSafe(req.getHeader("accept-language")));
             }
             LOGGER_VISIT.warn(logbuff.toString());
-            getSessionAdmin().registerSession(session, getServerName(req), req.getRemoteAddr());
+            getSessionAdmin().registerSession(session, req.getServerName(), req.getRemoteAddr());
         }
     }
 

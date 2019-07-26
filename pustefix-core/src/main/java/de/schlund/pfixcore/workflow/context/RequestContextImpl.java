@@ -359,7 +359,7 @@ public class RequestContextImpl implements Cloneable, AuthorizationInterceptor {
             if(session.getAttribute(AbstractPustefixRequestHandler.SESSION_ATTR_COOKIE_SESSION) == null) {
                 sessionIdPath = ";jsessionid=" + session.getId();
             }
-            String redirectURL = "https://" + AbstractPustefixRequestHandler.getServerName(preq.getRequest()) 
+            String redirectURL = "https://" + preq.getRequest().getServerName()
                     + ( port == 443 ? "" : ":" + port ) + preq.getContextPath()
                     + preq.getServletPath() + "/" + spdoc.getPagename() + sessionIdPath;
             boolean firstParam = true;

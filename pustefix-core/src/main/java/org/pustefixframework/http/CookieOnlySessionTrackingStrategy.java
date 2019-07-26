@@ -287,7 +287,7 @@ public class CookieOnlySessionTrackingStrategy implements SessionTrackingStrateg
     }
     
     private void redirectToSSLCheck(HttpServletRequest req, HttpServletResponse res, int statusCode) {
-        String redirect_uri = SessionHelper.getClearedURL("https", AbstractPustefixRequestHandler.getServerName(req), req, context.getServletManagerConfig().getProperties());
+        String redirect_uri = SessionHelper.getClearedURL("https", req.getServerName(), req, context.getServletManagerConfig().getProperties());
         if(req.getMethod().equals("POST") && req.getParameter("__lf") != null) {
             if(req.getQueryString() == null) {
                 redirect_uri += ("?");
@@ -300,7 +300,7 @@ public class CookieOnlySessionTrackingStrategy implements SessionTrackingStrateg
     }
     
     private void redirect(HttpServletRequest req, HttpServletResponse res, int statusCode, String scheme) {
-        String redirect_uri = SessionHelper.getClearedURL(scheme, AbstractPustefixRequestHandler.getServerName(req), req, context.getServletManagerConfig().getProperties());
+        String redirect_uri = SessionHelper.getClearedURL(scheme, req.getServerName(), req, context.getServletManagerConfig().getProperties());
         AbstractPustefixRequestHandler.relocate(res, statusCode, redirect_uri);
     }
      

@@ -71,7 +71,7 @@ public class CookieSessionTrackingStrategy implements SessionTrackingStrategy {
             if(session.getAttribute(INITIAL_SESSION_CHECK) != null && req.isRequestedSessionIdFromCookie()) {
                 session.removeAttribute(INITIAL_SESSION_CHECK);
                 session.setAttribute(AbstractPustefixRequestHandler.SESSION_ATTR_COOKIE_SESSION, true);
-                String redirect_uri = SessionHelper.getClearedURL(req.getScheme(), AbstractPustefixRequestHandler.getServerName(req), req, context.getServletManagerConfig().getProperties());
+                String redirect_uri = SessionHelper.getClearedURL(req.getScheme(), req.getServerName(), req, context.getServletManagerConfig().getProperties());
                 AbstractPustefixRequestHandler.relocate(res, HttpServletResponse.SC_MOVED_TEMPORARILY, redirect_uri);
                 return;
             }
@@ -284,7 +284,7 @@ public class CookieSessionTrackingStrategy implements SessionTrackingStrategy {
 
     private void redirectToClearedRequest(HttpServletRequest req, HttpServletResponse res, boolean usedSSL) {
         LOG.debug("===> Redirecting to cleared Request URL");
-        String redirect_uri = SessionHelper.getClearedURL(req.getScheme(), AbstractPustefixRequestHandler.getServerName(req), req, context.getServletManagerConfig().getProperties());
+        String redirect_uri = SessionHelper.getClearedURL(req.getScheme(), req.getServerName(), req, context.getServletManagerConfig().getProperties());
         if(req.isRequestedSessionIdFromCookie()) {
             Cookie cookie = new Cookie(AbstractPustefixRequestHandler.getSessionCookieName(req), "");
             cookie.setMaxAge(0);
@@ -306,7 +306,7 @@ public class CookieSessionTrackingStrategy implements SessionTrackingStrategy {
     
     private void redirectToSSL(HttpServletRequest req, HttpServletResponse res) {
         LOG.debug("===> Redirecting to session-less request URL under SSL");
-        String redirect_uri = SessionHelper.getClearedURL("https", AbstractPustefixRequestHandler.getServerName(req), req, context.getServletManagerConfig().getProperties());
+        String redirect_uri = SessionHelper.getClearedURL("https", req.getServerName(), req, context.getServletManagerConfig().getProperties());
         AbstractPustefixRequestHandler.relocate(res, redirect_uri);
     }
     
@@ -328,7 +328,7 @@ public class CookieSessionTrackingStrategy implements SessionTrackingStrategy {
         session.setAttribute(STORED_REQUEST, preq);
 
         LOG.debug("===> Redirecting to insecure SSL URL with session (Id: " + session.getId() + ")");
-        String redirect_uri = SessionHelper.encodeURL("https", AbstractPustefixRequestHandler.getServerName(req), req, context.getServletManagerConfig().getProperties());
+        String redirect_uri = SessionHelper.encodeURL("https", req.getServerName(), req, context.getServletManagerConfig().getProperties());
         AbstractPustefixRequestHandler.relocate(res, redirect_uri);
     }
     
@@ -340,7 +340,7 @@ public class CookieSessionTrackingStrategy implements SessionTrackingStrategy {
         LOG.debug("===> Redirecting to URL with session (Id: " + session.getId() + ")");
         session.setAttribute(STORED_REQUEST, preq);
         session.setAttribute(INITIAL_SESSION_CHECK, session.getId());
-        String redirect_uri = SessionHelper.encodeURL(req.getScheme(), AbstractPustefixRequestHandler.getServerName(req), req, context.getServletManagerConfig().getProperties());
+        String redirect_uri = SessionHelper.encodeURL(req.getScheme(), req.getServerName(), req, context.getServletManagerConfig().getProperties());
         AbstractPustefixRequestHandler.relocate(res, redirect_uri);
     }
     
@@ -355,7 +355,7 @@ public class CookieSessionTrackingStrategy implements SessionTrackingStrategy {
         session.setAttribute(INITIAL_SESSION_CHECK, session.getId());
         session.setAttribute(SessionAdmin.SESSION_IS_SECURE, Boolean.TRUE);
         addSSLCookie(req, res);
-        String redirect_uri = SessionHelper.encodeURL("https", AbstractPustefixRequestHandler.getServerName(req), req, context.getServletManagerConfig().getProperties());
+        String redirect_uri = SessionHelper.encodeURL("https", req.getServerName(), req, context.getServletManagerConfig().getProperties());
         AbstractPustefixRequestHandler.relocate(res, redirect_uri);
     }
     
@@ -404,7 +404,7 @@ public class CookieSessionTrackingStrategy implements SessionTrackingStrategy {
         session.setAttribute(INITIAL_SESSION_CHECK, session.getId());
 
         LOG.debug("===> Redirecting to secure SSL URL with session (Id: " + session.getId() + ")");
-        String redirect_uri = SessionHelper.encodeURL("https", AbstractPustefixRequestHandler.getServerName(req), req, context.getServletManagerConfig().getProperties());
+        String redirect_uri = SessionHelper.encodeURL("https", req.getServerName(), req, context.getServletManagerConfig().getProperties());
         AbstractPustefixRequestHandler.relocate(res, redirect_uri);
     }
         
@@ -421,7 +421,7 @@ public class CookieSessionTrackingStrategy implements SessionTrackingStrategy {
         session.setAttribute(STORED_REQUEST, preq);
 
         LOG.debug("===> Redirecting to SSL URL with session (Id: " + session.getId() + ")");
-        String redirect_uri = SessionHelper.encodeURL("https", AbstractPustefixRequestHandler.getServerName(req), req, context.getServletManagerConfig().getProperties());
+        String redirect_uri = SessionHelper.encodeURL("https", req.getServerName(), req, context.getServletManagerConfig().getProperties());
         AbstractPustefixRequestHandler.relocate(res, redirect_uri);
     }
     
@@ -439,10 +439,10 @@ public class CookieSessionTrackingStrategy implements SessionTrackingStrategy {
 
         LinkedList<TrailElement> traillog = context.getSessionAdmin().getInfo(child).getTraillog();
         session.setAttribute(AbstractPustefixRequestHandler.VISIT_ID, curr_visit_id);
-        context.getSessionAdmin().registerSession(session, traillog, AbstractPustefixRequestHandler.getServerName(req), req.getRemoteAddr());
+        context.getSessionAdmin().registerSession(session, traillog, req.getServerName(), req.getRemoteAddr());
         LOG.debug("===> Redirecting with session (Id: " + session.getId() + ") using OLD VISIT_ID: " + curr_visit_id);
         session.setAttribute(STORED_REQUEST, preq);
-        String redirect_uri = SessionHelper.encodeURL(req.getScheme(), AbstractPustefixRequestHandler.getServerName(req), req, context.getServletManagerConfig().getProperties());
+        String redirect_uri = SessionHelper.encodeURL(req.getScheme(), req.getServerName(), req, context.getServletManagerConfig().getProperties());
         AbstractPustefixRequestHandler.relocate(res, redirect_uri);
     }
     

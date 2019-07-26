@@ -329,14 +329,8 @@ public class PfixServletRequestImpl implements PfixServletRequest {
      * @see de.schlund.pfixxml.PfixServletRequest#getServerName()
      */
     public String getServerName() {
-        String forward = request.getHeader("X-Forwarded-Server");
-        if (forward != null && !forward.equals("")) {
-            return forward;
-        } else {
-            return request.getServerName();
-        }
+        return request.getServerName();
     }
-
 
     /* (non-Javadoc)
      * @see de.schlund.pfixxml.PfixServletRequest#getServletName()
