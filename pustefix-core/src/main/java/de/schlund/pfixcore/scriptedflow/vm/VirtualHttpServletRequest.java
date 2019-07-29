@@ -32,6 +32,7 @@ import java.util.Map;
 
 import javax.servlet.AsyncContext;
 import javax.servlet.DispatcherType;
+import javax.servlet.ReadListener;
 import javax.servlet.RequestDispatcher;
 import javax.servlet.ServletContext;
 import javax.servlet.ServletException;
@@ -42,6 +43,7 @@ import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
+import javax.servlet.http.HttpUpgradeHandler;
 import javax.servlet.http.Part;
 
 public class VirtualHttpServletRequest implements HttpServletRequest {
@@ -98,13 +100,11 @@ public class VirtualHttpServletRequest implements HttpServletRequest {
         return orig.getHeader(arg0);
     }
 
-    @SuppressWarnings("rawtypes")
-    public Enumeration getHeaders(String arg0) {
+    public Enumeration<String> getHeaders(String arg0) {
         return orig.getHeaders(arg0);
     }
 
-    @SuppressWarnings("rawtypes")
-    public Enumeration getHeaderNames() {
+    public Enumeration<String> getHeaderNames() {
         return orig.getHeaderNames();
     }
 
@@ -228,8 +228,7 @@ public class VirtualHttpServletRequest implements HttpServletRequest {
         return orig.getAttribute(arg0);
     }
 
-    @SuppressWarnings("rawtypes")
-    public Enumeration getAttributeNames() {
+    public Enumeration<String> getAttributeNames() {
         return orig.getAttributeNames();
     }
 
@@ -259,6 +258,18 @@ public class VirtualHttpServletRequest implements HttpServletRequest {
             public int read() throws IOException {
                 return -1;
             }
+            @Override
+            public boolean isFinished() {
+                throw new UnsupportedOperationException();
+            }
+            @Override
+            public void setReadListener(ReadListener readListener) {
+                throw new UnsupportedOperationException();
+            }
+            @Override
+            public boolean isReady() {
+                throw new UnsupportedOperationException();
+            }
         };
     }
 
@@ -271,8 +282,7 @@ public class VirtualHttpServletRequest implements HttpServletRequest {
         }
     }
 
-    @SuppressWarnings("rawtypes")
-    public Enumeration getParameterNames() {
+    public Enumeration<String> getParameterNames() {
         return Collections.enumeration(params.keySet());
     }
 
@@ -280,8 +290,7 @@ public class VirtualHttpServletRequest implements HttpServletRequest {
         return params.get(arg0);
     }
 
-    @SuppressWarnings("rawtypes")
-    public Map getParameterMap() {
+    public Map<String, String[]> getParameterMap() {
         return Collections.unmodifiableMap(params);
     }
 
@@ -326,8 +335,7 @@ public class VirtualHttpServletRequest implements HttpServletRequest {
         return orig.getLocale();
     }
 
-    @SuppressWarnings("rawtypes")
-    public Enumeration getLocales() {
+    public Enumeration<Locale> getLocales() {
         return orig.getLocales();
     }
 
@@ -423,6 +431,22 @@ public class VirtualHttpServletRequest implements HttpServletRequest {
 
     public Part getPart(String name) throws IOException, ServletException {
         throw new UnsupportedOperationException();
+    }
+
+    @Override
+    public <T extends HttpUpgradeHandler> T upgrade(Class<T> handlerClass) throws IOException, ServletException {
+        throw new UnsupportedOperationException();
+    }
+
+    @Override
+    public String changeSessionId() {
+        throw new UnsupportedOperationException();
+    }
+
+    @Override
+    public long getContentLengthLong() {
+        // Virtual requests have no request body
+        return -1;
     }
 
 }

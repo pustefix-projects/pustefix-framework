@@ -45,7 +45,8 @@ public abstract class AbstractSessionHandlingTest extends TestCase {
         Tomcat tomcat = new Tomcat();
         tomcat.setBaseDir("target/tomcat");
         tomcat.setPort(HTTP_PORT);
-        
+        tomcat.getConnector().setRedirectPort(HTTPS_PORT);
+
         Connector httpsConnector = new Connector();
         httpsConnector.setPort(HTTPS_PORT);
         httpsConnector.setSecure(true);
@@ -61,7 +62,6 @@ public abstract class AbstractSessionHandlingTest extends TestCase {
 
         Service service = tomcat.getService();
         service.addConnector(httpsConnector);
-        tomcat.getConnector().setRedirectPort(HTTPS_PORT);
 
         Context ctx = tomcat.addWebapp("/", new File("target/test-classes/webapp").getAbsolutePath());
 

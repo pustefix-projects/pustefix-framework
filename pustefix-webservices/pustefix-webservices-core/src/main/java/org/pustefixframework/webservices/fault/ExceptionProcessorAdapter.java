@@ -22,6 +22,7 @@ import java.io.PrintWriter;
 import java.util.Properties;
 
 import javax.servlet.ServletOutputStream;
+import javax.servlet.WriteListener;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpServletResponseWrapper;
@@ -144,6 +145,16 @@ public class ExceptionProcessorAdapter extends FaultHandler implements Applicati
         @Override
         public void write(int b) throws IOException {}
         
+        @Override
+        public boolean isReady() {
+            return true;
+        }
+
+        @Override
+        public void setWriteListener(WriteListener writeListener) {
+            throw new UnsupportedOperationException();
+        }
+
     }
     
 }

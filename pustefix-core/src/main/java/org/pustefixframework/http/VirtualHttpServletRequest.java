@@ -22,6 +22,7 @@ import java.util.Set;
 
 import javax.servlet.AsyncContext;
 import javax.servlet.DispatcherType;
+import javax.servlet.ReadListener;
 import javax.servlet.RequestDispatcher;
 import javax.servlet.ServletContext;
 import javax.servlet.ServletException;
@@ -32,6 +33,7 @@ import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
+import javax.servlet.http.HttpUpgradeHandler;
 import javax.servlet.http.Part;
 
 /**
@@ -163,11 +165,27 @@ public class VirtualHttpServletRequest implements HttpServletRequest {
             return new ServletInputStream() {
                 
                 ByteArrayInputStream in = new ByteArrayInputStream(content);
-                    
+
                 @Override
                 public int read() throws IOException {
                     return in.read();
                 }
+
+                @Override
+                public boolean isFinished() {
+                    return in.available() == 0;
+                }
+
+                @Override
+                public void setReadListener(ReadListener readListener) {
+                    throw new UnsupportedOperationException();
+                }
+
+                @Override
+                public boolean isReady() {
+                    return true;
+                }
+
             };
         }
     }
@@ -646,6 +664,21 @@ public class VirtualHttpServletRequest implements HttpServletRequest {
     @Override
     public Part getPart(String name) throws IOException, ServletException {
         return null;
+    }
+
+    @Override
+    public <T extends HttpUpgradeHandler> T upgrade(Class<T> handlerClass) throws IOException, ServletException {
+        throw new UnsupportedOperationException();
+    }
+
+    @Override
+    public String changeSessionId() {
+        throw new UnsupportedOperationException();
+    }
+
+    @Override
+    public long getContentLengthLong() {
+        return (content == null ? -1 : content.length);
     }
 
 }
