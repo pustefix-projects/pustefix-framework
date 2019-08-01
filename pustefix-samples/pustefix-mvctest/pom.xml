@@ -47,17 +47,17 @@
     <dependency>
       <groupId>org.springframework</groupId>
       <artifactId>spring-context</artifactId>
-      <version>5.0.2.RELEASE</version>
+      <version>5.1.8.RELEASE</version>
     </dependency>
     <dependency>
       <groupId>org.springframework</groupId>
       <artifactId>spring-webmvc</artifactId>
-      <version>5.0.2.RELEASE</version>
+      <version>5.1.8.RELEASE</version>
     </dependency>
     <dependency>
       <groupId>org.springframework</groupId>
       <artifactId>spring-test</artifactId>
-      <version>5.0.2.RELEASE</version>
+      <version>5.1.8.RELEASE</version>
     </dependency>
 
     <dependency>

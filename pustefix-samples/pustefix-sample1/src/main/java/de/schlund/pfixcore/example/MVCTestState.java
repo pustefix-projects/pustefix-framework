@@ -27,8 +27,8 @@ public class MVCTestState extends StaticState {
     
     @RequestMapping("/mvctest")
     public void list(Model model, Pageable pageable, @ModelAttribute("myfilter") DataFilter filter) {
-        if(pageable.getSort() == null) {
-            pageable = new PageRequest(0, 10, new Sort(Sort.Direction.ASC, "id"));
+        if(pageable.getSort() == null || pageable.getSort().isUnsorted()) {
+            pageable = PageRequest.of(0, 10, new Sort(Sort.Direction.ASC, "id"));
         }
         model.addAttribute("data", contextData.getDataList(pageable, filter.getPropertyFilter()));
         if(filter != null) {

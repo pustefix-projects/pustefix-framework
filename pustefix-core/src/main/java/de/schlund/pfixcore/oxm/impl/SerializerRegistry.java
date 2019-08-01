@@ -47,10 +47,10 @@ import de.schlund.pfixcore.oxm.impl.serializers.DateSerializer;
 import de.schlund.pfixcore.oxm.impl.serializers.FilterSerializer;
 import de.schlund.pfixcore.oxm.impl.serializers.MapSerializer;
 import de.schlund.pfixcore.oxm.impl.serializers.ObjectToStringSerializer;
+import de.schlund.pfixcore.oxm.impl.serializers.PageSerializer;
 import de.schlund.pfixcore.oxm.impl.serializers.PropertiesSerializer;
 import de.schlund.pfixcore.oxm.impl.serializers.SetSerializer;
 import de.schlund.pfixcore.oxm.impl.serializers.SimpleEnumSerializer;
-import de.schlund.pfixcore.oxm.impl.serializers.SortSerializer;
 
 /**
  * @author mleidig@schlund.de
@@ -111,14 +111,14 @@ public class SerializerRegistry {
         simpleSerializers.put(Class.class, new ClassSerializer());
 
         complexSerializers.put(Properties.class, new PropertiesSerializer());
-        
+
         try {
-            Class<?> sortClass = Class.forName("org.springframework.data.domain.Sort");
-            complexSerializers.put(sortClass, new SortSerializer());
+            Class<?> pageClass = Class.forName("org.springframework.data.domain.PageImpl");
+            complexSerializers.put(pageClass, new PageSerializer());
         } catch (ClassNotFoundException e) {
             //ignore optional serializer
         }
-        
+
         FilterSerializer filterSer = new FilterSerializer();
         complexSerializers.put(And.class, filterSer);
         complexSerializers.put(Or.class, filterSer);

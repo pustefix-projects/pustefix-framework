@@ -33,7 +33,7 @@
     </profile>
     <profile>
       <activation>
-        <jdk>11</jdk>
+        <jdk>12</jdk>
       </activation>
       <dependencies>
         <dependency>
@@ -90,17 +90,17 @@
     <dependency>
       <groupId>org.springframework</groupId>
       <artifactId>spring-context</artifactId>
-      <version>5.1.5.RELEASE</version>
+      <version>5.1.8.RELEASE</version>
     </dependency>
     <dependency>
       <groupId>org.springframework</groupId>
       <artifactId>spring-webmvc</artifactId>
-      <version>5.1.5.RELEASE</version>
+      <version>5.1.8.RELEASE</version>
     </dependency>
     <dependency>
       <groupId>org.springframework</groupId>
       <artifactId>spring-test</artifactId>
-      <version>5.1.5.RELEASE</version>
+      <version>5.1.8.RELEASE</version>
       <optional>true</optional>
     </dependency>
 
@@ -175,7 +175,7 @@
     <dependency>
       <groupId>org.springframework.data</groupId>
       <artifactId>spring-data-commons</artifactId>
-      <version>1.7.3.RELEASE</version>
+      <version>2.1.9.RELEASE</version>
       <optional>true</optional>
     </dependency>
     

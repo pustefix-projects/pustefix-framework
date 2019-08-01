@@ -401,10 +401,10 @@
     </profile>
     <profile>
       <activation>
-        <jdk>11</jdk>
+        <jdk>12</jdk>
       </activation>
       <properties>
-        <maven.compiler.release>11</maven.compiler.release>
+        <maven.compiler.release>12</maven.compiler.release>
       </properties>
     </profile>
   </profiles>
