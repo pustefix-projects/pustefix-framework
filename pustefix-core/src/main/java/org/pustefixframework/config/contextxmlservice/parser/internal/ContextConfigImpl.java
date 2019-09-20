@@ -28,15 +28,14 @@ import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Properties;
-import java.util.Set;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.pustefixframework.config.contextxmlservice.ContextConfig;
 import org.pustefixframework.config.contextxmlservice.ContextResourceConfig;
 import org.pustefixframework.config.contextxmlservice.PreserveParams;
 import org.pustefixframework.container.spring.beans.TenantAwareProperties;
 import org.pustefixframework.util.BytecodeAPIUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 
@@ -476,80 +475,6 @@ public class ContextConfigImpl implements ContextConfig {
             }
         }
         return condition;
-    }
-      
-    public void checkAuthConstraints() throws Exception {
-        Set<String> authPages = new LinkedHashSet<String>();
-        List<PageRequestConfigImpl> pages = getPageRequestConfigs();
-        for (PageRequestConfigImpl page : pages) {
-            AuthConstraint authConstraint = page.getAuthConstraint();
-            if (authConstraint == null) authConstraint = getDefaultAuthConstraint();
-            if (authConstraint != null) {
-                authPages.clear();
-                authPages.add(page.getPageName());
-                checkAuthConstraint(authConstraint, authPages, page.getPageName());
-            }
-        }
-    }
-    
-    private void checkAuthConstraint(AuthConstraint authConstraint, Set<String> authPages, String lastAuthPage) throws Exception {
-        for (String authPage : traverseAuthPages(authConstraint)) {
-            if (authPage != null && !authPage.equals(lastAuthPage)) {
-                if (authPages.contains(authPage)) {
-                    StringBuilder sb = new StringBuilder();
-                    for (String s : authPages)
-                        sb.append(s + " -> ");
-                    sb.append(authPage);
-                    throw new Exception("Circular authconstraint@authpage reference: " + sb.toString());
-                }
-                PageRequestConfigImpl cfg = getPageRequestConfig(authPage);
-                if (cfg != null) {
-                    AuthConstraint ac = cfg.getAuthConstraint();
-                    if (ac == null) ac = getDefaultAuthConstraint();
-                    if (ac != null) {
-                        authPages.add(authPage);
-                        checkAuthConstraint(ac, authPages, authPage);
-                    }
-                } else throw new Exception("Authpage not configured: " + authPage);
-            }
-        }
-    }
-
-    private Iterable<String> traverseAuthPages(final AuthConstraint authConstraint) {
-        return new Iterable<String>() {
-
-            public Iterator<String> iterator() {
-                return new Iterator<String>() {
-
-                    private Iterator<NavigationCase> navCases =
-                        authConstraint.getNavigation().iterator();
-
-                    private boolean visitedDefaultAuthPage;
-
-                    private boolean isDefaultPageVisitable() {
-                        return !visitedDefaultAuthPage && authConstraint.getDefaultAuthPage() != null;
-                    }
-
-                    public boolean hasNext() {
-                        return isDefaultPageVisitable() ||
-                               navCases.hasNext();
-                    }
-
-                    public String next() {
-                        if (isDefaultPageVisitable()) {
-                            String result = authConstraint.getDefaultAuthPage();
-                            visitedDefaultAuthPage = true;
-                            return result;
-                        }
-                        return navCases.next().getPage();
-                    }
-
-                    public void remove() {
-                        throw new UnsupportedOperationException(); 
-                    }
-                };
-            }
-        };
     }
 
 }
