@@ -39,7 +39,7 @@ import org.slf4j.LoggerFactory;
  */
 public class POData {
 
-    private Logger LOG = LoggerFactory.getLogger(POData.class);
+    private static Logger LOG = LoggerFactory.getLogger(POData.class);
 
     private Map<String, POMessage> messages;
     private PluralForms pluralForms;
@@ -145,11 +145,18 @@ public class POData {
 
             ScriptEngineManager manager = new ScriptEngineManager();
             ScriptEngine engine = manager.getEngineByName("javascript");
-            script = ((Compilable)engine).compile(expression);
+            if(engine == null) {
+                LOG.warn("No 'javascript' ScriptEngine found.");
+            } else {
+                script = ((Compilable)engine).compile(expression);
+            }
         }
 
         public synchronized int getIndex(int n) throws ScriptException {
 
+            if(script == null) {
+                return n == 1 ? 0 : 1;
+            }
             Bindings bindings = new SimpleBindings();
             bindings.put("n", n);
             Object result = script.eval(bindings);
