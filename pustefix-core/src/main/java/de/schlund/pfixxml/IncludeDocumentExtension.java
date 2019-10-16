@@ -657,7 +657,7 @@ public final class IncludeDocumentExtension {
     public static String getEncodedMessage(TargetGenerator targetGen, String key, String lang,
             String encode, Object arg1, Object arg2, Object arg3, Object arg4, Object arg5) throws Exception {
 
-        String msg = getMessage(targetGen, key, lang, arg1, arg2, arg3, arg5, arg5);
+        String msg = getMessage(targetGen, key, lang, arg1, arg2, arg3, arg4, arg5);
         if("js".equalsIgnoreCase(encode) || "javascript".equalsIgnoreCase(encode)) {
             msg = Encode.forJavaScript(msg);
         }
