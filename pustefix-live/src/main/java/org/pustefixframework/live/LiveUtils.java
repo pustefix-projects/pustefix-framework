@@ -19,7 +19,7 @@ public class LiveUtils {
     private static Logger LOG = LoggerFactory.getLogger(LiveUtils.class);
 
     public static String getArtifactFromPom(File pomFile) throws Exception {
-    	Element root = getRootFromPom(pomFile);
+        Element root = getRootFromPom(pomFile);
         Element artifactElem = getSingleChildElement(root, "artifactId", true);
         String artifactId = artifactElem.getTextContent().trim();
         return artifactId;
@@ -27,29 +27,39 @@ public class LiveUtils {
 
     public static String getKeyFromPom(File pomFile) throws Exception {
         Element root = getRootFromPom(pomFile);
-        Element groupElem = getSingleChildElement(root, "groupId", true);
-        String groupId = groupElem.getTextContent().trim();
+        String groupId = getMavenCoordinate(root, "groupId");
         Element artifactElem = getSingleChildElement(root, "artifactId", true);
         String artifactId = artifactElem.getTextContent().trim();
-        Element versionElem = getSingleChildElement(root, "version", true);
-        String version = versionElem.getTextContent().trim();
+        String version = getMavenCoordinate(root, "version");
         String entryKey = groupId + "+" + artifactId + "+" + version;
         return entryKey;
     }
     
     public static LiveJarInfo.Entry getEntryFromPom(File pomFile) throws Exception {
         Element root = getRootFromPom(pomFile);
-        Element groupElem = getSingleChildElement(root, "groupId", true);
-        String groupId = groupElem.getTextContent().trim();
+        String groupId = getMavenCoordinate(root, "groupId");
         Element artifactElem = getSingleChildElement(root, "artifactId", true);
         String artifactId = artifactElem.getTextContent().trim();
-        Element versionElem = getSingleChildElement(root, "version", true);
-        String version = versionElem.getTextContent().trim();
+        String version = getMavenCoordinate(root, "version");
         LiveJarInfo.Entry entry = new LiveJarInfo.Entry();
         entry.setGroupId(groupId);
         entry.setArtifactId(artifactId);
         entry.setVersion(version);
         return entry;
+    }
+
+    private static String getMavenCoordinate(Element root, String name) throws Exception {
+        Element elem = getSingleChildElement(root, name, false);
+        if(elem == null) {
+            Element parentElem = getSingleChildElement(root, "parent", false);
+            if(parentElem != null) {
+                elem = getSingleChildElement(parentElem, name, false);
+            }
+        }
+        if(elem == null) {
+            throw new Exception("Can't find '" + name + "' element.");
+        }
+        return elem.getTextContent().trim();
     }
 
     public static Element getRootFromPom(File pomFile) throws Exception {
