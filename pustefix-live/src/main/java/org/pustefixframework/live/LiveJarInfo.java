@@ -31,6 +31,7 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Properties;
 import java.util.Set;
 import java.util.jar.Attributes;
 import java.util.jar.Manifest;
@@ -424,6 +425,39 @@ public class LiveJarInfo {
                         return dir;
                     }
                 }
+            }
+            // look for entry using Maven coordinates from META-INF/pominfo.properties
+            try {
+                URL pomInfoUrl = new URL(url, "/META-INF/pominfo.properties");
+                URLConnection con = pomInfoUrl.openConnection();
+                if (con != null) {
+                    InputStream in = con.getInputStream();
+                    if (in != null) {
+                        Properties props = new Properties();
+                        props.load(in);
+                        String groupId = props.getProperty("groupId");
+                        String artifactId = props.getProperty("artifactId");
+                        String version = props.getProperty("version");
+                        String entryKey = groupId + "+" + artifactId + "+" + version;
+                        entry = jarEntries.get(entryKey);
+                        if(entry == null && !forceVersion) entry = jarEntriesNoVersion.get(groupId + "+" + artifactId);
+                        if (entry != null) {
+                            for (File dir : entry.directories) {
+                                if (LOG.isDebugEnabled()) {
+                                    LOG.debug("Found live module location by pominfo.properties: " + entryKey);
+                                }
+                                rootToLocation.put(url.toString(), dir);
+                                return dir;
+                            }
+                        }
+                    }
+                }
+            } catch(FileNotFoundException x) {
+                //file is optional
+            } catch(MalformedURLException x) {
+                //can't be thrown
+            } catch(IOException x) {
+                LOG.warn("IO error reading pominfo.properties: " + url.toString(), x);
             }
             // look for entry by artifact name and MANIFEST attributes
             try {
