@@ -223,7 +223,14 @@
           <xsl:value-of select="$__defining_module"/>
         </xsl:when>
         <xsl:otherwise>
-          <xsl:value-of select="$module"/>
+          <xsl:choose>
+            <xsl:when test="starts-with($module,'PAGEDEF:')">
+              <xsl:value-of select="include:getDefiningModule($__target_gen,substring($module,9))"/>
+            </xsl:when>
+            <xsl:otherwise>
+              <xsl:value-of select="$module"/>
+            </xsl:otherwise>
+          </xsl:choose>
         </xsl:otherwise>
       </xsl:choose>
     </xsl:variable>
@@ -512,7 +519,14 @@
           <xsl:value-of select="$__defining_module"/>
         </xsl:when>
         <xsl:otherwise>
-          <xsl:value-of select="$module"/>
+          <xsl:choose>
+            <xsl:when test="starts-with($module,'PAGEDEF:')">
+              <xsl:value-of select="include:getDefiningModule($__target_gen,substring($module,9))"/>
+            </xsl:when>
+            <xsl:otherwise>
+              <xsl:value-of select="$module"/>
+            </xsl:otherwise>
+          </xsl:choose>
         </xsl:otherwise>
       </xsl:choose>
     </xsl:variable>
@@ -595,7 +609,14 @@
           <xsl:value-of select="$__defining_module"/>
         </xsl:when>
         <xsl:otherwise>
-          <xsl:value-of select="$module"/>
+          <xsl:choose>
+            <xsl:when test="starts-with($module,'PAGEDEF:')">
+              <xsl:value-of select="include:getDefiningModule($__target_gen,substring($module,9))"/>
+            </xsl:when>
+            <xsl:otherwise>
+              <xsl:value-of select="$module"/>
+            </xsl:otherwise>
+          </xsl:choose>
         </xsl:otherwise>
       </xsl:choose>
     </xsl:variable>
@@ -669,7 +690,14 @@
           <xsl:value-of select="$__defining_module"/>
         </xsl:when>
         <xsl:otherwise>
-          <xsl:value-of select="$module"/>
+          <xsl:choose>
+            <xsl:when test="starts-with($module,'PAGEDEF:')">
+              <xsl:value-of select="include:getDefiningModule($__target_gen,substring($module,9))"/>
+            </xsl:when>
+            <xsl:otherwise>
+              <xsl:value-of select="$module"/>
+            </xsl:otherwise>
+          </xsl:choose>
         </xsl:otherwise>
       </xsl:choose>
     </xsl:variable>

@@ -176,4 +176,8 @@ public class IncludeDocumentExtensionSaxon1 {
         return IncludeDocumentExtension.messageExists(targetGen, key, lang);
     }
 
+    public static String getDefiningModule(TargetGenerator targetGen, String page) {
+        return IncludeDocumentExtension.getDefiningModule(targetGen, page);
+    }
+
 }

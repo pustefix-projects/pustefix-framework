@@ -679,4 +679,8 @@ public final class IncludeDocumentExtension {
         }
     }
 
+    public static String getDefiningModule(TargetGenerator targetGen, String page) {
+        return targetGen.getDefiningModule(page);
+    }
+
 }
