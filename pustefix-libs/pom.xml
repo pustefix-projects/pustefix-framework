@@ -24,10 +24,10 @@
             <phase>install</phase>
             <goals><goal>install-file</goal></goals>
             <configuration>
-              <file>${basedir}/saxon-6.5.5.jar</file>
+              <file>${basedir}/saxon-6.5.6.jar</file>
               <groupId>com.icl.saxon</groupId>
               <artifactId>saxon</artifactId>
-              <version>6.5.5</version>
+              <version>6.5.6</version>
               <generatePom>true</generatePom>
               <packaging>jar</packaging>
             </configuration>
@@ -77,10 +77,10 @@
                 <configuration>
                   <repositoryId>pustefix</repositoryId>
                   <url>scpexe://pustefix@pustefixhp.schlund.de/home/pustefix/repository/maven</url>
-                  <file>${basedir}/saxon-6.5.5.jar</file>
+                  <file>${basedir}/saxon-6.5.6.jar</file>
                   <groupId>com.icl.saxon</groupId>
                   <artifactId>saxon</artifactId>
-                  <version>6.5.5</version>
+                  <version>6.5.6</version>
                   <generatePom>true</generatePom>
                   <packaging>jar</packaging>
                 </configuration>
