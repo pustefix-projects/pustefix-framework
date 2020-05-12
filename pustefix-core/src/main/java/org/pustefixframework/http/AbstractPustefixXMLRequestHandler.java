@@ -426,9 +426,7 @@ public abstract class AbstractPustefixXMLRequestHandler extends AbstractPustefix
         if (spdoc.getLanguage() != null) {
             params.put(XSLPARAM_LANG, spdoc.getLanguage());
         }
-        synchronized(spdoc) {
-            handleDocument(preq, res, spdoc, params, doreuse);
-        }
+        handleDocument(preq, res, spdoc, params, doreuse);
         if (session != null && (getRendering(preq) != RENDERMODE.RENDER_FONTIFY) && 
                 (getRendering(preq) != RENDERMODE.RENDER_LASTDOM) && !doreuse) {
             // This will store just the last dom, but only when editmode is allowed (so this normally doesn't apply to production mode)
@@ -630,7 +628,9 @@ public abstract class AbstractPustefixXMLRequestHandler extends AbstractPustefix
             if (stylesheet.indexOf("::") > 0) {
                 spdoc.getDocument().getDocumentElement().setAttribute("used-pv", stylesheet);
             }
-            spdoc.setDocument(Xml.parse(generator.getXsltVersion(), spdoc.getDocument()));
+            synchronized(spdoc) {
+                spdoc.setDocument(Xml.parse(generator.getXsltVersion(), spdoc.getDocument()));
+            }
             spdoc.setDocIsUpdateable(false);
         }
 
