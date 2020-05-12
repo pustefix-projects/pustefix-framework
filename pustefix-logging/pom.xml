@@ -6,12 +6,12 @@
   <parent>
     <groupId>org.pustefixframework</groupId>
     <artifactId>pustefixframework</artifactId>
-    <version>0.22.20</version>
+    <version>0.22.21-SNAPSHOT</version>
   </parent>
 
   <groupId>org.pustefixframework.logging</groupId>
   <artifactId>pustefix-logging</artifactId>
-  <version>0.22.20</version>
+  <version>0.22.21-SNAPSHOT</version>
 
   <packaging>pom</packaging>
   <name>Pustefix Logging</name>
