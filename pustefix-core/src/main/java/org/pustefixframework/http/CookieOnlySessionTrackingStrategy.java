@@ -274,10 +274,16 @@ public class CookieOnlySessionTrackingStrategy implements SessionTrackingStrateg
             Cookie cookie = new Cookie(AbstractPustefixRequestHandler.getSessionCookieName(req), "");
             cookie.setMaxAge(0);
             cookie.setPath((req.getContextPath().equals("")) ? "/" : req.getContextPath());
+            if(req.isSecure()) {
+                cookie.setSecure(true);
+            }
             res.addCookie(cookie);
             Cookie resetCookie = new Cookie(COOKIE_SESSION_RESET, req.getRequestedSessionId());
             resetCookie.setMaxAge(60);
             resetCookie.setPath((req.getContextPath().equals("")) ? "/" : req.getContextPath());
+            if(req.isSecure()) {
+                resetCookie.setSecure(true);
+            }
             res.addCookie(resetCookie);
         }
     }
@@ -369,6 +375,9 @@ public class CookieOnlySessionTrackingStrategy implements SessionTrackingStrateg
         Cookie resetCookie = new Cookie(name, value);
         resetCookie.setMaxAge(-1);
         resetCookie.setPath((req.getContextPath().equals("")) ? "/" : req.getContextPath());
+        if(req.isSecure()) {
+            resetCookie.setSecure(true);
+        }
         res.addCookie(resetCookie);
     }
     
@@ -376,9 +385,12 @@ public class CookieOnlySessionTrackingStrategy implements SessionTrackingStrateg
         Cookie sslCookie = new Cookie(name, "");
         sslCookie.setMaxAge(0);
         sslCookie.setPath((req.getContextPath().equals("")) ? "/" : req.getContextPath());
+        if(req.isSecure()) {
+            sslCookie.setSecure(true);
+        }
         res.addCookie(sslCookie);
     }
-    
+
     private static Cookie getCookie(Cookie[] cookies, String name) {
         if(cookies != null) {
             for(Cookie cookie: cookies) {

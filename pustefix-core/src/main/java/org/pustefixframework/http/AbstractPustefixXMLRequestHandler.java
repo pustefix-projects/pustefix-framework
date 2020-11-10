@@ -308,6 +308,9 @@ public abstract class AbstractPustefixXMLRequestHandler extends AbstractPustefix
                 Cookie cookie = new Cookie(getSessionCookieName(req), "");
                 cookie.setMaxAge(0);
                 cookie.setPath((req.getContextPath().equals("")) ? "/" : req.getContextPath());
+                if(req.isSecure()) {
+                    cookie.setSecure(true);
+                }
                 res.addCookie(cookie);
             }
             relocate(res, redirectUri);
