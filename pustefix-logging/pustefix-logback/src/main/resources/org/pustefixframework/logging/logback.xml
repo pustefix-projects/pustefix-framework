@@ -310,10 +310,4 @@
     <appender-ref ref="LOGGER_CSRF"/>
   </logger>
 
-  <!-- Default logger -->
-
-  <root level="${defaultLevel}">
-    <appender-ref ref="LOGGER_GENERAL" />
-  </root>
-
 </included>
