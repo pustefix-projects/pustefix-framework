@@ -3,4 +3,8 @@
 
   <include resource="org/pustefixframework/logging/logback.xml"/>
 
+  <root level="${defaultLevel}">
+    <appender-ref ref="LOGGER_GENERAL" />
+  </root>
+
 </configuration>
