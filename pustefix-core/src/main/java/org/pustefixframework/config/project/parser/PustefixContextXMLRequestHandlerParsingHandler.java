@@ -42,6 +42,7 @@ import org.pustefixframework.http.AdditionalTrailInfo;
 import org.pustefixframework.http.DefaultAdditionalTrailInfoImpl;
 import org.pustefixframework.http.PustefixContextXMLRequestHandler;
 import org.pustefixframework.http.PustefixInternalsRequestHandler;
+import org.pustefixframework.http.internal.RenderInterceptorProcessor;
 import org.pustefixframework.web.servlet.view.XsltViewResolver;
 import org.springframework.aop.scope.ScopedProxyUtils;
 import org.springframework.beans.factory.BeanDefinitionStoreException;
@@ -227,6 +228,7 @@ public class PustefixContextXMLRequestHandlerParsingHandler extends Customizatio
         beanBuilder.addPropertyValue("pageMap", new RuntimeBeanReference(PageMap.class.getName()));
         beanBuilder.addPropertyValue("documentHistory", new RuntimeBeanReference(SPDocumentHistory.class.getName()));
         beanBuilder.addPropertyValue("viewResolver", new RuntimeBeanReference(XsltViewResolver.class.getName()));
+        beanBuilder.addPropertyValue("renderInterceptor",  new RuntimeBeanReference(RenderInterceptorProcessor.class.getName()));
         BeanDefinition beanDefinition = beanBuilder.getBeanDefinition();
         BeanDefinitionHolder beanHolder = new BeanDefinitionHolder(beanDefinition, PustefixContextXMLRequestHandler.class.getName() + (path != null ? "#" + path : ""));
         context.getObjectTreeElement().addObject(beanHolder);
@@ -244,7 +246,11 @@ public class PustefixContextXMLRequestHandlerParsingHandler extends Customizatio
         beanHolder = new BeanDefinitionHolder(beanDefinition, SPDocumentHistory.class.getName());
         beanHolder = ScopedProxyUtils.createScopedProxy(beanHolder, beanReg, true);
         context.getObjectTreeElement().addObject(beanHolder);
-        
+
+        beanBuilder = BeanDefinitionBuilder.genericBeanDefinition(RenderInterceptorProcessor.class);
+        beanDefinition = beanBuilder.getBeanDefinition();
+        beanHolder = new BeanDefinitionHolder(beanDefinition, RenderInterceptorProcessor.class.getName());
+        context.getObjectTreeElement().addObject(beanHolder);
     }
 
 }

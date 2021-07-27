@@ -51,13 +51,14 @@ import javax.xml.transform.TransformerFactoryConfigurationError;
 import javax.xml.transform.dom.DOMSource;
 import javax.xml.transform.stream.StreamResult;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.pustefixframework.config.contextxmlservice.AbstractXMLServletConfig;
 import org.pustefixframework.config.contextxmlservice.ServletManagerConfig;
 import org.pustefixframework.container.spring.http.PustefixHandlerMapping;
+import org.pustefixframework.http.internal.RenderInterceptorProcessor;
 import org.pustefixframework.util.LogUtils;
 import org.pustefixframework.util.URLUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.ApplicationContextAware;
 import org.springframework.context.i18n.LocaleContextHolder;
@@ -195,6 +196,7 @@ public abstract class AbstractPustefixXMLRequestHandler extends AbstractPustefix
     private ApplicationContext applicationContext;
     private SPDocumentHistory documentHistory;
     private ViewResolver viewResolver;
+    private RenderInterceptorProcessor renderInterceptor;
 
     //~ Methods ....................................................................................
     /**
@@ -754,7 +756,7 @@ public abstract class AbstractPustefixXMLRequestHandler extends AbstractPustefix
         DigestOutputStream digestOutput = new DigestOutputStream(output, digest);
         try {
             hookBeforeRender(preq, spdoc, paramhash, stylesheet);
-            render(spdoc, getRendering(preq), res, paramhash, stylesheet, digestOutput, preq);
+            render(spdoc, getRendering(preq), res, paramhash, stylesheet, digestOutput, output, preq);
         } finally {
             hookAfterRender(preq, spdoc, paramhash, stylesheet);
         }
@@ -784,13 +786,17 @@ public abstract class AbstractPustefixXMLRequestHandler extends AbstractPustefix
         return modified_or_no_etag;
     }
     
-    private void render(SPDocument spdoc, RENDERMODE rendering, HttpServletResponse res, TreeMap<String, Object> paramhash, String stylesheet, OutputStream output, PfixServletRequest preq) throws RenderingException {
+    private void render(SPDocument spdoc, RENDERMODE rendering, HttpServletResponse res, TreeMap<String, Object> paramhash,
+            String stylesheet, DigestOutputStream digestOutput, ByteArrayOutputStream byteOutput, PfixServletRequest preq) throws RenderingException {
         
         ExtensionFunctionUtils.initCache();
         try {
         switch (rendering) {
             case RENDER_NORMAL:
-                renderNormal(spdoc, res, paramhash, stylesheet, output, preq);
+                if(renderInterceptor.preRender(spdoc, stylesheet, preq, res, digestOutput, byteOutput)) {
+                    renderNormal(spdoc, res, paramhash, stylesheet, digestOutput, preq);
+                    renderInterceptor.postRender(spdoc, stylesheet, preq, res, digestOutput, byteOutput);
+                }
                 break;
             case RENDER_FONTIFY:
                 renderFontify(spdoc, res, paramhash);
@@ -1356,6 +1362,10 @@ public abstract class AbstractPustefixXMLRequestHandler extends AbstractPustefix
     
     public void setViewResolver(ViewResolver viewResolver) {
         this.viewResolver = viewResolver;
+    }
+
+    public void setRenderInterceptor(RenderInterceptorProcessor renderInterceptor) {
+        this.renderInterceptor = renderInterceptor;
     }
 
     class SkippingByteArrayOutputStream extends ByteArrayOutputStream {
